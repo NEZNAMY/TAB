@@ -62,7 +62,11 @@ public class NMSStorage {
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
         if (minorVersion >= 7) {
-            NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection, NetworkManager);
+            if (BukkitReflection.is1_20_2Plus()) {
+                NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection.getSuperclass(), NetworkManager);
+            } else {
+                NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection, NetworkManager);
+            }
             sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         } else {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);

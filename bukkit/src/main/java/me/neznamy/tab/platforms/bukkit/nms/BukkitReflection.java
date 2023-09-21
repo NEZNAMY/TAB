@@ -29,12 +29,16 @@ public class BukkitReflection {
     @Getter
     private static final boolean is1_19_4Plus = is1_19_3Plus && !serverPackage.equals("v1_19_R2");
 
+    /** Flag determining whether the server version is at least 1.20.2 or not */
+    @Getter
+    private static final boolean is1_20_2Plus = minorVersion >= 20 && !serverPackage.equals("v1_20_R1");
+
     private static boolean checkMojangMapped() {
         try {
             Class.forName("net.minecraft.network.syncher.SynchedEntityData").getMethod("define",
                     Class.forName("net.minecraft.network.syncher.EntityDataAccessor"), Object.class);
             return true;
-        } catch (ReflectiveOperationException ex) {
+        } catch (ReflectiveOperationException | NullPointerException ex) {
             return false;
         }
     }

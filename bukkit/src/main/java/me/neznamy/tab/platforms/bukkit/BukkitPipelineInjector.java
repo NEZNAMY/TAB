@@ -48,8 +48,13 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @Override
     @SneakyThrows
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                PacketScoreboard.DisplayObjective_POSITION.getInt(packet),
+        int position;
+        if (BukkitReflection.is1_20_2Plus()) {
+            position = ((Enum<?>)PacketScoreboard.DisplayObjective_POSITION.get(packet)).ordinal();
+        } else {
+            position = PacketScoreboard.DisplayObjective_POSITION.getInt(packet);
+        }
+        TAB.getInstance().getFeatureManager().onDisplayObjective(player, position,
                 (String) PacketScoreboard.DisplayObjective_OBJECTIVE_NAME.get(packet));
     }
 
@@ -94,27 +99,33 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         }
         List<Object> updatedList = new ArrayList<>();
         for (Object nmsData : (List<?>) BukkitTabList.PLAYERS.get(packet)) {
-            GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_getProfile.invoke(nmsData);
+            GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_Profile.get(nmsData);
+            UUID id;
+            if (BukkitReflection.is1_19_3Plus()) {
+                id = (UUID) BukkitTabList.PlayerInfoData_UUID.get(nmsData);
+            } else {
+                id = profile.getId();
+            }
             Object displayName = null;
             int latency = 0;
             if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
-                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
+                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, id);
                 if (newDisplayName != null) displayName = TAB.getInstance().getPlatform().toComponent(newDisplayName, receiver.getVersion());
                 if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
             if (actions.contains(TabList.Action.UPDATE_LATENCY.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 latency = BukkitTabList.PlayerInfoData_Latency.getInt(nmsData);
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
+                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, id, latency);
                 if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_Latency.set(nmsData, latency);
             }
             if (actions.contains(TabList.Action.ADD_PLAYER.name())) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
+                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, id, profile.getName());
             }
             if (BukkitReflection.is1_19_3Plus()) {
                 // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
                 updatedList.add(BukkitTabList.newPlayerInfoData.newInstance(
-                        profile.getId(),
+                        id,
                         profile,
                         BukkitTabList.PlayerInfoData_Listed.getBoolean(nmsData),
                         latency,

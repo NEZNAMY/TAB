@@ -37,6 +37,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static Constructor<?> newDisplayObjective;
     public static Field DisplayObjective_POSITION;
     public static Field DisplayObjective_OBJECTIVE_NAME;
+    public static Enum[] DisplaySlot_values;
 
     // PacketPlayOutScoreboardScore
     private static Class<Enum> EnumScoreboardAction;
@@ -141,11 +142,17 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                 EnumTeamPush = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumTeamPush");
             }
         }
-        
         emptyScoreboard = scoreboard.getConstructor().newInstance();
         IScoreboardCriteria_self = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
-        newDisplayObjective = DisplayObjectiveClass.getConstructor(int.class, scoreboardObjective);
-        DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, int.class);
+        if (BukkitReflection.is1_20_2Plus()) {
+            Class<?> DisplaySlot = Class.forName("net.minecraft.world.scores.DisplaySlot");
+            DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, DisplaySlot);
+            newDisplayObjective = DisplayObjectiveClass.getConstructor(DisplaySlot, scoreboardObjective);
+            DisplaySlot_values = (Enum[]) DisplaySlot.getDeclaredMethod("values").invoke(null);
+        } else {
+            DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, int.class);
+            newDisplayObjective = DisplayObjectiveClass.getConstructor(int.class, scoreboardObjective);
+        }
         DisplayObjective_OBJECTIVE_NAME = ReflectionUtils.getOnlyField(DisplayObjectiveClass, String.class);
         newScoreboardObjective = ReflectionUtils.getOnlyConstructor(scoreboardObjective);
         Objective_OBJECTIVE_NAME = ReflectionUtils.getFields(ObjectivePacketClass, String.class).get(0);
@@ -214,7 +221,13 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Override
     @SneakyThrows
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.sendPacket(newDisplayObjective.newInstance(slot.ordinal(), newScoreboardObjective(objective)));
+        Object displaySlot;
+        if (BukkitReflection.is1_20_2Plus()) {
+            displaySlot = DisplaySlot_values[slot.ordinal()];
+        } else {
+            displaySlot = slot.ordinal();
+        }
+        player.sendPacket(newDisplayObjective.newInstance(displaySlot, newScoreboardObjective(objective)));
     }
 
     @Override

@@ -88,8 +88,8 @@ public class ReflectionUtils {
     @NotNull
     public static List<Method> getMethods(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (!returnType.isAssignableFrom(m.getReturnType()) || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
+        for (Method m : clazz.getMethods()) {
+            if (!returnType.isAssignableFrom(m.getReturnType()) || m.getParameterCount() != parameterTypes.length) continue;
             Class<?>[] types = m.getParameterTypes();
             boolean valid = true;
             for (int i=0; i<types.length; i++) {

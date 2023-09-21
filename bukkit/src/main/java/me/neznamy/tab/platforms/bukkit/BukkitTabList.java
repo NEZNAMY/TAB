@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -40,7 +39,7 @@ public class BukkitTabList implements TabList {
     private static Field FOOTER;
 
     public static Class<?> PlayerInfoClass;
-    private static Constructor<?> newPacketPlayOutPlayerInfo;
+    private static Constructor<?> newPlayerInfo;
     public static Field ACTION;
     public static Field PLAYERS;
     private static Class<Enum> ActionClass;
@@ -50,7 +49,8 @@ public class BukkitTabList implements TabList {
     private static Class<?> EntityPlayer;
 
     public static Constructor<?> newPlayerInfoData;
-    public static Method PlayerInfoData_getProfile;
+    public static Field PlayerInfoData_UUID;
+    public static Field PlayerInfoData_Profile;
     public static Field PlayerInfoData_Latency;
     public static Field PlayerInfoData_GameMode;
     public static Field PlayerInfoData_DisplayName;
@@ -126,18 +126,19 @@ public class BukkitTabList implements TabList {
         // Info packet
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         newPlayerInfoData = ReflectionUtils.getOnlyConstructor(playerInfoDataClass);
-        PlayerInfoData_getProfile = ReflectionUtils.getOnlyMethod(playerInfoDataClass, GameProfile.class);
+        PlayerInfoData_Profile = ReflectionUtils.getOnlyField(playerInfoDataClass, GameProfile.class);
         PlayerInfoData_Latency = ReflectionUtils.getOnlyField(playerInfoDataClass, int.class);
         PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
         PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(playerInfoDataClass, IChatBaseComponent);
         if (BukkitReflection.is1_19_3Plus()) {
             newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
-            newPacketPlayOutPlayerInfo = PlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
+            newPlayerInfo = PlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
             ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, EnumSet.class);
             PlayerInfoData_Listed = ReflectionUtils.getOnlyField(playerInfoDataClass, boolean.class);
             PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
+            PlayerInfoData_UUID = ReflectionUtils.getOnlyField(playerInfoDataClass, UUID.class);
         } else {
-            newPacketPlayOutPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, Array.newInstance(EntityPlayer, 0).getClass());
+            newPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, Array.newInstance(EntityPlayer, 0).getClass());
             ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
         }
         gameModes = new Object[] {
@@ -212,13 +213,10 @@ public class BukkitTabList implements TabList {
             } else {
                 actions = EnumSet.of(Enum.valueOf(ActionClass, action.name()));
             }
-            packet = newPacketPlayOutPlayerInfo.newInstance(actions, Collections.emptyList());
-            GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
-            if (entry.getSkin() != null) profile.getProperties().put(TEXTURES_PROPERTY,
-                    new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
+            packet = newPlayerInfo.newInstance(actions, Collections.emptyList());
             players.add(newPlayerInfoData.newInstance(
                     entry.getUniqueId(),
-                    profile,
+                    createProfile(entry.getUniqueId(), entry.getName(), entry.getSkin()),
                     true,
                     entry.getLatency(),
                     gameModes[entry.getGameMode()],
@@ -226,16 +224,12 @@ public class BukkitTabList implements TabList {
                     null
             ));
         } else {
-            packet = newPacketPlayOutPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()),
-                    Array.newInstance(EntityPlayer, 0));
-            GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
-            if (entry.getSkin() != null) profile.getProperties().put(TEXTURES_PROPERTY,
-                    new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
+            packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Array.newInstance(EntityPlayer, 0));
             List<Object> parameters = new ArrayList<>();
             if (newPlayerInfoData.getParameterTypes()[0] == PlayerInfoClass) {
                 parameters.add(packet);
             }
-            parameters.add(profile);
+            parameters.add(createProfile(entry.getUniqueId(), entry.getName(), entry.getSkin()));
             parameters.add(entry.getLatency());
             parameters.add(gameModes[entry.getGameMode()]);
             parameters.add(entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName()));
@@ -248,5 +242,15 @@ public class BukkitTabList implements TabList {
 
     private Object toComponent(IChatBaseComponent component) {
         return player.getPlatform().toComponent(component, player.getVersion());
+    }
+
+    @NotNull
+    private GameProfile createProfile(@NotNull UUID id, @Nullable String name, @Nullable Skin skin) {
+        GameProfile profile = new GameProfile(id, name == null ? "" : name);
+        if (skin != null) {
+            profile.getProperties().put(TabList.TEXTURES_PROPERTY,
+                    new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
+        }
+        return profile;
     }
 }
