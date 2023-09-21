@@ -14,6 +14,7 @@ public enum ProtocolVersion {
     UNKNOWN_SERVER_VERSION ("Unknown"),
     UNKNOWN_CLIENT_VERSION ("Unknown"),
     PROXY   ("Proxy"),
+    V1_20_2 (764),
     V1_20_1 (763),
     V1_20   (763),
     V1_19_4 (762),
