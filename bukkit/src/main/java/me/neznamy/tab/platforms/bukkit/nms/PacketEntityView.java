@@ -169,6 +169,7 @@ public class PacketEntityView implements EntityView {
     private static void loadEntitySpawn() throws ReflectiveOperationException {
         SpawnEntityClass = getClass("network.protocol.game.ClientboundAddEntityPacket",
                 "network.protocol.game.PacketPlayOutSpawnEntity", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
+        SpawnEntity_EntityId = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(0);
         if (BukkitReflection.getMinorVersion() >= 17) {
             Class<?> Vec3D = getClass("world.phys.Vec3", "world.phys.Vec3D");
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
@@ -187,7 +188,6 @@ public class PacketEntityView implements EntityView {
             }
         } else {
             newSpawnEntity = SpawnEntityClass.getConstructor();
-            SpawnEntity_EntityId = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(0);
             if (BukkitReflection.getMinorVersion() >= 9) {
                 SpawnEntity_UUID = ReflectionUtils.getOnlyField(SpawnEntityClass, UUID.class);
                 SpawnEntity_X = ReflectionUtils.getFields(SpawnEntityClass, double.class).get(0);
