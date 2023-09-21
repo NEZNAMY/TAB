@@ -113,7 +113,14 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get(TabList.TEXTURES_PROPERTY);
         if (col.isEmpty()) return null; //offline mode
         Property property = col.iterator().next();
-        return new TabList.Skin(property.getValue(), property.getSignature());
+        if (BukkitReflection.is1_20_2Plus()) {
+            return new TabList.Skin(
+                    (String) property.getClass().getMethod("value").invoke(property),
+                    (String) property.getClass().getMethod("signature").invoke(property)
+            );
+        } else {
+            return new TabList.Skin(property.getValue(), property.getSignature());
+        }
     }
 
     @Override
