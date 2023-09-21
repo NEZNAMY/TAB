@@ -41,7 +41,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getPing() {
-        return getPlayer().latency;
+        return getPlayer().connection.latency();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
         Collection<Property> properties = getPlayer().getGameProfile().getProperties().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
         Property skinProperty = properties.iterator().next();
-        return new TabList.Skin(skinProperty.getValue(), skinProperty.getSignature());
+        return new TabList.Skin(skinProperty.value(), skinProperty.signature());
     }
 
     @Override

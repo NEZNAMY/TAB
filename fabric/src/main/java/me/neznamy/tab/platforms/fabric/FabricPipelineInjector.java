@@ -39,7 +39,7 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     @Override
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                ((ClientboundSetDisplayObjectivePacket)packet).getSlot(),
+                ((ClientboundSetDisplayObjectivePacket)packet).getSlot().ordinal(),
                 String.valueOf(((ClientboundSetDisplayObjectivePacket)packet).getObjectiveName()));
     }
 
@@ -80,16 +80,16 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
             Component displayName = nmsData.displayName();
             int latency = nmsData.latency();
             if (actions.contains(Action.UPDATE_DISPLAY_NAME)) {
-                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
+                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, nmsData.profileId());
                 if (newDisplayName != null) displayName = ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
             }
             if (actions.contains(Action.UPDATE_LATENCY)) {
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
+                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, nmsData.profileId(), latency);
             }
             if (actions.contains(Action.ADD_PLAYER)) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
+                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, nmsData.profileId(), profile.getName());
             }
-            updatedList.add(new Entry(profile.getId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
+            updatedList.add(new Entry(nmsData.profileId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
         }
         packet.entries = updatedList;
     }

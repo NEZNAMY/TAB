@@ -31,7 +31,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         player.sendPacket(
                 new ClientboundSetDisplayObjectivePacket(
-                        slot.ordinal(),
+                        net.minecraft.world.scores.DisplaySlot.values()[slot.ordinal()],
                         new Objective(
                                 dummyScoreboard,
                                 objective,

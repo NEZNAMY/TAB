@@ -114,8 +114,9 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
             return this;
         }
 
-        @NotNull
+        @Nullable
         public GameProfile createProfile() {
+            if (name == null) return null;
             GameProfile profile = new GameProfile(id, name);
             if (skin != null) {
                 profile.getProperties().put(TabList.TEXTURES_PROPERTY,

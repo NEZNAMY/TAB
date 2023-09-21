@@ -59,7 +59,7 @@ public record FabricEntityView(FabricTabPlayer player) implements EntityView {
 
     @Override
     public boolean isNamedEntitySpawnPacket(@NotNull Object packet) {
-        return packet instanceof ClientboundAddPlayerPacket;
+        return packet instanceof ClientboundAddEntityPacket;
     }
 
     @Override
@@ -84,7 +84,7 @@ public record FabricEntityView(FabricTabPlayer player) implements EntityView {
 
     @Override
     public int getSpawnedPlayer(@NotNull Object playerSpawnPacket) {
-        return ((ClientboundAddPlayerPacket) playerSpawnPacket).getEntityId();
+        return ((ClientboundAddEntityPacket) playerSpawnPacket).getId();
     }
 
     @Override
