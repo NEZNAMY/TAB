@@ -119,7 +119,6 @@ scoreboard:
         - " "
         - "&6Server Info:"
         - "* &bTPS&7: %tps%"
-        - "* &bUptime&7: &f%server_uptime%"
         - "* &bMemory&7: &f%memory-used%&7/&4%memory-max%"
         - "%animation:MyAnimation1%"
     scoreboard1:
