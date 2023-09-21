@@ -34,8 +34,15 @@ public class ParseCommand extends SubCommand {
             return;
         }
         TabPlayer target;
-        if (args[0].equals("me") && sender != null) {
-            target = sender;
+        if (args[0].equals("me")) {
+            if (sender != null) {
+                target = sender;
+            } else {
+                sendMessage(null, "&cThe \"me\" argument instead of player name is only available in-game " +
+                        "and parses the placeholder for player who ran the command. If you wish to use the parse command " +
+                        "from the console, use name of an online player instead of \"me\".");
+                return;
+            }
         } else {
             target = TAB.getInstance().getPlayer(args[0]);
             if (target == null) {
