@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
@@ -88,9 +89,13 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
+    @SneakyThrows
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                ((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
+        TAB.getInstance().getFeatureManager().onDisplayObjective(
+                player,
+                ((Number) ScoreboardDisplay.class.getMethod("getPosition").invoke(packet)).intValue(),
+                ((ScoreboardDisplay) packet).getName()
+        );
     }
 
     @Override

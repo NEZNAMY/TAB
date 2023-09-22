@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -9,6 +10,8 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
 import net.md_5.bungee.protocol.packet.Team;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -18,13 +21,19 @@ import java.util.Collection;
  */
 public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
+    /** Constructor to support both <1.20.2 and 1.20.2+ builds */
+    @SuppressWarnings("unchecked")
+    private static final Constructor<ScoreboardDisplay> newScoreboardDisplay = (Constructor<ScoreboardDisplay>)
+            Arrays.stream(ScoreboardDisplay.class.getConstructors()).filter(c -> c.getParameterCount() == 2).findAny().orElse(null);
+
     public BungeeScoreboard(@NotNull BungeeTabPlayer player) {
         super(player);
     }
 
     @Override
+    @SneakyThrows
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardDisplay((byte)slot.ordinal(), objective));
+        player.getPlayer().unsafe().sendPacket(newScoreboardDisplay.newInstance((byte)slot.ordinal(), objective));
     }
 
     @Override

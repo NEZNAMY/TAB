@@ -13,7 +13,8 @@ public class BungeeTAB extends Plugin {
     @Override
     public void onEnable() {
         if (!ReflectionUtils.classExists("net.md_5.bungee.protocol.packet.PlayerListItemUpdate")) {
-            getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1671 and up (or an equivalent fork) to work."));
+            getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1671 " +
+                    "(with 1.19.3 support) and up (or an equivalent fork) to work."));
             return;
         }
         TAB.create(new BungeePlatform(this));
