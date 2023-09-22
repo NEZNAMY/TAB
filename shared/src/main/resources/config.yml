@@ -108,7 +108,7 @@ scoreboard:
   scoreboards:
     admin:
       # Only players with tab.scoreboard.admin can see this scoreboard, others will see scoreboard1
-      display-condition: "permission:tab.scoreboard.admin;%server%!=N/A"
+      display-condition: "permission:tab.scoreboard.admin"
       title: "Admin scoreboard"
       lines:
         - "%animation:MyAnimation1%"
@@ -118,7 +118,6 @@ scoreboard:
         - "* &eStaff&7: &f%staffonline%"
         - " "
         - "&6Server Info:"
-        - "* &bTPS&7: %tps%"
         - "* &bMemory&7: &f%memory-used%&7/&4%memory-max%"
         - "%animation:MyAnimation1%"
     scoreboard1:
