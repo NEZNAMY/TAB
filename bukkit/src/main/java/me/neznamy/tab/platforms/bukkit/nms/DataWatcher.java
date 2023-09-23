@@ -107,7 +107,11 @@ public class DataWatcher implements EntityData {
             }
         }
         if (BukkitReflection.is1_19_3Plus()) {
-            DataWatcher_markDirty = ReflectionUtils.getOnlyMethod(DataWatcher, void.class, DataWatcherObject);
+            try {
+                DataWatcher_markDirty = ReflectionUtils.getOnlyMethod(DataWatcher, void.class, DataWatcherObject);
+            } catch (IllegalStateException e) {
+                DataWatcher_markDirty = DataWatcher.getMethod("markDirty", DataWatcherObject);
+            }
         }
         if (minorVersion >= 9) {
             newDataWatcherObject = DataWatcherObject.getConstructor(int.class, DataWatcherSerializer);
