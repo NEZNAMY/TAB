@@ -19,7 +19,7 @@ import java.util.Map.Entry;
  */
 public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager, JoinListener,
         CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable, Refreshable,
-        ServerSwitchListener {
+        ServerSwitchListener, QuitListener {
 
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
@@ -312,6 +312,14 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         if (scoreboard != null) {
             scoreboard.removePlayerFromSet(changed);
             scoreboard.addPlayer(changed);
+        }
+    }
+
+    @Override
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
+        ScoreboardImpl sb = activeScoreboards.get(disconnectedPlayer);
+        if (sb != null) {
+            sb.removePlayerFromSet(disconnectedPlayer);
         }
     }
 }
