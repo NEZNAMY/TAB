@@ -174,12 +174,10 @@ public class PacketEntityView implements EntityView {
             Class<?> Vec3D = getClass("world.phys.Vec3", "world.phys.Vec3D");
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
             Class<?> EntityTypes = getClass("world.entity.EntityType", "world.entity.EntityTypes");
-            if (BukkitReflection.isMojangMapped()) {
-                EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("ARMOR_STAND").get(null);
-            } else if (BukkitReflection.getMinorVersion() >= 19) {
-                EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("d").get(null);
+            if (BukkitReflection.getMinorVersion() >= 19) {
+                EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "ARMOR_STAND", "d").get(null);
             } else {
-                EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "c", "f_20529_").get(null); // Mohist 1.18.2
+                EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "ARMOR_STAND", "c", "f_20529_").get(null); // Mohist 1.18.2
             }
             if (BukkitReflection.getMinorVersion() >= 19) {
                 newSpawnEntity = SpawnEntityClass.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D, double.class);

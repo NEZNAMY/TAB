@@ -189,27 +189,50 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         } else {
             newTeamPacket = TeamPacketClass.getConstructor(scoreboardTeam, int.class);
         }
-        if (BukkitReflection.isMojangMapped()) {
-            ScoreboardScore_setScore = scoreboardScoreClass.getMethod("setScore", int.class);
-            ScoreboardTeam_setAllowFriendlyFire = scoreboardTeam.getMethod("setAllowFriendlyFire", boolean.class);
-            ScoreboardTeam_setCanSeeFriendlyInvisibles = scoreboardTeam.getMethod("setSeeFriendlyInvisibles", boolean.class);
-            ScoreboardTeam_setPrefix = scoreboardTeam.getMethod("setPlayerPrefix", IChatBaseComponent);
-            ScoreboardTeam_setSuffix = scoreboardTeam.getMethod("setPlayerSuffix", IChatBaseComponent);
-            ScoreboardTeam_setNameTagVisibility = scoreboardTeam.getMethod("setNameTagVisibility", EnumNameTagVisibility);
+        ScoreboardScore_setScore = ReflectionUtils.getMethod(
+                scoreboardScoreClass,
+                new String[] {"func_96647_c", "setScore", "b", "c", "m_83402_"}, // {Thermos, 1.5.1 - 1.17.1 & 1.20.2+, 1.18 - 1.20.1, 1.5, Mohist 1.18.2}
+                int.class
+        );
+        ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(
+                scoreboardTeam,
+                new String[] {"func_96660_a", "setAllowFriendlyFire", "a", "m_83355_"}, // {Thermos, 1.5.1+, 1.5 & 1.18+, Mohist 1.18.2}
+                boolean.class
+        );
+        ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(
+                scoreboardTeam,
+                new String[] {"func_98300_b", "setCanSeeFriendlyInvisibles", "b", "m_83362_", "setSeeFriendlyInvisibles"}, // {Thermos, 1.5.1+, 1.5 & 1.18+, Mohist 1.18.2, 1.20.2+}
+                boolean.class
+        );
+        if (minorVersion >= 13) {
+            ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(
+                    scoreboardTeam,
+                    new String[]{"setPrefix", "b", "m_83360_", "setPlayerPrefix"}, // {1.17.1-, 1.18 - 1.20.1, Mohist 1.18.2, 1.20.2+}
+                    IChatBaseComponent
+            );
+            ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(
+                    scoreboardTeam,
+                    new String[]{"setSuffix", "c", "m_83365_", "setPlayerSuffix"}, // {1.17.1-, 1.18 - 1.20.1, Mohist 1.18.2, 1.20.2+}
+                    IChatBaseComponent
+            );
         } else {
-            ScoreboardScore_setScore = ReflectionUtils.getMethod(scoreboardScoreClass, new String[] {"func_96647_c", "setScore", "b", "c", "m_83402_"}, int.class); // {Thermos, 1.5.1 - 1.17.1, 1.18+, 1.5, Mohist 1.18.2}
-            ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"func_96660_a", "setAllowFriendlyFire", "a", "m_83355_"}, boolean.class); // {Thermos, 1.5.1+, 1.5 & 1.18+, Mohist 1.18.2}
-            ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"func_98300_b", "setCanSeeFriendlyInvisibles", "b", "m_83362_"}, boolean.class); // {Thermos, 1.5.1+, 1.5 & 1.18+, Mohist 1.18.2}
-            if (minorVersion >= 13) {
-                ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(scoreboardTeam, new String[]{"setPrefix", "b", "m_83360_"}, IChatBaseComponent); // {1.17.1-, 1.18+, Mohist 1.18.2}
-                ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(scoreboardTeam, new String[]{"setSuffix", "c", "m_83365_"}, IChatBaseComponent); // {1.17.1-, 1.18+, Mohist 1.18.2}
-            } else {
-                ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"func_96666_b", "setPrefix", "b"}, String.class); // {Thermos, 1.5.1+, 1.5}
-                ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"func_96662_c", "setSuffix", "c"}, String.class); // {Thermos, 1.5.1+, 1.5}
-            }
-            if (minorVersion >= 8) {
-                ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"setNameTagVisibility", "a", "m_83346_"}, EnumNameTagVisibility); // {1.8.1+, 1.8 & 1.18+, Mohist 1.18.2}
-            }
+            ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(
+                    scoreboardTeam,
+                    new String[] {"func_96666_b", "setPrefix", "b"}, // {Thermos, 1.5.1+, 1.5}
+                    String.class
+            );
+            ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(
+                    scoreboardTeam,
+                    new String[] {"func_96662_c", "setSuffix", "c"}, // {Thermos, 1.5.1+, 1.5}
+                    String.class
+            );
+        }
+        if (minorVersion >= 8) {
+            ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(
+                    scoreboardTeam,
+                    new String[] {"setNameTagVisibility", "a", "m_83346_"}, // {1.8.1+, 1.8 & 1.18+, Mohist 1.18.2}
+                    EnumNameTagVisibility
+            );
         }
         available = true;
     }

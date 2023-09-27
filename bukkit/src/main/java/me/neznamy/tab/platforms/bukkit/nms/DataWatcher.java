@@ -92,19 +92,17 @@ public class DataWatcher implements EntityData {
             }
         }
         newDataWatcher = ReflectionUtils.getOnlyConstructor(DataWatcher);
-        if (BukkitReflection.isMojangMapped()) {
-            DataWatcher_register = DataWatcher.getMethod("define", DataWatcherObject, Object.class);
-        } else if (minorVersion >= 9) {
-            DataWatcher_register = ReflectionUtils.getMethod(DataWatcher, new String[]{"register", "a", "m_135372_"}, DataWatcherObject, Object.class); // {Bukkit, Bukkit 1.18+, Mohist 1.18.2}
+        if (minorVersion >= 9) {
+            DataWatcher_register = ReflectionUtils.getMethod(
+                    DataWatcher,
+                    new String[]{"define", "register", "a", "m_135372_"}, // {Bukkit 1.20.2+, Bukkit, Bukkit 1.18+, Mohist 1.18.2}
+                    DataWatcherObject, Object.class
+            );
         } else {
             DataWatcher_register = ReflectionUtils.getMethod(DataWatcher, new String[]{"func_75682_a", "a"}, int.class, Object.class); // {Thermos 1.7.10, Bukkit}
         }
         if (minorVersion >= 19) {
-            if (BukkitReflection.isMojangMapped()) {
-                DataWatcher_packDirty = DataWatcher.getMethod("packDirty");
-            } else {
-                DataWatcher_packDirty = DataWatcher.getMethod("b");
-            }
+            DataWatcher_packDirty = ReflectionUtils.getMethod(DataWatcher, new String[] {"packDirty", "b"}); // {Mojang | 1.20.2+, 1.20.2-}
         }
         if (BukkitReflection.is1_19_3Plus()) {
             DataWatcher_markDirty = ReflectionUtils.getMethods(DataWatcher, void.class, DataWatcherObject).get(0);
@@ -114,24 +112,21 @@ public class DataWatcher implements EntityData {
             DataWatcherSerializer_BYTE = ReflectionUtils.getField(DataWatcherRegistry, "BYTE", "a", "f_135027_").get(null); // Mohist 1.18.2
             DataWatcherSerializer_FLOAT = ReflectionUtils.getField(DataWatcherRegistry, "FLOAT", "c", "f_135029_").get(null); // Mohist 1.18.2
             DataWatcherSerializer_STRING = ReflectionUtils.getField(DataWatcherRegistry, "STRING", "d", "f_135030_").get(null); // Mohist 1.18.2
-            if (BukkitReflection.isMojangMapped()) {
-                DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("OPTIONAL_COMPONENT").get(null);
-                DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("BOOLEAN").get(null);
-            } else {
-                if (BukkitReflection.is1_19_3Plus()) {
-                    DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("g").get(null);
-                    if (BukkitReflection.is1_19_4Plus()) {
-                        DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("k").get(null);
-                    } else {
-                        DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("j").get(null);
-                    }
+            if (BukkitReflection.is1_19_3Plus()) {
+                DataWatcherSerializer_OPTIONAL_COMPONENT = ReflectionUtils.getField(DataWatcherRegistry, "OPTIONAL_COMPONENT", "g").get(null);
+                if (BukkitReflection.is1_19_4Plus()) {
+                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(DataWatcherRegistry, "BOOLEAN", "k").get(null);
                 } else {
-                    if (minorVersion >= 13) {
-                        DataWatcherSerializer_OPTIONAL_COMPONENT = ReflectionUtils.getField(DataWatcherRegistry, "f", "f_135032_").get(null); // Mohist 1.18.2
-                        DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(DataWatcherRegistry, "i", "f_135035_").get(null); // Mohist 1.18.2
-                    } else {
-                        DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("h").get(null);
-                    }
+                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(DataWatcherRegistry, "BOOLEAN", "j").get(null);
+                }
+            } else {
+                if (minorVersion >= 13) {
+                    DataWatcherSerializer_OPTIONAL_COMPONENT = ReflectionUtils.getField(DataWatcherRegistry,
+                            "OPTIONAL_COMPONENT", "f", "f_135032_").get(null); // Mohist 1.18.2
+                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(DataWatcherRegistry,
+                            "BOOLEAN", "i", "f_135035_").get(null); // Mohist 1.18.2
+                } else {
+                    DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("h").get(null);
                 }
             }
         }
