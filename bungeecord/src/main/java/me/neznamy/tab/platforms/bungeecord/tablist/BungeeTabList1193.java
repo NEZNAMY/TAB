@@ -1,11 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.TabList;
-import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
@@ -18,21 +14,19 @@ import java.util.UUID;
 /**
  * TabList handler for 1.19.3+ players using the new tab list packets.
  * Because BungeeCord does not have a TabList API, we need to use packets.
- * They are sent using an internal BungeeCord method that keeps track of them,
- * so they are removed on server switch to secure parity with Velocity.
  */
-@RequiredArgsConstructor
-public class BungeeTabList1193 implements TabList {
+public class BungeeTabList1193 extends BungeeTabList {
 
-    /** Player this TabList belongs to */
-    @NotNull
-    private final BungeeTabPlayer player;
+    public BungeeTabList1193(@NotNull BungeeTabPlayer player) {
+        super(player);
+    }
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
+        removeUuid(entry);
         PlayerListItemRemove remove = new PlayerListItemRemove();
         remove.setUuids(new UUID[]{entry});
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(remove);
+        player.sendPacket(remove);
     }
 
     @Override
@@ -58,39 +52,14 @@ public class BungeeTabList1193 implements TabList {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        Item item = item(entry.getUniqueId());
-        if (entry.getDisplayName() != null) item.setDisplayName(entry.getDisplayName().toString(player.getVersion()));
-        item.setGamemode(entry.getGameMode());
-        item.setListed(true);
-        item.setPing(entry.getLatency());
-        if (entry.getSkin() != null) {
-            item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature())});
-        } else {
-            item.setProperties(new Property[0]);
-        }
-        item.setUsername(entry.getName());
-        sendPacket(EnumSet.allOf(PlayerListItemUpdate.Action.class), item);
-    }
-
-    @NotNull
-    public Item item(@NotNull UUID id) {
-        Item item = new Item();
-        item.setUuid(id);
-        return item;
+        addUuid(entry.getUniqueId());
+        sendPacket(EnumSet.allOf(PlayerListItemUpdate.Action.class), entryToItem(entry));
     }
 
     private void sendPacket(@NotNull EnumSet<PlayerListItemUpdate.Action> actions, @NotNull Item item) {
         PlayerListItemUpdate packet = new PlayerListItemUpdate();
         packet.setActions(actions);
         packet.setItems(new Item[]{item});
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
-    }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().setTabHeader(
-                player.getPlatform().toComponent(header, player.getVersion()),
-                player.getPlatform().toComponent(footer, player.getVersion())
-        );
+        player.sendPacket(packet);
     }
 }

@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList17;
@@ -12,10 +13,13 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +32,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Flag tracking plugin presence */
     private static final boolean premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
+
+    /** Flag tracking version of bungeecord with packet queue due to configuration phase */
+    private static final boolean packetQueue = ReflectionUtils.methodExists(UserConnection.class, "sendPacketQueued", DefinedPacket.class);
 
     /** Player's scoreboard */
     @NotNull
@@ -140,5 +147,21 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return tabList1_19_3;
         if (version >= ProtocolVersion.V1_8.getNetworkId()) return tabList1_8;
         return tabList1_7;
+    }
+
+    /**
+     * Sends packet to the player. If BungeeCord supports 1.20.2+, new packet queue method is used
+     * to avoid error when sending packet in configuration phase.
+     *
+     * @param   packet
+     *          Packet to send
+     */
+    @SneakyThrows
+    public void sendPacket(@NotNull DefinedPacket packet) {
+        if (packetQueue) {
+            UserConnection.class.getDeclaredMethod("sendPacketQueued", DefinedPacket.class).invoke(player, packet);
+        } else {
+            getPlayer().unsafe().sendPacket(packet);
+        }
     }
 }

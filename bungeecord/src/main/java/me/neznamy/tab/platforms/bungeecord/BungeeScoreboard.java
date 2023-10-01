@@ -33,12 +33,12 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     @Override
     @SneakyThrows
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.getPlayer().unsafe().sendPacket(newScoreboardDisplay.newInstance((byte)slot.ordinal(), objective));
+        player.sendPacket(newScoreboardDisplay.newInstance((byte)slot.ordinal(), objective));
     }
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(
+        player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 jsonOrRaw(title),
                 ScoreboardObjective.HealthDisplay.valueOf(display.name()),
@@ -48,7 +48,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(
+        player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 "", // Empty string to prevent kick on 1.7
                 null,
@@ -58,7 +58,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(
+        player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 jsonOrRaw(title),
                 ScoreboardObjective.HealthDisplay.valueOf(display.name()),
@@ -74,13 +74,13 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.getPlayer().unsafe().sendPacket(new Team(name, (byte) 0, jsonOrRaw(name), jsonOrRaw(prefix), jsonOrRaw(suffix),
+        player.sendPacket(new Team(name, (byte) 0, jsonOrRaw(name), jsonOrRaw(prefix), jsonOrRaw(suffix),
                 visibility.toString(), collision.toString(), color, (byte)options, players.toArray(new String[0])));
     }
 
     @Override
     public void unregisterTeam0(@NotNull String name) {
-        player.getPlayer().unsafe().sendPacket(new Team(name));
+        player.sendPacket(new Team(name));
     }
 
     @Override
@@ -90,18 +90,18 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.getPlayer().unsafe().sendPacket(new Team(name, (byte) 2, jsonOrRaw(name), jsonOrRaw(prefix),
+        player.sendPacket(new Team(name, (byte) 2, jsonOrRaw(name), jsonOrRaw(prefix),
                 jsonOrRaw(suffix), visibility.toString(), collision.toString(), color, (byte)options, null));
     }
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardScore(playerName, (byte) 0, objective, score));
+        player.sendPacket(new ScoreboardScore(playerName, (byte) 0, objective, score));
     }
 
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String playerName) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardScore(playerName, (byte) 1, objective, 0));
+        player.sendPacket(new ScoreboardScore(playerName, (byte) 1, objective, 0));
     }
 
     /**
