@@ -74,11 +74,12 @@ public class NMSStorage {
         if (minorVersion >= 8) {
             ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
-            try {
-                getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
-            } catch (IllegalStateException catServer) {
-                getProfile = ReflectionUtils.getMethod(EntityHuman, new String[] {"getProfile"});
-            }
+
+            // There is only supposed to be one, however there are exceptions:
+            // #1 - CatServer adds another method
+            // #2 - Random mods may perform deep hack into the server and add another one (see #1089)
+            // Get first and hope for the best, alternatively players may not have correct skins in layout, but who cares
+            getProfile = ReflectionUtils.getMethods(EntityHuman, GameProfile.class).get(0);
         }
         PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
