@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 public class DisableChecker extends TabFeature implements Refreshable {
 
     @Getter private final String featureName;
-    @Getter private final String refreshDisplayName = "Updating display condition";
+    @Getter private final String refreshDisplayName = "Refreshing disable condition";
     private final @Nullable Condition disableCondition;
     private final BiConsumer<TabPlayer, Boolean> action;
 
