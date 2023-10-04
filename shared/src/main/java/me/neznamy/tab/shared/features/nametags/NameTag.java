@@ -100,7 +100,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        sorting.constructTeamNames(connectedPlayer);
         updateProperties(connectedPlayer);
         hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
