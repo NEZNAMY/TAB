@@ -161,7 +161,12 @@ public class BossBarLine implements BossBar {
             if (value > 100) value = 100;
             return value;
         } catch (NumberFormatException e) {
-            TAB.getInstance().getMisconfigurationHelper().invalidNumberForBossBarProgress(name, progress, player.getProperty(propertyProgress).getCurrentRawValue());
+            TAB.getInstance().getMisconfigurationHelper().invalidNumberForBossBarProgress(
+                    name,
+                    progress,
+                    player.getProperty(propertyProgress).getCurrentRawValue(),
+                    player
+            );
             return 100;
         }
     }

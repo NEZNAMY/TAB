@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -361,7 +362,10 @@ public class MisconfigurationHelper {
     // Runtime Errors
     // ------------------------
 
-    public void invalidNumberForBossBarProgress(@NotNull String bossBar, @NotNull String input, @NotNull String configuredValue) {
+    public void invalidNumberForBossBarProgress(@NotNull String bossBar, @NotNull String input, @NotNull String configuredValue, TabPlayer player) {
+        // Placeholders are not initialized, because bridge did not respond yet (typically on join)
+        if (player instanceof ProxyTabPlayer && !((ProxyTabPlayer)player).isBridgeConnected()) return;
+
         if (configuredValue.contains("%")) {
             TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Placeholder \"" + configuredValue +
                     "\" used in BossBar progress of \"" + bossBar + "\" returned value, which cannot be evaluated to a number between 0 and 100 (\"" + input + "\")"));
@@ -373,6 +377,9 @@ public class MisconfigurationHelper {
     }
 
     public void invalidInputForNumericSorting(SortingType type, String placeholder, String output, TabPlayer player) {
+        // Placeholders are not initialized, because bridge did not respond yet (typically on join)
+        if (player instanceof ProxyTabPlayer && !((ProxyTabPlayer)player).isBridgeConnected()) return;
+
         TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Placeholder " + placeholder + " used in sorting type " +
                 type + " returned \"" + output + "\" for player " + player.getName() + ", which is not a valid number."));
     }
