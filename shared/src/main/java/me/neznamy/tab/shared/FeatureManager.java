@@ -304,51 +304,50 @@ public class FeatureManager {
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
         int minorVersion = TAB.getInstance().getServerVersion().getMinorVersion();
 
-        if (configuration.getConfig().getBoolean("ping-spoof.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
+        boolean pingSpoof          = configuration.getConfig().getBoolean("ping-spoof.enabled", false);
+        boolean bossbar            = configuration.getConfig().getBoolean("bossbar.enabled", false);
+        boolean headerFooter       = configuration.getConfig().getBoolean("header-footer.enabled", true);
+        boolean spectatorFix       = configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false);
+        boolean scoreboard         = configuration.getConfig().getBoolean("scoreboard.enabled", false);
+        boolean perWorldPlayerList = configuration.getConfig().getBoolean("per-world-playerlist.enabled", false);
+        boolean layout             = configuration.getConfig().getBoolean("layout.enabled", false);
+        boolean yellowNumber       = configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true);
+        boolean belowName          = configuration.getConfig().getBoolean("belowname-objective.enabled", false);
+        boolean teams              = configuration.getConfig().getBoolean("scoreboard-teams.enabled", true);
+        boolean unlimitedTags      = configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false);
+        boolean globalPlayerList   = configuration.getConfig().getBoolean("global-playerlist.enabled", false);
+        boolean tablistFormatting  = configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true);
+        boolean alignedSuffix      = configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false);
 
-        if (configuration.getConfig().getBoolean("bossbar.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.BOSS_BAR,
-                    minorVersion >= 9 ? new BossBarManagerImpl() : TAB.getInstance().getPlatform().getLegacyBossBar());
-        }
-
-        if (configuration.getConfig().getBoolean("header-footer.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
-
-        if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
+        if (perWorldPlayerList && layout) TAB.getInstance().getMisconfigurationHelper().bothPerWorldPlayerListAndLayoutEnabled();
+        if (yellowNumber && layout)       TAB.getInstance().getMisconfigurationHelper().layoutBreaksYellowNumber();
+        if (spectatorFix && layout)       TAB.getInstance().getMisconfigurationHelper().layoutIncludesPreventSpectatorEffect();
+        if (globalPlayerList && layout)   TAB.getInstance().getMisconfigurationHelper().bothGlobalPlayerListAndLayoutEnabled();
 
         if (configuration.isPipelineInjection()) {
             PipelineInjector inj = TAB.getInstance().getPlatform().createPipelineInjector();
             if (inj != null) featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, inj);
         }
 
-        if (configuration.getConfig().getBoolean("scoreboard.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
-
-        if (configuration.getConfig().getBoolean("per-world-playerlist.enabled", false)) {
+        if (perWorldPlayerList) {
             TabFeature pwp = TAB.getInstance().getPlatform().getPerWorldPlayerList();
             if (pwp != null) featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, pwp);
-            if (configuration.getConfig().getBoolean("layout.enabled", false)) {
-                TAB.getInstance().getMisconfigurationHelper().bothPerWorldPlayerListAndLayoutEnabled();
-            }
         }
-
-        if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
-
-        if (configuration.getConfig().getBoolean("belowname-objective.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
-
-        // No requirements, but due to chicken vs egg, the feature uses NameTags, Layout and RedisBungee
-        if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true) ||
-                configuration.getConfig().getBoolean("layout.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
+        if (bossbar) {
+            featureManager.registerFeature(TabConstants.Feature.BOSS_BAR,
+                    minorVersion >= 9 ? new BossBarManagerImpl() : TAB.getInstance().getPlatform().getLegacyBossBar());
         }
+        if (pingSpoof)    featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
+        if (headerFooter) featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
+        if (spectatorFix) featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
+        if (scoreboard)   featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
+        if (yellowNumber) featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
+        if (belowName)    featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
+        if (teams || layout) featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
 
         // Must be loaded after: Sorting
-        if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true)) {
-            if (configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && minorVersion >= 8) {
+        if (teams) {
+            if (unlimitedTags && minorVersion >= 8) {
                 NameTag unlimited = TAB.getInstance().getPlatform().getUnlimitedNameTags();
                 if (unlimited instanceof NameTagX) {
                     featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, unlimited);
@@ -361,19 +360,11 @@ public class FeatureManager {
         }
 
         // Must be loaded after: Sorting
-        if (minorVersion >= 8 && configuration.getConfig().getBoolean("layout.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl());
-            if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) {
-                TAB.getInstance().getMisconfigurationHelper().layoutBreaksYellowNumber();
-            }
-            if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false)) {
-                TAB.getInstance().getMisconfigurationHelper().layoutIncludesPreventSpectatorEffect();
-            }
-        }
+        if (layout) featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl());
 
         // Must be loaded after: Layout
-        if (minorVersion >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
-            if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) {
+        if (tablistFormatting) {
+            if (alignedSuffix) {
                 featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new AlignedPlayerList());
             } else {
                 featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
@@ -381,12 +372,8 @@ public class FeatureManager {
         }
 
         // Must be loaded after: PlayerList
-        if (configuration.getConfig().getBoolean("global-playerlist.enabled", false) &&
-                TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
+        if (globalPlayerList && TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
-            if (configuration.getConfig().getBoolean("layout.enabled", false)) {
-                TAB.getInstance().getMisconfigurationHelper().bothGlobalPlayerListAndLayoutEnabled();
-            }
         }
 
         // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
