@@ -44,12 +44,13 @@ public class BukkitTAB extends JavaPlugin {
             return true;
         } catch (Exception ex) {
             if (ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]) == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is not compatible. " +
-                        "This plugin version was made for " + ProtocolVersion.values()[ProtocolVersion.values().length-1].getFriendlyName() +
-                        " - " + ProtocolVersion.values()[3].getFriendlyName() + ". Disabling."));
+                Bukkit.getConsoleSender().sendMessage(String.format(
+                        "%s[TAB] Your server version is not compatible. This plugin version was made for %s - %s. Disabling.",
+                        EnumChatFormat.RED.getFormat(), ProtocolVersion.V1_5, ProtocolVersion.LATEST_KNOWN_VERSION
+                ));
             } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] A compatibility issue " +
-                        "with your server was found. Unless you are running some really weird server software, this is a bug."));
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] A compatibility issue " +
+                        "with your server was found. Unless you are running some really weird server software, this is a bug.");
             }
             return false;
         }

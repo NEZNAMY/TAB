@@ -42,8 +42,11 @@ public class ViaVersionHook {
         }
         ProtocolVersion protocol = ProtocolVersion.fromNetworkId(version);
         if (protocol == ProtocolVersion.UNKNOWN_CLIENT_VERSION) {
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("ViaVersion returned unknown protocol version " + version +
-                    " for player " + playerName + ". This may result in plugin not working correctly for them."));
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(String.format(
+                    "ViaVersion returned unknown protocol version %d for player %s. " +
+                            "Latest version recognized by this plugin version is %d (%s). " +
+                            "Did a new MC version come out without you updating the plugin? This may result in plugin not working correctly for them.",
+                    version, playerName, ProtocolVersion.LATEST_KNOWN_VERSION.getNetworkId(), ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName())));
         } else {
             TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
         }
