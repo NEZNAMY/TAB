@@ -37,6 +37,9 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     /** Player's boat vehicle status for unlimited NameTags */
     private boolean onBoat;
 
+    /** Timestamp when join plugin message was sent to track how long bridge took to respond */
+    private long bridgeRequestTime;
+
     /** Flag for marking if this player has received join response from bridge or not */
     private boolean bridgeConnected;
 
@@ -115,6 +118,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
         }
         sendPluginMessage(args.toArray());
         if (expansion instanceof ProxyTabExpansion) ((ProxyTabExpansion) expansion).resendAllValues(this);
+        bridgeRequestTime = System.currentTimeMillis();
     }
 
     /**

@@ -100,6 +100,7 @@ public class PluginMessageHandler {
     }
 
     public void playerJoinResponse(@NotNull ProxyTabPlayer player, @NotNull ByteArrayDataInput in) {
+        TAB.getInstance().debug("Bridge took " + (System.currentTimeMillis()-player.getBridgeRequestTime()) + "ms to respond to join message of " + player.getName());
         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
         if (TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                 !TAB.getInstance().getGroupManager().isGroupsByPermissions()) player.setGroup(in.readUTF());
