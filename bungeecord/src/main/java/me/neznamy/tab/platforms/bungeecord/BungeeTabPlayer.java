@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList17;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList18;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -158,6 +159,10 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      */
     @SneakyThrows
     public void sendPacket(@NotNull DefinedPacket packet) {
+        if (!getPlayer().isConnected()) {
+            TAB.getInstance().debug("Attempted to send packet " + packet.getClass().getName() + " to offline player " + getName());
+            return;
+        }
         if (packetQueue) {
             UserConnection.class.getDeclaredMethod("sendPacketQueued", DefinedPacket.class).invoke(player, packet);
         } else {
