@@ -110,6 +110,10 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
+        if (!getPlayer().isConnected()) {
+            TAB.getInstance().debug("Attempted to send plugin message to offline player " + getName());
+            return;
+        }
         if (getPlayer().getServer() == null) {
             errorNoServer(message);
             return;
