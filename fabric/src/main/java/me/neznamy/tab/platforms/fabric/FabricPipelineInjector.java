@@ -11,8 +11,6 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Action;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Entry;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
@@ -39,7 +37,7 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     @Override
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                ((ClientboundSetDisplayObjectivePacket)packet).getSlot().ordinal(),
+                FabricMultiVersion.getSlot((ClientboundSetDisplayObjectivePacket) packet),
                 String.valueOf(((ClientboundSetDisplayObjectivePacket)packet).getObjectiveName()));
     }
 
@@ -67,29 +65,32 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isPlayerInfo(@NotNull Object packet) {
-        return packet instanceof ClientboundPlayerInfoUpdatePacket;
+        return FabricMultiVersion.isPlayerInfo(packet);
     }
 
     @Override
     public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet0) {
+        // Comment this entire method out when compiling with 1.19.2-, adding compatibility would be tough and not worth,
+        // as nobody needs these features on Fabric anyway
+
         ClientboundPlayerInfoUpdatePacket packet = (ClientboundPlayerInfoUpdatePacket) packet0;
-        EnumSet<Action> actions = packet.actions();
-        List<Entry> updatedList = new ArrayList<>();
-        for (Entry nmsData : packet.entries()) {
+        EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = packet.actions();
+        List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
+        for (ClientboundPlayerInfoUpdatePacket.Entry nmsData : packet.entries()) {
             GameProfile profile = nmsData.profile();
             Component displayName = nmsData.displayName();
             int latency = nmsData.latency();
-            if (actions.contains(Action.UPDATE_DISPLAY_NAME)) {
+            if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, nmsData.profileId());
                 if (newDisplayName != null) displayName = ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
             }
-            if (actions.contains(Action.UPDATE_LATENCY)) {
+            if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
                 latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, nmsData.profileId(), latency);
             }
-            if (actions.contains(Action.ADD_PLAYER)) {
+            if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, nmsData.profileId(), profile.getName());
             }
-            updatedList.add(new Entry(nmsData.profileId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
+            updatedList.add(new ClientboundPlayerInfoUpdatePacket.Entry(nmsData.profileId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
         }
         packet.entries = updatedList;
     }

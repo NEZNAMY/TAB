@@ -1,33 +1,25 @@
 package me.neznamy.tab.platforms.fabric.features;
 
+import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FabricNameTagX extends BackendNameTagX {
 
-    private boolean enabled = true;
+    public boolean enabled = true;
 
     public FabricNameTagX() {
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            if (enabled) respawn(oldPlayer.getUUID());
-        });
-        // no sneaking for fabric //TODO
+        FabricMultiVersion.registerNameTagXEvents(this);
     }
 
     @Override
@@ -39,7 +31,7 @@ public class FabricNameTagX extends BackendNameTagX {
 
     @Override
     public boolean areInSameWorld(@NotNull TabPlayer player1, @NotNull TabPlayer player2) {
-        return ((FabricTabPlayer)player1).getPlayer().level() == ((FabricTabPlayer)player2).getPlayer().level();
+        return ((FabricTabPlayer)player1).getPlayer().level == ((FabricTabPlayer)player2).getPlayer().level;
     }
 
     @Override
@@ -77,7 +69,7 @@ public class FabricNameTagX extends BackendNameTagX {
 
     @Override
     public boolean isSneaking(@NotNull TabPlayer player) {
-        return ((FabricTabPlayer)player).getPlayer().isCrouching();
+        return FabricMultiVersion.isSneaking(((FabricTabPlayer)player).getPlayer());
     }
 
     @Override
@@ -119,13 +111,7 @@ public class FabricNameTagX extends BackendNameTagX {
     @Override
     @NotNull
     public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
-        return () -> Arrays.asList(
-                new SynchedEntityData.DataValue<>(0, EntityDataSerializers.BYTE, flags),
-                new SynchedEntityData.DataValue<>(2, EntityDataSerializers.OPTIONAL_COMPONENT,
-                Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion()))),
-                new SynchedEntityData.DataValue<>(3, EntityDataSerializers.BOOLEAN, nameVisible),
-                new SynchedEntityData.DataValue<>(15, EntityDataSerializers.BYTE, (byte)16)
-        );
+        return FabricMultiVersion.createDataWatcher(viewer, flags, displayName, nameVisible);
     }
 
     @Override

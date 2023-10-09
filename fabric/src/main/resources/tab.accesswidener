@@ -8,6 +8,9 @@ accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPac
 mutable field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;
 accessible field net/minecraft/server/network/ServerCommonPacketListenerImpl connection Lnet/minecraft/network/Connection;
 
+# 1.20+
+accessible field net/minecraft/world/entity/Entity level Lnet/minecraft/world/level/Level;
+
 # new
 accessible field net/minecraft/server/MinecraftServer LOGGER Lorg/slf4j/Logger;
 mutable field net/minecraft/server/MinecraftServer LOGGER Lorg/slf4j/Logger;

@@ -1,6 +1,5 @@
 val minecraftVersion = "1.20.2"
 
-val v114 = "0.28.5+1.14"
 val v115 = "0.28.5+1.15"
 val v116 = "0.42.0+1.16"
 
@@ -27,11 +26,7 @@ val fabricApiVersions = mapOf(
     "1.15.2" to v115,
     "1.15.1" to v115,
     "1.15"   to v115,
-    "1.14.4" to v114,
-    "1.14.3" to v114,
-    "1.14.2" to v114,
-    "1.14.1" to v114,
-    "1.14"   to v114,
+    "1.14.4" to "0.28.5+1.14",
 )
 
 plugins {
@@ -57,8 +52,10 @@ dependencies {
     modImplementation(fabricApi.module("fabric-api-base", fabricApiVersions[minecraftVersion]))
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", fabricApiVersions[minecraftVersion]))
     modImplementation(fabricApi.module("fabric-networking-api-v1", fabricApiVersions[minecraftVersion]))
-    modImplementation(fabricApi.module("fabric-entity-events-v1", fabricApiVersions[minecraftVersion]))
     modImplementation(fabricApi.module("fabric-command-api-v${if (minecraftVersion.split(".")[1].toInt() >= 19) "2" else "1"}", fabricApiVersions[minecraftVersion]))
+    if (minecraftVersion.split(".")[1].toInt() >= 16) {
+        modImplementation(fabricApi.module("fabric-entity-events-v1", fabricApiVersions[minecraftVersion]))
+    }
 }
 
 loom {

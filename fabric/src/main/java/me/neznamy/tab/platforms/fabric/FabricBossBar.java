@@ -28,7 +28,7 @@ public class FabricBossBar implements BossBar {
                 BossEvent.BossBarColor.valueOf(color.name()),
                 BossEvent.BossBarOverlay.valueOf(style.name())
         );
-        bar.setProgress(progress);
+        FabricMultiVersion.setProgress(bar, progress);
         bars.put(id, bar);
         bar.addPlayer(player.getPlayer());
     }
@@ -40,7 +40,7 @@ public class FabricBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, float progress) {
-        bars.get(id).setProgress(progress);
+        FabricMultiVersion.setProgress(bars.get(id), progress);
     }
 
     @Override

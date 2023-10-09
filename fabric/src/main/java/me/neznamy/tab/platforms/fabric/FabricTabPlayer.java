@@ -31,7 +31,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     private final EntityView entityView = new FabricEntityView(this);
 
     public FabricTabPlayer(@NotNull FabricPlatform platform, @NotNull ServerPlayer player) {
-        super(platform, player, player.getUUID(), player.getGameProfile().getName(), player.level().dimension().location().toString());
+        super(platform, player, player.getUUID(), player.getGameProfile().getName(), "N/A");
     }
 
     @Override
@@ -41,12 +41,12 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getPing() {
-        return getPlayer().connection.latency();
+        return FabricMultiVersion.getPing(this);
     }
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendSystemMessage(getPlatform().toComponent(message, getVersion()));
+        FabricMultiVersion.sendMessage(this, getPlatform().toComponent(message, getVersion()));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
         Collection<Property> properties = getPlayer().getGameProfile().getProperties().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
         Property skinProperty = properties.iterator().next();
-        return new TabList.Skin(skinProperty.value(), skinProperty.signature());
+        return FabricMultiVersion.propertyToSkin(skinProperty);
     }
 
     @Override

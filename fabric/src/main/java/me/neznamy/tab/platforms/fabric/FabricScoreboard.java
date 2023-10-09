@@ -1,15 +1,14 @@
 package me.neznamy.tab.platforms.fabric;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.Objective;
@@ -23,6 +22,9 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @NotNull
     private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
 
+    @NotNull
+    private static final Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson(IChatBaseComponent.EMPTY_COMPONENT));
+
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);
     }
@@ -30,13 +32,13 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @Override
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         player.sendPacket(
-                new ClientboundSetDisplayObjectivePacket(
-                        net.minecraft.world.scores.DisplaySlot.values()[slot.ordinal()],
+                FabricMultiVersion.newDisplayObjective(
+                        slot.ordinal(),
                         new Objective(
                                 dummyScoreboard,
                                 objective,
                                 ObjectiveCriteria.DUMMY,
-                                Component.empty(),
+                                EMPTY_COMPONENT,
                                 ObjectiveCriteria.RenderType.INTEGER
                         )
                 )
@@ -67,7 +69,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 dummyScoreboard,
                                 objectiveName,
                                 ObjectiveCriteria.DUMMY,
-                                Component.empty(),
+                                EMPTY_COMPONENT,
                                 ObjectiveCriteria.RenderType.INTEGER
                         ),
                         1
@@ -104,12 +106,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setPlayerPrefix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         team.setPlayerSuffix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.getPlayers().addAll(players);
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
+        player.sendPacket(FabricMultiVersion.createTeam(team));
     }
 
     @Override
     public void unregisterTeam0(@NotNull String name) {
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createRemovePacket(new PlayerTeam(dummyScoreboard, name)));
+        player.sendPacket(FabricMultiVersion.removeTeam(new PlayerTeam(dummyScoreboard, name)));
     }
 
     @Override
@@ -123,7 +125,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         team.setPlayerSuffix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false));
+        player.sendPacket(FabricMultiVersion.updateTeam(team));
     }
 
     @Override

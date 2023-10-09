@@ -7,11 +7,6 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
-import net.minecraft.network.protocol.game.ClientboundTabListPacket;
-import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,56 +16,43 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
-        player.sendPacket(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry)));
+        player.sendPacket(FabricMultiVersion.build(Action.REMOVE_PLAYER, new Builder(entry)));
     }
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        player.sendPacket(build(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME),
-                new Builder(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()))));
+        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_DISPLAY_NAME,
+                new Builder(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()))
+        ));
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
-        player.sendPacket(build(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY), new Builder(entry).setLatency(latency)));
+        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_LATENCY, new Builder(entry).setLatency(latency)));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        player.sendPacket(build(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE), new Builder(entry).setGameMode(gameMode)));
+        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_GAME_MODE, new Builder(entry).setGameMode(gameMode)));
     }
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        player.sendPacket(build(EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class), new Builder(entry.getUniqueId())
+        player.sendPacket(FabricMultiVersion.build(Action.ADD_PLAYER, new Builder(entry.getUniqueId())
                 .setName(entry.getName())
                 .setSkin(entry.getSkin())
                 .setGameMode(entry.getGameMode())
                 .setLatency(entry.getLatency())
-                .setDisplayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))));
+                .setDisplayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))
+        ));
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().connection.send(new ClientboundTabListPacket(
+        player.getPlayer().connection.send(FabricMultiVersion.setHeaderFooter(
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion()))
         );
-    }
-
-    @NotNull
-    private Packet<?> build(@NotNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions, @NotNull FabricTabList.Builder entry) {
-        ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
-        packet.entries = Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry.getId(),
-                entry.createProfile(),
-                true,
-                entry.getLatency(),
-                GameType.byId(entry.getGameMode()),
-                entry.getDisplayName(),
-                null
-        ));
-        return packet;
     }
 
     @RequiredArgsConstructor
@@ -78,14 +60,14 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
     public static class Builder {
 
         @NotNull private final UUID id;
-        @Nullable private String name;
+        @NotNull private String name = ""; // Avoid nullability issues as things are changing over versions
         @Nullable private Skin skin;
         private int latency;
         private int gameMode;
         @Nullable private Component displayName;
 
         @NotNull
-        public Builder setName(@Nullable String name) {
+        public Builder setName(@NotNull String name) {
             this.name = name;
             return this;
         }
@@ -114,9 +96,8 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
             return this;
         }
 
-        @Nullable
+        @NotNull
         public GameProfile createProfile() {
-            if (name == null) return null;
             GameProfile profile = new GameProfile(id, name);
             if (skin != null) {
                 profile.getProperties().put(TabList.TEXTURES_PROPERTY,
