@@ -6,10 +6,8 @@ import java.util.concurrent.*;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,11 +50,6 @@ public class CpuManager {
             lastReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
-            if (lastReport.getPlaceholderUsageTotal() > 50) {
-                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of placeholders is " + (int) lastReport.getPlaceholderUsageTotal() +
-                        "%. See /" + (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ? TabConstants.COMMAND_PROXY : TabConstants.COMMAND_BACKEND) +
-                        " cpu for more info. Try increasing refresh intervals."));
-            }
         });
     }
 
