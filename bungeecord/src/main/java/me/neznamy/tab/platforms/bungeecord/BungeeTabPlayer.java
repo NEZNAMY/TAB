@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -79,7 +80,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(getPlatform().toComponent(message, getVersion()));
+        getPlayer().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
     }
 
     @Override
@@ -110,15 +111,18 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
-        if (!getPlayer().isConnected()) {
-            TAB.getInstance().debug("Attempted to send plugin message to offline player " + getName());
-            return;
+        try {
+            getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
+        } catch (NullPointerException BungeeCordBug) {
+            // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
+            //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
+            //        at net.md_5.bungee.ServerConnection.sendPacketQueued(ServerConnection.java:48)
+            //        at net.md_5.bungee.ServerConnection.sendData(ServerConnection.java:70)
+            if (TAB.getInstance().getConfiguration().isDebugMode()) {
+                TAB.getInstance().getErrorManager().printError("Failed to deliver plugin message to player " + getName() +
+                        " (online = " + getPlayer().isConnected() + ")", BungeeCordBug);
+            }
         }
-        if (getPlayer().getServer() == null) {
-            errorNoServer(message);
-            return;
-        }
-        getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
     }
 
     /**
@@ -163,12 +167,18 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      */
     @SneakyThrows
     public void sendPacket(@NotNull DefinedPacket packet) {
-        if (!getPlayer().isConnected()) {
-            TAB.getInstance().debug("Attempted to send packet " + packet.getClass().getName() + " to offline player " + getName());
-            return;
-        }
         if (packetQueue) {
-            UserConnection.class.getDeclaredMethod("sendPacketQueued", DefinedPacket.class).invoke(player, packet);
+            try {
+                UserConnection.class.getDeclaredMethod("sendPacketQueued", DefinedPacket.class).invoke(player, packet);
+            } catch (NullPointerException BungeeCordBug) {
+                // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
+                //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
+                //        at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:194)
+                if (TAB.getInstance().getConfiguration().isDebugMode()) {
+                    TAB.getInstance().getErrorManager().printError("Failed to deliver packet to player " + getName() +
+                            " (online = " + getPlayer().isConnected() + "): " + packet, BungeeCordBug);
+                }
+            }
         } else {
             getPlayer().unsafe().sendPacket(packet);
         }

@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.Property;
+import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.tab.ServerUnique;
 import org.jetbrains.annotations.NotNull;
@@ -32,10 +33,10 @@ public abstract class BungeeTabList implements TabList {
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().setTabHeader(
-                player.getPlatform().toComponent(header, player.getVersion()),
-                player.getPlatform().toComponent(footer, player.getVersion())
-        );
+        player.sendPacket(new PlayerListHeaderFooter(
+                header.toString(player.getVersion()),
+                footer.toString(player.getVersion())
+        ));
     }
 
     @NotNull
