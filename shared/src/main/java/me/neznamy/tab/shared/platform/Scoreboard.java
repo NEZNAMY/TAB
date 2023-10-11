@@ -90,7 +90,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     private void error(@NotNull String format, @NotNull Object... args) {
-        TAB.getInstance().getErrorManager().printError(String.format(format, args) + player.getName());
+        TAB.getInstance().debug(String.format(format, args) + player.getName());
     }
 
     /**
