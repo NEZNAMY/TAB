@@ -73,17 +73,21 @@ public class DataWatcher implements EntityData {
      */
     public static void load() throws ReflectiveOperationException {
         int minorVersion = BukkitReflection.getMinorVersion();
+        Class<?> Entity;
         if (BukkitReflection.isMojangMapped()) {
+            Entity = Class.forName("net.minecraft.world.entity.Entity");
             DataWatcher = Class.forName("net.minecraft.network.syncher.SynchedEntityData");
             DataWatcherObject = Class.forName("net.minecraft.network.syncher.EntityDataAccessor");
             DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.EntityDataSerializers");
             DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.EntityDataSerializer");
         } else if (minorVersion >= 17) {
+            Entity = Class.forName("net.minecraft.world.entity.Entity");
             DataWatcher = Class.forName("net.minecraft.network.syncher.DataWatcher");
             DataWatcherObject = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
             DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.DataWatcherRegistry");
             DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.DataWatcherSerializer");
         } else {
+            Entity = BukkitReflection.getLegacyClass("Entity");
             DataWatcher = BukkitReflection.getLegacyClass("DataWatcher");
             if (minorVersion >= 9) {
                 DataWatcherObject = BukkitReflection.getLegacyClass("DataWatcherObject");
@@ -91,7 +95,11 @@ public class DataWatcher implements EntityData {
                 DataWatcherSerializer = BukkitReflection.getLegacyClass("DataWatcherSerializer");
             }
         }
-        newDataWatcher = ReflectionUtils.getOnlyConstructor(DataWatcher);
+        if (minorVersion >= 7) {
+            newDataWatcher = DataWatcher.getConstructor(Entity);
+        } else {
+            newDataWatcher = DataWatcher.getConstructor();
+        }
         if (minorVersion >= 9) {
             DataWatcher_register = ReflectionUtils.getMethod(
                     DataWatcher,

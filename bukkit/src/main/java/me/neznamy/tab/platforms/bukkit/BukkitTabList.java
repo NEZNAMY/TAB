@@ -125,7 +125,7 @@ public class BukkitTabList implements TabList {
 
         // Info packet
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
-        newPlayerInfoData = ReflectionUtils.getOnlyConstructor(playerInfoDataClass);
+        newPlayerInfoData = playerInfoDataClass.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
         PlayerInfoData_Profile = ReflectionUtils.getOnlyField(playerInfoDataClass, GameProfile.class);
         PlayerInfoData_Latency = ReflectionUtils.getOnlyField(playerInfoDataClass, int.class);
         PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
