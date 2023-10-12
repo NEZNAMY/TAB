@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  * Class for handling BossBar feature
  */
 public class BossBarManagerImpl extends TabFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
-        UnLoadable, Refreshable {
+        UnLoadable, Refreshable, LoginPacketListener {
 
     //default BossBars
     private final List<String> defaultBars = new ArrayList<>();
@@ -254,5 +255,17 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
             }
             announcedBossBars.remove(line);
         });
+    }
+
+    @Override
+    public void onLoginPacket(TabPlayer player) {
+        // Since 1.20.2, Login packet clears BossBars as well
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+            for (BossBar bar : lineValues) {
+                if (bar.containsPlayer(player)) {
+                    ((BossBarLine)bar).sendToPlayerRaw(player);
+                }
+            }
+        }
     }
 }

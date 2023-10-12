@@ -235,6 +235,10 @@ public class BossBarLine implements BossBar {
         player.setProperty(progressRefresher, propertyProgress, progress);
         player.setProperty(colorRefresher, propertyColor, color);
         player.setProperty(styleRefresher, propertyStyle, style);
+        sendToPlayerRaw(player);
+    }
+
+    public void sendToPlayerRaw(TabPlayer player) {
         player.getBossBar().create(
                 uniqueId,
                 player.getProperty(propertyTitle).updateAndGet(),
