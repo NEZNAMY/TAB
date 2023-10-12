@@ -103,7 +103,7 @@ public class Property {
         }
         String rawFormattedValue0 = value;
         for (String placeholder : placeholders0) {
-            rawFormattedValue0 = rawFormattedValue0.replace(placeholder, "%s");
+            rawFormattedValue0 = replaceFirst(rawFormattedValue0, placeholder, "%s");
         }
         if (placeholders0.size() > 0 && rawFormattedValue0.contains("%")) {
             int index = rawFormattedValue0.lastIndexOf('%');
@@ -126,6 +126,15 @@ public class Property {
             TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
             expansion.setPropertyValue(owner, name, lastReplacedValue);
             expansion.setRawPropertyValue(owner, name, getCurrentRawValue());
+        }
+    }
+
+    private String replaceFirst(String original, String searchString, String replacement) {
+        int index = original.indexOf(searchString);
+        if (index != -1) {
+            return original.substring(0, index) + replacement + original.substring(index + searchString.length());
+        } else {
+            return original;
         }
     }
 
