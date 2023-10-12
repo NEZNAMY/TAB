@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * PLAYER_LIST display slot (in tablist).
  */
 public class YellowNumber extends TabFeature implements JoinListener, Loadable, UnLoadable,
-        ServerSwitchListener, Refreshable {
+        Refreshable, LoginPacketListener {
 
     @Getter private final String featureName = "Yellow Number";
     @Getter private final String refreshDisplayName = "Updating value";
@@ -107,16 +107,6 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         if (redis != null) redis.updateYellowNumber(connectedPlayer, value);
     }
 
-    @Override
-    public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
-        if (disableChecker.isDisabledPlayer(p) || p.isBedrockPlayer()) return;
-        p.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-        p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-        }
-    }
-
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
@@ -133,5 +123,15 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
             all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), value);
         }
         if (redis != null) redis.updateYellowNumber(refreshed, value);
+    }
+
+    @Override
+    public void onLoginPacket(TabPlayer p) {
+        if (disableChecker.isDisabledPlayer(p) || p.isBedrockPlayer() || !p.isLoaded()) return;
+        p.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
+        p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all.isLoaded()) p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+        }
     }
 }

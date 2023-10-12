@@ -189,6 +189,11 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         }
     }
 
+    @Override
+    public boolean isLogin(@NotNull Object packet) {
+        return packet instanceof Login;
+    }
+
     /**
      * Constructs new instance of the feature
      */

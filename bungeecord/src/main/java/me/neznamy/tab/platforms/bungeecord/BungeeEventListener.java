@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.EventListener;
@@ -26,13 +25,7 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
 
     @EventHandler
     public void onSwitch(ServerSwitchEvent e) {
-        Runnable task = () -> serverChange(e.getPlayer(), e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
-        // Temporary workaround until https://github.com/SpigotMC/BungeeCord/issues/3542 is resolved
-        if (e.getPlayer().getPendingConnection().getVersion() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-            TAB.getInstance().getCPUManager().runTaskLater(500, "", "", task);
-        } else {
-            task.run();
-        }
+        serverChange(e.getPlayer(), e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName(), false);
     }
 
     @EventHandler

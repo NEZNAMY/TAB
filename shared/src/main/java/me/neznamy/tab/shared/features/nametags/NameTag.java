@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class NameTag extends TabFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable {
+        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, LoginPacketListener {
 
     @Getter private final String featureName = "NameTags";
     @Getter private final String refreshDisplayName = "Updating prefix/suffix";
@@ -134,9 +134,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
         if (updateProperties(p) && !disableChecker.isDisabledPlayer(p)) updateTeamData(p);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!disableChecker.isDisabledPlayer(all)) registerTeam(all, p);
-        }
     }
 
     @Override
@@ -339,5 +336,13 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     public boolean hasHiddenNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer player) {
         return playersWithInvisibleNameTagView.contains(player);
+    }
+
+    @Override
+    public void onLoginPacket(TabPlayer player) {
+        if (!player.isLoaded()) return;
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (!disableChecker.isDisabledPlayer(all) && all.isLoaded()) registerTeam(all, player);
+        }
     }
 }

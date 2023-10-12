@@ -84,6 +84,8 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     public abstract void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet);
 
+    public abstract boolean isLogin(@NotNull Object packet);
+
     /**
      * Removes all real players from team if packet does not come from TAB and reports this to override log
      *
@@ -109,6 +111,12 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                     long time = System.nanoTime();
                     modifyPlayers(packet);
                     TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+                }
+                if (isLogin(packet)) {
+                    // Logic must be processed after packet is actually sent
+                    super.write(context, packet, channelPromise);
+                    TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onLoginPacket(player));
+                    return;
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
             } catch (Throwable e) {

@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Getter
 public class LayoutManagerImpl extends TabFeature implements LayoutManager, JoinListener, QuitListener, VanishListener, Loadable,
-        UnLoadable, Refreshable, ServerSwitchListener {
+        UnLoadable, Refreshable, LoginPacketListener {
 
     /** Config options */
     private final Direction direction = parseDirection(TAB.getInstance().getConfig().getString("layout.direction", "COLUMNS"));
@@ -182,12 +182,6 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     }
 
     @Override
-    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
-        LayoutView view = views.get(changed);
-        if (view != null) view.send();
-    }
-
-    @Override
     public Layout createNewLayout(String name) {
         return new LayoutPattern(this, name, Collections.emptyMap());
     }
@@ -202,6 +196,12 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     public void resetLayout(@NonNull me.neznamy.tab.api.TabPlayer player) {
         forcedLayouts.remove(player);
         refresh((TabPlayer) player, false);
+    }
+
+    @Override
+    public void onLoginPacket(TabPlayer player) {
+        LayoutView view = views.get(player);
+        if (view != null) view.send();
     }
 
     @RequiredArgsConstructor

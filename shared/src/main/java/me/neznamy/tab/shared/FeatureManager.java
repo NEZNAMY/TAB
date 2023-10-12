@@ -159,12 +159,11 @@ public class FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
 
-    public void onServerChange(@NotNull UUID playerUUID, @NotNull String to) {
+    public void onServerChange(@NotNull UUID playerUUID, @NotNull String to, boolean callOnLoginPacket) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
         String from = changed.getServer();
         changed.setServer(to);
-        changed.getScoreboard().clearRegisteredObjectives();
         ((ProxyTabPlayer)changed).sendJoinPluginMessage();
         for (TabFeature f : values) {
             if (!(f instanceof ServerSwitchListener)) continue;
@@ -173,6 +172,7 @@ public class FeatureManager {
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
+        if (callOnLoginPacket) onLoginPacket(changed);
     }
 
     public boolean onCommand(@Nullable TabPlayer sender, @NotNull String command) {
@@ -269,6 +269,16 @@ public class FeatureManager {
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
         }
         return newLatency;
+    }
+
+    public void onLoginPacket(TabPlayer packetReceiver) {
+        packetReceiver.getScoreboard().clearRegisteredObjectives();
+        for (TabFeature f : values) {
+            if (!(f instanceof LoginPacketListener)) continue;
+            long time = System.nanoTime();
+            ((LoginPacketListener)f).onLoginPacket(packetReceiver);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_LOGIN, System.nanoTime() - time);
+        }
     }
 
     public void registerFeature(@NotNull String featureName, @NotNull TabFeature featureHandler) {

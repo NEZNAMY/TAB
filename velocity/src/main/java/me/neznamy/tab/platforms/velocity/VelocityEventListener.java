@@ -30,7 +30,8 @@ public class VelocityEventListener extends EventListener<Player> {
     public void onConnect(@NotNull ServerPostConnectEvent e) {
         serverChange(
                 e.getPlayer(), e.getPlayer().getUniqueId(),
-                e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null")
+                e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null"),
+                true
         );
     }
 

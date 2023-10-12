@@ -18,7 +18,7 @@ import java.util.Map;
  * Feature handler for BelowName feature
  */
 public class BelowName extends TabFeature implements JoinListener, Loadable, UnLoadable,
-        ServerSwitchListener, Refreshable {
+        Refreshable, LoginPacketListener {
 
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
 
@@ -98,20 +98,6 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         if (redis != null) redis.updateBelowName(connectedPlayer, number);
     }
 
-    @Override
-    public void onServerChange(@NotNull TabPlayer player, @NotNull String from, @NotNull String to) {
-        if (disableChecker.isDisabledPlayer(player)) return;
-        player.getScoreboard().registerObjective(
-                OBJECTIVE_NAME,
-                player.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(),
-                Scoreboard.HealthDisplay.INTEGER
-        );
-        player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            player.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-        }
-    }
-
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
@@ -132,6 +118,16 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
             all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), number);
         }
         if (redis != null) redis.updateBelowName(refreshed, number);
+    }
+
+    @Override
+    public void onLoginPacket(TabPlayer player) {
+        if (disableChecker.isDisabledPlayer(player) || !player.isLoaded()) return;
+        player.getScoreboard().registerObjective(OBJECTIVE_NAME, player.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), Scoreboard.HealthDisplay.INTEGER);
+        player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all.isLoaded()) player.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+        }
     }
 
     @RequiredArgsConstructor

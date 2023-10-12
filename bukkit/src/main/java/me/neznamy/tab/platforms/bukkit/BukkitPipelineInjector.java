@@ -139,6 +139,11 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         }
     }
 
+    @Override
+    public boolean isLogin(@NotNull Object packet) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     @SneakyThrows

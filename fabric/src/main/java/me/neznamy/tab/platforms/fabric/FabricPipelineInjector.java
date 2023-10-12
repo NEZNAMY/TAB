@@ -96,6 +96,11 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
+    public boolean isLogin(@NotNull Object packet) {
+        return false;
+    }
+
+    @Override
     public void modifyPlayers(@NotNull Object teamPacket) {
         if (TAB.getInstance().getNameTagManager() == null) return;
         ClientboundSetPlayerTeamPacket packet = (ClientboundSetPlayerTeamPacket) teamPacket;
