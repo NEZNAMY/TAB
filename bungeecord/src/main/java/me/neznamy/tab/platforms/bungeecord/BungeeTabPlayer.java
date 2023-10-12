@@ -26,6 +26,8 @@ import net.md_5.bungee.protocol.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * TabPlayer implementation for BungeeCord
  */
@@ -170,7 +172,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         if (packetQueue) {
             try {
                 UserConnection.class.getDeclaredMethod("sendPacketQueued", DefinedPacket.class).invoke(player, packet);
-            } catch (NullPointerException BungeeCordBug) {
+            } catch (InvocationTargetException BungeeCordBug) { // Since we use reflection we must catch this one
                 // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
                 //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
                 //        at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:194)
