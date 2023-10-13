@@ -62,6 +62,7 @@ public class VelocityTabList implements TabList {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
+        if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
         Component displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
