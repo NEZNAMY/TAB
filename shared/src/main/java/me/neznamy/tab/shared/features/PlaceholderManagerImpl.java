@@ -295,4 +295,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         placeholderUsage.remove(identifier);
         recalculateUsedPlaceholders();
     }
+
+    public boolean isPlaceholderRegistered(@NotNull String identifier) {
+        return registeredPlaceholders.containsKey(identifier);
+    }
 }

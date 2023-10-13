@@ -56,7 +56,7 @@ public class PluginMessageHandler {
 
     public void placeholder(@NotNull ProxyTabPlayer player, @NotNull ByteArrayDataInput in) {
         String identifier = in.readUTF();
-        if (!TAB.getInstance().getPlaceholderManager().getRegisteredPlaceholders().containsKey(identifier)) return;
+        if (!TAB.getInstance().getPlaceholderManager().isPlaceholderRegistered(identifier)) return;
         Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
         if (placeholder instanceof RelationalPlaceholder) {
             TabPlayer other = TAB.getInstance().getPlayer(in.readUTF());
@@ -111,22 +111,25 @@ public class PluginMessageHandler {
         int placeholderCount = in.readInt();
         for (int i=0; i<placeholderCount; i++) {
             String identifier = in.readUTF();
+            boolean registered = TAB.getInstance().getPlaceholderManager().isPlaceholderRegistered(identifier);
             if (identifier.startsWith("%rel_")) {
                 int playerCount = in.readInt();
                 for (int j=0; j<playerCount; j++) {
                     TabPlayer other = TAB.getInstance().getPlayer(in.readUTF());
                     String value = in.readUTF();
-                    if (other != null) { // Backend player did not connect via this proxy if null
+                    if (registered && other != null) { // Backend player did not connect via this proxy if null
                         ((RelationalPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier))
                                 .updateValue(player, other, value);
                     }
                 }
             } else {
+                String value = in.readUTF();
+                if (!registered) continue;
                 Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
                 if (pl instanceof PlayerPlaceholder) {
-                    ((PlayerPlaceholder) pl).updateValue(player, in.readUTF());
+                    ((PlayerPlaceholder) pl).updateValue(player, value);
                 } else {
-                    ((ServerPlaceholder) pl).updateValue(in.readUTF());
+                    ((ServerPlaceholder) pl).updateValue(value);
                 }
             }
         }
