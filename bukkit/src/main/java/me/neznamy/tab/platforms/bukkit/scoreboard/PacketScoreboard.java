@@ -37,7 +37,6 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static Constructor<?> newDisplayObjective;
     public static Field DisplayObjective_POSITION;
     public static Field DisplayObjective_OBJECTIVE_NAME;
-    public static Enum[] DisplaySlot_values;
 
     // PacketPlayOutScoreboardScore
     private static Class<Enum> EnumScoreboardAction;
@@ -67,7 +66,6 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public static Field TeamPacket_PLAYERS;
     private static Class<Enum> EnumNameTagVisibility;
     private static Class<Enum> EnumTeamPush;
-    private static Class<Enum> EnumChatFormatClass;
     private static Constructor<?> newScoreboardTeam;
     private static Method ScoreboardTeam_getPlayerNameSet;
     private static Method ScoreboardTeam_setNameTagVisibility;
@@ -78,6 +76,13 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static Method ScoreboardTeam_setAllowFriendlyFire;
     private static Method ScoreboardTeam_setCanSeeFriendlyInvisibles;
 
+    private static Enum[] scoreboardActions;
+    private static Enum[] displaySlots;
+    private static Enum[] nameVisibilities;
+    private static Enum[] collisionRules;
+    private static Enum[] healthDisplays;
+    private static Enum[] chatFormats;
+
     public static void load() throws ReflectiveOperationException {
         int minorVersion = BukkitReflection.getMinorVersion();
         Class<?> scoreboardTeam;
@@ -87,9 +92,10 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         Class<?> scoreboard;
         Class<?> scorePacketClass;
         Class<?> IChatBaseComponent = null;
+        Class<Enum> enumChatFormatClass;
         if (BukkitReflection.isMojangMapped()) {
             IChatBaseComponent = Class.forName("net.minecraft.network.chat.Component");
-            EnumChatFormatClass = (Class<Enum>) Class.forName("net.minecraft.ChatFormatting");
+            enumChatFormatClass = (Class<Enum>) Class.forName("net.minecraft.ChatFormatting");
             DisplayObjectiveClass = Class.forName("net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket");
             ObjectivePacketClass = Class.forName("net.minecraft.network.protocol.game.ClientboundSetObjectivePacket");
             scoreboard = Class.forName("net.minecraft.world.scores.Scoreboard");
@@ -105,7 +111,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             EnumTeamPush = (Class<Enum>) Class.forName("net.minecraft.world.scores.Team$CollisionRule");
         } else if (minorVersion >= 17) {
             IChatBaseComponent = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
-            EnumChatFormatClass = (Class<Enum>) Class.forName("net.minecraft.EnumChatFormat");
+            enumChatFormatClass = (Class<Enum>) Class.forName("net.minecraft.EnumChatFormat");
             DisplayObjectiveClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective");
             ObjectivePacketClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective");
             scoreboard = Class.forName("net.minecraft.world.scores.Scoreboard");
@@ -120,7 +126,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             EnumNameTagVisibility = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility");
             EnumTeamPush = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush");
         } else {
-            EnumChatFormatClass = (Class<Enum>) getLegacyClass("EnumChatFormat");
+            enumChatFormatClass = (Class<Enum>) getLegacyClass("EnumChatFormat");
             DisplayObjectiveClass = getLegacyClass("PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective");
             ObjectivePacketClass = getLegacyClass("PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
             TeamPacketClass = getLegacyClass("PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
@@ -148,7 +154,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             Class<?> DisplaySlot = Class.forName("net.minecraft.world.scores.DisplaySlot");
             DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, DisplaySlot);
             newDisplayObjective = DisplayObjectiveClass.getConstructor(DisplaySlot, scoreboardObjective);
-            DisplaySlot_values = (Enum[]) DisplaySlot.getDeclaredMethod("values").invoke(null);
+            displaySlots = (Enum[]) DisplaySlot.getDeclaredMethod("values").invoke(null);
         } else {
             DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, int.class);
             newDisplayObjective = DisplayObjectiveClass.getConstructor(int.class, scoreboardObjective);
@@ -168,7 +174,12 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             newScorePacket_1_13 = scorePacketClass.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
             newObjectivePacket = ObjectivePacketClass.getConstructor(scoreboardObjective, int.class);
             Objective_DISPLAY_NAME = ReflectionUtils.getOnlyField(ObjectivePacketClass, IChatBaseComponent);
-            ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, EnumChatFormatClass);
+            ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumChatFormatClass);
+            scoreboardActions = new Enum[] {
+                    Enum.valueOf(EnumScoreboardAction, "CHANGE"),
+                    Enum.valueOf(EnumScoreboardAction, "REMOVE")
+            };
+            chatFormats = (Enum[]) enumChatFormatClass.getMethod("values").invoke(null);
         } else {
             newScorePacket_String = scorePacketClass.getConstructor(String.class);
             newObjectivePacket = ObjectivePacketClass.getConstructor();
@@ -180,8 +191,26 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                 newScorePacket = scorePacketClass.getConstructor(scoreboardScoreClass, int.class);
             }
         }
+        if (minorVersion >= 8) {
+            nameVisibilities = new Enum[] {
+                    Enum.valueOf(EnumNameTagVisibility, "ALWAYS"),
+                    Enum.valueOf(EnumNameTagVisibility, "NEVER"),
+                    Enum.valueOf(EnumNameTagVisibility, "HIDE_FOR_OTHER_TEAMS"),
+                    Enum.valueOf(EnumNameTagVisibility, "HIDE_FOR_OWN_TEAM")
+            };
+            healthDisplays = new Enum[] {
+                    Enum.valueOf(EnumScoreboardHealthDisplay, "INTEGER"),
+                    Enum.valueOf(EnumScoreboardHealthDisplay, "HEARTS")
+            };
+        }
         if (minorVersion >= 9) {
             ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, EnumTeamPush);
+            collisionRules = new Enum[] {
+                    Enum.valueOf(EnumTeamPush, "ALWAYS"),
+                    Enum.valueOf(EnumTeamPush, "NEVER"),
+                    Enum.valueOf(EnumTeamPush, "PUSH_OTHER_TEAMS"),
+                    Enum.valueOf(EnumTeamPush, "PUSH_OWN_TEAM")
+            };
         }
         if (minorVersion >= 17) {
             TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam);
@@ -246,7 +275,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         Object displaySlot;
         if (BukkitReflection.is1_20_2Plus()) {
-            displaySlot = DisplaySlot_values[slot.ordinal()];
+            displaySlot = displaySlots[slot.ordinal()];
         } else {
             displaySlot = slot.ordinal();
         }
@@ -273,9 +302,13 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private Object buildObjective(int action, String objectiveName, String title, @NotNull HealthDisplay display) {
         if (BukkitReflection.getMinorVersion() >= 13) {
             return newObjectivePacket.newInstance(
-                    newScoreboardObjective.newInstance(null, objectiveName, null,
-                            toComponent(IChatBaseComponent.optimizedComponent(title)),
-                            Enum.valueOf(EnumScoreboardHealthDisplay, display.name())),
+                    newScoreboardObjective.newInstance(
+                            null,
+                            objectiveName,
+                            null,
+                            toComponent(title),
+                            healthDisplays[display.ordinal()]
+                    ),
                     action
             );
         }
@@ -283,7 +316,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         Objective_OBJECTIVE_NAME.set(nmsPacket, objectiveName);
         Objective_DISPLAY_NAME.set(nmsPacket, title);
         if (BukkitReflection.getMinorVersion() >= 8) {
-            Objective_RENDER_TYPE.set(nmsPacket, Enum.valueOf(EnumScoreboardHealthDisplay, display.name()));
+            Objective_RENDER_TYPE.set(nmsPacket, healthDisplays[display.ordinal()]);
         }
         Objective_METHOD.set(nmsPacket, action);
         return nmsPacket;
@@ -333,15 +366,17 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
         if (BukkitReflection.getMinorVersion() >= 13) {
-            ScoreboardTeam_setPrefix.invoke(team, toComponent(IChatBaseComponent.optimizedComponent(prefix)));
-            ScoreboardTeam_setSuffix.invoke(team, toComponent(IChatBaseComponent.optimizedComponent(suffix)));
-            ScoreboardTeam_setColor.invoke(team, Enum.valueOf(EnumChatFormatClass, EnumChatFormat.lastColorsOf(prefix).toString()));
+            ScoreboardTeam_setPrefix.invoke(team, toComponent(prefix));
+            ScoreboardTeam_setSuffix.invoke(team, toComponent(suffix));
+            ScoreboardTeam_setColor.invoke(team, chatFormats[EnumChatFormat.lastColorsOf(prefix).ordinal()]);
         } else {
             ScoreboardTeam_setPrefix.invoke(team, prefix);
             ScoreboardTeam_setSuffix.invoke(team, suffix);
         }
-        if (BukkitReflection.getMinorVersion() >= 8) ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, visibility.name()));
-        if (BukkitReflection.getMinorVersion() >= 9) ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, collision.name()));
+        if (BukkitReflection.getMinorVersion() >= 8)
+            ScoreboardTeam_setNameTagVisibility.invoke(team, nameVisibilities[visibility.ordinal()]);
+        if (BukkitReflection.getMinorVersion() >= 9)
+            ScoreboardTeam_setCollisionRule.invoke(team, collisionRules[collision.ordinal()]);
         return team;
     }
 
@@ -349,7 +384,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @SneakyThrows
     public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
         if (BukkitReflection.getMinorVersion() >= 13) {
-            player.sendPacket(newScorePacket_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, "CHANGE"), objective, playerName, score));
+            player.sendPacket(newScorePacket_1_13.newInstance(scoreboardActions[0], objective, playerName, score));
         } else {
             Object scoreboardScore = newScoreboardScore.newInstance(emptyScoreboard, newScoreboardObjective(objective), playerName);
             ScoreboardScore_setScore.invoke(scoreboardScore, score);
@@ -365,7 +400,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @SneakyThrows
     public void removeScore0(@NotNull String objective, @NotNull String playerName) {
         if (BukkitReflection.getMinorVersion() >= 13) {
-            player.sendPacket(newScorePacket_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, "REMOVE"), objective, playerName, 0));
+            player.sendPacket(newScorePacket_1_13.newInstance(scoreboardActions[1], objective, playerName, 0));
         } else {
             player.sendPacket(newScorePacket_String.newInstance(playerName));
         }
@@ -385,7 +420,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                     null,
                     objectiveName,
                     null,
-                    toComponent(new IChatBaseComponent("")),
+                    toComponent(""),
                     null
             );
         }
@@ -396,7 +431,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         );
     }
 
-    private Object toComponent(IChatBaseComponent component) {
-        return player.getPlatform().toComponent(component, player.getVersion());
+    private Object toComponent(String text) {
+        return player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion());
     }
 }

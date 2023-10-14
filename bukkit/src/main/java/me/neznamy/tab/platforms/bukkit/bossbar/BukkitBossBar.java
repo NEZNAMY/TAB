@@ -21,6 +21,26 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BukkitBossBar implements BossBar {
 
+    /** Color array for fast access */
+    private static final org.bukkit.boss.BarColor[] colors = new org.bukkit.boss.BarColor[] {
+            org.bukkit.boss.BarColor.PINK,
+            org.bukkit.boss.BarColor.BLUE,
+            org.bukkit.boss.BarColor.RED,
+            org.bukkit.boss.BarColor.GREEN,
+            org.bukkit.boss.BarColor.YELLOW,
+            org.bukkit.boss.BarColor.PURPLE,
+            org.bukkit.boss.BarColor.WHITE
+    };
+
+    /** Style array for fast access */
+    private static final org.bukkit.boss.BarStyle[] styles = new org.bukkit.boss.BarStyle[] {
+            org.bukkit.boss.BarStyle.SOLID,
+            org.bukkit.boss.BarStyle.SEGMENTED_6,
+            org.bukkit.boss.BarStyle.SEGMENTED_10,
+            org.bukkit.boss.BarStyle.SEGMENTED_12,
+            org.bukkit.boss.BarStyle.SEGMENTED_20
+    };
+    
     /** Player this handler belongs to */
     @NotNull
     private final BukkitTabPlayer player;
@@ -34,8 +54,9 @@ public class BukkitBossBar implements BossBar {
         if (bossBars.containsKey(id)) return;
         org.bukkit.boss.BossBar bar = Bukkit.createBossBar(
                 BukkitUtils.toBukkitFormat(IChatBaseComponent.optimizedComponent(title), player.getVersion().getMinorVersion() >= 16),
-                org.bukkit.boss.BarColor.valueOf(color.name()),
-                org.bukkit.boss.BarStyle.valueOf(style.getBukkitName()));
+                colors[color.ordinal()],
+                styles[style.ordinal()]
+        );
         bar.setProgress(progress);
         bar.addPlayer(player.getPlayer());
         bossBars.put(id, bar);
@@ -53,12 +74,12 @@ public class BukkitBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        bossBars.get(id).setStyle(org.bukkit.boss.BarStyle.valueOf(style.getBukkitName()));
+        bossBars.get(id).setStyle(styles[style.ordinal()]);
     }
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarColor color) {
-        bossBars.get(id).setColor(org.bukkit.boss.BarColor.valueOf(color.name()));
+        bossBars.get(id).setColor(colors[color.ordinal()]);
     }
 
     @Override

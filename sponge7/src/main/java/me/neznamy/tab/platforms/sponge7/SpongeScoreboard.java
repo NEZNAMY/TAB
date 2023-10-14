@@ -6,6 +6,7 @@ import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
+import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMode;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
 import org.spongepowered.api.text.Text;
 
@@ -15,17 +16,31 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     /** Collision rule array for fast access */
     private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = new org.spongepowered.api.scoreboard.CollisionRule[]{
-            CollisionRules.ALWAYS, CollisionRules.NEVER, CollisionRules.PUSH_OTHER_TEAMS, CollisionRules.PUSH_OWN_TEAM
+            CollisionRules.ALWAYS,
+            CollisionRules.NEVER,
+            CollisionRules.PUSH_OTHER_TEAMS,
+            CollisionRules.PUSH_OWN_TEAM
     };
 
     /** Visibility array for fast access */
     private static final Visibility[] visibilities = new Visibility[] {
-            Visibilities.ALWAYS, Visibilities.NEVER, Visibilities.HIDE_FOR_OTHER_TEAMS, Visibilities.HIDE_FOR_OWN_TEAM
+            Visibilities.ALWAYS,
+            Visibilities.NEVER,
+            Visibilities.HIDE_FOR_OTHER_TEAMS,
+            Visibilities.HIDE_FOR_OWN_TEAM
     };
 
     /** DisplaySlot array for fast access */
     private static final org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] displaySlots = new org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] {
-            DisplaySlots.LIST, DisplaySlots.SIDEBAR, DisplaySlots.BELOW_NAME
+            DisplaySlots.LIST,
+            DisplaySlots.SIDEBAR,
+            DisplaySlots.BELOW_NAME
+    };
+
+    /** Health display array for fast access */
+    private static final ObjectiveDisplayMode[] healthDisplays = new ObjectiveDisplayMode[] {
+            ObjectiveDisplayModes.INTEGER,
+            ObjectiveDisplayModes.HEARTS
     };
 
     /** Scoreboard of the player */
@@ -34,7 +49,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     
     public SpongeScoreboard(@NotNull SpongeTabPlayer player) {
         super(player);
-        // Make sure each player is in different scoreboard for per-player view
+
+        // Make sure each player is in a different scoreboard for per-player view
         player.getPlayer().setScoreboard(sb);
     }
 
@@ -48,9 +64,10 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(Text.of(title))
-                .objectiveDisplayMode(display == HealthDisplay.HEARTS ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
+                .objectiveDisplayMode(healthDisplays[display.ordinal()])
                 .criterion(Criteria.DUMMY)
-                .build());
+                .build()
+        );
     }
 
     @Override
@@ -62,7 +79,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         sb.getObjective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(Text.of(title));
-            obj.setDisplayMode(display == HealthDisplay.HEARTS ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER);
+            obj.setDisplayMode(healthDisplays[display.ordinal()]);
         });
     }
 

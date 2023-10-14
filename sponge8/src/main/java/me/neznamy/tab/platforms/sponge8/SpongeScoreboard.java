@@ -11,6 +11,7 @@ import org.spongepowered.api.scoreboard.Visibility;
 import org.spongepowered.api.scoreboard.criteria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
+import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMode;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
 
 import java.util.Collection;
@@ -19,17 +20,31 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     /** Collision rule array for fast access */
     private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = new org.spongepowered.api.scoreboard.CollisionRule[]{
-            CollisionRules.ALWAYS.get(), CollisionRules.NEVER.get(), CollisionRules.PUSH_OTHER_TEAMS.get(), CollisionRules.PUSH_OWN_TEAM.get()
+            CollisionRules.ALWAYS.get(),
+            CollisionRules.NEVER.get(),
+            CollisionRules.PUSH_OTHER_TEAMS.get(),
+            CollisionRules.PUSH_OWN_TEAM.get()
     };
 
     /** Visibility array for fast access */
     private static final Visibility[] visibilities = new Visibility[] {
-            Visibilities.ALWAYS.get(), Visibilities.NEVER.get(), Visibilities.HIDE_FOR_OTHER_TEAMS.get(), Visibilities.HIDE_FOR_OWN_TEAM.get()
+            Visibilities.ALWAYS.get(),
+            Visibilities.NEVER.get(),
+            Visibilities.HIDE_FOR_OTHER_TEAMS.get(),
+            Visibilities.HIDE_FOR_OWN_TEAM.get()
     };
 
     /** DisplaySlot array for fast access */
     private static final org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] displaySlots = new org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] {
-            DisplaySlots.LIST.get(), DisplaySlots.SIDEBAR.get(), DisplaySlots.BELOW_NAME.get()
+            DisplaySlots.LIST.get(),
+            DisplaySlots.SIDEBAR.get(),
+            DisplaySlots.BELOW_NAME.get()
+    };
+
+    /** Health display array for fast access */
+    private static final ObjectiveDisplayMode[] healthDisplays = new ObjectiveDisplayMode[] {
+            ObjectiveDisplayModes.INTEGER.get(),
+            ObjectiveDisplayModes.HEARTS.get()
     };
 
     /** Scoreboard of the player */
@@ -38,7 +53,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     
     public SpongeScoreboard(@NotNull SpongeTabPlayer player) {
         super(player);
-        // Make sure each player is in different scoreboard for per-player view
+
+        // Make sure each player is in a different scoreboard for per-player view
         player.getPlayer().setScoreboard(sb);
     }
 
@@ -52,9 +68,10 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(adventure(title))
-                .objectiveDisplayMode(display == HealthDisplay.HEARTS ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
+                .objectiveDisplayMode(healthDisplays[display.ordinal()])
                 .criterion(Criteria.DUMMY)
-                .build());
+                .build()
+        );
     }
 
     @Override
@@ -66,7 +83,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         sb.objective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(adventure(title));
-            obj.setDisplayMode(display == HealthDisplay.HEARTS ? ObjectiveDisplayModes.HEARTS.get() : ObjectiveDisplayModes.INTEGER.get());
+            obj.setDisplayMode(healthDisplays[display.ordinal()]);
         });
      }
 

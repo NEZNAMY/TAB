@@ -17,12 +17,22 @@ public class SpongeBossBar implements BossBar {
 
     /** Color array for fast access */
     private static final BossBarColor[] colors = new BossBarColor[] {
-            BossBarColors.PINK, BossBarColors.BLUE, BossBarColors.RED, BossBarColors.GREEN, BossBarColors.YELLOW, BossBarColors.PURPLE, BossBarColors.WHITE
+            BossBarColors.PINK,
+            BossBarColors.BLUE,
+            BossBarColors.RED,
+            BossBarColors.GREEN,
+            BossBarColors.YELLOW,
+            BossBarColors.PURPLE,
+            BossBarColors.WHITE
     };
 
     /** Style array for fast access */
     private static final BossBarOverlay[] styles = new BossBarOverlay[] {
-            BossBarOverlays.PROGRESS, BossBarOverlays.NOTCHED_6, BossBarOverlays.NOTCHED_10, BossBarOverlays.NOTCHED_12, BossBarOverlays.NOTCHED_20
+            BossBarOverlays.PROGRESS,
+            BossBarOverlays.NOTCHED_6,
+            BossBarOverlays.NOTCHED_10,
+            BossBarOverlays.NOTCHED_12,
+            BossBarOverlays.NOTCHED_20
     };
 
     /** Player to send boss bars to */

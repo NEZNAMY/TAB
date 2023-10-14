@@ -21,6 +21,26 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ViaBossBar implements BossBar {
 
+    /** Color array for fast access */
+    private static final BossColor[] colors = new BossColor[] {
+            BossColor.PINK,
+            BossColor.BLUE,
+            BossColor.RED,
+            BossColor.GREEN,
+            BossColor.YELLOW,
+            BossColor.PURPLE,
+            BossColor.WHITE
+    };
+
+    /** Style array for fast access */
+    private static final BossStyle[] styles = new BossStyle[] {
+            BossStyle.SOLID,
+            BossStyle.SEGMENTED_6,
+            BossStyle.SEGMENTED_10,
+            BossStyle.SEGMENTED_12,
+            BossStyle.SEGMENTED_20
+    };
+    
     /** Player this handler belongs to */
     @NotNull
     private final BukkitTabPlayer player;
@@ -35,8 +55,9 @@ public class ViaBossBar implements BossBar {
         com.viaversion.viaversion.api.legacy.bossbar.BossBar bar = Via.getAPI().legacyAPI().createLegacyBossBar(
                 IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()),
                 progress,
-                BossColor.valueOf(color.name()),
-                BossStyle.valueOf(style.getBukkitName()));
+                colors[color.ordinal()],
+                styles[style.ordinal()]
+        );
         viaBossBars.put(id, bar);
         bar.addPlayer(player.getPlayer().getUniqueId());
     }
@@ -53,12 +74,12 @@ public class ViaBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        viaBossBars.get(id).setStyle(BossStyle.valueOf(style.getBukkitName()));
+        viaBossBars.get(id).setStyle(styles[style.ordinal()]);
     }
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarColor color) {
-        viaBossBars.get(id).setColor(BossColor.valueOf(color.name()));
+        viaBossBars.get(id).setColor(colors[color.ordinal()]);
     }
 
     @Override
