@@ -12,14 +12,11 @@ public class MiniMessageFormat implements RGBFormatter {
 
     @Override
     public @NotNull String reformat(@NotNull String text) {
-        if (
-                !text.contains("<") // No MiniMessage syntax is used
-                || text.contains(EnumChatFormat.COLOR_STRING) // MiniMessage throws errors when using legacy color code
-        ) return text;
-        try {
-            return LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(text));
-        } catch (Throwable ignored) {
-            return text;
+        if (text.contains("<") && !text.contains(EnumChatFormat.COLOR_STRING)) {
+            try {
+                return LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(text));
+            } catch (Throwable ignored) {}
         }
+        return text;
     }
 }
