@@ -205,12 +205,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         }
         if (minorVersion >= 9) {
             ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, EnumTeamPush);
-            collisionRules = new Enum[] {
-                    Enum.valueOf(EnumTeamPush, "ALWAYS"),
-                    Enum.valueOf(EnumTeamPush, "NEVER"),
-                    Enum.valueOf(EnumTeamPush, "PUSH_OTHER_TEAMS"),
-                    Enum.valueOf(EnumTeamPush, "PUSH_OWN_TEAM")
-            };
+            collisionRules = (Enum[]) EnumTeamPush.getMethod("values").invoke(null); // <1.13 has wrong enum constant names
         }
         if (minorVersion >= 17) {
             TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam);
