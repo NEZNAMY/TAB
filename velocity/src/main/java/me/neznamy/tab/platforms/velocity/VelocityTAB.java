@@ -10,7 +10,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.bstats.velocity.Metrics;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -52,9 +51,6 @@ public class VelocityTAB {
     @Subscribe
     public void onProxyInitialization(@Nullable ProxyInitializeEvent event) {
         TAB.create(new VelocityPlatform(this));
-        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Velocity compatibility is very experimental and should not be used in production! " +
-                "If you use it, you WILL run into issues and they WILL NOT be fixed. Any bug reports featuring Velocity installation " +
-                "will be immediately closed."));
     }
     
     /**
