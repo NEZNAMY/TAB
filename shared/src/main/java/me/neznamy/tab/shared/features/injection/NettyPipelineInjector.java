@@ -115,7 +115,8 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                 if (isLogin(packet)) {
                     // Logic must be processed after packet is actually sent
                     super.write(context, packet, channelPromise);
-                    TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onLoginPacket(player));
+                    TAB.getInstance().getCPUManager().runTaskLater(200, getFeatureName(), TabConstants.CpuUsageCategory.PACKET_LOGIN,
+                            () -> TAB.getInstance().getFeatureManager().onLoginPacket(player));
                     return;
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
