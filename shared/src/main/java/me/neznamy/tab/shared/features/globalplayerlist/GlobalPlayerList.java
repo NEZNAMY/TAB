@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * Feature handler for global PlayerList feature
  */
 public class GlobalPlayerList extends TabFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
-        Loadable, UnLoadable, ServerSwitchListener {
+        Loadable, UnLoadable, ServerSwitchListener, LoginPacketListener {
 
     // config options
     private final List<String> spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));
@@ -102,14 +102,6 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
 
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
-        // Event is fired after all entries are removed from switched player's tablist, ready to re-add immediately
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            // Ignore players on the same server, since the server already sends add packet
-            if (!all.getServer().equals(changed.getServer()) && shouldSee(changed, all)) {
-                changed.getTabList().addEntry(getAddInfoData(all, changed));
-            }
-        }
-
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         TAB.getInstance().getCPUManager().runTaskLater(200, featureName, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -123,6 +115,17 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
                 }
             }
         });
+    }
+
+    @Override
+    public void onLoginPacket(TabPlayer player) {
+        // Login packet itself does not clear this, but BungeeCord does when the packet is received
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            // Ignore players on the same server, since the server already sends add packet
+            if (!all.getServer().equals(player.getServer()) && shouldSee(player, all)) {
+                player.getTabList().addEntry(getAddInfoData(all, player));
+            }
+        }
     }
 
     public @NotNull TabList.Entry getAddInfoData(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
