@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,9 +30,9 @@ public class AdventureHook {
         net.kyori.adventure.text.format.TextColor color = null;
         if (modifier.getColor() != null) {
             if (clientVersion.getMinorVersion() >= 16) {
-                color = net.kyori.adventure.text.format.TextColor.color(modifier.getColor().getRgb());
+                color = TextColor.color(modifier.getColor().getRgb());
             } else {
-                color = net.kyori.adventure.text.format.TextColor.color(modifier.getColor().getLegacyColor().getHexCode());
+                color = TextColor.color(modifier.getColor().getLegacyColor().getHexCode());
             }
         }
         Set<TextDecoration> decorations = new HashSet<>();
@@ -40,8 +41,9 @@ public class AdventureHook {
         if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
         if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
         if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
-        Component advComponent = Component.text(component.getText(), color, decorations);
-        if (modifier.getFont() != null) advComponent = advComponent.font(Key.key(modifier.getFont()));
-        return advComponent.children(component.getExtra().stream().map(c -> toAdventureComponent(c, clientVersion)).collect(Collectors.toList()));
+        Key font = modifier.getFont() == null ? null : Key.key(modifier.getFont());
+        return Component.text(component.getText(), color, decorations)
+                .font(font)
+                .children(component.getExtra().stream().map(c -> toAdventureComponent(c, clientVersion)).collect(Collectors.toList()));
     }
 }
