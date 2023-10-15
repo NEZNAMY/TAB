@@ -53,16 +53,6 @@ public class RedisTeams extends RedisFeature {
     }
 
     @Override
-    public void onServerSwitch(@NotNull TabPlayer player) {
-        onJoin(player);
-    }
-
-    @Override
-    public void onServerSwitch(@NotNull RedisPlayer player) {
-        // No action is needed
-    }
-
-    @Override
     public void onQuit(@NotNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getScoreboard().unregisterTeam(teamNames.get(player));
@@ -85,6 +75,11 @@ public class RedisTeams extends RedisFeature {
         prefixes.put(player, in.readUTF());
         suffixes.put(player, in.readUTF());
         nameVisibilities.put(player, NameVisibility.getByName(in.readUTF()));
+    }
+
+    @Override
+    public void onLoginPacket(@NotNull TabPlayer player) {
+        onJoin(player);
     }
 
     private @NotNull String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15, int id) {

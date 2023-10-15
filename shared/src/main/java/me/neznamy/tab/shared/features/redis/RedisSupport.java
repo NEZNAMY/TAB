@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("UnstableApiUsage")
 @Getter
 public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener,
-        DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener {
+        DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener, LoginPacketListener {
 
     @NotNull private final String featureName = "RedisSupport";
 
@@ -206,5 +206,10 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     public void registerMessage(@NotNull String name, @NotNull Class<? extends RedisMessage> clazz, @NotNull Supplier<RedisMessage> supplier) {
         messages.put(name, supplier);
         classStringMap.put(clazz, name);
+    }
+
+    @Override
+    public void onLoginPacket(TabPlayer player) {
+        features.forEach(f -> f.onLoginPacket(player));
     }
 }

@@ -42,11 +42,6 @@ public class RedisGlobalPlayerList extends RedisFeature {
     }
 
     @Override
-    public void onServerSwitch(@NotNull TabPlayer player) {
-        onJoin(player);
-    }
-
-    @Override
     public void onServerSwitch(@NotNull RedisPlayer player) {
         TAB.getInstance().getCPUManager().runTaskLater(200, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
@@ -91,6 +86,11 @@ public class RedisGlobalPlayerList extends RedisFeature {
             }
             skins.put(player, new TabList.Skin(value, signature));
         }
+    }
+
+    @Override
+    public void onLoginPacket(@NotNull TabPlayer player) {
+        onJoin(player);
     }
 
     private boolean shouldSee(@NotNull TabPlayer viewer, @NotNull RedisPlayer target) {

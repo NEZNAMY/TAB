@@ -43,21 +43,6 @@ public class RedisBelowName extends RedisFeature {
     }
 
     @Override
-    public void onServerSwitch(@NotNull TabPlayer player) {
-        onJoin(player);
-    }
-
-    @Override
-    public void onServerSwitch(@NotNull RedisPlayer player) {
-        // No action is needed
-    }
-
-    @Override
-    public void onQuit(@NotNull RedisPlayer player) {
-        // No action is needed
-    }
-
-    @Override
     public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {
         out.writeInt(TAB.getInstance().getErrorManager().parseInteger(
                 player.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get(), 0));
@@ -66,6 +51,11 @@ public class RedisBelowName extends RedisFeature {
     @Override
     public void read(@NotNull ByteArrayDataInput in, @NotNull RedisPlayer player) {
         values.put(player, in.readInt());
+    }
+
+    @Override
+    public void onLoginPacket(@NotNull TabPlayer player) {
+        onJoin(player);
     }
 
     @NoArgsConstructor

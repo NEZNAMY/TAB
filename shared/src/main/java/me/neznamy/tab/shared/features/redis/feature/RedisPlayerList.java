@@ -51,16 +51,6 @@ public class RedisPlayerList extends RedisFeature {
     }
 
     @Override
-    public void onServerSwitch(@NotNull RedisPlayer player) {
-        // No action is needed
-    }
-
-    @Override
-    public void onQuit(@NotNull RedisPlayer player) {
-        // No action is needed
-    }
-
-    @Override
     public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {
         out.writeUTF(player.getProperty(TabConstants.Property.TABPREFIX).get() +
                 player.getProperty(TabConstants.Property.CUSTOMTABNAME).get() +
