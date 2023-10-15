@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -145,6 +146,6 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      */
     @NotNull
     private Component adventure(@NotNull String text) {
-        return player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion());
+        return AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion());
     }
 }

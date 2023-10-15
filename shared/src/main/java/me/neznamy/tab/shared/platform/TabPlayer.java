@@ -21,7 +21,7 @@ import java.util.*;
 public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Platform reference */
-    protected final Platform<?> platform;
+    protected final Platform platform;
 
     /** Platform-specific player object instance */
     @Setter protected Object player;
@@ -86,7 +86,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @param   useRealId
      *          Whether tablist uses real uuid or offline
      */
-    protected TabPlayer(@NotNull Platform<?> platform, @NotNull Object player, @NotNull UUID uniqueId, @NotNull String name,
+    protected TabPlayer(@NotNull Platform platform, @NotNull Object player, @NotNull UUID uniqueId, @NotNull String name,
                         @NotNull String server, @NotNull String world, int protocolVersion, boolean useRealId) {
         this.platform = platform;
         this.player = player;
@@ -345,5 +345,5 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  Server platform
      */
-    public abstract Platform<?> getPlatform();
+    public abstract Platform getPlatform();
 }

@@ -25,7 +25,7 @@ import java.io.File;
 /**
  * Platform implementation for Fabric
  */
-public record FabricPlatform(MinecraftServer server) implements BackendPlatform<Component> {
+public record FabricPlatform(MinecraftServer server) implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -106,7 +106,15 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform<
         return FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile();
     }
 
-    @Override
+    /**
+     * Converts internal component class to platform's component class
+     *
+     * @param   component
+     *          Component to convert
+     * @param   version
+     *          Game version to convert component for
+     * @return  Converted component
+     */
     public Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
         return Component.Serializer.fromJson(component.toString(version));
     }

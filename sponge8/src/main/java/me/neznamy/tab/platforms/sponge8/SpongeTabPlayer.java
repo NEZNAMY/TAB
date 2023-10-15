@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.entityview.DummyEntityView;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -53,7 +54,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(getPlatform().toComponent(message, getVersion()));
+        getPlayer().sendMessage(AdventureHook.toAdventureComponent(message, getVersion()));
     }
 
     @Override

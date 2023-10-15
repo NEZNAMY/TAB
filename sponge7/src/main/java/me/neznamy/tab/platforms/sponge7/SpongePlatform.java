@@ -26,7 +26,7 @@ import java.io.File;
  * Platform implementation for Sponge 7 and lower
  */
 @RequiredArgsConstructor
-public class SpongePlatform implements BackendPlatform<Text> {
+public class SpongePlatform implements BackendPlatform {
 
     /** Plugin reference */
     @NotNull
@@ -113,11 +113,6 @@ public class SpongePlatform implements BackendPlatform<Text> {
     @NotNull
     public File getDataFolder() {
         return plugin.getConfigDir();
-    }
-
-    @Override
-    public Text toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
-        return Text.of(component.toLegacyText());
     }
 
     @Override

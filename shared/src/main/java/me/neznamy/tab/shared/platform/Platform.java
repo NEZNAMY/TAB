@@ -18,7 +18,7 @@ import java.io.File;
  * An interface with methods that are called in universal code,
  * but require platform-specific API calls
  */
-public interface Platform<T> {
+public interface Platform {
 
     /**
      * Detects permission plugin and returns its representing object
@@ -144,15 +144,4 @@ public interface Platform<T> {
      * @return  plugin's data folder
      */
     File getDataFolder();
-
-    /**
-     * Converts internal component class to platform's component class
-     *
-     * @param   component
-     *          Component to convert
-     * @param   version
-     *          Game version to convert component for
-     * @return  Converted component
-     */
-    T toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version);
 }

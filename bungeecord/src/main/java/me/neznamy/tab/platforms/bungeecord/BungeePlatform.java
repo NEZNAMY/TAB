@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -14,7 +13,6 @@ import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
@@ -27,7 +25,7 @@ import java.io.File;
  * BungeeCord implementation of Platform
  */
 @AllArgsConstructor
-public class BungeePlatform extends ProxyPlatform<BaseComponent> {
+public class BungeePlatform extends ProxyPlatform {
 
     @NotNull
     private final BungeeTAB plugin;
@@ -86,11 +84,6 @@ public class BungeePlatform extends ProxyPlatform<BaseComponent> {
     @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder();
-    }
-
-    @Override
-    public BaseComponent toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
-        throw new UnsupportedOperationException("Not used on this platform");
     }
 
     @Override

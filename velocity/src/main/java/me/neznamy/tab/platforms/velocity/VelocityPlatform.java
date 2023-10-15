@@ -7,17 +7,14 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.kyori.adventure.text.Component;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +25,7 @@ import java.io.File;
  * Velocity implementation of Platform
  */
 @RequiredArgsConstructor
-public class VelocityPlatform extends ProxyPlatform<Component> {
+public class VelocityPlatform extends ProxyPlatform {
 
     @NotNull
     private final VelocityTAB plugin;
@@ -92,11 +89,6 @@ public class VelocityPlatform extends ProxyPlatform<Component> {
     @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder().toFile();
-    }
-
-    @Override
-    public Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
-        return AdventureHook.toAdventureComponent(component, version);
     }
 
     @Override

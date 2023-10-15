@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.*;
+import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -175,7 +176,7 @@ public class DataWatcher implements EntityData {
     public void setCustomName(@NotNull String customName, @NotNull ProtocolVersion clientVersion) {
         if (BukkitReflection.getMinorVersion() >= 13) {
             setValue(2, DataWatcherSerializer_OPTIONAL_COMPONENT,
-                    Optional.of(TAB.getInstance().getPlatform().toComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
+                    Optional.of(((BukkitPlatform)TAB.getInstance().getPlatform()).toComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
         } else if (BukkitReflection.getMinorVersion() >= 8) {
             setValue(2, DataWatcherSerializer_STRING, customName);
         } else {

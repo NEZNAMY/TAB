@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,7 @@ public class SpongeTabList implements TabList {
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         player.getPlayer().tabList().entry(entry).ifPresent(e -> {
-            Component component = displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion());
+            Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
             e.setDisplayName(component);
             expectedDisplayNames.put(e, component);
         });
@@ -60,7 +61,7 @@ public class SpongeTabList implements TabList {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        Component displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
+        Component displayName = entry.getDisplayName() == null ? null : AdventureHook.toAdventureComponent(entry.getDisplayName(), player.getVersion());
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile = profile.withProperty(ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
@@ -78,8 +79,8 @@ public class SpongeTabList implements TabList {
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().tabList().setHeaderAndFooter(
-                player.getPlatform().toComponent(header, player.getVersion()),
-                player.getPlatform().toComponent(footer, player.getVersion())
+                AdventureHook.toAdventureComponent(header, player.getVersion()),
+                AdventureHook.toAdventureComponent(footer, player.getVersion())
         );
     }
 

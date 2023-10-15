@@ -42,7 +42,7 @@ public class SpongeTabList implements TabList {
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> {
-            Text component = displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion());
+            Text component = displayName == null ? null : Text.of(displayName.toLegacyText());
             e.setDisplayName(component);
             expectedDisplayNames.put(e, component);
         });
@@ -60,7 +60,7 @@ public class SpongeTabList implements TabList {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        Text displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
+        Text displayName = entry.getDisplayName() == null ? null : Text.of(entry.getDisplayName().toLegacyText());
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile.getPropertyMap().put(TEXTURES_PROPERTY, ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
@@ -78,8 +78,8 @@ public class SpongeTabList implements TabList {
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().getTabList().setHeaderAndFooter(
-                player.getPlatform().toComponent(header, player.getVersion()),
-                player.getPlatform().toComponent(footer, player.getVersion())
+                Text.of(header.toLegacyText()),
+                Text.of(footer.toLegacyText())
         );
     }
 

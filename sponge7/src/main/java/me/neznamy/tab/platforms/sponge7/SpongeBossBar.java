@@ -1,12 +1,12 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.boss.*;
+import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class SpongeBossBar implements BossBar {
     @Override
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         ServerBossBar bar = ServerBossBar.builder()
-                .name(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()))
+                .name(Text.of(title))
                 .color(colors[color.ordinal()])
                 .overlay(styles[style.ordinal()])
                 .percent(progress)
@@ -56,7 +56,7 @@ public class SpongeBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
-        bossBars.get(id).setName(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()));
+        bossBars.get(id).setName(Text.of(title));
     }
 
     @Override

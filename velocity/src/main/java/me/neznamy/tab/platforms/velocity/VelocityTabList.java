@@ -5,6 +5,7 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +40,7 @@ public class VelocityTabList implements TabList {
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         getEntry(entry).ifPresent(e -> {
             if (player.getVersion().getMinorVersion() >= 8) {
-                Component component = displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion());
+                Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
                 e.setDisplayName(component);
                 expectedDisplayNames.put(e, component);
             } else {
@@ -63,7 +64,7 @@ public class VelocityTabList implements TabList {
     @Override
     public void addEntry(@NotNull Entry entry) {
         if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
-        Component displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
+        Component displayName = entry.getDisplayName() == null ? null : AdventureHook.toAdventureComponent(entry.getDisplayName(), player.getVersion());
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(new GameProfile(
@@ -83,8 +84,8 @@ public class VelocityTabList implements TabList {
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().sendPlayerListHeaderAndFooter(
-                player.getPlatform().toComponent(header, player.getVersion()),
-                player.getPlatform().toComponent(footer, player.getVersion())
+                AdventureHook.toAdventureComponent(header, player.getVersion()),
+                AdventureHook.toAdventureComponent(footer, player.getVersion())
         );
     }
 
