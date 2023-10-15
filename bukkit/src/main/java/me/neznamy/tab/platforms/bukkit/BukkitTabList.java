@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -33,10 +34,6 @@ import java.util.*;
 public class BukkitTabList implements TabList {
 
     // NMS Fields
-    private static Class<?> HeaderFooterClass;
-    private static Constructor<?> newHeaderFooter;
-    private static Field HEADER;
-    private static Field FOOTER;
 
     public static Class<?> PlayerInfoClass;
     private static Constructor<?> newPlayerInfo;
@@ -76,7 +73,6 @@ public class BukkitTabList implements TabList {
             IChatBaseComponent = Class.forName("net.minecraft.network.chat.Component");
             EntityPlayer = Class.forName("net.minecraft.server.level.ServerPlayer");
             EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.GameType");
-            HeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.ClientboundTabListPacket");
             if (BukkitReflection.is1_19_3Plus()) {
                 ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
                 PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
@@ -92,7 +88,6 @@ public class BukkitTabList implements TabList {
             IChatBaseComponent = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
             EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
             EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.EnumGamemode");
-            HeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
             if (BukkitReflection.is1_19_3Plus()) {
                 ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
                 PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
@@ -107,23 +102,12 @@ public class BukkitTabList implements TabList {
         } else {
             IChatBaseComponent = BukkitReflection.getLegacyClass("IChatBaseComponent");
             EntityPlayer = BukkitReflection.getLegacyClass("EntityPlayer");
-            HeaderFooterClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
             PlayerInfoClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo");
             ActionClass = (Class<Enum>) BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
             playerInfoDataClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
             EnumGamemodeClass = (Class<Enum>) BukkitReflection.getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
         }
 
-        // Header & Footer
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            newHeaderFooter = HeaderFooterClass.getConstructor(IChatBaseComponent, IChatBaseComponent);
-        } else {
-            newHeaderFooter = HeaderFooterClass.getConstructor();
-            HEADER = ReflectionUtils.getFields(HeaderFooterClass, IChatBaseComponent).get(0);
-            FOOTER = ReflectionUtils.getFields(HeaderFooterClass, IChatBaseComponent).get(1);
-        }
-
-        // Info packet
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         newPlayerInfoData = playerInfoDataClass.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
         PlayerInfoData_Profile = ReflectionUtils.getOnlyField(playerInfoDataClass, GameProfile.class);
@@ -190,15 +174,7 @@ public class BukkitTabList implements TabList {
     @Override
     @SneakyThrows
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        if (HeaderFooterClass == null) return;
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            player.sendPacket(newHeaderFooter.newInstance(toComponent(header), toComponent(footer)));
-        } else {
-            Object packet = newHeaderFooter.newInstance();
-            HEADER.set(packet, toComponent(header));
-            FOOTER.set(packet, toComponent(footer));
-            player.sendPacket(packet);
-        }
+        if (HeaderFooter.getInstance() != null) HeaderFooter.getInstance().set(player, header, footer);
     }
 
     @SneakyThrows
