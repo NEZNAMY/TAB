@@ -102,8 +102,8 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
 
     @Override
     public void onQuit(@NotNull TabPlayer p) {
-        playerViews.values().forEach(v -> v.processPlayerQuit(p));
         playerViews.remove(p);
+        playerViews.values().forEach(v -> v.processPlayerQuit(p));
     }
 
     @Override
