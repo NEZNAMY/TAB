@@ -23,6 +23,8 @@ import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,7 +74,8 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean hasPermission(@NotNull String permission) {
+    public boolean hasPermission(@NotNull String permissionString) {
+        Permission permission = new Permission(permissionString, PermissionDefault.FALSE);
         return getPlayer().hasPermission(permission);
     }
 
