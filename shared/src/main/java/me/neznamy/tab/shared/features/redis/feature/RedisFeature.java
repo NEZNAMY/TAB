@@ -23,4 +23,6 @@ public abstract class RedisFeature {
     public abstract void read(@NotNull ByteArrayDataInput in, @NotNull RedisPlayer player);
 
     public void onLoginPacket(@NotNull TabPlayer player) {/* Do nothing by default */}
+
+    public void onVanishStatusChange(@NotNull RedisPlayer player) {/* Do nothing by default */}
 }

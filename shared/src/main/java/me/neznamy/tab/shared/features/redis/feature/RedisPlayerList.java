@@ -66,6 +66,15 @@ public class RedisPlayerList extends RedisFeature {
         return values.get(player);
     }
 
+    @Override
+    public void onVanishStatusChange(@NotNull RedisPlayer player) {
+        if (player.isVanished()) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getVersion().getMinorVersion() < 8) continue;
+            viewer.getTabList().updateDisplayName(player.getUniqueId(), IChatBaseComponent.optimizedComponent(getFormat(player)));
+        }
+    }
+
     @NoArgsConstructor
     @AllArgsConstructor
     public class Update extends RedisMessage {

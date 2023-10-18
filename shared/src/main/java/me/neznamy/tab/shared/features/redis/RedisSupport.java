@@ -29,7 +29,8 @@ import java.util.function.Supplier;
 @SuppressWarnings("UnstableApiUsage")
 @Getter
 public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener,
-        DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener, LoginPacketListener {
+        DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener, LoginPacketListener,
+        VanishListener {
 
     @NotNull private final String featureName = "RedisSupport";
 
@@ -56,6 +57,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         registerMessage("join", PlayerJoin.class, PlayerJoin::new);
         registerMessage("quit", PlayerQuit.class, PlayerQuit::new);
         registerMessage("server", ServerSwitch.class, ServerSwitch::new);
+        registerMessage("vanish", UpdateVanishStatus.class, UpdateVanishStatus::new);
     }
 
     public void updateTabFormat(@NotNull TabPlayer p, @NotNull String format) {
@@ -211,5 +213,10 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @Override
     public void onLoginPacket(TabPlayer player) {
         features.forEach(f -> f.onLoginPacket(player));
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        sendMessage(new UpdateVanishStatus(player.getUniqueId(), player.isVanished()));
     }
 }
