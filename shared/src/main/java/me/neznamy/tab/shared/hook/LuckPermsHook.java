@@ -2,14 +2,22 @@ package me.neznamy.tab.shared.hook;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -28,6 +36,30 @@ public class LuckPermsHook {
     @Getter private final Function<TabPlayer, String> groupFunction = p -> {
         User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
         if (user == null) return TabConstants.NO_GROUP;
+
+        try {
+            File folder = TAB.getInstance().getDataFolder();
+            ConfigurationFile groups = null;
+            groups = new YamlConfigurationFile(null, new File(folder, "groups.yml"));
+            Collection<Group> inheritedGroups = user.getInheritedGroups(user.getQueryOptions());
+            for (Group group : inheritedGroups) {
+                for (Object groupName : groups.getConfigurationSection("custom-groups").keySet()) {
+                    if (!groupName.toString().equalsIgnoreCase(group.getName()))
+                        continue;
+                    String[] serverList = groups.getString("custom-groups." + groupName).toLowerCase().split(",");
+                    if (Arrays.toString(serverList).contains("global")) {
+                        return groupName.toString();
+                    }
+                    for (String server : serverList) {
+                        if (server.equalsIgnoreCase(p.getServer())) {
+                            return groupName.toString();
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return user.getPrimaryGroup();
     };
 

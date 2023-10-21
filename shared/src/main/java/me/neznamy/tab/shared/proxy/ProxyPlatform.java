@@ -48,9 +48,17 @@ public abstract class ProxyPlatform implements Platform {
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         //internal dynamic %online_<server>% placeholder
         if (identifier.startsWith("%online_")) {
-            String server = identifier.substring(8, identifier.length()-1);
-            pl.registerServerPlaceholder(identifier, 1000, () ->
-                    Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count());
+            String server;
+            String id = identifier.substring(8, identifier.length() - 1);
+            if (id.endsWith("*")) {
+                server = id.substring(0, id.length() - 1);
+                pl.registerServerPlaceholder(identifier, 1000, () ->
+                        Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().toLowerCase().startsWith(server.toLowerCase()) && !p.isVanished()).count());
+            } else {
+                server = id;
+                pl.registerServerPlaceholder(identifier, 1000, () ->
+                        Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equalsIgnoreCase(server) && !p.isVanished()).count());
+            }
             return;
         }
         Placeholder placeholder;
