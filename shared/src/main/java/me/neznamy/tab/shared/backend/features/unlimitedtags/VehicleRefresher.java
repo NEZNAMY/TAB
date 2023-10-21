@@ -2,12 +2,12 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +28,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     @Getter private final String refreshDisplayName = "Refreshing vehicles";
 
     /** Map of players currently in a vehicle */
-    private final WeakHashMap<TabPlayer, Object> playersInVehicle = new WeakHashMap<>();
+    private final HashMap<TabPlayer, Object> playersInVehicle = new HashMap<>();
 
     /** Map of vehicles carrying players */
     @Getter
@@ -43,23 +43,26 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     @Override
     public void load() {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
-                this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
+                featureName, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
                     for (TabPlayer inVehicle : playersInVehicle.keySet()) {
-                        if (!inVehicle.isOnline() || feature.getArmorStandManager(inVehicle) == null) continue; // not removed from WeakHashMap yet
                         feature.getArmorStandManager(inVehicle).teleport();
                     }
-                    for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
-                        if (feature.isPreviewingNametag(p)) {
+                    for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                        if (feature.isPreviewingNameTag(p)) {
                             feature.getArmorStandManager(p).teleport((BackendTabPlayer) p);
                         }
                     }
                 });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VEHICLE));
-        feature.registerVehiclePlaceholder();
-        for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> {
+            Object v = feature.getVehicle((TabPlayer) p);
+            //There's a bug in Bukkit 1.19.3 throwing NPE on .toString(), use default toString implementation
+            return v == null ? "" : v.getClass().getName() + "@" + Integer.toHexString(v.hashCode());
+        });
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             Object vehicle = feature.getVehicle(p);
             if (vehicle != null) {
-                vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
+                updateVehicle(vehicle);
                 playersInVehicle.put(p, vehicle);
                 if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
                     playersOnBoats.add(p);
@@ -69,21 +72,21 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         Object vehicle = feature.getVehicle(connectedPlayer);
-        if (vehicle != null) vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
+        if (vehicle != null) updateVehicle(vehicle);
     }
 
     @Override
-    public void onQuit(TabPlayer disconnectedPlayer) {
-        if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(feature.getEntityId(playersInVehicle.get(disconnectedPlayer)));
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
+        if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(feature.getEntityId(playersInVehicle.remove(disconnectedPlayer)));
         for (List<Integer> entities : vehicles.values()) {
             entities.remove((Integer)feature.getEntityId(disconnectedPlayer));
         }
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
+    public void refresh(@NotNull TabPlayer p, boolean force) {
         if (feature.isPlayerDisabled(p)) return;
         Object vehicle = feature.getVehicle(p);
         if (playersInVehicle.containsKey(p) && vehicle == null) {
@@ -95,16 +98,18 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                 playersOnBoats.remove(p);
                 feature.updateTeamData(p);
             }
+            feature.getArmorStandManager(p).updateVisibility(true);
         }
         if (!playersInVehicle.containsKey(p) && vehicle != null) {
             //vehicle enter
-            vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
+            updateVehicle(vehicle);
             feature.getArmorStandManager(p).respawn(); //making teleport instant instead of showing teleport animation
             playersInVehicle.put(p, vehicle);
             if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
                 playersOnBoats.add(p);
                 feature.updateTeamData(p);
             }
+            feature.getArmorStandManager(p).updateVisibility(true);
         }
     }
 
@@ -115,7 +120,11 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
      *          Player to check
      * @return  {@code true} if in a boat, {@code false} if not
      */
-    public boolean isOnBoat(TabPlayer p) {
+    public boolean isOnBoat(@NotNull TabPlayer p) {
         return playersOnBoats.contains(p);
+    }
+
+    private void updateVehicle(Object vehicle) {
+        feature.runInEntityScheduler(vehicle, () -> vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle)));
     }
 }

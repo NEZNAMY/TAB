@@ -1,69 +1,128 @@
 package me.neznamy.tab.platforms.sponge8;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.platforms.sponge8.features.PetFix;
-import me.neznamy.tab.platforms.sponge8.features.unlimitedtags.SpongeNameTagX;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bstats.charts.SimplePie;
+import org.bstats.sponge.Metrics;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
+import java.io.File;
+
+/**
+ * Platform implementation for Sponge 8 and up
+ */
 @RequiredArgsConstructor
-public final class SpongePlatform extends BackendPlatform {
+public class SpongePlatform implements BackendPlatform {
 
+    /** Main class reference */
+    @NotNull
     private final Sponge8TAB plugin;
-    @Getter private final PipelineInjector pipelineInjector = new SpongePipelineInjector();
-    @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
-    @Getter private final TabFeature perWorldPlayerlist = null;
 
     @Override
-    public String getPluginVersion(String plugin) {
-        return Sponge.pluginManager().plugin(plugin.toLowerCase()).map(container -> container.metadata().version().toString()).orElse(null);
-    }
-
-    @Override
-    public void registerUnknownPlaceholder(String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 
     @Override
     public void loadPlayers() {
         for (ServerPlayer player : Sponge.server().onlinePlayers()) {
-            TAB.getInstance().addPlayer(new SpongeTabPlayer(player));
+            TAB.getInstance().addPlayer(new SpongeTabPlayer(this, player));
         }
     }
 
     @Override
-    public void registerPlaceholders() {
-        new SpongePlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
+    @Nullable
+    public PipelineInjector createPipelineInjector() {
+        return null;
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
-        return new SpongeNameTagX(plugin);
+    @NotNull
+    public NameTag getUnlimitedNameTags() {
+        return new NameTag();
     }
 
     @Override
-    public TabFeature getPetFix() {
-        return new PetFix();
+    @NotNull
+    public TabExpansion createTabExpansion() {
+        return new EmptyTabExpansion();
     }
 
     @Override
-    public void sendConsoleMessage(String message, boolean translateColors) {
-        if (translateColors) message = EnumChatFormat.color(message);
-        final Component actualMessage = Component.text()
-                .append(Component.text("[TAB] "))
-                .append(LegacyComponentSerializer.legacySection().deserialize(message))
-                .build();
-        Sponge.systemSubject().sendMessage(actualMessage);
+    @Nullable
+    public TabFeature getPerWorldPlayerList() {
+        return null;
+    }
+
+    @Override
+    public void logInfo(@NotNull IChatBaseComponent message) {
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(
+                AdventureHook.toAdventureComponent(message, TAB.getInstance().getServerVersion())));
+    }
+
+    @Override
+    public void logWarn(@NotNull IChatBaseComponent message) {
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(
+                AdventureHook.toAdventureComponent(message, TAB.getInstance().getServerVersion()))); // Sponge console does not support colors
+    }
+
+    @Override
+    @NotNull
+    public String getServerVersionInfo() {
+        return "[Sponge] " + Sponge.platform().minecraftVersion().name();
+    }
+
+    @Override
+    public void registerListener() {
+        Sponge.game().eventManager().registerListeners(plugin.getContainer(), new SpongeEventListener());
+    }
+
+    @Override
+    public void registerCommand() {
+        // Must be registered in main class event listener
+    }
+
+    @Override
+    public void startMetrics() {
+        Metrics metrics = plugin.getMetricsFactory().make(17732);
+        metrics.startup(null);
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
+                () -> TAB.getInstance().getServerVersion().getFriendlyName()));
+    }
+
+    @Override
+    @NotNull
+    public ProtocolVersion getServerVersion() {
+        return ProtocolVersion.fromFriendlyName(Sponge.game().platform().minecraftVersion().name());
+    }
+
+    @Override
+    @NotNull
+    public File getDataFolder() {
+        return plugin.getConfigDir().toFile();
+    }
+
+    @Override
+    public double getTPS() {
+        return Sponge.server().ticksPerSecond();
+    }
+
+    @Override
+    public double getMSPT() {
+        return Sponge.server().averageTickTime();
     }
 }

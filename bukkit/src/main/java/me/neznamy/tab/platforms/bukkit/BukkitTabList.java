@@ -1,14 +1,23 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import lombok.NonNull;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.TabListEntry;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
-import me.neznamy.tab.shared.tablist.BulkUpdateTabList;
+import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabList.Entry.Builder;
+import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * TabList which support modifying many entries at once
@@ -17,68 +26,207 @@ import java.util.stream.Collectors;
  * we don't need to worry about that here.
  * <p>
  * This class does not support server versions of 1.7 and
- * below, because of the massive differences in tablist
+ * below, because of the massive differences in tab list
  * and packet fields.
  */
 @RequiredArgsConstructor
-public class BukkitTabList extends BulkUpdateTabList {
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class BukkitTabList implements TabList {
+
+    // NMS Fields
+
+    public static Class<?> PlayerInfoClass;
+    private static Constructor<?> newPlayerInfo;
+    public static Field ACTION;
+    public static Field PLAYERS;
+    private static Class<Enum> ActionClass;
+    public static Class<?> ClientboundPlayerInfoRemovePacket;
+    private static Class<?> RemoteChatSession$Data;
+    private static Constructor<?> newClientboundPlayerInfoRemovePacket;
+    private static Class<?> EntityPlayer;
+
+    public static Constructor<?> newPlayerInfoData;
+    public static Field PlayerInfoData_UUID;
+    public static Field PlayerInfoData_Profile;
+    public static Field PlayerInfoData_Latency;
+    public static Field PlayerInfoData_GameMode;
+    public static Field PlayerInfoData_DisplayName;
+    public static Field PlayerInfoData_Listed;
+    public static Field PlayerInfoData_RemoteChatSession;
+
+    private static Object[] gameModes;
+
+    @Getter
+    private static boolean available;
 
     /** Player this TabList belongs to */
     private final BukkitTabPlayer player;
 
-    @Override
-    public void removeEntries(@NonNull Collection<UUID> entries) {
-        if (PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket != null) {
-            //1.19.3+
-            try {
-                player.sendPacket(PacketPlayOutPlayerInfoStorage.newClientboundPlayerInfoRemovePacket.newInstance(new ArrayList<>(entries)));
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
+    public static void load() throws NoSuchMethodException, ClassNotFoundException {
+        if (BukkitReflection.getMinorVersion() < 8) return; // Not supported (yet?)
+
+        // Classes
+        Class<?> playerInfoDataClass;
+        Class<?> IChatBaseComponent;
+        Class<Enum> EnumGamemodeClass;
+        if (BukkitReflection.isMojangMapped()) {
+            IChatBaseComponent = Class.forName("net.minecraft.network.chat.Component");
+            EntityPlayer = Class.forName("net.minecraft.server.level.ServerPlayer");
+            EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.GameType");
+            if (BukkitReflection.is1_19_3Plus()) {
+                ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
+                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action");
+                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Entry");
+                RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$Data");
+            } else {
+                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket");
+                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$Action");
+                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate");
+            }
+        } else if (BukkitReflection.getMinorVersion() >= 17) {
+            IChatBaseComponent = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
+            EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
+            EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.EnumGamemode");
+            if (BukkitReflection.is1_19_3Plus()) {
+                ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
+                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$a");
+                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$b");
+                RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$a");
+            } else {
+                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo");
+                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData");
             }
         } else {
+            IChatBaseComponent = BukkitReflection.getLegacyClass("IChatBaseComponent");
+            EntityPlayer = BukkitReflection.getLegacyClass("EntityPlayer");
+            PlayerInfoClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo");
+            ActionClass = (Class<Enum>) BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+            playerInfoDataClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
+            EnumGamemodeClass = (Class<Enum>) BukkitReflection.getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
+        }
+
+        PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
+        newPlayerInfoData = playerInfoDataClass.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
+        PlayerInfoData_Profile = ReflectionUtils.getOnlyField(playerInfoDataClass, GameProfile.class);
+        PlayerInfoData_Latency = ReflectionUtils.getOnlyField(playerInfoDataClass, int.class);
+        PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
+        PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(playerInfoDataClass, IChatBaseComponent);
+        if (BukkitReflection.is1_19_3Plus()) {
+            newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
+            newPlayerInfo = PlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
+            ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, EnumSet.class);
+            PlayerInfoData_Listed = ReflectionUtils.getOnlyField(playerInfoDataClass, boolean.class);
+            PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
+            PlayerInfoData_UUID = ReflectionUtils.getOnlyField(playerInfoDataClass, UUID.class);
+        } else {
+            newPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, Array.newInstance(EntityPlayer, 0).getClass());
+            ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
+        }
+        gameModes = new Object[] {
+                Enum.valueOf(EnumGamemodeClass, "SURVIVAL"),
+                Enum.valueOf(EnumGamemodeClass, "CREATIVE"),
+                Enum.valueOf(EnumGamemodeClass, "ADVENTURE"),
+                Enum.valueOf(EnumGamemodeClass, "SPECTATOR")
+        };
+        available = true;
+    }
+
+    @Override
+    @SneakyThrows
+    public void removeEntry(@NotNull UUID entry) {
+        if (!available) return;
+        if (ClientboundPlayerInfoRemovePacket != null) {
+            //1.19.3+
+            player.sendPacket(newClientboundPlayerInfoRemovePacket.newInstance(Collections.singletonList(entry)));
+        } else {
             //1.19.2-
-            player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("REMOVE_PLAYER",
-                    entries.stream().map(id ->
-                            new TabListEntry.Builder(id).build()).collect(Collectors.toList()),
-                    player.getVersion())
-            );
+            player.sendPacket(createPacket(Action.REMOVE_PLAYER, new Builder(entry).build()));
         }
     }
 
     @Override
-    public void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_DISPLAY_NAME",
-                entries.entrySet().stream().map(entry ->
-                        new TabListEntry.Builder(entry.getKey()).displayName(entry.getValue()).build()).collect(Collectors.toList()),
-                player.getVersion())
-        );
+    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+        if (!available) return;
+        player.sendPacket(createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
     }
 
     @Override
-    public void updateLatencies(@NonNull Map<UUID, Integer> entries) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_LATENCY",
-                entries.entrySet().stream().map(entry ->
-                        new TabListEntry.Builder(entry.getKey()).latency(entry.getValue()).build()).collect(Collectors.toList()),
-                player.getVersion())
-        );
+    public void updateLatency(@NotNull UUID entry, int latency) {
+        if (!available) return;
+        player.sendPacket(createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
     }
 
     @Override
-    public void updateGameModes(@NonNull Map<UUID, Integer> entries) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_GAME_MODE",
-                entries.entrySet().stream().map(entry ->
-                        new TabListEntry.Builder(entry.getKey()).gameMode(entry.getValue()).build()).collect(Collectors.toList()),
-                player.getVersion())
-        );
+    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+        if (!available) return;
+        player.sendPacket(createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
     }
 
     @Override
-    public void addEntries(@NonNull Collection<TabListEntry> entries) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER",
-                entries.stream().map(entry ->
-                        new TabListEntry(entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(),
-                                entry.getLatency(), entry.getGameMode(), entry.getDisplayName(), entry.getChatSession())).collect(Collectors.toList()),
-                player.getVersion())
-        );
+    public void addEntry(@NotNull Entry entry) {
+        if (!available) return;
+        player.sendPacket(createPacket(Action.ADD_PLAYER, entry));
+    }
+
+    @Override
+    @SneakyThrows
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+        if (HeaderFooter.getInstance() != null) HeaderFooter.getInstance().set(player, header, footer);
+    }
+
+    @SneakyThrows
+    @NotNull
+    private Object createPacket(@NotNull Action action, @NotNull Entry entry) {
+        Object packet;
+        List<Object> players = new ArrayList<>();
+        if (BukkitReflection.is1_19_3Plus()) {
+            EnumSet<?> actions;
+            if (action == Action.ADD_PLAYER) {
+                actions = EnumSet.allOf(ActionClass);
+            } else {
+                actions = EnumSet.of(Enum.valueOf(ActionClass, action.name()));
+            }
+            packet = newPlayerInfo.newInstance(actions, Collections.emptyList());
+            players.add(newPlayerInfoData.newInstance(
+                    entry.getUniqueId(),
+                    createProfile(entry.getUniqueId(), entry.getName(), entry.getSkin()),
+                    true,
+                    entry.getLatency(),
+                    gameModes[entry.getGameMode()],
+                    entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName()),
+                    null
+            ));
+        } else {
+            packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Array.newInstance(EntityPlayer, 0));
+            List<Object> parameters = new ArrayList<>();
+            if (newPlayerInfoData.getParameterTypes()[0] == PlayerInfoClass) {
+                parameters.add(packet);
+            }
+            parameters.add(createProfile(entry.getUniqueId(), entry.getName(), entry.getSkin()));
+            parameters.add(entry.getLatency());
+            parameters.add(gameModes[entry.getGameMode()]);
+            parameters.add(entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName()));
+            if (BukkitReflection.getMinorVersion() >= 19) parameters.add(null);
+            players.add(newPlayerInfoData.newInstance(parameters.toArray()));
+        }
+        PLAYERS.set(packet, players);
+        return packet;
+    }
+
+    private Object toComponent(IChatBaseComponent component) {
+        return player.getPlatform().toComponent(component, player.getVersion());
+    }
+
+    @NotNull
+    private GameProfile createProfile(@NotNull UUID id, @Nullable String name, @Nullable Skin skin) {
+        GameProfile profile = new GameProfile(id, name == null ? "" : name);
+        if (skin != null) {
+            profile.getProperties().put(TabList.TEXTURES_PROPERTY,
+                    new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
+        }
+        return profile;
     }
 }

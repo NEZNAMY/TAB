@@ -6,15 +6,16 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
 public class Texture extends SkinSource {
@@ -24,7 +25,7 @@ public class Texture extends SkinSource {
     }
 
     @Override
-    public List<String> download(String texture) {
+    public @NotNull List<String> download(@NotNull String texture) {
         try {
             URL url = new URL("https://api.mineskin.org/generate/url/");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -47,7 +48,7 @@ public class Texture extends SkinSource {
             return Arrays.asList(value, signature);
         } catch (IOException | ParseException e) {
             TAB.getInstance().getErrorManager().printError("Failed to load skin by texture: " + e.getMessage(), e);
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 }

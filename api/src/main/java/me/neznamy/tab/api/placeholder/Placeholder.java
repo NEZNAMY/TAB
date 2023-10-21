@@ -1,14 +1,23 @@
 package me.neznamy.tab.api.placeholder;
 
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * An interface representing some kind of placeholder
+ */
 public interface Placeholder {
 
+    /**
+     * Returns refresh interval of this placeholder
+     *
+     * @return  refresh interval of this placeholder
+     */
     int getRefresh();
 
-    String getIdentifier();
-
-    void enableTriggerMode(Runnable onActivation, Runnable onDisable);
-
-    void unload();
-
-    boolean isUsed();
+    /**
+     * Returns placeholder's identifier
+     *
+     * @return  placeholder's identifier
+     */
+    @NotNull String getIdentifier();
 }

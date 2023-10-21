@@ -33,7 +33,6 @@ hs_err_pid*
 .idea/
 
 # other
-.gitattributes
 *.iml
 run/
 

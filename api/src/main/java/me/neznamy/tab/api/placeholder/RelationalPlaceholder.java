@@ -1,33 +1,34 @@
 package me.neznamy.tab.api.placeholder;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 
+/**
+ * An interface for relational placeholders (returning different value for each player duo)
+ */
 public interface RelationalPlaceholder extends Placeholder {
 
-    void updateValue(TabPlayer viewer, TabPlayer target, Object value);
-
     /**
-     * Calls the placeholder request function and returns the output.
-     * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
-     * file and "ERROR" is returned.
+     * Force-updates placeholder value. It will still be overridden by periodic refresh later,
+     * so this is (only) useful for force an update when value is supposed to change, and you have
+     * a high refresh interval set.
      *
      * @param   viewer
-     *          player looking at output of the placeholder
+     *          Placeholder viewer
      * @param   target
-     *          player the placeholder is displayed on
-     * @return  value placeholder returned or "ERROR" if it threw an error
+     *          Placeholder target
+     * @param   value
+     *          New value
      */
-    Object request(TabPlayer viewer, TabPlayer target);
+    void updateValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target, @NonNull Object value);
 
     /**
-     * Returns last known value for given players. First player is viewer,
-     * second player is target.
+     * Force-updates placeholder value using previously provided update function.
      *
      * @param   viewer
-     *          viewer of the placeholder
+     *          Placeholder viewer
      * @param   target
-     *          target who is the text displayed on
-     * @return  last known value for entered player duo
+     *          Placeholder target
      */
-    String getLastValue(TabPlayer viewer, TabPlayer target);
+    void update(@NonNull TabPlayer viewer, @NonNull TabPlayer target);
 }

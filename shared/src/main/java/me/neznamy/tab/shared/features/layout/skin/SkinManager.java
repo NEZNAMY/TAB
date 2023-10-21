@@ -9,18 +9,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import me.neznamy.tab.api.config.ConfigurationFile;
-import me.neznamy.tab.api.config.YamlConfigurationFile;
-import me.neznamy.tab.api.tablist.Skin;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.platform.TabList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SkinManager {
 
     private final List<String> invalidSkins = new ArrayList<>();
-    @Getter private Skin defaultSkin;
+    @Getter private TabList.Skin defaultSkin;
+    private final Map<Integer, TabList.Skin> defaultSkinHashMap = new HashMap<>();
     private final Map<String, SkinSource> sources = new HashMap<>();
 
-    public SkinManager(String defaultSkin) {
+    public TabList.Skin getDefaultSkin(int slot) {
+        return defaultSkinHashMap.getOrDefault(slot, defaultSkin);
+    }
+
+    public SkinManager(@NotNull String defaultSkin, Map<Integer, String> defaultSkinHashMap) {
         try {
             File f = new File(TAB.getInstance().getDataFolder(), "skincache.yml");
             if (f.exists() || f.createNewFile()) {
@@ -29,6 +36,9 @@ public class SkinManager {
                 sources.put("mineskin", new MineSkin(cache));
                 sources.put("texture", new Texture(cache));
                 this.defaultSkin = getSkin(defaultSkin);
+                for ( Map.Entry<Integer, String> entry : defaultSkinHashMap.entrySet()) {
+                    this.defaultSkinHashMap.put(entry.getKey(), getSkin(entry.getValue()));
+                }
             } else {
                 TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", null);
             }
@@ -37,7 +47,7 @@ public class SkinManager {
         }
     }
 
-    public Skin getSkin(String skin) {
+    public @Nullable TabList.Skin getSkin(@NotNull String skin) {
         if (invalidSkins.contains(skin)) return defaultSkin;
         for (Entry<String, SkinSource> entry : sources.entrySet()) {
             if (skin.startsWith(entry.getKey() + ":")) {
@@ -46,10 +56,10 @@ public class SkinManager {
                     invalidSkins.add(skin);
                     return defaultSkin;
                 }
-                return new Skin(value.get(0), value.get(1));
+                return new TabList.Skin(value.get(0), value.get(1));
             }
         }
-        TAB.getInstance().getErrorManager().startupWarn("Invalid skin definition: \"" + skin + "\"");
+        TAB.getInstance().getMisconfigurationHelper().invalidLayoutSkinDefinition(skin);
         return null;
     }
 }

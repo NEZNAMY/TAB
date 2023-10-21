@@ -1,42 +1,43 @@
 package me.neznamy.tab.shared.placeholders.expansion;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 public interface TabExpansion {
 
-    default void setScoreboardVisible(TabPlayer player, boolean visible) {
+    default void setScoreboardVisible(@NotNull TabPlayer player, boolean visible) {
         setValue(player, "scoreboard_visible", visible ? "Enabled" : "Disabled");
     }
 
-    default void setScoreboardName(TabPlayer player, String name) {
+    default void setScoreboardName(@NotNull TabPlayer player, @NotNull String name) {
         setValue(player, "scoreboard_name", name);
     }
 
-    default void setBossBarVisible(TabPlayer player, boolean visible) {
+    default void setBossBarVisible(@NotNull TabPlayer player, boolean visible) {
         setValue(player, "bossbar_visible", visible ? "Enabled" : "Disabled");
     }
 
-    default void setNameTagPreview(TabPlayer player, boolean previewing) {
+    default void setNameTagPreview(@NotNull TabPlayer player, boolean previewing) {
         setValue(player, "nametag_preview", previewing ? "Enabled" : "Disabled");
     }
 
-    default void setNameTagVisibility(TabPlayer player, boolean visible) {
+    default void setNameTagVisibility(@NotNull TabPlayer player, boolean visible) {
         setValue(player, "nametag_visibility", visible ? "Enabled" : "Disabled");
     }
 
-    default void setPlaceholderValue(TabPlayer player, String placeholder, String value) {
+    default void setPlaceholderValue(@NotNull TabPlayer player, @NotNull String placeholder, @NotNull String value) {
         setValue(player, "placeholder_" + placeholder.substring(1, placeholder.length()-1), value);
     }
 
-    default void setPropertyValue(TabPlayer player, String property, String value) {
+    default void setPropertyValue(@NotNull TabPlayer player, @NotNull String property, @NotNull String value) {
         setValue(player, property, value);
     }
 
-    default void setRawPropertyValue(TabPlayer player, String property, String value) {
+    default void setRawPropertyValue(@NotNull TabPlayer player, @NotNull String property, @NotNull String value) {
         setValue(player, property + "_raw", value);
     }
 
-    void setValue(TabPlayer player, String key, String value);
+    void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value);
 
-    boolean unregister();
+    void unregisterExpansion();
 }

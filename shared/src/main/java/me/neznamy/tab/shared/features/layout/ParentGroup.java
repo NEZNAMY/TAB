@@ -3,28 +3,31 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.*;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.tablist.TabListEntry;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ParentGroup {
 
-    private final Layout layout;
-    private final Condition condition;
-    private final int[] slots;
+    @NotNull private final LayoutView layout;
+    @Nullable private final Condition condition;
+    @Getter private final int[] slots;
+    private final TabPlayer viewer;
     @Getter private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
     @Getter final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
-    public ParentGroup(Layout layout, Condition condition, int[] slots) {
+    public ParentGroup(@NotNull LayoutView layout, @NotNull GroupPattern pattern, @NotNull TabPlayer viewer) {
         this.layout = layout;
-        this.condition = condition;
-        this.slots = slots;
+        this.condition = pattern.getCondition();
+        this.slots = pattern.getSlots();
+        this.viewer = viewer;
         for (int slot : slots) {
-            playerSlots.put(slot, new PlayerSlot(layout, layout.getManager().getUUID(slot)));
+            playerSlots.put(slot, new PlayerSlot(slot, layout, layout.getManager().getUUID(slot)));
         }
     }
 
-    public void tick(List<TabPlayer> remainingPlayers) {
+    public void tick(@NotNull List<TabPlayer> remainingPlayers) {
         players.clear();
         List<TabPlayer> meetingCondition = new ArrayList<>();
         for (TabPlayer p : remainingPlayers) {
@@ -47,9 +50,7 @@ public class ParentGroup {
         }
     }
     
-    public List<TabListEntry> getSlots(TabPlayer p) {
-        List<TabListEntry> data = new ArrayList<>();
-        playerSlots.values().forEach(s -> data.add(s.getSlot(p)));
-        return data;
+    public void sendSlots() {
+        playerSlots.values().forEach(s -> viewer.getTabList().addEntry(s.getSlot(viewer)));
     }
 }

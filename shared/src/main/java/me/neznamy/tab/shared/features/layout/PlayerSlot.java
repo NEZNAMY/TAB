@@ -2,72 +2,67 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.TabListEntry;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 @RequiredArgsConstructor
 public class PlayerSlot {
 
-    private final Layout layout;
+    private final int slot;
+    private final LayoutView layout;
     @Getter private final UUID uniqueId;
     @Getter private TabPlayer player;
     private String text = "";
 
-    public void setPlayer(TabPlayer newPlayer) {
+    public void setPlayer(@Nullable TabPlayer newPlayer) {
         if (player == newPlayer) return;
         this.player = newPlayer;
         if (player != null) text = "";
-        for (TabPlayer viewer : layout.getViewers()) {
-            if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) continue;
-            viewer.getTabList().removeEntry(uniqueId);
-            viewer.getTabList().addEntry(getSlot(viewer));
-        }
+        if (layout.getViewer().getVersion().getMinorVersion() < 8 || layout.getViewer().isBedrockPlayer()) return;
+        layout.getViewer().getTabList().removeEntry(uniqueId);
+        layout.getViewer().getTabList().addEntry(getSlot(layout.getViewer()));
     }
 
-    public TabListEntry getSlot(TabPlayer p) {
-        TabListEntry data;
+    public @NotNull TabList.Entry getSlot(@NotNull TabPlayer p) {
+        TabList.Entry data;
         TabPlayer player = this.player; //avoiding NPE from concurrent access
         if (player != null) {
             PlayerList playerList = layout.getManager().getPlayerList();
-            data = new TabListEntry(
+            data = new TabList.Entry(
                     uniqueId,
-                    layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
+                    layout.getManager().getDirection().getEntryName(p, slot),
                     player.getSkin(),
-                    true,
                     player.getPing(),
                     0,
-                    playerList == null ? new IChatBaseComponent(player.getName()) : playerList.getTabFormat(player, p),
-                    null
+                    playerList == null ? new IChatBaseComponent(player.getName()) : playerList.getTabFormat(player, p)
             );
         } else {
-            data = new TabListEntry(
+            data = new TabList.Entry(
                     uniqueId,
-                    layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
-                    layout.getManager().getSkinManager().getDefaultSkin(),
-                    true,
+                    layout.getManager().getDirection().getEntryName(p, slot),
+                    layout.getManager().getSkinManager().getDefaultSkin(slot),
                     layout.getManager().getEmptySlotPing(),
                     0,
-                    new IChatBaseComponent(text),
-                    null
+                    new IChatBaseComponent(text)
             );
         }
         return data;
     }
 
-    public void setText(String text) {
+    public void setText(@NotNull String text) {
         if (this.text.equals(text) && player == null) return;
         this.text = text;
         if (player != null) {
             setPlayer(null);
         } else {
-            for (TabPlayer all : layout.getViewers()) {
-                if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
-                all.getTabList().updateDisplayName(uniqueId, IChatBaseComponent.optimizedComponent(text));
-            }
+            if (layout.getViewer().getVersion().getMinorVersion() < 8 || layout.getViewer().isBedrockPlayer()) return;
+            layout.getViewer().getTabList().updateDisplayName(uniqueId, IChatBaseComponent.optimizedComponent(text));
         }
     }
 }

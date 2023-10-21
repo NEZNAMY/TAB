@@ -6,5 +6,4 @@ is in quality of the report (typically providing correct steps to reproduce that
 * Test **experimental builds**, which can be found in [GitHub Actions](https://github.com/NEZNAMY/TAB/actions) for problems of any kind including bugs. 
 This way you will help make the actual releases more stable / help get stable releases sooner.
 * Help improve the wiki by opening a [Wiki change issue](https://github.com/NEZNAMY/TAB/issues/new?assignees=&labels=Wiki&template=wiki_change.yml), 
-where you can improve existing descriptions, add information you found missing, fix typos / grammar mistakes or add more examples of usage of functions.
-* [Buy a copy](https://builtbybit.com/resources/14009/) of the plugin or [send a donation](https://paypal.me/neznamy1) to keep the plugin active.
+where you can improve existing descriptions, add information you found missing, fix typos / grammar mistakes or add more examples.

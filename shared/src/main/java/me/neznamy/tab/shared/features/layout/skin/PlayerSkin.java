@@ -2,14 +2,15 @@ package me.neznamy.tab.shared.features.layout.skin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
 public class PlayerSkin extends SkinSource {
@@ -19,7 +20,7 @@ public class PlayerSkin extends SkinSource {
     }
 
     @Override
-    public List<String> download(String input) {
+    public @NotNull List<String> download(@NotNull String input) {
         try {
             JSONObject json = getResponse("https://api.ashcon.app/mojang/v2/user/" + input);
             JSONObject textures = (JSONObject) json.get("textures");
@@ -29,10 +30,10 @@ public class PlayerSkin extends SkinSource {
             return Arrays.asList(value, signature);
         } catch (FileNotFoundException e) {
             TAB.getInstance().getErrorManager().printError("Failed to load skin by player: No user with the name '" + input + "' was found");
-            return new ArrayList<>();
+            return Collections.emptyList();
         } catch (IOException | ParseException e) {
             TAB.getInstance().getErrorManager().printError("Failed to load skin by player: " + e.getMessage(), e);
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 }

@@ -8,6 +8,7 @@ plugins {
 tasks {
     processResources {
         filter<ReplaceTokens>("tokens" to mapOf(
+            "id" to rootProject.ext.get("id")!!.toString(),
             "name" to rootProject.name,
             "version" to project.version,
             "description" to project.description,

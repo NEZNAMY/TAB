@@ -1,5 +1,4 @@
 dependencies {
     implementation(projects.shared)
-    compileOnly(libs.sponge7)
-    implementation(libs.bstats.sponge)
+    compileOnly("org.spongepowered:spongeapi:5.0.0")
 }

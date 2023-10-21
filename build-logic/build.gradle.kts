@@ -3,15 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.plugin.shadow)
-    implementation(libs.plugin.lombok)
-}
-
-dependencies {
-    compileOnly(files(libs::class.java.protectionDomain.codeSource.location))
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    implementation("com.github.johnrengelman:shadow:8.1.1")
+    implementation("io.freefair.gradle:lombok-plugin:8.0.1")
+    implementation("fabric-loom:fabric-loom.gradle.plugin:1.1-SNAPSHOT")
 }

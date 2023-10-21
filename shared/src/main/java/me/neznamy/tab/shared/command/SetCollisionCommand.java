@@ -1,13 +1,16 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SetCollisionCommand extends SubCommand {
 
@@ -19,8 +22,8 @@ public class SetCollisionCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
-        TeamManager feature = TAB.getInstance().getTeamManager();
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
+        NameTagManager feature = TAB.getInstance().getNameTagManager();
         if (feature == null) {
             sendMessage(sender, getMessages().getTeamFeatureRequired());
             return;
@@ -32,16 +35,16 @@ public class SetCollisionCommand extends SubCommand {
                 return;
             }
             feature.setCollisionRule(target, Boolean.parseBoolean(args[1]));
-            feature.updateTeamData(target);
+            ((NameTag)feature).updateTeamData(target);
         } else {
             sendMessage(sender, getMessages().getCollisionCommandUsage());
         }
     }
     
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
         if (arguments.length == 2) return getStartingArgument(Arrays.asList("true", "false"), arguments[1]);
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 }

@@ -4,12 +4,13 @@ import java.util.*;
 import java.util.function.Function;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabPlayer;
+import lombok.NonNull;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.placeholders.conditions.simple.*;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The main condition class. It allows users to configure different
@@ -22,25 +23,26 @@ public class Condition {
     private static Map<String, Condition> registeredConditions = new HashMap<>();
 
     /** All supported sub-condition types */
-    @Getter private static final Map<String, Function<String, SimpleCondition>> conditionTypes =
-            new LinkedHashMap<String, Function<String, SimpleCondition>>() {{
-        put("permission:", PermissionCondition::new);
-        put("<-", ContainsCondition::new);
-        put("|-", StartsWithCondition::new);
-        put("-|", EndsWithCondition::new);
-        put(">=", MoreThanOrEqualsCondition::new);
-        put(">", MoreThanCondition::new);
-        put("<=", LessThanOrEqualsCondition::new);
-        put("<", LessThanCondition::new);
-        put("!=", NotEqualsCondition::new);
-        put("=", EqualsCondition::new);
+    @Getter private static final Map<String, Function<String, Function<TabPlayer, Boolean>>> conditionTypes =
+            new LinkedHashMap<String, Function<String, Function<TabPlayer, Boolean>>>() {{
+
+        put(">=", line -> new NumericCondition(line.split(">="), (left, right) -> left >= right)::isMet);
+        put(">", line -> new NumericCondition(line.split(">"), (left, right) -> left > right)::isMet);
+        put("<=", line -> new NumericCondition(line.split("<="), (left, right) -> left <= right)::isMet);
+        put("<-", line -> new StringCondition(line.split("<-"), String::contains)::isMet);
+        put("<", line -> new NumericCondition(line.split("<"), (left, right) -> left < right)::isMet);
+        put("|-", line -> new StringCondition(line.split("\\|-"), String::startsWith)::isMet);
+        put("-|", line -> new StringCondition(line.split("-\\|"), String::endsWith)::isMet);
+        put("!=", line -> new StringCondition(line.split("!="), (left, right) -> !left.equals(right))::isMet);
+        put("=", line -> new StringCondition(line.split("="), String::equals)::isMet);
+        put("permission:", line -> p -> p.hasPermission(line.split(":")[1]));
     }};
 
     /** Name of this condition defined in configuration */
     @Getter private final String name;
 
     /** All defined sub-conditions inside this conditions */
-    protected SimpleCondition[] subConditions;
+    protected final List<Function<TabPlayer, Boolean>> subConditions = new ArrayList<>();
 
     /** Condition type, {@code true} for AND type and {@code false} for OR type */
     private final boolean type;
@@ -75,25 +77,19 @@ public class Condition {
      * @param   no
      *          value to return if condition is not met
      */
-    public Condition(boolean type, String name, List<String> conditions, String yes, String no) {
+    public Condition(boolean type, @NonNull String name, @NonNull List<String> conditions, @Nullable String yes, @Nullable String no) {
         this.type = type;
         this.name = name;
         this.yes = yes;
         this.no = no;
-        if (conditions == null) {
-            TAB.getInstance().getErrorManager().startupWarn("Condition \"" + name + "\" is missing \"conditions\" section.");
-            return;
-        }
-        List<SimpleCondition> list = new ArrayList<>();
         for (String line : conditions) {
-            SimpleCondition condition = SimpleCondition.compile(line);
+            Function<TabPlayer, Boolean> condition = compile(line);
             if (condition != null) {
-                list.add(condition);
+                subConditions.add(condition);
             } else {
-                TAB.getInstance().getErrorManager().startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
+                TAB.getInstance().getMisconfigurationHelper().invalidConditionPattern(name, line);
             }
         }
-        subConditions = list.toArray(new SimpleCondition[0]);
         PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
         for (String subCondition : conditions) {
             if (subCondition.startsWith("permission:")) {
@@ -102,8 +98,8 @@ public class Condition {
                 placeholdersInConditions.addAll(pm.detectPlaceholders(subCondition));
             }
         }
-        placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
-        placeholdersInConditions.addAll(pm.detectPlaceholders(no));
+        if (yes != null) placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
+        if (no != null) placeholdersInConditions.addAll(pm.detectPlaceholders(no));
         registeredConditions.put(name, this);
     }
 
@@ -141,13 +137,13 @@ public class Condition {
      */
     public boolean isMet(TabPlayer p) {
         if (type) {
-            for (SimpleCondition condition : subConditions) {
-                if (!condition.isMet(p)) return false;
+            for (Function<TabPlayer, Boolean> condition : subConditions) {
+                if (!condition.apply(p)) return false;
             }
             return true;
         } else {
-            for (SimpleCondition condition : subConditions) {
-                if (condition.isMet(p)) return true;
+            for (Function<TabPlayer, Boolean> condition : subConditions) {
+                if (condition.apply(p)) return true;
             }
             return false;
         }
@@ -163,7 +159,7 @@ public class Condition {
      * @return  condition from string
      */
     public static Condition getCondition(String string) {
-        if (string == null) return null;
+        if (string == null || string.isEmpty()) return null;
         if (registeredConditions.containsKey(string)) {
             return registeredConditions.get(string);
         } else {
@@ -175,10 +171,24 @@ public class Condition {
             } else {
                 type = false;
                 conditions = Arrays.asList(string.split("\\|"));
+
+                // Fix conflict with | for multiple conditions and |- for "startsWith"
+                List<String> fixedConditions = new ArrayList<>();
+                for (int i=0; i<conditions.size(); i++) {
+                    String expression = conditions.get(i);
+                    if (i < conditions.size()-1 && conditions.get(i+1).startsWith("-")) {
+                        fixedConditions.add(expression + "|" + conditions.get(i+1));
+                        i++;
+                    } else {
+                        fixedConditions.add(expression);
+                    }
+                }
+                conditions = fixedConditions;
             }
             Condition c = new Condition(type, "AnonymousCondition[" + string + "]", conditions, "true", "false");
             c.finishSetup();
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), c::getText);
+            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(),
+                    p -> c.getText((TabPlayer) p));
             return c;
         }
     }
@@ -197,5 +207,22 @@ public class Condition {
      */
     public static void finishSetups() {
         registeredConditions.values().forEach(Condition::finishSetup);
+    }
+
+    /**
+     * Compiles condition from condition line. This includes detection
+     * what kind of condition it is and creating it.
+     *
+     * @param   line
+     *          condition line
+     * @return  compiled condition or null if no valid pattern was found
+     */
+    private static Function<TabPlayer, Boolean> compile(String line) {
+        for (Map.Entry<String, Function<String, Function<TabPlayer, Boolean>>> entry : Condition.getConditionTypes().entrySet()) {
+            if (line.contains(entry.getKey())) {
+                return entry.getValue().apply(line);
+            }
+        }
+        return null;
     }
 }

@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.backend;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface EntityData {
 
-    Object build();
+    @NotNull Object build();
 }

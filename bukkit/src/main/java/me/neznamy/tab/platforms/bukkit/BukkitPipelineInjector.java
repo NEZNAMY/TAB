@@ -2,20 +2,20 @@ package me.neznamy.tab.platforms.bukkit;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.chat.WrappedChatComponent;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage.PlayerInfoDataStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardDisplayObjectiveStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
+import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,118 +33,126 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    protected Channel getChannel(TabPlayer player) {
+    @Nullable
+    protected Channel getChannel(@NotNull TabPlayer player) {
         BukkitTabPlayer bukkit = (BukkitTabPlayer) player;
         NMSStorage nms = NMSStorage.getInstance();
         try {
             if (nms.CHANNEL != null) return (Channel) nms.CHANNEL.get(nms.NETWORK_MANAGER.get(bukkit.getPlayerConnection()));
-        } catch (final IllegalAccessException exception) {
+        } catch (IllegalAccessException exception) {
             TAB.getInstance().getErrorManager().printError("Failed to get channel of " + bukkit.getName(), exception);
         }
         return null;
     }
 
     @Override
-    public void onDisplayObjective(TabPlayer player, Object packet) throws IllegalAccessException {
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                PacketPlayOutScoreboardDisplayObjectiveStorage.POSITION.getInt(packet),
-                (String) PacketPlayOutScoreboardDisplayObjectiveStorage.OBJECTIVE_NAME.get(packet));
+    @SneakyThrows
+    public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
+        int position;
+        if (BukkitReflection.is1_20_2Plus()) {
+            position = ((Enum<?>)PacketScoreboard.DisplayObjective_POSITION.get(packet)).ordinal();
+        } else {
+            position = PacketScoreboard.DisplayObjective_POSITION.getInt(packet);
+        }
+        TAB.getInstance().getFeatureManager().onDisplayObjective(player, position,
+                (String) PacketScoreboard.DisplayObjective_OBJECTIVE_NAME.get(packet));
     }
 
     @Override
-    public void onObjective(TabPlayer player, Object packet) throws IllegalAccessException {
+    @SneakyThrows
+    public void onObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onObjective(player,
-                PacketPlayOutScoreboardObjectiveStorage.METHOD.getInt(packet),
-                (String) PacketPlayOutScoreboardObjectiveStorage.OBJECTIVE_NAME.get(packet));
+                PacketScoreboard.Objective_METHOD.getInt(packet),
+                (String) PacketScoreboard.Objective_OBJECTIVE_NAME.get(packet));
     }
 
     @Override
-    public boolean isDisplayObjective(Object packet) {
-        return PacketPlayOutScoreboardDisplayObjectiveStorage.CLASS.isInstance(packet);
+    public boolean isDisplayObjective(@NotNull Object packet) {
+        return PacketScoreboard.DisplayObjectiveClass.isInstance(packet);
     }
 
     @Override
-    public boolean isObjective(Object packet) {
-        return PacketPlayOutScoreboardObjectiveStorage.CLASS.isInstance(packet);
+    public boolean isObjective(@NotNull Object packet) {
+        return PacketScoreboard.ObjectivePacketClass.isInstance(packet);
     }
 
     @Override
-    public boolean isTeam(Object packet) {
-        return PacketPlayOutScoreboardTeamStorage.CLASS.isInstance(packet);
+    public boolean isTeam(@NotNull Object packet) {
+        return PacketScoreboard.TeamPacketClass.isInstance(packet);
     }
 
     @Override
-    public boolean isPlayerInfo(Object packet) {
-        return PacketPlayOutPlayerInfoStorage.CLASS.isInstance(packet);
+    public boolean isPlayerInfo(@NotNull Object packet) {
+        return BukkitTabList.PlayerInfoClass.isInstance(packet);
     }
 
     @Override
-    public boolean isLogin(Object packet) {
-        return false;
-    }
-
-    @Override
-    public void onPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
-        NMSStorage nms = NMSStorage.getInstance();
+    @SneakyThrows
+    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
         List<String> actions;
-        if (PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket != null) {
+        if (BukkitTabList.ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
-            actions = ((EnumSet<?>)PacketPlayOutPlayerInfoStorage.ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
+            actions = ((EnumSet<?>)BukkitTabList.ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
         } else {
             //1.19.2-
-            actions = Collections.singletonList(PacketPlayOutPlayerInfoStorage.ACTION.get(packet).toString());
+            actions = Collections.singletonList(BukkitTabList.ACTION.get(packet).toString());
         }
         List<Object> updatedList = new ArrayList<>();
-        for (Object nmsData : (List<?>) PacketPlayOutPlayerInfoStorage.PLAYERS.get(packet)) {
-            GameProfile profile = (GameProfile) PlayerInfoDataStorage.PlayerInfoData_getProfile.invoke(nmsData);
-            int gameMode = 0;
+        for (Object nmsData : (List<?>) BukkitTabList.PLAYERS.get(packet)) {
+            GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_Profile.get(nmsData);
+            UUID id;
+            if (BukkitReflection.is1_19_3Plus()) {
+                id = (UUID) BukkitTabList.PlayerInfoData_UUID.get(nmsData);
+            } else {
+                id = profile.getId();
+            }
+            Object displayName = null;
             int latency = 0;
-            IChatBaseComponent displayName = null;
-            if (actions.contains("UPDATE_GAME_MODE") || actions.contains("ADD_PLAYER")) {
-                gameMode = PacketPlayOutPlayerInfoStorage.gameMode2Int(PlayerInfoDataStorage.PlayerInfoData_GameMode.get(nmsData));
-                gameMode = TAB.getInstance().getFeatureManager().onGameModeChange(receiver, profile.getId(), gameMode);
-                if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_GameMode.set(nmsData, PacketPlayOutPlayerInfoStorage.int2GameMode(gameMode));
+            if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
+                displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
+                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, id);
+                if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
+                if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
-            if (actions.contains("UPDATE_LATENCY") || actions.contains("ADD_PLAYER")) {
-                latency = PlayerInfoDataStorage.PlayerInfoData_Latency.getInt(nmsData);
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
-                if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_Latency.set(nmsData, latency);
+            if (actions.contains(TabList.Action.UPDATE_LATENCY.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
+                latency = BukkitTabList.PlayerInfoData_Latency.getInt(nmsData);
+                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, id, latency);
+                if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_Latency.set(nmsData, latency);
             }
-            if (actions.contains("UPDATE_DISPLAY_NAME") || actions.contains("ADD_PLAYER")) {
-                Object nmsComponent = PlayerInfoDataStorage.PlayerInfoData_DisplayName.get(nmsData);
-                displayName = nmsComponent == null ? null : new WrappedChatComponent(nmsComponent);
-                displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId(), displayName);
-                if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_DisplayName.set(nmsData, nms.toNMSComponent(displayName, receiver.getVersion()));
+            if (actions.contains(TabList.Action.ADD_PLAYER.name())) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, id, profile.getName());
             }
-            if (actions.contains("ADD_PLAYER")) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
-            }
-            if (nms.is1_19_3Plus()) {
+            if (BukkitReflection.is1_19_3Plus()) {
                 // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
-                boolean listed = PlayerInfoDataStorage.PlayerInfoData_Listed.getBoolean(nmsData);
-                Object chatSession = PlayerInfoDataStorage.PlayerInfoData_RemoteChatSession.get(nmsData);
-                updatedList.add(PlayerInfoDataStorage.newPlayerInfoData.newInstance(
-                        profile.getId(),
+                updatedList.add(BukkitTabList.newPlayerInfoData.newInstance(
+                        id,
                         profile,
-                        listed,
+                        BukkitTabList.PlayerInfoData_Listed.getBoolean(nmsData),
                         latency,
-                        PacketPlayOutPlayerInfoStorage.int2GameMode(gameMode),
-                        nms.toNMSComponent(displayName, receiver.getVersion()),
-                        chatSession));
+                        BukkitTabList.PlayerInfoData_GameMode.get(nmsData),
+                        displayName,
+                        BukkitTabList.PlayerInfoData_RemoteChatSession.get(nmsData)));
             }
         }
-        if (nms.is1_19_3Plus()) {
-            PacketPlayOutPlayerInfoStorage.PLAYERS.set(packet, updatedList);
+        if (BukkitReflection.is1_19_3Plus()) {
+            BukkitTabList.PLAYERS.set(packet, updatedList);
         }
+    }
+
+    @Override
+    public boolean isLogin(@NotNull Object packet) {
+        return false;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
-        int action = PacketPlayOutScoreboardTeamStorage.ACTION.getInt(packetPlayOutScoreboardTeam);
+    @SneakyThrows
+    public void modifyPlayers(@NotNull Object packetPlayOutScoreboardTeam) {
+        if (TAB.getInstance().getNameTagManager() == null) return;
+        int action = PacketScoreboard.TeamPacket_ACTION.getInt(packetPlayOutScoreboardTeam);
         if (action == 1 || action == 2 || action == 4) return;
-        Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeamStorage.PLAYERS.get(packetPlayOutScoreboardTeam);
-        String teamName = (String) PacketPlayOutScoreboardTeamStorage.NAME.get(packetPlayOutScoreboardTeam);
+        Collection<String> players = (Collection<String>) PacketScoreboard.TeamPacket_PLAYERS.get(packetPlayOutScoreboardTeam);
+        String teamName = (String) PacketScoreboard.TeamPacket_NAME.get(packetPlayOutScoreboardTeam);
         if (players == null) return;
         //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
         Collection<String> newList = new ArrayList<>();
@@ -154,14 +162,19 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 newList.add(entry);
                 continue;
             }
-            Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-            if (!((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(sorting.getShortTeamName(p))) {
-                logTeamOverride(teamName, p.getName(), sorting.getShortTeamName(p));
+            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            String expectedTeam = sorting.getShortTeamName(p);
+            if (expectedTeam == null) {
+                newList.add(entry);
+                continue;
+            }
+            if (!((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
+                    !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
+                logTeamOverride(teamName, p.getName(), expectedTeam);
             } else {
                 newList.add(entry);
             }
         }
-        PacketPlayOutScoreboardTeamStorage.PLAYERS.set(packetPlayOutScoreboardTeam, newList);
+        PacketScoreboard.TeamPacket_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
     }
 }

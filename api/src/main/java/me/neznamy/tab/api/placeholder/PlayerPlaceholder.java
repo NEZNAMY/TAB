@@ -1,28 +1,30 @@
 package me.neznamy.tab.api.placeholder;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 
+/**
+ * Interface for player placeholders (placeholders returning different value for each player)
+ */
 public interface PlayerPlaceholder extends Placeholder {
 
-    void updateValue(TabPlayer player, Object value);
-
     /**
-     * Calls the placeholder request function and returns the output.
-     * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
-     * file and "ERROR" is returned.
-     *
-     * @param   p
-     *          player to get placeholder value for
-     * @return  value placeholder returned or "ERROR" if it threw an error
-     */
-    Object request(TabPlayer p);
-
-    /**
-     * Returns last known value for given player.
+     * Force-updates placeholder value. It will still be overridden by periodic refresh later,
+     * so this is (only) useful for force an update when value is supposed to change, and you have
+     * a high refresh interval set.
      *
      * @param   player
-     *          player to get last value for
-     * @return  last known value for entered player
+     *          Player to update value for
+     * @param   value
+     *          New value
      */
-    String getLastValue(TabPlayer player);
+    void updateValue(@NonNull TabPlayer player, @NonNull Object value);
+
+    /**
+     * Force-updates placeholder value using previously provided update function.
+     *
+     * @param   player
+     *          Player to update value for
+     */
+    void update(@NonNull TabPlayer player);
 }

@@ -1,30 +1,55 @@
 package me.neznamy.tab.shared.backend;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.entityview.EntityView;
+import me.neznamy.tab.shared.hook.ViaVersionHook;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public abstract class BackendTabPlayer extends ITabPlayer {
+/**
+ * TabPlayer extension for backend platforms, which have access to
+ * more data and can display it.
+ */
+public abstract class BackendTabPlayer extends TabPlayer {
 
     /**
      * Constructs new instance with given parameters
      *
-     * @param player          platform-specific player object
-     * @param uniqueId        Player's unique ID
-     * @param name            Player's name
-     * @param server          Player's server
-     * @param world           Player's world
-     * @param protocolVersion Player's game version
+     * @param   player
+     *          platform-specific player object
+     * @param   uniqueId
+     *          Player's unique ID
+     * @param   name
+     *          Player's name
+     * @param   world
+     *          Player's world
      */
-    protected BackendTabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion) {
-        super(player, uniqueId, name, server, world, protocolVersion, true);
+    protected BackendTabPlayer(@NotNull BackendPlatform platform, @NotNull Object player, @NotNull UUID uniqueId,
+                               @NotNull String name, @NotNull String world) {
+        super(platform, player, uniqueId, name, TAB.getInstance().getConfiguration().getServerName(),
+                world, ViaVersionHook.getInstance().getPlayerVersion(uniqueId, name), true);
     }
 
-    public abstract void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data);
+    /**
+     * Returns player's health for {@link me.neznamy.tab.shared.TabConstants.Placeholder#HEALTH} placeholder.
+     *
+     * @return  player's health
+     */
+    public abstract double getHealth();
 
-    public abstract void updateEntityMetadata(int entityId, EntityData data);
+    /**
+     * Returns player's display name for {@link me.neznamy.tab.shared.TabConstants.Placeholder#DISPLAY_NAME} placeholder.
+     *
+     * @return  player's display name
+     */
+    public abstract String getDisplayName();
 
-    public abstract void teleportEntity(int entityId, Location location);
-
-    public abstract void destroyEntities(int... entities);
+    /**
+     * Returns player's entity view
+     *
+     * @return  player's entity view
+     */
+    public abstract EntityView getEntityView();
 }

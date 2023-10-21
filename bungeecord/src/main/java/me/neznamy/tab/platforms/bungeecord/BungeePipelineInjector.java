@@ -7,20 +7,29 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+
+import lombok.SneakyThrows;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -33,87 +42,114 @@ import java.util.function.Supplier;
 @SuppressWarnings("unchecked")
 public class BungeePipelineInjector extends NettyPipelineInjector {
 
+    /** Inaccessible bungee internals */
+    @Nullable
     private static Field wrapperField;
+
+    @Nullable
+    private static Object directionData;
+
+    @Nullable
+    private static Method getId;
 
     static {
         try {
             (wrapperField = InitialHandler.class.getDeclaredField("ch")).setAccessible(true);
+            directionData = ReflectionUtils.setAccessible(Protocol.class.getDeclaredField("TO_CLIENT")).get(Protocol.GAME);
+            getId = ReflectionUtils.setAccessible(directionData.getClass().getDeclaredMethod("getId", Class.class, int.class));
         } catch (ReflectiveOperationException exception) {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", exception);
         }
     }
 
     /** Packets used by the plugin that must be deserialized and BungeeCord does not do it automatically */
+    @NotNull
     private final Class<? extends DefinedPacket>[] extraPacketClasses = new Class[]{Team.class, ScoreboardDisplay.class, ScoreboardObjective.class};
+
+    @NotNull
     private final Supplier<DefinedPacket>[] extraPacketSuppliers = new Supplier[]{Team::new, ScoreboardDisplay::new, ScoreboardObjective::new};
 
     @Override
+    @NotNull
     public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
         return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : TabChannelDuplexHandler::new;
     }
 
     @Override
-    protected Channel getChannel(TabPlayer player) {
+    @Nullable
+    protected Channel getChannel(@NotNull TabPlayer player) {
+        if (wrapperField == null) return null;
         final BungeeTabPlayer bungee = (BungeeTabPlayer) player;
         try {
             return ((ChannelWrapper) wrapperField.get(bungee.getPlayer().getPendingConnection())).getHandle();
-        } catch (final IllegalAccessException exception) {
+        } catch (IllegalAccessException exception) {
             TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + bungee.getPlayer().getName(), exception);
         }
         return null;
     }
 
     @Override
-    public void onDisplayObjective(TabPlayer player, Object packet) {
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                ((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
+    @SneakyThrows
+    public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
+        TAB.getInstance().getFeatureManager().onDisplayObjective(
+                player,
+                ((Number) ScoreboardDisplay.class.getMethod("getPosition").invoke(packet)).intValue(),
+                ((ScoreboardDisplay) packet).getName()
+        );
     }
 
     @Override
-    public void onObjective(TabPlayer player, Object packet) {
+    public void onObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onObjective(player,
                 ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
     }
 
     @Override
-    public boolean isDisplayObjective(Object packet) {
+    public boolean isDisplayObjective(@NotNull Object packet) {
         return packet instanceof ScoreboardDisplay;
     }
 
     @Override
-    public boolean isObjective(Object packet) {
+    public boolean isObjective(@NotNull Object packet) {
         return packet instanceof ScoreboardObjective;
     }
 
     @Override
-    public boolean isTeam(Object packet) {
+    public boolean isTeam(@NotNull Object packet) {
         return packet instanceof Team;
     }
 
     @Override
-    public boolean isPlayerInfo(Object packet) {
+    public boolean isPlayerInfo(@NotNull Object packet) {
         return packet instanceof PlayerListItem || packet instanceof PlayerListItemUpdate;
     }
 
     @Override
-    public void modifyPlayers(Object team) {
+    public void modifyPlayers(@NotNull Object team) {
+        if (TAB.getInstance().getNameTagManager() == null) return;
         Team packet = (Team) team;
         if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
         Collection<String> col = Lists.newArrayList(packet.getPlayers());
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-            if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(sorting.getShortTeamName(p))) {
-                logTeamOverride(packet.getName(), p.getName(), sorting.getShortTeamName(p));
+            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            String expectedTeam = sorting.getShortTeamName(p);
+            if (expectedTeam != null && (col.contains(p.getNickname()) || col.contains(p.getName())) &&
+                    !((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
+                    !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
+                logTeamOverride(packet.getName(), p.getName(), expectedTeam);
                 col.remove(p.getNickname());
+                col.remove(p.getName());
             }
         }
-        RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (redis != null) {
-            for (RedisPlayer p : redis.getRedisPlayers().values()) {
-                if (col.contains(p.getNickname()) && !packet.getName().equals(p.getTeamName())) {
-                    logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
-                    col.remove(p.getNickname());
+            RedisTeams teams = redis.getRedisTeams();
+            if (teams != null) {
+                for (RedisPlayer p : redis.getRedisPlayers().values()) {
+                    if (col.contains(p.getNickname()) && !packet.getName().equals(teams.getTeamNames().get(p))) {
+                        logTeamOverride(packet.getName(), p.getNickname(), teams.getTeamNames().get(p));
+                        col.remove(p.getNickname());
+                    }
                 }
             }
         }
@@ -121,26 +157,16 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public boolean isLogin(Object packet) {
-        return packet instanceof Login;
-    }
-
-    @Override
-    public void onPlayerInfo(TabPlayer receiver, Object packet) {
-        PlayerListItem.Item[] items;
+    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (packet instanceof PlayerListItemUpdate) {
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
-                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_GAMEMODE)) {
-                    item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
+                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
+                    if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
-                }
-                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    IChatBaseComponent displayName = IChatBaseComponent.deserialize(item.getDisplayName());
-                    displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid(), displayName);
-                    item.setDisplayName(displayName == null ? null : displayName.toString(receiver.getVersion()));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
@@ -149,19 +175,23 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         } else {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
-                if (listItem.getAction() == PlayerListItem.Action.UPDATE_GAMEMODE || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
+                    if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
                 }
-                if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    IChatBaseComponent displayName = IChatBaseComponent.deserialize(item.getDisplayName());
-                    displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid(), displayName);
-                    item.setDisplayName(displayName == null ? null : displayName.toString(receiver.getVersion()));
+                if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isLogin(@NotNull Object packet) {
+        return packet instanceof Login;
     }
 
     /**
@@ -184,12 +214,12 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          * @param   player
          *          player to inject
          */
-        public DeserializableBungeeChannelDuplexHandler(TabPlayer player) {
+        public DeserializableBungeeChannelDuplexHandler(@NotNull TabPlayer player) {
             super(player);
         }
 
         @Override
-        public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
+        public void write(@NotNull ChannelHandlerContext context, @NotNull Object packet, @NotNull ChannelPromise channelPromise) {
             long time = System.nanoTime();
             Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
             TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
@@ -204,12 +234,13 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          *          byte buf to deserialize
          * @return  deserialized packet or input byte buf if packet is not tracked
          */
-        private Object deserialize(ByteBuf buf) {
+        @NotNull
+        private Object deserialize(@NotNull ByteBuf buf) {
             int marker = buf.readerIndex();
             try {
                 int packetId = buf.readByte();
                 for (int i=0; i<extraPacketClasses.length; i++) {
-                    if (packetId == ((BungeeTabPlayer)player).getPacketId(extraPacketClasses[i])) {
+                    if (packetId == getPacketId(((BungeeTabPlayer)player).getPlayer().getPendingConnection().getVersion(), extraPacketClasses[i])) {
                         DefinedPacket packet = extraPacketSuppliers[i].get();
                         packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
                         buf.release();
@@ -221,6 +252,26 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             }
             buf.readerIndex(marker);
             return buf;
+        }
+
+        /**
+         * Returns packet ID of specified packet on the protocol version
+         *
+         * @param   protocolVersion
+         *          Protocol version to get packet id for
+         * @param   clazz
+         *          packet class
+         * @return  packet ID
+         */
+        private int getPacketId(int protocolVersion, @NotNull Class<? extends DefinedPacket> clazz) {
+            if (getId == null) return -1;
+            try {
+                return (int) getId.invoke(directionData, clazz, protocolVersion);
+            } catch (ReflectiveOperationException e) {
+                TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz +
+                        " with client version " + protocolVersion, e);
+                return -1;
+            }
         }
     }
 }

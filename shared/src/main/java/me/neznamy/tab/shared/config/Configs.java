@@ -1,14 +1,16 @@
 package me.neznamy.tab.shared.config;
 
 import lombok.Getter;
-import me.neznamy.tab.api.PropertyConfiguration;
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.config.ConfigurationFile;
-import me.neznamy.tab.api.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
+import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
@@ -28,7 +30,6 @@ public class Configs {
     @Getter private final boolean bukkitPermissions = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY && config.getBoolean("use-bukkit-permissions-manager", false);
     @Getter private final boolean debugMode = config.getBoolean("debug", false);
     @Getter private final boolean onlineUuidInTabList = config.getBoolean("use-online-uuid-in-tablist", true);
-    @Getter private final boolean removeGhostPlayers = getSecretOption("remove-ghost-players", false);
     @Getter private final boolean pipelineInjection = getSecretOption("pipeline-injection", true);
     @Getter private final String serverName = getSecretOption("server-name", "N/A");
 
@@ -41,9 +42,6 @@ public class Configs {
 
     //playerdata.yml, used for bossbar & scoreboard toggle saving
     private ConfigurationFile playerdata;
-
-    @Getter private final ConfigurationFile layout = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout.yml"),
-            new File(TAB.getInstance().getDataFolder(), "layout.yml"));
 
     @Getter private PropertyConfiguration groups;
 
@@ -62,9 +60,12 @@ public class Configs {
      */
     public Configs() throws YAMLException, IOException {
         Converter converter = new Converter();
-        converter.convertToV3(config);
-        converter.removeOldOptions(config);
-        converter.convertAnimationFile(animationFile);
+        converter.convert2810to290(animationFile);
+        converter.convert292to300(config);
+        converter.convert301to302(config);
+        converter.convert331to332(config);
+        converter.convert332to400(config);
+        converter.convert403to404(config);
         if (config.getBoolean("mysql.enabled", false)) {
             try {
                 // Initialization to try to avoid java.sql.SQLException: No suitable driver found
@@ -97,7 +98,7 @@ public class Configs {
      * @return  value with specified path or default value if not present
      */
     @SuppressWarnings("unchecked")
-    public <T> T getSecretOption(String path, T defaultValue) {
+    public @NotNull <T> T getSecretOption(@NotNull String path, @NotNull T defaultValue) {
         Object value = config.getObject(path);
         return value == null ? defaultValue : (T) value;
     }
@@ -116,7 +117,7 @@ public class Configs {
         return playerdata;
     }
 
-    public String getGroup(List<Object> serverGroups, String element) {
+    public String getGroup(@NotNull List<Object> serverGroups, @Nullable String element) {
         if (serverGroups.isEmpty() || element == null) return element;
         for (Object worldGroup : serverGroups) {
             for (String definedWorld : worldGroup.toString().split(";")) {

@@ -3,7 +3,10 @@ package me.neznamy.tab.api.scoreboard;
 import java.util.List;
 import java.util.Map;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Interface allowing work with scoreboards, such as creating,
@@ -11,7 +14,7 @@ import me.neznamy.tab.api.TabPlayer;
  * <p>
  * Instance can be obtained using {@link me.neznamy.tab.api.TabAPI#getScoreboardManager()}.
  * This requires the scoreboard feature to be enabled in config,
- * the method will return null otherwise.
+ * the method will return {@code null} otherwise.
  */
 public interface ScoreboardManager {
 
@@ -39,7 +42,7 @@ public interface ScoreboardManager {
      * @throws  NullPointerException
      *          if {@code name} or {@code lines} is {@code null}
      */
-    Scoreboard createScoreboard(String name, String title, List<String> lines);
+    @NotNull Scoreboard createScoreboard(@NonNull String name, @NonNull String title, @NonNull List<String> lines);
     
     /**
      * Returns map of registered scoreboards via config and API.
@@ -49,7 +52,7 @@ public interface ScoreboardManager {
      * 
      * @return  map of registered scoreboards
      */
-    Map<String, Scoreboard> getRegisteredScoreboards();
+    @NotNull Map<String, Scoreboard> getRegisteredScoreboards();
     
     /**
      * Displays scoreboard to defined player. This will disable all display
@@ -66,7 +69,7 @@ public interface ScoreboardManager {
      * @see     #hasCustomScoreboard(TabPlayer)
      * @see     #resetScoreboard(TabPlayer)
      */
-    void showScoreboard(TabPlayer player, Scoreboard scoreboard);
+    void showScoreboard(@NonNull TabPlayer player, @NonNull Scoreboard scoreboard);
     
     /**
      * Returns {@code true} if player has custom scoreboard set using
@@ -79,7 +82,7 @@ public interface ScoreboardManager {
      * @see      #showScoreboard(TabPlayer, Scoreboard)
      * @see     #resetScoreboard(TabPlayer)
      */
-    boolean hasCustomScoreboard(TabPlayer player);
+    boolean hasCustomScoreboard(@NonNull TabPlayer player);
     
     /**
      * Hides custom scoreboard sent using {@link #showScoreboard(TabPlayer, Scoreboard)}
@@ -91,7 +94,7 @@ public interface ScoreboardManager {
      * @see     #showScoreboard(TabPlayer, Scoreboard)
      * @see     #hasCustomScoreboard(TabPlayer)
      */
-    void resetScoreboard(TabPlayer player);
+    void resetScoreboard(@NonNull TabPlayer player);
     
     /**
      * Returns {@code true} if player has scoreboard enabled, {@code false} 
@@ -105,7 +108,7 @@ public interface ScoreboardManager {
      * @see     #setScoreboardVisible(TabPlayer, boolean, boolean)
      * @see     #toggleScoreboard(TabPlayer, boolean)
      */
-    boolean hasScoreboardVisible(TabPlayer player);
+    boolean hasScoreboardVisible(@NonNull TabPlayer player);
     
     /**
      * Sets scoreboard visibility of player to defined value. If visibility status
@@ -122,7 +125,7 @@ public interface ScoreboardManager {
      * @see     #toggleScoreboard(TabPlayer, boolean)
      * @see     #hasScoreboardVisible(TabPlayer)
      */
-    void setScoreboardVisible(TabPlayer player, boolean visible, boolean sendToggleMessage);
+    void setScoreboardVisible(@NonNull TabPlayer player, boolean visible, boolean sendToggleMessage);
     
     /**
      * Toggles scoreboard for specified player. If player had scoreboard visible,
@@ -136,7 +139,7 @@ public interface ScoreboardManager {
      * @see     #hasScoreboardVisible(TabPlayer)
      * @see     #setScoreboardVisible(TabPlayer, boolean, boolean)
      */
-    void toggleScoreboard(TabPlayer player, boolean sendToggleMessage);
+    void toggleScoreboard(@NonNull TabPlayer player, boolean sendToggleMessage);
     
     /**
      * Temporarily displays scoreboard to all players for specified amount of 
@@ -151,7 +154,7 @@ public interface ScoreboardManager {
      *          if no scoreboard was found with such name or {@code duration}
      *          is &lt; 0.
      */
-    void announceScoreboard(String scoreboard, int duration);
+    void announceScoreboard(@NonNull String scoreboard, int duration);
 
     /**
      * Returns player's currently displayed scoreboard. This can be either with
@@ -162,5 +165,5 @@ public interface ScoreboardManager {
      *          player to get active scoreboard of
      * @return  player's active scoreboard or {@code null} if player has no scoreboard
      */
-    Scoreboard getActiveScoreboard(TabPlayer player);
+    @Nullable Scoreboard getActiveScoreboard(@NonNull TabPlayer player);
 }

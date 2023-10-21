@@ -1,13 +1,13 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.feature.QuitListener;
-import me.neznamy.tab.api.feature.VanishListener;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.features.types.QuitListener;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlayerList;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -19,10 +19,11 @@ import java.util.stream.Collectors;
 /**
  * Additional code for PlayerList class to secure alignment
  */
-public class AlignedPlayerList extends PlayerList implements QuitListener, VanishListener {
+public class AlignedPlayerList extends PlayerList implements QuitListener {
 
     private final Map<TabPlayer, PlayerView> playerViews = new HashMap<>();
     @Getter private final byte[] widths = loadWidths();
+    @Getter private final Map<String, Integer> multiCharWidths = loadMultiCharWidths();
 
     /**
      * Loads widths from included widths.txt file as well as width overrides from config
@@ -38,13 +39,16 @@ public class AlignedPlayerList extends PlayerList implements QuitListener, Vanis
         for (String line : new BufferedReader(new InputStreamReader(file)).lines().collect(Collectors.toList())) {
             widths[characterId++] = (byte) Float.parseFloat(line);
         }
-        Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
+        Map<Object, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
         List<Integer> redundant = new ArrayList<>();
-        for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
-            if (widths[entry.getKey()] == entry.getValue().byteValue()) {
-                redundant.add(entry.getKey());
-            } else {
-                widths[entry.getKey()] = entry.getValue().byteValue();
+        for (Entry<Object, Integer> entry : widthOverrides.entrySet()) {
+            if (entry.getKey() instanceof Integer) {
+                Integer key = (Integer) entry.getKey();
+                if (widths[key] == entry.getValue().byteValue()) {
+                    redundant.add(key);
+                } else {
+                    widths[key] = entry.getValue().byteValue();
+                }
             }
         }
         redundant.forEach(widthOverrides::remove);
@@ -52,26 +56,36 @@ public class AlignedPlayerList extends PlayerList implements QuitListener, Vanis
         return widths;
     }
 
+    private Map<String, Integer> loadMultiCharWidths() {
+        Map<String, Integer> multiCharWidths = new HashMap<>();
+        Map<Object, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
+        for (Entry<Object, Integer> entry : widthOverrides.entrySet()) {
+            if (entry.getKey() instanceof String) {
+                multiCharWidths.put((String) entry.getKey(), entry.getValue());
+            }
+        }
+        return multiCharWidths;
+    }
+
     @Override
     public void load() {
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             playerViews.put(all, new PlayerView(this, all));
-            if (isDisabled(all.getServer(), all.getWorld())) {
-                addDisabledPlayer(all);
+            if (disableChecker.isDisableConditionMet(all)) {
+                disableChecker.addDisabledPlayer(all);
             }
         }
         playerViews.values().forEach(PlayerView::load);
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         updateProperties(connectedPlayer);
         playerViews.put(connectedPlayer, new PlayerView(this, connectedPlayer));
         playerViews.values().forEach(v -> v.playerJoin(connectedPlayer));
-        if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-            addDisabledPlayer(connectedPlayer);
+        if (disableChecker.isDisableConditionMet(connectedPlayer)) {
+            disableChecker.addDisabledPlayer(connectedPlayer);
             return;
         }
         if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
@@ -83,24 +97,18 @@ public class AlignedPlayerList extends PlayerList implements QuitListener, Vanis
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
         if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION) ||
                 connectedPlayer.getVersion().getMinorVersion() == 8)
-            TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+            TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
     }
 
     @Override
-    public void onQuit(TabPlayer p) {
-        playerViews.values().forEach(v -> v.processPlayerQuit(p));
+    public void onQuit(@NotNull TabPlayer p) {
         playerViews.remove(p);
+        playerViews.values().forEach(v -> v.processPlayerQuit(p));
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
-        super.onWorldChange(p, from, to);
-        playerViews.values().forEach(v -> v.worldChange(p));
-    }
-
-    @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
-        if (isDisabledPlayer(refreshed)) return;
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
+        if (disableChecker.isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
             updateProperties(refreshed);
@@ -117,14 +125,14 @@ public class AlignedPlayerList extends PlayerList implements QuitListener, Vanis
     }
 
     @Override
-    public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
+    public IChatBaseComponent getTabFormat(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         PlayerView view = playerViews.get(viewer);
         if (view == null) return null;
         return view.formatName(p);
     }
 
     @Override
-    public void onVanishStatusChange(TabPlayer player) {
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
         playerViews.values().forEach(v -> v.onVanishChange(player));
     }
 }

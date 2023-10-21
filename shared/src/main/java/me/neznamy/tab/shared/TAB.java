@@ -2,19 +2,28 @@ package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.api.*;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.bossbar.BossBarManager;
-import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.api.tablist.SortingManager;
+import me.neznamy.tab.api.tablist.layout.LayoutManager;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
-import me.neznamy.tab.api.team.TeamManager;
-import me.neznamy.tab.api.util.ReflectionUtils;
+import me.neznamy.tab.api.tablist.HeaderFooterManager;
+import me.neznamy.tab.api.tablist.TabListFormatManager;
+import me.neznamy.tab.api.nametag.NameTagManager;
+import me.neznamy.tab.shared.cpu.CpuManager;
+import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
@@ -28,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TAB extends TabAPI {
 
     /** Instance of this class */
-    @Getter @Setter private static TAB instance;
+    @Getter private static TAB instance;
 
     /** Player data storage */
     private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
@@ -69,7 +78,7 @@ public class TAB extends TabAPI {
     @Getter private final ErrorManager errorManager;
 
     /** Feature manager forwarding events into all loaded features */
-    @Getter private FeatureManagerImpl featureManager;
+    @Getter private FeatureManager featureManager;
 
     /** Plugin's configuration files and values storage */
     @Getter private Configs configuration;
@@ -83,20 +92,25 @@ public class TAB extends TabAPI {
     /** Minecraft version the server is running on, always using the latest on proxies */
     @Getter private final ProtocolVersion serverVersion;
 
-    /** Boolean checking floodgate plugin presence for hook */
-    @Getter private final boolean floodgateInstalled = ReflectionUtils.classExists("org.geysermc.floodgate.api.FloodgateApi");
-
-    /** Version string defined by the server */
-    @Getter private final String serverVersionString;
-
     /** TAB's data folder */
     @Getter private final File dataFolder;
 
-    /** Plugin's console logger provided by platform */
-    @Getter private final Object logger;
-
     /** File with YAML syntax error, which prevented plugin from loading */
     @Getter @Setter private String brokenFile;
+
+    /** Helper for detecting misconfiguration in configs and send it to user */
+    @Getter private final MisconfigurationHelper misconfigurationHelper = new MisconfigurationHelper();
+
+    /**
+     * Creates new instance using given platform and loads it
+     *
+     * @param   platform
+     *          Platform interface
+     */
+    public static void create(@NotNull Platform platform) {
+        instance = new TAB(platform);
+        instance.load();
+    }
 
     /**
      * Constructs new instance with given parameters and sets this
@@ -104,21 +118,23 @@ public class TAB extends TabAPI {
      *
      * @param   platform
      *          Platform interface
-     * @param   serverVersion
-     *          Version the server is running on
      */
-    public TAB(Platform platform, ProtocolVersion serverVersion, String serverVersionString, File dataFolder, Object logger) {
+    private TAB(@NotNull Platform platform) {
         this.platform = platform;
-        this.serverVersion = serverVersion;
-        this.serverVersionString = serverVersionString;
-        this.dataFolder = dataFolder;
-        this.logger = logger;
+        this.serverVersion = platform.getServerVersion();
+        this.dataFolder = platform.getDataFolder();
         this.errorManager = new ErrorManager(this);
         try {
-
             eventBus = new EventBusImpl();
         } catch (NoSuchMethodError e) {
             //1.7.10 or lower
+        }
+        TabAPI.setInstance(this);
+        platform.registerListener();
+        platform.registerCommand();
+        platform.startMetrics();
+        if (platform instanceof ProxyPlatform) {
+            ((ProxyPlatform) platform).registerChannel();
         }
     }
 
@@ -130,7 +146,7 @@ public class TAB extends TabAPI {
      *          TabList id of player
      * @return  player with provided id or null if player was not found
      */
-    public TabPlayer getPlayerByTabListUUID(UUID tabListId) {
+    public @Nullable TabPlayer getPlayerByTabListUUID(UUID tabListId) {
         return playersByTabListId.get(tabListId);
     }
 
@@ -145,21 +161,23 @@ public class TAB extends TabAPI {
             long time = System.currentTimeMillis();
             cpu = new CpuManager();
             configuration = new Configs();
-            featureManager = new FeatureManagerImpl();
+            featureManager = new FeatureManager();
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
-            featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, new GroupManager(platform.detectPermissionPlugin()));
+            featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, platform.detectPermissionPlugin());
             platform.registerPlaceholders();
-            platform.loadFeatures();
+            featureManager.loadFeaturesFromConfig();
             platform.loadPlayers();
             command = new TabCommand();
             featureManager.load();
-            for (TabPlayer p : onlinePlayers) ((ITabPlayer)p).markAsLoaded(false);
+            for (TabPlayer p : onlinePlayers) p.markAsLoaded(false);
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
-            sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
+            cpu.enable();
+            misconfigurationHelper.printWarnCount();
+            platform.logInfo(IChatBaseComponent.fromColoredText("&aEnabled in " + (System.currentTimeMillis()-time) + "ms"));
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {
-            sendConsoleMessage("&cDid not enable due to a broken configuration file.", true);
+            platform.logWarn(IChatBaseComponent.fromColoredText("&cDid not enable due to a broken configuration file."));
             kill();
             return (configuration == null ? "&4Failed to reload, file %file% has broken syntax. Check console for more info."
                     : configuration.getMessages().getReloadFailBrokenFile()).replace("%file%", brokenFile);
@@ -180,7 +198,7 @@ public class TAB extends TabAPI {
             long time = System.currentTimeMillis();
             if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
             featureManager.unload();
-            sendConsoleMessage("&aDisabled in " + (System.currentTimeMillis()-time) + "ms", true);
+            platform.logInfo(IChatBaseComponent.fromColoredText("&aDisabled in " + (System.currentTimeMillis()-time) + "ms"));
         } catch (Exception | NoClassDefFoundError e) {
             errorManager.criticalError("Failed to disable", e);
         }
@@ -204,7 +222,7 @@ public class TAB extends TabAPI {
      * @param   player
      *          Player to add
      */
-    public void addPlayer(TabPlayer player) {
+    public void addPlayer(@NotNull TabPlayer player) {
         data.put(player.getUniqueId(), player);
         playersByTabListId.put(player.getTablistId(), player);
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
@@ -216,7 +234,7 @@ public class TAB extends TabAPI {
      * @param   player
      *          Player to remove
      */
-    public void removePlayer(TabPlayer player) {
+    public void removePlayer(@NotNull TabPlayer player) {
         data.remove(player.getUniqueId());
         playersByTabListId.remove(player.getTablistId());
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
@@ -227,8 +245,8 @@ public class TAB extends TabAPI {
      *
      * @return  group manager instance
      */
-    public GroupManager getGroupManager() {
-        return (GroupManager) featureManager.getFeature(TabConstants.Feature.GROUP_MANAGER);
+    public @NotNull GroupManager getGroupManager() {
+        return featureManager.getFeature(TabConstants.Feature.GROUP_MANAGER);
     }
 
     /**
@@ -236,33 +254,33 @@ public class TAB extends TabAPI {
      *
      * @return  {@link #cpu}
      */
-    public CpuManager getCPUManager() {
+    public @NotNull CpuManager getCPUManager() {
         return cpu;
     }
 
     @Override
-    public BossBarManager getBossBarManager() {
-        return (BossBarManager) featureManager.getFeature(TabConstants.Feature.BOSS_BAR);
+    public @Nullable BossBarManager getBossBarManager() {
+        return featureManager.getFeature(TabConstants.Feature.BOSS_BAR);
     }
 
     @Override
-    public ScoreboardManager getScoreboardManager() {
-        return (ScoreboardManager) featureManager.getFeature(TabConstants.Feature.SCOREBOARD);
+    public @Nullable ScoreboardManager getScoreboardManager() {
+        return featureManager.getFeature(TabConstants.Feature.SCOREBOARD);
     }
 
     @Override
-    public TeamManager getTeamManager() {
-        if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return (NameTag) featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
-        return (NameTag) featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+    public @Nullable NameTagManager getNameTagManager() {
+        if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
+        return featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
     }
 
     @Override
-    public PlaceholderManagerImpl getPlaceholderManager() {
-        return (PlaceholderManagerImpl) featureManager.getFeature(TabConstants.Feature.PLACEHOLDER_MANAGER);
+    public @NotNull PlaceholderManagerImpl getPlaceholderManager() {
+        return featureManager.getFeature(TabConstants.Feature.PLACEHOLDER_MANAGER);
     }
 
     @Override
-    public TabPlayer getPlayer(String name) {
+    public @Nullable TabPlayer getPlayer(@NotNull String name) {
         for (TabPlayer p : data.values()) {
             if (p.getName().equalsIgnoreCase(name)) return p;
         }
@@ -270,52 +288,43 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public TabPlayer getPlayer(UUID uniqueId) {
+    public @Nullable TabPlayer getPlayer(@NotNull UUID uniqueId) {
         return data.get(uniqueId);
     }
 
     @Override
-    public void sendConsoleMessage(String message, boolean translateColors) {
-        platform.sendConsoleMessage(message, translateColors);
+    public @Nullable HeaderFooterManager getHeaderFooterManager() {
+        return featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
     }
 
-    @Override
-    public HeaderFooterManager getHeaderFooterManager() {
-        return (HeaderFooterManager) featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
-    }
-
-    @Override
-    public ConfigurationFile getPlayerCache() {
-        return configuration.getPlayerDataFile();
-    }
-
-    @Override
-    public ConfigurationFile getConfig() {
+    public @NotNull ConfigurationFile getConfig() {
         return configuration.getConfig();
     }
 
     @Override
-    public PropertyConfiguration getGroups() {
-        return configuration.getGroups();
+    public @Nullable TabListFormatManager getTabListFormatManager() {
+        return featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
     }
 
     @Override
-    public PropertyConfiguration getUsers() {
-        return configuration.getUsers();
+    public @Nullable LayoutManager getLayoutManager() {
+        return featureManager.getFeature(TabConstants.Feature.LAYOUT);
     }
 
     @Override
-    public void logError(String message, Throwable t) {
-        errorManager.printError(message, t);
+    public @Nullable SortingManager getSortingManager() {
+        return featureManager.getFeature(TabConstants.Feature.SORTING);
     }
 
-    @Override
-    public TablistFormatManager getTablistFormatManager() {
-        return (TablistFormatManager) featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
-    }
-
-    @Override
-    public void debug(String message) {
-        if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
+    /**
+     * Sends a debug message into console if the option
+     * is enabled in config.
+     *
+     * @param   message
+     *          Message to send
+     */
+    public void debug(@NotNull String message) {
+        if (configuration != null && configuration.isDebugMode())
+            platform.logInfo(IChatBaseComponent.fromColoredText("&9[DEBUG] " + message));
     }
 }

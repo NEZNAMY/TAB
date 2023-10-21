@@ -1,53 +1,92 @@
 package me.neznamy.tab.api.placeholder;
 
-import java.util.List;
+import lombok.NonNull;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.TabPlayer;
-
-public interface PlaceholderManager extends Refreshable {
+/**
+ * An interface allowing placeholder registration. Instance can be
+ * obtained using {@link TabAPI#getPlaceholderManager()}
+ */
+public interface PlaceholderManager {
 
     /**
      * Registers a server placeholder (placeholder with same output for all players)
-     */
-    ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier);
-
-    /**
-     * Registers a player placeholder (placeholder with player-specific output)
-     */
-    PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function);
-
-    /**
-     * Registers a relational placeholder (different output for each player pair)
-     */
-    RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function);
-
-    /**
-     * Detects placeholders in text using %% pattern and returns list of all detected identifiers
-     *
-     * @param   text
-     *          text to detect placeholders in
-     * @return  list of detected identifiers
-     */
-    List<String> detectPlaceholders(String text);
-
-    /**
-     * Adds placeholder to list of used placeholders and assigns this feature as using it,
-     * which will then receive refresh() if values changes
      *
      * @param   identifier
-     *          placeholder identifier
-     * @param   feature
-     *          feature using the placeholder
+     *          Placeholder identifier
+     * @param   refresh
+     *          Refresh interval
+     * @param   supplier
+     *          Supplier for placeholder output
+     * @return  Registered placeholder for further use
+     * @throws  IllegalArgumentException
+     *          If {@code identifier} does not start and end with {@code %} or
+     *          {@code refresh} is not divisible by 50
      */
-    void addUsedPlaceholder(String identifier, Refreshable feature);
+    @NotNull ServerPlaceholder registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<Object> supplier);
 
-    String findReplacement(String placeholder, String output);
+    /**
+     * Registers a player placeholder (placeholder different output per player)
+     *
+     * @param   identifier
+     *          Placeholder identifier
+     * @param   refresh
+     *          Refresh interval
+     * @param   function
+     *          Function for placeholder output
+     * @return  Registered placeholder for further use
+     * @throws  IllegalArgumentException
+     *          If {@code identifier} does not start and end with {@code %} or
+     *          {@code refresh} is not divisible by 50
+     */
+    @NotNull PlayerPlaceholder registerPlayerPlaceholder(@NonNull String identifier, int refresh, @NonNull Function<TabPlayer, Object> function);
 
-    List<String> getUsedPlaceholders();
+    /**
+     * Registers a relational placeholder (placeholder with output different for each player duo)
+     *
+     * @param   identifier
+     *          Placeholder identifier
+     * @param   refresh
+     *          Refresh interval
+     * @param   function
+     *          Function for placeholder output
+     * @return  Registered placeholder for further use
+     * @throws  IllegalArgumentException
+     *          If {@code identifier} does not start and end with {@code %},
+     *          does not start with {@code %rel_} or
+     *          {@code refresh} is not divisible by 50
+     */
+    @NotNull RelationalPlaceholder registerRelationalPlaceholder(@NonNull String identifier, int refresh, @NonNull BiFunction<TabPlayer, TabPlayer, Object> function);
 
-    Placeholder getPlaceholder(String identifier);
+    /**
+     * Returns placeholder from specified identifier. If it does not exist, it is registered
+     * as a PlaceholderAPI placeholder and returned.
+     *
+     * @param   identifier
+     *          Placeholder identifier
+     * @return  Placeholder with specified identifier
+     */
+    @NotNull Placeholder getPlaceholder(@NonNull String identifier);
+
+    /**
+     * Unregisters placeholder and makes plugin no longer refresh it.
+     *
+     * @param   placeholder
+     *          Placeholder to unregister
+     */
+    void unregisterPlaceholder(@NonNull Placeholder placeholder);
+
+    /**
+     * Unregisters placeholder and makes plugin no longer refresh it.
+     *
+     * @param   identifier
+     *          identifier of placeholder to unregister
+     */
+    void unregisterPlaceholder(@NonNull String identifier);
 }

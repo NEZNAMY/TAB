@@ -1,18 +1,20 @@
 package me.neznamy.tab.shared.features.nametags;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.feature.JoinListener;
-import me.neznamy.tab.api.feature.Loadable;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.features.types.JoinListener;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class CollisionManager extends TabFeature implements JoinListener, Loadable, Refreshable {
@@ -22,7 +24,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     private final NameTag nameTags;
     private final boolean collisionRule;
     private final WeakHashMap<TabPlayer, Boolean> collision = new WeakHashMap<>();
-    private final WeakHashMap<TabPlayer, Boolean> forcedCollision = new WeakHashMap<>();
+    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, Boolean> forcedCollision = new WeakHashMap<>();
 
     public boolean getCollision(TabPlayer p) {
         return forcedCollision.getOrDefault(p, collision.getOrDefault(p, collisionRule));
@@ -32,12 +34,11 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     public void load() {
         if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return; //cannot control collision anyway
         if (!collisionRule) return; //no need to refresh disguise status since collision is disabled
-        if (TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.LIBS_DISGUISES) == null && TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) return; //no disguise plugin available
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
 
             if (forcedCollision.containsKey(p)) return forcedCollision.get(p);
-            boolean newCollision = !p.isDisguised();
-            collision.put(p, newCollision);
+            boolean newCollision = !((TabPlayer)p).isDisguised();
+            collision.put((TabPlayer) p, newCollision);
             return newCollision;
         });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.COLLISION));
@@ -47,18 +48,18 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     }
     
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         collision.put(connectedPlayer, collisionRule);
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
-        if (nameTags.isDisabledPlayer(p)) return;
+    public void refresh(@NotNull TabPlayer p, boolean force) {
+        if (nameTags.getDisableChecker().isDisabledPlayer(p)) return;
         nameTags.updateTeamData(p);
     }
     
-    public void setCollisionRule(TabPlayer player, Boolean collision) {
-        if (forcedCollision.get(player) == collision) return;
+    public void setCollisionRule(@NotNull TabPlayer player, @Nullable Boolean collision) {
+        if (Objects.equals(forcedCollision.get(player), collision)) return;
         if (collision == null) {
             forcedCollision.remove(player);
         } else {
@@ -67,7 +68,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
         nameTags.updateTeamData(player);
     }
 
-    public Boolean getCollisionRule(TabPlayer player) {
+    public @Nullable Boolean getCollisionRule(@NotNull TabPlayer player) {
         return forcedCollision.get(player);
     }
 }

@@ -1,62 +1,71 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.player.ChatSession;
-import com.velocitypowered.api.proxy.player.TabList;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.hook.AdventureHook;
+import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
+@SuppressWarnings("deprecation")
 @RequiredArgsConstructor
-public class VelocityTabList extends SingleUpdateTabList {
+public class VelocityTabList implements TabList {
 
     /** Player this TabList belongs to */
-    private final VelocityTabPlayer player;
+    @NotNull private final VelocityTabPlayer player;
+
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<TabListEntry, Component> expectedDisplayNames = new WeakHashMap<>();
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry(@NotNull UUID entry) {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
+    /**
+     * https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133
+     * You are supposed to be overriding
+     * {@link com.velocitypowered.api.proxy.player.TabList#buildEntry(GameProfile, Component, int, int, ChatSession, boolean)},
+     * not the outdated {@link com.velocitypowered.api.proxy.player.TabList#buildEntry(GameProfile, Component, int, int)},
+     * because {@link Entry.Builder#build()} calls that method. Manually removing the
+     * entry and adding it again to avoid this bug.
+     */
     @Override
-    public void updateDisplayName(@NonNull UUID id, IChatBaseComponent displayName) {
-        if (player.getVersion().getMinorVersion() >= 8) {
-            getEntry(id).setDisplayName(VelocityTAB.getComponentCache().get(displayName, player.getVersion()));
-        } else {
-            /**
-             * https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133
-             * You are supposed to be overriding
-             * {@link TabList#buildEntry(GameProfile, Component, int, int, ChatSession, boolean)},
-             * not the outdated {@link TabList#buildEntry(GameProfile, Component, int, int)},
-             * because {@link TabListEntry.Builder#build()} calls that method.
-             */
-            String username = getEntry(id).getProfile().getName();
-            removeEntry(id);
-            addEntry(new me.neznamy.tab.api.tablist.TabListEntry.Builder(id).name(username).displayName(displayName).build());
-        }
+    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+        getEntry(entry).ifPresent(e -> {
+            if (player.getVersion().getMinorVersion() >= 8) {
+                Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
+                e.setDisplayName(component);
+                expectedDisplayNames.put(e, component);
+            } else {
+                String username = e.getProfile().getName();
+                removeEntry(entry);
+                addEntry(new Entry.Builder(entry).name(username).displayName(displayName).build());
+            }
+        });
     }
 
     @Override
-    public void updateLatency(@NonNull UUID id, int latency) {
-        getEntry(id).setLatency(latency);
+    public void updateLatency(@NotNull UUID entry, int latency) {
+        getEntry(entry).ifPresent(e -> e.setLatency(latency));
     }
 
     @Override
-    public void updateGameMode(@NonNull UUID id, int gameMode) {
-        getEntry(id).setGameMode(gameMode);
+    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+        getEntry(entry).ifPresent(e -> e.setGameMode(gameMode));
     }
 
     @Override
-    public void addEntry(me.neznamy.tab.api.tablist.@NonNull TabListEntry entry) {
+    public void addEntry(@NotNull Entry entry) {
         if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
-        player.getPlayer().getTabList().addEntry(TabListEntry.builder()
+        Component displayName = entry.getDisplayName() == null ? null : AdventureHook.toAdventureComponent(entry.getDisplayName(), player.getVersion());
+        TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(new GameProfile(
                         entry.getUniqueId(),
@@ -64,29 +73,62 @@ public class VelocityTabList extends SingleUpdateTabList {
                         entry.getSkin() == null ? Collections.emptyList() : Collections.singletonList(
                                 new GameProfile.Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), Objects.requireNonNull(entry.getSkin().getSignature())))
                 ))
-                .listed(entry.isListed())
                 .latency(entry.getLatency())
                 .gameMode(entry.getGameMode())
-                .displayName(VelocityTAB.getComponentCache().get(entry.getDisplayName(), player.getVersion()))
-                //.chatSession(new RemoteChatSession(entry.getChatSessionId(), entry.getProfilePublicKey())) // RemoteChatSession is in proxy module
-                .build());
+                .displayName(displayName)
+                .build();
+        player.getPlayer().getTabList().addEntry(e);
+        expectedDisplayNames.put(e, displayName);
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+        player.getPlayer().sendPlayerListHeaderAndFooter(
+                AdventureHook.toAdventureComponent(header, player.getVersion()),
+                AdventureHook.toAdventureComponent(footer, player.getVersion())
+        );
     }
 
     /**
      * Returns TabList entry with specified UUID. If no such entry was found,
-     * a new, dummy entry is returned to avoid NPE.
+     * empty Optional is returned.
      *
      * @param   id
      *          UUID to get entry by
      * @return  TabList entry with specified UUID
      */
-    private TabListEntry getEntry(UUID id) {
-        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            if (entry.getProfile().getId().equals(id)) return entry;
+    @NotNull
+    private Optional<TabListEntry> getEntry(@NotNull UUID id) {
+        for (TabListEntry entry : getEntries()) {
+            if (entry.getProfile().getId().equals(id)) return Optional.of(entry);
         }
-        //return dummy entry to not cause NPE
-        //possibly add logging into the future to see when this happens
-        return TabListEntry.builder().tabList(player.getPlayer().getTabList())
-                .profile(new GameProfile(id, "", Collections.emptyList())).build();
+        return Optional.empty();
+    }
+
+    @Override
+    public void checkDisplayNames() {
+        for (TabListEntry entry : getEntries()) {
+            Component expectedComponent = expectedDisplayNames.get(entry);
+            if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
+                displayNameWrong(entry.getProfile().getName(), player);
+                entry.setDisplayName(expectedComponent);
+            }
+        }
+    }
+
+    /**
+     * Returns list of entries in player's TabList. This includes a try/catch
+     * to avoid {@link ConcurrentModificationException} when it's modified by the
+     * backend server while iterating.
+     *
+     * @return  A copy of TabList entries in player's TabList
+     */
+    private Collection<TabListEntry> getEntries() {
+        try {
+            return new ArrayList<>(player.getPlayer().getTabList().getEntries());
+        } catch (ConcurrentModificationException velocity) {
+            // TabList was modified by backend server during iteration
+            return getEntries();
+        }
     }
 }

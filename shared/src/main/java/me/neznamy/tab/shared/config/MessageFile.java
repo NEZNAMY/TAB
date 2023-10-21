@@ -6,9 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
+import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
 public class MessageFile extends YamlConfigurationFile {
@@ -26,7 +27,7 @@ public class MessageFile extends YamlConfigurationFile {
     @Getter private final String commandOnlyFromGame = getString("command-only-from-game", "&cThis command must be ran from the game");
     @Getter private final String unlimitedNametagModeNotEnabled = getString("unlimited-nametag-mode-not-enabled", "&c[TAB] Warning! To make this feature work, you need to enable unlimited-nametag-mode in the config!");
     @Getter private final String scoreboardFeatureNotEnabled = getString("scoreboard-feature-not-enabled", "&4This command requires the scoreboard feature to be enabled.");
-    @Getter private final String scoreboardAnnounceCommandUsage = getString("scoreboard-announce-command-usage", "Usage: /tab announce scoreboard <scoreboard name> <length>");
+    @Getter private final String scoreboardAnnounceCommandUsage = getString("scoreboard-announce-command-usage", "Usage: /tab scoreboard announce <scoreboard name> <length>");
     @Getter private final String nametagPreviewOn = getString("nametag-preview-on", "&7Preview mode &aactivated&7.");
     @Getter private final String nametagPreviewOff = getString("nametag-preview-of", "&7Preview mode &3deactivated&7.");
     @Getter private final String reloadSuccess = getString("reload-success", "&3[TAB] Successfully reloaded");
@@ -72,61 +73,71 @@ public class MessageFile extends YamlConfigurationFile {
     @Getter private final String nameTagsHidden = getString("nametags-hidden", "&aNametags of all players were hidden to you");
     @Getter private final String nameTagsShown = getString("nametags-shown", "&aNametags of all players were shown to you");
     @Getter private final String armorStandsDisabledCannotPreview = getString("armorstands-disabled-cannot-use-preview", "&cYour armor stands are disabled, therefore you cannot use preview feature");
+    @Getter private final List<String> scoreboardHelpMenu = getStringList("scoreboard-help-menu", Arrays.asList(
+            "/tab scoreboard [on/off/toggle] [player] [options]",
+            "/tab scoreboard show <name> [player]",
+            "/tab scoreboard announce <name> <length>"
+    ));
+    @Getter private final List<String> bossbarHelpMenu = getStringList("bossbar-help-menu", Arrays.asList(
+            "/tab bossbar [on/off/toggle] [player] [options]",
+            "/tab bossbar send <name> [player]",
+            "/tab bossbar announce <name> <length>"
+    ));
 
     public MessageFile() throws YAMLException, IOException {
         super(MessageFile.class.getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));
     }
 
-    public String getBossBarNotFound(String name) {
+    public @NotNull String getBossBarNotFound(@NotNull String name) {
         return getString("bossbar-not-found", "&cNo bossbar found with the name \"%name%\"").replace("%name%", name);
     }
 
-    public String getGroupDataRemoved(String group) {
+    public @NotNull String getGroupDataRemoved(@NotNull String group) {
         return getString("group-data-removed", "&3[TAB] All data has been successfully removed from group &e%group%").replace("%group%", group);
     }
 
-    public String getGroupValueAssigned(String property, String value, String group) {
+    public @NotNull String getGroupValueAssigned(@NotNull String property, @NotNull String value, @NotNull String group) {
         return getString("group-value-assigned", "&3[TAB] %property% '&r%value%&r&3' has been successfully assigned to group &e%group%")
                 .replace("%property%", property).replace("%value%", value).replace("%group%", group);
     }
 
-    public String getGroupValueRemoved(String property, String group) {
+    public @NotNull String getGroupValueRemoved(@NotNull String property, @NotNull String group) {
         return getString("group-value-removed", "&3[TAB] %property% has been successfully removed from group &e%group%")
                 .replace("%property%", property).replace("%group%", group);
     }
 
-    public String getPlayerDataRemoved(String player) {
+    public @NotNull String getPlayerDataRemoved(@NotNull String player) {
         return getString("user-data-removed", "&3[TAB] All data has been successfully removed from player &e%player%").replace("%player%", player);
     }
 
-    public String getPlayerValueAssigned(String property, String value, String player) {
+    public @NotNull String getPlayerValueAssigned(@NotNull String property, @NotNull String value, @NotNull String player) {
         return getString("user-value-assigned", "&3[TAB] %property% '&r%value%&r&3' has been successfully assigned to player &e%player%")
                 .replace("%property%", property).replace("%value%", value).replace("%player%", player);
     }
 
-    public String getPlayerValueRemoved(String property, String player) {
+    public @NotNull String getPlayerValueRemoved(@NotNull String property, @NotNull String player) {
         return getString("user-value-removed", "&3[TAB] %property% has been successfully removed from player &e%player%")
                 .replace("%property%", property).replace("%player%", player);
     }
 
-    public String getPlayerNotFound(String name) {
+    public @NotNull String getPlayerNotFound(@NotNull String name) {
         return getString("player-not-online", "&cNo online player found with the name \"%player%\"").replace("%player%", name);
     }
 
-    public String getInvalidNumber(String input) {
+    public @NotNull String getInvalidNumber(@NotNull String input) {
         return getString("invalid-number", "\"%input%\" is not a number!").replace("%input%", input);
     }
 
-    public String getScoreboardNotFound(String name) {
+    public @NotNull String getScoreboardNotFound(@NotNull String name) {
         return getString("scoreboard-not-found", "&cNo scoreboard found with the name \"%name%\"").replace("%name%", name);
     }
 
-    public String getBossBarAnnouncementSuccess(String bar, int length) {
+    public @NotNull String getBossBarAnnouncementSuccess(@NotNull String bar, int length) {
         return getString("bossbar-announcement-success", "&aAnnouncing bossbar &6%bossbar% &afor %length% seconds.")
                 .replace("%bossbar%", bar).replace("%length%", String.valueOf(length));
     }
 
-    public String getBossBarSendSuccess(String player, String bar, int length) {
+    public @NotNull String getBossBarSendSuccess(@NotNull String player, @NotNull String bar, int length) {
         return getString("bossbar-send-success", "&aSending bossbar &6%bossbar% &ato player &6%player% &afor %length% seconds.")
                 .replace("%player%", player).replace("%bossbar%", bar).replace("%length%", String.valueOf(length));
     }

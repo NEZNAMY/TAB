@@ -1,9 +1,12 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import me.neznamy.tab.api.*;
+import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -13,11 +16,8 @@ public class BackendArmorStandManager implements ArmorStandManager {
 
     @Getter private boolean sneaking;
 
-    /** Map of registered armor stands by name */
-    private final Map<String, BackendArmorStand> armorStands = new LinkedHashMap<>();
-
     /** Armor stands in an array for speed while iterating */
-    private BackendArmorStand[] armorStandArray;
+    private final ArmorStand[] armorStandArray;
 
     /** Players in entity tracking range of owner */
     private final List<BackendTabPlayer> nearbyPlayerList = new ArrayList<>();
@@ -33,21 +33,22 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   owner
      *          Owner of this armor stand manager
      */
-    public BackendArmorStandManager(NameTagX nameTagX, TabPlayer owner) {
+    public BackendArmorStandManager(@NotNull NameTagX nameTagX, @NotNull TabPlayer owner) {
         this.nameTagX = (BackendNameTagX) nameTagX;
         sneaking = this.nameTagX.isSneaking(owner);
         owner.setProperty(nameTagX, TabConstants.Property.NAMETAG, owner.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
         double height = 0;
+        List<ArmorStand> armorStands = new ArrayList<>();
         for (String line : nameTagX.getDynamicLines()) {
-            armorStands.put(line, new BackendArmorStand((BackendNameTagX) nameTagX, this, owner, line, height, false));
+            armorStands.add(new ArmorStand((BackendNameTagX) nameTagX, this, owner, line, height, false));
             height += 0.26;
         }
         for (Map.Entry<String, Object> line : nameTagX.getStaticLines().entrySet()) {
-            armorStands.put(line.getKey(), new BackendArmorStand((BackendNameTagX) nameTagX, this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
+            armorStands.add(new ArmorStand((BackendNameTagX) nameTagX, this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
         }
-        armorStandArray = armorStands.values().toArray(new BackendArmorStand[0]);
+        armorStandArray = armorStands.toArray(new ArmorStand[0]);
         fixArmorStandHeights();
     }
 
@@ -57,15 +58,15 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to teleport armor stands for
      */
-    public void teleport(BackendTabPlayer viewer) {
-        for (BackendArmorStand a : armorStandArray) a.teleport(viewer);
+    public void teleport(@NotNull BackendTabPlayer viewer) {
+        for (ArmorStand a : armorStandArray) a.teleport(viewer);
     }
 
     /**
      * Teleports armor stands to player's current location for all nearby players
      */
     public void teleport() {
-        for (BackendArmorStand a : armorStandArray) a.teleport();
+        for (ArmorStand a : armorStandArray) a.teleport();
     }
 
     /**
@@ -75,24 +76,8 @@ public class BackendArmorStandManager implements ArmorStandManager {
      *          Player to check for
      * @return  {@code true} if player nearby, {@code false} if not
      */
-    public boolean isNearby(BackendTabPlayer viewer) {
+    public boolean isNearby(@NotNull BackendTabPlayer viewer) {
         return nearbyPlayerList.contains(viewer);
-    }
-
-    /**
-     * Returns {@code true} if manager contains armor stand with specified entity id, {@code false} if not
-     *
-     * @param   entityId
-     *          entity id
-     * @return  {@code true} if armor stand with specified entity id exists, {@code false} if not
-     */
-    public boolean hasArmorStandWithID(int entityId) {
-        for (ArmorStand a : armorStandArray) {
-            if (a.getEntityId() == entityId) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -102,7 +87,6 @@ public class BackendArmorStandManager implements ArmorStandManager {
      *          new sneaking status
      */
     public void sneak(boolean sneaking) {
-        if (this.sneaking == sneaking) return;
         this.sneaking = sneaking;
         for (BackendTabPlayer viewer : nearbyPlayers) {
             if (viewer.getVersion().getMinorVersion() == 14 && !nameTagX.isArmorStandsAlwaysVisible()) {
@@ -128,14 +112,14 @@ public class BackendArmorStandManager implements ArmorStandManager {
         }
     }
 
-    public void respawn(BackendTabPlayer viewer) {
+    public void respawn(@NotNull BackendTabPlayer viewer) {
         // 1.8.0 will not see entity that respawned in the same tick
         // creating new delayed task every time someone sneaks can be abused and cause OOM
         // RIP 1.8.0
         for (ArmorStand as : armorStandArray) {
-            viewer.destroyEntities(as.getEntityId());
+            viewer.getEntityView().destroyEntities(as.getEntityId());
         }
-        for (BackendArmorStand a : armorStandArray) {
+        for (ArmorStand a : armorStandArray) {
             a.spawn(viewer);
         }
     }
@@ -146,11 +130,11 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to spawn armor stands for
      */
-    public void spawn(BackendTabPlayer viewer) {
+    public void spawn(@NotNull BackendTabPlayer viewer) {
         nearbyPlayerList.add(viewer);
         nearbyPlayers = nearbyPlayerList.toArray(new BackendTabPlayer[0]);
         if (viewer.getVersion().getMinorVersion() < 8) return;
-        for (BackendArmorStand a : armorStandArray) a.spawn(viewer);
+        for (ArmorStand a : armorStandArray) a.spawn(viewer);
     }
 
     /**
@@ -168,26 +152,12 @@ public class BackendArmorStandManager implements ArmorStandManager {
     }
 
     /**
-     * Adds armor stand to list and registers it to all nearby players
-     *
-     * @param   name
-     *          Unique identifier of the text line
-     * @param   as
-     *          Armor stand to add
-     */
-    public void addArmorStand(String name, BackendArmorStand as) {
-        armorStands.put(name, as);
-        armorStandArray = armorStands.values().toArray(new BackendArmorStand[0]);
-        for (BackendTabPlayer p : nearbyPlayers) as.spawn(p);
-    }
-
-    /**
      * Removes specified player from list of nearby players
      *
      * @param   viewer
      *          player to remove
      */
-    public void unregisterPlayer(BackendTabPlayer viewer) {
+    public void unregisterPlayer(@NotNull BackendTabPlayer viewer) {
         if (nearbyPlayerList.remove(viewer)) nearbyPlayers = nearbyPlayerList.toArray(new BackendTabPlayer[0]);
     }
 
@@ -201,9 +171,9 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to destroy armor stands for
      */
-    public void destroy(BackendTabPlayer viewer) {
+    public void destroy(@NotNull BackendTabPlayer viewer) {
         for (ArmorStand as : armorStandArray) {
-            viewer.destroyEntities(as.getEntityId());
+            viewer.getEntityView().destroyEntities(as.getEntityId());
         }
         unregisterPlayer(viewer);
     }
@@ -212,7 +182,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
     public void destroy() {
         for (BackendTabPlayer viewer : nearbyPlayers) {
             for (ArmorStand as : armorStandArray) {
-                viewer.destroyEntities(as.getEntityId());
+                viewer.getEntityView().destroyEntities(as.getEntityId());
             }
         }
         nearbyPlayerList.clear();
@@ -231,9 +201,9 @@ public class BackendArmorStandManager implements ArmorStandManager {
         if (fix) fixArmorStandHeights();
     }
 
-    public void updateMetadata(BackendTabPlayer viewer) {
-        for (BackendArmorStand a : armorStandArray) {
-            viewer.updateEntityMetadata(a.entityId, a.createDataWatcher(a.getProperty().getFormat(viewer), viewer));
+    public void updateMetadata(@NotNull BackendTabPlayer viewer) {
+        for (ArmorStand a : armorStandArray) {
+            viewer.getEntityView().updateEntityMetadata(a.entityId, a.createDataWatcher(a.getProperty().getFormat(viewer), viewer));
         }
     }
 }

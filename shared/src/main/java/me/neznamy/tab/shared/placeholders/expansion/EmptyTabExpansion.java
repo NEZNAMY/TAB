@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.placeholders.expansion;
 
-import me.neznamy.tab.api.TabPlayer;
+import lombok.NonNull;
+import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
  * Dummy implementation when expansion is disabled or not supported by platform
@@ -8,8 +9,8 @@ import me.neznamy.tab.api.TabPlayer;
 public class EmptyTabExpansion implements TabExpansion {
 
     @Override
-    public void setValue(TabPlayer player, String key, String value) {}
+    public void setValue(@NonNull TabPlayer player, @NonNull String key, @NonNull String value) {/*Do nothing*/}
 
     @Override
-    public boolean unregister() { return false; }
+    public void unregisterExpansion() {/* Do nothing */}
 }

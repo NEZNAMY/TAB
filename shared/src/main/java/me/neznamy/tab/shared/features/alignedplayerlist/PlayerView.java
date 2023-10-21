@@ -1,26 +1,28 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
-import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 
 public class PlayerView {
 
-    private final AlignedPlayerList feature;
-    private final TabPlayer viewer;
+    @NotNull private final AlignedPlayerList feature;
+    @NotNull private final TabPlayer viewer;
     private final boolean canSeeVanished;
     private final Map<TabPlayer, Integer> playerWidths = new WeakHashMap<>();
 
     private int maxWidth;
     private TabPlayer maxPlayer;
 
-    public PlayerView(AlignedPlayerList feature, TabPlayer viewer) {
+    public PlayerView(@NotNull AlignedPlayerList feature, @NotNull TabPlayer viewer) {
         this.feature = feature;
         this.viewer = viewer;
         canSeeVanished = viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
@@ -35,7 +37,7 @@ public class PlayerView {
         updateAllPlayers();
     }
 
-    public void playerJoin(TabPlayer connectedPlayer) {
+    public void playerJoin(@NotNull TabPlayer connectedPlayer) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         int width = getPlayerNameWidth(connectedPlayer);
         playerWidths.put(connectedPlayer, width);
@@ -48,25 +50,16 @@ public class PlayerView {
         }
     }
 
-    public void worldChange(TabPlayer target) {
-        int width = getPlayerNameWidth(target);
-        if (playerWidths.getOrDefault(target, 0) != width) {
-            playerWidths.put(target, width);
-            if (recalculateMaxWidth(null)) {
-                updateAllPlayers();
-            } else {
-                viewer.getTabList().updateDisplayName(feature.getTablistUUID(target, viewer), formatName(target));
-            }
-        }
-    }
-
     private void updateAllPlayers() {
+        if (viewer.getVersion().getMinorVersion() < 8) return;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (feature.getDisableChecker().isDisabledPlayer(all)) continue;
             viewer.getTabList().updateDisplayName(feature.getTablistUUID(all, viewer), formatName(all));
         }
     }
 
-    public synchronized IChatBaseComponent formatName(TabPlayer target) {
+    public synchronized IChatBaseComponent formatName(@NotNull TabPlayer target) {
+        if (viewer.getVersion().getMinorVersion() < 8) return null;
         Integer width = playerWidths.get(target);
         if (width == null) return null; //in packet reader, not loaded yet, will send packet after loading player
         Property prefixPr = target.getProperty(TabConstants.Property.TABPREFIX);
@@ -120,7 +113,8 @@ public class PlayerView {
         return output.toString();
     }
 
-    public void updatePlayer(TabPlayer target) {
+    public void updatePlayer(@NotNull TabPlayer target) {
+        if (viewer.getVersion().getMinorVersion() < 8) return;
         playerWidths.put(target, getPlayerNameWidth(target));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();
@@ -129,7 +123,7 @@ public class PlayerView {
         }
     }
 
-    public void processPlayerQuit(TabPlayer disconnectedPlayer) {
+    public void processPlayerQuit(@NotNull TabPlayer disconnectedPlayer) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         if (disconnectedPlayer == maxPlayer && recalculateMaxWidth(disconnectedPlayer)) {
             updateAllPlayers();
@@ -143,7 +137,7 @@ public class PlayerView {
      *          player to get width for
      * @return  width of player's TabList name format
      */
-    private int getPlayerNameWidth(TabPlayer p) {
+    private int getPlayerNameWidth(@NotNull TabPlayer p) {
         return getTextWidth(IChatBaseComponent.fromColoredText(
                 p.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) +
                 p.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer) +
@@ -157,14 +151,25 @@ public class PlayerView {
      *          component to get width of
      * @return  text width of characters in given component
      */
-    private int getTextWidth(IChatBaseComponent component) {
+    private int getTextWidth(@NotNull IChatBaseComponent component) {
+        byte[] widths = feature.getWidths();
+        Map<String, Integer> multiCharWidths = feature.getMultiCharWidths();
         int width = 0;
         if (component.getText() != null) {
-            for (char c : component.getText().toCharArray()) {
-                width += feature.getWidths()[c] + 1;
+            char[] chars = component.getText().toCharArray();
+            for (int i=0; i<chars.length; i++) {
                 if (component.getModifier().isBold()) {
                     width += 1;
                 }
+                if (i < chars.length-1) {
+                    String key = (int)chars[i] + "+" + (int)chars[i + 1];
+                    if (multiCharWidths.containsKey(key)) {
+                        width += multiCharWidths.get(key) + 1;
+                        i++; // Skip next character
+                        continue;
+                    }
+                }
+                width += widths[chars[i]] + 1;
             }
         }
         for (IChatBaseComponent extra : component.getExtra()) {
@@ -174,11 +179,11 @@ public class PlayerView {
     }
 
     // returns true if max changed, false if not
-    private boolean recalculateMaxWidth(TabPlayer ignoredPlayer) {
+    private boolean recalculateMaxWidth(@Nullable TabPlayer ignoredPlayer) {
         int newMaxWidth = 0;
         TabPlayer newMaxPlayer = null;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all == ignoredPlayer) continue;
+            if (all == ignoredPlayer || !playerWidths.containsKey(all)) continue;
             if (all.isVanished() && !canSeeVanished && all != viewer) continue;
             int localWidth = playerWidths.get(all);
             if (localWidth > newMaxWidth) {
@@ -192,10 +197,13 @@ public class PlayerView {
         return changed;
     }
 
-    public void onVanishChange(TabPlayer changed) {
+    public void onVanishChange(@NotNull TabPlayer changed) {
+        if (viewer.getVersion().getMinorVersion() < 8) return;
         playerWidths.put(changed, getPlayerNameWidth(changed));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();
+        } else if (!changed.isVanished() && !feature.getDisableChecker().isDisabledPlayer(changed)) {
+            viewer.getTabList().updateDisplayName(changed.getTablistId(), feature.getTabFormat(changed, viewer));
         }
     }
 }
