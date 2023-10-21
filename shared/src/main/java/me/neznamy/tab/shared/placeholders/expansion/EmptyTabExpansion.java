@@ -12,5 +12,5 @@ public class EmptyTabExpansion implements TabExpansion {
     public void setValue(@NonNull TabPlayer player, @NonNull String key, @NonNull String value) {/*Do nothing*/}
 
     @Override
-    public boolean unregister() { return false; }
+    public void unregisterExpansion() {/* Do nothing */}
 }

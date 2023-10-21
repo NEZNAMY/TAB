@@ -20,9 +20,8 @@ public class ProxyTabExpansion implements TabExpansion {
     }
 
     @Override
-    public boolean unregister() {
+    public void unregisterExpansion() {
         // Don't do anything on proxy side
-        return false;
     }
 
     public void resendAllValues(@NotNull TabPlayer player) {

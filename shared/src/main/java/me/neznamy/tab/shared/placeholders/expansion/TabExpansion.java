@@ -39,5 +39,5 @@ public interface TabExpansion {
 
     void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value);
 
-    boolean unregister();
+    void unregisterExpansion();
 }

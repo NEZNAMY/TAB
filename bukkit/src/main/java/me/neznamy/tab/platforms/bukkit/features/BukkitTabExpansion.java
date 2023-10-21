@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -111,5 +112,16 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     @Override
     public void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value) {
         values.computeIfAbsent(player, p -> new HashMap<>()).put(key, value);
+    }
+
+    @Override
+    @SuppressWarnings({"UnstableApiUsage", "deprecation"})
+    public void unregisterExpansion() {
+        if (ReflectionUtils.methodExists(PlaceholderExpansion.class, "unregister")) {
+            // Added in 2.10.7 (Jul 28, 2020)
+            unregister();
+        } else {
+            PlaceholderAPI.unregisterExpansion(this);
+        }
     }
 }
