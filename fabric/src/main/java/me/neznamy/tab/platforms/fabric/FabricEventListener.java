@@ -12,7 +12,7 @@ public class FabricEventListener extends EventListener<ServerPlayer> {
     public void register() {
         ServerPlayConnectionEvents.DISCONNECT.register((connection, $) -> quit(connection.player.getUUID()));
         ServerPlayConnectionEvents.JOIN.register((connection, $, $$) -> join(connection.player));
-        FabricMultiVersion.registerEntityEvents(this::replacePlayer);
+        FabricMultiVersion.registerEntityEvents(this::replacePlayer, this::worldChange);
         //TODO command preprocess
     }
 
