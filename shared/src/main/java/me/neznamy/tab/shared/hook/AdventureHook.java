@@ -27,7 +27,7 @@ public class AdventureHook {
     @NotNull
     public static Component toAdventureComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
         ChatModifier modifier = component.getModifier();
-        net.kyori.adventure.text.format.TextColor color = null;
+        TextColor color = null;
         if (modifier.getColor() != null) {
             if (clientVersion.getMinorVersion() >= 16) {
                 color = TextColor.color(modifier.getColor().getRgb());
