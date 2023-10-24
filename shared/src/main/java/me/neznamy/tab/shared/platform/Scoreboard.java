@@ -23,7 +23,11 @@ public abstract class Scoreboard<T extends TabPlayer> {
     /** Scoreboard objectives player has registered */
     private final Set<String> registeredObjectives = new HashSet<>();
 
+    /** Flag tracking time between Login packet send and its processing */
+    private boolean frozen;
+
     public void setScore(@NotNull String objective, @NotNull String playerName, int score) {
+        if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
             error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
             return;
@@ -32,6 +36,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public void removeScore(@NotNull String objective, @NotNull String playerName) {
+        if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
             error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
             return;
@@ -40,6 +45,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public void registerObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+        if (frozen) return;
         if (!registeredObjectives.add(objectiveName)) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
@@ -48,6 +54,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public void unregisterObjective(@NotNull String objectiveName) {
+        if (frozen) return;
         if (!registeredObjectives.remove(objectiveName)) {
             error("Tried to unregister non-existing objective %s for player ", objectiveName);
             return;
@@ -56,6 +63,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public void updateObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+        if (frozen) return;
         if (!registeredObjectives.contains(objectiveName)) {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
@@ -65,6 +73,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                              @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
+        if (frozen) return;
         if (!registeredTeams.add(name)) {
             error("Tried to register duplicated team %s to player ", name);
             return;
@@ -73,6 +82,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public void unregisterTeam(@NotNull String name) {
+        if (frozen) return;
         if (!registeredTeams.remove(name)) {
             error("Tried to unregister non-existing team %s for player ", name);
             return;
@@ -82,6 +92,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public void updateTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                            @NotNull CollisionRule collision, int options) {
+        if (frozen) return;
         if (!registeredTeams.contains(name)) {
             error("Tried to modify non-existing team %s for player ", name);
             return;
@@ -94,11 +105,19 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     /**
-     * Clears maps of registered teams and objectives on server switch, as proxy sends Login packet
+     * Marks for freeze.
      */
-    public void clearRegisteredObjectives() {
+    public void freeze() {
+        frozen = true;
+    }
+
+    /**
+     * Clears frozen flag and clears maps of registered teams and objectives.
+     */
+    public void unfreeze() {
         registeredTeams.clear();
         registeredObjectives.clear();
+        frozen = false;
     }
 
     /**

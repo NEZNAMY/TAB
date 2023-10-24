@@ -113,7 +113,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                     TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
                 }
                 if (isLogin(packet)) {
-                    // Logic must be processed after packet is actually sent
+                    player.getScoreboard().freeze();
                     super.write(context, packet, channelPromise);
                     TAB.getInstance().getCPUManager().runTaskLater(200, getFeatureName(), TabConstants.CpuUsageCategory.PACKET_LOGIN,
                             () -> TAB.getInstance().getFeatureManager().onLoginPacket(player));

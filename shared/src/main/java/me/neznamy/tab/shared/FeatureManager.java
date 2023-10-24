@@ -129,6 +129,12 @@ public class FeatureManager {
         if (!connectedPlayer.isOnline()) return;
         long millis = System.currentTimeMillis();
         TAB.getInstance().addPlayer(connectedPlayer);
+
+        // I don't think this is actually needed, but someone said it fixed geyser warn in console
+        // Doing this won't hurt, so whatever
+        if (connectedPlayer.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId() && connectedPlayer instanceof ProxyTabPlayer) {
+            connectedPlayer.getScoreboard().freeze();
+        }
         for (TabFeature f : values) {
             if (!(f instanceof JoinListener)) continue;
             long time = System.nanoTime();
@@ -272,7 +278,7 @@ public class FeatureManager {
     }
 
     public void onLoginPacket(TabPlayer packetReceiver) {
-        packetReceiver.getScoreboard().clearRegisteredObjectives();
+        packetReceiver.getScoreboard().unfreeze();
         for (TabFeature f : values) {
             if (!(f instanceof LoginPacketListener)) continue;
             long time = System.nanoTime();
