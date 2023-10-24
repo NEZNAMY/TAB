@@ -38,6 +38,21 @@ public interface BackendPlatform extends Platform {
     }
 
     /**
+     * Registers a dummy placeholder implementation for specified identifier in case
+     * no placeholder plugin was found.
+     *
+     * @param   identifier
+     *          Placeholder identifier to register
+     */
+    default void registerDummyPlaceholder(@NotNull String identifier) {
+        if (identifier.startsWith("%rel_")) { // To prevent placeholder identifier check from throwing
+            TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, -1, (viewer, target) -> identifier);
+        } else {
+            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
+        }
+    }
+
+    /**
      * Returns server's TPS for {@link TabConstants.Placeholder#TPS} placeholder
      *
      * @return  server's TPS
