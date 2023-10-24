@@ -23,19 +23,17 @@ public abstract class HeaderFooter {
      * Finds the best available instance for current server software.
      */
     public static void findInstance() {
-        if (PacketHeaderFooter.isAvailable()) {
-            instance = new PacketHeaderFooter();
-        } else if (PaperHeaderFooter.isAvailable()) {
+        if (PaperHeaderFooter.isAvailable()) {
             instance = new PaperHeaderFooter();
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
-                    "sending Header/Footer due to a compatibility error. Using fallback solution using Paper API.");
+        } else if (PacketHeaderFooter.isAvailable()) {
+            instance = new PacketHeaderFooter();
         } else if (BukkitHeaderFooter.isAvailable()) {
             instance = new BukkitHeaderFooter();
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
                     "sending Header/Footer due to a compatibility error. Using fallback solution using Bukkit API. " +
                     "This will drastically drop performance, as well as miss support for fonts (added in 1.16). " +
                     "Please update the plugin with to version proper support for your server version.");
-        } else if (BukkitReflection.getMinorVersion() >= 8){
+        } else if (BukkitReflection.getMinorVersion() >= 8) {
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
                     "sending Header/Footer due to a compatibility error. No fallback solution was found either. This will " +
                     "result in the feature not working. " +
