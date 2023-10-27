@@ -113,6 +113,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
+        if (!getPlayer().isConnected()) return;
         try {
             getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
         } catch (NullPointerException BungeeCordBug) {
@@ -169,6 +170,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      */
     @SneakyThrows
     public void sendPacket(@NotNull DefinedPacket packet) {
+        if (!getPlayer().isConnected()) return;
         if (packetQueue) {
             try {
                 UserConnection.class.getDeclaredMethod("sendPacketQueued", DefinedPacket.class).invoke(player, packet);
