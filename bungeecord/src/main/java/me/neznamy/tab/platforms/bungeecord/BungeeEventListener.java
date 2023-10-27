@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.EventListener;
@@ -25,7 +26,29 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
 
     @EventHandler
     public void onSwitch(ServerSwitchEvent e) {
-        serverChange(e.getPlayer(), e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName(), false);
+        TAB tab = TAB.getInstance();
+        if (tab.isPluginDisabled()) return;
+        tab.getCPUManager().runTask(() -> {
+            TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
+            if (player == null) {
+                player = createPlayer(e.getPlayer());
+
+                // I don't think this is actually needed, but someone said it fixed geyser warn in console
+                // Doing this won't hurt, so whatever
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+                    player.getScoreboard().freeze();
+                }
+
+                tab.getFeatureManager().onJoin(player);
+            } else {
+                tab.getFeatureManager().onServerChange(player.getUniqueId(), e.getPlayer().getServer().getInfo().getName());
+                if (player.getVersion().getNetworkId() < ProtocolVersion.V1_20_2.getNetworkId()) {
+                    // For versions below 1.20.2 the tablist is already clean when this event is called
+                    // For 1.20.2+ this event is called before, so we listen to Login packet instead
+                    tab.getFeatureManager().onTabListClear(player);
+                }
+            }
+        });
     }
 
     @EventHandler

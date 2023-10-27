@@ -53,6 +53,7 @@ public class TabConstants {
         public static final String PACKET_ENTITY_DESTROY = "PacketPlayOutEntityDestroy";
         public static final String RAW_PACKET_OUT = "Packet reading (out)";
         public static final String PACKET_LOGIN = "Login packet";
+        public static final String TABLIST_CLEAR = "TabList entry re-add";
 
         public static final String PLACEHOLDER_REFRESHING = "Refreshing placeholders";
 

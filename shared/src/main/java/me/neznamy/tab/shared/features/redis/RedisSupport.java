@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 @Getter
 public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener,
         DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener, LoginPacketListener,
-        VanishListener {
+        VanishListener, TabListClearListener {
 
     @NotNull private final String featureName = "RedisSupport";
 
@@ -213,6 +213,11 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @Override
     public void onLoginPacket(TabPlayer player) {
         features.forEach(f -> f.onLoginPacket(player));
+    }
+
+    @Override
+    public void onTabListClear(TabPlayer player) {
+        features.forEach(f -> f.onTabListClear(player));
     }
 
     @Override

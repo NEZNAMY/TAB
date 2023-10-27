@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Getter
 public class LayoutManagerImpl extends TabFeature implements LayoutManager, JoinListener, QuitListener, VanishListener, Loadable,
-        UnLoadable, Refreshable, LoginPacketListener {
+        UnLoadable, Refreshable, TabListClearListener {
 
     /** Config options */
     private final Direction direction = parseDirection(TAB.getInstance().getConfig().getString("layout.direction", "COLUMNS"));
@@ -199,7 +199,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     }
 
     @Override
-    public void onLoginPacket(TabPlayer player) {
+    public void onTabListClear(TabPlayer player) {
         LayoutView view = views.get(player);
         if (view != null) view.send();
     }

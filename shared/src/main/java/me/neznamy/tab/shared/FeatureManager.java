@@ -129,12 +129,6 @@ public class FeatureManager {
         if (!connectedPlayer.isOnline()) return;
         long millis = System.currentTimeMillis();
         TAB.getInstance().addPlayer(connectedPlayer);
-
-        // I don't think this is actually needed, but someone said it fixed geyser warn in console
-        // Doing this won't hurt, so whatever
-        if (connectedPlayer.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId() && connectedPlayer instanceof ProxyTabPlayer) {
-            connectedPlayer.getScoreboard().freeze();
-        }
         for (TabFeature f : values) {
             if (!(f instanceof JoinListener)) continue;
             long time = System.nanoTime();
@@ -165,7 +159,7 @@ public class FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
 
-    public void onServerChange(@NotNull UUID playerUUID, @NotNull String to, boolean callOnLoginPacket) {
+    public void onServerChange(@NotNull UUID playerUUID, @NotNull String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
         String from = changed.getServer();
@@ -178,7 +172,6 @@ public class FeatureManager {
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
-        if (callOnLoginPacket) onLoginPacket(changed);
     }
 
     public boolean onCommand(@Nullable TabPlayer sender, @NotNull String command) {
@@ -284,6 +277,15 @@ public class FeatureManager {
             long time = System.nanoTime();
             ((LoginPacketListener)f).onLoginPacket(packetReceiver);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_LOGIN, System.nanoTime() - time);
+        }
+    }
+
+    public void onTabListClear(TabPlayer packetReceiver) {
+        for (TabFeature f : values) {
+            if (!(f instanceof TabListClearListener)) continue;
+            long time = System.nanoTime();
+            ((TabListClearListener)f).onTabListClear(packetReceiver);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.TABLIST_CLEAR, System.nanoTime() - time);
         }
     }
 
