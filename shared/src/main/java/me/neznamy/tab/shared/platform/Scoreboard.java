@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -50,7 +51,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
         }
-        registerObjective0(objectiveName, cutTo(title, 32), display);
+        registerObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display);
     }
 
     public void unregisterObjective(@NotNull String objectiveName) {
@@ -68,7 +69,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
         }
-        updateObjective0(objectiveName, cutTo(title, 32), display);
+        updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display);
     }
 
     public void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
@@ -78,7 +79,15 @@ public abstract class Scoreboard<T extends TabPlayer> {
             error("Tried to register duplicated team %s to player ", name);
             return;
         }
-        registerTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, players, options);
+        registerTeam0(
+                name,
+                cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                visibility,
+                collision,
+                players,
+                options
+        );
     }
 
     public void unregisterTeam(@NotNull String name) {
@@ -97,7 +106,14 @@ public abstract class Scoreboard<T extends TabPlayer> {
             error("Tried to modify non-existing team %s for player ", name);
             return;
         }
-        updateTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, options);
+        updateTeam0(
+                name,
+                cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                visibility,
+                collision,
+                options
+        );
     }
 
     private void error(@NotNull String format, @NotNull Object... args) {

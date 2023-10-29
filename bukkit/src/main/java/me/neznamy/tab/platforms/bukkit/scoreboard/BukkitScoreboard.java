@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -155,22 +156,22 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     public void newObjective(String objectiveName, String criteria, String title, @NotNull HealthDisplay display) {
         if (serverMinorVersion >= 14) {
-            scoreboard.registerNewObjective(objectiveName, criteria, transform(title, 128, 32), RenderType.valueOf(display.name()));
+            scoreboard.registerNewObjective(objectiveName, criteria, transform(title, 128, Limitations.SCOREBOARD_TITLE_PRE_1_13), RenderType.valueOf(display.name()));
         } else {
             setDisplayName(scoreboard.registerNewObjective(objectiveName, display == HealthDisplay.HEARTS ? "health" : "dummy"), title);
         }
     }
 
     public void setDisplayName(@NotNull Objective objective, @NotNull String displayName) {
-        objective.setDisplayName(transform(displayName, 128, 32));
+        objective.setDisplayName(transform(displayName, 128, Limitations.SCOREBOARD_TITLE_PRE_1_13));
     }
 
     public void setPrefix(@NotNull Team team, @NotNull String prefix) {
-        team.setPrefix(transform(prefix, 64, 16));
+        team.setPrefix(transform(prefix, 64, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
     public void setSuffix(@NotNull Team team, @NotNull String suffix) {
-        team.setSuffix(transform(suffix, 64, 16));
+        team.setSuffix(transform(suffix, 64, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
     /**

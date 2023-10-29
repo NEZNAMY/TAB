@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -15,12 +16,12 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  */
 public class StaticLine extends ScoreboardLine {
 
-    //values for 1.7 clients with 16-character limit for player name
+    //values for 1.7 clients
     protected String prefix17;
     protected String name17;
     protected String suffix17;
 
-    //values for 1.8-1.12 clients with 40-character limit for player name
+    //values for 1.8-1.12 clients
     protected String prefix;
     protected String name;
     protected String suffix;
@@ -35,12 +36,12 @@ public class StaticLine extends ScoreboardLine {
         super.text = text;
         String legacy = RGBUtils.getInstance().convertRGBtoLegacy(this.text);
         //1.8+
-        String[] v18 = splitText(getPlayerName(lineNumber), legacy, 40);
+        String[] v18 = splitText(getPlayerName(lineNumber), legacy, Limitations.SCOREBOARD_SCORE_LENGTH_1_8);
         prefix = v18[0];
         name = v18[1];
         suffix = v18[2];
         //1.7-
-        String[] v17 = splitText(getPlayerName(lineNumber), legacy, 16);
+        String[] v17 = splitText(getPlayerName(lineNumber), legacy, Limitations.SCOREBOARD_SCORE_LENGTH_1_7);
         prefix17 = v17[0];
         name17 = v17[1];
         suffix17 = v17[2];

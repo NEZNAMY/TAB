@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +64,8 @@ public class BungeeTabList17 extends BungeeTabList {
     public void addEntry(@NotNull Entry entry) {
         addUuid(entry.getUniqueId());
         String displayNameString = entry.getDisplayName() == null ? String.valueOf(entry.getName()) : entry.getDisplayName().toLegacyText();
-        if (displayNameString.length() > 16) displayNameString = displayNameString.substring(0, 16); // 16 character limit
+        if (displayNameString.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7)
+            displayNameString = displayNameString.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
         update(PlayerListItem.Action.ADD_PLAYER, createItem(entry.getName(), displayNameString, entry.getLatency()));
 
         // Add to map
