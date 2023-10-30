@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
+import me.neznamy.tab.platforms.bungeecord.BungeeMultiVersion;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -83,7 +84,7 @@ public class BungeeTabList17 extends BungeeTabList {
     private PlayerListItem.Item createItem(@Nullable String username, @NotNull String displayName, int latency) {
         PlayerListItem.Item item = new PlayerListItem.Item();
         item.setUsername(username);
-        item.setDisplayName(displayName);
+        BungeeMultiVersion.setDisplayName(item, IChatBaseComponent.optimizedComponent(displayName), player.getVersion());
         item.setPing(latency);
         return item;
     }

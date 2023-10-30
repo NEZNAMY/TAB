@@ -1,13 +1,13 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bungeecord.BungeeMultiVersion;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.Property;
-import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.tab.ServerUnique;
 import org.jetbrains.annotations.NotNull;
@@ -33,10 +33,7 @@ public abstract class BungeeTabList implements TabList {
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.sendPacket(new PlayerListHeaderFooter(
-                header.toString(player.getVersion()),
-                footer.toString(player.getVersion())
-        ));
+        player.sendPacket(BungeeMultiVersion.newPlayerListHeaderFooter(header, footer, player.getVersion()));
     }
 
     @NotNull
@@ -49,7 +46,9 @@ public abstract class BungeeTabList implements TabList {
     @NotNull
     public Item entryToItem(Entry entry) {
         Item item = item(entry.getUniqueId());
-        if (entry.getDisplayName() != null) item.setDisplayName(entry.getDisplayName().toString(player.getVersion()));
+        if (entry.getDisplayName() != null) {
+            BungeeMultiVersion.setDisplayName(item, entry.getDisplayName(), player.getVersion());
+        }
         item.setGamemode(entry.getGameMode());
         item.setListed(true);
         item.setPing(entry.getLatency());
