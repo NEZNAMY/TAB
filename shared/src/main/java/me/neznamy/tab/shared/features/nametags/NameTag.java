@@ -78,7 +78,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unload() {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (hasTeamHandlingPaused(target) || disableChecker.isDisabledPlayer(target)) return;
+                if (hasTeamHandlingPaused(target) || disableChecker.isDisabledPlayer(target)) continue;
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(target));
             }
         }
