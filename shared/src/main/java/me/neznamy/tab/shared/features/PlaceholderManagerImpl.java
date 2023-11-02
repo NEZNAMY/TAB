@@ -232,6 +232,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
                 tabExpansion.setPlaceholderValue(connectedPlayer, p.getIdentifier(), ((ServerPlaceholderImpl) p).getLastValue());
             }
         }
+        // Initialize to avoid onVanishStatusChange being called in the loop after joining because previous value was null
+        ((PlayerPlaceholderImpl)registeredPlaceholders.get(TabConstants.Placeholder.VANISHED)).update(connectedPlayer);
     }
 
     @Override
