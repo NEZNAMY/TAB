@@ -70,9 +70,13 @@ public class PluginMessageHandler {
     }
 
     public void vanished(@NotNull ProxyTabPlayer player, @NotNull ByteArrayDataInput in) {
-        player.setVanished(in.readBoolean());
-        TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
-        ((PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.VANISHED)).updateValue(player, player.isVanished());
+        boolean oldVanish = player.isVanished();
+        boolean newVanish = in.readBoolean();
+        if (oldVanish != newVanish) {
+            player.setVanished(newVanish);
+            TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
+            ((PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.VANISHED)).updateValue(player, player.isVanished());
+        }
     }
 
     public void disguised(@NotNull ProxyTabPlayer player, @NotNull ByteArrayDataInput in) {
@@ -105,7 +109,10 @@ public class PluginMessageHandler {
         if (TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                 !TAB.getInstance().getGroupManager().isGroupsByPermissions()) player.setGroup(in.readUTF());
         // reset attributes from previous server to default false values, new server will send separate update packets if needed
-        player.setVanished(false);
+        if (player.vanished) { // Only trigger if bridge says player is vanished, do not trigger on proxy vanish
+            player.vanished = false;
+            TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
+        }
         player.setDisguised(false);
         player.setInvisibilityPotion(false);
         int placeholderCount = in.readInt();
