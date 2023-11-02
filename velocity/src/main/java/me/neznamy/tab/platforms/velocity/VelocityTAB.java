@@ -62,6 +62,7 @@ public class VelocityTAB {
      */
     @Subscribe
     public void onProxyShutdown(@Nullable ProxyShutdownEvent event) {
-        TAB.getInstance().unload();
+        // Fix race condition as Velocity calls DisconnectEvent for each player before this event
+        TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().unload());
     }
 }
