@@ -61,3 +61,5 @@ body:
           required: false
         - label: I have read the Compatibility wiki page and am not trying to run the plugin on an unsupported server version / platform
           required: true
+        - label: I am willing to cooperate to get this issue resolved faster, including providing any additional information requested or testing new builds
+          required: true
