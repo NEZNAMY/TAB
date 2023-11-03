@@ -280,6 +280,16 @@ public class FabricMultiVersion {
         return new ClientboundSetEntityDataPacket(entityId, (List<SynchedEntityData.DataValue<?>>) data.build());
     }
 
+    public static boolean isBundlePacket(Object packet) {
+        // 1.19.4+
+        return packet instanceof ClientboundBundlePacket;
+    }
+
+    public static Iterable<Packet<ClientGamePacketListener>> getPackets(Object bundlePacket) {
+        // 1.19.4+
+        return ((ClientboundBundlePacket)bundlePacket).subPackets();
+    }
+
     public static ClientboundSetDisplayObjectivePacket newDisplayObjective(int slot, Objective objective) {
         // 1.20.1-
         // return new ClientboundSetDisplayObjectivePacket(slot, objective);

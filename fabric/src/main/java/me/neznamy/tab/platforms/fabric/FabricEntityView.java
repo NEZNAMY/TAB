@@ -84,4 +84,15 @@ public record FabricEntityView(FabricTabPlayer player) implements EntityView {
     public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
         return FabricMultiVersion.getDestroyedEntities(destroyPacket);
     }
+
+    @Override
+    public boolean isBundlePacket(@NotNull Object packet) {
+        return FabricMultiVersion.isBundlePacket(packet);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
+        return (Iterable<Object>) (Object) FabricMultiVersion.getPackets(bundlePacket);
+    }
 }

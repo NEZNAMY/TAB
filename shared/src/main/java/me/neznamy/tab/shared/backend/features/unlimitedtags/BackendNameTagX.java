@@ -163,6 +163,16 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
         if (receiver.getVersion().getMinorVersion() < 8) return;
         if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
         BackendTabPlayer player = (BackendTabPlayer) receiver;
+        if (player.getEntityView().isBundlePacket(packet)) {
+            for (Object wrappedPacket : player.getEntityView().getPackets(packet)) {
+                checkPacket(player, wrappedPacket);
+            }
+        } else {
+            checkPacket(player, packet);
+        }
+    }
+
+    private void checkPacket(@NotNull BackendTabPlayer player, @NotNull Object packet) {
         if (player.getEntityView().isMovePacket(packet) && !player.getEntityView().isLookPacket(packet)) { //ignoring head rotation only packets
             packetListener.onEntityMove(player, player.getEntityView().getMoveEntityId(packet));
         } else if (player.getEntityView().isTeleportPacket(packet)) {
