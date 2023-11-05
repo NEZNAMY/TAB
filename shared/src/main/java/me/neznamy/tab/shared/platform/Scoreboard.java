@@ -184,7 +184,9 @@ public abstract class Scoreboard<T extends TabPlayer> {
     public abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                                      @NotNull CollisionRule collision, int options);
 
-    public enum DisplaySlot { PLAYER_LIST, SIDEBAR, BELOW_NAME }
+    public enum TeamAction {
+        CREATE, REMOVE, UPDATE, ADD_PLAYER, REMOVE_PLAYER
+    }
 
     @AllArgsConstructor
     public enum CollisionRule {
@@ -227,9 +229,20 @@ public abstract class Scoreboard<T extends TabPlayer> {
             return BY_NAME.getOrDefault(name, ALWAYS);
         }
     }
-    
+
+    public enum ObjectiveAction {
+        REGISTER, UNREGISTER, UPDATE
+    }
+
     public enum HealthDisplay {
-        
         INTEGER, HEARTS
+    }
+
+    public enum DisplaySlot {
+        PLAYER_LIST, SIDEBAR, BELOW_NAME
+    }
+
+    public enum ScoreAction {
+        CHANGE, REMOVE
     }
 }

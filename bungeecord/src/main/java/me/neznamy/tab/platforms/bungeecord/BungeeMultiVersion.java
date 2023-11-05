@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.Scoreboard.*;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ChatColor;
@@ -80,7 +81,8 @@ public class BungeeMultiVersion {
     @SneakyThrows
     @NotNull
     public static PlayerListHeaderFooter newPlayerListHeaderFooter(@NotNull IChatBaseComponent header,
-                                                                   @NotNull IChatBaseComponent footer, ProtocolVersion version) {
+                                                                   @NotNull IChatBaseComponent footer,
+                                                                   @NotNull ProtocolVersion version) {
         if (b1760Plus) {
             return PlayerListHeaderFooter.class.getConstructor(BaseComponent.class, BaseComponent.class).newInstance(
                     toComponent(header, version),
@@ -106,41 +108,58 @@ public class BungeeMultiVersion {
     @NotNull
     @SneakyThrows
     public static ScoreboardObjective newScoreboardObjective(@NotNull String objective, @NotNull String title,
-                                                             @Nullable ScoreboardObjective.HealthDisplay healthDisplay, byte action,
+                                                             @Nullable ScoreboardObjective.HealthDisplay healthDisplay, ObjectiveAction action,
                                                              @NotNull ProtocolVersion version) {
         if (b1760Plus) {
-            return ScoreboardObjective.class
-                    .getConstructor(String.class, BaseComponent.class, ScoreboardObjective.HealthDisplay.class, byte.class)
-                    .newInstance(objective, toComponent(IChatBaseComponent.optimizedComponent(title), version), healthDisplay, action);
+            return ScoreboardObjective.class.getConstructor(
+                    String.class,
+                    BaseComponent.class,
+                    ScoreboardObjective.HealthDisplay.class,
+                    byte.class
+            ).newInstance(
+                    objective,
+                    toComponent(IChatBaseComponent.optimizedComponent(title), version),
+                    healthDisplay,
+                    (byte) action.ordinal()
+            );
         } else {
-            return new ScoreboardObjective(objective, jsonOrRaw(title, version), healthDisplay, action);
+            return new ScoreboardObjective(objective, jsonOrRaw(title, version), healthDisplay, (byte) action.ordinal());
         }
     }
 
     @NotNull
     @SneakyThrows
-    public static Team newTeam(@NotNull String name, byte mode, @NotNull String prefix, @NotNull String suffix,
+    public static Team newTeam(@NotNull String name, TeamAction action, @NotNull String prefix, @NotNull String suffix,
                                @NotNull String nameTagVisibility, @NotNull String collisionRule, int color,
                                byte options, @Nullable String[] players, @NotNull ProtocolVersion version) {
         if (b1760Plus) {
-            return Team.class.getConstructor(String.class, byte.class, BaseComponent.class, BaseComponent.class,
-                    BaseComponent.class, String.class, String.class, int.class, byte.class, String[].class)
-                    .newInstance(
-                            name,
-                            mode,
-                            toComponent(IChatBaseComponent.optimizedComponent(name), version),
-                            toComponent(IChatBaseComponent.optimizedComponent(prefix), version),
-                            toComponent(IChatBaseComponent.optimizedComponent(suffix), version),
-                            nameTagVisibility,
-                            collisionRule,
-                            color,
-                            options,
-                            players
-                    );
+            return Team.class.getConstructor(
+                    String.class,
+                    byte.class,
+                    BaseComponent.class,
+                    BaseComponent.class,
+                    BaseComponent.class,
+                    String.class,
+                    String.class,
+                    int.class,
+                    byte.class,
+                    String[].class
+            ).newInstance(
+                    name,
+                    (byte) action.ordinal(),
+                    toComponent(IChatBaseComponent.optimizedComponent(name), version),
+                    toComponent(IChatBaseComponent.optimizedComponent(prefix), version),
+                    toComponent(IChatBaseComponent.optimizedComponent(suffix), version),
+                    nameTagVisibility,
+                    collisionRule,
+                    color,
+                    options,
+                    players
+            );
         } else {
             return new Team(
                     name,
-                    mode,
+                    (byte) action.ordinal(),
                     jsonOrRaw(name, version),
                     jsonOrRaw(prefix, version),
                     jsonOrRaw(suffix, version),

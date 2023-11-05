@@ -56,7 +56,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                                 ObjectiveCriteria.RenderType.valueOf(display.name())
                         ),
-                        0
+                        ObjectiveAction.REGISTER.ordinal()
                 )
         );
     }
@@ -72,7 +72,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 EMPTY_COMPONENT,
                                 ObjectiveCriteria.RenderType.INTEGER
                         ),
-                        1
+                        ObjectiveAction.UNREGISTER.ordinal()
                 )
         );
     }
@@ -88,7 +88,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                                 ObjectiveCriteria.RenderType.valueOf(display.name())
                         ),
-                        2
+                        ObjectiveAction.UPDATE.ordinal()
                 )
         );
     }

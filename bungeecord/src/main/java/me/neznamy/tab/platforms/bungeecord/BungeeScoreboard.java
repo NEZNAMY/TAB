@@ -33,7 +33,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 objectiveName,
                 title,
                 ScoreboardObjective.HealthDisplay.valueOf(display.name()),
-                (byte) 0,
+                ObjectiveAction.REGISTER,
                 player.getVersion()
         ));
     }
@@ -44,7 +44,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 objectiveName,
                 "", // Empty value instead of null to prevent NPE kick on 1.7
                 null,
-                (byte) 1,
+                ObjectiveAction.UNREGISTER,
                 player.getVersion()
         ));
     }
@@ -55,7 +55,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 objectiveName,
                 title,
                 ScoreboardObjective.HealthDisplay.valueOf(display.name()),
-                (byte) 2,
+                ObjectiveAction.UPDATE,
                 player.getVersion()
         ));
     }
@@ -70,7 +70,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         }
         player.sendPacket(BungeeMultiVersion.newTeam(
                 name,
-                (byte) 0,
+                TeamAction.CREATE,
                 prefix,
                 suffix,
                 visibility.toString(),
@@ -96,7 +96,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         }
         player.sendPacket(BungeeMultiVersion.newTeam(
                 name,
-                (byte) 2,
+                TeamAction.UPDATE,
                 prefix,
                 suffix,
                 visibility.toString(),
@@ -110,11 +110,11 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        player.sendPacket(new ScoreboardScore(playerName, (byte) 0, objective, score));
+        player.sendPacket(new ScoreboardScore(playerName, (byte) ScoreAction.CHANGE.ordinal(), objective, score));
     }
 
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String playerName) {
-        player.sendPacket(new ScoreboardScore(playerName, (byte) 1, objective, 0));
+        player.sendPacket(new ScoreboardScore(playerName, (byte) ScoreAction.REMOVE.ordinal(), objective, 0));
     }
 }
