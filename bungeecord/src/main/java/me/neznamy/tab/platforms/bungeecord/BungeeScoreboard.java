@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
@@ -32,7 +31,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         player.sendPacket(BungeeMultiVersion.newScoreboardObjective(
                 objectiveName,
-                IChatBaseComponent.optimizedComponent(title),
+                title,
                 ScoreboardObjective.HealthDisplay.valueOf(display.name()),
                 (byte) 0,
                 player.getVersion()
@@ -43,7 +42,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     public void unregisterObjective0(@NotNull String objectiveName) {
         player.sendPacket(BungeeMultiVersion.newScoreboardObjective(
                 objectiveName,
-                new IChatBaseComponent(), // Empty value instead of null to prevent NPE kick on 1.7
+                "", // Empty value instead of null to prevent NPE kick on 1.7
                 null,
                 (byte) 1,
                 player.getVersion()
@@ -54,7 +53,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         player.sendPacket(BungeeMultiVersion.newScoreboardObjective(
                 objectiveName,
-                IChatBaseComponent.optimizedComponent(title),
+                title,
                 ScoreboardObjective.HealthDisplay.valueOf(display.name()),
                 (byte) 2,
                 player.getVersion()

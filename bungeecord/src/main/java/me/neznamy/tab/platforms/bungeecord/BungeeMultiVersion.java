@@ -105,15 +105,15 @@ public class BungeeMultiVersion {
 
     @NotNull
     @SneakyThrows
-    public static ScoreboardObjective newScoreboardObjective(@NotNull String objective, @NotNull IChatBaseComponent title,
+    public static ScoreboardObjective newScoreboardObjective(@NotNull String objective, @NotNull String title,
                                                              @Nullable ScoreboardObjective.HealthDisplay healthDisplay, byte action,
                                                              @NotNull ProtocolVersion version) {
         if (b1760Plus) {
             return ScoreboardObjective.class
                     .getConstructor(String.class, BaseComponent.class, ScoreboardObjective.HealthDisplay.class, byte.class)
-                    .newInstance(objective, toComponent(title, version), healthDisplay, action);
+                    .newInstance(objective, toComponent(IChatBaseComponent.optimizedComponent(title), version), healthDisplay, action);
         } else {
-            return new ScoreboardObjective(objective, title.toString(version), healthDisplay, action);
+            return new ScoreboardObjective(objective, jsonOrRaw(title, version), healthDisplay, action);
         }
     }
 
