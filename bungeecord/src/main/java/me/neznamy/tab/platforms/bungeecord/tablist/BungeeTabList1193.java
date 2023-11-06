@@ -40,14 +40,14 @@ public class BungeeTabList1193 extends BungeeTabList {
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
         Item item = item(entry);
-        item.setPing(latency);
+        BungeeMultiVersion.setPing(item, latency);
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY), item);
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
         Item item = item(entry);
-        item.setGamemode(gameMode);
+        BungeeMultiVersion.setGamemode(item, gameMode);
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE), item);
     }
 

@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.tab.ServerUnique;
 import org.jetbrains.annotations.NotNull;
@@ -49,13 +48,13 @@ public abstract class BungeeTabList implements TabList {
         if (entry.getDisplayName() != null) {
             BungeeMultiVersion.setDisplayName(item, entry.getDisplayName(), player.getVersion());
         }
-        item.setGamemode(entry.getGameMode());
-        item.setListed(true);
-        item.setPing(entry.getLatency());
+        BungeeMultiVersion.setGamemode(item, entry.getGameMode());
+        BungeeMultiVersion.setListed(item, true);
+        BungeeMultiVersion.setPing(item, entry.getLatency());
         if (entry.getSkin() != null) {
-            item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature())});
+            BungeeMultiVersion.setProperties(item, new String[]{TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()});
         } else {
-            item.setProperties(new Property[0]);
+            BungeeMultiVersion.setProperties(item);
         }
         item.setUsername(entry.getName());
         return item;

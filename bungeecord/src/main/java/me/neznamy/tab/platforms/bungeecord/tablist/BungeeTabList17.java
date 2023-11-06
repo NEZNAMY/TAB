@@ -85,7 +85,7 @@ public class BungeeTabList17 extends BungeeTabList {
         PlayerListItem.Item item = new PlayerListItem.Item();
         item.setUsername(username);
         BungeeMultiVersion.setDisplayName(item, IChatBaseComponent.optimizedComponent(displayName), player.getVersion());
-        item.setPing(latency);
+        BungeeMultiVersion.setPing(item, latency);
         return item;
     }
 }

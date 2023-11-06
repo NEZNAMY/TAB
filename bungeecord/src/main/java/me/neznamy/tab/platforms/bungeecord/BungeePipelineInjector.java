@@ -121,7 +121,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isPlayerInfo(@NotNull Object packet) {
-        return packet instanceof PlayerListItem || packet instanceof PlayerListItemUpdate;
+        return packet instanceof PlayerListItem || packet.getClass().getSimpleName().equals("PlayerListItemUpdate");
     }
 
     @Override
@@ -157,22 +157,9 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
+    @SneakyThrows
     public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        if (packet instanceof PlayerListItemUpdate) {
-            PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
-            for (PlayerListItem.Item item : update.getItems()) {
-                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
-                    if (newDisplayName != null) BungeeMultiVersion.setDisplayName(item, newDisplayName, receiver.getVersion());
-                }
-                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
-                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
-                }
-                if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
-                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
-                }
-            }
-        } else {
+        if (packet instanceof PlayerListItem) {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
@@ -180,9 +167,25 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                     if (newDisplayName != null) BungeeMultiVersion.setDisplayName(item, newDisplayName, receiver.getVersion());
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
+                    BungeeMultiVersion.setPing(item, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(),
+                            (int) PlayerListItem.Item.class.getMethod("getPing").invoke(item)));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
+                }
+            }
+        } else {
+            PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
+            for (PlayerListItem.Item item : update.getItems()) {
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
+                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
+                    if (newDisplayName != null) BungeeMultiVersion.setDisplayName(item, newDisplayName, receiver.getVersion());
+                }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
+                    BungeeMultiVersion.setPing(item, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(),
+                            (int) PlayerListItem.Item.class.getMethod("getPing").invoke(item)));
+                }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
                 }
             }

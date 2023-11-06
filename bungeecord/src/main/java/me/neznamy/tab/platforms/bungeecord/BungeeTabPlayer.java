@@ -20,7 +20,6 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,8 +43,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @NotNull
     private final TabList tabList1_8 = new BungeeTabList18(this);
 
-    @NotNull
-    private final TabList tabList1_19_3 = new BungeeTabList1193(this);
+    @Nullable
+    private TabList tabList1_19_3;
 
     /** Player's boss bar view */
     @NotNull
@@ -80,12 +79,17 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     @Nullable
+    @SneakyThrows
     public TabList.Skin getSkin() {
         LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
         if (loginResult == null) return null;
-        Property[] properties = loginResult.getProperties();
+        // Reflection to support old bungee versions as well
+        Object[] properties = (Object[]) loginResult.getClass().getMethod("getProperties").invoke(loginResult);
         if (properties == null || properties.length == 0) return null; //Offline mode
-        return new TabList.Skin(properties[0].getValue(), properties[0].getSignature());
+        return new TabList.Skin(
+                (String) properties[0].getClass().getMethod("getValue").invoke(properties[0]),
+                (String) properties[0].getClass().getMethod("getSignature").invoke(properties[0])
+        );
     }
 
     @Override
@@ -149,7 +153,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @NotNull
     public TabList getTabList() {
         int version = getPlayer().getPendingConnection().getVersion();
-        if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return tabList1_19_3;
+        if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return getTabList1_19_3();
         if (version >= ProtocolVersion.V1_8.getNetworkId()) return tabList1_8;
         return tabList1_7;
     }
@@ -165,5 +169,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public void sendPacket(@NotNull DefinedPacket packet) {
         if (!getPlayer().isConnected()) return;
         BungeeMultiVersion.sendPacket(this, packet);
+    }
+
+    @NotNull
+    public TabList getTabList1_19_3() {
+        // Workaround to prevent error on old BungeeCord builds
+        if (tabList1_19_3 == null) tabList1_19_3 = new BungeeTabList1193(this);
+        return tabList1_19_3;
     }
 }
