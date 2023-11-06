@@ -43,14 +43,20 @@ public class ChatModifier {
         return json;
     }
 
+    /**
+     * Returns a String consisting of magic codes (color symbol + character) of
+     * each magic code used. If none are used, empty String is returned.
+     *
+     * @return  Magic codes of this modifier as String
+     */
     @NotNull
     public String getMagicCodes() {
         StringBuilder builder = new StringBuilder();
-        if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
-        if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
-        if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
-        if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
-        if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
+        if (bold) builder.append(EnumChatFormat.BOLD.getFormat());
+        if (italic) builder.append(EnumChatFormat.ITALIC.getFormat());
+        if (underlined) builder.append(EnumChatFormat.UNDERLINE.getFormat());
+        if (strikethrough) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
+        if (obfuscated) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
         return builder.toString();
     }
 }

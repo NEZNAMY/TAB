@@ -21,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class NameTag extends TabFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, LoginPacketListener {
+        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, LoginPacketListener,
+        VanishListener {
 
     @Getter private final String featureName = "NameTags";
     @Getter private final String refreshDisplayName = "Updating prefix/suffix";
@@ -77,7 +78,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unload() {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (hasTeamHandlingPaused(target) || disableChecker.isDisabledPlayer(target)) return;
+                if (hasTeamHandlingPaused(target) || disableChecker.isDisabledPlayer(target)) continue;
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(target));
             }
         }
@@ -121,6 +122,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         if (!disableChecker.isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
+                if (disconnectedPlayer.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) continue;
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(disconnectedPlayer));
             }
         }
@@ -227,6 +229,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
+        if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return;
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
@@ -243,6 +246,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) continue;
             viewer.getScoreboard().unregisterTeam(teamName);
         }
     }
@@ -255,6 +259,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (hasTeamHandlingPaused(p)) return;
+        if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
         viewer.getScoreboard().registerTeam(
@@ -343,6 +348,18 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         if (!player.isLoaded()) return;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!disableChecker.isDisabledPlayer(all) && all.isLoaded()) registerTeam(all, player);
+        }
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) continue;
+            if (player.isVanished()) {
+                viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(player));
+            } else {
+                registerTeam(player, viewer);
+            }
         }
     }
 }

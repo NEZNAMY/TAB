@@ -280,17 +280,17 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Override
     @SneakyThrows
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
-        player.sendPacket(buildObjective(0, objectiveName, title, display));
+        player.sendPacket(buildObjective(ObjectiveAction.REGISTER.ordinal(), objectiveName, title, display));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(buildObjective(1, objectiveName, "", HealthDisplay.INTEGER));
+        player.sendPacket(buildObjective(ObjectiveAction.UNREGISTER.ordinal(), objectiveName, "", HealthDisplay.INTEGER));
     }
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
-        player.sendPacket(buildObjective(2, objectiveName, title, display));
+        player.sendPacket(buildObjective(ObjectiveAction.UPDATE.ordinal(), objectiveName, title, display));
     }
 
     @SneakyThrows
@@ -327,7 +327,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_ofBoolean.invoke(null, team, true));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, 0));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.CREATE));
         }
     }
 
@@ -338,7 +338,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_of.invoke(null, team));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, 1));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.REMOVE));
         }
     }
 
@@ -350,7 +350,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_ofBoolean.invoke(null, team, false));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, 2));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.UPDATE));
         }
     }
 

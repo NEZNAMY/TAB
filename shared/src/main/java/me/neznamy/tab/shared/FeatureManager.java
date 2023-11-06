@@ -159,7 +159,7 @@ public class FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
 
-    public void onServerChange(@NotNull UUID playerUUID, @NotNull String to, boolean callOnLoginPacket) {
+    public void onServerChange(@NotNull UUID playerUUID, @NotNull String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
         String from = changed.getServer();
@@ -172,7 +172,6 @@ public class FeatureManager {
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
-        if (callOnLoginPacket) onLoginPacket(changed);
     }
 
     public boolean onCommand(@Nullable TabPlayer sender, @NotNull String command) {
@@ -272,12 +271,21 @@ public class FeatureManager {
     }
 
     public void onLoginPacket(TabPlayer packetReceiver) {
-        packetReceiver.getScoreboard().clearRegisteredObjectives();
+        packetReceiver.getScoreboard().unfreeze();
         for (TabFeature f : values) {
             if (!(f instanceof LoginPacketListener)) continue;
             long time = System.nanoTime();
             ((LoginPacketListener)f).onLoginPacket(packetReceiver);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_LOGIN, System.nanoTime() - time);
+        }
+    }
+
+    public void onTabListClear(TabPlayer packetReceiver) {
+        for (TabFeature f : values) {
+            if (!(f instanceof TabListClearListener)) continue;
+            long time = System.nanoTime();
+            ((TabListClearListener)f).onTabListClear(packetReceiver);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.TABLIST_CLEAR, System.nanoTime() - time);
         }
     }
 

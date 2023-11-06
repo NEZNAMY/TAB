@@ -29,7 +29,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
+        registerDummyPlaceholder(identifier);
     }
 
     @Override

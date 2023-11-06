@@ -72,4 +72,14 @@ public class DummyEntityView implements EntityView {
     public int[] getDestroyedEntities(Object destroyPacket) {
         throw new UnsupportedOperationException("Not available on this platform");
     }
+
+    @Override
+    public boolean isBundlePacket(Object packet) {
+        throw new UnsupportedOperationException("Not available on this platform");
+    }
+
+    @Override
+    public Iterable<Object> getPackets(Object bundlePacket) {
+        throw new UnsupportedOperationException("Not available on this platform");
+    }
 }

@@ -142,7 +142,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
         if (!placeholderAPI) {
-            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
+            registerDummyPlaceholder(identifier);
             return;
         }
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();

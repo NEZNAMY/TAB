@@ -33,4 +33,8 @@ public interface EntityView {
     int getSpawnedPlayer(Object playerSpawnPacket);
 
     int[] getDestroyedEntities(Object destroyPacket);
+
+    boolean isBundlePacket(Object packet);
+
+    Iterable<Object> getPackets(Object bundlePacket);
 }

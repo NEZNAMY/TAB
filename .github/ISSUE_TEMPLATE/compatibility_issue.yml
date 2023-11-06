@@ -1,0 +1,38 @@
+name: Compatibility issue
+description: A compatibility issue with another plugin/mod or a specific version of a platform marked as supported
+labels: ["Type: Compatibility issue"]
+body:
+  - type: input
+    attributes:
+      label: TAB version
+      description: Full version in numbers, "latest" is not a version.
+      placeholder: 4.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Software causing compatibility issue
+      description: plugin/mod/platform version causing the issue
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional info
+      description: Anything else you want to provide that will help in resolving the issue faster.
+    validations:
+      required: false
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Let's make sure this report is valid
+      options:
+        - label: I am running latest version of the plugin
+          required: true
+        - label: I ticked all of the boxes without actually reading them
+          required: false
+        - label: The compatibility wiki page does not mention this incompatibility
+          required: true
+        - label: I am willing to cooperate to get this issue resolved faster, including providing any additional information requested or testing new builds
+          required: true

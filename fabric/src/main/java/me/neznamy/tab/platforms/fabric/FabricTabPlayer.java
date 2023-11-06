@@ -31,7 +31,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     private final EntityView entityView = new FabricEntityView(this);
 
     public FabricTabPlayer(@NotNull FabricPlatform platform, @NotNull ServerPlayer player) {
-        super(platform, player, player.getUUID(), player.getGameProfile().getName(), "N/A");
+        super(platform, player, player.getUUID(), player.getGameProfile().getName(), FabricMultiVersion.getWorldName(player.level));
     }
 
     @Override

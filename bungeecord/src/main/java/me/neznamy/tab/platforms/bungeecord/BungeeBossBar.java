@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -35,7 +34,7 @@ public class BungeeBossBar implements BossBar {
 
         net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 0);
         packet.setHealth(progress);
-        packet.setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
+        BungeeMultiVersion.setTitle(packet, title, player.getVersion());
         packet.setColor(color.ordinal());
         packet.setDivision(style.ordinal());
         player.sendPacket(packet);
@@ -49,7 +48,7 @@ public class BungeeBossBar implements BossBar {
         if (player.getVersion().getMinorVersion() < 9) return;
 
         net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 3);
-        packet.setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
+        BungeeMultiVersion.setTitle(packet, title, player.getVersion());
         player.sendPacket(packet);
     }
 

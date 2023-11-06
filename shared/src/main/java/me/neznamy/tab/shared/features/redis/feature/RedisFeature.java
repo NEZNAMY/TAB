@@ -24,5 +24,7 @@ public abstract class RedisFeature {
 
     public void onLoginPacket(@NotNull TabPlayer player) {/* Do nothing by default */}
 
+    public void onTabListClear(@NotNull TabPlayer player) {/* Do nothing by default */}
+
     public void onVanishStatusChange(@NotNull RedisPlayer player) {/* Do nothing by default */}
 }

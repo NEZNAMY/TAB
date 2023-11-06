@@ -66,6 +66,9 @@ public class PacketEntityView implements EntityView {
     private static Class<?> PacketPlayOutNamedEntitySpawn;
     private static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 
+    private static Class<?> ClientboundBundlePacket;
+    private static Field ClientboundBundlePacket_packets;
+
     private static Object dummyEntity;
 
     @Getter
@@ -86,6 +89,10 @@ public class PacketEntityView implements EntityView {
         loadEntityTeleport();
         loadEntityMove();
         loadEntitySpawn();
+        if (BukkitReflection.is1_19_4Plus()) {
+            ClientboundBundlePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundBundlePacket");
+            ClientboundBundlePacket_packets = ReflectionUtils.getOnlyField(ClientboundBundlePacket.getSuperclass(), Iterable.class);
+        }
         available = true;
     }
 
@@ -364,6 +371,17 @@ public class PacketEntityView implements EntityView {
         } else {
             return (int[]) entities;
         }
+    }
+
+    @Override
+    public boolean isBundlePacket(@NotNull Object packet) {
+        return BukkitReflection.is1_19_4Plus() && ClientboundBundlePacket.isInstance(packet);
+    }
+
+    @Override
+    @SneakyThrows
+    public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
+        return (Iterable<Object>) ClientboundBundlePacket_packets.get(bundlePacket);
     }
 
     /**

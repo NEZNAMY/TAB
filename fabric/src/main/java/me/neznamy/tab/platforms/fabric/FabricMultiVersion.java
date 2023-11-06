@@ -19,6 +19,8 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -48,6 +50,20 @@ public class FabricMultiVersion {
             return 13;
         }
     }
+
+    public static String getWorldName(Level level) {
+        // 1.15.2-
+        // return level.getLevelData().getLevelName() + level.dimension.getType().getFileSuffix();
+
+        // 1.16+
+        String path = level.dimension().location().getPath();
+        String dimensionSuffix = switch (path) {
+            case "overworld" -> ""; // No suffix for overworld
+            case "the_nether" -> "_nether";
+            default -> "_" + path; // End + default behavior for other dimensions created by mods
+        };
+        return ((ServerLevelData)level.getLevelData()).getLevelName() + dimensionSuffix;
+    }
     
     public static void sendSystemMessage(CommandSourceStack source, Component message) {
         // 1.19.4-
@@ -73,11 +89,16 @@ public class FabricMultiVersion {
         // TODO sneaking
     }
 
-    public static void registerEntityEvents(BiConsumer<UUID, ServerPlayer> action) {
+    public static void registerEntityEvents(BiConsumer<UUID, ServerPlayer> respawnAction, BiConsumer<UUID, String> worldChangeAction) {
         // 1.16+
-        net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) ->
-                action.accept(oldPlayer.getUUID(), newPlayer));
-        // TODO world switch with proper world name
+        net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AFTER_RESPAWN.register(
+                (oldPlayer, newPlayer, alive) -> {
+                    respawnAction.accept(newPlayer.getUUID(), newPlayer);
+                    // respawning from death & taking end portal in the end do not call world change event
+                    worldChangeAction.accept(newPlayer.getUUID(), getWorldName(newPlayer.level));
+                });
+        net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(
+                (player, origin, destination) -> worldChangeAction.accept(player.getUUID(), getWorldName(destination)));
     }
 
     public static ClientboundTabListPacket setHeaderFooter(Component header, Component footer) {
@@ -257,6 +278,16 @@ public class FabricMultiVersion {
 
         // 1.19.3+
         return new ClientboundSetEntityDataPacket(entityId, (List<SynchedEntityData.DataValue<?>>) data.build());
+    }
+
+    public static boolean isBundlePacket(Object packet) {
+        // 1.19.4+
+        return packet instanceof ClientboundBundlePacket;
+    }
+
+    public static Iterable<Packet<ClientGamePacketListener>> getPackets(Object bundlePacket) {
+        // 1.19.4+
+        return ((ClientboundBundlePacket)bundlePacket).subPackets();
     }
 
     public static ClientboundSetDisplayObjectivePacket newDisplayObjective(int slot, Objective objective) {

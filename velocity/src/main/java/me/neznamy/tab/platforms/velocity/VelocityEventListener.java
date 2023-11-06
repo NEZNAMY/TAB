@@ -28,11 +28,21 @@ public class VelocityEventListener extends EventListener<Player> {
 
     @Subscribe
     public void onConnect(@NotNull ServerPostConnectEvent e) {
-        serverChange(
-                e.getPlayer(), e.getPlayer().getUniqueId(),
-                e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null"),
-                true
-        );
+        TAB tab = TAB.getInstance();
+        if (tab.isPluginDisabled()) return;
+        tab.getCPUManager().runTask(() -> {
+            TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
+            if (player == null) {
+                tab.getFeatureManager().onJoin(createPlayer(e.getPlayer()));
+            } else {
+                tab.getFeatureManager().onServerChange(
+                        player.getUniqueId(),
+                        e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null")
+                );
+                tab.getFeatureManager().onTabListClear(player);
+                tab.getFeatureManager().onLoginPacket(player);
+            }
+        });
     }
 
     @Subscribe

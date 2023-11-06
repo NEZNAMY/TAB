@@ -89,7 +89,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     }
 
     @Override
-    public void onLoginPacket(@NotNull TabPlayer player) {
+    public void onTabListClear(@NotNull TabPlayer player) {
         onJoin(player);
     }
 

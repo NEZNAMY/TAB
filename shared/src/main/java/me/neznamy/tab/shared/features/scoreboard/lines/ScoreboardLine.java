@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -164,7 +165,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      * @param   text
      *          text to display
      * @param   maxNameLength
-     *          maximum length of name field, used values are 16 characters for &lt;1.8 and 40 for 1.8+
+     *          maximum length of name field
      * @return  Split text as an array of 3 elements
      */
     protected String[] splitText(@NonNull String playerNameStart, @NonNull String text, int maxNameLength) {
@@ -176,7 +177,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
             nameValue = playerNameStart + text;
             suffixValue = "";
         } else {
-            String[] prefixOther = split(text, 16);
+            String[] prefixOther = split(text, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13);
             prefixValue = prefixOther[0];
             String other = prefixOther[1];
             if (playerNameStart.length() > 0) {

@@ -26,7 +26,7 @@ import java.util.UUID;
 public abstract class ProxyTabPlayer extends TabPlayer {
 
     /** Player's vanish status from backend server */
-    private boolean vanished;
+    public boolean vanished;
 
     /** Player's disguise status from backend server */
     private boolean disguised;

@@ -63,7 +63,6 @@ public class VelocityTabList implements TabList {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
         Component displayName = entry.getDisplayName() == null ? null : AdventureHook.toAdventureComponent(entry.getDisplayName(), player.getVersion());
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
@@ -77,8 +76,17 @@ public class VelocityTabList implements TabList {
                 .gameMode(entry.getGameMode())
                 .displayName(displayName)
                 .build();
-        player.getPlayer().getTabList().addEntry(e);
         expectedDisplayNames.put(e, displayName);
+
+        // Remove entry because:
+        // #1 - If player is 1.8 - 1.19.2, KeyedVelocityTabList#addEntry will throw IllegalArgumentException
+        //      if the entry is already present (most likely due to an accident trying to add existing player in global playerlist)
+        // #2 - If player is 1.20.2+, tablist is cleared by the client itself without requirement to remove
+        //      manually by the proxy, however velocity's tablist entry tracker still thinks they are present
+        //      and therefore will refuse to add them
+        removeEntry(entry.getUniqueId());
+
+        player.getPlayer().getTabList().addEntry(e);
     }
 
     @Override

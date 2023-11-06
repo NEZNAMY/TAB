@@ -51,29 +51,6 @@ public abstract class EventListener<T> {
     }
 
     /**
-     * Processes server change by forwarding it to all features.
-     *
-     * @param   player
-     *          Player who switched server or joined
-     * @param   uuid
-     *          UUID of the player
-     * @param   server
-     *          New server
-     * @param   callOnLoginPacket
-     *          Whether onLoginPacket method should be called as well or not
-     */
-    public void serverChange(@NotNull T player, @NotNull UUID uuid, @NotNull String server, boolean callOnLoginPacket) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() -> {
-            if (TAB.getInstance().getPlayer(uuid) == null) {
-                TAB.getInstance().getFeatureManager().onJoin(createPlayer(player));
-            } else {
-                TAB.getInstance().getFeatureManager().onServerChange(uuid, server, callOnLoginPacket);
-            }
-        });
-    }
-
-    /**
      * Processes plugin message.
      *
      * @param   player

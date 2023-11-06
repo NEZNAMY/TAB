@@ -62,11 +62,7 @@ public class BukkitUtils {
                 sb.append(component.getModifier().getColor().getLegacyColor().getFormat());
             }
         }
-        if (component.getModifier().isBold()) sb.append(EnumChatFormat.BOLD.getFormat());
-        if (component.getModifier().isStrikethrough()) sb.append(EnumChatFormat.STRIKETHROUGH.getFormat());
-        if (component.getModifier().isItalic()) sb.append(EnumChatFormat.ITALIC.getFormat());
-        if (component.getModifier().isObfuscated()) sb.append(EnumChatFormat.OBFUSCATED.getFormat());
-        if (component.getModifier().isUnderlined()) sb.append(EnumChatFormat.UNDERLINE.getFormat());
+        sb.append(component.getModifier().getMagicCodes());
         if (component.getText() != null) sb.append(component.getText());
         for (IChatBaseComponent extra : component.getExtra()) {
             sb.append(toBukkitFormat(extra, rgbClient));

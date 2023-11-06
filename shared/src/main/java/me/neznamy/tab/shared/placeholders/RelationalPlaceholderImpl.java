@@ -129,11 +129,12 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
      * @return  last known value for entered player duo
      */
     public String getLastValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
-        if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) {
-            lastValues.get(viewer).put(target, getReplacements().findReplacement(identifier));
+        WeakHashMap<me.neznamy.tab.api.TabPlayer, String> viewerMap = lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>());
+        if (!viewerMap.containsKey(target)) {
+            viewerMap.put(target, getReplacements().findReplacement(identifier));
             update(viewer, target);
         }
-        return setPlaceholders(EnumChatFormat.color(lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).get(target)), target);
+        return setPlaceholders(EnumChatFormat.color(viewerMap.get(target)), target);
     }
 
     @Override

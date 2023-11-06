@@ -181,7 +181,7 @@ public class TAB extends TabAPI {
             kill();
             return (configuration == null ? "&4Failed to reload, file %file% has broken syntax. Check console for more info."
                     : configuration.getMessages().getReloadFailBrokenFile()).replace("%file%", brokenFile);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
             kill();
             return "&cFailed to enable due to an internal plugin error. Check console for more info.";
@@ -199,7 +199,7 @@ public class TAB extends TabAPI {
             if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
             featureManager.unload();
             platform.logInfo(IChatBaseComponent.fromColoredText("&aDisabled in " + (System.currentTimeMillis()-time) + "ms"));
-        } catch (Exception | NoClassDefFoundError e) {
+        } catch (Throwable e) {
             errorManager.criticalError("Failed to disable", e);
         }
         kill();

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * Feature handler for global PlayerList feature
  */
 public class GlobalPlayerList extends TabFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
-        Loadable, UnLoadable, ServerSwitchListener, LoginPacketListener {
+        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener {
 
     // config options
     private final List<String> spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));
@@ -118,8 +118,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onLoginPacket(TabPlayer player) {
-        // Login packet itself does not clear this, but BungeeCord does when the packet is received
+    public void onTabListClear(TabPlayer player) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             // Ignore players on the same server, since the server already sends add packet
             if (!all.getServer().equals(player.getServer()) && shouldSee(player, all)) {

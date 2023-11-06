@@ -14,19 +14,14 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
-import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * TabPlayer implementation for BungeeCord
@@ -36,9 +31,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Flag tracking plugin presence */
     private static final boolean premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
-
-    /** Flag tracking version of bungeecord with packet queue due to configuration phase */
-    private static final boolean packetQueue = ReflectionUtils.methodExists(UserConnection.class, "sendPacketQueued", DefinedPacket.class);
 
     /** Player's scoreboard */
     @NotNull
@@ -51,8 +43,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @NotNull
     private final TabList tabList1_8 = new BungeeTabList18(this);
 
-    @NotNull
-    private final TabList tabList1_19_3 = new BungeeTabList1193(this);
+    @Nullable
+    private TabList tabList1_19_3;
 
     /** Player's boss bar view */
     @NotNull
@@ -87,12 +79,17 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     @Nullable
+    @SneakyThrows
     public TabList.Skin getSkin() {
         LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
         if (loginResult == null) return null;
-        Property[] properties = loginResult.getProperties();
+        // Reflection to support old bungee versions as well
+        Object[] properties = (Object[]) loginResult.getClass().getMethod("getProperties").invoke(loginResult);
         if (properties == null || properties.length == 0) return null; //Offline mode
-        return new TabList.Skin(properties[0].getValue(), properties[0].getSignature());
+        return new TabList.Skin(
+                (String) properties[0].getClass().getMethod("getValue").invoke(properties[0]),
+                (String) properties[0].getClass().getMethod("getSignature").invoke(properties[0])
+        );
     }
 
     @Override
@@ -113,6 +110,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
+        if (!getPlayer().isConnected()) return;
         try {
             getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
         } catch (NullPointerException BungeeCordBug) {
@@ -155,7 +153,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @NotNull
     public TabList getTabList() {
         int version = getPlayer().getPendingConnection().getVersion();
-        if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return tabList1_19_3;
+        if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return getTabList1_19_3();
         if (version >= ProtocolVersion.V1_8.getNetworkId()) return tabList1_8;
         return tabList1_7;
     }
@@ -169,20 +167,14 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      */
     @SneakyThrows
     public void sendPacket(@NotNull DefinedPacket packet) {
-        if (packetQueue) {
-            try {
-                UserConnection.class.getDeclaredMethod("sendPacketQueued", DefinedPacket.class).invoke(player, packet);
-            } catch (InvocationTargetException BungeeCordBug) { // Since we use reflection we must catch this one
-                // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
-                //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
-                //        at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:194)
-                if (TAB.getInstance().getConfiguration().isDebugMode()) {
-                    TAB.getInstance().getErrorManager().printError("Failed to deliver packet to player " + getName() +
-                            " (online = " + getPlayer().isConnected() + "): " + packet, BungeeCordBug);
-                }
-            }
-        } else {
-            getPlayer().unsafe().sendPacket(packet);
-        }
+        if (!getPlayer().isConnected()) return;
+        BungeeMultiVersion.sendPacket(this, packet);
+    }
+
+    @NotNull
+    public TabList getTabList1_19_3() {
+        // Workaround to prevent error on old BungeeCord builds
+        if (tabList1_19_3 == null) tabList1_19_3 = new BungeeTabList1193(this);
+        return tabList1_19_3;
     }
 }

@@ -9,6 +9,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -113,10 +114,16 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                     TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
                 }
                 if (isLogin(packet)) {
-                    // Logic must be processed after packet is actually sent
+                    player.getScoreboard().freeze();
                     super.write(context, packet, channelPromise);
-                    TAB.getInstance().getCPUManager().runTaskLater(200, getFeatureName(), TabConstants.CpuUsageCategory.PACKET_LOGIN,
-                            () -> TAB.getInstance().getFeatureManager().onLoginPacket(player));
+                    TAB.getInstance().getCPUManager().runTaskLater(200, getFeatureName(),
+                            TabConstants.CpuUsageCategory.PACKET_LOGIN, () -> {
+                        TAB.getInstance().getFeatureManager().onLoginPacket(player);
+                        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+                            // For 1.20.2+ we need to do this, because server switch event is called before tablist is cleared
+                            TAB.getInstance().getFeatureManager().onTabListClear(player);
+                        }
+                    });
                     return;
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);

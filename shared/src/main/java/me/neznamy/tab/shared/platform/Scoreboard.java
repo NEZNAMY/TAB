@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -23,7 +24,11 @@ public abstract class Scoreboard<T extends TabPlayer> {
     /** Scoreboard objectives player has registered */
     private final Set<String> registeredObjectives = new HashSet<>();
 
+    /** Flag tracking time between Login packet send and its processing */
+    private boolean frozen;
+
     public void setScore(@NotNull String objective, @NotNull String playerName, int score) {
+        if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
             error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
             return;
@@ -32,6 +37,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public void removeScore(@NotNull String objective, @NotNull String playerName) {
+        if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
             error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
             return;
@@ -40,14 +46,16 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public void registerObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+        if (frozen) return;
         if (!registeredObjectives.add(objectiveName)) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
         }
-        registerObjective0(objectiveName, cutTo(title, 32), display);
+        registerObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display);
     }
 
     public void unregisterObjective(@NotNull String objectiveName) {
+        if (frozen) return;
         if (!registeredObjectives.remove(objectiveName)) {
             error("Tried to unregister non-existing objective %s for player ", objectiveName);
             return;
@@ -56,23 +64,34 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public void updateObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+        if (frozen) return;
         if (!registeredObjectives.contains(objectiveName)) {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
         }
-        updateObjective0(objectiveName, cutTo(title, 32), display);
+        updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display);
     }
 
     public void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                              @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
+        if (frozen) return;
         if (!registeredTeams.add(name)) {
             error("Tried to register duplicated team %s to player ", name);
             return;
         }
-        registerTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, players, options);
+        registerTeam0(
+                name,
+                cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                visibility,
+                collision,
+                players,
+                options
+        );
     }
 
     public void unregisterTeam(@NotNull String name) {
+        if (frozen) return;
         if (!registeredTeams.remove(name)) {
             error("Tried to unregister non-existing team %s for player ", name);
             return;
@@ -82,11 +101,19 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public void updateTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                            @NotNull CollisionRule collision, int options) {
+        if (frozen) return;
         if (!registeredTeams.contains(name)) {
             error("Tried to modify non-existing team %s for player ", name);
             return;
         }
-        updateTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, options);
+        updateTeam0(
+                name,
+                cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                visibility,
+                collision,
+                options
+        );
     }
 
     private void error(@NotNull String format, @NotNull Object... args) {
@@ -94,11 +121,19 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     /**
-     * Clears maps of registered teams and objectives on server switch, as proxy sends Login packet
+     * Marks for freeze.
      */
-    public void clearRegisteredObjectives() {
+    public void freeze() {
+        frozen = true;
+    }
+
+    /**
+     * Clears frozen flag and clears maps of registered teams and objectives.
+     */
+    public void unfreeze() {
         registeredTeams.clear();
         registeredObjectives.clear();
+        frozen = false;
     }
 
     /**
@@ -149,7 +184,9 @@ public abstract class Scoreboard<T extends TabPlayer> {
     public abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                                      @NotNull CollisionRule collision, int options);
 
-    public enum DisplaySlot { PLAYER_LIST, SIDEBAR, BELOW_NAME }
+    public enum TeamAction {
+        CREATE, REMOVE, UPDATE, ADD_PLAYER, REMOVE_PLAYER
+    }
 
     @AllArgsConstructor
     public enum CollisionRule {
@@ -192,9 +229,20 @@ public abstract class Scoreboard<T extends TabPlayer> {
             return BY_NAME.getOrDefault(name, ALWAYS);
         }
     }
-    
+
+    public enum ObjectiveAction {
+        REGISTER, UNREGISTER, UPDATE
+    }
+
     public enum HealthDisplay {
-        
         INTEGER, HEARTS
+    }
+
+    public enum DisplaySlot {
+        PLAYER_LIST, SIDEBAR, BELOW_NAME
+    }
+
+    public enum ScoreAction {
+        CHANGE, REMOVE
     }
 }
