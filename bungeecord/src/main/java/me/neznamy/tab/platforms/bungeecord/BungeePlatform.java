@@ -2,12 +2,14 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
+import me.neznamy.tab.platforms.bungeecord.features.BungeePremiumVanishSupport;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
+import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -44,6 +46,16 @@ public class BungeePlatform extends ProxyPlatform {
         if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
                 RedisBungeeAPI.getRedisBungeeApi() != null) {
             return new BungeeRedisSupport(plugin);
+        }
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public PremiumVanishSupport getPremiumVanishSupport() {
+        if(plugin.getProxy().getPluginManager().getPlugin("PremiumVanish") != null)
+        {
+            return new BungeePremiumVanishSupport();
         }
         return null;
     }

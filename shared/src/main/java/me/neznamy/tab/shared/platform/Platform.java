@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
@@ -83,6 +84,13 @@ public interface Platform {
      * @return  Created instance
      */
     @Nullable RedisSupport getRedisSupport();
+
+    /**
+     * Creates PremiumVanish feature and returns it
+     *
+     * @return  Created instance
+     */
+    @Nullable PremiumVanishSupport getPremiumVanishSupport();
 
     /**
      * Returns per world player list feature handler.

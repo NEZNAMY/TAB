@@ -6,12 +6,14 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.platforms.velocity.features.VelocityPremiumVanishSupport;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
+import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -47,6 +49,17 @@ public class VelocityPlatform extends ProxyPlatform {
         if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
                 RedisBungeeAPI.getRedisBungeeApi() != null) {
             return new VelocityRedisSupport(plugin);
+        }
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public PremiumVanishSupport getPremiumVanishSupport()
+    {
+        if(plugin.getServer().getPluginManager().isLoaded("premiumvanish"))
+        {
+            return new VelocityPremiumVanishSupport();
         }
         return null;
     }

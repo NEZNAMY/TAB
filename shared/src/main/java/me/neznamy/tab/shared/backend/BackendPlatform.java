@@ -4,6 +4,7 @@ import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.platform.Platform;
@@ -21,6 +22,7 @@ public interface BackendPlatform extends Platform {
     }
 
     default RedisSupport getRedisSupport() { return null; }
+    default PremiumVanishSupport getPremiumVanishSupport() { return null; }
 
     @Override
     default void registerPlaceholders() {

@@ -195,6 +195,7 @@ public class TabConstants {
         public static final String UNLIMITED_NAME_TAGS_PACKET_LISTENER = "nametagx-packet";
         public static final String UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER = "nametagx-vehicle";
         public static final String PING_SPOOF = "PingSpoof";
+        public static final String PREMIUMVANISH = "PremiumVanish";
 
         //Bukkit only
         public static final String PER_WORLD_PLAYER_LIST = "PerWorldPlayerList";
