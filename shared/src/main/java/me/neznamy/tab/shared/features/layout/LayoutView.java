@@ -68,9 +68,15 @@ public class LayoutView {
 
     public void tick() {
         Stream<TabPlayer> str = manager.getSortedPlayers().keySet().stream();
-        if (!viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) {
+
+        if(manager.getPremiumVanish() != null)
+        {
+            str = str.filter(player -> !player.isVanished() || manager.getPremiumVanish().canSee(viewer.getPlayer(), player.getPlayer()));
+        }
+        else if (!viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) {
             str = str.filter(player -> !player.isVanished());
         }
+
         List<TabPlayer> players = str.collect(Collectors.toList());
         for (ParentGroup group : groups) {
             group.tick(players);

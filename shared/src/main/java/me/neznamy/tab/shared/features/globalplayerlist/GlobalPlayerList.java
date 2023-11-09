@@ -5,6 +5,7 @@ import java.util.*;
 import lombok.Getter;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -26,6 +27,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
 
     private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+    private final PremiumVanishSupport premiumVanish = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PREMIUMVANISH);
     @Getter private final String featureName = "Global PlayerList";
 
     public GlobalPlayerList() {
@@ -50,7 +52,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
 
     public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
         if (displayed == viewer) return true;
-        if (displayed.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
+        if (displayed.isVanished() && (!viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), displayed.getPlayer())))) return false;
         if (isSpyServer(viewer.getServer())) return true;
         return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
     }

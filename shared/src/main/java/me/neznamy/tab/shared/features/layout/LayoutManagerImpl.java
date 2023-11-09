@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
@@ -49,6 +50,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     private final String refreshDisplayName = "Switching layouts";
     private final WeakHashMap<TabPlayer, LayoutView> views = new WeakHashMap<>();
     private final WeakHashMap<me.neznamy.tab.api.TabPlayer, LayoutPattern> forcedLayouts = new WeakHashMap<>();
+    private PremiumVanishSupport premiumVanish;
 
     private static boolean teamsEnabled;
 
@@ -84,6 +86,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
+        premiumVanish = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PREMIUMVANISH);
     }
 
     private @NotNull Direction parseDirection(@NotNull String value) {

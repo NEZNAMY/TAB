@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,7 @@ public class PlayerView {
 
     private int maxWidth;
     private TabPlayer maxPlayer;
+    private PremiumVanishSupport premiumVanish;
 
     public PlayerView(@NotNull AlignedPlayerList feature, @NotNull TabPlayer viewer) {
         this.feature = feature;
@@ -35,13 +37,14 @@ public class PlayerView {
         recalculateMaxWidth(null);
         if (viewer.getVersion().getMinorVersion() < 8) return;
         updateAllPlayers();
+        premiumVanish = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PREMIUMVANISH);
     }
 
     public void playerJoin(@NotNull TabPlayer connectedPlayer) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         int width = getPlayerNameWidth(connectedPlayer);
         playerWidths.put(connectedPlayer, width);
-        if (width > maxWidth && (!connectedPlayer.isVanished() || canSeeVanished)) {
+        if (width > maxWidth && (!connectedPlayer.isVanished() || canSeeVanished || (premiumVanish != null && premiumVanish.canSee(viewer.getPlayer(), connectedPlayer.getPlayer())))) {
             maxWidth = width;
             maxPlayer = connectedPlayer;
             updateAllPlayers();
@@ -69,7 +72,7 @@ public class PlayerView {
         String prefixAndName = prefixPr.getFormat(viewer) + namePr.getFormat(viewer);
         String suffix = suffixPr.getFormat(viewer);
         if (suffix.length() == 0) return IChatBaseComponent.optimizedComponent(prefixAndName);
-        if ((target.isVanished() && !canSeeVanished) || width > maxWidth) {
+        if ((target.isVanished() && !canSeeVanished && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), target.getPlayer()))) || width > maxWidth) {
             //tab sending packets for vanished players or player just unvanished
             return IChatBaseComponent.optimizedComponent(prefixAndName + suffix);
         }
@@ -184,7 +187,7 @@ public class PlayerView {
         TabPlayer newMaxPlayer = null;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == ignoredPlayer || !playerWidths.containsKey(all)) continue;
-            if (all.isVanished() && !canSeeVanished && all != viewer) continue;
+            if (all.isVanished() && !canSeeVanished && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), all.getPlayer())) && all != viewer) continue;
             int localWidth = playerWidths.get(all);
             if (localWidth > newMaxWidth) {
                 newMaxWidth = localWidth;
