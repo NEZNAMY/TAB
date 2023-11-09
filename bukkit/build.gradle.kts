@@ -10,4 +10,5 @@ dependencies {
     compileOnly("LibsDisguises:LibsDisguises:10.0.21") {
         exclude("org.spigotmc", "spigot")
     }
+    compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.8.8")
 }

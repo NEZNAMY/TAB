@@ -4,23 +4,25 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
-import me.neznamy.tab.shared.GroupManager;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.platforms.bukkit.features.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
-import me.neznamy.tab.platforms.bukkit.features.BukkitNameTagX;
+import me.neznamy.tab.platforms.bukkit.features.premiumvanish.BukkitPremiumVanishSupport;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
@@ -137,6 +139,16 @@ public class BukkitPlatform implements BackendPlatform {
     @Nullable
     public TabFeature getPerWorldPlayerList() {
         return new PerWorldPlayerList(plugin);
+    }
+
+    @Override
+    @Nullable
+    public PremiumVanishSupport getPremiumVanishSupport() {
+        if(plugin.getServer().getPluginManager().isPluginEnabled("PremiumVanish"))
+        {
+            return new BukkitPremiumVanishSupport();
+        }
+        return null;
     }
 
     @Override
