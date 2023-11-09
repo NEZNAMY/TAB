@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
+import de.myzelyam.api.vanish.VanishAPI;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -49,23 +50,40 @@ import java.lang.reflect.Field;
 @Getter
 public class BukkitPlatform implements BackendPlatform {
 
-    /** Plugin instance for registering tasks and events */
+    /** Flag tracking plugin presence */
+    private final boolean premiumVanish = Bukkit.getPluginManager().isPluginEnabled("PremiumVanish");
+
+    /**
+     * Plugin instance for registering tasks and events
+     */
     @NotNull
     private final JavaPlugin plugin;
 
-    /** Variables checking presence of other plugins to hook into */
+    /**
+     * Variables checking presence of other plugins to hook into
+     */
     private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
 
-    /** NMS server to get TPS from on spigot */
-    @Nullable private Object server;
+    /**
+     * NMS server to get TPS from on spigot
+     */
+    @Nullable
+    private Object server;
 
-    /** TPS field */
-    @Nullable private Field spigotTps;
+    /**
+     * TPS field
+     */
+    @Nullable
+    private Field spigotTps;
 
-    /** Detection for presence of Paper's TPS getter */
+    /**
+     * Detection for presence of Paper's TPS getter
+     */
     private final boolean paperTps = ReflectionUtils.methodExists(Bukkit.class, "getTPS");
 
-    /** Detection for presence of Paper's MSPT getter */
+    /**
+     * Detection for presence of Paper's MSPT getter
+     */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
@@ -106,7 +124,7 @@ public class BukkitPlatform implements BackendPlatform {
         }
         // Override for the PAPI placeholder to prevent console errors on unsupported server versions when ping field changes
         manager.registerPlayerPlaceholder("%player_ping%", manager.getRefreshInterval("%player_ping%"),
-                p -> ((TabPlayer)p).getPing());
+                p -> ((TabPlayer) p).getPing());
         BackendPlatform.super.registerPlaceholders();
     }
 
@@ -169,7 +187,7 @@ public class BukkitPlatform implements BackendPlatform {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 long time = System.nanoTime();
                 ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
-                TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, System.nanoTime()-time);
+                TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, System.nanoTime() - time);
             });
             return null;
         });
@@ -236,11 +254,9 @@ public class BukkitPlatform implements BackendPlatform {
     /**
      * Converts internal component class to platform's component class
      *
-     * @param   component
-     *          Component to convert
-     * @param   version
-     *          Game version to convert component for
-     * @return  Converted component
+     * @param component Component to convert
+     * @param version   Game version to convert component for
+     * @return Converted component
      */
     public Object toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
         return NMSStorage.getInstance().componentCache.get(component, version);
@@ -275,11 +291,22 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public double getMSPT() {
-       if (paperMspt) return Bukkit.getAverageTickTime();
-       return -1;
+        if (paperMspt) return Bukkit.getAverageTickTime();
+        return -1;
     }
 
     public void runEntityTask(@NotNull Entity entity, @NotNull Runnable task) {
         task.run();
+    }
+
+    @Override
+    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        Player bViewer = ((BukkitTabPlayer)viewer).getPlayer();
+        Player bTarget = ((BukkitTabPlayer)target).getPlayer();
+
+        //noinspection ConstantConditions
+        if (premiumVanish && VanishAPI.canSee(bViewer, bTarget)) return true;
+        if (bViewer.canSee(bTarget)) return true;
+        return BackendPlatform.super.canSee(viewer, target);
     }
 }

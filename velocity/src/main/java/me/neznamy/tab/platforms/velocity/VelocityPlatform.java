@@ -4,6 +4,7 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
+import de.myzelyam.api.vanish.VelocityVanishAPI;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
@@ -13,6 +14,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bstats.charts.SimplePie;
@@ -33,6 +35,14 @@ public class VelocityPlatform extends ProxyPlatform {
     /** Plugin message channel */
     @Getter
     private final MinecraftChannelIdentifier MCI = MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
+
+    /** Flag tracking plugin presence */
+    private final boolean premiumVanish;
+
+    public VelocityPlatform(VelocityTAB plugin) {
+        this.plugin = plugin;
+        premiumVanish = plugin.getServer().getPluginManager().isLoaded("premiumvanish");
+    }
 
     @Override
     public void loadPlayers() {
@@ -100,5 +110,14 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     public void registerChannel() {
         plugin.getServer().getChannelRegistrar().register(MCI);
+    }
+
+    @Override
+    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        //noinspection ConstantConditions
+        if (premiumVanish && VelocityVanishAPI.canSee(
+                ((VelocityTabPlayer)viewer).getPlayer(),
+                ((VelocityTabPlayer)target).getPlayer())) return true;
+        return super.canSee(viewer, target);
     }
 }

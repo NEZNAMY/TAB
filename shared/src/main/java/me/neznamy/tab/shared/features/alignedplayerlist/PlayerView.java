@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -12,21 +13,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+@RequiredArgsConstructor
 public class PlayerView {
 
     @NotNull private final AlignedPlayerList feature;
     @NotNull private final TabPlayer viewer;
-    private final boolean canSeeVanished;
     private final Map<TabPlayer, Integer> playerWidths = new WeakHashMap<>();
 
     private int maxWidth;
     private TabPlayer maxPlayer;
-
-    public PlayerView(@NotNull AlignedPlayerList feature, @NotNull TabPlayer viewer) {
-        this.feature = feature;
-        this.viewer = viewer;
-        canSeeVanished = viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
-    }
 
     public void load() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -41,7 +36,7 @@ public class PlayerView {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         int width = getPlayerNameWidth(connectedPlayer);
         playerWidths.put(connectedPlayer, width);
-        if (width > maxWidth && (!connectedPlayer.isVanished() || canSeeVanished)) {
+        if (width > maxWidth && TAB.getInstance().getPlatform().canSee(viewer, connectedPlayer)) {
             maxWidth = width;
             maxPlayer = connectedPlayer;
             updateAllPlayers();
@@ -69,7 +64,7 @@ public class PlayerView {
         String prefixAndName = prefixPr.getFormat(viewer) + namePr.getFormat(viewer);
         String suffix = suffixPr.getFormat(viewer);
         if (suffix.length() == 0) return IChatBaseComponent.optimizedComponent(prefixAndName);
-        if ((target.isVanished() && !canSeeVanished) || width > maxWidth) {
+        if (width > maxWidth || !TAB.getInstance().getPlatform().canSee(viewer, target)) {
             //tab sending packets for vanished players or player just unvanished
             return IChatBaseComponent.optimizedComponent(prefixAndName + suffix);
         }
@@ -184,7 +179,7 @@ public class PlayerView {
         TabPlayer newMaxPlayer = null;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == ignoredPlayer || !playerWidths.containsKey(all)) continue;
-            if (all.isVanished() && !canSeeVanished && all != viewer) continue;
+            if (!TAB.getInstance().getPlatform().canSee(viewer, all) && all != viewer) continue;
             int localWidth = playerWidths.get(all);
             if (localWidth > newMaxWidth) {
                 newMaxWidth = localWidth;

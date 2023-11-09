@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -28,9 +27,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @Getter
 public class BungeeTabPlayer extends ProxyTabPlayer {
-
-    /** Flag tracking plugin presence */
-    private static final boolean premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 
     /** Player's scoreboard */
     @NotNull
@@ -142,7 +138,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public boolean isVanished() {
         try {
             //noinspection ConstantConditions
-            if (premiumVanish && BungeeVanishAPI.isInvisible(getPlayer())) return true;
+            if (getPlatform().isPremiumVanish() && BungeeVanishAPI.isInvisible(getPlayer())) return true;
         } catch (IllegalStateException ignored) {
             // PV Bug: PremiumVanish must be enabled to use its API
         }

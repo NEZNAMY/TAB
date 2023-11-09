@@ -122,7 +122,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         if (!disableChecker.isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
-                if (disconnectedPlayer.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) continue;
+                if (!TAB.getInstance().getPlatform().canSee(viewer, disconnectedPlayer)) continue;
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(disconnectedPlayer));
             }
         }
@@ -229,7 +229,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return;
+        if (!TAB.getInstance().getPlatform().canSee(viewer, p)) return;
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
@@ -246,7 +246,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) continue;
+            if (!TAB.getInstance().getPlatform().canSee(viewer, p)) continue;
             viewer.getScoreboard().unregisterTeam(teamName);
         }
     }
@@ -259,7 +259,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (hasTeamHandlingPaused(p)) return;
-        if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return;
+        if (!TAB.getInstance().getPlatform().canSee(viewer, p)) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
         viewer.getScoreboard().registerTeam(
@@ -354,6 +354,12 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            // This method does not keep up with all the possibilities as it would need to
+            // track view of each player to see who is and who is not visible to who
+            // This simple implementation will only unregister teams for players without that permission
+            // to avoid 3rd party clients to find out who is online and vanished using teams feature from TAB.
+            // Incorrect setup will (only) result in teams being unregistered to staff members as well, which
+            // will only put them to the top of the TabList, but will not cause any actual harm or affect players.
             if (viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) continue;
             if (player.isVanished()) {
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(player));

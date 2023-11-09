@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
+import de.myzelyam.api.vanish.BungeeVanishAPI;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -10,6 +12,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ProxyServer;
@@ -26,6 +29,10 @@ import java.io.File;
  */
 @AllArgsConstructor
 public class BungeePlatform extends ProxyPlatform {
+
+    /** Flag tracking plugin presence */
+    @Getter
+    private final boolean premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 
     @NotNull
     private final BungeeTAB plugin;
@@ -95,5 +102,14 @@ public class BungeePlatform extends ProxyPlatform {
     @Override
     public void registerChannel() {
         ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
+    }
+
+    @Override
+    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        //noinspection ConstantConditions
+        if (premiumVanish && BungeeVanishAPI.canSee(
+                ((BungeeTabPlayer)viewer).getPlayer(),
+                ((BungeeTabPlayer)target).getPlayer())) return true;
+        return super.canSee(viewer, target);
     }
 }

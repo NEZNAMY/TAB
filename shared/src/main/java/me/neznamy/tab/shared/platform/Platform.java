@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -144,4 +145,18 @@ public interface Platform {
      * @return  plugin's data folder
      */
     File getDataFolder();
+
+    /**
+     * Returns {@code true} if the viewer can see the target, {@code false} otherwise.
+     * This includes all vanish, permission & plugin API checks.
+     *
+     * @param   viewer
+     *          Player who is viewing
+     * @param   target
+     *          Player who is being viewed
+     * @return  {@code true} if can see, {@code false} if not.
+     */
+    default boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        return !target.isVanished() || viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
+    }
 }
