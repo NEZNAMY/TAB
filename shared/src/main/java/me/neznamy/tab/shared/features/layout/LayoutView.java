@@ -71,7 +71,7 @@ public class LayoutView {
 
         if(manager.getPremiumVanish() != null)
         {
-            str = str.filter(player -> !player.isVanished() || manager.getPremiumVanish().canSee(viewer.getPlayer(), player.getPlayer()));
+            str = str.filter(player -> !player.isVanished() || manager.getPremiumVanish().canSee(viewer, player));
         }
         else if (!viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) {
             str = str.filter(player -> !player.isVanished());

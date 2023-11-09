@@ -125,7 +125,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         if (!disableChecker.isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
-                if (disconnectedPlayer.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), disconnectedPlayer.getPlayer()))) continue;
+                if (disconnectedPlayer.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer, disconnectedPlayer))) continue;
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(disconnectedPlayer));
             }
         }
@@ -232,7 +232,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), p.getPlayer()))) return;
+        if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer, p))) return;
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
@@ -249,7 +249,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), p.getPlayer()))) continue;
+            if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer, p))) continue;
             viewer.getScoreboard().unregisterTeam(teamName);
         }
     }
@@ -262,7 +262,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (hasTeamHandlingPaused(p)) return;
-        if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), p.getPlayer()))) return;
+        if (p.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer, p))) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
         viewer.getScoreboard().registerTeam(
@@ -357,7 +357,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (player.isVanished() && (!viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), player.getPlayer())))) {
+            if (player.isVanished() && (!viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer, player)))) {
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(player));
             } else {
                 registerTeam(player, viewer);

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.premiumvanish;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,7 @@ public abstract class PremiumVanishSupport extends TabFeature
     /**
      * @return Boolean if viewer can see viewed
      */
-    public boolean canSee(Object viewer, Object viewed)
+    public boolean canSee(TabPlayer viewer, TabPlayer viewed)
     {
         return false;
     }

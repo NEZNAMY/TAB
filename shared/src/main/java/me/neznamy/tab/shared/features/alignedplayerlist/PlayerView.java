@@ -44,7 +44,7 @@ public class PlayerView {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         int width = getPlayerNameWidth(connectedPlayer);
         playerWidths.put(connectedPlayer, width);
-        if (width > maxWidth && (!connectedPlayer.isVanished() || canSeeVanished || (premiumVanish != null && premiumVanish.canSee(viewer.getPlayer(), connectedPlayer.getPlayer())))) {
+        if (width > maxWidth && (!connectedPlayer.isVanished() || canSeeVanished || (premiumVanish != null && premiumVanish.canSee(viewer, connectedPlayer)))) {
             maxWidth = width;
             maxPlayer = connectedPlayer;
             updateAllPlayers();
@@ -72,7 +72,7 @@ public class PlayerView {
         String prefixAndName = prefixPr.getFormat(viewer) + namePr.getFormat(viewer);
         String suffix = suffixPr.getFormat(viewer);
         if (suffix.length() == 0) return IChatBaseComponent.optimizedComponent(prefixAndName);
-        if ((target.isVanished() && !canSeeVanished && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), target.getPlayer()))) || width > maxWidth) {
+        if ((target.isVanished() && !canSeeVanished && (premiumVanish == null || !premiumVanish.canSee(viewer, target))) || width > maxWidth) {
             //tab sending packets for vanished players or player just unvanished
             return IChatBaseComponent.optimizedComponent(prefixAndName + suffix);
         }
@@ -187,7 +187,7 @@ public class PlayerView {
         TabPlayer newMaxPlayer = null;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == ignoredPlayer || !playerWidths.containsKey(all)) continue;
-            if (all.isVanished() && !canSeeVanished && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), all.getPlayer())) && all != viewer) continue;
+            if (all.isVanished() && !canSeeVanished && (premiumVanish == null || !premiumVanish.canSee(viewer, all)) && all != viewer) continue;
             int localWidth = playerWidths.get(all);
             if (localWidth > newMaxWidth) {
                 newMaxWidth = localWidth;

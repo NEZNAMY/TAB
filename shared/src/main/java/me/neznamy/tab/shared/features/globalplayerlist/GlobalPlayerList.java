@@ -52,7 +52,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
 
     public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
         if (displayed == viewer) return true;
-        if (displayed.isVanished() && (!viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer.getPlayer(), displayed.getPlayer())))) return false;
+        if (displayed.isVanished() && (!viewer.hasPermission(TabConstants.Permission.SEE_VANISHED) && (premiumVanish == null || !premiumVanish.canSee(viewer, displayed)))) return false;
         if (isSpyServer(viewer.getServer())) return true;
         return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
     }

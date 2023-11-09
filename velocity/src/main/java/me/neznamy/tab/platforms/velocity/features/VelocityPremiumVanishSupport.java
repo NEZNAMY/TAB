@@ -2,26 +2,19 @@ package me.neznamy.tab.platforms.velocity.features;
 
 import com.velocitypowered.api.proxy.Player;
 import de.myzelyam.api.vanish.VelocityVanishAPI;
-import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 
 /**
  * PremiumVanishSupport implementation for Velocity
  */
-public class VelocityPremiumVanishSupport extends PremiumVanishSupport
-{
+public class VelocityPremiumVanishSupport extends PremiumVanishSupport {
     @Override
-    public boolean canSee(Object viewerObj, Object viewedObj)
+    public boolean canSee(TabPlayer viewer, TabPlayer viewed)
     {
-        if(viewerObj instanceof Player && viewedObj instanceof Player)
-        {
-            Player viewer = (Player)viewerObj;
-            Player viewed = (Player)viewedObj;
+        Player viewerPlayer = (Player)viewer.getPlayer();
+        Player viewedPlayer = (Player)viewed.getPlayer();
 
-            return VelocityVanishAPI.canSee(viewer, viewed);
-        }
-
-        TAB.getInstance().getErrorManager().printError("ERROR: Invalid instance!");
-        return true;
+        return VelocityVanishAPI.canSee(viewerPlayer, viewedPlayer);
     }
 }

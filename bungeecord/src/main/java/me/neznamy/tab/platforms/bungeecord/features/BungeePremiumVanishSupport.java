@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord.features;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.premiumvanish.PremiumVanishSupport;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -10,17 +10,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  */
 public class BungeePremiumVanishSupport extends PremiumVanishSupport {
     @Override
-    public boolean canSee(Object viewerObj, Object viewedObj)
+    public boolean canSee(TabPlayer viewer, TabPlayer viewed)
     {
-        if(viewerObj instanceof ProxiedPlayer && viewedObj instanceof ProxiedPlayer)
-        {
-            ProxiedPlayer viewer = (ProxiedPlayer)viewerObj;
-            ProxiedPlayer viewed = (ProxiedPlayer)viewedObj;
+        ProxiedPlayer viewerPlayer = (ProxiedPlayer)viewer.getPlayer();
+        ProxiedPlayer viewedPlayer = (ProxiedPlayer)viewed.getPlayer();
 
-            return BungeeVanishAPI.canSee(viewer, viewed);
-        }
-
-        TAB.getInstance().getErrorManager().printError("ERROR: Invalid instance!");
-        return true;
+        return BungeeVanishAPI.canSee(viewerPlayer, viewedPlayer);
     }
 }
