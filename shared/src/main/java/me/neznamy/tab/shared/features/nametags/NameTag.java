@@ -128,8 +128,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == disconnectedPlayer) continue;
-            List<me.neznamy.tab.api.TabPlayer> list = hiddenNameTagFor.get(all);
-            if (list != null) list.remove(disconnectedPlayer); //clearing memory from API method
+            hiddenNameTagFor.getOrDefault(all, Collections.emptyList()).remove(disconnectedPlayer); //clearing memory from API method
         }
     }
 
@@ -229,7 +228,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        if (!TAB.getInstance().getPlatform().canSee(viewer, p)) return;
+        if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
@@ -246,7 +245,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (!TAB.getInstance().getPlatform().canSee(viewer, p)) continue;
+            if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) continue;
             viewer.getScoreboard().unregisterTeam(teamName);
         }
     }
@@ -259,7 +258,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (hasTeamHandlingPaused(p)) return;
-        if (!TAB.getInstance().getPlatform().canSee(viewer, p)) return;
+        if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
         viewer.getScoreboard().registerTeam(
@@ -354,6 +353,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer == player) continue;
             // This method does not keep up with all the possibilities as it would need to
             // track view of each player to see who is and who is not visible to who
             // This simple implementation will only unregister teams for players without that permission
