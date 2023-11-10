@@ -21,3 +21,26 @@ is in quality of the report. Bug reports where steps to reproduce are "idk" have
 
 # Contributing
 See [CONTRIBUTING.md](https://github.com/NEZNAMY/TAB/blob/master/CONTRIBUTING.md)
+
+# Provided services
+The plugin is being used by a large amount of servers, which also means the demand for my attention is high. Unfortunately, 
+I am no longer able to keep up with the demand since I don't want to dedicate my whole existence to a free plugin. 
+In order to provide the best quality of all provided services, the amount of services provided may vary over time. 
+Here is the full list of potential services and their status:
+
+| Service type                  | Availability |
+|-------------------------------|--------------|
+| Updates for new MC versions   | ✔            |
+| Bug fixes                     | ✔            |
+| Wiki updates<sup>1</sup>      | ✔            |
+| Feature requests              | ❌            |
+| Customer support<sup>2</sup>  | ✔            |
+| Free user support<sup>3</sup> | ❌            |
+| Optimization<sup>4</sup>      | ✔            |
+
+<sup>1</sup> - Adding new examples, guides and other kind of useful information people ask about.  
+<sup>2</sup> - Assistance with the plugin on discord, including answering any questions and helping with 
+configuration to those, who bought a copy of the plugin when it was purchasable.  
+<sup>3</sup> - Like <sup>2</sup>, but for anyone in the world who asks for it.  
+<sup>4</sup> - Improving plugin's performance while not losing out on any features. This was done 
+proactively a lot in the past, so there isn't much to do anymore, only if someone actually finds and reports something.  
