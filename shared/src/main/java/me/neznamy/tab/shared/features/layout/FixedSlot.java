@@ -57,7 +57,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
 
     public static @Nullable FixedSlot fromLine(@NotNull String line, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
         String[] array = line.split("\\|");
-        if (array.length < 2) {
+        if (array.length < 1) {
             TAB.getInstance().getMisconfigurationHelper().invalidFixedSlotDefinition(pattern.getName(), line);
             return null;
         }
@@ -68,7 +68,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
             TAB.getInstance().getMisconfigurationHelper().invalidFixedSlotDefinition(pattern.getName(), line);
             return null;
         }
-        String text = array[1];
+        String text = array.length > 1 ? array[1] : "";
         String skin = array.length > 2 ? array[2] : "";
         int ping = array.length > 3 ? TAB.getInstance().getErrorManager().parseInteger(array[3], manager.getEmptySlotPing()) : manager.getEmptySlotPing();
         FixedSlot f = new FixedSlot(
