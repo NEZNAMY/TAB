@@ -12,6 +12,7 @@ import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
@@ -362,16 +363,27 @@ public class BungeeMultiVersion {
      *          Game version to convert component for
      * @return  Converted component
      */
-    private static BaseComponent toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
+    public static BaseComponent toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
         TextComponent textComponent = new TextComponent(component.getText());
         ChatModifier modifier = component.getModifier();
         if (modifier.getColor() != null) textComponent.setColor(ChatColor.of(
                 modifier.getColor().toString(version.getMinorVersion() >= 16)));
+
         if (modifier.isBold()) textComponent.setBold(true);
         if (modifier.isItalic()) textComponent.setItalic(true);
         if (modifier.isObfuscated()) textComponent.setObfuscated(true);
         if (modifier.isStrikethrough()) textComponent.setStrikethrough(true);
         if (modifier.isUnderlined()) textComponent.setUnderlined(true);
+
+        textComponent.setFont(modifier.getFont());
+
+        if (modifier.getClickEvent() != null) {
+            textComponent.setClickEvent(new ClickEvent(
+                    ClickEvent.Action.valueOf(modifier.getClickEvent().getAction().name()),
+                    modifier.getClickEvent().getValue()
+            ));
+        }
+
         if (!component.getExtra().isEmpty()) textComponent.setExtra(
                 component.getExtra().stream().map(c -> toComponent(c, version)).collect(Collectors.toList()));
         return textComponent;

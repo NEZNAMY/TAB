@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +61,16 @@ public class AdventureHook {
         if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
         if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
         if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
+
         Component adventureComponent = Component.text(component.getText(), color, decorations);
+
+        if (modifier.getClickEvent() != null) {
+            adventureComponent = adventureComponent.clickEvent(ClickEvent.clickEvent(
+                    ClickEvent.Action.valueOf(modifier.getClickEvent().getAction().name()),
+                    modifier.getClickEvent().getValue()
+            ));
+        }
+
         if (modifier.getFont() != null) {
             adventureComponent = adventureComponent.font(Key.key(modifier.getFont()));
         }

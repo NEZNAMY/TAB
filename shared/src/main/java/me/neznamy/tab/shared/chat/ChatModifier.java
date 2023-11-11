@@ -9,23 +9,23 @@ import org.json.simple.JSONObject;
 @Data @NoArgsConstructor
 public class ChatModifier {
 
-    @Nullable
-    private TextColor color;
+    @Nullable private TextColor color;
     private boolean bold;
     private boolean italic;
     private boolean underlined;
     private boolean strikethrough;
     private boolean obfuscated;
-    @Nullable
-    private String font;
+    @Nullable private ClickEvent clickEvent;
+    @Nullable private String font;
 
     public ChatModifier(@NotNull ChatModifier modifier) {
-        this.color = modifier.color == null ? null : new TextColor(modifier.color);
+        if (modifier.color != null) color = new TextColor(modifier.color);
         this.bold = modifier.bold;
         this.italic = modifier.italic;
         this.underlined = modifier.underlined;
         this.strikethrough = modifier.strikethrough;
         this.obfuscated = modifier.obfuscated;
+        if (modifier.clickEvent != null) this.clickEvent = new ClickEvent(modifier.clickEvent.getAction(), modifier.clickEvent.getValue());
         this.font = modifier.font;
     }
 
@@ -39,6 +39,12 @@ public class ChatModifier {
         if (underlined) json.put("underlined", true);
         if (strikethrough) json.put("strikethrough", true);
         if (obfuscated) json.put("obfuscated", true);
+        if (clickEvent != null) {
+            JSONObject click = new JSONObject();
+            click.put("action", clickEvent.getAction().name().toLowerCase());
+            click.put("value", clickEvent.getValue());
+            json.put("clickEvent", click);
+        }
         if (font != null) json.put("font", font);
         return json;
     }

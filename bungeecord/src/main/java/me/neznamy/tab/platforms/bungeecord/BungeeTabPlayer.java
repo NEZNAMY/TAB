@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -70,7 +69,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
+        getPlayer().sendMessage(BungeeMultiVersion.toComponent(message, getVersion()));
     }
 
     @Override
