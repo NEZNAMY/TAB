@@ -43,6 +43,12 @@ public class AdventureBossBar implements BossBar {
 
     @Override
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+        if (bossBars.containsKey(id)) {
+            // Can happen on 1.20.2+ on Velocity on server switch
+            ((Audience)player.getPlayer()).hideBossBar(bossBars.get(id));
+            ((Audience)player.getPlayer()).showBossBar(bossBars.get(id));
+            return;
+        }
         net.kyori.adventure.bossbar.BossBar bar = net.kyori.adventure.bossbar.BossBar.bossBar(
                 AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                 progress,
