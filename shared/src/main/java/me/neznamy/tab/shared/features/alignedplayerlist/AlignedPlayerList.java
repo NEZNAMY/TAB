@@ -40,15 +40,16 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
             widths[characterId++] = (byte) Float.parseFloat(line);
         }
         Map<Object, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
-        List<Integer> redundant = new ArrayList<>();
+        List<Object> redundant = new ArrayList<>();
         for (Entry<Object, Integer> entry : widthOverrides.entrySet()) {
-            if (entry.getKey() instanceof Integer) {
-                Integer key = (Integer) entry.getKey();
+            try {
+                int key = Integer.parseInt(entry.getKey().toString());
                 if (widths[key] == entry.getValue().byteValue()) {
-                    redundant.add(key);
-                } else {
-                    widths[key] = entry.getValue().byteValue();
+                    redundant.add(entry.getKey());
                 }
+                widths[key] = entry.getValue().byteValue();
+            } catch (NumberFormatException ignored) {
+                // Multi-character symbol
             }
         }
         redundant.forEach(widthOverrides::remove);
