@@ -327,7 +327,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_ofBoolean.invoke(null, team, true));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.CREATE));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.CREATE.ordinal()));
         }
     }
 
@@ -338,7 +338,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_of.invoke(null, team));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.REMOVE));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.REMOVE.ordinal()));
         }
     }
 
@@ -350,7 +350,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_ofBoolean.invoke(null, team, false));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.UPDATE));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.UPDATE.ordinal()));
         }
     }
 
