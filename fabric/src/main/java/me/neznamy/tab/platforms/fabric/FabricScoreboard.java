@@ -8,7 +8,9 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.Objective;
@@ -32,8 +34,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @Override
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         player.sendPacket(
-                FabricMultiVersion.newDisplayObjective(
-                        slot.ordinal(),
+                new ClientboundSetDisplayObjectivePacket(
+                        net.minecraft.world.scores.DisplaySlot.values()[slot.ordinal()],
                         new Objective(
                                 dummyScoreboard,
                                 objective,
@@ -106,12 +108,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setPlayerPrefix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         team.setPlayerSuffix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.getPlayers().addAll(players);
-        player.sendPacket(FabricMultiVersion.createTeam(team));
+        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
     }
 
     @Override
     public void unregisterTeam0(@NotNull String name) {
-        player.sendPacket(FabricMultiVersion.removeTeam(new PlayerTeam(dummyScoreboard, name)));
+        player.sendPacket(ClientboundSetPlayerTeamPacket.createRemovePacket(new PlayerTeam(dummyScoreboard, name)));
     }
 
     @Override
@@ -125,7 +127,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         team.setPlayerSuffix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
-        player.sendPacket(FabricMultiVersion.updateTeam(team));
+        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false));
     }
 
     @Override

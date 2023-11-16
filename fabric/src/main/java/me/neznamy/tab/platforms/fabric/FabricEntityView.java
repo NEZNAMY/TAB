@@ -4,10 +4,14 @@ import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 public record FabricEntityView(FabricTabPlayer player) implements EntityView {
@@ -18,13 +22,14 @@ public record FabricEntityView(FabricTabPlayer player) implements EntityView {
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location,
                             @NotNull EntityData data) {
-        player.sendPacket(FabricMultiVersion.addEntity(entityId, id, entityType, location, data));
+        player.sendPacket(new ClientboundAddEntityPacket(entityId, id, location.getX(), location.getY(), location.getZ(), 0, 0, (EntityType<?>) entityType, 0, Vec3.ZERO, 0));
         updateEntityMetadata(entityId, data);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        player.sendPacket(FabricMultiVersion.newEntityMetadata(entityId, data));
+        player.sendPacket(new ClientboundSetEntityDataPacket(entityId, (List<SynchedEntityData.DataValue<?>>) data.build()));
 
     }
 
@@ -37,12 +42,12 @@ public record FabricEntityView(FabricTabPlayer player) implements EntityView {
 
     @Override
     public void destroyEntities(int... entities) {
-        FabricMultiVersion.destroyEntities(player, entities);
+        player.sendPacket(new ClientboundRemoveEntitiesPacket(entities));
     }
 
     @Override
     public boolean isDestroyPacket(@NotNull Object packet) {
-        return FabricMultiVersion.isEntityDestroyPacket(packet);
+        return packet instanceof ClientboundRemoveEntitiesPacket;
     }
 
     @Override
@@ -82,17 +87,17 @@ public record FabricEntityView(FabricTabPlayer player) implements EntityView {
 
     @Override
     public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
-        return FabricMultiVersion.getDestroyedEntities(destroyPacket);
+        return ((ClientboundRemoveEntitiesPacket) destroyPacket).getEntityIds().toIntArray();
     }
 
     @Override
     public boolean isBundlePacket(@NotNull Object packet) {
-        return FabricMultiVersion.isBundlePacket(packet);
+        return packet instanceof ClientboundBundlePacket;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
-        return (Iterable<Object>) (Object) FabricMultiVersion.getPackets(bundlePacket);
+        return (Iterable<Object>) (Object) ((ClientboundBundlePacket)bundlePacket).subPackets();
     }
 }

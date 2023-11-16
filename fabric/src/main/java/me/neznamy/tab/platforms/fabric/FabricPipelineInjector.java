@@ -37,7 +37,7 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     @Override
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                FabricMultiVersion.getSlot((ClientboundSetDisplayObjectivePacket) packet),
+                ((ClientboundSetDisplayObjectivePacket) packet).getSlot().ordinal(),
                 String.valueOf(((ClientboundSetDisplayObjectivePacket)packet).getObjectiveName()));
     }
 
@@ -65,7 +65,7 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isPlayerInfo(@NotNull Object packet) {
-        return FabricMultiVersion.isPlayerInfo(packet);
+        return packet instanceof ClientboundPlayerInfoUpdatePacket;
     }
 
     @Override

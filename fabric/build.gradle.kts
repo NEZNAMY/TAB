@@ -52,10 +52,8 @@ dependencies {
     modImplementation(fabricApi.module("fabric-api-base", fabricApiVersions[minecraftVersion]))
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", fabricApiVersions[minecraftVersion]))
     modImplementation(fabricApi.module("fabric-networking-api-v1", fabricApiVersions[minecraftVersion]))
-    modImplementation(fabricApi.module("fabric-command-api-v${if (minecraftVersion.split(".")[1].toInt() >= 19) "2" else "1"}", fabricApiVersions[minecraftVersion]))
-    if (minecraftVersion.split(".")[1].toInt() >= 16) {
-        modImplementation(fabricApi.module("fabric-entity-events-v1", fabricApiVersions[minecraftVersion]))
-    }
+    modImplementation(fabricApi.module("fabric-command-api-v2", fabricApiVersions[minecraftVersion]))
+    modImplementation(fabricApi.module("fabric-entity-events-v1", fabricApiVersions[minecraftVersion]))
 }
 
 loom {
