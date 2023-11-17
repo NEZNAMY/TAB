@@ -16,26 +16,6 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class FabricBossBar implements BossBar {
 
-    /** Color array for fast access */
-    private static final BossBarColor[] colors = new BossBarColor[] {
-            BossBarColor.PINK,
-            BossBarColor.BLUE,
-            BossBarColor.RED,
-            BossBarColor.GREEN,
-            BossBarColor.YELLOW,
-            BossBarColor.PURPLE,
-            BossBarColor.WHITE
-    };
-
-    /** Overlay array for fast access */
-    private static final BossBarOverlay[] overlays = new BossBarOverlay[] {
-            BossBarOverlay.PROGRESS,
-            BossBarOverlay.NOTCHED_6,
-            BossBarOverlay.NOTCHED_10,
-            BossBarOverlay.NOTCHED_12,
-            BossBarOverlay.NOTCHED_20
-    };
-    
     @NotNull
     private final FabricTabPlayer player;
 
@@ -46,8 +26,8 @@ public class FabricBossBar implements BossBar {
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         ServerBossEvent bar = new ServerBossEvent(
                 player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
-                colors[color.ordinal()],
-                overlays[style.ordinal()]
+                BossBarColor.valueOf(color.name()),
+                BossBarOverlay.valueOf(style.name())
         );
         bar.setProgress(progress);
         bars.put(id, bar);
@@ -66,12 +46,12 @@ public class FabricBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        bars.get(id).setOverlay(overlays[style.ordinal()]);
+        bars.get(id).setOverlay(BossBarOverlay.valueOf(style.name()));
     }
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarColor color) {
-        bars.get(id).setColor(colors[color.ordinal()]);
+        bars.get(id).setColor(BossBarColor.valueOf(color.name()));
     }
 
     @Override

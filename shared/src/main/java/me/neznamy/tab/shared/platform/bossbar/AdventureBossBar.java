@@ -17,26 +17,6 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public class AdventureBossBar implements BossBar {
 
-    /** Color array for fast access */
-    private static final Color[] colors = new Color[] {
-            Color.PINK,
-            Color.BLUE,
-            Color.RED,
-            Color.GREEN,
-            Color.YELLOW,
-            Color.PURPLE,
-            Color.WHITE
-    };
-
-    /** Overlay array for fast access */
-    private static final Overlay[] overlays = new Overlay[] {
-            Overlay.PROGRESS,
-            Overlay.NOTCHED_6,
-            Overlay.NOTCHED_10,
-            Overlay.NOTCHED_12,
-            Overlay.NOTCHED_20
-    };
-
     private final TabPlayer player;
 
     private final Map<UUID, net.kyori.adventure.bossbar.BossBar> bossBars = new LinkedHashMap<>();
@@ -52,8 +32,8 @@ public class AdventureBossBar implements BossBar {
         net.kyori.adventure.bossbar.BossBar bar = net.kyori.adventure.bossbar.BossBar.bossBar(
                 AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                 progress,
-                colors[color.ordinal()],
-                overlays[style.ordinal()]
+                Color.valueOf(color.name()),
+                Overlay.valueOf(style.name())
         );
         bossBars.put(id, bar);
         ((Audience)player.getPlayer()).showBossBar(bar);
@@ -71,12 +51,12 @@ public class AdventureBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        bossBars.get(id).overlay(overlays[style.ordinal()]);
+        bossBars.get(id).overlay(Overlay.valueOf(style.name()));
     }
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarColor color) {
-        bossBars.get(id).color(colors[color.ordinal()]);
+        bossBars.get(id).color(Color.valueOf(color.name()));
     }
 
     @Override

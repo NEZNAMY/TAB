@@ -21,25 +21,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BukkitBossBar implements BossBar {
 
-    /** Color array for fast access */
-    private static final org.bukkit.boss.BarColor[] colors = new org.bukkit.boss.BarColor[] {
-            org.bukkit.boss.BarColor.PINK,
-            org.bukkit.boss.BarColor.BLUE,
-            org.bukkit.boss.BarColor.RED,
-            org.bukkit.boss.BarColor.GREEN,
-            org.bukkit.boss.BarColor.YELLOW,
-            org.bukkit.boss.BarColor.PURPLE,
-            org.bukkit.boss.BarColor.WHITE
-    };
-
     /** Style array for fast access */
-    private static final org.bukkit.boss.BarStyle[] styles = new org.bukkit.boss.BarStyle[] {
-            org.bukkit.boss.BarStyle.SOLID,
-            org.bukkit.boss.BarStyle.SEGMENTED_6,
-            org.bukkit.boss.BarStyle.SEGMENTED_10,
-            org.bukkit.boss.BarStyle.SEGMENTED_12,
-            org.bukkit.boss.BarStyle.SEGMENTED_20
-    };
+    private static final org.bukkit.boss.BarStyle[] styles = org.bukkit.boss.BarStyle.values();
     
     /** Player this handler belongs to */
     @NotNull
@@ -54,7 +37,7 @@ public class BukkitBossBar implements BossBar {
         if (bossBars.containsKey(id)) return;
         org.bukkit.boss.BossBar bar = Bukkit.createBossBar(
                 BukkitUtils.toBukkitFormat(IChatBaseComponent.optimizedComponent(title), player.getVersion().getMinorVersion() >= 16),
-                colors[color.ordinal()],
+                org.bukkit.boss.BarColor.valueOf(color.name()),
                 styles[style.ordinal()]
         );
         bar.setProgress(progress);
@@ -79,7 +62,7 @@ public class BukkitBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarColor color) {
-        bossBars.get(id).setColor(colors[color.ordinal()]);
+        bossBars.get(id).setColor(org.bukkit.boss.BarColor.valueOf(color.name()));
     }
 
     @Override

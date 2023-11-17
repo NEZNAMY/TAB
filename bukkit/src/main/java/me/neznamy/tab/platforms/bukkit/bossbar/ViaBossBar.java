@@ -21,25 +21,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ViaBossBar implements BossBar {
 
-    /** Color array for fast access */
-    private static final BossColor[] colors = new BossColor[] {
-            BossColor.PINK,
-            BossColor.BLUE,
-            BossColor.RED,
-            BossColor.GREEN,
-            BossColor.YELLOW,
-            BossColor.PURPLE,
-            BossColor.WHITE
-    };
-
     /** Style array for fast access */
-    private static final BossStyle[] styles = new BossStyle[] {
-            BossStyle.SOLID,
-            BossStyle.SEGMENTED_6,
-            BossStyle.SEGMENTED_10,
-            BossStyle.SEGMENTED_12,
-            BossStyle.SEGMENTED_20
-    };
+    private static final BossStyle[] styles = BossStyle.values();
     
     /** Player this handler belongs to */
     @NotNull
@@ -55,7 +38,7 @@ public class ViaBossBar implements BossBar {
         com.viaversion.viaversion.api.legacy.bossbar.BossBar bar = Via.getAPI().legacyAPI().createLegacyBossBar(
                 IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()),
                 progress,
-                colors[color.ordinal()],
+                BossColor.valueOf(color.name()),
                 styles[style.ordinal()]
         );
         viaBossBars.put(id, bar);
@@ -79,7 +62,7 @@ public class ViaBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarColor color) {
-        viaBossBars.get(id).setColor(colors[color.ordinal()]);
+        viaBossBars.get(id).setColor(BossColor.valueOf(color.name()));
     }
 
     @Override
