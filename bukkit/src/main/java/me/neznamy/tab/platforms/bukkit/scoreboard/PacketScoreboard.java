@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -279,7 +280,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                   @Nullable IChatBaseComponent numberFormat) {
         player.sendPacket(buildObjective(ObjectiveAction.REGISTER.ordinal(), objectiveName, title, display));
     }
 
@@ -289,12 +291,13 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                 @Nullable IChatBaseComponent numberFormat) {
         player.sendPacket(buildObjective(ObjectiveAction.UPDATE.ordinal(), objectiveName, title, display));
     }
 
     @SneakyThrows
-    private Object buildObjective(int action, String objectiveName, String title, @NotNull HealthDisplay display) {
+    private Object buildObjective(int action, @NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         if (BukkitReflection.getMinorVersion() >= 13) {
             return newObjectivePacket.newInstance(
                     newScoreboardObjective.newInstance(
@@ -377,11 +380,12 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
+    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
         if (BukkitReflection.getMinorVersion() >= 13) {
-            player.sendPacket(newScorePacket_1_13.newInstance(scoreboardActions[0], objective, playerName, score));
+            player.sendPacket(newScorePacket_1_13.newInstance(scoreboardActions[0], objective, scoreHolder, score));
         } else {
-            Object scoreboardScore = newScoreboardScore.newInstance(emptyScoreboard, newScoreboardObjective(objective), playerName);
+            Object scoreboardScore = newScoreboardScore.newInstance(emptyScoreboard, newScoreboardObjective(objective), scoreHolder);
             ScoreboardScore_setScore.invoke(scoreboardScore, score);
             if (BukkitReflection.getMinorVersion() >= 8) {
                 player.sendPacket(newScorePacket.newInstance(scoreboardScore));
@@ -393,11 +397,11 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
+    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
         if (BukkitReflection.getMinorVersion() >= 13) {
-            player.sendPacket(newScorePacket_1_13.newInstance(scoreboardActions[1], objective, playerName, 0));
+            player.sendPacket(newScorePacket_1_13.newInstance(scoreboardActions[1], objective, scoreHolder, 0));
         } else {
-            player.sendPacket(newScorePacket_String.newInstance(playerName));
+            player.sendPacket(newScorePacket_String.newInstance(scoreHolder));
         }
     }
 

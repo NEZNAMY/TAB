@@ -386,4 +386,16 @@ public abstract class ConfigurationFile {
             Files.write(file.toPath(), content);
         }
     }
+
+    /**
+     * Sets value to specified key if key does not exist.
+     *
+     * @param   key
+     *          Map key
+     * @param   value
+     *          Value to insert if missing
+     */
+    public void setIfMissing(@NotNull String key, @NotNull String value) {
+        if (!hasConfigOption(key)) set(key, value);
+    }
 }

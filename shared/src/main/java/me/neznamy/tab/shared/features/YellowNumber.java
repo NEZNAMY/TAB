@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -9,6 +11,9 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Feature handler for scoreboard objective with
@@ -19,15 +24,18 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
 
     @Getter private final String featureName = "Yellow Number";
     @Getter private final String refreshDisplayName = "Updating value";
+    @Getter private final String PROPERTY_VALUE = Property.randomName();
+    @Getter private final String PROPERTY_VALUE_FANCY = Property.randomName();
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
 
     /** Scoreboard title which is unused in java */
-    private static final String TITLE = "PlayerListObjectiveTitle";
+    private static final String TITLE = "PlayerListObjectiveTitle"; // Unused by this objective slot (on Java, only visible on Bedrock)
 
     /** Numeric value to display */
-    private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", TabConstants.Placeholder.PING);
+    private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("playerlist-objective.value", TabConstants.Placeholder.PING);
+    private final String rawValueFancy = TAB.getInstance().getConfiguration().getConfig().getString("playerlist-objective.fancy-value", "&e" + TabConstants.Placeholder.PING);
 
     /** Scoreboard display type */
     private final Scoreboard.HealthDisplay displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) ||
@@ -37,39 +45,46 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     private RedisSupport redis;
 
     public YellowNumber() {
-        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("yellow-number-in-tablist.disable-condition"));
+        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("playerlist-objective.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
     }
 
     /**
-     * Returns current value for specified player
+     * Returns current value for specified player parsed to int
      *
      * @param   p
      *          Player to get value of
      * @return  Current value of player
      */
-    public int getValue(@NotNull TabPlayer p) {
-        return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0);
+    public int getValueNumber(@NotNull TabPlayer p) {
+        return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(PROPERTY_VALUE).updateAndGet(), 0);
     }
 
     @Override
     public void load() {
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
-            loaded.setProperty(this, TabConstants.Property.YELLOW_NUMBER, rawValue);
+            loaded.setProperty(this, PROPERTY_VALUE, rawValue);
+            loaded.setProperty(this, PROPERTY_VALUE_FANCY, rawValueFancy);
             if (disableChecker.isDisableConditionMet(loaded)) {
                 disableChecker.addDisabledPlayer(loaded);
                 continue;
             }
             if (loaded.isBedrockPlayer()) continue;
-            loaded.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-            loaded.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+            register(loaded);
+        }
+
+        Map<TabPlayer, Integer> values = new HashMap<>();
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+            if (disableChecker.isDisabledPlayer(target)) continue;
+            values.put(target, getValueNumber(target));
+            target.getProperty(PROPERTY_VALUE_FANCY).updateAndGet();
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (disableChecker.isDisabledPlayer(viewer) || viewer.isBedrockPlayer()) continue;
-            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                viewer.getScoreboard().setScore(OBJECTIVE_NAME, target.getNickname(), getValue(target));
+            if (disableChecker.isDisabledPlayer(viewer)) continue;
+            for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
+                setScore(viewer, entry.getKey(), entry.getValue(), entry.getKey().getProperty(PROPERTY_VALUE_FANCY).getFormat(viewer));
             }
         }
     }
@@ -84,27 +99,29 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.setProperty(this, TabConstants.Property.YELLOW_NUMBER, rawValue);
+        connectedPlayer.setProperty(this, PROPERTY_VALUE, rawValue);
+        connectedPlayer.setProperty(this, PROPERTY_VALUE_FANCY, rawValueFancy);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             disableChecker.addDisabledPlayer(connectedPlayer);
             return;
         }
         if (!connectedPlayer.isBedrockPlayer()) {
-            connectedPlayer.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-            connectedPlayer.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+            register(connectedPlayer);
         }
-        int value = getValue(connectedPlayer);
+        int value = getValueNumber(connectedPlayer);
+        Property valueFancy = connectedPlayer.getProperty(PROPERTY_VALUE_FANCY);
+        valueFancy.update();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!disableChecker.isDisabledPlayer(all)) {
                 if (!all.isBedrockPlayer()) {
-                    all.getScoreboard().setScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), value);
+                    setScore(all, connectedPlayer, value, valueFancy.getFormat(connectedPlayer));
                 }
                 if (!connectedPlayer.isBedrockPlayer()) {
-                    connectedPlayer.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+                    setScore(connectedPlayer, all, getValueNumber(all), all.getProperty(PROPERTY_VALUE_FANCY).getFormat(connectedPlayer));
                 }
             }
         }
-        if (redis != null) redis.updateYellowNumber(connectedPlayer, value);
+        if (redis != null) redis.updateYellowNumber(connectedPlayer, value, valueFancy.get());
     }
 
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
@@ -117,21 +134,37 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        int value = getValue(refreshed);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (disableChecker.isDisabledPlayer(all) || all.isBedrockPlayer()) continue;
-            all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), value);
+        int value = getValueNumber(refreshed);
+        Property fancy = refreshed.getProperty(PROPERTY_VALUE_FANCY);
+        fancy.update();
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (disableChecker.isDisabledPlayer(viewer) || viewer.isBedrockPlayer()) continue;
+            setScore(viewer, refreshed, value, fancy.getFormat(viewer));
         }
-        if (redis != null) redis.updateYellowNumber(refreshed, value);
+        if (redis != null) redis.updateYellowNumber(refreshed, value, fancy.get());
     }
 
     @Override
-    public void onLoginPacket(TabPlayer p) {
+    public void onLoginPacket(@NotNull TabPlayer p) {
         if (disableChecker.isDisabledPlayer(p) || p.isBedrockPlayer() || !p.isLoaded()) return;
-        p.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-        p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+        register(p);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.isLoaded()) p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+            if (all.isLoaded()) setScore(p, all, getValueNumber(all), all.getProperty(PROPERTY_VALUE_FANCY).getFormat(p));
         }
+    }
+
+    private void register(@NotNull TabPlayer player) {
+        player.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType, new IChatBaseComponent());
+        player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+    }
+
+    public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyValue) {
+        viewer.getScoreboard().setScore(
+                OBJECTIVE_NAME,
+                scoreHolder.getNickname(),
+                value,
+                null, // Unused by this objective slot
+                IChatBaseComponent.emptyToNullOptimizedComponent(fancyValue)
+        );
     }
 }

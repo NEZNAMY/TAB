@@ -71,14 +71,14 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         sendMessage(redisTeams.new Update(p.getTablistId(), teamName, tagPrefix, tagSuffix, nameVisibility));
     }
 
-    public void updateBelowName(@NotNull TabPlayer p, int value) {
+    public void updateBelowName(@NotNull TabPlayer p, int value, @NotNull String fancyValue) {
         if (redisBelowName == null) return; // Plugin still loading
-        sendMessage(redisBelowName.new Update(p.getTablistId(), value));
+        sendMessage(redisBelowName.new Update(p.getTablistId(), value, fancyValue));
     }
 
-    public void updateYellowNumber(@NotNull TabPlayer p, int value) {
+    public void updateYellowNumber(@NotNull TabPlayer p, int value, String fancyValue) {
         if (redisYellowNumber == null) return; // Plugin still loading
-        sendMessage(redisYellowNumber.new Update(p.getTablistId(), value));
+        sendMessage(redisYellowNumber.new Update(p.getTablistId(), value, fancyValue));
     }
 
     /**
@@ -121,11 +121,11 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     public void load() {
         register();
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.BELOW_NAME)) {
-            redisBelowName = new RedisBelowName(this);
+            redisBelowName = new RedisBelowName(this, TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME));
             features.add(redisBelowName);
         }
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.YELLOW_NUMBER)) {
-            redisYellowNumber = new RedisYellowNumber(this);
+            redisYellowNumber = new RedisYellowNumber(this, TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.YELLOW_NUMBER));
             features.add(redisYellowNumber);
         }
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PLAYER_LIST)) {

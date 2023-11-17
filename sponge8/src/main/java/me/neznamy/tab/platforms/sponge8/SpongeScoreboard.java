@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.scoreboard.CollisionRules;
 import org.spongepowered.api.scoreboard.Team;
 import org.spongepowered.api.scoreboard.Visibilities;
@@ -65,7 +66,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                   @Nullable IChatBaseComponent numberFormat) {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(adventure(title))
@@ -81,7 +83,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                 @Nullable IChatBaseComponent numberFormat) {
         sb.objective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(adventure(title));
             obj.setDisplayMode(healthDisplays[display.ordinal()]);
@@ -128,13 +131,14 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        sb.objective(objective).ifPresent(o -> o.findOrCreateScore(adventure(playerName)).setScore(score));
+    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+        sb.objective(objective).ifPresent(o -> o.findOrCreateScore(adventure(scoreHolder)).setScore(score));
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
-        sb.objective(objective).ifPresent(o -> o.removeScore(adventure(playerName)));
+    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+        sb.objective(objective).ifPresent(o -> o.removeScore(adventure(scoreHolder)));
     }
 
     /**

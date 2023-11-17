@@ -130,13 +130,6 @@ public class TabConstants {
         public static final String NAMETAG = "nametag";
         public static final String BELOWNAME = "belowname";
 
-        public static final String SCOREBOARD_TITLE = "scoreboard-title";
-
-        public static final String BELOWNAME_NUMBER = "belowname-number";
-        public static final String BELOWNAME_TEXT = "belowname-text";
-
-        public static final String YELLOW_NUMBER = "yellow-number";
-
         public static String bossbarTitle(String name) {
             return "bossbar-title-" + name;
         }
@@ -153,16 +146,8 @@ public class TabConstants {
             return "bossbar-style-" + name;
         }
 
-        public static String scoreboardPrefix(String scoreboard, int lineNumber) {
-            return scoreboard + "-" + lineNumber + "-prefix";
-        }
-
         public static String scoreboardName(String scoreboard, int lineNumber) {
             return scoreboard + "-" + lineNumber + "-name";
-        }
-
-        public static String scoreboardSuffix(String scoreboard, int lineNumber) {
-            return scoreboard + "-" + lineNumber + "-suffix";
         }
     }
 
@@ -213,6 +198,10 @@ public class TabConstants {
         }
 
         public static String scoreboardLine(String scoreboard, int index) {
+            return "scoreboard-line-" + scoreboard + "-" + index;
+        }
+
+        public static String scoreboardScore(String scoreboard, int index) {
             return "scoreboard-score-" + scoreboard + "-" + index;
         }
 

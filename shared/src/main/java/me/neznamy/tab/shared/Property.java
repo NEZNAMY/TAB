@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Property {
 
+    private static long counter = 0;
+
     /** Internal identifier for this text for PlaceholderAPI expansion, null if it should not be exposed */
     @Nullable private final String name;
 
@@ -252,5 +254,9 @@ public class Property {
             format = format.replace(pl.getIdentifier(), viewer == null ? "" : pl.getLastValue(viewer, owner));
         }
         return EnumChatFormat.color(format);
+    }
+
+    public static String randomName() {
+        return String.valueOf(counter++);
     }
 }

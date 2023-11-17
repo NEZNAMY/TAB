@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,31 +28,33 @@ public abstract class Scoreboard<T extends TabPlayer> {
     /** Flag tracking time between Login packet send and its processing */
     private boolean frozen;
 
-    public void setScore(@NotNull String objective, @NotNull String playerName, int score) {
+    public void setScore(@NotNull String objective, @NotNull String scoreHolder, int score,
+                         @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
-            error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
+            error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objective);
             return;
         }
-        setScore0(objective, playerName, score);
+        setScore0(objective, scoreHolder, score, displayName, numberFormat);
     }
 
-    public void removeScore(@NotNull String objective, @NotNull String playerName) {
+    public void removeScore(@NotNull String objective, @NotNull String scoreHolder) {
         if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
-            error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
+            error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objective);
             return;
         }
-        removeScore0(objective, playerName);
+        removeScore0(objective, scoreHolder);
     }
 
-    public void registerObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void registerObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                  @Nullable IChatBaseComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.add(objectiveName)) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
         }
-        registerObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display);
+        registerObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
     public void unregisterObjective(@NotNull String objectiveName) {
@@ -63,13 +66,14 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterObjective0(objectiveName);
     }
 
-    public void updateObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void updateObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                @Nullable IChatBaseComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objectiveName)) {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
         }
-        updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display);
+        updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
     public void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
@@ -166,15 +170,18 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public abstract void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective);
 
-    public abstract void setScore0(@NotNull String objective, @NotNull String player, int score);
+    public abstract void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+                                   @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat);
 
-    public abstract void removeScore0(@NotNull String objective, @NotNull String player);
+    public abstract void removeScore0(@NotNull String objective, @NotNull String scoreHolder);
 
-    public abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display);
+    public abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title,
+                                            @NotNull HealthDisplay display, @Nullable IChatBaseComponent numberFormat);
 
     public abstract void unregisterObjective0(@NotNull String objectiveName);
 
-    public abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display);
+    public abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title,
+                                          @NotNull HealthDisplay display, @Nullable IChatBaseComponent numberFormat);
 
     public abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                                                  @NotNull CollisionRule collision, @NotNull Collection<String> players, int options);

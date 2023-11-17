@@ -3,13 +3,17 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
+import me.neznamy.tab.shared.features.scoreboard.ScoreRefresher;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,6 +31,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     
     //text to display
     @Getter protected String text;
+    @Getter protected String numberFormat;
     
     //scoreboard this line belongs to
     protected final ScoreboardImpl parent;
@@ -36,6 +41,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     
     //forced player name start to make lines unique & sort them by names
     @Getter protected final String playerName;
+
+    @Getter private final ScoreRefresher scoreRefresher;
 
     private final Set<TabPlayer> shownPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     
@@ -47,11 +54,14 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      * @param   lineNumber
      *          ID of this line
      */
-    protected ScoreboardLine(@NonNull ScoreboardImpl parent, int lineNumber) {
+    protected ScoreboardLine(@NonNull ScoreboardImpl parent, int lineNumber, String text) {
+        initializeText(text);
         this.parent = parent;
         this.lineNumber = lineNumber;
         teamName = "TAB-SB-TM-" + lineNumber;
         playerName = getPlayerName(lineNumber);
+        scoreRefresher = new ScoreRefresher(this, numberFormat);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardScore(parent.getName(), lineNumber), scoreRefresher);
     }
     
     /**
@@ -121,7 +131,13 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          suffix
      */
     protected void addLine(@NonNull TabPlayer p, @NonNull String fakePlayer, @NonNull String prefix, @NonNull String suffix) {
-        p.getScoreboard().setScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p));
+        p.getScoreboard().setScore(
+                ScoreboardManagerImpl.OBJECTIVE_NAME,
+                fakePlayer,
+                getNumber(p),
+                null, // Makes no sense for TAB
+                scoreRefresher.getNumberFormat(p)
+        );
         p.getScoreboard().registerTeam(teamName, prefix, suffix, Scoreboard.NameVisibility.NEVER,
                 Scoreboard.CollisionRule.NEVER, Collections.singletonList(fakePlayer), 0);
         shownPlayers.add(p);
@@ -192,5 +208,18 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 
     public boolean isShownTo(@NonNull TabPlayer player) {
         return shownPlayers.contains(player);
+    }
+
+    /**
+     * Splits text using {@code "|"} symbol, where first part is text to display and
+     * second part is number format (optional)
+     *
+     * @param   text
+     *          Inputted text to categorize
+     */
+    protected void initializeText(@NotNull String text) {
+        String[] split = text.split("\\|");
+        this.text = split[0];
+        this.numberFormat = split.length >= 2 ? split[1] : "";
     }
 }

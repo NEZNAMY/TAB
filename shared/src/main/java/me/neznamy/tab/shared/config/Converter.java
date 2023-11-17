@@ -439,4 +439,16 @@ public class Converter {
             config.set("global-playerlist.update-latency", null);
         }
     }
+
+    public void convert409to410(@NotNull ConfigurationFile config) {
+        if (config.hasConfigOption("yellow-number-in-tablist")) {
+            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 4.0.9 to 4.1.0"));
+            Map<Object, Object> section = config.getConfigurationSection("yellow-number-in-tablist");
+            section.put("fancy-value", "&e%ping%");
+            config.set("yellow-number-in-tablist", null);
+            config.set("playerlist-objective", section);
+        }
+        config.setIfMissing("belowname-objective.npc-text", "NPC");
+        config.setIfMissing("belowname-objective.fancy-display", "&c" + TabConstants.Placeholder.HEALTH);
+    }
 }

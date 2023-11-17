@@ -1,7 +1,8 @@
 package me.neznamy.tab.platforms.fabric;
 
 import java.util.Collection;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -17,15 +18,16 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @NotNull
     private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
 
-    @NotNull
-    private static final Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson(IChatBaseComponent.EMPTY_COMPONENT));
+    private final Map<String, Objective> objectives = new HashMap<>();
 
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);
@@ -36,63 +38,35 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         player.sendPacket(
                 new ClientboundSetDisplayObjectivePacket(
                         net.minecraft.world.scores.DisplaySlot.values()[slot.ordinal()],
-                        new Objective(
-                                dummyScoreboard,
-                                objective,
-                                ObjectiveCriteria.DUMMY,
-                                EMPTY_COMPONENT,
-                                ObjectiveCriteria.RenderType.INTEGER
-                        )
+                        objectives.get(objective)
                 )
         );
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
-        player.sendPacket(
-                new ClientboundSetObjectivePacket(
-                        new Objective(
-                                dummyScoreboard,
-                                objectiveName,
-                                ObjectiveCriteria.DUMMY,
-                                player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
-                                ObjectiveCriteria.RenderType.valueOf(display.name())
-                        ),
-                        ObjectiveAction.REGISTER.ordinal()
-                )
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                   @Nullable IChatBaseComponent numberFormat) {
+        Objective obj = objective(
+                objectiveName,
+                toComponent(title),
+                RenderType.valueOf(display.name())
         );
+        objectives.put(objectiveName, obj);
+        player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER.ordinal()));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(
-                new ClientboundSetObjectivePacket(
-                        new Objective(
-                                dummyScoreboard,
-                                objectiveName,
-                                ObjectiveCriteria.DUMMY,
-                                EMPTY_COMPONENT,
-                                ObjectiveCriteria.RenderType.INTEGER
-                        ),
-                        ObjectiveAction.UNREGISTER.ordinal()
-                )
-        );
+        player.sendPacket(new ClientboundSetObjectivePacket(objectives.remove(objectiveName), ObjectiveAction.UNREGISTER.ordinal()));
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
-        player.sendPacket(
-                new ClientboundSetObjectivePacket(
-                        new Objective(
-                                dummyScoreboard,
-                                objectiveName,
-                                ObjectiveCriteria.DUMMY,
-                                player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
-                                ObjectiveCriteria.RenderType.valueOf(display.name())
-                        ),
-                        ObjectiveAction.UPDATE.ordinal()
-                )
-        );
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                 @Nullable IChatBaseComponent numberFormat) {
+        Objective obj = objectives.get(objectiveName);
+        obj.setDisplayName(toComponent(title));
+        obj.setRenderType(RenderType.valueOf(display.name()));
+        player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE.ordinal()));
     }
 
     @Override
@@ -105,8 +79,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
         team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
-        team.setPlayerPrefix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
-        team.setPlayerSuffix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
+        team.setPlayerPrefix(toComponent(prefix));
+        team.setPlayerSuffix(toComponent(suffix));
         team.getPlayers().addAll(players);
         player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
     }
@@ -125,18 +99,33 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
         team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
-        team.setPlayerPrefix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
-        team.setPlayerSuffix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
+        team.setPlayerPrefix(toComponent(prefix));
+        team.setPlayerSuffix(toComponent(suffix));
         player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false));
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        player.sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, playerName, score));
+    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+        player.sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, scoreHolder, score));
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
-        player.sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, playerName, 0));
+    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+        player.sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, scoreHolder, 0));
+    }
+
+    private Objective objective(@NotNull String name, @NotNull Component displayName, @NotNull RenderType renderType) {
+        return new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType);
+    }
+
+    @NotNull
+    private Component toComponent(@NotNull String string) {
+        return toComponent(IChatBaseComponent.optimizedComponent(string));
+    }
+
+    @NotNull
+    private Component toComponent(@NotNull IChatBaseComponent component) {
+        return player.getPlatform().toComponent(component, player.getVersion());
     }
 }

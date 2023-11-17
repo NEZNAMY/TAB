@@ -18,6 +18,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -69,27 +70,29 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
+    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
         checkPlayerScoreboard();
         if (serverMinorVersion >= 7 && TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
-            scoreboard.getObjective(objective).getScore(playerName).setScore(score);
+            scoreboard.getObjective(objective).getScore(scoreHolder).setScore(score);
         } else {
-            scoreboard.getObjective(objective).getScore(Bukkit.getOfflinePlayer(playerName)).setScore(score);
+            scoreboard.getObjective(objective).getScore(Bukkit.getOfflinePlayer(scoreHolder)).setScore(score);
         }
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
+    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
         checkPlayerScoreboard();
         if (serverMinorVersion >= 7 && TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
-            scoreboard.resetScores(playerName);
+            scoreboard.resetScores(scoreHolder);
         } else {
-            scoreboard.resetScores(Bukkit.getOfflinePlayer(playerName));
+            scoreboard.resetScores(Bukkit.getOfflinePlayer(scoreHolder));
         }
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                   @Nullable IChatBaseComponent numberFormat) {
         checkPlayerScoreboard();
         newObjective(objectiveName, "dummy", title, display);
     }
@@ -101,7 +104,8 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                 @Nullable IChatBaseComponent numberFormat) {
         checkPlayerScoreboard();
         Objective obj = scoreboard.getObjective(objectiveName);
         setDisplayName(obj, title);

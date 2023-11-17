@@ -34,8 +34,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      *          text to display
      */
     public StableDynamicLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
-        super(parent, lineNumber);
-        this.text = text;
+        super(parent, lineNumber, text);
     }
 
     @Override
@@ -50,6 +49,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
     @Override
     public void register(@NonNull TabPlayer p) {
         p.setProperty(this, parent.getName() + "-" + teamName, text);
+        getScoreRefresher().registerProperties(p);
         String[] prefixSuffix = replaceText(p, true, true);
         if (prefixSuffix.length == 0) return;
         addLine(p, getPlayerName(), prefixSuffix[0], prefixSuffix[1]);

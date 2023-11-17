@@ -6,6 +6,7 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -197,6 +198,8 @@ public abstract class ProxyTabPlayer extends TabPlayer {
             out.writeInt((int) value);
         } else if (value instanceof Double) {
             out.writeDouble((double) value);
+        } else if (value instanceof IChatBaseComponent) {
+            out.writeUTF(((IChatBaseComponent)value).toString(getVersion()));
         } else throw new IllegalArgumentException("Unhandled message data type " + value.getClass().getName());
     }
 

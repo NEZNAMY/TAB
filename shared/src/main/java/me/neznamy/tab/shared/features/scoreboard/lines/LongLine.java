@@ -32,8 +32,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
      *          line text
      */
     public LongLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
-        super(parent, lineNumber);
-        this.text = text;
+        super(parent, lineNumber, text);
         nameProperty = TabConstants.Property.scoreboardName(parent.getName(), lineNumber);
         textProperty = parent.getName() + "-" + teamName;
     }
@@ -61,6 +60,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     @Override
     public void register(@NonNull TabPlayer p) {
         p.setProperty(this, textProperty, text);
+        getScoreRefresher().registerProperties(p);
         String value = p.getProperty(textProperty).get();
         if (p.getVersion().getMinorVersion() >= 13) {
             addLine(p, playerName, value, "");

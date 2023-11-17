@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.UUID;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -78,15 +78,14 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             if (belowname != null) {
                 int value = belowname.getValue(player);
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    if (all.getWorld().equals(player.getWorld()) && Objects.equals(all.getServer(), player.getServer()))
-                        all.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, player.getNickname(), value);
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                    belowname.setScore(viewer, player, value, player.getProperty(belowname.getFANCY_FORMAT_PROPERTY()).get());
                 }
             }
             if (yellownumber != null) {
-                int value = yellownumber.getValue(player);
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers())
-                    all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), value);
+                int value = yellownumber.getValueNumber(player);
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers())
+                    yellownumber.setScore(viewer, player, value, player.getProperty(yellownumber.getPROPERTY_VALUE_FANCY()).get());
             }
         });
     }
@@ -110,21 +109,25 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
             }
             if (redisBelowName != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    if (Objects.equals(all.getServer(), player.getServer()))
-                        all.getScoreboard().setScore(
-                                BelowName.OBJECTIVE_NAME,
-                                player.getNickname(),
-                                redisBelowName.getValues().get(player)
-                        );
+                    all.getScoreboard().setScore(
+                            BelowName.OBJECTIVE_NAME,
+                            player.getNickname(),
+                            redisBelowName.getValues().get(player),
+                            null, // Unused by this objective slot
+                            IChatBaseComponent.emptyToNullOptimizedComponent(redisBelowName.getFancyValues().get(player))
+                    );
                 }
             }
             if (redisYellowNumber != null) {
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers())
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     all.getScoreboard().setScore(
                             YellowNumber.OBJECTIVE_NAME,
                             player.getNickname(),
-                            redisYellowNumber.getValues().get(player)
+                            redisYellowNumber.getValues().get(player),
+                            null, // Unused by this objective slot
+                            IChatBaseComponent.emptyToNullOptimizedComponent(redisYellowNumber.getFancyValues().get(player))
                     );
+                }
             }
         });
     }

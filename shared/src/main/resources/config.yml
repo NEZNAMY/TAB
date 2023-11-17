@@ -65,10 +65,11 @@ scoreboard-teams:
     static-lines:
       myCustomLine: 0.66
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Yellow-number
-yellow-number-in-tablist:
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective
+playerlist-objective:
   enabled: true
   value: "%ping%"
+  fancy-value: "&e%ping%"
   disable-condition: '%world%=disabledworld'
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname
@@ -76,6 +77,8 @@ belowname-objective:
   enabled: false
   number: "%health%"
   text: "&cHealth"
+  npc-text: "NPC"
+  fancy-display: "&c%health%"
   disable-condition: '%world%=disabledworld'
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix

@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.sponge7;
 
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
@@ -60,7 +62,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                   @Nullable IChatBaseComponent numberFormat) {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(Text.of(title))
@@ -76,7 +79,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                 @Nullable IChatBaseComponent numberFormat) {
         sb.getObjective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(Text.of(title));
             obj.setDisplayMode(healthDisplays[display.ordinal()]);
@@ -123,12 +127,13 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        sb.getObjective(objective).ifPresent(o -> o.getOrCreateScore(Text.of(playerName)).setScore(score));
+    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+        sb.getObjective(objective).ifPresent(o -> o.getOrCreateScore(Text.of(scoreHolder)).setScore(score));
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
-        sb.getObjective(objective).ifPresent(o -> o.removeScore(Text.of(playerName)));
+    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+        sb.getObjective(objective).ifPresent(o -> o.removeScore(Text.of(scoreHolder)));
     }
 }

@@ -27,8 +27,7 @@ public class StaticLine extends ScoreboardLine {
     protected String suffix;
 
     public StaticLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
-        super(parent, lineNumber);
-        this.text = EnumChatFormat.color(text);
+        super(parent, lineNumber, EnumChatFormat.color(text));
         setValues(this.text);
     }
 
@@ -60,6 +59,7 @@ public class StaticLine extends ScoreboardLine {
 
     @Override
     public void register(@NonNull TabPlayer p) {
+        getScoreRefresher().registerProperties(p);
         if (p.getVersion().getMinorVersion() >= 13) {
             addLine(p, playerName, text, "");
         } else if (p.getVersion().getMinorVersion() >= 8) {

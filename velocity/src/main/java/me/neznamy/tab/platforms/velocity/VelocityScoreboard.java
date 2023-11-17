@@ -1,9 +1,11 @@
 package me.neznamy.tab.platforms.velocity;
 
+import com.google.common.collect.Lists;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,15 +31,19 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
-        player.sendPluginMessage(
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                   @Nullable IChatBaseComponent numberFormat) {
+        List<Object> args = Lists.newArrayList(
                 "PacketPlayOutScoreboardObjective",
                 objectiveName,
                 ObjectiveAction.REGISTER.ordinal(),
                 title,
                 IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()),
-                display.ordinal()
+                display.ordinal(),
+                numberFormat != null
         );
+        if (numberFormat != null) args.add(numberFormat);
+        player.sendPluginMessage(args.toArray());
     }
 
     @Override
@@ -50,15 +56,19 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
-        player.sendPluginMessage(
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                 @Nullable IChatBaseComponent numberFormat) {
+        List<Object> args = Lists.newArrayList(
                 "PacketPlayOutScoreboardObjective",
                 objectiveName,
                 ObjectiveAction.UPDATE.ordinal(),
                 title,
                 IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()),
-                display.ordinal()
+                display.ordinal(),
+                numberFormat != null
         );
+        if (numberFormat != null) args.add(numberFormat);
+        player.sendPluginMessage(args.toArray());
     }
 
     @Override
@@ -112,23 +122,29 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        player.sendPluginMessage(
+    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+        List<Object> args = Lists.newArrayList(
                 "PacketPlayOutScoreboardScore",
                 objective,
                 ScoreAction.CHANGE.ordinal(),
-                playerName,
+                scoreHolder,
                 score
         );
+        args.add(displayName != null);
+        if (displayName != null) args.add(displayName);
+        args.add(numberFormat != null);
+        if (numberFormat != null) args.add(numberFormat);
+        player.sendPluginMessage(args.toArray());
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
+    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
         player.sendPluginMessage(
                 "PacketPlayOutScoreboardScore",
                 objective,
                 ScoreAction.REMOVE.ordinal(),
-                playerName,
+                scoreHolder,
                 0
         );
     }

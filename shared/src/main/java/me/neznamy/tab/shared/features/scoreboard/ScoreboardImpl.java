@@ -2,7 +2,9 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.scoreboard.Line;
@@ -19,30 +21,30 @@ import java.util.*;
 /**
  * A class representing a scoreboard configured in config
  */
+@Getter
 public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.scoreboard.Scoreboard, Refreshable {
 
-    @Getter private final String featureName = "Scoreboard";
-    @Getter private final String refreshDisplayName = "Updating Scoreboard title";
+    private final String featureName = "Scoreboard";
+    private final String refreshDisplayName = "Updating Scoreboard title";
+    private final String titleProperty = Property.randomName();
 
     //scoreboard manager
-    @Getter private final ScoreboardManagerImpl manager;
+    private final ScoreboardManagerImpl manager;
 
     //name of this scoreboard
-    @Getter private final String name;
+    private final String name;
 
     //scoreboard title
-    @Getter private String title;
+    private String title;
 
     //display condition
     private Condition displayCondition;
 
     //lines of scoreboard
-    @Getter private final List<Line> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
 
     //players currently seeing this scoreboard
-    @Getter private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
-
-    private final String titleProperty;
+    private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
 
     /**
      * Constructs new instance with given parameters and registers lines to feature manager
@@ -84,7 +86,6 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         this.manager = manager;
         this.name = name;
         this.title = title;
-        this.titleProperty = getName() + "-" + TabConstants.Property.SCOREBOARD_TITLE;
         for (int i=0; i<lines.size(); i++) {
             ScoreboardLine score;
             if (dynamicLinesOnly) {
@@ -135,7 +136,8 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         p.getScoreboard().registerObjective(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 p.getProperty(titleProperty).updateAndGet(),
-                Scoreboard.HealthDisplay.INTEGER
+                Scoreboard.HealthDisplay.INTEGER,
+                new IChatBaseComponent()
         );
         p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
@@ -172,7 +174,8 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         refreshed.getScoreboard().updateObjective(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 refreshed.getProperty(titleProperty).updateAndGet(),
-                Scoreboard.HealthDisplay.INTEGER
+                Scoreboard.HealthDisplay.INTEGER,
+                new IChatBaseComponent()
         );
     }
 
@@ -215,7 +218,13 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         int score = 1;
         for (Line line : linesReversed) {
             if (line instanceof StaticLine || p.getProperty(getName() + "-" + ((ScoreboardLine)line).getTeamName()).get().length() > 0) {
-                p.getScoreboard().setScore(ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(p), score++);
+                p.getScoreboard().setScore(
+                        ScoreboardManagerImpl.OBJECTIVE_NAME,
+                        ((ScoreboardLine)line).getPlayerName(p),
+                        score++,
+                        null, // Makes no sense for TAB
+                        ((ScoreboardLine) line).getScoreRefresher().getNumberFormat(p)
+                );
             }
         }
     }

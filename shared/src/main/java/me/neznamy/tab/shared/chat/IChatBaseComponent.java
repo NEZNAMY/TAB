@@ -337,4 +337,9 @@ public class IChatBaseComponent {
     public static @NotNull IChatBaseComponent optimizedComponent(@NotNull String text) {
         return stringCache.get(text, null);
     }
+
+    public static @Nullable IChatBaseComponent emptyToNullOptimizedComponent(@NotNull String text) {
+        if (text.isEmpty()) return null;
+        return optimizedComponent(text);
+    }
 }

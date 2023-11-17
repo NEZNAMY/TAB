@@ -329,7 +329,7 @@ public class FeatureManager {
         boolean scoreboard         = configuration.getConfig().getBoolean("scoreboard.enabled", false);
         boolean perWorldPlayerList = configuration.getConfig().getBoolean("per-world-playerlist.enabled", false);
         boolean layout             = configuration.getConfig().getBoolean("layout.enabled", false);
-        boolean yellowNumber       = configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true);
+        boolean yellowNumber       = configuration.getConfig().getBoolean("playerlist-objective.enabled", true);
         boolean belowName          = configuration.getConfig().getBoolean("belowname-objective.enabled", false);
         boolean teams              = configuration.getConfig().getBoolean("scoreboard-teams.enabled", true);
         boolean unlimitedTags      = configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false);

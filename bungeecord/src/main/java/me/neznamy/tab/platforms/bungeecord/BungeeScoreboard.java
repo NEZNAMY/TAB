@@ -2,11 +2,13 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 import net.md_5.bungee.protocol.packet.Team;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -28,7 +30,8 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                   @Nullable IChatBaseComponent numberFormat) {
         player.sendPacket(BungeeMultiVersion.newScoreboardObjective(
                 objectiveName,
                 title,
@@ -50,7 +53,8 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+                                 @Nullable IChatBaseComponent numberFormat) {
         player.sendPacket(BungeeMultiVersion.newScoreboardObjective(
                 objectiveName,
                 title,
@@ -109,12 +113,13 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        player.sendPacket(new ScoreboardScore(playerName, (byte) ScoreAction.CHANGE.ordinal(), objective, score));
+    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+        player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.CHANGE.ordinal(), objective, score));
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
-        player.sendPacket(new ScoreboardScore(playerName, (byte) ScoreAction.REMOVE.ordinal(), objective, 0));
+    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+        player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.REMOVE.ordinal(), objective, 0));
     }
 }
