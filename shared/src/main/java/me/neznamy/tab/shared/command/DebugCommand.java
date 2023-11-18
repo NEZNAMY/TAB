@@ -75,7 +75,9 @@ public class DebugCommand extends SubCommand {
         }
         sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
         if (analyzed instanceof ProxyTabPlayer) {
-            sendMessage(sender, "&eBridge connection: " + (((ProxyTabPlayer)analyzed).isBridgeConnected() ? "&aConnected" : "&cNot connected"));
+            char versionRequired = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.charAt(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.length()-1);
+            sendMessage(sender, "&eBridge connection: " + (((ProxyTabPlayer)analyzed).isBridgeConnected() ?
+                    "&aConnected" : "&cNot connected (requires Bridge version " + versionRequired + ".x.x installed)"));
         }
         sendMessage(sender, getGroup(analyzed));
         sendMessage(sender, getTeamName(analyzed));
