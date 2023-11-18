@@ -46,7 +46,7 @@ public class BukkitTAB extends JavaPlugin {
             if (ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]) == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
                 Bukkit.getConsoleSender().sendMessage(String.format(
                         "%s[TAB] Your server version is not compatible. This plugin version was made for %s - %s. Disabling.",
-                        EnumChatFormat.RED.getFormat(), ProtocolVersion.V1_5, ProtocolVersion.LATEST_KNOWN_VERSION
+                        EnumChatFormat.RED.getFormat(), ProtocolVersion.V1_5.getFriendlyName(), ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName()
                 ));
             } else {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] A compatibility issue " +
