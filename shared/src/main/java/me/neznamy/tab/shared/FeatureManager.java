@@ -25,6 +25,7 @@ import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import me.neznamy.tab.shared.proxy.message.outgoing.Unload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,7 +73,7 @@ public class FeatureManager {
         TAB.getInstance().getPlaceholderManager().getTabExpansion().unregisterExpansion();
         if (TAB.getInstance().getPlatform() instanceof ProxyPlatform) {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                ((ProxyTabPlayer)player).sendPluginMessage("Unload");
+                ((ProxyTabPlayer)player).sendPluginMessage(new Unload());
             }
         }
     }

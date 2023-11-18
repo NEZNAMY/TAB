@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.proxy;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.proxy.message.outgoing.ExpansionPlaceholder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class ProxyTabExpansion implements TabExpansion {
     @Override
     public void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value) {
         values.computeIfAbsent(player, p -> new HashMap<>()).put(key, value);
-        ((ProxyTabPlayer)player).sendPluginMessage("Expansion", key, value);
+        ((ProxyTabPlayer)player).sendPluginMessage(new ExpansionPlaceholder(key, value));
     }
 
     @Override
@@ -24,9 +25,9 @@ public class ProxyTabExpansion implements TabExpansion {
         // Don't do anything on proxy side
     }
 
-    public void resendAllValues(@NotNull TabPlayer player) {
+    public void resendAllValues(@NotNull ProxyTabPlayer player) {
         for (Map.Entry<String, String> entry : values.computeIfAbsent(player, p -> new HashMap<>()).entrySet()) {
-            ((ProxyTabPlayer)player).sendPluginMessage("Expansion", entry.getKey(), entry.getValue());
+            player.sendPluginMessage(new ExpansionPlaceholder(entry.getKey(), entry.getValue()));
         }
     }
 }

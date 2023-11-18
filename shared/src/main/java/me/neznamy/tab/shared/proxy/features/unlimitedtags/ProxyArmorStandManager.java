@@ -3,9 +3,10 @@ package me.neznamy.tab.shared.proxy.features.unlimitedtags;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import me.neznamy.tab.shared.proxy.message.outgoing.nametags.Destroy;
+import me.neznamy.tab.shared.proxy.message.outgoing.nametags.SetText;
 import org.jetbrains.annotations.NotNull;
 
 public class ProxyArmorStandManager implements ArmorStandManager {
@@ -21,13 +22,13 @@ public class ProxyArmorStandManager implements ArmorStandManager {
                 + owner.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
         for (String line : nameTagX.getDefinedLines()) {
             String text = owner.getProperty(line).get();
-            this.owner.sendPluginMessage("NameTagX", "SetText", line, text, IChatBaseComponent.fromColoredText(text).toString(owner.getVersion())); //rel placeholder support in the future
+            this.owner.sendPluginMessage(new SetText(line, text));
         }
     }
 
     @Override
     public void destroy() {
-        owner.sendPluginMessage("NameTagX", "Destroy");
+        owner.sendPluginMessage(new Destroy());
     }
 
     @Override
@@ -35,7 +36,7 @@ public class ProxyArmorStandManager implements ArmorStandManager {
         for (String line : nameTagX.getDefinedLines()) {
             if (owner.getProperty(line).update() || force) {
                 String text = owner.getProperty(line).get();
-                owner.sendPluginMessage("NameTagX", "SetText", line, text, IChatBaseComponent.fromColoredText(text).toString(owner.getVersion()));
+                owner.sendPluginMessage(new SetText(line, text));
             }
         }
     }

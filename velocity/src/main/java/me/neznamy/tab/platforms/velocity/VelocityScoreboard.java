@@ -1,15 +1,16 @@
 package me.neznamy.tab.platforms.velocity;
 
-import com.google.common.collect.Lists;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.proxy.message.outgoing.SetDisplayObjective;
+import me.neznamy.tab.shared.proxy.message.outgoing.SetObjective;
+import me.neznamy.tab.shared.proxy.message.outgoing.SetScore;
+import me.neznamy.tab.shared.proxy.message.outgoing.SetScoreboardTeam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Scoreboard handler for Velocity. Because it does not have
@@ -23,129 +24,60 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
 
     @Override
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.sendPluginMessage(
-                "PacketPlayOutScoreboardDisplayObjective",
-                slot.ordinal(),
-                objective
-        );
+        player.sendPluginMessage(new SetDisplayObjective(slot.ordinal(), objective));
     }
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
                                    @Nullable IChatBaseComponent numberFormat) {
-        List<Object> args = Lists.newArrayList(
-                "PacketPlayOutScoreboardObjective",
-                objectiveName,
-                ObjectiveAction.REGISTER.ordinal(),
-                title,
-                IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()),
-                display.ordinal(),
-                numberFormat != null
-        );
-        if (numberFormat != null) args.add(numberFormat);
-        player.sendPluginMessage(args.toArray());
+        player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.REGISTER, title, display,
+                numberFormat == null ? null : numberFormat.toString(player.getVersion())));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPluginMessage(
-                "PacketPlayOutScoreboardObjective",
-                objectiveName,
-                ObjectiveAction.UNREGISTER.ordinal()
-        );
+        player.sendPluginMessage(new SetObjective(objectiveName));
     }
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
                                  @Nullable IChatBaseComponent numberFormat) {
-        List<Object> args = Lists.newArrayList(
-                "PacketPlayOutScoreboardObjective",
-                objectiveName,
-                ObjectiveAction.UPDATE.ordinal(),
-                title,
-                IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()),
-                display.ordinal(),
-                numberFormat != null
-        );
-        if (numberFormat != null) args.add(numberFormat);
-        player.sendPluginMessage(args.toArray());
+        player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.UPDATE, title, display,
+                numberFormat == null ? null : numberFormat.toString(player.getVersion())));
     }
 
     @Override
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
                               @NotNull Collection<String> players, int options) {
-        List<Object> args = new ArrayList<>();
-        args.add("PacketPlayOutScoreboardTeam");
-        args.add(name);
-        args.add(TeamAction.CREATE.ordinal());
-        args.add(players.size());
-        args.addAll(players);
-        args.add(prefix);
-        args.add(IChatBaseComponent.optimizedComponent(prefix).toString(player.getVersion()));
-        args.add(suffix);
-        args.add(IChatBaseComponent.optimizedComponent(suffix).toString(player.getVersion()));
-        args.add(options);
-        args.add(visibility.toString());
-        args.add(collision.toString());
-        args.add(EnumChatFormat.lastColorsOf(prefix).ordinal());
-        player.sendPluginMessage(args.toArray());
+        player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.CREATE.ordinal(), prefix, suffix, options,
+                visibility.toString(), collision.toString(), EnumChatFormat.lastColorsOf(prefix).ordinal(), players));
     }
 
     @Override
     public void unregisterTeam0(@NotNull String name) {
-        player.sendPluginMessage(
-                "PacketPlayOutScoreboardTeam",
-                name,
-                TeamAction.REMOVE.ordinal(),
-                0
-        );
+        player.sendPluginMessage(new SetScoreboardTeam(name));
     }
 
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                             @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
-        player.sendPluginMessage(
-                "PacketPlayOutScoreboardTeam",
-                name,
-                TeamAction.UPDATE.ordinal(),
-                0,
-                prefix,
-                IChatBaseComponent.optimizedComponent(prefix).toString(player.getVersion()),
-                suffix,
-                IChatBaseComponent.optimizedComponent(suffix).toString(player.getVersion()),
-                options,
-                visibility.toString(),
-                collision.toString(),
-                EnumChatFormat.lastColorsOf(prefix).ordinal()
-        );
+        player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.UPDATE.ordinal(), prefix, suffix, options,
+                visibility.toString(), collision.toString(), EnumChatFormat.lastColorsOf(prefix).ordinal(), null));
     }
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                           @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
-        List<Object> args = Lists.newArrayList(
-                "PacketPlayOutScoreboardScore",
-                objective,
-                ScoreAction.CHANGE.ordinal(),
-                scoreHolder,
-                score
-        );
-        args.add(displayName != null);
-        if (displayName != null) args.add(displayName);
-        args.add(numberFormat != null);
-        if (numberFormat != null) args.add(numberFormat);
-        player.sendPluginMessage(args.toArray());
+        player.sendPluginMessage(new SetScore(
+                objective, ScoreAction.CHANGE.ordinal(), scoreHolder, score,
+                displayName == null ? null : displayName.toString(player.getVersion()),
+                numberFormat == null ? null : numberFormat.toString(player.getVersion())
+        ));
     }
 
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
-        player.sendPluginMessage(
-                "PacketPlayOutScoreboardScore",
-                objective,
-                ScoreAction.REMOVE.ordinal(),
-                scoreHolder,
-                0
-        );
+        player.sendPluginMessage(new SetScore(objective, scoreHolder));
     }
 }

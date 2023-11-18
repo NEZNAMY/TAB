@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.proxy.features.unlimitedtags;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import me.neznamy.tab.shared.proxy.message.outgoing.nametags.*;
 import org.jetbrains.annotations.NotNull;
 
 public class ProxyNameTagX extends NameTagX {
@@ -16,11 +16,11 @@ public class ProxyNameTagX extends NameTagX {
     public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         super.onServerChange(p, from, to);
         if (isPreviewingNameTag(p)) {
-            ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "Preview", true);
+            ((ProxyTabPlayer)p).sendPluginMessage(new Preview(true));
         }
         for (String line : getDefinedLines()) {
             String text = p.getProperty(line).get();
-            ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "SetText", line, text, IChatBaseComponent.fromColoredText(text).toString(p.getVersion())); //rel placeholder support in the future
+            ((ProxyTabPlayer)p).sendPluginMessage(new SetText(line, text));
         }
     }
 
@@ -29,26 +29,26 @@ public class ProxyNameTagX extends NameTagX {
         super.onWorldChange(changed, from, to);
         for (String line : getDefinedLines()) {
             String text = changed.getProperty(line).get();
-            ((ProxyTabPlayer)changed).sendPluginMessage("NameTagX", "SetText", line, text, IChatBaseComponent.fromColoredText(text).toString(changed.getVersion())); //rel placeholder support in the future
+            ((ProxyTabPlayer)changed).sendPluginMessage(new SetText(line, text));
         }
     }
 
     @Override
     public void onUnlimitedDisableConditionChange(TabPlayer p, boolean disabledNow) {
         super.onUnlimitedDisableConditionChange(p, disabledNow);
-        ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "SetEnabled", !disabledNow && !getDisableChecker().isDisabledPlayer(p));
+        ((ProxyTabPlayer)p).sendPluginMessage(new SetEnabled(!disabledNow && !getDisableChecker().isDisabledPlayer(p)));
     }
 
     @Override
     public void addDisabledPlayer(@NotNull TabPlayer player) {
         super.addDisabledPlayer(player);
-        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "SetEnabled", false);
+        ((ProxyTabPlayer)player).sendPluginMessage(new SetEnabled(false));
     }
 
     @Override
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         super.onDisableConditionChange(p, disabledNow);
-        ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "SetEnabled", !disabledNow && !getUnlimitedDisableChecker().isDisabledPlayer(p));
+        ((ProxyTabPlayer)p).sendPluginMessage(new SetEnabled(!disabledNow && !getUnlimitedDisableChecker().isDisabledPlayer(p)));
     }
 
     @Override
@@ -64,21 +64,21 @@ public class ProxyNameTagX extends NameTagX {
 
     @Override
     public void setNameTagPreview(@NotNull TabPlayer player, boolean status) {
-        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Preview", status);
+        ((ProxyTabPlayer)player).sendPluginMessage(new Preview(status));
     }
 
     @Override
     public void resumeArmorStands(@NotNull TabPlayer player) {
-        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Resume");
+        ((ProxyTabPlayer)player).sendPluginMessage(new Resume());
     }
 
     @Override
     public void pauseArmorStands(@NotNull TabPlayer player) {
-        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Pause");
+        ((ProxyTabPlayer)player).sendPluginMessage(new Pause());
     }
 
     @Override
     public void updateNameTagVisibilityView(@NotNull TabPlayer player) {
-        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "VisibilityView");
+        ((ProxyTabPlayer)player).sendPluginMessage(new VisibilityView());
     }
 }
