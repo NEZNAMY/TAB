@@ -5,8 +5,10 @@ import de.myzelyam.api.vanish.BungeeVanishAPI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -14,8 +16,13 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
@@ -23,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
 /**
  * BungeeCord implementation of Platform
@@ -33,6 +41,9 @@ public class BungeePlatform extends ProxyPlatform {
     /** Flag tracking plugin presence */
     @Getter
     private final boolean premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
+
+    /** Component cache for better performance */
+    private final ComponentCache<IChatBaseComponent, BaseComponent> cache = new ComponentCache<>(1000, this::toComponent0);
 
     @NotNull
     private final BungeeTAB plugin;
@@ -111,5 +122,54 @@ public class BungeePlatform extends ProxyPlatform {
                 ((BungeeTabPlayer)viewer).getPlayer(),
                 ((BungeeTabPlayer)target).getPlayer())) return true;
         return super.canSee(viewer, target);
+    }
+
+    /**
+     * Converts internal component class to platform's component class. If the component is
+     * present in the cache, it is taken from it.
+     *
+     * @param   component
+     *          Component to convert
+     * @param   version
+     *          Game version to convert component for
+     * @return  Converted component
+     */
+    public BaseComponent toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
+        return cache.get(component, version);
+    }
+
+    /**
+     * Converts internal component class to platform's component class
+     *
+     * @param   component
+     *          Component to convert
+     * @param   version
+     *          Game version to convert component for
+     * @return  Converted component
+     */
+    private BaseComponent toComponent0(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
+        TextComponent textComponent = new TextComponent(component.getText());
+        ChatModifier modifier = component.getModifier();
+        if (modifier.getColor() != null) textComponent.setColor(ChatColor.of(
+                modifier.getColor().toString(version.getMinorVersion() >= 16)));
+
+        if (modifier.isBold()) textComponent.setBold(true);
+        if (modifier.isItalic()) textComponent.setItalic(true);
+        if (modifier.isObfuscated()) textComponent.setObfuscated(true);
+        if (modifier.isStrikethrough()) textComponent.setStrikethrough(true);
+        if (modifier.isUnderlined()) textComponent.setUnderlined(true);
+
+        textComponent.setFont(modifier.getFont());
+
+        if (modifier.getClickEvent() != null) {
+            textComponent.setClickEvent(new ClickEvent(
+                    ClickEvent.Action.valueOf(modifier.getClickEvent().getAction().name()),
+                    modifier.getClickEvent().getValue()
+            ));
+        }
+
+        if (!component.getExtra().isEmpty()) textComponent.setExtra(
+                component.getExtra().stream().map(c -> toComponent(c, version)).collect(Collectors.toList()));
+        return textComponent;
     }
 }

@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
-import me.neznamy.tab.platforms.bungeecord.BungeeMultiVersion;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
@@ -33,21 +32,21 @@ public class BungeeTabList1193 extends BungeeTabList {
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         Item item = item(entry);
-        if (displayName != null) BungeeMultiVersion.setDisplayName(item, displayName, player.getVersion());
+        if (displayName != null) item.setDisplayName(player.getPlatform().toComponent(displayName, player.getVersion()));
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME), item);
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
         Item item = item(entry);
-        BungeeMultiVersion.setPing(item, latency);
+        item.setPing(latency);
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY), item);
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
         Item item = item(entry);
-        BungeeMultiVersion.setGamemode(item, gameMode);
+        item.setGamemode(gameMode);
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE), item);
     }
 

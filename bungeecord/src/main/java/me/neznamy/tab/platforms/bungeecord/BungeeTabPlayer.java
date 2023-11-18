@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList17;
@@ -14,10 +13,12 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,8 +39,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @NotNull
     private final TabList tabList1_8 = new BungeeTabList18(this);
 
-    @Nullable
-    private TabList tabList1_19_3;
+    @NotNull
+    private final TabList tabList1_19_3 = new BungeeTabList1193(this);
 
     /** Player's boss bar view */
     @NotNull
@@ -69,22 +70,17 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(BungeeMultiVersion.toComponent(message, getVersion()));
+        getPlayer().sendMessage(getPlatform().toComponent(message, getVersion()));
     }
 
     @Override
     @Nullable
-    @SneakyThrows
     public TabList.Skin getSkin() {
         LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
         if (loginResult == null) return null;
-        // Reflection to support old bungee versions as well
-        Object[] properties = (Object[]) loginResult.getClass().getMethod("getProperties").invoke(loginResult);
+        Property[] properties = loginResult.getProperties();
         if (properties == null || properties.length == 0) return null; //Offline mode
-        return new TabList.Skin(
-                (String) properties[0].getClass().getMethod("getValue").invoke(properties[0]),
-                (String) properties[0].getClass().getMethod("getSignature").invoke(properties[0])
-        );
+        return new TabList.Skin(properties[0].getValue(), properties[0].getSignature());
     }
 
     @Override
@@ -148,7 +144,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @NotNull
     public TabList getTabList() {
         int version = getPlayer().getPendingConnection().getVersion();
-        if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return getTabList1_19_3();
+        if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return tabList1_19_3;
         if (version >= ProtocolVersion.V1_8.getNetworkId()) return tabList1_8;
         return tabList1_7;
     }
@@ -160,16 +156,18 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      * @param   packet
      *          Packet to send
      */
-    @SneakyThrows
     public void sendPacket(@NotNull DefinedPacket packet) {
         if (!getPlayer().isConnected()) return;
-        BungeeMultiVersion.sendPacket(this, packet);
-    }
-
-    @NotNull
-    public TabList getTabList1_19_3() {
-        // Workaround to prevent error on old BungeeCord builds
-        if (tabList1_19_3 == null) tabList1_19_3 = new BungeeTabList1193(this);
-        return tabList1_19_3;
+        try {
+            ((UserConnection)getPlayer()).sendPacketQueued(packet);
+        } catch (NullPointerException BungeeCordBug) {
+            // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
+            //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
+            //        at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:194)
+            if (TAB.getInstance().getConfiguration().isDebugMode()) {
+                TAB.getInstance().getErrorManager().printError("Failed to deliver packet to player " + getName() +
+                        " (online = " + getPlayer().isConnected() + "): " + packet, BungeeCordBug);
+            }
+        }
     }
 }

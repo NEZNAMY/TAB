@@ -56,7 +56,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         try {
             (wrapperField = InitialHandler.class.getDeclaredField("ch")).setAccessible(true);
             directionData = ReflectionUtils.setAccessible(Protocol.class.getDeclaredField("TO_CLIENT")).get(Protocol.GAME);
-            getId = ReflectionUtils.setAccessible(directionData.getClass().getDeclaredMethod("getId", Class.class, int.class));
+            getId = ReflectionUtils.setAccessible(Protocol.DirectionData.class.getDeclaredMethod("getId", Class.class, int.class));
         } catch (ReflectiveOperationException exception) {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", exception);
         }
@@ -77,25 +77,16 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     @Override
     @Nullable
+    @SneakyThrows
     protected Channel getChannel(@NotNull TabPlayer player) {
         if (wrapperField == null) return null;
-        final BungeeTabPlayer bungee = (BungeeTabPlayer) player;
-        try {
-            return ((ChannelWrapper) wrapperField.get(bungee.getPlayer().getPendingConnection())).getHandle();
-        } catch (IllegalAccessException exception) {
-            TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + bungee.getPlayer().getName(), exception);
-        }
-        return null;
+        return ((ChannelWrapper) wrapperField.get(((BungeeTabPlayer) player).getPlayer().getPendingConnection())).getHandle();
     }
 
     @Override
-    @SneakyThrows
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
-        TAB.getInstance().getFeatureManager().onDisplayObjective(
-                player,
-                ((Number) ScoreboardDisplay.class.getMethod("getPosition").invoke(packet)).intValue(),
-                ((ScoreboardDisplay) packet).getName()
-        );
+        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
+                ((ScoreboardDisplay)packet).getPosition(), ((ScoreboardDisplay) packet).getName());
     }
 
     @Override
@@ -121,7 +112,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isPlayerInfo(@NotNull Object packet) {
-        return packet instanceof PlayerListItem || packet.getClass().getSimpleName().equals("PlayerListItemUpdate");
+        return packet instanceof PlayerListItem || packet instanceof PlayerListItemUpdate;
     }
 
     @Override
@@ -157,18 +148,16 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    @SneakyThrows
     public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (packet instanceof PlayerListItem) {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
-                    if (newDisplayName != null) BungeeMultiVersion.setDisplayName(item, newDisplayName, receiver.getVersion());
+                    if (newDisplayName != null) item.setDisplayName(((BungeeTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion()));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    BungeeMultiVersion.setPing(item, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(),
-                            (int) PlayerListItem.Item.class.getMethod("getPing").invoke(item)));
+                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
@@ -179,11 +168,10 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             for (PlayerListItem.Item item : update.getItems()) {
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
-                    if (newDisplayName != null) BungeeMultiVersion.setDisplayName(item, newDisplayName, receiver.getVersion());
+                    if (newDisplayName != null) item.setDisplayName(((BungeeTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion()));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
-                    BungeeMultiVersion.setPing(item, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(),
-                            (int) PlayerListItem.Item.class.getMethod("getPing").invoke(item)));
+                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());

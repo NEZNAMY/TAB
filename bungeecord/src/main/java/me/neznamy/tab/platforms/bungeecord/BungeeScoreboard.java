@@ -1,9 +1,11 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.protocol.Either;
+import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 import net.md_5.bungee.protocol.packet.Team;
@@ -24,43 +26,39 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.sendPacket(BungeeMultiVersion.newScoreboardDisplay(slot.ordinal(), objective));
+        player.sendPacket(new ScoreboardDisplay(slot.ordinal(), objective));
     }
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
                                    @Nullable IChatBaseComponent numberFormat) {
-        player.sendPacket(BungeeMultiVersion.newScoreboardObjective(
+        player.sendPacket(new ScoreboardObjective(
                 objectiveName,
-                title,
+                either(title),
                 ScoreboardObjective.HealthDisplay.valueOf(display.name()),
-                ObjectiveAction.REGISTER,
-                player.getVersion()
+                (byte) ObjectiveAction.REGISTER.ordinal()
         ));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(BungeeMultiVersion.newScoreboardObjective(
+        player.sendPacket(new ScoreboardObjective(
                 objectiveName,
-                "", // Empty value instead of null to prevent NPE kick on 1.7
+                either(""), // Empty value instead of null to prevent NPE kick on 1.7
                 null,
-                ObjectiveAction.UNREGISTER,
-                player.getVersion()
+                (byte) ObjectiveAction.UNREGISTER.ordinal()
         ));
     }
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
                                  @Nullable IChatBaseComponent numberFormat) {
-        player.sendPacket(BungeeMultiVersion.newScoreboardObjective(
+        player.sendPacket(new ScoreboardObjective(
                 objectiveName,
-                title,
+                either(title),
                 ScoreboardObjective.HealthDisplay.valueOf(display.name()),
-                ObjectiveAction.UPDATE,
-                player.getVersion()
+                (byte) ObjectiveAction.UPDATE.ordinal()
         ));
     }
 
@@ -72,17 +70,17 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.sendPacket(BungeeMultiVersion.newTeam(
+        player.sendPacket(new Team(
                 name,
-                TeamAction.CREATE,
-                prefix,
-                suffix,
+                (byte) TeamAction.CREATE.ordinal(),
+                either(name),
+                either(prefix),
+                either(suffix),
                 visibility.toString(),
                 collision.toString(),
                 color,
                 (byte)options,
-                players.toArray(new String[0]),
-                player.getVersion()
+                players.toArray(new String[0])
         ));
     }
 
@@ -98,17 +96,17 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.sendPacket(BungeeMultiVersion.newTeam(
+        player.sendPacket(new Team(
                 name,
-                TeamAction.UPDATE,
-                prefix,
-                suffix,
+                (byte) TeamAction.UPDATE.ordinal(),
+                either(name),
+                either(prefix),
+                either(suffix),
                 visibility.toString(),
                 collision.toString(),
                 color,
                 (byte)options,
-                null,
-                player.getVersion()
+                null
         ));
     }
 
@@ -121,5 +119,13 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
         player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.REMOVE.ordinal(), objective, 0));
+    }
+
+    private Either<String, BaseComponent> either(@NotNull String text) {
+        if (player.getVersion().getMinorVersion() >= 13) {
+            return Either.right(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion()));
+        } else {
+            return Either.left(text);
+        }
     }
 }

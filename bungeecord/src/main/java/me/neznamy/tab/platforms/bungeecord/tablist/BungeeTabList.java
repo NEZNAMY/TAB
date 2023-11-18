@@ -1,12 +1,13 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.SneakyThrows;
-import me.neznamy.tab.platforms.bungeecord.BungeeMultiVersion;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
+import net.md_5.bungee.protocol.Property;
+import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.tab.ServerUnique;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +33,10 @@ public abstract class BungeeTabList implements TabList {
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.sendPacket(BungeeMultiVersion.newPlayerListHeaderFooter(header, footer, player.getVersion()));
+        player.sendPacket(new PlayerListHeaderFooter(
+                player.getPlatform().toComponent(header, player.getVersion()),
+                player.getPlatform().toComponent(footer, player.getVersion())
+        ));
     }
 
     @NotNull
@@ -46,15 +50,15 @@ public abstract class BungeeTabList implements TabList {
     public Item entryToItem(Entry entry) {
         Item item = item(entry.getUniqueId());
         if (entry.getDisplayName() != null) {
-            BungeeMultiVersion.setDisplayName(item, entry.getDisplayName(), player.getVersion());
+            item.setDisplayName(player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()));
         }
-        BungeeMultiVersion.setGamemode(item, entry.getGameMode());
-        BungeeMultiVersion.setListed(item, true);
-        BungeeMultiVersion.setPing(item, entry.getLatency());
+        item.setGamemode(entry.getGameMode());
+        item.setListed(true);
+        item.setPing(entry.getLatency());
         if (entry.getSkin() != null) {
-            BungeeMultiVersion.setProperties(item, new String[]{TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()});
+            item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature())});
         } else {
-            BungeeMultiVersion.setProperties(item);
+            item.setProperties(new Property[0]);
         }
         item.setUsername(entry.getName());
         return item;
