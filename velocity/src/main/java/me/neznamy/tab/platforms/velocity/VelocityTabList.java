@@ -33,12 +33,12 @@ public class VelocityTabList implements TabList {
      * You are supposed to be overriding
      * {@link com.velocitypowered.api.proxy.player.TabList#buildEntry(GameProfile, Component, int, int, ChatSession, boolean)},
      * not the outdated {@link com.velocitypowered.api.proxy.player.TabList#buildEntry(GameProfile, Component, int, int)},
-     * because {@link Entry.Builder#build()} calls that method. Manually removing the
+     * because {@link TabListEntry.Builder#build()} calls that method. Manually removing the
      * entry and adding it again to avoid this bug.
      */
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        getEntry(entry).ifPresent(e -> {
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> {
             if (player.getVersion().getMinorVersion() >= 8) {
                 Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
                 e.setDisplayName(component);
@@ -53,12 +53,12 @@ public class VelocityTabList implements TabList {
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
-        getEntry(entry).ifPresent(e -> e.setLatency(latency));
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setLatency(latency));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        getEntry(entry).ifPresent(e -> e.setGameMode(gameMode));
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setGameMode(gameMode));
     }
 
     @Override
@@ -97,46 +97,14 @@ public class VelocityTabList implements TabList {
         );
     }
 
-    /**
-     * Returns TabList entry with specified UUID. If no such entry was found,
-     * empty Optional is returned.
-     *
-     * @param   id
-     *          UUID to get entry by
-     * @return  TabList entry with specified UUID
-     */
-    @NotNull
-    private Optional<TabListEntry> getEntry(@NotNull UUID id) {
-        for (TabListEntry entry : getEntries()) {
-            if (entry.getProfile().getId().equals(id)) return Optional.of(entry);
-        }
-        return Optional.empty();
-    }
-
     @Override
     public void checkDisplayNames() {
-        for (TabListEntry entry : getEntries()) {
+        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
             Component expectedComponent = expectedDisplayNames.get(entry);
             if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
                 displayNameWrong(entry.getProfile().getName(), player);
                 entry.setDisplayName(expectedComponent);
             }
-        }
-    }
-
-    /**
-     * Returns list of entries in player's TabList. This includes a try/catch
-     * to avoid {@link ConcurrentModificationException} when it's modified by the
-     * backend server while iterating.
-     *
-     * @return  A copy of TabList entries in player's TabList
-     */
-    private Collection<TabListEntry> getEntries() {
-        try {
-            return new ArrayList<>(player.getPlayer().getTabList().getEntries());
-        } catch (ConcurrentModificationException velocity) {
-            // TabList was modified by backend server during iteration
-            return getEntries();
         }
     }
 }
