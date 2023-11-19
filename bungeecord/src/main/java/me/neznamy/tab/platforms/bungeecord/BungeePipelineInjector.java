@@ -254,15 +254,10 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          *          packet class
          * @return  packet ID
          */
+        @SneakyThrows
         private int getPacketId(int protocolVersion, @NotNull Class<? extends DefinedPacket> clazz) {
             if (getId == null) return -1;
-            try {
-                return (int) getId.invoke(directionData, clazz, protocolVersion);
-            } catch (ReflectiveOperationException e) {
-                TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz +
-                        " with client version " + protocolVersion, e);
-                return -1;
-            }
+            return (int) getId.invoke(directionData, clazz, protocolVersion);
         }
     }
 }
