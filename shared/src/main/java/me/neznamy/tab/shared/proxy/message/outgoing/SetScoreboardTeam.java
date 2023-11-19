@@ -24,7 +24,7 @@ public class SetScoreboardTeam implements OutgoingMessage {
 
     public SetScoreboardTeam(String name) {
         this.name = name;
-        this.action = Scoreboard.TeamAction.REMOVE.ordinal();
+        this.action = Scoreboard.TeamAction.REMOVE;
     }
 
     @Override

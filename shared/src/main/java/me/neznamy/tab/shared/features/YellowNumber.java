@@ -38,7 +38,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     private final String rawValueFancy = TAB.getInstance().getConfiguration().getConfig().getString("playerlist-objective.fancy-value", "&e" + TabConstants.Placeholder.PING);
 
     /** Scoreboard display type */
-    private final Scoreboard.HealthDisplay displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) ||
+    private final int displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) ||
             "%player_health%".equals(rawValue) || "%player_health_rounded%".equals(rawValue) ?
             Scoreboard.HealthDisplay.HEARTS : Scoreboard.HealthDisplay.INTEGER;
     private final DisableChecker disableChecker;

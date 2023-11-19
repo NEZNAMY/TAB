@@ -20,7 +20,7 @@ public class SetScore implements OutgoingMessage {
     public SetScore(String objective, String scoreHolder) {
         this.objective = objective;
         this.scoreHolder = scoreHolder;
-        this.action = Scoreboard.ScoreAction.REMOVE.ordinal();
+        this.action = Scoreboard.ScoreAction.REMOVE;
     }
 
     @Override

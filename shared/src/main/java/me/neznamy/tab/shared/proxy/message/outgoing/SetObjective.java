@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 public class SetObjective implements OutgoingMessage {
 
     private String objectiveName;
-    private Scoreboard.ObjectiveAction action;
+    private int action;
     private String title;
-    private Scoreboard.HealthDisplay display;
+    private int display;
     private String numberFormat;
 
     public SetObjective(String objectiveName) {
@@ -27,10 +27,10 @@ public class SetObjective implements OutgoingMessage {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("PacketPlayOutScoreboardObjective");
         out.writeUTF(objectiveName);
-        out.writeInt(action.ordinal());
+        out.writeInt(action);
         if (action == Scoreboard.ObjectiveAction.REGISTER || action == Scoreboard.ObjectiveAction.UPDATE) {
             out.writeUTF(title);
-            out.writeInt(display.ordinal());
+            out.writeInt(display);
             out.writeBoolean(numberFormat != null);
             if (numberFormat != null) out.writeUTF(numberFormat);
         }

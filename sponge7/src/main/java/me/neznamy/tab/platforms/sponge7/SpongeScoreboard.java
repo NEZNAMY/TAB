@@ -57,17 +57,17 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        sb.getObjective(objective).ifPresent(o -> sb.updateDisplaySlot(o, displaySlots[slot.ordinal()]));
+    public void setDisplaySlot(int slot, @NotNull String objective) {
+        sb.getObjective(objective).ifPresent(o -> sb.updateDisplaySlot(o, displaySlots[slot]));
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(Text.of(title))
-                .objectiveDisplayMode(healthDisplays[display.ordinal()])
+                .objectiveDisplayMode(healthDisplays[display])
                 .criterion(Criteria.DUMMY)
                 .build()
         );
@@ -79,11 +79,11 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                  @Nullable IChatBaseComponent numberFormat) {
         sb.getObjective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(Text.of(title));
-            obj.setDisplayMode(healthDisplays[display.ordinal()]);
+            obj.setDisplayMode(healthDisplays[display]);
         });
     }
 

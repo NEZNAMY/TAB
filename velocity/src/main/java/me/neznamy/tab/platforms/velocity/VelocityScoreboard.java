@@ -23,12 +23,12 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.sendPluginMessage(new SetDisplayObjective(slot.ordinal(), objective));
+    public void setDisplaySlot(int slot, @NotNull String objective) {
+        player.sendPluginMessage(new SetDisplayObjective(slot, objective));
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
         player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.REGISTER, title, display,
                 numberFormat == null ? null : numberFormat.toString(player.getVersion())));
@@ -40,7 +40,7 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                  @Nullable IChatBaseComponent numberFormat) {
         player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.UPDATE, title, display,
                 numberFormat == null ? null : numberFormat.toString(player.getVersion())));
@@ -50,7 +50,7 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
                               @NotNull Collection<String> players, int options) {
-        player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.CREATE.ordinal(), prefix, suffix, options,
+        player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.CREATE, prefix, suffix, options,
                 visibility.toString(), collision.toString(), EnumChatFormat.lastColorsOf(prefix).ordinal(), players));
     }
 
@@ -62,7 +62,7 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                             @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
-        player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.UPDATE.ordinal(), prefix, suffix, options,
+        player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.UPDATE, prefix, suffix, options,
                 visibility.toString(), collision.toString(), EnumChatFormat.lastColorsOf(prefix).ordinal(), null));
     }
 
@@ -70,7 +70,7 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                           @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
         player.sendPluginMessage(new SetScore(
-                objective, ScoreAction.CHANGE.ordinal(), scoreHolder, score,
+                objective, ScoreAction.CHANGE, scoreHolder, score,
                 displayName == null ? null : displayName.toString(player.getVersion()),
                 numberFormat == null ? null : numberFormat.toString(player.getVersion())
         ));

@@ -64,9 +64,9 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
+    public void setDisplaySlot(int slot, @NotNull String objective) {
         checkPlayerScoreboard();
-        scoreboard.getObjective(objective).setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.valueOf(slot.name()));
+        scoreboard.getObjective(objective).setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.values()[slot]);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
         checkPlayerScoreboard();
         newObjective(objectiveName, "dummy", title, display);
@@ -104,12 +104,12 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                  @Nullable IChatBaseComponent numberFormat) {
         checkPlayerScoreboard();
         Objective obj = scoreboard.getObjective(objectiveName);
         setDisplayName(obj, title);
-        if (serverMinorVersion >= 14) obj.setRenderType(RenderType.valueOf(display.name()));
+        if (serverMinorVersion >= 14) obj.setRenderType(RenderType.values()[display]);
     }
 
     @Override
@@ -158,9 +158,14 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
     }
 
-    public void newObjective(String objectiveName, String criteria, String title, @NotNull HealthDisplay display) {
+    public void newObjective(String objectiveName, String criteria, String title, int display) {
         if (serverMinorVersion >= 14) {
-            scoreboard.registerNewObjective(objectiveName, criteria, transform(title, 128, Limitations.SCOREBOARD_TITLE_PRE_1_13), RenderType.valueOf(display.name()));
+            scoreboard.registerNewObjective(
+                    objectiveName,
+                    criteria,
+                    transform(title, 128, Limitations.SCOREBOARD_TITLE_PRE_1_13),
+                    RenderType.values()[display]
+            );
         } else {
             setDisplayName(scoreboard.registerNewObjective(objectiveName, display == HealthDisplay.HEARTS ? "health" : "dummy"), title);
         }

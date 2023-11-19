@@ -268,36 +268,36 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
+    public void setDisplaySlot(int slot, @NotNull String objective) {
         Object displaySlot;
         if (BukkitReflection.is1_20_2Plus()) {
-            displaySlot = displaySlots[slot.ordinal()];
+            displaySlot = displaySlots[slot];
         } else {
-            displaySlot = slot.ordinal();
+            displaySlot = slot;
         }
         player.sendPacket(newDisplayObjective.newInstance(displaySlot, newScoreboardObjective(objective)));
     }
 
     @Override
     @SneakyThrows
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
-        player.sendPacket(buildObjective(ObjectiveAction.REGISTER.ordinal(), objectiveName, title, display));
+        player.sendPacket(buildObjective(ObjectiveAction.REGISTER, objectiveName, title, display));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(buildObjective(ObjectiveAction.UNREGISTER.ordinal(), objectiveName, "", HealthDisplay.INTEGER));
+        player.sendPacket(buildObjective(ObjectiveAction.UNREGISTER, objectiveName, "", HealthDisplay.INTEGER));
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                  @Nullable IChatBaseComponent numberFormat) {
-        player.sendPacket(buildObjective(ObjectiveAction.UPDATE.ordinal(), objectiveName, title, display));
+        player.sendPacket(buildObjective(ObjectiveAction.UPDATE, objectiveName, title, display));
     }
 
     @SneakyThrows
-    private Object buildObjective(int action, @NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+    private Object buildObjective(int action, @NotNull String objectiveName, @NotNull String title, int display) {
         if (BukkitReflection.getMinorVersion() >= 13) {
             return newObjectivePacket.newInstance(
                     newScoreboardObjective.newInstance(
@@ -305,7 +305,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                             objectiveName,
                             null,
                             toComponent(title),
-                            healthDisplays[display.ordinal()]
+                            healthDisplays[display]
                     ),
                     action
             );
@@ -314,7 +314,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         Objective_OBJECTIVE_NAME.set(nmsPacket, objectiveName);
         Objective_DISPLAY_NAME.set(nmsPacket, title);
         if (BukkitReflection.getMinorVersion() >= 8) {
-            Objective_RENDER_TYPE.set(nmsPacket, healthDisplays[display.ordinal()]);
+            Objective_RENDER_TYPE.set(nmsPacket, healthDisplays[display]);
         }
         Objective_METHOD.set(nmsPacket, action);
         return nmsPacket;
@@ -330,7 +330,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_ofBoolean.invoke(null, team, true));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.CREATE.ordinal()));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.CREATE));
         }
     }
 
@@ -341,7 +341,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_of.invoke(null, team));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.REMOVE.ordinal()));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.REMOVE));
         }
     }
 
@@ -353,7 +353,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (BukkitReflection.getMinorVersion() >= 17) {
             player.sendPacket(TeamPacketConstructor_ofBoolean.invoke(null, team, false));
         } else {
-            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.UPDATE.ordinal()));
+            player.sendPacket(newTeamPacket.newInstance(team, TeamAction.UPDATE));
         }
     }
 

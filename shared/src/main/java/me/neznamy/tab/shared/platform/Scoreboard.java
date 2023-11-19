@@ -47,7 +47,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         removeScore0(objective, scoreHolder);
     }
 
-    public void registerObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void registerObjective(@NotNull String objectiveName, @NotNull String title, int display,
                                   @Nullable IChatBaseComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.add(objectiveName)) {
@@ -66,7 +66,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterObjective0(objectiveName);
     }
 
-    public void updateObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void updateObjective(@NotNull String objectiveName, @NotNull String title, int display,
                                 @Nullable IChatBaseComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objectiveName)) {
@@ -168,7 +168,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         }
     }
 
-    public abstract void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective);
+    public abstract void setDisplaySlot(int slot, @NotNull String objective);
 
     public abstract void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                                    @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat);
@@ -176,12 +176,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
     public abstract void removeScore0(@NotNull String objective, @NotNull String scoreHolder);
 
     public abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title,
-                                            @NotNull HealthDisplay display, @Nullable IChatBaseComponent numberFormat);
+                                            int display, @Nullable IChatBaseComponent numberFormat);
 
     public abstract void unregisterObjective0(@NotNull String objectiveName);
 
     public abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title,
-                                          @NotNull HealthDisplay display, @Nullable IChatBaseComponent numberFormat);
+                                          int display, @Nullable IChatBaseComponent numberFormat);
 
     public abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                                                  @NotNull CollisionRule collision, @NotNull Collection<String> players, int options);
@@ -190,10 +190,6 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                                      @NotNull CollisionRule collision, int options);
-
-    public enum TeamAction {
-        CREATE, REMOVE, UPDATE, ADD_PLAYER, REMOVE_PLAYER
-    }
 
     @AllArgsConstructor
     public enum CollisionRule {
@@ -237,19 +233,39 @@ public abstract class Scoreboard<T extends TabPlayer> {
         }
     }
 
-    public enum ObjectiveAction {
-        REGISTER, UNREGISTER, UPDATE
+    public static class ObjectiveAction {
+
+        public static final int REGISTER = 0;
+        public static final int UNREGISTER = 1;
+        public static final int UPDATE = 2;
     }
 
-    public enum HealthDisplay {
-        INTEGER, HEARTS
+    public static class HealthDisplay {
+
+        public static final int INTEGER = 0;
+        public static final int HEARTS = 1;
     }
 
-    public enum DisplaySlot {
-        PLAYER_LIST, SIDEBAR, BELOW_NAME
+    public static class DisplaySlot {
+
+        public static final int PLAYER_LIST = 0;
+        public static final int SIDEBAR = 1;
+        public static final int BELOW_NAME = 2;
     }
 
-    public enum ScoreAction {
-        CHANGE, REMOVE
+    public static class ScoreAction {
+
+        public static final int CHANGE = 0;
+        public static final int REMOVE = 1;
+    }
+
+    @SuppressWarnings("unused")
+    public static class TeamAction {
+
+        public static final int CREATE = 0;
+        public static final int REMOVE = 1;
+        public static final int UPDATE = 2;
+        public static final int ADD_PLAYER = 3;
+        public static final int REMOVE_PLAYER = 4;
     }
 }

@@ -26,18 +26,18 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.sendPacket(new ScoreboardDisplay(slot.ordinal(), objective));
+    public void setDisplaySlot(int slot, @NotNull String objective) {
+        player.sendPacket(new ScoreboardDisplay(slot, objective));
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 either(title),
-                ScoreboardObjective.HealthDisplay.valueOf(display.name()),
-                (byte) ObjectiveAction.REGISTER.ordinal()
+                ScoreboardObjective.HealthDisplay.values()[display],
+                (byte) ObjectiveAction.REGISTER
         ));
     }
 
@@ -47,18 +47,18 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 objectiveName,
                 either(""), // Empty value instead of null to prevent NPE kick on 1.7
                 null,
-                (byte) ObjectiveAction.UNREGISTER.ordinal()
+                (byte) ObjectiveAction.UNREGISTER
         ));
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                  @Nullable IChatBaseComponent numberFormat) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 either(title),
-                ScoreboardObjective.HealthDisplay.valueOf(display.name()),
-                (byte) ObjectiveAction.UPDATE.ordinal()
+                ScoreboardObjective.HealthDisplay.values()[display],
+                (byte) ObjectiveAction.UPDATE
         ));
     }
 
@@ -72,7 +72,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         }
         player.sendPacket(new Team(
                 name,
-                (byte) TeamAction.CREATE.ordinal(),
+                (byte) TeamAction.CREATE,
                 either(name),
                 either(prefix),
                 either(suffix),
@@ -98,7 +98,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         }
         player.sendPacket(new Team(
                 name,
-                (byte) TeamAction.UPDATE.ordinal(),
+                (byte) TeamAction.UPDATE,
                 either(name),
                 either(prefix),
                 either(suffix),
@@ -113,12 +113,12 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                           @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
-        player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.CHANGE.ordinal(), objective, score));
+        player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.CHANGE, objective, score));
     }
 
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
-        player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.REMOVE.ordinal(), objective, 0));
+        player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.REMOVE, objective, 0));
     }
 
     private Either<String, BaseComponent> either(@NotNull String text) {

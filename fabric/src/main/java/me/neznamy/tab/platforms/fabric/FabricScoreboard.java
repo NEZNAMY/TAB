@@ -34,39 +34,39 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
+    public void setDisplaySlot(int slot, @NotNull String objective) {
         player.sendPacket(
                 new ClientboundSetDisplayObjectivePacket(
-                        net.minecraft.world.scores.DisplaySlot.values()[slot.ordinal()],
+                        net.minecraft.world.scores.DisplaySlot.values()[slot],
                         objectives.get(objective)
                 )
         );
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
         Objective obj = objective(
                 objectiveName,
                 toComponent(title),
-                RenderType.valueOf(display.name())
+                RenderType.values()[display]
         );
         objectives.put(objectiveName, obj);
-        player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER.ordinal()));
+        player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(new ClientboundSetObjectivePacket(objectives.remove(objectiveName), ObjectiveAction.UNREGISTER.ordinal()));
+        player.sendPacket(new ClientboundSetObjectivePacket(objectives.remove(objectiveName), ObjectiveAction.UNREGISTER));
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display,
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                  @Nullable IChatBaseComponent numberFormat) {
         Objective obj = objectives.get(objectiveName);
         obj.setDisplayName(toComponent(title));
-        obj.setRenderType(RenderType.valueOf(display.name()));
-        player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE.ordinal()));
+        obj.setRenderType(RenderType.values()[display]);
+        player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE));
     }
 
     @Override

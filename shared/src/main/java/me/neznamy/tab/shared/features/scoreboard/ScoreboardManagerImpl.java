@@ -167,7 +167,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void onDisplayObjective(@NotNull TabPlayer receiver, int slot, @NotNull String objective) {
-        if (respectOtherPlugins && slot == Scoreboard.DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
+        if (respectOtherPlugins && slot == Scoreboard.DisplaySlot.SIDEBAR && !objective.equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", hiding TAB one.");
             otherPluginScoreboards.put(receiver, objective);
             ScoreboardImpl sb = activeScoreboards.get(receiver);
