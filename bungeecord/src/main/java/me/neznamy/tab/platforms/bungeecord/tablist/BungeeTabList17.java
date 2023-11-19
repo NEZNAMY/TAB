@@ -73,6 +73,11 @@ public class BungeeTabList17 extends BungeeTabList {
         displayNames.put(entry.getUniqueId(), displayNameString);
     }
 
+    @Override
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+        // Not available on 1.7
+    }
+
     private void update(@NotNull PlayerListItem.Action action, @NotNull PlayerListItem.Item item) {
         PlayerListItem packet = new PlayerListItem();
         packet.setAction(action);
