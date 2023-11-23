@@ -11,7 +11,6 @@ import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.*;
-import me.neznamy.tab.shared.features.alignedplayerlist.AlignedPlayerList;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -336,7 +335,6 @@ public class FeatureManager {
         boolean unlimitedTags      = configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false);
         boolean globalPlayerList   = configuration.getConfig().getBoolean("global-playerlist.enabled", false);
         boolean tablistFormatting  = configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true);
-        boolean alignedSuffix      = configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false);
 
         if (perWorldPlayerList && layout) TAB.getInstance().getMisconfigurationHelper().bothPerWorldPlayerListAndLayoutEnabled();
         if (yellowNumber && layout)       TAB.getInstance().getMisconfigurationHelper().layoutBreaksYellowNumber();
@@ -382,13 +380,7 @@ public class FeatureManager {
         if (layout) featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl());
 
         // Must be loaded after: Layout
-        if (tablistFormatting) {
-            if (alignedSuffix) {
-                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new AlignedPlayerList());
-            } else {
-                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
-            }
-        }
+        if (tablistFormatting) featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
 
         // Must be loaded after: PlayerList
         if (globalPlayerList && TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {

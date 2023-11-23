@@ -65,7 +65,7 @@ public class Converter {
         ConfigurationFile newConfig = new YamlConfigurationFile(null, new File(folder, "config.yml"));
 
         convertHeaderFooter(oldConfig, newConfig);
-        convertTabListFormatting(oldConfig, newConfig, premiumConfig);
+        convertTabListFormatting(oldConfig, newConfig);
         convertTeamOptions(oldConfig, newConfig, premiumConfig);
         convertYellowNumber(oldConfig, newConfig);
         convertBelowName(oldConfig, newConfig);
@@ -151,19 +151,12 @@ public class Converter {
         newConfig.set("scoreboard-teams.sorting-types", sortingTypes);
     }
 
-    private void convertTabListFormatting(@NotNull ConfigurationFile oldConfig, @NotNull ConfigurationFile newConfig, @Nullable ConfigurationFile premiumConfig) {
+    private void convertTabListFormatting(@NotNull ConfigurationFile oldConfig, @NotNull ConfigurationFile newConfig) {
         newConfig.set("tablist-name-formatting.enabled", oldConfig.getBoolean("change-tablist-prefix-suffix", true));
         newConfig.set("tablist-name-formatting.anti-override", oldConfig.getBoolean("anti-override.tablist-names", true));
         newConfig.set("tablist-name-formatting.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.tablist-names", Collections.singletonList("disabledworld")));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
             newConfig.set("tablist-name-formatting.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.tablist-names", Collections.singletonList("disabledserver")));
-        if (premiumConfig != null) {
-            newConfig.set("tablist-name-formatting.align-tabsuffix-on-the-right", premiumConfig.getBoolean("align-tabsuffix-on-the-right", false));
-            newConfig.set("tablist-name-formatting.character-width-overrides", premiumConfig.getConfigurationSection("character-width-overrides"));
-        } else {
-            newConfig.set("tablist-name-formatting.align-tabsuffix-on-the-right", false);
-            newConfig.set("tablist-name-formatting.character-width-overrides", new HashMap<Integer, Integer>());
-        }
     }
 
     private void convertYellowNumber(@NotNull ConfigurationFile oldConfig, @NotNull ConfigurationFile newConfig) {
@@ -450,5 +443,7 @@ public class Converter {
         }
         config.setIfMissing("belowname-objective.npc-text", "NPC");
         config.setIfMissing("belowname-objective.fancy-display", "&c" + TabConstants.Placeholder.HEALTH);
+        config.remove("tablist-name-formatting.align-tabsuffix-on-the-right");
+        config.remove("tablist-name-formatting.character-width-overrides");
     }
 }

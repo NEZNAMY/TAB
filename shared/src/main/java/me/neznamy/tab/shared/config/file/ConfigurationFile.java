@@ -398,4 +398,14 @@ public abstract class ConfigurationFile {
     public void setIfMissing(@NotNull String key, @NotNull String value) {
         if (!hasConfigOption(key)) set(key, value);
     }
+
+    /**
+     * Removes option from config.
+     *
+     * @param   key
+     *          Key to remove
+     */
+    public void remove(@NotNull String key) {
+        if (hasConfigOption(key)) set(key, null);
+    }
 }

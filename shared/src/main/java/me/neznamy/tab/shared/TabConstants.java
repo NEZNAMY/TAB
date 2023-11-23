@@ -80,7 +80,6 @@ public class TabConstants {
         public static final String COMMAND_AUTOCOMPLETE             = "tab.tabcomplete";
         public static final String COMMAND_DATA_REMOVE              = "tab.remove";
         public static final String COMMAND_PROPERTY_CHANGE_PREFIX   = "tab.change.";
-        public static final String COMMAND_WIDTH                    = "tab.width";
 
         public static final String COMMAND_BOSSBAR_ANNOUNCE         = "tab.announce.bar";
         public static final String COMMAND_BOSSBAR_TOGGLE           = "tab.bossbar.toggle";
