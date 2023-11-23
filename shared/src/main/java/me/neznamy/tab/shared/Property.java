@@ -247,11 +247,19 @@ public class Property {
      *          the viewer
      * @return  format for the viewer
      */
-    public @NotNull String getFormat(@Nullable TabPlayer viewer) {
+    public @NotNull String getFormat(@NotNull TabPlayer viewer) {
         String format = lastReplacedValue;
+        // Direct placeholders
         for (String identifier : relPlaceholders) {
             RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-            format = format.replace(pl.getIdentifier(), viewer == null ? "" : pl.getLastValue(viewer, owner));
+            format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
+        }
+
+        // Nested placeholders
+        for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(format)) {
+            if (!identifier.startsWith("%rel_")) continue;
+            RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
+            format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
         }
         return EnumChatFormat.color(format);
     }
