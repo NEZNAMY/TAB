@@ -10,12 +10,18 @@
     "server": ["me.neznamy.tab.platforms.fabric.FabricTAB"]
   },
   "depends": {
-    "fabricloader": ">=0.9.0",
     "fabric-api-base": "*",
-    "minecraft": "1.20.2"
+    "minecraft": [
+      "1.14.4",
+      "1.15.2",
+      "1.16.5",
+      "1.17", "1.17.1",
+      "1.18", "1.18.1", "1.18.2",
+      "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4",
+      "1.20", "1.20.1", "1.20.2", "1.20.3-beta.2"
+    ]
   },
   "recommends": {
     "fabric-permissions-api-v0": "*"
-  },
-  "accessWidener": "tab.accesswidener"
+  }
 }

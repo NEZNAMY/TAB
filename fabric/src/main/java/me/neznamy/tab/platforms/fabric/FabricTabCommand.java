@@ -48,10 +48,10 @@ public class FabricTabCommand {
 
     private int executeCommand(@NotNull CommandSourceStack source, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
-            boolean hasReloadPermission = FabricTAB.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
-            boolean hasAdminPermission = FabricTAB.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
+            boolean hasReloadPermission = ((FabricPlatform)TAB.getInstance().getPlatform()).hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
+            boolean hasAdminPermission = ((FabricPlatform)TAB.getInstance().getPlatform()).hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
-                source.sendSystemMessage(((FabricPlatform)TAB.getInstance().getPlatform()).toComponent(
+                FabricTAB.getVersion().sendMessage(source, ((FabricPlatform)TAB.getInstance().getPlatform()).toComponent(
                         IChatBaseComponent.optimizedComponent(message), TAB.getInstance().getServerVersion()));
             }
         } else {

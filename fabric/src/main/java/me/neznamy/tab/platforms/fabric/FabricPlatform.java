@@ -1,5 +1,9 @@
 package me.neznamy.tab.platforms.fabric;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.platforms.fabric.features.FabricNameTagX;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -11,9 +15,10 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.SharedConstants;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +30,13 @@ import java.io.File;
 /**
  * Platform implementation for Fabric
  */
-public record FabricPlatform(MinecraftServer server) implements BackendPlatform {
+@RequiredArgsConstructor
+@Getter
+public class FabricPlatform implements BackendPlatform {
+
+    private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
+
+    private final MinecraftServer server;
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -42,7 +53,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @Override
     @NotNull
     public PipelineInjector createPipelineInjector() {
-        return new FabricPipelineInjector();
+        return FabricTAB.getVersion().createPipelineInjector();
     }
 
     @Override
@@ -64,19 +75,34 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     }
 
     @Override
+    @SneakyThrows
     public void logInfo(@NotNull IChatBaseComponent message) {
-        MinecraftServer.LOGGER.info("[TAB] " + message.toRawText());
+        Object logger = getLogger();
+        logger.getClass().getMethod("info", String.class).invoke(logger, message.toRawText());
     }
 
     @Override
+    @SneakyThrows
     public void logWarn(@NotNull IChatBaseComponent message) {
-        MinecraftServer.LOGGER.warn("[TAB] " + message.toRawText()); // Fabric console does not support colors
+        Object logger = getLogger();
+        logger.getClass().getMethod("warn", String.class).invoke(logger, message.toRawText());
+    }
+
+    @SneakyThrows
+    private Object getLogger() {
+        Class<?> loggerClass;
+        if (getServerVersion().getNetworkId() >= ProtocolVersion.V1_18_2.getNetworkId()) {
+            loggerClass = Class.forName("org.slf4j.Logger");
+        } else {
+            loggerClass = Class.forName("org.apache.logging.log4j.Logger");
+        }
+        return ReflectionUtils.getFields(MinecraftServer.class, loggerClass).get(0).get(null);
     }
 
     @Override
     @NotNull
     public String getServerVersionInfo() {
-        return "[Fabric] " + SharedConstants.getCurrentVersion().getName();
+        return "[Fabric] " + FabricTAB.getVersion().getServerVersion();
     }
 
     @Override
@@ -97,7 +123,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @Override
     @NotNull
     public ProtocolVersion getServerVersion() {
-        return ProtocolVersion.fromFriendlyName(SharedConstants.getCurrentVersion().getName());
+        return ProtocolVersion.fromFriendlyName(FabricTAB.getVersion().getServerVersion());
     }
 
     @Override
@@ -116,7 +142,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
      * @return  Converted component
      */
     public Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
-        return Component.Serializer.fromJson(component.toString(version));
+        return FabricTAB.getVersion().deserialize(component.toString(version));
     }
 
     @Override
@@ -126,6 +152,11 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
 
     @Override
     public double getMSPT() {
-        return server.getAverageTickTime();
+        return FabricTAB.getVersion().getMSPT();
+    }
+
+    public boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {
+        if (source.hasPermission(4)) return true;
+        return fabricPermissionsApi && Permissions.check(source, permission);
     }
 }

@@ -1,7 +1,9 @@
-package me.neznamy.tab.platforms.fabric;
+package me.neznamy.tab.platforms.fabric.v1_17_1;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
+import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -9,18 +11,20 @@ import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
 
 public class FabricPipelineInjector extends NettyPipelineInjector {
 
@@ -30,14 +34,17 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
 
     @Override
     @Nullable
+    @SneakyThrows
     protected Channel getChannel(@NotNull TabPlayer player) {
-        return ((FabricTabPlayer)player).getPlayer().connection.connection.channel;
+        Connection c = (Connection) ReflectionUtils.getFields(ServerGamePacketListenerImpl.class, Connection.class)
+                .get(0).get(((FabricTabPlayer)player).getPlayer().connection);
+        return (Channel) ReflectionUtils.getFields(Connection.class, Channel.class).get(0).get(c);
     }
 
     @Override
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                ((ClientboundSetDisplayObjectivePacket) packet).getSlot().ordinal(),
+                ((ClientboundSetDisplayObjectivePacket) packet).getSlot(),
                 String.valueOf(((ClientboundSetDisplayObjectivePacket)packet).getObjectiveName()));
     }
 
@@ -65,34 +72,28 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isPlayerInfo(@NotNull Object packet) {
-        return packet instanceof ClientboundPlayerInfoUpdatePacket;
+        return packet instanceof ClientboundPlayerInfoPacket;
     }
 
     @Override
+    @SneakyThrows
     public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet0) {
-        // Comment this entire method out when compiling with 1.19.2-, adding compatibility would be tough and not worth,
-        // as nobody needs these features on Fabric anyway
-
-        ClientboundPlayerInfoUpdatePacket packet = (ClientboundPlayerInfoUpdatePacket) packet0;
-        EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = packet.actions();
-        List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
-        for (ClientboundPlayerInfoUpdatePacket.Entry nmsData : packet.entries()) {
-            GameProfile profile = nmsData.profile();
-            Component displayName = nmsData.displayName();
-            int latency = nmsData.latency();
-            if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, nmsData.profileId());
-                if (newDisplayName != null) displayName = ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
+        ClientboundPlayerInfoPacket packet = (ClientboundPlayerInfoPacket) packet0;
+        for (ClientboundPlayerInfoPacket.PlayerUpdate nmsData : packet.getEntries()) {
+            GameProfile profile = nmsData.getProfile();
+            Field displayNameField = ReflectionUtils.getFields(ClientboundPlayerInfoPacket.PlayerUpdate.class, Component.class).get(0);
+            Field latencyField = ReflectionUtils.getFields(ClientboundPlayerInfoPacket.PlayerUpdate.class, int.class).get(0);
+            if (packet.getAction() == ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME) {
+                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
+                if (newDisplayName != null) displayNameField.set(nmsData, ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion()));
             }
-            if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, nmsData.profileId(), latency);
+            if (packet.getAction() == ClientboundPlayerInfoPacket.Action.UPDATE_LATENCY) {
+                latencyField.set(nmsData, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latencyField.getInt(nmsData)));
             }
-            if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, nmsData.profileId(), profile.getName());
+            if (packet.getAction() == ClientboundPlayerInfoPacket.Action.ADD_PLAYER) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
             }
-            updatedList.add(new ClientboundPlayerInfoUpdatePacket.Entry(nmsData.profileId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
         }
-        packet.entries = updatedList;
     }
 
     @Override
@@ -101,10 +102,11 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
+    @SneakyThrows
     public void modifyPlayers(@NotNull Object teamPacket) {
         if (TAB.getInstance().getNameTagManager() == null) return;
         ClientboundSetPlayerTeamPacket packet = (ClientboundSetPlayerTeamPacket) teamPacket;
-        int action = packet.method;
+        int action = ReflectionUtils.getInstanceFields(ClientboundSetPlayerTeamPacket.class, int.class).get(0).getInt(packet);
         if (action == 1 || action == 2 || action == 4) return;
         Collection<String> players = packet.getPlayers();
         String teamName = packet.getName();
@@ -130,6 +132,6 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
                 newList.add(entry);
             }
         }
-        packet.players = newList;
+        ReflectionUtils.getFields(ClientboundSetPlayerTeamPacket.class, Collection.class).get(0).set(packet, newList);
     }
 }

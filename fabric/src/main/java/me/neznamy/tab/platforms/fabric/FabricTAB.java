@@ -1,39 +1,42 @@
 package me.neznamy.tab.platforms.fabric;
 
-import me.lucko.fabric.api.permissions.v0.Permissions;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ServerLevelData;
-import org.jetbrains.annotations.NotNull;
 
 public class FabricTAB implements DedicatedServerModInitializer {
 
-    private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
+    @Getter
+    private static VersionLoader version;
 
     @Override
+    @SneakyThrows
     public void onInitializeServer() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
-        ServerLifecycleEvents.SERVER_STOPPING.register($ -> TAB.getInstance().unload());
-    }
-
-    public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {
-        if (source.hasPermission(4)) return true;
-        return fabricPermissionsApi && Permissions.check(source, permission);
-    }
-
-    public static String getWorldName(Level level) {
-        String path = level.dimension().location().getPath();
-        String dimensionSuffix = switch (path) {
-            case "overworld" -> ""; // No suffix for overworld
-            case "the_nether" -> "_nether";
-            default -> "_" + path; // End + default behavior for other dimensions created by mods
+        String[] modules = {
+                "v1_14_4",
+                "v1_15_2",
+                "v1_16_5",
+                "v1_17",
+                "v1_17_1",
+                "v1_18_2", // 1.18, 1.18.1, 1.18.2
+                "v1_19_2", // 1.19, 1.19.1, 1.19.2
+                "v1_19_3",
+                "v1_20_1", // 1.19.4, 1.20, 1.20.1
+                "v1_20_2",
+                "v1_20_3"
         };
-        return ((ServerLevelData)level.getLevelData()).getLevelName() + dimensionSuffix;
+        for (String module : modules) {
+            try {
+                version = (VersionLoader) Class.forName("me.neznamy.tab.platforms.fabric." + module + ".FabricTAB").getConstructor().newInstance();
+                if (!version.getSupportedVersions().contains(version.getServerVersion())) continue;
+                version.registerCommandCallback();
+                ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
+                ServerLifecycleEvents.SERVER_STOPPING.register($ -> TAB.getInstance().unload());
+                return;
+            } catch (Throwable ignored) {}
+        }
+        throw new IllegalStateException("Your server version is marked as compatible, but a compatibility issue was found.");
     }
 }

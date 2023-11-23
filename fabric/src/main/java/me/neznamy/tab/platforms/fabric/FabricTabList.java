@@ -4,48 +4,53 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
-import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.UUID;
 
-public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList {
+@RequiredArgsConstructor
+public class FabricTabList implements TabList {
+
+    @NotNull
+    private final FabricTabPlayer player;
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
-        player.sendPacket(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry)));
+        player.sendPacket(FabricTAB.getVersion().build(Action.UPDATE_DISPLAY_NAME, new Builder(entry)));
     }
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        player.sendPacket(build(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME),
+        player.sendPacket(FabricTAB.getVersion().build(Action.UPDATE_DISPLAY_NAME,
                 new Builder(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()))
         ));
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
-        player.sendPacket(build(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY),
+        player.sendPacket(FabricTAB.getVersion().build(Action.UPDATE_LATENCY,
                 new Builder(entry).setLatency(latency)));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        player.sendPacket(build(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE),
+        player.sendPacket(FabricTAB.getVersion().build(Action.UPDATE_GAME_MODE,
                 new Builder(entry).setGameMode(gameMode)));
     }
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        player.sendPacket(build(EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class),
+        player.sendPacket(FabricTAB.getVersion().build(Action.ADD_PLAYER,
                 new Builder(entry.getUniqueId())
                 .setName(entry.getName())
                 .setSkin(entry.getSkin())
@@ -55,26 +60,13 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
         ));
     }
 
-    private Packet<?> build(EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions, FabricTabList.Builder entry) {
-        ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
-        packet.entries = Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry.getId(),
-                entry.createProfile(),
-                true,
-                entry.getLatency(),
-                GameType.byId(entry.getGameMode()),
-                entry.getDisplayName(),
-                null
-        ));
-        return packet;
-    }
-
     @Override
+    @SneakyThrows
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().connection.send(new ClientboundTabListPacket(
+        player.sendPacket(FabricTAB.getVersion().newHeaderFooter(
                 player.getPlatform().toComponent(header, player.getVersion()),
-                player.getPlatform().toComponent(footer, player.getVersion()))
-        );
+                player.getPlatform().toComponent(footer, player.getVersion())
+        ));
     }
 
     @RequiredArgsConstructor

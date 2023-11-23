@@ -1,8 +1,5 @@
 package me.neznamy.tab.platforms.fabric;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -12,6 +9,10 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.world.BossEvent.BossBarColor;
 import net.minecraft.world.BossEvent.BossBarOverlay;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class FabricBossBar implements BossBar {
@@ -29,7 +30,7 @@ public class FabricBossBar implements BossBar {
                 BossBarColor.valueOf(color.name()),
                 BossBarOverlay.valueOf(style.name())
         );
-        bar.setProgress(progress);
+        bar.setProgress(progress); // Somehow the compiled method name is same despite method being renamed in 1.17
         bars.put(id, bar);
         bar.addPlayer(player.getPlayer());
     }
@@ -41,7 +42,7 @@ public class FabricBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, float progress) {
-        bars.get(id).setProgress(progress);
+        bars.get(id).setProgress(progress); // Somehow the compiled method name is same despite method being renamed in 1.17
     }
 
     @Override

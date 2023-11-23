@@ -1,26 +1,21 @@
 package me.neznamy.tab.platforms.fabric;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
-import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
-import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
@@ -35,21 +30,17 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void setDisplaySlot(int slot, @NotNull String objective) {
-        player.sendPacket(
-                new ClientboundSetDisplayObjectivePacket(
-                        net.minecraft.world.scores.DisplaySlot.values()[slot],
-                        objectives.get(objective)
-                )
-        );
+        player.sendPacket(FabricTAB.getVersion().setDisplaySlot(slot, objectives.get(objective)));
     }
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
-        Objective obj = objective(
+        Objective obj = FabricTAB.getVersion().newObjective(
                 objectiveName,
                 toComponent(title),
-                RenderType.values()[display]
+                RenderType.values()[display],
+                numberFormat == null ? null : toComponent(numberFormat)
         );
         objectives.put(objectiveName, obj);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
@@ -82,12 +73,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setPlayerPrefix(toComponent(prefix));
         team.setPlayerSuffix(toComponent(suffix));
         team.getPlayers().addAll(players);
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
+        player.sendPacket(FabricTAB.getVersion().registerTeam(team));
     }
 
     @Override
     public void unregisterTeam0(@NotNull String name) {
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createRemovePacket(new PlayerTeam(dummyScoreboard, name)));
+        player.sendPacket(FabricTAB.getVersion().unregisterTeam(new PlayerTeam(dummyScoreboard, name)));
     }
 
     @Override
@@ -101,22 +92,24 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(toComponent(prefix));
         team.setPlayerSuffix(toComponent(suffix));
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false));
+        player.sendPacket(FabricTAB.getVersion().updateTeam(team));
     }
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                           @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
-        player.sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, scoreHolder, score));
+        player.sendPacket(FabricTAB.getVersion().setScore(
+                objective,
+                scoreHolder,
+                score,
+                displayName == null ? null : toComponent(displayName),
+                numberFormat == null ? null : toComponent(numberFormat)
+        ));
     }
 
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
-        player.sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, scoreHolder, 0));
-    }
-
-    private Objective objective(@NotNull String name, @NotNull Component displayName, @NotNull RenderType renderType) {
-        return new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType);
+        player.sendPacket(FabricTAB.getVersion().removeScore(objective, scoreHolder));
     }
 
     @NotNull
