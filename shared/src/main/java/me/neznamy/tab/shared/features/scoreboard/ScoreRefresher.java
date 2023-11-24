@@ -23,6 +23,7 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
+        if (!line.getParent().getPlayers().contains(refreshed)) return;
         refreshed.getScoreboard().setScore(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 line.getPlayerName(refreshed),

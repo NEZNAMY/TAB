@@ -34,7 +34,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     @Getter protected String numberFormat;
     
     //scoreboard this line belongs to
-    protected final ScoreboardImpl parent;
+    @Getter protected final ScoreboardImpl parent;
     
     //scoreboard team name of player in this line
     @Getter protected final String teamName;
