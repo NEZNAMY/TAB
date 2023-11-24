@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.UnLoadable;
@@ -27,6 +28,8 @@ import org.jetbrains.annotations.NotNull;
  */
 @SuppressWarnings("deprecation")
 public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
+
+    @Getter private final String featureName = "Per world PlayerList";
 
     /** Config options */
     private final boolean allowBypass = TAB.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
@@ -112,11 +115,5 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
             }
         }
         return viewerWorldGroup.equals(targetWorldGroup);
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Per world PlayerList";
     }
 }
