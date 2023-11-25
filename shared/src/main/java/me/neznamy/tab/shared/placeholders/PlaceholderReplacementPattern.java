@@ -102,7 +102,7 @@ public class PlaceholderReplacementPattern {
         }
         
         //number interval
-        if (numberIntervals.size() > 0) {  //not parsing number if no intervals are configured
+        if (!numberIntervals.isEmpty()) {  //not parsing number if no intervals are configured
             try {
                 //supporting placeholders with fancy output using "," every 3 digits
                 String cleanValue = output.contains(",") ? output.replace(",", "") : output;

@@ -57,7 +57,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
 
     @Override
     public void unregister(@NonNull TabPlayer p) {
-        if (parent.getPlayers().contains(p) && p.getProperty(parent.getName() + "-" + teamName).get().length() > 0) {
+        if (parent.getPlayers().contains(p) && !p.getProperty(parent.getName() + "-" + teamName).get().isEmpty()) {
             removeLine(p, getPlayerName());
         }
     }
@@ -72,19 +72,19 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      *          if action should be done despite update seemingly not needed
      * @param   suppressToggle
      *          if line should NOT be removed despite being empty
-     * @return  list of 2 elements for prefix/suffix
+     * @return  array of 2 elements for prefix/suffix
      */
     private String[] replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
         Property scoreProperty = p.getProperty(parent.getName() + "-" + teamName);
         if (scoreProperty == null) return EMPTY_ARRAY; //not actually loaded yet (force refresh called from placeholder manager register method)
-        boolean emptyBefore = scoreProperty.get().length() == 0;
+        boolean emptyBefore = scoreProperty.get().isEmpty();
         if (!scoreProperty.update() && !force) return EMPTY_ARRAY;
         String replaced = scoreProperty.get();
         if (p.getVersion().getMinorVersion() < 16) {
             replaced = RGBUtils.getInstance().convertRGBtoLegacy(replaced); //converting RGB to legacy here to avoid splitting in the middle of RGB code
         }
         String[] split = split(p, replaced);
-        if (replaced.length() > 0) {
+        if (!replaced.isEmpty()) {
             if (emptyBefore) {
                 //was "", now it is not
                 addLine(p, getPlayerName(), split[0], split[1]);

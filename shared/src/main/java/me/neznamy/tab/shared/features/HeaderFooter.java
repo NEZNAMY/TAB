@@ -98,7 +98,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     private String getProperty(TabPlayer p, String property) {
         String append = getFromConfig(p, property + "append");
-        if (append.length() > 0) append = "\n" + append;
+        if (!append.isEmpty()) append = "\n" + append;
         return getFromConfig(p, property) + append;
     }
 

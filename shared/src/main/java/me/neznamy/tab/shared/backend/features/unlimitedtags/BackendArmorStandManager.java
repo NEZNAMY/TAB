@@ -144,7 +144,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
         double currentY = -0.26;
         for (ArmorStand as : armorStandArray) {
             if (as.isStaticOffset()) continue;
-            if (as.getProperty().get().length() != 0) {
+            if (!as.getProperty().get().isEmpty()) {
                 currentY += 0.26;
                 as.setOffset(currentY);
             }

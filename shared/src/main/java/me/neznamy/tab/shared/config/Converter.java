@@ -160,7 +160,7 @@ public class Converter {
     }
 
     private void convertYellowNumber(@NotNull ConfigurationFile oldConfig, @NotNull ConfigurationFile newConfig) {
-        newConfig.set("yellow-number-in-tablist.enabled", !oldConfig.getString("yellow-number-in-tablist", TabConstants.Placeholder.PING).equals(""));
+        newConfig.set("yellow-number-in-tablist.enabled", !oldConfig.getString("yellow-number-in-tablist", TabConstants.Placeholder.PING).isEmpty());
         newConfig.set("yellow-number-in-tablist.value", oldConfig.getString("yellow-number-in-tablist", TabConstants.Placeholder.PING));
         newConfig.set("yellow-number-in-tablist.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.yellow-number", Collections.singletonList("disabledworld")));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)

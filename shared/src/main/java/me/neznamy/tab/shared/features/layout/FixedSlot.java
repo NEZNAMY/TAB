@@ -78,11 +78,11 @@ public class FixedSlot extends TabFeature implements Refreshable {
                 manager.getUUID(slot),
                 text,
                 "Layout-" + pattern.getName() + "-SLOT-" + slot,
-                skin.length() == 0 ? manager.getDefaultSkin(slot) : skin,
+                skin.isEmpty() ? manager.getDefaultSkin(slot) : skin,
                 "Layout-" + pattern.getName() + "-SLOT-" + slot + "-skin",
                 ping
         );
-        if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), slot), f);
+        if (!text.isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), slot), f);
         return f;
     }
 }

@@ -80,14 +80,14 @@ public class GroupCommand extends PropertyCommand {
 
     @Override
     public void saveEntity(@Nullable TabPlayer sender, @NotNull String group, @NotNull String type, @NotNull String value, @Nullable String server, @Nullable String world) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             sendMessage(sender, getMessages().getGroupValueAssigned(type, value, group));
         } else {
             sendMessage(sender, getMessages().getGroupValueRemoved(type, group));
         }
         String[] property = TAB.getInstance().getConfiguration().getGroups().getProperty(group, type, server, world);
-        if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;
-        TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, server, world, value.length() == 0 ? null : value);
+        if (property.length > 0 && String.valueOf(value.isEmpty() ? null : value).equals(String.valueOf(property[0]))) return;
+        TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, server, world, value.isEmpty() ? null : value);
         for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
             if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
                 pl.forceRefresh();

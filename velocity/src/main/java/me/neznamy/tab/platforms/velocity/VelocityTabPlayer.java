@@ -65,7 +65,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Nullable
     public TabList.Skin getSkin() {
         List<GameProfile.Property> properties = getPlayer().getGameProfile().getProperties();
-        if (properties.size() == 0) return null; //Offline mode
+        if (properties.isEmpty()) return null; //Offline mode
         return new TabList.Skin(properties.get(0).getValue(), properties.get(0).getSignature());
     }
     

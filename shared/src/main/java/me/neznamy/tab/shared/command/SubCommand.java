@@ -93,7 +93,7 @@ public abstract class SubCommand {
      *          the message to sent
      */
     public void sendMessage(@Nullable TabPlayer sender, @NotNull String message) {
-        if (message.length() == 0) return;
+        if (message.isEmpty()) return;
         if (sender != null) {
             sender.sendMessage(message, true);
         } else {
@@ -110,7 +110,7 @@ public abstract class SubCommand {
      *          the message to sent
      */
     public void sendRawMessage(@Nullable TabPlayer sender, @NotNull String message) {
-        if (message.length() == 0) return;
+        if (message.isEmpty()) return;
         if (sender != null) {
             sender.sendMessage(message, false);
         } else {

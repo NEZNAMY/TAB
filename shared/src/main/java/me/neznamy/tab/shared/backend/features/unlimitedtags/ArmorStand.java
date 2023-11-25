@@ -123,7 +123,7 @@ public class ArmorStand {
     public boolean calculateVisibility() {
         if (manager.isArmorStandsAlwaysVisible()) return true;
         if (owner.isDisguised() || manager.isOnBoat(owner)) return false;
-        return owner.getGamemode() != 3 && !manager.hasHiddenNameTag(owner) && property.get().length() > 0 &&
+        return owner.getGamemode() != 3 && !manager.hasHiddenNameTag(owner) && !property.get().isEmpty() &&
                 !manager.getUnlimitedDisableChecker().isDisabledPlayer(owner);
     }
 
@@ -136,10 +136,10 @@ public class ArmorStand {
      * @return  {@code true} if it's empty, {@code false} if not
      */
     protected boolean isNameVisiblyEmpty(@NotNull String displayName) {
-        if (displayName.length() == 0) return true;
+        if (displayName.isEmpty()) return true;
         String rawText = displayName.contains(" ") ? displayName.replace(" ", "") : displayName;
         if (!rawText.startsWith(EnumChatFormat.COLOR_STRING) && !rawText.startsWith("&") && !rawText.startsWith("#")) return false;
-        return IChatBaseComponent.fromColoredText(rawText).toRawText().length() == 0;
+        return IChatBaseComponent.fromColoredText(rawText).toRawText().isEmpty();
     }
 
     /**

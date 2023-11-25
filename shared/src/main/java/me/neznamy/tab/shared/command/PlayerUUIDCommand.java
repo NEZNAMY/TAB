@@ -54,14 +54,14 @@ public class PlayerUUIDCommand extends PropertyCommand {
     @Override
     public void saveEntity(@Nullable TabPlayer sender, @NotNull String playerName, @NotNull String type, @NotNull String value, String server, String world) {
         TabPlayer player = TAB.getInstance().getPlayer(playerName);
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, playerName + "(" + player.getUniqueId() + ")"));
         } else {
             sendMessage(sender, getMessages().getPlayerValueRemoved(type, playerName + "(" + player.getUniqueId() + ")"));
         }
         String[] property = TAB.getInstance().getConfiguration().getUsers().getProperty(player.getUniqueId().toString(), type, server, world);
-        if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;
-        TAB.getInstance().getConfiguration().getUsers().setProperty(player.getUniqueId().toString(), type, server, world, value.length() == 0 ? null : value);
+        if (property.length > 0 && String.valueOf(value.isEmpty() ? null : value).equals(String.valueOf(property[0]))) return;
+        TAB.getInstance().getConfiguration().getUsers().setProperty(player.getUniqueId().toString(), type, server, world, value.isEmpty() ? null : value);
         player.forceRefresh();
     }
     

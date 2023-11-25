@@ -272,7 +272,7 @@ public abstract class ConfigurationFile {
      * @return  value from configuration file as {@code Map<K, V>}
      */
     public @NotNull <K, V> Map<K, V> getConfigurationSection(@NonNull String path) {
-        if (path.length() == 0) return (Map<K, V>) values;
+        if (path.isEmpty()) return (Map<K, V>) values;
         Object value = getObject(path, null);
         if (value instanceof Map) {
             return (Map<K, V>) value;

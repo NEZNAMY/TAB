@@ -193,7 +193,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *          whether colors should be translated or not
      */
     public void sendMessage(@NotNull String message, boolean translateColors) {
-        if (message.length() == 0) return;
+        if (message.isEmpty()) return;
         IChatBaseComponent component;
         if (translateColors) {
             component = IChatBaseComponent.fromColoredText(message);

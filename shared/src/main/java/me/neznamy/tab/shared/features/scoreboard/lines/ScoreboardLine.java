@@ -196,7 +196,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
             String[] prefixOther = split(text, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13);
             prefixValue = prefixOther[0];
             String other = prefixOther[1];
-            if (playerNameStart.length() > 0) {
+            if (!playerNameStart.isEmpty()) {
                 other = playerNameStart + EnumChatFormat.getLastColors(prefixValue) + other;
             }
             String[] nameSuffix = split(other, maxNameLength);

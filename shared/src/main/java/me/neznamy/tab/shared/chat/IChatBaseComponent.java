@@ -124,7 +124,7 @@ public class IChatBaseComponent {
      * @return  serialized string
      */
     public @NotNull String toString(@NotNull ProtocolVersion clientVersion) {
-        if (extra == null && (text == null || text.length() == 0)) return EMPTY_COMPONENT;
+        if (extra == null && (text == null || text.isEmpty())) return EMPTY_COMPONENT;
         targetVersion = clientVersion;
         for (IChatBaseComponent child : getExtra()) {
             child.targetVersion = clientVersion;

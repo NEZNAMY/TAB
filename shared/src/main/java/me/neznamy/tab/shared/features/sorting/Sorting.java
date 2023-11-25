@@ -104,7 +104,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     /**
      * Compiles sorting type list into classes
      *
-     * @return  list of compiled sorting types
+     * @return  array of compiled sorting types
      */
     private @NotNull SortingType[] compile(@NotNull List<String> options) {
         List<SortingType> list = new ArrayList<>();
