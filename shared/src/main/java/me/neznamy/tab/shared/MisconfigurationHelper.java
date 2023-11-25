@@ -330,8 +330,8 @@ public class MisconfigurationHelper {
     }
 
     public void layoutBreaksYellowNumber() {
-        startupWarn("Layout feature breaks yellow-number feature, because it replaces real player with fake slots " +
-                "with different usernames for more reliable functionality. Disable yellow-number feature, as it will only look bad " +
+        startupWarn("Layout feature breaks playerlist-objective feature, because it replaces real player with fake slots " +
+                "with different usernames for more reliable functionality. Disable playerlist-objective feature, as it will only look bad " +
                 "and consume resources.");
     }
 
