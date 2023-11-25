@@ -154,7 +154,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     private void register(@NotNull TabPlayer player) {
-        player.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType, new IChatBaseComponent());
+        player.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType, new IChatBaseComponent(""));
         player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
     }
 

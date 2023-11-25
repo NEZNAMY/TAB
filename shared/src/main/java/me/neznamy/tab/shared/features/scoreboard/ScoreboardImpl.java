@@ -137,7 +137,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 p.getProperty(titleProperty).updateAndGet(),
                 Scoreboard.HealthDisplay.INTEGER,
-                new IChatBaseComponent()
+                new IChatBaseComponent("")
         );
         p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
