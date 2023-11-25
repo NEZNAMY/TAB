@@ -57,8 +57,12 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         boolean noConditionScoreboardFound = false;
         String noConditionScoreboard = null;
         for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
+            if (entry.getValue() == null) {
+                TAB.getInstance().getMisconfigurationHelper().invalidScoreboardSection(entry.getKey());
+                continue;
+            }
             String condition = (String) entry.getValue().get("display-condition");
-            if (condition == null || condition.length() == 0) {
+            if (condition == null || condition.isEmpty()) {
                 noConditionScoreboardFound = true;
                 noConditionScoreboard = entry.getKey();
             } else if (noConditionScoreboardFound) {

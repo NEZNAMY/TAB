@@ -335,6 +335,10 @@ public class MisconfigurationHelper {
                 "and consume resources.");
     }
 
+    public void invalidScoreboardSection(@NotNull String name) {
+        startupWarn("Invalid scoreboard section \"" + name + "\" with no value.");
+    }
+
     /**
      * Sends a startup warn message into console
      *
