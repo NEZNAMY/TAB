@@ -1,14 +1,13 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.Either;
-import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-import net.md_5.bungee.protocol.packet.ScoreboardObjective;
-import net.md_5.bungee.protocol.packet.ScoreboardScore;
-import net.md_5.bungee.protocol.packet.Team;
+import net.md_5.bungee.protocol.NumberFormat;
+import net.md_5.bungee.protocol.packet.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +36,9 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 objectiveName,
                 either(title),
                 ScoreboardObjective.HealthDisplay.values()[display],
-                (byte) ObjectiveAction.REGISTER
+                (byte) ObjectiveAction.REGISTER,
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED,
+                        player.getPlatform().toComponent(numberFormat, player.getVersion()))
         ));
     }
 
@@ -47,7 +48,8 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 objectiveName,
                 either(""), // Empty value instead of null to prevent NPE kick on 1.7
                 null,
-                (byte) ObjectiveAction.UNREGISTER
+                (byte) ObjectiveAction.UNREGISTER,
+                null
         ));
     }
 
@@ -58,7 +60,9 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 objectiveName,
                 either(title),
                 ScoreboardObjective.HealthDisplay.values()[display],
-                (byte) ObjectiveAction.UPDATE
+                (byte) ObjectiveAction.UPDATE,
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED,
+                        player.getPlatform().toComponent(numberFormat, player.getVersion()))
         ));
     }
 
@@ -113,12 +117,24 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                           @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
-        player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.CHANGE, objective, score));
+        player.sendPacket(new ScoreboardScore(
+                scoreHolder,
+                (byte) ScoreAction.CHANGE,
+                objective,
+                score,
+                displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()),
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED,
+                        player.getPlatform().toComponent(numberFormat, player.getVersion()))
+        ));
     }
 
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
-        player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.REMOVE, objective, 0));
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
+            player.sendPacket(new ScoreboardScoreReset(scoreHolder, objective));
+        } else {
+            player.sendPacket(new ScoreboardScore(scoreHolder, (byte) ScoreAction.REMOVE, objective, 0, null, null));
+        }
     }
 
     private Either<String, BaseComponent> either(@NotNull String text) {

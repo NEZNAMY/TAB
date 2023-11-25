@@ -14,6 +14,7 @@ public enum ProtocolVersion {
     UNKNOWN_SERVER_VERSION ("Unknown"),
     UNKNOWN_CLIENT_VERSION ("Unknown"),
     PROXY   ("Proxy"),
+    V1_20_3 (765), // DRAFT: Expected version id
     V1_20_2 (764),
     V1_20_1 (763),
     V1_20   (763),
@@ -77,7 +78,7 @@ public enum ProtocolVersion {
     /** Newest MC version this plugin jar knows */
     public static final ProtocolVersion LATEST_KNOWN_VERSION = ProtocolVersion.V1_20_2;
 
-    /** Version's network id found at https://wiki.vg/Protocol_version_numbers */
+    /** Version's network id found at <a href="https://wiki.vg/Protocol_version_numbers">wiki.vg</a> */
     private final int networkId;
 
     /** Version's minor version, such as 16 for 1.16.x. Allowing override to
