@@ -57,7 +57,7 @@ public class DataWatcher implements EntityData {
         } else if (BukkitReflection.getMinorVersion() >= 15) {
             //1.15.x, 1.16.x
             return 14;
-        } else if (BukkitReflection.getMinorVersion() >= 14) {
+        } else if (BukkitReflection.getMinorVersion() == 14) {
             //1.14.x
             return 13;
         } else if (BukkitReflection.getMinorVersion() >= 10) {

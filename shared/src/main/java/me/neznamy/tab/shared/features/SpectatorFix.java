@@ -12,10 +12,11 @@ import org.jetbrains.annotations.NotNull;
  * the bottom of TabList with transparent name. Does not work on self as that would result
  * in players not being able to clip through walls.
  */
+@Getter
 public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable,
         ServerSwitchListener, WorldSwitchListener {
 
-    @Getter private final String featureName = "Spectator fix";
+    private final String featureName = "Spectator fix";
 
     /**
      * Sends GameMode update of all players to either their real GameMode if

@@ -12,34 +12,35 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.shared.TAB;
 
+@Getter
 public class MessageFile extends YamlConfigurationFile {
 
-    @Getter private final String announceCommandUsage = getString("announce-command-usage", "Usage: /tab announce <type> <name> <length>\nCurrently supported types: &lbar, scoreboard");
-    @Getter private final String bossBarNotEnabled = getString("bossbar-feature-not-enabled", "&cThis command requires the bossbar feature to be enabled.");
-    @Getter private final String bossBarAnnounceCommandUsage = getString("bossbar-announce-command-usage", "Usage: /tab announce bar <bar name> <length>");
-    @Getter private final String bossBarAlreadyAnnounced = getString("bossbar-already-announced", "&cThis bossbar is already being announced");
-    @Getter private final String parseCommandUsage = getString("parse-command-usage", "Usage: /tab parse <player> <placeholder>");
-    @Getter private final String sendCommandUsage = getString("send-command-usage", "Usage: /tab send <type> <player> <bar name> <length>\nCurrently supported types: &lbar");
-    @Getter private final String sendBarCommandUsage = getString("send-bar-command-usage", "Usage: /tab send bar <player> <bar name> <length>");
-    @Getter private final String teamFeatureRequired = getString("team-feature-required", "This command requires scoreboard teams feature enabled");
-    @Getter private final String collisionCommandUsage = getString("collision-command-usage", "Usage: /tab setcollision <player> <true/false>");
-    @Getter private final String noPermission = getString("no-permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
-    @Getter private final String commandOnlyFromGame = getString("command-only-from-game", "&cThis command must be ran from the game");
-    @Getter private final String unlimitedNametagModeNotEnabled = getString("unlimited-nametag-mode-not-enabled", "&c[TAB] Warning! To make this feature work, you need to enable unlimited-nametag-mode in the config!");
-    @Getter private final String scoreboardFeatureNotEnabled = getString("scoreboard-feature-not-enabled", "&4This command requires the scoreboard feature to be enabled.");
-    @Getter private final String scoreboardAnnounceCommandUsage = getString("scoreboard-announce-command-usage", "Usage: /tab scoreboard announce <scoreboard name> <length>");
-    @Getter private final String nametagPreviewOn = getString("nametag-preview-on", "&7Preview mode &aactivated&7.");
-    @Getter private final String nametagPreviewOff = getString("nametag-preview-of", "&7Preview mode &3deactivated&7.");
-    @Getter private final String reloadSuccess = getString("reload-success", "&3[TAB] Successfully reloaded");
-    @Getter private final String reloadFailBrokenFile = getString("reload-fail-file", "&3[TAB] &4Failed to reload, file %file% has broken syntax. Check console for more info.");
-    @Getter private final String scoreboardOn = getString("scoreboard-toggle-on", "&2Scoreboard enabled");
-    @Getter private final String scoreboardOff = getString("scoreboard-toggle-off", "&7Scoreboard disabled");
-    @Getter private final String bossBarOn = getString("bossbar-toggle-on", "&2Bossbar is now visible");
-    @Getter private final String bossBarOff = getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!");
-    @Getter private final String scoreboardShowUsage = getString("scoreboard-show-usage", "Usage: /tab scoreboard show <scoreboard> [player]");
-    @Getter private final String bossBarNotMarkedAsAnnouncement = getString("bossbar-not-marked-as-announcement", "&cThis bossbar is not marked as an announcement bar and is therefore " +
+    private final String announceCommandUsage = getString("announce-command-usage", "Usage: /tab announce <type> <name> <length>\nCurrently supported types: &lbar, scoreboard");
+    private final String bossBarNotEnabled = getString("bossbar-feature-not-enabled", "&cThis command requires the bossbar feature to be enabled.");
+    private final String bossBarAnnounceCommandUsage = getString("bossbar-announce-command-usage", "Usage: /tab announce bar <bar name> <length>");
+    private final String bossBarAlreadyAnnounced = getString("bossbar-already-announced", "&cThis bossbar is already being announced");
+    private final String parseCommandUsage = getString("parse-command-usage", "Usage: /tab parse <player> <placeholder>");
+    private final String sendCommandUsage = getString("send-command-usage", "Usage: /tab send <type> <player> <bar name> <length>\nCurrently supported types: &lbar");
+    private final String sendBarCommandUsage = getString("send-bar-command-usage", "Usage: /tab send bar <player> <bar name> <length>");
+    private final String teamFeatureRequired = getString("team-feature-required", "This command requires scoreboard teams feature enabled");
+    private final String collisionCommandUsage = getString("collision-command-usage", "Usage: /tab setcollision <player> <true/false>");
+    private final String noPermission = getString("no-permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
+    private final String commandOnlyFromGame = getString("command-only-from-game", "&cThis command must be ran from the game");
+    private final String unlimitedNametagModeNotEnabled = getString("unlimited-nametag-mode-not-enabled", "&c[TAB] Warning! To make this feature work, you need to enable unlimited-nametag-mode in the config!");
+    private final String scoreboardFeatureNotEnabled = getString("scoreboard-feature-not-enabled", "&4This command requires the scoreboard feature to be enabled.");
+    private final String scoreboardAnnounceCommandUsage = getString("scoreboard-announce-command-usage", "Usage: /tab scoreboard announce <scoreboard name> <length>");
+    private final String nametagPreviewOn = getString("nametag-preview-on", "&7Preview mode &aactivated&7.");
+    private final String nametagPreviewOff = getString("nametag-preview-of", "&7Preview mode &3deactivated&7.");
+    private final String reloadSuccess = getString("reload-success", "&3[TAB] Successfully reloaded");
+    private final String reloadFailBrokenFile = getString("reload-fail-file", "&3[TAB] &4Failed to reload, file %file% has broken syntax. Check console for more info.");
+    private final String scoreboardOn = getString("scoreboard-toggle-on", "&2Scoreboard enabled");
+    private final String scoreboardOff = getString("scoreboard-toggle-off", "&7Scoreboard disabled");
+    private final String bossBarOn = getString("bossbar-toggle-on", "&2Bossbar is now visible");
+    private final String bossBarOff = getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!");
+    private final String scoreboardShowUsage = getString("scoreboard-show-usage", "Usage: /tab scoreboard show <scoreboard> [player]");
+    private final String bossBarNotMarkedAsAnnouncement = getString("bossbar-not-marked-as-announcement", "&cThis bossbar is not marked as an announcement bar and is therefore " +
             "already displayed permanently (if display condition is met)");
-    @Getter private final List<String> helpMenu = getStringList("help-menu", Arrays.asList("&m                                                                                "
+    private final List<String> helpMenu = getStringList("help-menu", Arrays.asList("&m                                                                                "
             ," &8>> &3&l/tab reload"
             ,"    &7Reloads plugin and config"
             ," &8>> &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>"
@@ -57,28 +58,28 @@ public class MessageFile extends YamlConfigurationFile {
             ," &8>> &3&l/tab group/player <name> remove"
             ,"    &7Clears all data about player/group"
             ,"&m                                                                                "));
-    @Getter private final List<String> mySQLHelpMenu = getStringList("mysql-help-menu", Arrays.asList(
+    private final List<String> mySQLHelpMenu = getStringList("mysql-help-menu", Arrays.asList(
             "/tab mysql upload - uploads data from files to mysql",
             "/tab mysql download - downloads data from mysql to files"
     ));
-    @Getter private final String mySQLFailNotEnabled = getString("mysql-fail-not-enabled", "&cCannot download/upload data from/to MySQL, because it's disabled.");
-    @Getter private final String mySQLFailError = getString("mysql-fail-error", "MySQL download failed due to an error. Check console for more info.");
-    @Getter private final String mySQLDownloadSuccess = getString("mysql-download-success", "&aMySQL data downloaded successfully.");
-    @Getter private final String mySQLUploadSuccess = getString("mysql-upload-success", "&aMySQL data uploaded successfully.");
-    @Getter private final List<String> nameTagHelpMenu = getStringList("nametag-help-menu", Arrays.asList(
+    private final String mySQLFailNotEnabled = getString("mysql-fail-not-enabled", "&cCannot download/upload data from/to MySQL, because it's disabled.");
+    private final String mySQLFailError = getString("mysql-fail-error", "MySQL download failed due to an error. Check console for more info.");
+    private final String mySQLDownloadSuccess = getString("mysql-download-success", "&aMySQL data downloaded successfully.");
+    private final String mySQLUploadSuccess = getString("mysql-upload-success", "&aMySQL data uploaded successfully.");
+    private final List<String> nameTagHelpMenu = getStringList("nametag-help-menu", Arrays.asList(
             "/tab nametag preview [player] - toggles armor stand preview mode",
             "/tab nametag toggle [player] - toggles nametags on all players for command sender"
     ));
-    @Getter private final String nameTagFeatureNotEnabled = getString("nametag-feature-not-enabled", "&cThis command requires nametag feature to be enabled.");
-    @Getter private final String nameTagsHidden = getString("nametags-hidden", "&aNametags of all players were hidden to you");
-    @Getter private final String nameTagsShown = getString("nametags-shown", "&aNametags of all players were shown to you");
-    @Getter private final String armorStandsDisabledCannotPreview = getString("armorstands-disabled-cannot-use-preview", "&cYour armor stands are disabled, therefore you cannot use preview feature");
-    @Getter private final List<String> scoreboardHelpMenu = getStringList("scoreboard-help-menu", Arrays.asList(
+    private final String nameTagFeatureNotEnabled = getString("nametag-feature-not-enabled", "&cThis command requires nametag feature to be enabled.");
+    private final String nameTagsHidden = getString("nametags-hidden", "&aNametags of all players were hidden to you");
+    private final String nameTagsShown = getString("nametags-shown", "&aNametags of all players were shown to you");
+    private final String armorStandsDisabledCannotPreview = getString("armorstands-disabled-cannot-use-preview", "&cYour armor stands are disabled, therefore you cannot use preview feature");
+    private final List<String> scoreboardHelpMenu = getStringList("scoreboard-help-menu", Arrays.asList(
             "/tab scoreboard [on/off/toggle] [player] [options]",
             "/tab scoreboard show <name> [player]",
             "/tab scoreboard announce <name> <length>"
     ));
-    @Getter private final List<String> bossbarHelpMenu = getStringList("bossbar-help-menu", Arrays.asList(
+    private final List<String> bossbarHelpMenu = getStringList("bossbar-help-menu", Arrays.asList(
             "/tab bossbar [on/off/toggle] [player] [options]",
             "/tab bossbar send <name> [player]",
             "/tab bossbar announce <name> <length>"

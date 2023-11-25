@@ -266,10 +266,11 @@ public class BossBarLine implements BossBar {
         return players.contains((TabPlayer) player);
     }
 
+    @Getter
     public class TextRefresher extends TabFeature implements Refreshable {
 
-        @Getter private final String featureName = "BossBar";
-        @Getter private final String refreshDisplayName = "Updating text";
+        private final String featureName = "BossBar";
+        private final String refreshDisplayName = "Updating text";
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
@@ -278,10 +279,11 @@ public class BossBarLine implements BossBar {
         }
     }
 
+    @Getter
     public class ProgressRefresher extends TabFeature implements Refreshable {
 
-        @Getter private final String featureName = "BossBar";
-        @Getter private final String refreshDisplayName = "Updating progress";
+        private final String featureName = "BossBar";
+        private final String refreshDisplayName = "Updating progress";
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
@@ -290,10 +292,11 @@ public class BossBarLine implements BossBar {
         }
     }
 
+    @Getter
     public class ColorRefresher extends TabFeature implements Refreshable {
 
-        @Getter private final String featureName = "BossBar";
-        @Getter private final String refreshDisplayName = "Updating color";
+        private final String featureName = "BossBar";
+        private final String refreshDisplayName = "Updating color";
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
@@ -302,10 +305,11 @@ public class BossBarLine implements BossBar {
         }
     }
 
+    @Getter
     public class StyleRefresher extends TabFeature implements Refreshable {
 
-        @Getter private final String featureName = "BossBar";
-        @Getter private final String refreshDisplayName = "Updating style";
+        private final String featureName = "BossBar";
+        private final String refreshDisplayName = "Updating style";
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {

@@ -8,10 +8,11 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 
+@Getter
 public class LatencyRefresher extends TabFeature implements Refreshable {
 
-    @Getter private final String featureName = "Global PlayerList";
-    @Getter private final String refreshDisplayName = "Updating latency";
+    private final String featureName = "Global PlayerList";
+    private final String refreshDisplayName = "Updating latency";
 
     public LatencyRefresher() {
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.PING, this);

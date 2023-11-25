@@ -49,7 +49,7 @@ public class MySQL {
         if (!isConnected()) openConnection();
         PreparedStatement ps = con.prepareStatement(query);
         int i = 0;
-        if (query.contains("?") && vars.length != 0) {
+        if (query.contains("?")) {
             for (Object obj : vars) {
                 i++;
                 ps.setObject(i, obj);

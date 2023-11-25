@@ -28,7 +28,7 @@ public class NameTagCommand extends SubCommand {
             sendMessages(sender, getMessages().getNameTagHelpMenu());
             return;
         }
-        boolean silent = args.length >= 3 && args[2].equals("-s");
+        boolean silent = args.length == 3 && args[2].equals("-s");
 
         switch (args[0].toLowerCase(Locale.US)) {
             case "preview":

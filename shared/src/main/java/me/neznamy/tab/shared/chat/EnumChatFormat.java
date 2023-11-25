@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An enum containing all possible legacy color codes and magic codes. Also contains handy color-related methods.
  */
+@Getter
 public enum EnumChatFormat {
 
     BLACK('0', 0x000000),
@@ -43,22 +44,22 @@ public enum EnumChatFormat {
     public static final String COLOR_STRING = String.valueOf(COLOR_CHAR);
 
     /** Character representing the color or magic code */
-    @Getter private final char character;
+    private final char character;
 
     /** Red value of this constant, 0 for magic codes */
-    @Getter private final short red;
+    private final short red;
 
     /** Green value of this constant, 0 for magic codes */
-    @Getter private final short green;
+    private final short green;
 
     /** Blue value of this constant, 0 for magic codes */
-    @Getter private final short blue;
+    private final short blue;
 
     /** Color as a hex code, 0 for magic codes */
-    @Getter private final int hexCode;
+    private final int hexCode;
 
     /** Color symbol followed by constant's character */
-    @Getter private final String format;
+    private final String format;
 
     /**
      * Constructs new color instance with given character and hex code

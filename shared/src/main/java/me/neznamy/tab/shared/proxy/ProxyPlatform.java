@@ -27,13 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Abstract class containing common variables and methods
  * shared between proxies.
  */
+@Getter
 public abstract class ProxyPlatform implements Platform {
 
     /** Plugin message handler for sending and receiving plugin messages */
-    @Getter protected final PluginMessageHandler pluginMessageHandler = new PluginMessageHandler();
+    protected final PluginMessageHandler pluginMessageHandler = new PluginMessageHandler();
 
     /** Placeholders which are refreshed on backend server */
-    @Getter private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
+    private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
 
     @Override
     public @NotNull GroupManager detectPermissionPlugin() {
