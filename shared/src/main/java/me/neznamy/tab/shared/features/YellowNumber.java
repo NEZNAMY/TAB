@@ -22,7 +22,7 @@ import java.util.Map;
 public class YellowNumber extends TabFeature implements JoinListener, Loadable, UnLoadable,
         Refreshable, LoginPacketListener {
 
-    @Getter private final String featureName = "Yellow Number";
+    @Getter private final String featureName = "Playerlist Objective";
     @Getter private final String refreshDisplayName = "Updating value";
     @Getter private final String PROPERTY_VALUE = Property.randomName();
     @Getter private final String PROPERTY_VALUE_FANCY = Property.randomName();
