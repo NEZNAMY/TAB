@@ -28,7 +28,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     @Getter private final String PROPERTY_VALUE_FANCY = Property.randomName();
 
     /** Objective name used by this feature */
-    public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
+    public static final String OBJECTIVE_NAME = "TAB-PlayerList";
 
     /** Scoreboard title which is unused in java */
     private static final String TITLE = "PlayerListObjectiveTitle"; // Unused by this objective slot (on Java, only visible on Bedrock)
