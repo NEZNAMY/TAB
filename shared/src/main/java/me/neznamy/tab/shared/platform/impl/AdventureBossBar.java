@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.platform.bossbar;
+package me.neznamy.tab.shared.platform.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -8,6 +8,7 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
+import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar.Color;

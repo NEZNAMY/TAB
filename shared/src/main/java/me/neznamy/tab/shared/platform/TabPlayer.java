@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.FloodgateHook;
-import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;

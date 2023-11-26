@@ -1,8 +1,9 @@
-package me.neznamy.tab.platforms.velocity;
+package me.neznamy.tab.shared.platform.impl;
 
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetDisplayObjective;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetObjective;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetScore;
@@ -13,12 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 /**
- * Scoreboard handler for Velocity. Because it does not have
- * any scoreboard API, we need to use bridge to send the packets.
+ * Scoreboard handler using bridge to encode the packets.
  */
-public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
+public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
 
-    public VelocityScoreboard(@NotNull VelocityTabPlayer player) {
+    public BridgeScoreboard(@NotNull ProxyTabPlayer player) {
         super(player);
     }
 

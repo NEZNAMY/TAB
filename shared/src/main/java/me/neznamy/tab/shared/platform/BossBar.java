@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.platform.bossbar;
+package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;

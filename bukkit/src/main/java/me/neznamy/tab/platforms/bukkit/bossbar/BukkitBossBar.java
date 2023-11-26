@@ -5,7 +5,7 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.bossbar.BossBar;
+import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;

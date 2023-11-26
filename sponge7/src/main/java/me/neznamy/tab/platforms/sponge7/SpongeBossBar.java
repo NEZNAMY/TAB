@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.platform.bossbar.BossBar;
+import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import org.jetbrains.annotations.NotNull;

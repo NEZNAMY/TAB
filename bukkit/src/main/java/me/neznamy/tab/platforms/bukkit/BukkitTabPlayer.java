@@ -10,7 +10,7 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
-import me.neznamy.tab.shared.platform.bossbar.BossBar;
+import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.platforms.bukkit.bossbar.EntityBossBar;
