@@ -3,6 +3,17 @@ TAB aims to be a superior all-in-one minecraft plugin for displaying information
 similar plugins in terms of features, performance and compatibility.  
 More information can be found at [Why TAB?](https://github.com/NEZNAMY/TAB/wiki/Why-TAB%3F) wiki page.
 
+# Download
+### Releases
+You can download full releases from [GitHub releases](https://github.com/NEZNAMY/TAB/releases), 
+[SpigotMC](https://www.spigotmc.org/resources/57806/) or [Modrinth](https://modrinth.com/plugin/tab-was-taken).
+
+### Dev builds
+Plugin's development is continuous and contains lots of small changes/fixes not worthy of being called a full
+update, therefore development builds are being created and eventually a full update is released when enough changes are made.  
+If you want to benefit from a recent change in the code before official release, you can download development builds
+from [GitHub actions](https://github.com/NEZNAMY/TAB/actions).  
+
 # Compiling
 Compilation requires JDK 17 and up.  
 To compile the plugin, run `./gradlew build` from the terminal.  
