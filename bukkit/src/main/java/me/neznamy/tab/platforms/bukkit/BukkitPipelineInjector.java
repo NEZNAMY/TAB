@@ -87,55 +87,67 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    @SneakyThrows
     public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        List<String> actions;
-        if (BukkitTabList.ClientboundPlayerInfoRemovePacket != null) {
-            //1.19.3+
-            actions = ((EnumSet<?>)BukkitTabList.ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
+        if (BukkitReflection.is1_19_3Plus()) {
+            onPlayerInfo1_19_3(receiver, packet);
         } else {
-            //1.19.2-
-            actions = Collections.singletonList(BukkitTabList.ACTION.get(packet).toString());
+            onPlayerInfo1_19_2(receiver, packet);
         }
+    }
+
+    @SneakyThrows
+    private void onPlayerInfo1_19_3(@NotNull TabPlayer receiver, @NotNull Object packet) {
+        List<String> actions = ((EnumSet<?>)BukkitTabList.ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
         List<Object> updatedList = new ArrayList<>();
         for (Object nmsData : (List<?>) BukkitTabList.PLAYERS.get(packet)) {
             GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_Profile.get(nmsData);
             UUID id;
-            if (BukkitReflection.is1_19_3Plus()) {
-                id = (UUID) BukkitTabList.PlayerInfoData_UUID.get(nmsData);
-            } else {
-                id = profile.getId();
-            }
+            id = (UUID) BukkitTabList.PlayerInfoData_UUID.get(nmsData);
             Object displayName = null;
             int latency = 0;
-            if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
+            if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name())) {
                 displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, id);
                 if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
-                if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
-            if (actions.contains(TabList.Action.UPDATE_LATENCY.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
-                latency = BukkitTabList.PlayerInfoData_Latency.getInt(nmsData);
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, id, latency);
-                if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_Latency.set(nmsData, latency);
+            if (actions.contains(TabList.Action.UPDATE_LATENCY.name())) {
+                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, id, BukkitTabList.PlayerInfoData_Latency.getInt(nmsData));
             }
             if (actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, id, profile.getName());
             }
-            if (BukkitReflection.is1_19_3Plus()) {
-                // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
-                updatedList.add(BukkitTabList.newPlayerInfoData.newInstance(
-                        id,
-                        profile,
-                        BukkitTabList.PlayerInfoData_Listed.getBoolean(nmsData),
-                        latency,
-                        BukkitTabList.PlayerInfoData_GameMode.get(nmsData),
-                        displayName,
-                        BukkitTabList.PlayerInfoData_RemoteChatSession.get(nmsData)));
-            }
+            // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
+            updatedList.add(BukkitTabList.newPlayerInfoData.newInstance(
+                    id,
+                    profile,
+                    BukkitTabList.PlayerInfoData_Listed.getBoolean(nmsData),
+                    latency,
+                    BukkitTabList.PlayerInfoData_GameMode.get(nmsData),
+                    displayName,
+                    BukkitTabList.PlayerInfoData_RemoteChatSession.get(nmsData)));
         }
-        if (BukkitReflection.is1_19_3Plus()) {
-            BukkitTabList.PLAYERS.set(packet, updatedList);
+        BukkitTabList.PLAYERS.set(packet, updatedList);
+    }
+
+    @SneakyThrows
+    private void onPlayerInfo1_19_2(@NotNull TabPlayer receiver, @NotNull Object packet) {
+        String action = BukkitTabList.ACTION.get(packet).toString();
+        for (Object nmsData : (List<?>) BukkitTabList.PLAYERS.get(packet)) {
+            GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_Profile.get(nmsData);
+            UUID id = profile.getId();
+            if (action.equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.equals(TabList.Action.ADD_PLAYER.name())) {
+                Object displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
+                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, id);
+                if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
+                BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
+            }
+            if (action.equals(TabList.Action.UPDATE_LATENCY.name()) || action.equals(TabList.Action.ADD_PLAYER.name())) {
+                int latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, id, BukkitTabList.PlayerInfoData_Latency.getInt(nmsData));
+                BukkitTabList.PlayerInfoData_Latency.set(nmsData, latency);
+            }
+            if (action.equals(TabList.Action.ADD_PLAYER.name())) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, id, profile.getName());
+            }
         }
     }
 
