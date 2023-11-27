@@ -400,12 +400,18 @@ public abstract class ConfigurationFile {
     }
 
     /**
-     * Removes option from config.
+     * Removes option from config if present and returns {@code true}. If option was
+     * not present, returns {@code false}.
      *
      * @param   key
      *          Key to remove
+     * @return  {@code true} if option was present and removed, {@code false} if not.
      */
-    public void remove(@NotNull String key) {
-        if (hasConfigOption(key)) set(key, null);
+    public boolean remove(@NotNull String key) {
+        if (hasConfigOption(key)) {
+            set(key, null);
+            return true;
+        }
+        return false;
     }
 }

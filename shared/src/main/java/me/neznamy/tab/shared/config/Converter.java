@@ -345,15 +345,15 @@ public class Converter {
     }
 
     public void convert301to302(@NotNull ConfigurationFile config) {
-        if (!config.hasConfigOption("placeholders.remove-strings")) return;
-        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.0.1 to 3.0.2"));
-        config.set("placeholders.remove-strings", null);
+        if (config.remove("placeholders.remove-strings")) {
+            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.0.1 to 3.0.2"));
+        }
     }
 
     public void convert331to332(@NotNull ConfigurationFile config) {
-        if (!config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) return;
-        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.3.1 to 3.3.2)"));
-        config.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", null);
+        if (config.remove("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) {
+            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.3.1 to 3.3.2)"));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -420,17 +420,14 @@ public class Converter {
         disabledConditionConverter.accept(config.getConfigurationSection("belowname-objective"));
 
         // Removed config option
-        if (config.hasConfigOption("layout.hide-vanished-players")) config.set("layout.hide-vanished-players", null);
+        config.remove("layout.hide-vanished-players");
     }
 
     public void convert403to404(@NotNull ConfigurationFile config) {
-        if (config.hasConfigOption("placeholders.register-tab-expansion")) {
+        if (config.remove("placeholders.register-tab-expansion")) {
             TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 4.0.3 to 4.0.4"));
-            config.set("placeholders.register-tab-expansion", null);
         }
-        if (config.hasConfigOption("global-playerlist.update-latency")) {
-            config.set("global-playerlist.update-latency", null);
-        }
+        config.remove("global-playerlist.update-latency");
     }
 
     public void convert409to410(@NotNull ConfigurationFile config) {
