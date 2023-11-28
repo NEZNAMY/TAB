@@ -345,13 +345,13 @@ public class Converter {
     }
 
     public void convert301to302(@NotNull ConfigurationFile config) {
-        if (config.remove("placeholders.remove-strings")) {
+        if (config.removeOption("placeholders.remove-strings")) {
             TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.0.1 to 3.0.2"));
         }
     }
 
     public void convert331to332(@NotNull ConfigurationFile config) {
-        if (config.remove("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) {
+        if (config.removeOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) {
             TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.3.1 to 3.3.2)"));
         }
     }
@@ -420,14 +420,14 @@ public class Converter {
         disabledConditionConverter.accept(config.getConfigurationSection("belowname-objective"));
 
         // Removed config option
-        config.remove("layout.hide-vanished-players");
+        config.removeOption("layout.hide-vanished-players");
     }
 
     public void convert403to404(@NotNull ConfigurationFile config) {
-        if (config.remove("placeholders.register-tab-expansion")) {
+        if (config.removeOption("placeholders.register-tab-expansion")) {
             TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 4.0.3 to 4.0.4"));
         }
-        config.remove("global-playerlist.update-latency");
+        config.removeOption("global-playerlist.update-latency");
     }
 
     public void convert409to410(@NotNull ConfigurationFile config) {
@@ -440,7 +440,7 @@ public class Converter {
         }
         config.setIfMissing("belowname-objective.npc-text", "NPC");
         config.setIfMissing("belowname-objective.fancy-display", "&c" + TabConstants.Placeholder.HEALTH);
-        config.remove("tablist-name-formatting.align-tabsuffix-on-the-right");
-        config.remove("tablist-name-formatting.character-width-overrides");
+        config.removeOption("tablist-name-formatting.align-tabsuffix-on-the-right");
+        config.removeOption("tablist-name-formatting.character-width-overrides");
     }
 }

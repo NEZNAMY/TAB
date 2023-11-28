@@ -407,7 +407,7 @@ public abstract class ConfigurationFile {
      *          Key to remove
      * @return  {@code true} if option was present and removed, {@code false} if not.
      */
-    public boolean remove(@NotNull String key) {
+    public boolean removeOption(@NotNull String key) {
         if (hasConfigOption(key)) {
             set(key, null);
             return true;
