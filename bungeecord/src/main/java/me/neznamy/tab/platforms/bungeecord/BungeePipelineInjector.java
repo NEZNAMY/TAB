@@ -227,10 +227,15 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          */
         @NotNull
         private Object deserialize(@NotNull ByteBuf buf) {
+            if (wrapperField == null) return buf;
             int marker = buf.readerIndex();
             try {
                 int packetId = buf.readByte();
                 for (int i=0; i<extraPacketClasses.length; i++) {
+                    ChannelWrapper ch = (ChannelWrapper) wrapperField.get(((BungeeTabPlayer) player).getPlayer().getPendingConnection());
+                    if (!ch.getEncodeProtocol().TO_CLIENT.hasPacket(extraPacketClasses[i], ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion())) {
+                        continue;
+                    }
                     if (packetId == getPacketId(((BungeeTabPlayer)player).getPlayer().getPendingConnection().getVersion(), extraPacketClasses[i])) {
                         DefinedPacket packet = extraPacketSuppliers[i].get();
                         packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
