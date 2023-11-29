@@ -1,4 +1,4 @@
-val minecraftVersion = "1.20.2"
+val minecraftVersion = "1.20.3-pre4"
 
 plugins {
     id("fabric-loom")
@@ -18,7 +18,7 @@ dependencies {
     mappings(loom.officialMojangMappings())
     modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
     modImplementation("net.fabricmc:fabric-loader:0.14.17")
-    val version = "0.88.5+1.20.2"
+    val version = "0.90.4+1.20.3"
     modImplementation(fabricApi.module("fabric-api-base", version))
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", version))
     modImplementation(fabricApi.module("fabric-networking-api-v1", version))

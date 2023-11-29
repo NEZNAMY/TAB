@@ -36,7 +36,7 @@ public class FabricTAB implements VersionLoader {
 
     @Override
     public List<String> getSupportedVersions() {
-        return Collections.singletonList("1.20.3 Pre-Release 2");
+        return Collections.singletonList("1.20.3 Pre-Release 4");
     }
 
     @Override
