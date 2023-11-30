@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     implementation(projects.fabric)
-    minecraft("com.mojang:minecraft:1.20.3-pre4")
+    minecraft("com.mojang:minecraft:1.20.3-rc1")
     mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:0.14.17")
     val fabricApiVersion = "0.90.4+1.20.3"

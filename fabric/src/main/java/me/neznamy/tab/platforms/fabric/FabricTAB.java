@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -12,7 +11,6 @@ public class FabricTAB implements DedicatedServerModInitializer {
     private static VersionLoader version;
 
     @Override
-    @SneakyThrows
     public void onInitializeServer() {
         String[] modules = {
                 "v1_14_4",

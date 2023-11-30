@@ -1,4 +1,4 @@
-val minecraftVersion = "1.20.3-pre4"
+val minecraftVersion = "1.20.3-rc1"
 
 plugins {
     id("fabric-loom")
