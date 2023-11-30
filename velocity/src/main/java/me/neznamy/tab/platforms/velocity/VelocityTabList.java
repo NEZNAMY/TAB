@@ -99,12 +99,17 @@ public class VelocityTabList implements TabList {
 
     @Override
     public void checkDisplayNames() {
-        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            Component expectedComponent = expectedDisplayNames.get(entry);
-            if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
-                displayNameWrong(entry.getProfile().getName(), player);
-                entry.setDisplayName(expectedComponent);
+        try {
+            for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
+                Component expectedComponent = expectedDisplayNames.get(entry);
+                if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
+                    displayNameWrong(entry.getProfile().getName(), player);
+                    entry.setDisplayName(expectedComponent);
+                }
             }
+        } catch (ConcurrentModificationException VelocityBug) {
+            // Error when copying collection (player joined/left in the meantime), retry
+            checkDisplayNames();
         }
     }
 }
