@@ -60,7 +60,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NotNull String objective) {
         sb.getObjective(objective).ifPresent(o -> sb.updateDisplaySlot(o, displaySlots[slot]));
     }
 

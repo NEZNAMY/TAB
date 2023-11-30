@@ -25,7 +25,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NotNull String objective) {
         player.sendPacket(new ScoreboardDisplay(slot, objective));
     }
 

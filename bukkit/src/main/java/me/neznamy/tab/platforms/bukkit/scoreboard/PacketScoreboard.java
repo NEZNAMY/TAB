@@ -252,7 +252,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void setDisplaySlot(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NotNull String objective) {
         Object displaySlot;
         if (BukkitReflection.is1_20_2Plus()) {
             displaySlot = displaySlots[slot];

@@ -28,7 +28,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
     /** Flag tracking time between Login packet send and its processing */
     private boolean frozen;
 
-    public void setScore(@NotNull String objective, @NotNull String scoreHolder, int score,
+    public final void setDisplaySlot(int slot, @NotNull String objective) {
+        if (frozen) return;
+        setDisplaySlot0(slot, objective);
+    }
+
+    public final void setScore(@NotNull String objective, @NotNull String scoreHolder, int score,
                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
@@ -38,7 +43,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         setScore0(objective, scoreHolder, score, displayName, numberFormat);
     }
 
-    public void removeScore(@NotNull String objective, @NotNull String scoreHolder) {
+    public final void removeScore(@NotNull String objective, @NotNull String scoreHolder) {
         if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
             error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objective);
@@ -47,7 +52,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         removeScore0(objective, scoreHolder);
     }
 
-    public void registerObjective(@NotNull String objectiveName, @NotNull String title, int display,
+    public final void registerObjective(@NotNull String objectiveName, @NotNull String title, int display,
                                   @Nullable IChatBaseComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.add(objectiveName)) {
@@ -57,7 +62,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         registerObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
-    public void unregisterObjective(@NotNull String objectiveName) {
+    public final void unregisterObjective(@NotNull String objectiveName) {
         if (frozen) return;
         if (!registeredObjectives.remove(objectiveName)) {
             error("Tried to unregister non-existing objective %s for player ", objectiveName);
@@ -66,7 +71,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterObjective0(objectiveName);
     }
 
-    public void updateObjective(@NotNull String objectiveName, @NotNull String title, int display,
+    public final void updateObjective(@NotNull String objectiveName, @NotNull String title, int display,
                                 @Nullable IChatBaseComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objectiveName)) {
@@ -76,7 +81,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
-    public void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
+    public final void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                              @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         if (frozen) return;
         if (!registeredTeams.add(name)) {
@@ -94,7 +99,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         );
     }
 
-    public void unregisterTeam(@NotNull String name) {
+    public final void unregisterTeam(@NotNull String name) {
         if (frozen) return;
         if (!registeredTeams.remove(name)) {
             error("Tried to unregister non-existing team %s for player ", name);
@@ -103,7 +108,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterTeam0(name);
     }
 
-    public void updateTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
+    public final void updateTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                            @NotNull CollisionRule collision, int options) {
         if (frozen) return;
         if (!registeredTeams.contains(name)) {
@@ -168,27 +173,27 @@ public abstract class Scoreboard<T extends TabPlayer> {
         }
     }
 
-    public abstract void setDisplaySlot(int slot, @NotNull String objective);
+    protected abstract void setDisplaySlot0(int slot, @NotNull String objective);
 
-    public abstract void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+    protected abstract void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                                    @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat);
 
-    public abstract void removeScore0(@NotNull String objective, @NotNull String scoreHolder);
+    protected abstract void removeScore0(@NotNull String objective, @NotNull String scoreHolder);
 
-    public abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title,
+    protected abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title,
                                             int display, @Nullable IChatBaseComponent numberFormat);
 
-    public abstract void unregisterObjective0(@NotNull String objectiveName);
+    protected abstract void unregisterObjective0(@NotNull String objectiveName);
 
-    public abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title,
+    protected abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title,
                                           int display, @Nullable IChatBaseComponent numberFormat);
 
-    public abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
+    protected abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                                                  @NotNull CollisionRule collision, @NotNull Collection<String> players, int options);
 
-    public abstract void unregisterTeam0(@NotNull String name);
+    protected abstract void unregisterTeam0(@NotNull String name);
 
-    public abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
+    protected abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                                      @NotNull CollisionRule collision, int options);
 
     @AllArgsConstructor

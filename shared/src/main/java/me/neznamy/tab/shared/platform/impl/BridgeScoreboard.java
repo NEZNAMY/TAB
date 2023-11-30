@@ -23,7 +23,7 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NotNull String objective) {
         player.sendPluginMessage(new SetDisplayObjective(slot, objective));
     }
 

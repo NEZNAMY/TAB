@@ -64,7 +64,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NotNull String objective) {
         checkPlayerScoreboard();
         scoreboard.getObjective(objective).setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.values()[slot]);
     }

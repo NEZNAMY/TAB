@@ -29,7 +29,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NotNull String objective) {
         player.sendPacket(FabricTAB.getVersion().setDisplaySlot(slot, objectives.get(objective)));
     }
 

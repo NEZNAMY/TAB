@@ -28,13 +28,20 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
     public void onSwitch(ServerSwitchEvent e) {
         TAB tab = TAB.getInstance();
         if (tab.isPluginDisabled()) return;
+
+        // Avoid 1.20.3 client crash on scoreboard packets, do it sync to prevent packet being sent after event, but before processing
+        TabPlayer p = tab.getPlayer(e.getPlayer().getUniqueId());
+        if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
+            p.getScoreboard().freeze();
+        }
+
         tab.getCPUManager().runTask(() -> {
             TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
             if (player == null) {
                 player = createPlayer(e.getPlayer());
 
-                // I don't think this is actually needed, but someone said it fixed geyser warn in console
-                // Doing this won't hurt, so whatever
+                // Things will get cleared immediately after, so no point in sending it, also someone said it fixed some warn from Geyser
+                // Sending these packets before login packet will also crash the client on 1.20.3
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     player.getScoreboard().freeze();
                 }
