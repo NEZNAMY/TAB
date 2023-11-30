@@ -9,6 +9,10 @@ dependencies {
     }
     compileOnly("LibsDisguises:LibsDisguises:10.0.21") {
         exclude("org.spigotmc", "spigot")
+        exclude("org.spigotmc", "spigot-api")
+        exclude("com.github.dmulloy2", "ProtocolLib")
+        exclude("org.ow2.asm", "asm")
+        exclude("net.md-5", "bungeecord-chat")
     }
     compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.8.8")
 }
