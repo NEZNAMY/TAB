@@ -27,18 +27,10 @@ public class PacketHeaderFooter extends HeaderFooter {
     static {
         try {
             if (BukkitReflection.getMinorVersion() >= 8) {
-                Class<?> IChatBaseComponent;
-                Class<?> HeaderFooterClass;
-                if (BukkitReflection.isMojangMapped()) {
-                    IChatBaseComponent = Class.forName("net.minecraft.network.chat.Component");
-                    HeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.ClientboundTabListPacket");
-                } else if (BukkitReflection.getMinorVersion() >= 17) {
-                    IChatBaseComponent = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
-                    HeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
-                } else {
-                    IChatBaseComponent = BukkitReflection.getLegacyClass("IChatBaseComponent");
-                    HeaderFooterClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
-                }
+                Class<?> IChatBaseComponent = BukkitReflection.getClass("net.minecraft.network.chat.Component",
+                        "net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
+                Class<?> HeaderFooterClass = BukkitReflection.getClass("net.minecraft.network.protocol.game.ClientboundTabListPacket",
+                        "net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
                 if (BukkitReflection.getMinorVersion() >= 17) {
                     newHeaderFooter = HeaderFooterClass.getConstructor(IChatBaseComponent, IChatBaseComponent);
                 } else {
