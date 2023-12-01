@@ -222,6 +222,6 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
 
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
-        sendMessage(new UpdateVanishStatus(player.getUniqueId(), player.isVanished()));
+        sendMessage(new UpdateVanishStatus(player.getTablistId(), player.isVanished()));
     }
 }
