@@ -50,12 +50,12 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         int position;
         if (BukkitReflection.is1_20_2Plus()) {
-            position = ((Enum<?>)PacketScoreboard.DisplayObjective_POSITION.get(packet)).ordinal();
+            position = ((Enum<?>)PacketScoreboard.displayPacketData.DisplayObjective_POSITION.get(packet)).ordinal();
         } else {
-            position = PacketScoreboard.DisplayObjective_POSITION.getInt(packet);
+            position = PacketScoreboard.displayPacketData.DisplayObjective_POSITION.getInt(packet);
         }
         TAB.getInstance().getFeatureManager().onDisplayObjective(player, position,
-                (String) PacketScoreboard.DisplayObjective_OBJECTIVE_NAME.get(packet));
+                (String) PacketScoreboard.displayPacketData.DisplayObjective_OBJECTIVE_NAME.get(packet));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isDisplayObjective(@NotNull Object packet) {
-        return PacketScoreboard.DisplayObjectiveClass.isInstance(packet);
+        return PacketScoreboard.displayPacketData.DisplayObjectiveClass.isInstance(packet);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isTeam(@NotNull Object packet) {
-        return PacketScoreboard.TeamPacketClass.isInstance(packet);
+        return PacketScoreboard.teamPacketData.TeamPacketClass.isInstance(packet);
     }
 
     @Override
@@ -161,10 +161,10 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @SneakyThrows
     public void modifyPlayers(@NotNull Object packetPlayOutScoreboardTeam) {
         if (TAB.getInstance().getNameTagManager() == null) return;
-        int action = PacketScoreboard.TeamPacket_ACTION.getInt(packetPlayOutScoreboardTeam);
+        int action = PacketScoreboard.teamPacketData.TeamPacket_ACTION.getInt(packetPlayOutScoreboardTeam);
         if (action == 1 || action == 2 || action == 4) return;
-        Collection<String> players = (Collection<String>) PacketScoreboard.TeamPacket_PLAYERS.get(packetPlayOutScoreboardTeam);
-        String teamName = (String) PacketScoreboard.TeamPacket_NAME.get(packetPlayOutScoreboardTeam);
+        Collection<String> players = (Collection<String>) PacketScoreboard.teamPacketData.TeamPacket_PLAYERS.get(packetPlayOutScoreboardTeam);
+        String teamName = (String) PacketScoreboard.teamPacketData.TeamPacket_NAME.get(packetPlayOutScoreboardTeam);
         if (players == null) return;
         //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
         Collection<String> newList = new ArrayList<>();
@@ -187,6 +187,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 newList.add(entry);
             }
         }
-        PacketScoreboard.TeamPacket_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
+        PacketScoreboard.teamPacketData.TeamPacket_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
     }
 }

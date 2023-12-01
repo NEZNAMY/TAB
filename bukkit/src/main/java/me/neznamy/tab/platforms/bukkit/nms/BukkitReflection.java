@@ -31,7 +31,11 @@ public class BukkitReflection {
 
     /** Flag determining whether the server version is at least 1.20.2 or not */
     @Getter
-    private static final boolean is1_20_2Plus = minorVersion >= 20 && !serverPackage.equals("v1_20_R1");
+    private static final boolean is1_20_2Plus = ReflectionUtils.classExists("net.minecraft.world.scores.DisplaySlot");
+
+    /** Flag determining whether the server version is at least 1.20.3 or not */
+    @Getter
+    private static final boolean is1_20_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundResetScorePacket");
 
     private static boolean checkMojangMapped() {
         try {
@@ -56,6 +60,31 @@ public class BukkitReflection {
         for (String name : names) {
             try {
                 return getLegacyClass(name);
+            } catch (ClassNotFoundException e) {
+                //not the first class name in array
+            }
+        }
+        throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
+    }
+
+    /**
+     * Returns class with given potential names in same order. For 1.17+ it takes exact full class names,
+     * for <1.17 it takes class name only.
+     *
+     * @param   names
+     *          possible class names
+     * @return  class for specified names
+     * @throws  ClassNotFoundException
+     *          if class does not exist
+     */
+    public static Class<?> getClass(@NotNull String... names) throws ClassNotFoundException {
+        for (String name : names) {
+            try {
+                if (minorVersion >= 17) {
+                    return Class.forName(name);
+                } else {
+                    return getLegacyClass(name);
+                }
             } catch (ClassNotFoundException e) {
                 //not the first class name in array
             }
