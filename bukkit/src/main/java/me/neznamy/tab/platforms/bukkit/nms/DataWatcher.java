@@ -32,8 +32,6 @@ public class DataWatcher implements EntityData {
     private static Class<?> DataWatcherObject;
     private static Constructor<?> newDataWatcherObject;
 
-    private static Class<?> DataWatcherRegistry;
-    private static Class<?> DataWatcherSerializer;
     private static Object DataWatcherSerializer_BYTE;
     private static Object DataWatcherSerializer_FLOAT;
     private static Object DataWatcherSerializer_STRING;
@@ -74,70 +72,58 @@ public class DataWatcher implements EntityData {
      */
     public static void load() throws ReflectiveOperationException {
         int minorVersion = BukkitReflection.getMinorVersion();
-        Class<?> Entity;
-        if (BukkitReflection.isMojangMapped()) {
-            Entity = Class.forName("net.minecraft.world.entity.Entity");
-            DataWatcher = Class.forName("net.minecraft.network.syncher.SynchedEntityData");
-            DataWatcherObject = Class.forName("net.minecraft.network.syncher.EntityDataAccessor");
-            DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.EntityDataSerializers");
-            DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.EntityDataSerializer");
-        } else if (minorVersion >= 17) {
-            Entity = Class.forName("net.minecraft.world.entity.Entity");
-            DataWatcher = Class.forName("net.minecraft.network.syncher.DataWatcher");
-            DataWatcherObject = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
-            DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.DataWatcherRegistry");
-            DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.DataWatcherSerializer");
-        } else {
-            Entity = BukkitReflection.getLegacyClass("Entity");
-            DataWatcher = BukkitReflection.getLegacyClass("DataWatcher");
-            if (minorVersion >= 9) {
-                DataWatcherObject = BukkitReflection.getLegacyClass("DataWatcherObject");
-                DataWatcherRegistry = BukkitReflection.getLegacyClass("DataWatcherRegistry");
-                DataWatcherSerializer = BukkitReflection.getLegacyClass("DataWatcherSerializer");
-            }
-        }
+        DataWatcher = BukkitReflection.getClass("net.minecraft.network.syncher.SynchedEntityData",
+                "net.minecraft.network.syncher.DataWatcher", "DataWatcher");
         if (minorVersion >= 7) {
-            newDataWatcher = DataWatcher.getConstructor(Entity);
+            newDataWatcher = DataWatcher.getConstructor(BukkitReflection.getClass("net.minecraft.world.entity.Entity", "Entity"));
         } else {
             newDataWatcher = DataWatcher.getConstructor();
         }
         if (minorVersion >= 9) {
+            DataWatcherObject = BukkitReflection.getClass("net.minecraft.network.syncher.EntityDataAccessor",
+                    "net.minecraft.network.syncher.DataWatcherObject", "DataWatcherObject");
+            Class<?> dataWatcherRegistry = BukkitReflection.getClass("net.minecraft.network.syncher.EntityDataSerializers",
+                    "net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry");
+            Class<?> dataWatcherSerializer = BukkitReflection.getClass("net.minecraft.network.syncher.EntityDataSerializer",
+                    "net.minecraft.network.syncher.DataWatcherSerializer", "DataWatcherSerializer");
             DataWatcher_register = ReflectionUtils.getMethod(
                     DataWatcher,
-                    new String[]{"define", "register", "a", "m_135372_"}, // {Bukkit 1.20.2+, Bukkit, Bukkit 1.18+, Mohist 1.18.2}
+                    new String[]{"define", "register", "a", "m_135372_"}, // {Mojang, Bukkit, Bukkit 1.18+, Mohist 1.18.2}
                     DataWatcherObject, Object.class
             );
-        } else {
-            DataWatcher_register = ReflectionUtils.getMethod(DataWatcher, new String[]{"func_75682_a", "a"}, int.class, Object.class); // {Thermos 1.7.10, Bukkit}
-        }
-        if (minorVersion >= 19) {
-            DataWatcher_packDirty = ReflectionUtils.getMethod(DataWatcher, new String[] {"packDirty", "b"}); // {Mojang | 1.20.2+, 1.20.2-}
-        }
-        if (BukkitReflection.is1_19_3Plus()) {
-            DataWatcher_markDirty = ReflectionUtils.getMethods(DataWatcher, void.class, DataWatcherObject).get(0);
-        }
-        if (minorVersion >= 9) {
-            newDataWatcherObject = DataWatcherObject.getConstructor(int.class, DataWatcherSerializer);
-            DataWatcherSerializer_BYTE = ReflectionUtils.getField(DataWatcherRegistry, "BYTE", "a", "f_135027_").get(null); // Mohist 1.18.2
-            DataWatcherSerializer_FLOAT = ReflectionUtils.getField(DataWatcherRegistry, "FLOAT", "c", "f_135029_").get(null); // Mohist 1.18.2
-            DataWatcherSerializer_STRING = ReflectionUtils.getField(DataWatcherRegistry, "STRING", "d", "f_135030_").get(null); // Mohist 1.18.2
+            newDataWatcherObject = DataWatcherObject.getConstructor(int.class, dataWatcherSerializer);
+            DataWatcherSerializer_BYTE = ReflectionUtils.getField(dataWatcherRegistry, "BYTE", "a", "f_135027_").get(null); // Mohist 1.18.2
+            DataWatcherSerializer_FLOAT = ReflectionUtils.getField(dataWatcherRegistry, "FLOAT", "c", "f_135029_").get(null); // Mohist 1.18.2
+            DataWatcherSerializer_STRING = ReflectionUtils.getField(dataWatcherRegistry, "STRING", "d", "f_135030_").get(null); // Mohist 1.18.2
             if (BukkitReflection.is1_19_3Plus()) {
-                DataWatcherSerializer_OPTIONAL_COMPONENT = ReflectionUtils.getField(DataWatcherRegistry, "OPTIONAL_COMPONENT", "g").get(null);
+                DataWatcherSerializer_OPTIONAL_COMPONENT = ReflectionUtils.getField(dataWatcherRegistry, "OPTIONAL_COMPONENT", "g").get(null);
                 if (BukkitReflection.is1_19_4Plus()) {
-                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(DataWatcherRegistry, "BOOLEAN", "k").get(null);
+                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(dataWatcherRegistry, "BOOLEAN", "k").get(null);
                 } else {
-                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(DataWatcherRegistry, "BOOLEAN", "j").get(null);
+                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(dataWatcherRegistry, "BOOLEAN", "j").get(null);
                 }
             } else {
                 if (minorVersion >= 13) {
-                    DataWatcherSerializer_OPTIONAL_COMPONENT = ReflectionUtils.getField(DataWatcherRegistry,
+                    DataWatcherSerializer_OPTIONAL_COMPONENT = ReflectionUtils.getField(dataWatcherRegistry,
                             "OPTIONAL_COMPONENT", "f", "f_135032_").get(null); // Mohist 1.18.2
-                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(DataWatcherRegistry,
+                    DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(dataWatcherRegistry,
                             "BOOLEAN", "i", "f_135035_").get(null); // Mohist 1.18.2
                 } else {
-                    DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("h").get(null);
+                    DataWatcherSerializer_BOOLEAN = dataWatcherRegistry.getDeclaredField("h").get(null);
                 }
             }
+        } else {
+            DataWatcher_register = ReflectionUtils.getMethod(
+                    DataWatcher,
+                    new String[]{"func_75682_a", "a"}, int.class, // {Thermos 1.7.10, Bukkit}
+                    Object.class
+            );
+        }
+        if (minorVersion >= 19) {
+            DataWatcher_packDirty = ReflectionUtils.getMethod(DataWatcher, new String[] {"packDirty", "b"}); // {Mojang, Bukkit}
+        }
+        if (BukkitReflection.is1_19_3Plus()) {
+            DataWatcher_markDirty = ReflectionUtils.getMethods(DataWatcher, void.class, DataWatcherObject).get(0);
         }
     }
     
