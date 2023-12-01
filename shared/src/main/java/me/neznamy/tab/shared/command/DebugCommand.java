@@ -42,7 +42,7 @@ public class DebugCommand extends SubCommand {
             }
         }
         if (analyzed == null && sender != null) {
-            analyzed = TAB.getInstance().getPlayer(sender.getUniqueId());
+            analyzed = sender;
         }
         debug(sender, analyzed);
     }
