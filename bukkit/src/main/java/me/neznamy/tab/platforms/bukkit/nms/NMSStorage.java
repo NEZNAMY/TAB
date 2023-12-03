@@ -41,14 +41,13 @@ public class NMSStorage {
     public NMSStorage() {
         int minorVersion = BukkitReflection.getMinorVersion();
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
-        Class<?> Packet = BukkitReflection.getClass("net.minecraft.network.protocol.Packet", "Packet");
-        Class<?> EntityPlayer = BukkitReflection.getClass("net.minecraft.server.level.ServerPlayer",
-                "net.minecraft.server.level.EntityPlayer", "EntityPlayer");
-        Class<?> PlayerConnection = BukkitReflection.getClass("net.minecraft.server.network.ServerGamePacketListenerImpl",
-                "net.minecraft.server.network.PlayerConnection", "PlayerConnection");
+        Class<?> Packet = BukkitReflection.getClass("network.protocol.Packet", "Packet");
+        Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
+        Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
+                "server.network.PlayerConnection", "PlayerConnection");
         if (minorVersion >= 7) {
-            Class<?> ChatSerializer = BukkitReflection.getClass("net.minecraft.network.chat.Component$Serializer",
-                    "net.minecraft.network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
+            Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
+                    "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
             ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
             sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         } else {

@@ -55,18 +55,17 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     static {
         try {
             int minorVersion = BukkitReflection.getMinorVersion();
-            Scoreboard = BukkitReflection.getClass("net.minecraft.world.scores.Scoreboard", "Scoreboard");
-            ScoreboardObjective = BukkitReflection.getClass("net.minecraft.world.scores.Objective",
-                    "net.minecraft.world.scores.ScoreboardObjective", "ScoreboardObjective");
+            Scoreboard = BukkitReflection.getClass("world.scores.Scoreboard", "Scoreboard");
+            ScoreboardObjective = BukkitReflection.getClass("world.scores.Objective", "world.scores.ScoreboardObjective", "ScoreboardObjective");
             Class<?> IScoreboardCriteria = BukkitReflection.getClass(
-                    "net.minecraft.world.scores.criteria.ObjectiveCriteria", // Mojang mapped
-                    "net.minecraft.world.scores.criteria.IScoreboardCriteria", // Bukkit 1.17.+
+                    "world.scores.criteria.ObjectiveCriteria", // Mojang mapped
+                    "world.scores.criteria.IScoreboardCriteria", // Bukkit 1.17.+
                     "IScoreboardCriteria", // 1.5.1 - 1.16.5
                     "IObjective" // 1.5.0
             );
             ObjectivePacketClass = BukkitReflection.getClass(
-                    "net.minecraft.network.protocol.game.ClientboundSetObjectivePacket", // Mojang mapped
-                    "net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective", // Bukkit 1.17+
+                    "network.protocol.game.ClientboundSetObjectivePacket", // Mojang mapped
+                    "network.protocol.game.PacketPlayOutScoreboardObjective", // Bukkit 1.17+
                     "PacketPlayOutScoreboardObjective", // 1.7 - 1.16.5
                     "Packet206SetScoreboardObjective" // 1.5 - 1.6.4
             );
@@ -78,13 +77,12 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             IScoreboardCriteria_dummy = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0).get(null);
             newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
             if (minorVersion >= 7) {
-                Component = BukkitReflection.getClass("net.minecraft.network.chat.Component",
-                        "net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
+                Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
             }
             if (minorVersion >= 8) {
                 Class<?> EnumScoreboardHealthDisplay = BukkitReflection.getClass(
-                        "net.minecraft.world.scores.criteria.ObjectiveCriteria$RenderType",
-                        "net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay",
+                        "world.scores.criteria.ObjectiveCriteria$RenderType",
+                        "world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay",
                         "IScoreboardCriteria$EnumScoreboardHealthDisplay",
                         "EnumScoreboardHealthDisplay");
                 healthDisplays = (Enum<?>[]) EnumScoreboardHealthDisplay.getMethod("values").invoke(null);
@@ -96,8 +94,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                 ScoreboardObjective_setDisplayName = ReflectionUtils.getOnlyMethod(ScoreboardObjective, void.class, String.class);
             }
             if (BukkitReflection.is1_20_3Plus()) {
-                NumberFormat = Class.forName("net.minecraft.network.chat.numbers.NumberFormat");
-                newFixedFormat = Class.forName("net.minecraft.network.chat.numbers.FixedFormat").getConstructor(Component);
+                NumberFormat = BukkitReflection.getClass("network.chat.numbers.NumberFormat");
+                newFixedFormat = BukkitReflection.getClass("network.chat.numbers.FixedFormat").getConstructor(Component);
             }
             scorePacketData = new ScorePacketData();
             teamPacketData = new TeamPacketData();
@@ -254,20 +252,17 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         @SneakyThrows
         public ScorePacketData() {
             Class<?> SetScorePacket = BukkitReflection.getClass(
-                    "net.minecraft.network.protocol.game.ClientboundSetScorePacket", // Mojang mapped
-                    "net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore", // Bukkit 1.17+
+                    "network.protocol.game.ClientboundSetScorePacket", // Mojang mapped
+                    "network.protocol.game.PacketPlayOutScoreboardScore", // Bukkit 1.17+
                     "PacketPlayOutScoreboardScore", // 1.7 - 1.16.5
                     "Packet207SetScoreboardScore" // 1.5 - 1.6.4
             );
             if (BukkitReflection.is1_20_3Plus()) {
-                newResetScorePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundResetScorePacket").getConstructor(String.class, String.class);
+                newResetScorePacket = BukkitReflection.getClass("network.protocol.game.ClientboundResetScorePacket").getConstructor(String.class, String.class);
                 newSetScorePacket = SetScorePacket.getConstructor(String.class, String.class, int.class, Component, NumberFormat);
             } else if (BukkitReflection.getMinorVersion() >= 13) {
-                Class<?> EnumScoreboardAction = BukkitReflection.getClass(
-                        "net.minecraft.server.ServerScoreboard$Method", // Mojang mapped
-                        "net.minecraft.server.ScoreboardServer$Action", // Bukkit 1.17+
-                        "ScoreboardServer$Action" // 1.13+
-                );
+                Class<?> EnumScoreboardAction = BukkitReflection.getClass("server.ServerScoreboard$Method",
+                        "server.ScoreboardServer$Action", "ScoreboardServer$Action");
                 newSetScorePacket = SetScorePacket.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
                 scoreboardActions = (Enum<?>[]) EnumScoreboardAction.getMethod("values").invoke(null);
             } else {
@@ -344,11 +339,11 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         @SneakyThrows
         public TeamPacketData() {
             int minorVersion = BukkitReflection.getMinorVersion();
-            Class<?> scoreboardTeam = BukkitReflection.getClass("net.minecraft.world.scores.PlayerTeam", "net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam");
-            Class<?> enumChatFormatClass = BukkitReflection.getClass("net.minecraft.ChatFormatting", "net.minecraft.EnumChatFormat", "EnumChatFormat");
+            Class<?> scoreboardTeam = BukkitReflection.getClass("world.scores.PlayerTeam", "world.scores.ScoreboardTeam", "ScoreboardTeam");
+            Class<?> enumChatFormatClass = BukkitReflection.getClass("ChatFormatting", "EnumChatFormat", "EnumChatFormat");
             TeamPacketClass = BukkitReflection.getClass(
-                    "net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket", // Mojang mapped
-                    "net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam", // Bukkit 1.17+
+                    "network.protocol.game.ClientboundSetPlayerTeamPacket", // Mojang mapped
+                    "network.protocol.game.PacketPlayOutScoreboardTeam", // Bukkit 1.17+
                     "PacketPlayOutScoreboardTeam", // Bukkit 1.7 - 1.16.5
                     "Packet209SetScoreboardTeam" // 1.5 - 1.6.4
             );
@@ -370,8 +365,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             );
             if (minorVersion >= 8) {
                 Class<?> enumNameTagVisibility = BukkitReflection.getClass(
-                        "net.minecraft.world.scores.Team$Visibility", // Mojang mapped
-                        "net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.17+
+                        "world.scores.Team$Visibility", // Mojang mapped
+                        "world.scores.ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.17+
                         "ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.8.1 - 1.16.5
                         "EnumNameTagVisibility" // Bukkit 1.8.0
                 );
@@ -383,11 +378,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                 );
             }
             if (minorVersion >= 9) {
-                Class<?> enumTeamPush = BukkitReflection.getClass(
-                        "net.minecraft.world.scores.Team$CollisionRule", // Mojang mapped
-                        "net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", // Bukkit 1.17+
-                        "ScoreboardTeamBase$EnumTeamPush" // 1.9 - 1.16.5
-                );
+                Class<?> enumTeamPush = BukkitReflection.getClass("world.scores.Team$CollisionRule",
+                        "world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
                 ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumTeamPush);
                 collisionRules = (Enum<?>[]) enumTeamPush.getMethod("values").invoke(null);
             }
@@ -493,14 +485,14 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         @SneakyThrows
         public DisplayPacketData() {
             DisplayObjectiveClass = BukkitReflection.getClass(
-                    "net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket", // Mojang mapped
-                    "net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective", // Bukkit 1.17+
+                    "network.protocol.game.ClientboundSetDisplayObjectivePacket", // Mojang mapped
+                    "network.protocol.game.PacketPlayOutScoreboardDisplayObjective", // Bukkit 1.17+
                     "PacketPlayOutScoreboardDisplayObjective", // Bukkit 1.7 - 1.16.5
                     "Packet208SetScoreboardDisplayObjective" // Bukkit 1.5 - 1.6.4
             );
             DisplayObjective_OBJECTIVE_NAME = ReflectionUtils.getOnlyField(DisplayObjectiveClass, String.class);
             if (BukkitReflection.is1_20_2Plus()) {
-                Class<?> DisplaySlot = Class.forName("net.minecraft.world.scores.DisplaySlot");
+                Class<?> DisplaySlot = BukkitReflection.getClass("world.scores.DisplaySlot");
                 displaySlots = (Object[]) DisplaySlot.getDeclaredMethod("values").invoke(null);
                 DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, DisplaySlot);
                 newDisplayObjective = DisplayObjectiveClass.getConstructor(DisplaySlot, ScoreboardObjective);

@@ -27,10 +27,10 @@ public class PacketHeaderFooter extends HeaderFooter {
     static {
         try {
             if (BukkitReflection.getMinorVersion() >= 8) {
-                Class<?> IChatBaseComponent = BukkitReflection.getClass("net.minecraft.network.chat.Component",
-                        "net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
-                Class<?> HeaderFooterClass = BukkitReflection.getClass("net.minecraft.network.protocol.game.ClientboundTabListPacket",
-                        "net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
+                Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component",
+                        "network.chat.IChatBaseComponent", "IChatBaseComponent");
+                Class<?> HeaderFooterClass = BukkitReflection.getClass("network.protocol.game.ClientboundTabListPacket",
+                        "network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
                 if (BukkitReflection.getMinorVersion() >= 17) {
                     newHeaderFooter = HeaderFooterClass.getConstructor(IChatBaseComponent, IChatBaseComponent);
                 } else {

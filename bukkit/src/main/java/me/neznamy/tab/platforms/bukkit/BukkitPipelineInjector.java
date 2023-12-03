@@ -45,10 +45,9 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     public static void tryLoad() {
         if (BukkitReflection.getMinorVersion() < 8) return;
         try {
-            Class<?> NetworkManager = BukkitReflection.getClass("net.minecraft.network.Connection",
-                    "net.minecraft.network.NetworkManager", "NetworkManager");
-            Class<?> PlayerConnection = BukkitReflection.getClass("net.minecraft.server.network.ServerGamePacketListenerImpl",
-                    "net.minecraft.server.network.PlayerConnection", "PlayerConnection");
+            Class<?> NetworkManager = BukkitReflection.getClass("network.Connection", "network.NetworkManager", "NetworkManager");
+            Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
+                    "server.network.PlayerConnection", "PlayerConnection");
             if (BukkitReflection.is1_20_2Plus()) {
                 NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection.getSuperclass(), NetworkManager);
             } else {

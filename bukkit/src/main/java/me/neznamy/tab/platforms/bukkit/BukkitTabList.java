@@ -247,8 +247,7 @@ public class BukkitTabList implements TabList {
 
         @SneakyThrows
         public SkinData() {
-            Class<?> EntityHuman = BukkitReflection.getClass("net.minecraft.world.entity.player.Player",
-                    "net.minecraft.world.entity.player.EntityHuman", "EntityHuman");
+            Class<?> EntityHuman = BukkitReflection.getClass("world.entity.player.Player", "world.entity.player.EntityHuman", "EntityHuman");
 
             // There is only supposed to be one, however there are exceptions:
             // #1 - CatServer adds another method

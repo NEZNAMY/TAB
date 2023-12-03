@@ -78,15 +78,16 @@ public class BukkitReflection {
      *          if class does not exist
      */
     public static Class<?> getClass(@NotNull String... names) throws ClassNotFoundException {
+        ClassLoader loader = BukkitReflection.class.getClassLoader();
         for (String name : names) {
             try {
                 if (minorVersion >= 17) {
-                    return Class.forName(name);
+                    return Class.forName("net.minecraft." + name);
                 } else {
-                    return getLegacyClass(name);
+                    return loader.loadClass("net.minecraft.server." + serverPackage + "." + name);
                 }
-            } catch (ClassNotFoundException e) {
-                //not the first class name in array
+            } catch (ClassNotFoundException | NullPointerException ignored) {
+                // not the first class name in array
             }
         }
         throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));

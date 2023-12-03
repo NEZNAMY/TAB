@@ -72,20 +72,19 @@ public class DataWatcher implements EntityData {
      */
     public static void load() throws ReflectiveOperationException {
         int minorVersion = BukkitReflection.getMinorVersion();
-        DataWatcher = BukkitReflection.getClass("net.minecraft.network.syncher.SynchedEntityData",
-                "net.minecraft.network.syncher.DataWatcher", "DataWatcher");
+        DataWatcher = BukkitReflection.getClass("network.syncher.SynchedEntityData", "network.syncher.DataWatcher", "DataWatcher");
         if (minorVersion >= 7) {
-            newDataWatcher = DataWatcher.getConstructor(BukkitReflection.getClass("net.minecraft.world.entity.Entity", "Entity"));
+            newDataWatcher = DataWatcher.getConstructor(BukkitReflection.getClass("world.entity.Entity", "Entity"));
         } else {
             newDataWatcher = DataWatcher.getConstructor();
         }
         if (minorVersion >= 9) {
-            DataWatcherObject = BukkitReflection.getClass("net.minecraft.network.syncher.EntityDataAccessor",
-                    "net.minecraft.network.syncher.DataWatcherObject", "DataWatcherObject");
-            Class<?> dataWatcherRegistry = BukkitReflection.getClass("net.minecraft.network.syncher.EntityDataSerializers",
-                    "net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry");
-            Class<?> dataWatcherSerializer = BukkitReflection.getClass("net.minecraft.network.syncher.EntityDataSerializer",
-                    "net.minecraft.network.syncher.DataWatcherSerializer", "DataWatcherSerializer");
+            DataWatcherObject = BukkitReflection.getClass("network.syncher.EntityDataAccessor",
+                    "network.syncher.DataWatcherObject", "DataWatcherObject");
+            Class<?> dataWatcherRegistry = BukkitReflection.getClass("network.syncher.EntityDataSerializers",
+                    "network.syncher.DataWatcherRegistry", "DataWatcherRegistry");
+            Class<?> dataWatcherSerializer = BukkitReflection.getClass("network.syncher.EntityDataSerializer",
+                    "network.syncher.DataWatcherSerializer", "DataWatcherSerializer");
             DataWatcher_register = ReflectionUtils.getMethod(
                     DataWatcher,
                     new String[]{"define", "register", "a", "m_135372_"}, // {Mojang, Bukkit, Bukkit 1.18+, Mohist 1.18.2}
