@@ -14,10 +14,9 @@ import org.jetbrains.annotations.NotNull;
  * TabList names - anti-override
  * NameTags - anti-override
  * Scoreboard - disabling tab's scoreboard to prevent conflict
- * SpectatorFix - to change game mode to something else than spectator
- * PetFix - to remove owner field from entity data
  * PingSpoof - full feature functionality
  * Unlimited name tags - replacement for bukkit events with much better accuracy and reliability
+ * NickCompatibility - Detect name changes from other plugins
  */
 public abstract class PipelineInjector extends TabFeature implements JoinListener, Loadable, UnLoadable {
 
