@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import com.mojang.authlib.GameProfile;
-import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
 import me.neznamy.tab.platforms.bukkit.BukkitTabList;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
@@ -33,7 +33,7 @@ public class NMSStorage {
 
     /** Basic universal values */
     protected Class<?> Packet;
-    protected Class<?> NetworkManager;
+
     public Class<?> EntityPlayer;
     protected Class<?> EntityHuman;
     protected Class<?> PlayerConnection;
@@ -42,8 +42,7 @@ public class NMSStorage {
     public Field PING;
 
     public Field PLAYER_CONNECTION;
-    public Field NETWORK_MANAGER;
-    public Field CHANNEL;
+
     public Method getHandle;
     public Method sendPacket;
     public Method getProfile;
@@ -63,18 +62,13 @@ public class NMSStorage {
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
         if (minorVersion >= 7) {
-            if (BukkitReflection.is1_20_2Plus()) {
-                NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection.getSuperclass(), NetworkManager);
-            } else {
-                NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection, NetworkManager);
-            }
             sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         } else {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
         if (minorVersion >= 8) {
+            BukkitPipelineInjector.tryLoad();
             ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
-            CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
 
             // There is only supposed to be one, however there are exceptions:
             // #1 - CatServer adds another method
@@ -98,14 +92,12 @@ public class NMSStorage {
         if (minorVersion >= 17 && ReflectionUtils.classExists("net.minecraft.ChatFormatting")) {
             ChatSerializer = Class.forName("net.minecraft.network.chat.Component$Serializer");
             EntityHuman = Class.forName("net.minecraft.world.entity.player.Player");
-            NetworkManager = Class.forName("net.minecraft.network.Connection");
             Packet = Class.forName("net.minecraft.network.protocol.Packet");
             EntityPlayer = Class.forName("net.minecraft.server.level.ServerPlayer");
             PlayerConnection = Class.forName("net.minecraft.server.network.ServerGamePacketListenerImpl");
         } else if (minorVersion >= 17) {
             ChatSerializer = Class.forName("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer");
             EntityHuman = Class.forName("net.minecraft.world.entity.player.EntityHuman");
-            NetworkManager = Class.forName("net.minecraft.network.NetworkManager");
             Packet = Class.forName("net.minecraft.network.protocol.Packet");
             EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
             PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
@@ -114,7 +106,6 @@ public class NMSStorage {
             Packet = BukkitReflection.getLegacyClass("Packet");
             EntityPlayer = BukkitReflection.getLegacyClass("EntityPlayer");
             PlayerConnection = BukkitReflection.getLegacyClass("PlayerConnection");
-            NetworkManager = BukkitReflection.getLegacyClass("NetworkManager");
             if (minorVersion >= 7) {
                 ChatSerializer = BukkitReflection.getLegacyClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
             }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
@@ -131,7 +132,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
-        return NMSStorage.getInstance().getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
+        return BukkitReflection.getMinorVersion() >= 8 && BukkitPipelineInjector.isAvailable() ? new BukkitPipelineInjector() : null;
     }
 
     @Override
