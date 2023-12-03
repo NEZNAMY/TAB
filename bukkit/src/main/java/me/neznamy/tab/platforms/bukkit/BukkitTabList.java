@@ -2,21 +2,23 @@ package me.neznamy.tab.platforms.bukkit;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabList.Entry.Builder;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -56,8 +58,8 @@ public class BukkitTabList implements TabList {
 
     private static Object[] gameModes;
 
-    @Getter
-    private static boolean available;
+    @Nullable
+    private static SkinData skinData;
 
     /** Player this TabList belongs to */
     private final BukkitTabPlayer player;
@@ -131,13 +133,20 @@ public class BukkitTabList implements TabList {
                 Enum.valueOf(EnumGamemodeClass, "ADVENTURE"),
                 Enum.valueOf(EnumGamemodeClass, "SPECTATOR")
         };
-        available = true;
+
+        try {
+            skinData = new SkinData();
+        } catch (Exception e) {
+            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
+                    "getting player's game profile due to a compatibility error. This will " +
+                    "result in player skins not properly working in layout feature. " +
+                    "Please update the plugin a to version with native support for your server version for optimal experience.");
+        }
     }
 
     @Override
     @SneakyThrows
     public void removeEntry(@NotNull UUID entry) {
-        if (!available) return;
         if (ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
             player.sendPacket(newClientboundPlayerInfoRemovePacket.newInstance(Collections.singletonList(entry)));
@@ -149,25 +158,21 @@ public class BukkitTabList implements TabList {
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        if (!available) return;
         player.sendPacket(createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
-        if (!available) return;
         player.sendPacket(createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        if (!available) return;
         player.sendPacket(createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
     }
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        if (!available) return;
         player.sendPacket(createPacket(Action.ADD_PLAYER, entry));
     }
 
@@ -228,5 +233,44 @@ public class BukkitTabList implements TabList {
                     new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
         }
         return profile;
+    }
+
+    @Nullable
+    public Skin getSkin() {
+        if (skinData == null) return null;
+        return skinData.getSkin(player);
+    }
+
+    private static class SkinData {
+
+        private final Method getProfile;
+
+        @SneakyThrows
+        public SkinData() {
+            Class<?> EntityHuman = BukkitReflection.getClass("net.minecraft.world.entity.player.Player",
+                    "net.minecraft.world.entity.player.EntityHuman", "EntityHuman");
+
+            // There is only supposed to be one, however there are exceptions:
+            // #1 - CatServer adds another method
+            // #2 - Random mods may perform deep hack into the server and add another one (see #1089)
+            // Get first and hope for the best, alternatively players may not have correct skins in layout, but who cares
+            getProfile = ReflectionUtils.getMethods(EntityHuman, GameProfile.class).get(0);
+        }
+
+        @Nullable
+        @SneakyThrows
+        public Skin getSkin(@NotNull BukkitTabPlayer player) {
+            Collection<Property> col = ((GameProfile) getProfile.invoke(player.getHandle())).getProperties().get(TEXTURES_PROPERTY);
+            if (col.isEmpty()) return null; //offline mode
+            Property property = col.iterator().next();
+            if (BukkitReflection.is1_20_2Plus()) {
+                return new Skin(
+                        (String) property.getClass().getMethod("value").invoke(property),
+                        (String) property.getClass().getMethod("signature").invoke(property)
+                );
+            } else {
+                return new Skin(property.getValue(), property.getSignature());
+            }
+        }
     }
 }

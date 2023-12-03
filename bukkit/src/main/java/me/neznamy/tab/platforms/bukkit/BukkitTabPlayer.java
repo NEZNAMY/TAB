@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
@@ -28,8 +26,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-
 /**
  * TabPlayer implementation for Bukkit platform
  */
@@ -51,7 +47,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     private final Scoreboard<BukkitTabPlayer> scoreboard = ScoreboardLoader.getInstance().apply(this);
 
     @NotNull
-    private final TabList tabList = new BukkitTabList(this);
+    private final BukkitTabList tabList = new BukkitTabList(this);
 
     @NotNull
     private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
@@ -115,20 +111,9 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    @SneakyThrows
     @Nullable
     public TabList.Skin getSkin() {
-        Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get(TabList.TEXTURES_PROPERTY);
-        if (col.isEmpty()) return null; //offline mode
-        Property property = col.iterator().next();
-        if (BukkitReflection.is1_20_2Plus()) {
-            return new TabList.Skin(
-                    (String) property.getClass().getMethod("value").invoke(property),
-                    (String) property.getClass().getMethod("signature").invoke(property)
-            );
-        } else {
-            return new TabList.Skin(property.getValue(), property.getSignature());
-        }
+        return tabList.getSkin();
     }
 
     @Override
