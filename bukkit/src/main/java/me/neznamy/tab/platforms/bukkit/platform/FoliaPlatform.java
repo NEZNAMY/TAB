@@ -74,9 +74,10 @@ public class FoliaPlatform extends BukkitPlatform {
      * @param   task
      *          Task to run
      */
+    @Override
     @SneakyThrows
     @SuppressWarnings("JavaReflectionMemberAccess")
-    private void runSync(@NotNull Entity entity, @NotNull Runnable task) {
+    public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
         Object entityScheduler = Entity.class.getMethod("getScheduler").invoke(entity);
         Consumer<?> consumer = $ -> task.run(); // Reflection and lambdas don't go together
         entityScheduler.getClass().getMethod("run", Plugin.class, Consumer.class, Runnable.class)

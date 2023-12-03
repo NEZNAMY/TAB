@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
@@ -13,14 +14,12 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.scoreboard.NameTagVisibility;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.RenderType;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Scoreboard implementation using Bukkit API (1.5.2+). It has several issues:
@@ -50,23 +49,33 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Getter
     private static final boolean available = ReflectionUtils.methodExists(Bukkit.class, "getScoreboardManager");
 
+    /** Array of display slots, because the Bukkit order does not match network ordinals */
+    private static final org.bukkit.scoreboard.DisplaySlot[] slots = new org.bukkit.scoreboard.DisplaySlot[]{
+            org.bukkit.scoreboard.DisplaySlot.PLAYER_LIST,
+            org.bukkit.scoreboard.DisplaySlot.SIDEBAR,
+            org.bukkit.scoreboard.DisplaySlot.BELOW_NAME
+    };
+
     /** Server's minor version */
     private final int serverMinorVersion = BukkitReflection.getMinorVersion();
 
-    @NotNull
-    protected final org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+    protected org.bukkit.scoreboard.Scoreboard scoreboard;
 
+    @SneakyThrows
     public BukkitScoreboard(@NotNull BukkitTabPlayer player) {
         super(player);
 
         // Put player into a different scoreboard for per-player view
-        player.getPlayer().setScoreboard(scoreboard);
+        runSync(() -> {
+            scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+            player.getPlayer().setScoreboard(scoreboard);
+        });
     }
 
     @Override
     public void setDisplaySlot0(int slot, @NotNull String objective) {
         checkPlayerScoreboard();
-        scoreboard.getObjective(objective).setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.values()[slot]);
+        scoreboard.getObjective(objective).setDisplaySlot(slots[slot]);
     }
 
     @Override
@@ -219,11 +228,34 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      * Sadly there is no efficient solution to this, which md_5 fails
      * to understand and keeps saying you don't need packets for scoreboards.
      */
+    @SneakyThrows
     private void checkPlayerScoreboard() {
         if (player.getPlayer().getScoreboard() != scoreboard) {
-            player.getPlayer().setScoreboard(scoreboard);
             TAB.getInstance().getErrorManager().printError("Player " + player.getName() + " was in a different scoreboard " +
                     "than expected. This means another plugin changed player's scoreboard.");
+            runSync(() -> player.getPlayer().setScoreboard(scoreboard));
+        }
+    }
+
+    /**
+     * Runs the task if in main thread. If not, submits the task and waits for the result.
+     *
+     * @param   task
+     *          Task to run
+     */
+    @SneakyThrows
+    private void runSync(@NotNull Runnable task) {
+        if (Bukkit.isPrimaryThread()) {
+            // Server thread (plugin reload)
+            task.run();
+        } else {
+            // Plugin thread (player join)
+            CountDownLatch c = new CountDownLatch(1);
+            player.getPlatform().runSync(player.getPlayer(), () -> {
+                task.run();
+                c.countDown();
+            });
+            c.await();
         }
     }
 }

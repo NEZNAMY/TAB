@@ -295,6 +295,10 @@ public class BukkitPlatform implements BackendPlatform {
         return -1;
     }
 
+    public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
+        Bukkit.getScheduler().runTask(plugin, task);
+    }
+
     public void runEntityTask(@NotNull Entity entity, @NotNull Runnable task) {
         task.run();
     }
