@@ -35,15 +35,12 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitTabList implements TabList {
 
-    // NMS Fields
-
     public static Class<?> PlayerInfoClass;
     private static Constructor<?> newPlayerInfo;
     public static Field ACTION;
     public static Field PLAYERS;
     private static Class<Enum> ActionClass;
     public static Class<?> ClientboundPlayerInfoRemovePacket;
-    private static Class<?> RemoteChatSession$Data;
     private static Constructor<?> newClientboundPlayerInfoRemovePacket;
     private static Class<?> EntityPlayer;
 
@@ -67,48 +64,29 @@ public class BukkitTabList implements TabList {
     public static void load() throws NoSuchMethodException, ClassNotFoundException {
         if (BukkitReflection.getMinorVersion() < 8) return; // Not supported (yet?)
 
-        // Classes
-        Class<?> playerInfoDataClass;
-        Class<?> IChatBaseComponent;
-        Class<Enum> EnumGamemodeClass;
-        if (BukkitReflection.isMojangMapped()) {
-            IChatBaseComponent = Class.forName("net.minecraft.network.chat.Component");
-            EntityPlayer = Class.forName("net.minecraft.server.level.ServerPlayer");
-            EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.GameType");
-            if (BukkitReflection.is1_19_3Plus()) {
-                ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
-                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
-                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action");
-                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Entry");
-                RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$Data");
-            } else {
-                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket");
-                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$Action");
-                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate");
-            }
-        } else if (BukkitReflection.getMinorVersion() >= 17) {
-            IChatBaseComponent = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
-            EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
-            EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.EnumGamemode");
-            if (BukkitReflection.is1_19_3Plus()) {
-                ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
-                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
-                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$a");
-                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$b");
-                RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$a");
-            } else {
-                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo");
-                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
-                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData");
-            }
-        } else {
-            IChatBaseComponent = BukkitReflection.getLegacyClass("IChatBaseComponent");
-            EntityPlayer = BukkitReflection.getLegacyClass("EntityPlayer");
-            PlayerInfoClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo");
-            ActionClass = (Class<Enum>) BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
-            playerInfoDataClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
-            EnumGamemodeClass = (Class<Enum>) BukkitReflection.getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
-        }
+        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
+        Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType",
+                "world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode");
+        EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
+        ActionClass = (Class<Enum>) BukkitReflection.getClass(
+                "network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action", // Mojang 1.19.3+
+                "network.protocol.game.ClientboundPlayerInfoPacket$Action", // Mojang 1.17 - 1.19.2
+                "network.protocol.game.ClientboundPlayerInfoUpdatePacket$a", // Bukkit 1.19.3+
+                "network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", // Bukkit 1.17 - 1.19.2
+                "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", // Bukkit 1.8.1 - 1.16.5
+                "EnumPlayerInfoAction" // Bukkit 1.8.0
+        );
+        PlayerInfoClass = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoUpdatePacket",
+                "network.protocol.game.ClientboundPlayerInfoPacket",
+                "network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo");
+        Class<?> playerInfoDataClass = BukkitReflection.getClass(
+                "network.protocol.game.ClientboundPlayerInfoUpdatePacket$Entry", // Mojang 1.19.3
+                "network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate", // Mojang 1.17 - 1.19.2
+                "network.protocol.game.ClientboundPlayerInfoUpdatePacket$b", // Bukkit 1.19.3+
+                "network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData", // Bukkit 1.17 - 1.19.2
+                "PacketPlayOutPlayerInfo$PlayerInfoData", // Bukkit 1.8.1 - 1.16.5
+                "PlayerInfoData" // Bukkit 1.8.0
+        );
 
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         newPlayerInfoData = playerInfoDataClass.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
@@ -117,6 +95,8 @@ public class BukkitTabList implements TabList {
         PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
         PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(playerInfoDataClass, IChatBaseComponent);
         if (BukkitReflection.is1_19_3Plus()) {
+            ClientboundPlayerInfoRemovePacket = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoRemovePacket");
+            Class<?> RemoteChatSession$Data = BukkitReflection.getClass("network.chat.RemoteChatSession$Data", "network.chat.RemoteChatSession$a");
             newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
             newPlayerInfo = PlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
             ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, EnumSet.class);
