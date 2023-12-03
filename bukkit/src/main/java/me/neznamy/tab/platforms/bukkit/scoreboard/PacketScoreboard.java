@@ -17,8 +17,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 
-import static me.neznamy.tab.platforms.bukkit.nms.BukkitReflection.getLegacyClass;
-
 /**
  * Scoreboard implementation for Bukkit, which uses packets
  * to send scoreboards to use the full potential on all versions
@@ -266,7 +264,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                 newSetScorePacket = SetScorePacket.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
                 scoreboardActions = (Enum<?>[]) EnumScoreboardAction.getMethod("values").invoke(null);
             } else {
-                Class<?> ScoreboardScore = getLegacyClass("ScoreboardScore");
+                Class<?> ScoreboardScore = BukkitReflection.getClass("ScoreboardScore");
                 newSetScorePacket_String = SetScorePacket.getConstructor(String.class);
                 SetScorePacket_SCORE = ReflectionUtils.getFields(SetScorePacket, int.class).get(0);
                 newScoreboardScore = ScoreboardScore.getConstructor(Scoreboard, ScoreboardObjective, String.class);

@@ -17,10 +17,6 @@ public class BukkitReflection {
     @Getter
     private static final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
-    /** Flag determining whether this server jar is mojang mapped or not */
-    @Getter
-    private static final boolean mojangMapped = checkMojangMapped();
-
     /** Flag determining whether the server version is at least 1.19.3 or not */
     @Getter
     private static final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
@@ -37,39 +33,9 @@ public class BukkitReflection {
     @Getter
     private static final boolean is1_20_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundResetScorePacket");
 
-    private static boolean checkMojangMapped() {
-        try {
-            Class.forName("net.minecraft.network.syncher.SynchedEntityData").getMethod("define",
-                    Class.forName("net.minecraft.network.syncher.EntityDataAccessor"), Object.class);
-            return true;
-        } catch (ReflectiveOperationException | NullPointerException ex) {
-            return false;
-        }
-    }
-
     /**
-     * Returns class with given potential names in same order
-     *
-     * @param   names
-     *          possible class names
-     * @return  class for specified names
-     * @throws  ClassNotFoundException
-     *          if class does not exist
-     */
-    public static Class<?> getLegacyClass(@NotNull String... names) throws ClassNotFoundException {
-        for (String name : names) {
-            try {
-                return getLegacyClass(name);
-            } catch (ClassNotFoundException e) {
-                //not the first class name in array
-            }
-        }
-        throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
-    }
-
-    /**
-     * Returns class with given potential names in same order. For 1.17+ it takes exact full class names,
-     * for <1.17 it takes class name only.
+     * Returns class with given potential names in same order. For 1.17+ it takes packaged class names
+     * without "net.minecraft." prefix, for <1.17 it takes class name only.
      *
      * @param   names
      *          possible class names
@@ -91,23 +57,5 @@ public class BukkitReflection {
             }
         }
         throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
-    }
-
-    /**
-     * Returns class from given name. Supports modded servers, such as Thermos.
-     *
-     * @param   name
-     *          class name
-     * @return  class from given name
-     * @throws  ClassNotFoundException
-     *          if class was not found
-     */
-    public static Class<?> getLegacyClass(@NotNull String name) throws ClassNotFoundException {
-        try {
-            return BukkitReflection.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
-        } catch (NullPointerException e) {
-            // nested class not found
-            throw new ClassNotFoundException(name);
-        }
     }
 }
