@@ -238,7 +238,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Nullable
     @SneakyThrows
     private Object toFixedFormat(@Nullable IChatBaseComponent numberFormat) {
-        if (numberFormat == null) return null;
+        if (numberFormat == null || newFixedFormat == null) return null;
         return newFixedFormat.newInstance(toComponent(numberFormat));
     }
 
