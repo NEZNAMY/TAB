@@ -8,7 +8,7 @@ import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
-import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
+import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -48,7 +48,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     private final Object playerConnection;
 
     @NotNull
-    private final Scoreboard<BukkitTabPlayer> scoreboard = new PacketScoreboard(this);
+    private final Scoreboard<BukkitTabPlayer> scoreboard = ScoreboardLoader.getInstance().apply(this);
 
     @NotNull
     private final TabList tabList = new BukkitTabList(this);

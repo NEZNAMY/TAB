@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabList;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
-import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
+import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -87,7 +87,7 @@ public class NMSStorage {
         BukkitTabList.load();
         DataWatcher.load();
         PacketEntityView.load();
-        PacketScoreboard.load();
+        ScoreboardLoader.findInstance();
         HeaderFooter.findInstance();
         if (minorVersion < 17) {
             PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos

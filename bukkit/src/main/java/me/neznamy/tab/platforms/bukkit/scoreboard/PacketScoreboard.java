@@ -52,56 +52,60 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public static TeamPacketData teamPacketData;
     public static DisplayPacketData displayPacketData;
 
-    public static void load() throws ReflectiveOperationException {
-        int minorVersion = BukkitReflection.getMinorVersion();
-        Scoreboard = BukkitReflection.getClass("net.minecraft.world.scores.Scoreboard", "Scoreboard");
-        ScoreboardObjective = BukkitReflection.getClass("net.minecraft.world.scores.Objective",
-                "net.minecraft.world.scores.ScoreboardObjective", "ScoreboardObjective");
-        Class<?> IScoreboardCriteria = BukkitReflection.getClass(
-                "net.minecraft.world.scores.criteria.ObjectiveCriteria", // Mojang mapped
-                "net.minecraft.world.scores.criteria.IScoreboardCriteria", // Bukkit 1.17.+
-                "IScoreboardCriteria", // 1.5.1 - 1.16.5
-                "IObjective" // 1.5.0
-        );
-        ObjectivePacketClass = BukkitReflection.getClass(
-                "net.minecraft.network.protocol.game.ClientboundSetObjectivePacket", // Mojang mapped
-                "net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective", // Bukkit 1.17+
-                "PacketPlayOutScoreboardObjective", // 1.7 - 1.16.5
-                "Packet206SetScoreboardObjective" // 1.5 - 1.6.4
-        );
-        emptyScoreboard = Scoreboard.getConstructor().newInstance();
-        Objective_OBJECTIVE_NAME = ReflectionUtils.getFields(ObjectivePacketClass, String.class).get(0);
-        List<Field> list = ReflectionUtils.getFields(ObjectivePacketClass, int.class);
-        Objective_METHOD = list.get(list.size()-1);
-        newObjectivePacket = ObjectivePacketClass.getConstructor(ScoreboardObjective, int.class);
-        IScoreboardCriteria_dummy = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0).get(null);
-        newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
-        if (minorVersion >= 7) {
-            Component = BukkitReflection.getClass("net.minecraft.network.chat.Component",
-                    "net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
-        }
-        if (minorVersion >= 8) {
-            Class<?> EnumScoreboardHealthDisplay = BukkitReflection.getClass(
-                    "net.minecraft.world.scores.criteria.ObjectiveCriteria$RenderType",
-                    "net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay",
-                    "IScoreboardCriteria$EnumScoreboardHealthDisplay",
-                    "EnumScoreboardHealthDisplay");
-            healthDisplays = (Enum<?>[]) EnumScoreboardHealthDisplay.getMethod("values").invoke(null);
-            if (minorVersion < 13) {
-                Objective_RENDER_TYPE = ReflectionUtils.getOnlyField(ObjectivePacketClass, EnumScoreboardHealthDisplay);
+    static {
+        try {
+            int minorVersion = BukkitReflection.getMinorVersion();
+            Scoreboard = BukkitReflection.getClass("net.minecraft.world.scores.Scoreboard", "Scoreboard");
+            ScoreboardObjective = BukkitReflection.getClass("net.minecraft.world.scores.Objective",
+                    "net.minecraft.world.scores.ScoreboardObjective", "ScoreboardObjective");
+            Class<?> IScoreboardCriteria = BukkitReflection.getClass(
+                    "net.minecraft.world.scores.criteria.ObjectiveCriteria", // Mojang mapped
+                    "net.minecraft.world.scores.criteria.IScoreboardCriteria", // Bukkit 1.17.+
+                    "IScoreboardCriteria", // 1.5.1 - 1.16.5
+                    "IObjective" // 1.5.0
+            );
+            ObjectivePacketClass = BukkitReflection.getClass(
+                    "net.minecraft.network.protocol.game.ClientboundSetObjectivePacket", // Mojang mapped
+                    "net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective", // Bukkit 1.17+
+                    "PacketPlayOutScoreboardObjective", // 1.7 - 1.16.5
+                    "Packet206SetScoreboardObjective" // 1.5 - 1.6.4
+            );
+            emptyScoreboard = Scoreboard.getConstructor().newInstance();
+            Objective_OBJECTIVE_NAME = ReflectionUtils.getFields(ObjectivePacketClass, String.class).get(0);
+            List<Field> list = ReflectionUtils.getFields(ObjectivePacketClass, int.class);
+            Objective_METHOD = list.get(list.size()-1);
+            newObjectivePacket = ObjectivePacketClass.getConstructor(ScoreboardObjective, int.class);
+            IScoreboardCriteria_dummy = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0).get(null);
+            newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
+            if (minorVersion >= 7) {
+                Component = BukkitReflection.getClass("net.minecraft.network.chat.Component",
+                        "net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
             }
+            if (minorVersion >= 8) {
+                Class<?> EnumScoreboardHealthDisplay = BukkitReflection.getClass(
+                        "net.minecraft.world.scores.criteria.ObjectiveCriteria$RenderType",
+                        "net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay",
+                        "IScoreboardCriteria$EnumScoreboardHealthDisplay",
+                        "EnumScoreboardHealthDisplay");
+                healthDisplays = (Enum<?>[]) EnumScoreboardHealthDisplay.getMethod("values").invoke(null);
+                if (minorVersion < 13) {
+                    Objective_RENDER_TYPE = ReflectionUtils.getOnlyField(ObjectivePacketClass, EnumScoreboardHealthDisplay);
+                }
+            }
+            if (minorVersion < 13) {
+                ScoreboardObjective_setDisplayName = ReflectionUtils.getOnlyMethod(ScoreboardObjective, void.class, String.class);
+            }
+            if (BukkitReflection.is1_20_3Plus()) {
+                NumberFormat = Class.forName("net.minecraft.network.chat.numbers.NumberFormat");
+                newFixedFormat = Class.forName("net.minecraft.network.chat.numbers.FixedFormat").getConstructor(Component);
+            }
+            scorePacketData = new ScorePacketData();
+            teamPacketData = new TeamPacketData();
+            displayPacketData = new DisplayPacketData();
+            available = true;
+        } catch (Exception ignored) {
+            // Print exception to find out what went wrong
         }
-        if (minorVersion < 13) {
-            ScoreboardObjective_setDisplayName = ReflectionUtils.getOnlyMethod(ScoreboardObjective, void.class, String.class);
-        }
-        if (BukkitReflection.is1_20_3Plus()) {
-            NumberFormat = Class.forName("net.minecraft.network.chat.numbers.NumberFormat");
-            newFixedFormat = Class.forName("net.minecraft.network.chat.numbers.FixedFormat").getConstructor(Component);
-        }
-        scorePacketData = new ScorePacketData();
-        teamPacketData = new TeamPacketData();
-        displayPacketData = new DisplayPacketData();
-        available = true;
     }
 
     public PacketScoreboard(@NotNull BukkitTabPlayer player) {
