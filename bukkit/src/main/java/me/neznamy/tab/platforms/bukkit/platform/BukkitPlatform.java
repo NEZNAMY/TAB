@@ -17,7 +17,6 @@ import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.BukkitNameTagX;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
@@ -250,17 +249,6 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder();
-    }
-
-    /**
-     * Converts internal component class to platform's component class
-     *
-     * @param component Component to convert
-     * @param version   Game version to convert component for
-     * @return Converted component
-     */
-    public Object toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
-        return NMSStorage.getInstance().componentCache.get(component, version);
     }
 
     @Override

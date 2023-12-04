@@ -11,10 +11,9 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Header/footer sender using Paper's API added in 1.16.5.
- * Due to lack of component cache for adventure components in TAB,
- * there is a performance loss compared to using NMS. However, we do not
- * need to serialize/deserialize anything ourselves thanks to direct component
- * conversion, so in the end it is roughly the same.
+ * Thanks to both cache and direct component conversion, this
+ * implementation is even faster than using NMS components
+ * and is therefore preferred if available.
  */
 public class PaperHeaderFooter extends HeaderFooter {
 

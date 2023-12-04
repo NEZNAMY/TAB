@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabList.Entry.Builder;
+import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -58,12 +59,19 @@ public class BukkitTabList implements TabList {
     @Nullable
     private static SkinData skinData;
 
+    private static Method ChatSerializer_DESERIALIZE;
+    private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
+            (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
+
     /** Player this TabList belongs to */
     private final BukkitTabPlayer player;
 
     public static void load() throws NoSuchMethodException, ClassNotFoundException {
-        if (BukkitReflection.getMinorVersion() < 8) return; // Not supported (yet?)
+        if (BukkitReflection.getMinorVersion() < 8) return; // Not supported
 
+        Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
+                "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
+        ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType",
                 "world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode");
@@ -201,8 +209,8 @@ public class BukkitTabList implements TabList {
         return packet;
     }
 
-    private Object toComponent(IChatBaseComponent component) {
-        return player.getPlatform().toComponent(component, player.getVersion());
+    public Object toComponent(IChatBaseComponent component) {
+        return componentCache.get(component, player.getVersion());
     }
 
     @NotNull

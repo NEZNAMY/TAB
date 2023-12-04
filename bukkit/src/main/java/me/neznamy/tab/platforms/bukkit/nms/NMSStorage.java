@@ -8,8 +8,6 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabList;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -29,11 +27,6 @@ public class NMSStorage {
     public Method getHandle;
     public Method sendPacket;
 
-    private Method ChatSerializer_DESERIALIZE;
-
-    public final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
-            (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
-
     /**
      * Constructs new instance and attempts to load all fields, methods and constructors.
      */
@@ -46,9 +39,6 @@ public class NMSStorage {
         Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
                 "server.network.PlayerConnection", "PlayerConnection");
         if (minorVersion >= 7) {
-            Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
-                    "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
-            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
             sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         } else {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);

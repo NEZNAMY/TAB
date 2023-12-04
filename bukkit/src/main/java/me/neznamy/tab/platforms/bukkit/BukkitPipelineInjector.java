@@ -139,7 +139,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name())) {
                 displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, id);
-                if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
+                if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getTabList().toComponent(newDisplayName);
             }
             if (actions.contains(TabList.Action.UPDATE_LATENCY.name())) {
                 latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, id, BukkitTabList.PlayerInfoData_Latency.getInt(nmsData));
@@ -169,7 +169,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             if (action.equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.equals(TabList.Action.ADD_PLAYER.name())) {
                 Object displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, id);
-                if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
+                if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getTabList().toComponent(newDisplayName);
                 BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
             if (action.equals(TabList.Action.UPDATE_LATENCY.name()) || action.equals(TabList.Action.ADD_PLAYER.name())) {

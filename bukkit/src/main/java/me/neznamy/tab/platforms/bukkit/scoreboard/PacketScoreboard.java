@@ -7,6 +7,7 @@ import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +51,10 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public static TeamPacketData teamPacketData;
     public static DisplayPacketData displayPacketData;
 
+    private static Method ChatSerializer_DESERIALIZE;
+    private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
+            (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
+
     static {
         try {
             int minorVersion = BukkitReflection.getMinorVersion();
@@ -76,6 +81,9 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
             if (minorVersion >= 7) {
                 Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
+                Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
+                        "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
+                ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
             }
             if (minorVersion >= 8) {
                 Class<?> EnumScoreboardHealthDisplay = BukkitReflection.getClass(
@@ -228,7 +236,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Nullable
     private Object toComponent(@Nullable IChatBaseComponent component) {
         if (component == null || BukkitReflection.getMinorVersion() < 8) return null;
-        return player.getPlatform().toComponent(component, player.getVersion());
+        return componentCache.get(component, player.getVersion());
     }
 
     @Nullable

@@ -1,11 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.*;
-import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +38,11 @@ public class DataWatcher implements EntityData {
     private static Object DataWatcherSerializer_BOOLEAN;
 
     private static final int armorStandFlagsPosition = getArmorStandFlagsPosition();
-    
+
+    private static Method ChatSerializer_DESERIALIZE;
+    private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
+            (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
+
     /** Watched data */
     private final Map<Integer, Item> dataValues = new HashMap<>();
 
@@ -74,6 +77,9 @@ public class DataWatcher implements EntityData {
         int minorVersion = BukkitReflection.getMinorVersion();
         DataWatcher = BukkitReflection.getClass("network.syncher.SynchedEntityData", "network.syncher.DataWatcher", "DataWatcher");
         if (minorVersion >= 7) {
+            Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
+                    "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
+            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
             newDataWatcher = DataWatcher.getConstructor(BukkitReflection.getClass("world.entity.Entity", "Entity"));
         } else {
             newDataWatcher = DataWatcher.getConstructor();
@@ -161,7 +167,7 @@ public class DataWatcher implements EntityData {
     public void setCustomName(@NotNull String customName, @NotNull ProtocolVersion clientVersion) {
         if (BukkitReflection.getMinorVersion() >= 13) {
             setValue(2, DataWatcherSerializer_OPTIONAL_COMPONENT,
-                    Optional.of(((BukkitPlatform)TAB.getInstance().getPlatform()).toComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
+                    Optional.of(componentCache.get(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
         } else if (BukkitReflection.getMinorVersion() >= 8) {
             setValue(2, DataWatcherSerializer_STRING, customName);
         } else {
