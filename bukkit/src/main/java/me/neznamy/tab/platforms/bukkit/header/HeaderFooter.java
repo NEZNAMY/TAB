@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.header;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.bukkit.Bukkit;
@@ -25,7 +25,7 @@ public abstract class HeaderFooter {
     public static void findInstance() {
         if (PaperHeaderFooter.isAvailable()) {
             instance = new PaperHeaderFooter();
-        } else if (PacketHeaderFooter.isAvailable()) {
+        } else if (PacketHeaderFooter.isAvailable() && PacketSender.isAvailable()) {
             instance = new PacketHeaderFooter();
         } else if (BukkitHeaderFooter.isAvailable()) {
             instance = new BukkitHeaderFooter();
@@ -33,7 +33,7 @@ public abstract class HeaderFooter {
                     "sending Header/Footer due to a compatibility error. Using fallback solution using Bukkit API. " +
                     "This will drastically drop performance, as well as miss support for fonts (added in 1.16). " +
                     "Please update the plugin to version with proper support for your server version.");
-        } else if (BukkitReflection.getMinorVersion() >= 8) {
+        } else {
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
                     "sending Header/Footer due to a compatibility error. No fallback solution was found either. This will " +
                     "result in the feature not working. " +

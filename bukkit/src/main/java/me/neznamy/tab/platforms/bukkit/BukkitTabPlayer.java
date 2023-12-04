@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
+import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
@@ -14,7 +15,6 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.platforms.bukkit.bossbar.EntityBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
@@ -34,14 +34,6 @@ import org.jetbrains.annotations.Nullable;
 public class BukkitTabPlayer extends BackendTabPlayer {
 
     private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
-
-    /** Player's NMS handle (EntityPlayer), preloading for speed */
-    @NotNull
-    private final Object handle;
-
-    /** Player's connection for sending packets, preloading for speed */
-    @NotNull
-    private final Object playerConnection;
 
     @NotNull
     private final Scoreboard<BukkitTabPlayer> scoreboard = ScoreboardLoader.getInstance().apply(this);
@@ -64,11 +56,8 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      * @param   p
      *          bukkit player
      */
-    @SneakyThrows
     public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
         super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName());
-        handle = NMSStorage.getInstance().getHandle.invoke(player);
-        playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
     }
 
     @Override
@@ -84,8 +73,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @SneakyThrows
     public void sendPacket(@NotNull Object nmsPacket) {
-        if (!getPlayer().isOnline()) return;
-        NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
+        PacketSender.sendPacket(getPlayer(), nmsPacket);
     }
 
     @Override

@@ -231,12 +231,13 @@ public class BukkitTabList implements TabList {
 
     private static class SkinData {
 
+        private final Method getHandle;
         private final Method getProfile;
 
         @SneakyThrows
         public SkinData() {
             Class<?> EntityHuman = BukkitReflection.getClass("world.entity.player.Player", "world.entity.player.EntityHuman", "EntityHuman");
-
+            getHandle = Class.forName("org.bukkit.craftbukkit." + BukkitReflection.getServerPackage() + ".entity.CraftPlayer").getMethod("getHandle");
             // There is only supposed to be one, however there are exceptions:
             // #1 - CatServer adds another method
             // #2 - Random mods may perform deep hack into the server and add another one (see #1089)
@@ -247,7 +248,7 @@ public class BukkitTabList implements TabList {
         @Nullable
         @SneakyThrows
         public Skin getSkin(@NotNull BukkitTabPlayer player) {
-            Collection<Property> col = ((GameProfile) getProfile.invoke(player.getHandle())).getProperties().get(TEXTURES_PROPERTY);
+            Collection<Property> col = ((GameProfile) getProfile.invoke(getHandle.invoke(player.getPlayer()))).getProperties().get(TEXTURES_PROPERTY);
             if (col.isEmpty()) return null; //offline mode
             Property property = col.iterator().next();
             if (BukkitReflection.is1_20_2Plus()) {

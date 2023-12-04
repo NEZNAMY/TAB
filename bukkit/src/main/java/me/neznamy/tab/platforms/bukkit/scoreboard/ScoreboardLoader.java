@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.bukkit.Bukkit;
@@ -18,7 +19,7 @@ public class ScoreboardLoader {
      * Finds the best available instance for current server software.
      */
     public static void findInstance() {
-        if (PacketScoreboard.isAvailable()) {
+        if (PacketScoreboard.isAvailable() && PacketSender.isAvailable()) {
             instance = PacketScoreboard::new;
         } else if (PaperScoreboard.isAvailable()) {
             instance = PaperScoreboard::new;
