@@ -47,19 +47,26 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     /** Flag tracking whether this implementation is available for use */
     @Getter
-    private static final boolean available = ReflectionUtils.methodExists(Bukkit.class, "getScoreboardManager");
+    private static final boolean available;
 
     /** Array of display slots, because the Bukkit order does not match network ordinals */
-    private static final org.bukkit.scoreboard.DisplaySlot[] slots = new org.bukkit.scoreboard.DisplaySlot[]{
-            org.bukkit.scoreboard.DisplaySlot.PLAYER_LIST,
-            org.bukkit.scoreboard.DisplaySlot.SIDEBAR,
-            org.bukkit.scoreboard.DisplaySlot.BELOW_NAME
-    };
+    private static org.bukkit.scoreboard.DisplaySlot[] slots;
 
     /** Server's minor version */
     private final int serverMinorVersion = BukkitReflection.getMinorVersion();
 
     protected org.bukkit.scoreboard.Scoreboard scoreboard;
+
+    static {
+        available = ReflectionUtils.methodExists(Bukkit.class, "getScoreboardManager");
+        if (available) {
+            slots = new org.bukkit.scoreboard.DisplaySlot[]{
+                    org.bukkit.scoreboard.DisplaySlot.PLAYER_LIST,
+                    org.bukkit.scoreboard.DisplaySlot.SIDEBAR,
+                    org.bukkit.scoreboard.DisplaySlot.BELOW_NAME
+            };
+        }
+    }
 
     @SneakyThrows
     public BukkitScoreboard(@NotNull BukkitTabPlayer player) {
