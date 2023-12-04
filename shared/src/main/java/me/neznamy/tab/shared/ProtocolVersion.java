@@ -72,7 +72,9 @@ public enum ProtocolVersion {
     V1_6_1  (73),
     V1_5_2  (61),
     V1_5_1  (60),
-    V1_5    (60);
+    V1_5    (60),
+    V1_4_7  (51),
+    V1_4_6  (51);
 
     /** Newest MC version this plugin jar knows */
     public static final ProtocolVersion LATEST_KNOWN_VERSION = ProtocolVersion.V1_20_2;
@@ -109,7 +111,7 @@ public enum ProtocolVersion {
      */
     ProtocolVersion(@NotNull String friendlyName) {
         this.networkId = 999;
-        this.minorVersion = 18;
+        this.minorVersion = 20;
         this.friendlyName = friendlyName;
     }
 
