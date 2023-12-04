@@ -3,8 +3,8 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
-import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
+import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
@@ -79,10 +79,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     @SneakyThrows
     public int getPing() {
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            return getPlayer().getPing();
-        }
-        return NMSStorage.getInstance().PING.getInt(handle);
+        return PingRetriever.getPing(getPlayer());
     }
 
     @SneakyThrows

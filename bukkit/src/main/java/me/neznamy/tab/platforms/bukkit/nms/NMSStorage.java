@@ -21,8 +21,6 @@ public class NMSStorage {
     /** Instance of this class */
     @Getter @Setter private static NMSStorage instance;
 
-    // Ping field for 1.5.2 - 1.16.5, 1.17+ has Player#getPing()
-    public Field PING;
     public Field PLAYER_CONNECTION;
     public Method getHandle;
     public Method sendPacket;
@@ -51,10 +49,8 @@ public class NMSStorage {
         getHandle = Class.forName("org.bukkit.craftbukkit." + BukkitReflection.getServerPackage() + ".entity.CraftPlayer").getMethod("getHandle");
         DataWatcher.load();
         PacketEntityView.load();
+        PingRetriever.tryLoad();
         ScoreboardLoader.findInstance();
         HeaderFooter.findInstance();
-        if (minorVersion < 17) {
-            PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
-        }
     }
 }
