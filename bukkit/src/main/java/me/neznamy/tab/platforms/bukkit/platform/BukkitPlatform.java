@@ -148,7 +148,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public NameTag getUnlimitedNameTags() {
-        return new BukkitNameTagX(plugin);
+        return BukkitReflection.getMinorVersion() >= 8 ? new BukkitNameTagX(plugin) : new NameTag();
     }
 
     @Override

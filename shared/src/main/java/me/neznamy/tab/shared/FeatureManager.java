@@ -364,7 +364,7 @@ public class FeatureManager {
 
         // Must be loaded after: Sorting
         if (teams) {
-            if (unlimitedTags && minorVersion >= 8) {
+            if (unlimitedTags) {
                 NameTag unlimited = TAB.getInstance().getPlatform().getUnlimitedNameTags();
                 if (unlimited instanceof NameTagX) {
                     featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, unlimited);
