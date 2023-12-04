@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
@@ -73,7 +74,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     @NotNull
     public List<Integer> getPassengers(@NotNull Object entity) {
         Entity vehicle = (Entity) entity;
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 11) {
+        if (BukkitReflection.getMinorVersion() >= 11) {
             return vehicle.getPassengers().stream().map(Entity::getEntityId).collect(Collectors.toList());
         } else {
             if (vehicle.getPassenger() != null) {
@@ -109,13 +110,13 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     @Override
     public boolean isSwimming(@NotNull TabPlayer player) {
         Player p = (Player) player.getPlayer();
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14 && p.getPose() == Pose.SWIMMING) return true;
-        return TAB.getInstance().getServerVersion().getMinorVersion() == 13 && p.isSwimming();
+        if (BukkitReflection.getMinorVersion() >= 14 && p.getPose() == Pose.SWIMMING) return true;
+        return BukkitReflection.getMinorVersion() == 13 && p.isSwimming();
     }
 
     @Override
     public boolean isGliding(@NotNull TabPlayer player) {
-        return TAB.getInstance().getServerVersion().getMinorVersion() >= 9 && ((Player)player.getPlayer()).isGliding();
+        return BukkitReflection.getMinorVersion() >= 9 && ((Player)player.getPlayer()).isGliding();
     }
 
     @Override

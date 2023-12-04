@@ -135,6 +135,7 @@ public class BukkitTabList implements TabList {
     @Override
     @SneakyThrows
     public void removeEntry(@NotNull UUID entry) {
+        if (PlayerInfoClass == null) return;
         if (ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
             player.sendPacket(newClientboundPlayerInfoRemovePacket.newInstance(Collections.singletonList(entry)));
@@ -146,21 +147,25 @@ public class BukkitTabList implements TabList {
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+        if (PlayerInfoClass == null) return;
         player.sendPacket(createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
+        if (PlayerInfoClass == null) return;
         player.sendPacket(createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
+        if (PlayerInfoClass == null) return;
         player.sendPacket(createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
     }
 
     @Override
     public void addEntry(@NotNull Entry entry) {
+        if (PlayerInfoClass == null) return;
         player.sendPacket(createPacket(Action.ADD_PLAYER, entry));
     }
 

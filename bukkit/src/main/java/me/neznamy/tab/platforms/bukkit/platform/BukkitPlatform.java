@@ -5,7 +5,11 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
+import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
+import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
+import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
@@ -93,6 +97,13 @@ public class BukkitPlatform implements BackendPlatform {
             spigotTps = server.getClass().getField("recentTps");
         } catch (ReflectiveOperationException e) {
             //not spigot
+        }
+        PingRetriever.tryLoad();
+        PacketSender.tryLoad();
+        ScoreboardLoader.findInstance();
+        if (BukkitReflection.getMinorVersion() >= 8) {
+            BukkitPipelineInjector.tryLoad();
+            HeaderFooter.findInstance();
         }
     }
 
@@ -236,7 +247,7 @@ public class BukkitPlatform implements BackendPlatform {
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM,
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
-                () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
+                () -> "1." + BukkitReflection.getMinorVersion() + ".x"));
     }
 
     @Override

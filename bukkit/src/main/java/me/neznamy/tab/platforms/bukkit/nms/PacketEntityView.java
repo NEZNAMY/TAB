@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
@@ -255,7 +254,7 @@ public class PacketEntityView implements EntityView {
             SpawnEntity_EntityType.set(nmsPacket, entityIds.get((EntityType) entityType));
             player.sendPacket(nmsPacket);
         }
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
+        if (BukkitReflection.getMinorVersion() >= 15) {
             updateEntityMetadata(entityId, data);
         }
     }

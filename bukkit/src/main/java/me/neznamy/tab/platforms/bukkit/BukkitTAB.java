@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.*;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.platform.FoliaPlatform;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -40,7 +40,9 @@ public class BukkitTAB extends JavaPlugin {
      */
     private boolean isVersionSupported() {
         try {
-            NMSStorage.setInstance(new NMSStorage());
+            DataWatcher.load();
+            PacketEntityView.load();
+            BukkitTabList.load();
             return true;
         } catch (Exception ex) {
             if (ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]) == ProtocolVersion.UNKNOWN_SERVER_VERSION) {

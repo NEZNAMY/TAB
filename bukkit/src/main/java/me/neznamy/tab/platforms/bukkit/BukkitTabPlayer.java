@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
@@ -16,7 +17,6 @@ import me.neznamy.tab.platforms.bukkit.bossbar.EntityBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -42,8 +42,8 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     private final BukkitTabList tabList = new BukkitTabList(this);
 
     @NotNull
-    private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
-            new BukkitBossBar(this) : getVersion().getMinorVersion() >= 9 ? new ViaBossBar(this) : new EntityBossBar(this);
+    private final BossBar bossBar = BukkitReflection.getMinorVersion() >= 9 ? new BukkitBossBar(this) :
+            getVersion().getMinorVersion() >= 9 ? new ViaBossBar(this) : new EntityBossBar(this);
 
     @NotNull
     private final EntityView entityView = new PacketEntityView(this);

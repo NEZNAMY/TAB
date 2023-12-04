@@ -2,7 +2,6 @@ package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -85,7 +84,7 @@ public enum ProtocolVersion {
      * set minor version of UNKNOWN_SERVER_VERSION value to value from package to fix compatibility
      * with server forks that set bukkit version field value to "Unknown".
      */
-    @Setter private int minorVersion;
+    private final int minorVersion;
 
     /** Version's friendly name displayed in %player-version% placeholder */
     @NotNull private final String friendlyName;
