@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -42,7 +43,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
-                refreshed.getScoreboard().updateTeam(teamName, refreshed.getProperty(textProperty).get(),
+                refreshed.getScoreboard().updateTeam(teamName, EnumChatFormat.WHITE.getFormat() + refreshed.getProperty(textProperty).get(),
                         "", Scoreboard.NameVisibility.ALWAYS, Scoreboard.CollisionRule.ALWAYS, 0);
             } else {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());
@@ -63,7 +64,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
         getScoreRefresher().registerProperties(p);
         String value = p.getProperty(textProperty).get();
         if (p.getVersion().getMinorVersion() >= 13) {
-            addLine(p, playerName, value, "");
+            addLine(p, playerName, EnumChatFormat.WHITE.getFormat() + value, "");
             p.setProperty(this, nameProperty, playerName);
         } else {
             String[] values = splitText(

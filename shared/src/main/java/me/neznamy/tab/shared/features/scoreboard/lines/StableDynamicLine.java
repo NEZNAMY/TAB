@@ -113,8 +113,9 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      * @return  array of 2 elements for prefix and suffix
      */
     private String[] split(@NonNull TabPlayer p, @NonNull String text) {
+        if (p.getVersion().getMinorVersion() >= 13) return new String[] {EnumChatFormat.WHITE.getFormat() + text, ""};
         int charLimit = 16;
-        if (text.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
+        if (text.length() > charLimit) {
             StringBuilder prefix = new StringBuilder(text);
             StringBuilder suffix = new StringBuilder(text);
             prefix.setLength(charLimit);

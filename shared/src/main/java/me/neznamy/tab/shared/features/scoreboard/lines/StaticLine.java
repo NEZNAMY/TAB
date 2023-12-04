@@ -61,7 +61,7 @@ public class StaticLine extends ScoreboardLine {
     public void register(@NonNull TabPlayer p) {
         getScoreRefresher().registerProperties(p);
         if (p.getVersion().getMinorVersion() >= 13) {
-            addLine(p, playerName, text, "");
+            addLine(p, playerName, EnumChatFormat.WHITE.getFormat() + text, "");
         } else if (p.getVersion().getMinorVersion() >= 8) {
             addLine(p, name, prefix, suffix);
         } else {
