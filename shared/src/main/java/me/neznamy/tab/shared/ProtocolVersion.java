@@ -77,7 +77,7 @@ public enum ProtocolVersion {
     V1_4_6  (51);
 
     /** Newest MC version this plugin jar knows */
-    public static final ProtocolVersion LATEST_KNOWN_VERSION = ProtocolVersion.V1_20_2;
+    public static final ProtocolVersion LATEST_KNOWN_VERSION = ProtocolVersion.V1_20_3;
 
     /** Version's network id found at <a href="https://wiki.vg/Protocol_version_numbers">wiki.vg</a> */
     private final int networkId;
