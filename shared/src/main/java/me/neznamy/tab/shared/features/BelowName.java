@@ -33,8 +33,8 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     
     private final String rawNumber = TAB.getInstance().getConfig().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = TAB.getInstance().getConfig().getString("belowname-objective.text", "Health");
-    private final String npcText = TAB.getInstance().getConfig().getString("belowname-objective.npc-text", "NPC");
-    private final String fancyDisplay = TAB.getInstance().getConfig().getString("belowname-objective.fancy-display", "&c" + TabConstants.Placeholder.HEALTH);
+    private final String fancyDisplayDefault = TAB.getInstance().getConfig().getString("belowname-objective.fancy-display-default", "NPC");
+    private final String fancyDisplayPlayers = TAB.getInstance().getConfig().getString("belowname-objective.fancy-display-players", "&c" + TabConstants.Placeholder.HEALTH);
 
     private final TextRefresher textRefresher = new TextRefresher(this);
     private final DisableChecker disableChecker;
@@ -53,9 +53,9 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
             loaded.setProperty(this, NUMBER_PROPERTY, rawNumber);
-            loaded.setProperty(this, FANCY_FORMAT_PROPERTY, fancyDisplay);
+            loaded.setProperty(this, FANCY_FORMAT_PROPERTY, fancyDisplayPlayers);
             loaded.setProperty(textRefresher, TEXT_PROPERTY, rawText);
-            loaded.setProperty(textRefresher, DEFAULT_FORMAT_PROPERTY, npcText);
+            loaded.setProperty(textRefresher, DEFAULT_FORMAT_PROPERTY, fancyDisplayDefault);
             if (disableChecker.isDisableConditionMet(loaded)) {
                 disableChecker.addDisabledPlayer(loaded);
                 continue;
@@ -87,9 +87,9 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         connectedPlayer.setProperty(this, NUMBER_PROPERTY, rawNumber);
-        connectedPlayer.setProperty(this, FANCY_FORMAT_PROPERTY, fancyDisplay);
+        connectedPlayer.setProperty(this, FANCY_FORMAT_PROPERTY, fancyDisplayPlayers);
         connectedPlayer.setProperty(textRefresher, TEXT_PROPERTY, rawText);
-        connectedPlayer.setProperty(textRefresher, DEFAULT_FORMAT_PROPERTY, npcText);
+        connectedPlayer.setProperty(textRefresher, DEFAULT_FORMAT_PROPERTY, fancyDisplayDefault);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             disableChecker.addDisabledPlayer(connectedPlayer);
             return;

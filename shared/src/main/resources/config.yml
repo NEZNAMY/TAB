@@ -67,7 +67,7 @@ scoreboard-teams:
 playerlist-objective:
   enabled: true
   value: "%ping%"
-  fancy-value: "&e%ping%"
+  fancy-value: "&7Ping: %ping%"
   disable-condition: '%world%=disabledworld'
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname
@@ -75,8 +75,8 @@ belowname-objective:
   enabled: false
   number: "%health%"
   text: "&cHealth"
-  npc-text: "NPC"
-  fancy-display: "&c%health%"
+  fancy-display-players: "&c%health%"
+  fancy-display-default: "NPC"
   disable-condition: '%world%=disabledworld'
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix
@@ -107,32 +107,36 @@ scoreboard:
   delay-on-join-milliseconds: 0
   respect-other-plugins: true
   scoreboards:
-    admin:
-      # Only players with tab.scoreboard.admin can see this scoreboard, others will see scoreboard1
-      display-condition: "permission:tab.scoreboard.admin"
-      title: "Admin scoreboard"
+    scoreboard-1.20.3+:
+      title: "<#E0B11E>MyServer</#FF0000>"
+      display-condition: "%player-version-id%>=765" # Only display it to 1.20.3+ players
       lines:
+        - "&7%date%"
+        - "%animation:MyAnimation1%"
+        - "&6Online:"
+        - "* &eOnline&7:|%online%"
+        - "* &eCurrent World&7:|%worldonline%"
+        - "* &eStaff&7:|%staffonline%"
+        - ""
+        - "&6Personal Info:"
+        - "* &bRank&7:|%group%"
+        - "* &bPing&7:|%ping%&8ms"
+        - "* &bWorld&7:|%world%"
+        - "%animation:MyAnimation1%"
+
+    scoreboard:
+      title: "<#E0B11E>MyServer</#FF0000>"
+      lines:
+        - "&7%date%"
         - "%animation:MyAnimation1%"
         - "&6Online:"
         - "* &eOnline&7: &f%online%"
         - "* &eCurrent World&7: &f%worldonline%"
         - "* &eStaff&7: &f%staffonline%"
-        - " "
-        - "&6Server Info:"
-        - "* &bMemory&7: &f%memory-used%&7/&4%memory-max%"
-        - "%animation:MyAnimation1%"
-    scoreboard1:
-      title: "Default"
-      lines:
-        - "%animation:MyAnimation1%"
-        - "&6My Stats:"
-        - "* &eKills&7: &f%statistic_player_kills%"
-        - "* &eDeaths&7: &f%statistic_deaths%"
-        - "* &eHealth&7: &f%health%"
-        - " "
+        - ""
         - "&6Personal Info:"
         - "* &bRank&7: &f%group%"
-        - "* &bPing&7: &f%ping%&7ms"
+        - "* &bPing&7: &f%ping%&8ms"
         - "* &bWorld&7: &f%world%"
         - "%animation:MyAnimation1%"
 

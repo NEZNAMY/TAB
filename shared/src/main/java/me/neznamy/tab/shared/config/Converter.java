@@ -434,12 +434,12 @@ public class Converter {
         if (config.hasConfigOption("yellow-number-in-tablist")) {
             TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 4.0.9 to 4.1.0"));
             Map<Object, Object> section = config.getConfigurationSection("yellow-number-in-tablist");
-            section.put("fancy-value", "&e%ping%");
+            section.put("fancy-value", "&7Ping: %ping%");
             config.set("yellow-number-in-tablist", null);
             config.set("playerlist-objective", section);
         }
-        config.setIfMissing("belowname-objective.npc-text", "NPC");
-        config.setIfMissing("belowname-objective.fancy-display", "&c" + TabConstants.Placeholder.HEALTH);
+        config.setIfMissing("belowname-objective.fancy-display-default", "NPC");
+        config.setIfMissing("belowname-objective.fancy-display-players", "&c" + TabConstants.Placeholder.HEALTH);
         config.removeOption("tablist-name-formatting.align-tabsuffix-on-the-right");
         config.removeOption("tablist-name-formatting.character-width-overrides");
     }

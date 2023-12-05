@@ -35,7 +35,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
 
     /** Numeric value to display */
     private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("playerlist-objective.value", TabConstants.Placeholder.PING);
-    private final String rawValueFancy = TAB.getInstance().getConfiguration().getConfig().getString("playerlist-objective.fancy-value", "&e" + TabConstants.Placeholder.PING);
+    private final String rawValueFancy = TAB.getInstance().getConfiguration().getConfig().getString("playerlist-objective.fancy-value", "&7Ping: %ping%");
 
     /** Scoreboard display type */
     private final int displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) ||
