@@ -211,14 +211,14 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     }
 
     /**
-     * Splits text using {@code "|"} symbol, where first part is text to display and
+     * Splits text using {@code "||"} string, where first part is text to display and
      * second part is number format (optional)
      *
      * @param   text
      *          Inputted text to categorize
      */
     protected void initializeText(@NotNull String text) {
-        String[] split = text.split("\\|");
+        String[] split = text.split("\\|\\|");
         this.text = split[0];
         this.numberFormat = split.length >= 2 ? split[1] : "";
     }
