@@ -35,9 +35,7 @@ public class ViaVersionHook {
         if (!installed) return TAB.getInstance().getServerVersion().getNetworkId();
         int version = Via.getAPI().getPlayerVersion(player);
         if (version == -1) {
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("ViaVersion returned protocol version -1 for player " + playerName +
-                    ". Using server's version (" + TAB.getInstance().getServerVersion().getNetworkId() + " - " +
-                    TAB.getInstance().getServerVersion().getFriendlyName() + ")"));
+            // Player got instantly disconnected with a packet error
             return TAB.getInstance().getServerVersion().getNetworkId();
         }
         ProtocolVersion protocol = ProtocolVersion.fromNetworkId(version);
