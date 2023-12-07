@@ -13,8 +13,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
         String[] modules = {
-                "v1_14_4",
-                "v1_15_2",
+                "v1_15_2", // 1.14.4, 1.15.2
                 "v1_16_5",
                 "v1_17_1", // 1.17, 1.17.1
                 "v1_18_2", // 1.18, 1.18.1, 1.18.2

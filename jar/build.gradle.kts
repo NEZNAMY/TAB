@@ -14,7 +14,6 @@ val platforms = setOf(
 
 val fabrics = setOf(
     rootProject.projects.fabric,
-    rootProject.projects.fabric.v1144,
     rootProject.projects.fabric.v1152,
     rootProject.projects.fabric.v1165,
     rootProject.projects.fabric.v1171,

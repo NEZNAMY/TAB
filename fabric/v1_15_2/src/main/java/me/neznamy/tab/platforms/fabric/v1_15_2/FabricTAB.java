@@ -37,7 +37,7 @@ public class FabricTAB implements VersionLoader {
 
     @Override
     public List<String> getSupportedVersions() {
-        return Collections.singletonList("1.15.2");
+        return Arrays.asList("1.14.4", "1.15.2");
     }
 
     @Override
@@ -100,7 +100,13 @@ public class FabricTAB implements VersionLoader {
     }
 
     @Override
+    @SneakyThrows
     public boolean isSneaking(ServerPlayer player) {
+        if (getServerVersion().equals("1.14.4")) {
+            return (boolean) player.getClass().getMethod("method_5715").invoke(player);
+        }
+
+        // 1.15.2
         return player.isCrouching();
     }
 
@@ -111,7 +117,8 @@ public class FabricTAB implements VersionLoader {
         data.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT),
                 Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion())));
         data.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
-        data.define(new EntityDataAccessor<>(14, EntityDataSerializers.BYTE), (byte)16);
+        int markerPosition = viewer.getPlatform().getServerVersion().getMinorVersion() >= 15 ? 14 : 13;
+        data.define(new EntityDataAccessor<>(markerPosition, EntityDataSerializers.BYTE), (byte)16);
         return () -> data;
     }
 
