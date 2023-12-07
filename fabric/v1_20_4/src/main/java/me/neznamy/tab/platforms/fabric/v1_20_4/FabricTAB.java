@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.fabric.v1_20_3;
+package me.neznamy.tab.platforms.fabric.v1_20_4;
 
 import com.mojang.authlib.properties.Property;
 import lombok.SneakyThrows;
@@ -36,7 +36,7 @@ public class FabricTAB implements VersionLoader {
 
     @Override
     public List<String> getSupportedVersions() {
-        return Collections.singletonList("1.20.3");
+        return Arrays.asList("1.20.3", "1.20.4");
     }
 
     @Override

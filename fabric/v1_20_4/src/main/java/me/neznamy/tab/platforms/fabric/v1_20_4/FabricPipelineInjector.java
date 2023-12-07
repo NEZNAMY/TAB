@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.fabric.v1_20_3;
+package me.neznamy.tab.platforms.fabric.v1_20_4;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;

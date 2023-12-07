@@ -23,7 +23,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
                 "v1_19_3",
                 "v1_20_1", // 1.19.4, 1.20, 1.20.1
                 "v1_20_2",
-                "v1_20_3"
+                "v1_20_4" // 1.20.3, 1.20.4
         };
         for (String module : modules) {
             try {
