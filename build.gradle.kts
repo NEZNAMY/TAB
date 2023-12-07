@@ -22,7 +22,6 @@ val platforms = setOf(
     projects.fabric.v1144,
     projects.fabric.v1152,
     projects.fabric.v1165,
-    projects.fabric.v117,
     projects.fabric.v1171,
     projects.fabric.v1182,
     projects.fabric.v1192,

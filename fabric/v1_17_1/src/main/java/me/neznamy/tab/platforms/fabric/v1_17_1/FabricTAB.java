@@ -41,7 +41,7 @@ public class FabricTAB implements VersionLoader {
 
     @Override
     public List<String> getSupportedVersions() {
-        return List.of("1.17.1");
+        return List.of("1.17", "1.17.1");
     }
 
     @Override
@@ -147,8 +147,14 @@ public class FabricTAB implements VersionLoader {
     }
 
     @Override
-    public int[] getDestroyedEntities(Object entityDestroyPacket) {
-        return ((ClientboundRemoveEntitiesPacket) entityDestroyPacket).getEntityIds().toIntArray();
+    @SneakyThrows
+    public int[] getDestroyedEntities(Object packet) {
+        if (getServerVersion().equals("1.17")) {
+            return new int[]{(int) ReflectionUtils.getOnlyMethod(packet.getClass(), int.class).invoke(packet)};
+        }
+
+        // 1.17.1
+        return ((ClientboundRemoveEntitiesPacket) packet).getEntityIds().toIntArray();
     }
 
     @Override
@@ -167,7 +173,17 @@ public class FabricTAB implements VersionLoader {
     }
 
     @Override
+    @SneakyThrows
     public void destroyEntities(FabricTabPlayer player, int... entities) {
+        if (getServerVersion().equals("1.17")) {
+            for (int entity : entities) {
+                // While the actual packet name is different, fabric-mapped name is the same
+                player.sendPacket(ClientboundRemoveEntitiesPacket.class.getConstructor(int.class).newInstance(entity));
+            }
+            return;
+        }
+
+        // 1.17.1
         player.sendPacket(new ClientboundRemoveEntitiesPacket(entities));
     }
 

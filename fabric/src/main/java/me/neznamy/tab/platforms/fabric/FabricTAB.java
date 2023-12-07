@@ -16,8 +16,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
                 "v1_14_4",
                 "v1_15_2",
                 "v1_16_5",
-                "v1_17",
-                "v1_17_1",
+                "v1_17_1", // 1.17, 1.17.1
                 "v1_18_2", // 1.18, 1.18.1, 1.18.2
                 "v1_19_2", // 1.19, 1.19.1, 1.19.2
                 "v1_19_3",
