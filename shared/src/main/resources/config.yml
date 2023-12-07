@@ -114,16 +114,15 @@ scoreboard:
         - "&7%date%"
         - "%animation:MyAnimation1%"
         - "&6Online:"
-        - "* &eOnline&7:|%online%"
-        - "* &eCurrent World&7:|%worldonline%"
-        - "* &eStaff&7:|%staffonline%"
+        - "* &eOnline&7:||%online%"
+        - "* &eCurrent World&7:||%worldonline%"
+        - "* &eStaff&7:||%staffonline%"
         - ""
         - "&6Personal Info:"
-        - "* &bRank&7:|%group%"
-        - "* &bPing&7:|%ping%&8ms"
-        - "* &bWorld&7:|%world%"
+        - "* &bRank&7:||%group%"
+        - "* &bPing&7:||%ping%&8ms"
+        - "* &bWorld&7:||%world%"
         - "%animation:MyAnimation1%"
-
     scoreboard:
       title: "<#E0B11E>MyServer</#FF0000>"
       lines:
