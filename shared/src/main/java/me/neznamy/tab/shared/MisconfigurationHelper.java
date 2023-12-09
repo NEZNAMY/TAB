@@ -6,6 +6,7 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.TabConstants.Placeholder;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.features.layout.GroupPattern;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -337,6 +338,34 @@ public class MisconfigurationHelper {
 
     public void invalidScoreboardSection(@NotNull String name) {
         startupWarn("Invalid scoreboard section \"" + name + "\" with no value.");
+    }
+
+    public void checkLayoutGroups(@NotNull String layoutName, @NotNull List<GroupPattern> groups) {
+        // Checking for duplicated slots
+        Map<Integer, String> takenSlots = new HashMap<>();
+        for (GroupPattern pattern : groups) {
+            for (int slot : pattern.getSlots()) {
+                if (takenSlots.containsKey(slot)) {
+                    startupWarn("Layout \"" + layoutName + "\"'s player group \"" + pattern.getName() +
+                            "\" defines slot " + slot + ", but this slot is already taken by group \"" +
+                            takenSlots.get(slot) + "\", which will take priority.");
+                } else {
+                    takenSlots.put(slot, pattern.getName());
+                }
+            }
+        }
+
+        // Checking for unreachable groups
+        String noConditionGroup = null;
+        for (GroupPattern pattern : groups) {
+            if (noConditionGroup != null) {
+                startupWarn("Layout \"" + layoutName + "\"'s player group \"" + pattern.getName() +
+                        "\" is unreachable, because it is defined after group \"" + noConditionGroup +
+                        "\", which has no condition requirement.");
+            } else if (pattern.getCondition() == null) {
+                noConditionGroup = pattern.getName();
+            }
+        }
     }
 
     /**

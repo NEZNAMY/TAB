@@ -51,9 +51,10 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
                         positions.add(i);
                     }
                 }
-                addGroup(Condition.getCondition((String) groupData.get("condition")), positions.stream().mapToInt(i->i).toArray());
+                addGroup(groupName, Condition.getCondition((String) groupData.get("condition")), positions.stream().mapToInt(i->i).toArray());
             }
         }
+        TAB.getInstance().getMisconfigurationHelper().checkLayoutGroups(name, this.groups);
     }
 
     public void addFixedSlot(@NotNull String lineDefinition) {
@@ -61,8 +62,8 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
         if (slot != null) fixedSlots.put(slot.getSlot(), slot);
     }
 
-    public void addGroup(@Nullable Condition condition, int[] slots) {
-        groups.add(new GroupPattern(condition, Arrays.stream(slots).filter(slot -> !fixedSlots.containsKey(slot)).toArray()));
+    public void addGroup(@NotNull String name, @Nullable Condition condition, int[] slots) {
+        groups.add(new GroupPattern(name, condition, Arrays.stream(slots).filter(slot -> !fixedSlots.containsKey(slot)).toArray()));
         if (condition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(condition.getName())));
     }
 
@@ -94,11 +95,10 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping) {
         fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text,
                 "Layout-" + text + "-SLOT-" + slot, skin, "Layout-" + text + "-SLOT-" + slot+ "-skin", ping));
-
     }
 
     @Override
     public void addGroup(@Nullable String condition, int[] slots) {
-        addGroup(Condition.getCondition(condition), slots);
+        addGroup(UUID.randomUUID().toString(), Condition.getCondition(condition), slots);
     }
 }
