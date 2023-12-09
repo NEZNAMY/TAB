@@ -10,6 +10,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MiniMessageFormat implements RGBFormatter {
 
+    /** Serializer that uses &x format on all platforms, even those that do not have it enabled by default */
+    private final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
+            .hexColors().useUnusualXRepeatedCharacterHexFormat().build();
+
     @Override
     @NotNull
     public String reformat(@NotNull String text) {
@@ -17,7 +21,7 @@ public class MiniMessageFormat implements RGBFormatter {
         String modified = text.replace(EnumChatFormat.WHITE.getFormat(), "<white>"); // Forced &f in scoreboard
         if (modified.contains(EnumChatFormat.COLOR_STRING)) return text;
         try {
-            return LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(modified));
+            return SERIALIZER.serialize(MiniMessage.miniMessage().deserialize(modified));
         } catch (Throwable ignored) {
             return text;
         }
