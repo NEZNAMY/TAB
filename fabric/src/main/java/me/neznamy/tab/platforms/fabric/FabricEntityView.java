@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
@@ -25,13 +26,13 @@ public class FabricEntityView implements EntityView {
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location,
                             @NotNull EntityData data) {
-        player.sendPacket(FabricTAB.getVersion().spawnEntity(entityId, id, entityType, location));
+        player.sendPacket(FabricMultiVersion.spawnEntity.apply(entityId, id, entityType, location));
         updateEntityMetadata(entityId, data);
     }
 
     @Override
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        player.sendPacket(FabricTAB.getVersion().newEntityMetadata(entityId, data));
+        player.sendPacket(FabricMultiVersion.newEntityMetadata.apply(entityId, data));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class FabricEntityView implements EntityView {
 
     @Override
     public void destroyEntities(int... entities) {
-        FabricTAB.getVersion().destroyEntities(player, entities);
+        FabricMultiVersion.destroyEntities(player, entities);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class FabricEntityView implements EntityView {
 
     @Override
     public boolean isNamedEntitySpawnPacket(@NotNull Object packet) {
-        return FabricTAB.getVersion().isSpawnPlayerPacket(packet);
+        return FabricMultiVersion.isSpawnPlayerPacket.apply((Packet<?>) packet);
     }
 
     @Override
@@ -85,22 +86,24 @@ public class FabricEntityView implements EntityView {
     }
 
     @Override
+    @SneakyThrows
     public int getSpawnedPlayer(@NotNull Object playerSpawnPacket) {
-        return FabricTAB.getVersion().getSpawnedPlayer(playerSpawnPacket);
+        // On 1.16.5- getter is client-only and on 1.20.2+ it is a different class
+        return ReflectionUtils.getFields(playerSpawnPacket.getClass(), int.class).get(0).getInt(playerSpawnPacket);
     }
 
     @Override
     public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
-        return FabricTAB.getVersion().getDestroyedEntities(destroyPacket);
+        return FabricMultiVersion.getDestroyedEntities(destroyPacket);
     }
 
     @Override
     public boolean isBundlePacket(@NotNull Object packet) {
-        return FabricTAB.getVersion().isBundlePacket(packet);
+        return FabricMultiVersion.isBundlePacket.apply((Packet<?>) packet);
     }
 
     @Override
     public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
-        return FabricTAB.getVersion().getPackets(bundlePacket);
+        return FabricMultiVersion.getBundledPackets.apply((Packet<?>) bundlePacket);
     }
 }

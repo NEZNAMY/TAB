@@ -30,13 +30,13 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void setDisplaySlot0(int slot, @NotNull String objective) {
-        player.sendPacket(FabricTAB.getVersion().setDisplaySlot(slot, objectives.get(objective)));
+        player.sendPacket(FabricMultiVersion.setDisplaySlot.apply(slot, objectives.get(objective)));
     }
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
-        Objective obj = FabricTAB.getVersion().newObjective(
+        Objective obj = FabricMultiVersion.newObjective.apply(
                 objectiveName,
                 toComponent(title),
                 RenderType.values()[display],
@@ -73,12 +73,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setPlayerPrefix(toComponent(prefix));
         team.setPlayerSuffix(toComponent(suffix));
         team.getPlayers().addAll(players);
-        player.sendPacket(FabricTAB.getVersion().registerTeam(team));
+        player.sendPacket(FabricMultiVersion.registerTeam.apply(team));
     }
 
     @Override
     public void unregisterTeam0(@NotNull String name) {
-        player.sendPacket(FabricTAB.getVersion().unregisterTeam(new PlayerTeam(dummyScoreboard, name)));
+        player.sendPacket(FabricMultiVersion.unregisterTeam.apply(new PlayerTeam(dummyScoreboard, name)));
     }
 
     @Override
@@ -92,13 +92,13 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(toComponent(prefix));
         team.setPlayerSuffix(toComponent(suffix));
-        player.sendPacket(FabricTAB.getVersion().updateTeam(team));
+        player.sendPacket(FabricMultiVersion.updateTeam.apply(team));
     }
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                           @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
-        player.sendPacket(FabricTAB.getVersion().setScore(
+        player.sendPacket(FabricMultiVersion.setScore.apply(
                 objective,
                 scoreHolder,
                 score,
@@ -109,7 +109,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
-        player.sendPacket(FabricTAB.getVersion().removeScore(objective, scoreHolder));
+        player.sendPacket(FabricMultiVersion.removeScore.apply(objective, scoreHolder));
     }
 
     @NotNull

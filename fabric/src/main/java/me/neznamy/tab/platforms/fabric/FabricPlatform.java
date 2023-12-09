@@ -53,7 +53,7 @@ public class FabricPlatform implements BackendPlatform {
     @Override
     @NotNull
     public PipelineInjector createPipelineInjector() {
-        return FabricTAB.getVersion().createPipelineInjector();
+        return new FabricPipelineInjector();
     }
 
     @Override
@@ -102,7 +102,7 @@ public class FabricPlatform implements BackendPlatform {
     @Override
     @NotNull
     public String getServerVersionInfo() {
-        return "[Fabric] " + FabricTAB.getVersion().getServerVersion();
+        return "[Fabric] " + FabricTAB.minecraftVersion;
     }
 
     @Override
@@ -123,7 +123,7 @@ public class FabricPlatform implements BackendPlatform {
     @Override
     @NotNull
     public ProtocolVersion getServerVersion() {
-        return ProtocolVersion.fromFriendlyName(FabricTAB.getVersion().getServerVersion());
+        return ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class FabricPlatform implements BackendPlatform {
      * @return  Converted component
      */
     public Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
-        return FabricTAB.getVersion().deserialize(component.toString(version));
+        return FabricMultiVersion.deserialize.apply(component.toString(version));
     }
 
     @Override
@@ -152,7 +152,7 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public double getMSPT() {
-        return FabricTAB.getVersion().getMSPT();
+        return FabricMultiVersion.getMSPT.apply(server);
     }
 
     public boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {

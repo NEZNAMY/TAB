@@ -20,32 +20,37 @@ public class FabricTabList implements TabList {
     private final FabricTabPlayer player;
 
     @Override
+    @SneakyThrows
     public void removeEntry(@NotNull UUID entry) {
-        player.sendPacket(FabricTAB.getVersion().build(Action.UPDATE_DISPLAY_NAME, new Builder(entry)));
+        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME, new Builder(entry)));
     }
 
     @Override
+    @SneakyThrows
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        player.sendPacket(FabricTAB.getVersion().build(Action.UPDATE_DISPLAY_NAME,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME,
                 new Builder(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()))
         ));
     }
 
     @Override
+    @SneakyThrows
     public void updateLatency(@NotNull UUID entry, int latency) {
-        player.sendPacket(FabricTAB.getVersion().build(Action.UPDATE_LATENCY,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_LATENCY,
                 new Builder(entry).setLatency(latency)));
     }
 
     @Override
+    @SneakyThrows
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        player.sendPacket(FabricTAB.getVersion().build(Action.UPDATE_GAME_MODE,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_GAME_MODE,
                 new Builder(entry).setGameMode(gameMode)));
     }
 
     @Override
+    @SneakyThrows
     public void addEntry(@NotNull Entry entry) {
-        player.sendPacket(FabricTAB.getVersion().build(Action.ADD_PLAYER,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.ADD_PLAYER,
                 new Builder(entry.getUniqueId())
                 .setName(entry.getName())
                 .setSkin(entry.getSkin())
@@ -58,7 +63,7 @@ public class FabricTabList implements TabList {
     @Override
     @SneakyThrows
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.sendPacket(FabricTAB.getVersion().newHeaderFooter(
+        player.sendPacket(FabricMultiVersion.newHeaderFooter.apply(
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion())
         ));

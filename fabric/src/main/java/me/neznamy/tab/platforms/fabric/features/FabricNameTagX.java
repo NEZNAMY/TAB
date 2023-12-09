@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.fabric.features;
 
-import me.neznamy.tab.platforms.fabric.FabricTAB;
+import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -39,8 +39,8 @@ public class FabricNameTagX extends BackendNameTagX {
 
     @Override
     public boolean areInSameWorld(@NotNull TabPlayer player1, @NotNull TabPlayer player2) {
-        return FabricTAB.getVersion().getLevel(((FabricTabPlayer)player1).getPlayer()) ==
-                FabricTAB.getVersion().getLevel(((FabricTabPlayer)player2).getPlayer());
+        return FabricMultiVersion.getLevel.apply(((FabricTabPlayer)player1).getPlayer()) ==
+                FabricMultiVersion.getLevel.apply(((FabricTabPlayer)player2).getPlayer());
     }
 
     @Override
@@ -78,7 +78,7 @@ public class FabricNameTagX extends BackendNameTagX {
 
     @Override
     public boolean isSneaking(@NotNull TabPlayer player) {
-        return FabricTAB.getVersion().isSneaking(((FabricTabPlayer)player).getPlayer());
+        return FabricMultiVersion.isSneaking.apply(((FabricTabPlayer)player).getPlayer());
     }
 
     @Override
@@ -120,7 +120,7 @@ public class FabricNameTagX extends BackendNameTagX {
     @Override
     @NotNull
     public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
-        return FabricTAB.getVersion().createDataWatcher(viewer, flags, displayName, nameVisible);
+        return FabricMultiVersion.createDataWatcher.apply(viewer, flags, displayName, nameVisible);
     }
 
     @Override

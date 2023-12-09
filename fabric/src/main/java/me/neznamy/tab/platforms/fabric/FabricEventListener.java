@@ -16,16 +16,16 @@ public class FabricEventListener extends EventListener<ServerPlayer> {
         ServerPlayConnectionEvents.DISCONNECT.register((connection, $) -> quit(connection.player.getUUID()));
         ServerPlayConnectionEvents.JOIN.register((connection, $, $$) -> join(connection.player));
         //TODO command preprocess
-        if (ProtocolVersion.fromFriendlyName(FabricTAB.getVersion().getServerVersion()).getMinorVersion() >= 16) {
+        if (ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion).getMinorVersion() >= 16) {
             // Added in 1.16
             ServerPlayerEvents.AFTER_RESPAWN.register(
                     (oldPlayer, newPlayer, alive) -> {
                         replacePlayer(newPlayer.getUUID(), newPlayer);
                         // respawning from death & taking end portal in the end do not call world change event
-                        worldChange(newPlayer.getUUID(), FabricTAB.getVersion().getName(FabricTAB.getVersion().getLevel(newPlayer)));
+                        worldChange(newPlayer.getUUID(), FabricMultiVersion.getLevelName.apply(FabricMultiVersion.getLevel.apply(newPlayer)));
                     });
             ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(
-                    (player, origin, destination) -> worldChange(player.getUUID(), FabricTAB.getVersion().getName(destination)));
+                    (player, origin, destination) -> worldChange(player.getUUID(), FabricMultiVersion.getLevelName.apply(destination)));
         } // TODO else
     }
 

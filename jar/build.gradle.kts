@@ -14,15 +14,9 @@ val platforms = setOf(
 
 val fabrics = setOf(
     rootProject.projects.fabric,
-    rootProject.projects.fabric.v1152,
-    rootProject.projects.fabric.v1165,
-    rootProject.projects.fabric.v1171,
+    rootProject.projects.fabric.v1144,
     rootProject.projects.fabric.v1182,
-    rootProject.projects.fabric.v1192,
-    rootProject.projects.fabric.v1193,
-    rootProject.projects.fabric.v1201,
-    rootProject.projects.fabric.v1202,
-    rootProject.projects.fabric.v1204
+    rootProject.projects.fabric.v1192
 ).map { it.dependencyProject }
 
 tasks {

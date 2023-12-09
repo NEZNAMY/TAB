@@ -1,38 +1,43 @@
 package me.neznamy.tab.platforms.fabric;
 
-import lombok.Getter;
+import lombok.SneakyThrows;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.SharedConstants;
+
+import java.util.Arrays;
 
 public class FabricTAB implements DedicatedServerModInitializer {
 
-    @Getter
-    private static VersionLoader version;
+    public static final String minecraftVersion = getServerVersion();
 
     @Override
+    @SneakyThrows
     public void onInitializeServer() {
-        String[] modules = {
-                "v1_15_2", // 1.14.4, 1.15.2
-                "v1_16_5",
-                "v1_17_1", // 1.17, 1.17.1
-                "v1_18_2", // 1.18, 1.18.1, 1.18.2
-                "v1_19_2", // 1.19, 1.19.1, 1.19.2
-                "v1_19_3",
-                "v1_20_1", // 1.19.4, 1.20, 1.20.1
-                "v1_20_2",
-                "v1_20_4" // 1.20.3, 1.20.4
-        };
-        for (String module : modules) {
-            try {
-                version = (VersionLoader) Class.forName("me.neznamy.tab.platforms.fabric." + module + ".FabricTAB").getConstructor().newInstance();
-                if (!version.getSupportedVersions().contains(version.getServerVersion())) continue;
-                version.registerCommandCallback();
-                ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
-                ServerLifecycleEvents.SERVER_STOPPING.register($ -> TAB.getInstance().unload());
-                return;
-            } catch (Throwable ignored) {}
+        for (String module : Arrays.asList("1_14_4", "1_18_2", "1_19_2", "1_20_4")) {
+            Class.forName("me.neznamy.tab.platforms.fabric.loader.Loader_" + module)
+                    .getConstructor(ProtocolVersion.class).newInstance(ProtocolVersion.fromFriendlyName(minecraftVersion));
         }
-        throw new IllegalStateException("Your server version is marked as compatible, but a compatibility issue was found.");
+        if (ProtocolVersion.fromFriendlyName(minecraftVersion).getMinorVersion() >= 19) {
+            net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
+        } else {
+            net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register((dispatcher, $) -> new FabricTabCommand().onRegisterCommands(dispatcher));
+        }
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
+        ServerLifecycleEvents.SERVER_STOPPING.register($ -> TAB.getInstance().unload());
+    }
+
+    @SneakyThrows
+    private static String getServerVersion() {
+        try {
+            // 1.19.4+
+            return SharedConstants.getCurrentVersion().getName();
+        } catch (Throwable e) {
+            // 1.19.3-
+            Object gameVersion = SharedConstants.class.getMethod("method_16673").invoke(null);
+            return (String) gameVersion.getClass().getMethod("getName").invoke(gameVersion);
+        }
     }
 }
