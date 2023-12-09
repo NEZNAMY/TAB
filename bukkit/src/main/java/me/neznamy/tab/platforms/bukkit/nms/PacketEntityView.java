@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.UUID;
@@ -97,7 +96,7 @@ public class PacketEntityView implements EntityView {
 
     private static void loadEntityMetadata() throws ReflectiveOperationException {
         // Class
-        Class<?> entityMetadataClass = getClass("network.protocol.game.ClientboundSetEntityDataPacket",
+        Class<?> entityMetadataClass = BukkitReflection.getClass("network.protocol.game.ClientboundSetEntityDataPacket",
                 "network.protocol.game.PacketPlayOutEntityMetadata", "PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
 
         // Constructor
@@ -110,7 +109,7 @@ public class PacketEntityView implements EntityView {
 
     private static void loadEntityDestroy() throws ReflectiveOperationException {
         // Class
-        EntityDestroyClass = getClass("network.protocol.game.ClientboundRemoveEntitiesPacket",
+        EntityDestroyClass = BukkitReflection.getClass("network.protocol.game.ClientboundRemoveEntitiesPacket",
                 "network.protocol.game.PacketPlayOutEntityDestroy", "PacketPlayOutEntityDestroy", "Packet29DestroyEntity");
 
         // Constructor
@@ -127,12 +126,12 @@ public class PacketEntityView implements EntityView {
 
     private static void loadEntityTeleport() throws ReflectiveOperationException {
         // Class
-        EntityTeleportClass = getClass("network.protocol.game.ClientboundTeleportEntityPacket",
+        EntityTeleportClass = BukkitReflection.getClass("network.protocol.game.ClientboundTeleportEntityPacket",
                 "network.protocol.game.PacketPlayOutEntityTeleport", "PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
 
         // Constructor
         if (BukkitReflection.getMinorVersion() >= 17) {
-            newEntityTeleport = EntityTeleportClass.getConstructor(getClass("world.entity.Entity"));
+            newEntityTeleport = EntityTeleportClass.getConstructor(BukkitReflection.getClass("world.entity.Entity"));
         } else {
             newEntityTeleport = EntityTeleportClass.getConstructor();
         }
@@ -151,8 +150,8 @@ public class PacketEntityView implements EntityView {
 
         // Dummy armor stand for constructor
         if (BukkitReflection.getMinorVersion() >= 17) {
-            Class<?> world = getClass("world.level.Level", "world.level.World", "World");
-            Class<?> entityArmorStand = getClass("world.entity.decoration.ArmorStand",
+            Class<?> world = BukkitReflection.getClass("world.level.Level", "world.level.World", "World");
+            Class<?> entityArmorStand = BukkitReflection.getClass("world.entity.decoration.ArmorStand",
                     "world.entity.decoration.EntityArmorStand", "EntityArmorStand");
             Constructor<?> newEntityArmorStand = entityArmorStand.getConstructor(world, double.class, double.class, double.class);
             Method World_getHandle = BukkitReflection.getBukkitClass("CraftWorld").getMethod("getHandle");
@@ -162,9 +161,9 @@ public class PacketEntityView implements EntityView {
 
     private static void loadEntityMove() throws ReflectiveOperationException {
         // Classes
-        PacketPlayOutEntity = getClass("network.protocol.game.ClientboundMoveEntityPacket",
+        PacketPlayOutEntity = BukkitReflection.getClass("network.protocol.game.ClientboundMoveEntityPacket",
                 "network.protocol.game.PacketPlayOutEntity", "PacketPlayOutEntity", "Packet30Entity");
-        PacketPlayOutEntityLook = getClass("network.protocol.game.ClientboundMoveEntityPacket$Rot",
+        PacketPlayOutEntityLook = BukkitReflection.getClass("network.protocol.game.ClientboundMoveEntityPacket$Rot",
                 "network.protocol.game.PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntity$PacketPlayOutEntityLook",
                 "PacketPlayOutEntityLook", "Packet32EntityLook");
 
@@ -173,13 +172,13 @@ public class PacketEntityView implements EntityView {
     }
 
     private static void loadEntitySpawn() throws ReflectiveOperationException {
-        SpawnEntityClass = getClass("network.protocol.game.ClientboundAddEntityPacket",
+        SpawnEntityClass = BukkitReflection.getClass("network.protocol.game.ClientboundAddEntityPacket",
                 "network.protocol.game.PacketPlayOutSpawnEntity", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
         SpawnEntity_EntityId = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(0);
         if (BukkitReflection.getMinorVersion() >= 17) {
-            Class<?> Vec3D = getClass("world.phys.Vec3", "world.phys.Vec3D");
+            Class<?> Vec3D = BukkitReflection.getClass("world.phys.Vec3", "world.phys.Vec3D");
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
-            Class<?> EntityTypes = getClass("world.entity.EntityType", "world.entity.EntityTypes");
+            Class<?> EntityTypes = BukkitReflection.getClass("world.entity.EntityType", "world.entity.EntityTypes");
             if (BukkitReflection.getMinorVersion() >= 19) {
                 EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "ARMOR_STAND", "d").get(null);
             } else {
@@ -216,7 +215,7 @@ public class PacketEntityView implements EntityView {
             }
         }
         if (!BukkitReflection.is1_20_2Plus()) {
-            PacketPlayOutNamedEntitySpawn = getClass("network.protocol.game.ClientboundAddPlayerPacket",
+            PacketPlayOutNamedEntitySpawn = BukkitReflection.getClass("network.protocol.game.ClientboundAddPlayerPacket",
                     "network.protocol.game.PacketPlayOutNamedEntitySpawn", "PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
             PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         }
@@ -381,29 +380,5 @@ public class PacketEntityView implements EntityView {
     @SneakyThrows
     public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
         return (Iterable<Object>) ClientboundBundlePacket_packets.get(bundlePacket);
-    }
-
-    /**
-     * Returns class from given potential names. Supports modded servers, such as Thermos.
-     *
-     * @param   names
-     *          Potential class names
-     * @return  class from given name
-     * @throws  ClassNotFoundException
-     *          if class was not found
-     */
-    public static Class<?> getClass(@NotNull String... names) throws ClassNotFoundException {
-        for (String name : names) {
-            try {
-                if (BukkitReflection.getMinorVersion() >= 17) {
-                    return PacketEntityView.class.getClassLoader().loadClass("net.minecraft." + name);
-                } else {
-                    return PacketEntityView.class.getClassLoader().loadClass("net.minecraft.server." + BukkitReflection.getServerPackage() + "." + name);
-                }
-            } catch (ClassNotFoundException | NullPointerException e) {
-                // Wrong class name
-            }
-        }
-        throw new ClassNotFoundException("No class found with potential names " + Arrays.toString(names));
     }
 }
