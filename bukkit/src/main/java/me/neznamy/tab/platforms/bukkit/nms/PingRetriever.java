@@ -18,7 +18,7 @@ public class PingRetriever {
     public static void tryLoad() {
         try {
             if (BukkitReflection.getMinorVersion() < 17) {
-                getHandle = Class.forName("org.bukkit.craftbukkit." + BukkitReflection.getServerPackage() + ".entity.CraftPlayer").getMethod("getHandle");
+                getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
                 Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
                 PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
             }

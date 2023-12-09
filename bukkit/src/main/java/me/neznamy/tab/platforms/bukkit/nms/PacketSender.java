@@ -24,7 +24,7 @@ public class PacketSender {
             Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
             Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
                     "server.network.PlayerConnection", "PlayerConnection");
-            getHandle = Class.forName("org.bukkit.craftbukkit." + BukkitReflection.getServerPackage() + ".entity.CraftPlayer").getMethod("getHandle");
+            getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
             PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
             if (BukkitReflection.getMinorVersion() >= 7) {
                 sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);

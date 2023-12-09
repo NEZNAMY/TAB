@@ -58,4 +58,17 @@ public class BukkitReflection {
         }
         throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
     }
+
+    /**
+     * Returns CraftBukkit class with given package and name.
+     *
+     * @param   name
+     *          Package and name of the class
+     * @return  CraftBukkit class
+     * @throws  ClassNotFoundException
+     *          If class does not exist
+     */
+    public static Class<?> getBukkitClass(@NotNull String name) throws ClassNotFoundException {
+        return Class.forName("org.bukkit.craftbukkit." + serverPackage + "." + name);
+    }
 }

@@ -51,7 +51,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
                     "server.network.PlayerConnection", "PlayerConnection");
             Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
-            getHandle = Class.forName("org.bukkit.craftbukkit." + BukkitReflection.getServerPackage() + ".entity.CraftPlayer").getMethod("getHandle");
+            getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
             PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
             if (BukkitReflection.is1_20_2Plus()) {
                 NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection.getSuperclass(), NetworkManager);

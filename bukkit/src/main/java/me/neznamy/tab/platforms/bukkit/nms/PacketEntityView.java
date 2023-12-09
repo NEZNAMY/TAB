@@ -155,7 +155,7 @@ public class PacketEntityView implements EntityView {
             Class<?> entityArmorStand = getClass("world.entity.decoration.ArmorStand",
                     "world.entity.decoration.EntityArmorStand", "EntityArmorStand");
             Constructor<?> newEntityArmorStand = entityArmorStand.getConstructor(world, double.class, double.class, double.class);
-            Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + BukkitReflection.getServerPackage() + ".CraftWorld").getMethod("getHandle");
+            Method World_getHandle = BukkitReflection.getBukkitClass("CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
         }
     }

@@ -242,7 +242,7 @@ public class BukkitTabList implements TabList {
         @SneakyThrows
         public SkinData() {
             Class<?> EntityHuman = BukkitReflection.getClass("world.entity.player.Player", "world.entity.player.EntityHuman", "EntityHuman");
-            getHandle = Class.forName("org.bukkit.craftbukkit." + BukkitReflection.getServerPackage() + ".entity.CraftPlayer").getMethod("getHandle");
+            getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
             // There is only supposed to be one, however there are exceptions:
             // #1 - CatServer adds another method
             // #2 - Random mods may perform deep hack into the server and add another one (see #1089)
