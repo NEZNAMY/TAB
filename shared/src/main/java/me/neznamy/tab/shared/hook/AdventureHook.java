@@ -76,7 +76,7 @@ public class AdventureHook {
         }
         if (!component.getExtra().isEmpty()) {
             adventureComponent = adventureComponent.children(component.getExtra().stream().map(
-                    c -> toAdventureComponent(c, clientVersion)).collect(Collectors.toList()));
+                    c -> toAdventureComponent0(c, clientVersion)).collect(Collectors.toList()));
         }
         return adventureComponent;
     }
