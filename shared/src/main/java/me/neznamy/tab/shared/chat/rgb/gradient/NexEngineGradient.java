@@ -16,11 +16,12 @@ public class NexEngineGradient implements GradientPattern {
         if (!text.contains("<grad")) return text;
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
+            String format = matcher.group();
             TextColor start = new TextColor(matcher.group(1));
             String content = matcher.group(2);
             TextColor end = new TextColor(matcher.group(3));
             String applied = asGradient(start, content, end);
-            text = text.replace(text, applied);
+            text = text.replace(format, applied);
         }
         return text;
     }
