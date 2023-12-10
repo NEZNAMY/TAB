@@ -14,6 +14,7 @@ public class NexEngineGradient implements GradientPattern {
     @Override
     public String applyPattern(@NotNull String text, boolean ignorePlaceholders) {
         if (!text.contains("<grad")) return text;
+        String replaced = text;
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             String format = matcher.group();
@@ -21,8 +22,8 @@ public class NexEngineGradient implements GradientPattern {
             String content = matcher.group(2);
             TextColor end = new TextColor(matcher.group(3));
             String applied = asGradient(start, content, end);
-            text = text.replace(format, applied);
+            replaced = replaced.replace(format, applied);
         }
-        return text;
+        return replaced;
     }
 }
