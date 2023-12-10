@@ -12,7 +12,7 @@ public class NexEngineGradient implements GradientPattern {
     //pattern for <gradient:#RRGGBB></gradient:#RRGGBB>
     private final Pattern pattern = Pattern.compile("<gradient:#([A-Fa-f0-9]{6})>(.*?)</gradient:#([A-Fa-f0-9]{6})>");
 
-    //pattern for <gradient:#RRGGBB></gradient:#RRGGBB>
+    //pattern for <gradient:#RRGGBB|L></gradient:#RRGGBB>
     private final Pattern patternLegacy = Pattern.compile("<gradient:#([A-Fa-f0-9]{6})\\|(.)>(.*?)</gradient:#([A-Fa-f0-9]{6})>");
 
 
