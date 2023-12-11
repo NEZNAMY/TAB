@@ -1,10 +1,8 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
-import de.myzelyam.api.vanish.BungeeVanishAPI;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
+import me.neznamy.tab.platforms.bungeecord.hook.BungeePremiumVanishHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -13,8 +11,8 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -35,18 +33,20 @@ import java.util.stream.Collectors;
 /**
  * BungeeCord implementation of Platform
  */
-@AllArgsConstructor
 public class BungeePlatform extends ProxyPlatform {
-
-    /** Flag tracking plugin presence */
-    @Getter
-    private final boolean premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 
     /** Component cache for better performance */
     private final ComponentCache<IChatBaseComponent, BaseComponent> cache = new ComponentCache<>(1000, this::toComponent0);
 
     @NotNull
     private final BungeeTAB plugin;
+
+    public BungeePlatform(@NotNull BungeeTAB plugin) {
+        this.plugin = plugin;
+        if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {
+            PremiumVanishHook.setInstance(new BungeePremiumVanishHook(this));
+        }
+    }
 
     @Override
     public void loadPlayers() {
@@ -113,15 +113,6 @@ public class BungeePlatform extends ProxyPlatform {
     @Override
     public void registerChannel() {
         ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
-    }
-
-    @Override
-    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        //noinspection ConstantConditions
-        if (premiumVanish && BungeeVanishAPI.canSee(
-                ((BungeeTabPlayer)viewer).getPlayer(),
-                ((BungeeTabPlayer)target).getPlayer())) return true;
-        return super.canSee(viewer, target);
     }
 
     /**

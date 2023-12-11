@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import de.myzelyam.api.vanish.BungeeVanishAPI;
 import lombok.Getter;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
@@ -9,6 +8,7 @@ import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList18;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.BossBar;
@@ -131,12 +131,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public boolean isVanished() {
-        try {
-            //noinspection ConstantConditions
-            if (getPlatform().isPremiumVanish() && BungeeVanishAPI.isInvisible(getPlayer())) return true;
-        } catch (IllegalStateException ignored) {
-            // PV Bug: PremiumVanish must be enabled to use its API
-        }
+        if (PremiumVanishHook.getInstance() != null && PremiumVanishHook.getInstance().isVanished(this)) return true;
         return super.isVanished();
     }
 

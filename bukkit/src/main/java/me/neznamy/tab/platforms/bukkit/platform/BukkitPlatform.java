@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
-import de.myzelyam.api.vanish.VanishAPI;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
+import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
@@ -27,6 +27,7 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
+import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
@@ -54,40 +55,25 @@ import java.lang.reflect.Field;
 @Getter
 public class BukkitPlatform implements BackendPlatform {
 
-    /** Flag tracking plugin presence */
-    private final boolean premiumVanish = Bukkit.getPluginManager().isPluginEnabled("PremiumVanish");
-
-    /**
-     * Plugin instance for registering tasks and events
-     */
+    /** Plugin instance for registering tasks and events */
     @NotNull
     private final JavaPlugin plugin;
 
-    /**
-     * Variables checking presence of other plugins to hook into
-     */
+    /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
 
-    /**
-     * NMS server to get TPS from on spigot
-     */
+    /** NMS server to get TPS from on spigot */
     @Nullable
     private Object server;
 
-    /**
-     * TPS field
-     */
+    /** TPS field */
     @Nullable
     private Field spigotTps;
 
-    /**
-     * Detection for presence of Paper's TPS getter
-     */
+    /** Detection for presence of Paper's TPS getter */
     private final boolean paperTps = ReflectionUtils.methodExists(Bukkit.class, "getTPS");
 
-    /**
-     * Detection for presence of Paper's MSPT getter
-     */
+    /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
@@ -97,6 +83,9 @@ public class BukkitPlatform implements BackendPlatform {
             spigotTps = server.getClass().getField("recentTps");
         } catch (ReflectiveOperationException e) {
             //not spigot
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
+            PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
         }
         PingRetriever.tryLoad();
         PacketSender.tryLoad();
@@ -305,12 +294,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        Player bViewer = ((BukkitTabPlayer)viewer).getPlayer();
-        Player bTarget = ((BukkitTabPlayer)target).getPlayer();
-
-        //noinspection ConstantConditions
-        if (premiumVanish && VanishAPI.canSee(bViewer, bTarget)) return true;
-        if (bViewer.canSee(bTarget)) return true;
-        return BackendPlatform.super.canSee(viewer, target);
+        if (BackendPlatform.super.canSee(viewer, target)) return true;
+        return ((BukkitTabPlayer)viewer).getPlayer().canSee(((BukkitTabPlayer)target).getPlayer());
     }
 }
