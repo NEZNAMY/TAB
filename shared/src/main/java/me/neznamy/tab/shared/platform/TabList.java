@@ -48,7 +48,19 @@ public interface TabList {
      * they are forced. Only works on platforms with a full TabList API.
      * Not needed for platforms which support pipeline injection.
      */
-    default void checkDisplayNames(){}
+    default void checkDisplayNames() {
+        // Empty by default, overridden by Sponge7, Sponge8 and Velocity
+    }
+
+    /**
+     * Processes packet for anti-override, ping spoof and nick compatibility.
+     *
+     * @param   packet
+     *          Packet to process
+     */
+    default void onPacketSend(@NotNull Object packet) {
+        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
+    }
 
     /**
      * Sends a debug message when display name is not as expected.

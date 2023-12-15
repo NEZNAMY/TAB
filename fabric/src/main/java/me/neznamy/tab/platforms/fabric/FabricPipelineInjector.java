@@ -63,17 +63,6 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public boolean isPlayerInfo(@NotNull Object packet) {
-        return FabricMultiVersion.isPlayerInfo.apply((Packet<?>) packet);
-    }
-
-    @Override
-    @SneakyThrows
-    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        FabricMultiVersion.onPlayerInfo.accept(receiver, packet);
-    }
-
-    @Override
     public boolean isLogin(@NotNull Object packet) {
         return false;
     }

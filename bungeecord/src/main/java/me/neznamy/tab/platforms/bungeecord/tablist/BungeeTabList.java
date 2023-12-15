@@ -2,13 +2,16 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
+import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import net.md_5.bungee.tab.ServerUnique;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,5 +73,38 @@ public abstract class BungeeTabList implements TabList {
 
     public void removeUuid(UUID id) {
         uuids.remove(id);
+    }
+
+    @Override
+    public void onPacketSend(@NotNull Object packet) {
+        if (packet instanceof PlayerListItem) {
+            PlayerListItem listItem = (PlayerListItem) packet;
+            for (PlayerListItem.Item item : listItem.getItems()) {
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, item.getUuid());
+                    if (newDisplayName != null) item.setDisplayName(player.getPlatform().toComponent(newDisplayName, player.getVersion()));
+                }
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
+                }
+                if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(player, item.getUuid(), item.getUsername());
+                }
+            }
+        } else if (packet instanceof PlayerListItemUpdate) {
+            PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
+            for (PlayerListItem.Item item : update.getItems()) {
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
+                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, item.getUuid());
+                    if (newDisplayName != null) item.setDisplayName(player.getPlatform().toComponent(newDisplayName, player.getVersion()));
+                }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
+                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
+                }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(player, item.getUuid(), item.getUsername());
+                }
+            }
+        }
     }
 }

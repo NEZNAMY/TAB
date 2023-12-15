@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
@@ -111,11 +110,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public boolean isPlayerInfo(@NotNull Object packet) {
-        return packet instanceof PlayerListItem || packet instanceof PlayerListItemUpdate;
-    }
-
-    @Override
     public void modifyPlayers(@NotNull Object team) {
         if (TAB.getInstance().getNameTagManager() == null) return;
         Team packet = (Team) team;
@@ -145,39 +139,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             }
         }
         packet.setPlayers(col.toArray(new String[0]));
-    }
-
-    @Override
-    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        if (packet instanceof PlayerListItem) {
-            PlayerListItem listItem = (PlayerListItem) packet;
-            for (PlayerListItem.Item item : listItem.getItems()) {
-                if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
-                    if (newDisplayName != null) item.setDisplayName(((BungeeTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion()));
-                }
-                if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
-                }
-                if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
-                }
-            }
-        } else {
-            PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
-            for (PlayerListItem.Item item : update.getItems()) {
-                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
-                    if (newDisplayName != null) item.setDisplayName(((BungeeTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion()));
-                }
-                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
-                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
-                }
-                if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
-                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
-                }
-            }
-        }
     }
 
     @Override

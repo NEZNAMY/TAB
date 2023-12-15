@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,6 +68,14 @@ public class FabricTabList implements TabList {
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion())
         ));
+    }
+
+    @Override
+    @SneakyThrows
+    public void onPacketSend(@NotNull Object packet) {
+        if (FabricMultiVersion.isPlayerInfo.apply((Packet<?>) packet)) {
+            FabricMultiVersion.onPlayerInfo.accept(player, packet);
+        }
     }
 
     @RequiredArgsConstructor

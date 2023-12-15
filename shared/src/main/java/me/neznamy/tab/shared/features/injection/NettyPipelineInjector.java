@@ -81,10 +81,6 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     public abstract boolean isTeam(@NotNull Object packet);
 
-    public abstract boolean isPlayerInfo(@NotNull Object packet);
-
-    public abstract void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet);
-
     public abstract boolean isLogin(@NotNull Object packet);
 
     /**
@@ -104,8 +100,8 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
-                if (isPlayerInfo(packet) && player.getVersion().getMinorVersion() >= 8)
-                                                onPlayerInfo(player, packet);
+                if (player.getVersion().getMinorVersion() >= 8)
+                                                player.getTabList().onPacketSend(packet);
                 if (isDisplayObjective(packet)) onDisplayObjective(player, packet);
                 if (isObjective(packet))        onObjective(player, packet);
                 if (antiOverrideTeams && isTeam(packet)) {

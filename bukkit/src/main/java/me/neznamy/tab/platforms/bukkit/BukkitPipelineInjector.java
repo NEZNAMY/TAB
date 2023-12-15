@@ -1,20 +1,17 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Pipeline injection for bukkit
@@ -115,76 +112,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     public boolean isTeam(@NotNull Object packet) {
         if (!PacketScoreboard.isAvailable()) return false;
         return PacketScoreboard.teamPacketData.TeamPacketClass.isInstance(packet);
-    }
-
-    @Override
-    public boolean isPlayerInfo(@NotNull Object packet) {
-        return BukkitTabList.PlayerInfoClass.isInstance(packet);
-    }
-
-    @Override
-    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        if (BukkitReflection.is1_19_3Plus()) {
-            onPlayerInfo1_19_3(receiver, packet);
-        } else {
-            onPlayerInfo1_19_2(receiver, packet);
-        }
-    }
-
-    @SneakyThrows
-    private void onPlayerInfo1_19_3(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        List<String> actions = ((EnumSet<?>)BukkitTabList.ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
-        List<Object> updatedList = new ArrayList<>();
-        for (Object nmsData : (List<?>) BukkitTabList.PLAYERS.get(packet)) {
-            GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_Profile.get(nmsData);
-            UUID id;
-            id = (UUID) BukkitTabList.PlayerInfoData_UUID.get(nmsData);
-            Object displayName = null;
-            int latency = 0;
-            if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name())) {
-                displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
-                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, id);
-                if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getTabList().toComponent(newDisplayName);
-            }
-            if (actions.contains(TabList.Action.UPDATE_LATENCY.name())) {
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, id, BukkitTabList.PlayerInfoData_Latency.getInt(nmsData));
-            }
-            if (actions.contains(TabList.Action.ADD_PLAYER.name())) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, id, profile.getName());
-            }
-            // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
-            updatedList.add(BukkitTabList.newPlayerInfoData.newInstance(
-                    id,
-                    profile,
-                    BukkitTabList.PlayerInfoData_Listed.getBoolean(nmsData),
-                    latency,
-                    BukkitTabList.PlayerInfoData_GameMode.get(nmsData),
-                    displayName,
-                    BukkitTabList.PlayerInfoData_RemoteChatSession.get(nmsData)));
-        }
-        BukkitTabList.PLAYERS.set(packet, updatedList);
-    }
-
-    @SneakyThrows
-    private void onPlayerInfo1_19_2(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        String action = BukkitTabList.ACTION.get(packet).toString();
-        for (Object nmsData : (List<?>) BukkitTabList.PLAYERS.get(packet)) {
-            GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_Profile.get(nmsData);
-            UUID id = profile.getId();
-            if (action.equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.equals(TabList.Action.ADD_PLAYER.name())) {
-                Object displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
-                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, id);
-                if (newDisplayName != null) displayName = ((BukkitTabPlayer)receiver).getTabList().toComponent(newDisplayName);
-                BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
-            }
-            if (action.equals(TabList.Action.UPDATE_LATENCY.name()) || action.equals(TabList.Action.ADD_PLAYER.name())) {
-                int latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, id, BukkitTabList.PlayerInfoData_Latency.getInt(nmsData));
-                BukkitTabList.PlayerInfoData_Latency.set(nmsData, latency);
-            }
-            if (action.equals(TabList.Action.ADD_PLAYER.name())) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, id, profile.getName());
-            }
-        }
     }
 
     @Override

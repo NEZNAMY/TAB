@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -21,6 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * TabList which support modifying many entries at once
@@ -36,23 +38,23 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitTabList implements TabList {
 
-    public static Class<?> PlayerInfoClass;
+    private static Class<?> PlayerInfoClass;
     private static Constructor<?> newPlayerInfo;
-    public static Field ACTION;
-    public static Field PLAYERS;
+    private static Field ACTION;
+    private static Field PLAYERS;
     private static Class<Enum> ActionClass;
-    public static Class<?> ClientboundPlayerInfoRemovePacket;
+    private static Class<?> ClientboundPlayerInfoRemovePacket;
     private static Constructor<?> newClientboundPlayerInfoRemovePacket;
     private static Class<?> EntityPlayer;
 
-    public static Constructor<?> newPlayerInfoData;
-    public static Field PlayerInfoData_UUID;
-    public static Field PlayerInfoData_Profile;
-    public static Field PlayerInfoData_Latency;
-    public static Field PlayerInfoData_GameMode;
-    public static Field PlayerInfoData_DisplayName;
-    public static Field PlayerInfoData_Listed;
-    public static Field PlayerInfoData_RemoteChatSession;
+    private static Constructor<?> newPlayerInfoData;
+    private static Field PlayerInfoData_UUID;
+    private static Field PlayerInfoData_Profile;
+    private static Field PlayerInfoData_Latency;
+    private static Field PlayerInfoData_GameMode;
+    private static Field PlayerInfoData_DisplayName;
+    private static Field PlayerInfoData_Listed;
+    private static Field PlayerInfoData_RemoteChatSession;
 
     private static Object[] gameModes;
 
@@ -232,6 +234,72 @@ public class BukkitTabList implements TabList {
     public Skin getSkin() {
         if (skinData == null) return null;
         return skinData.getSkin(player);
+    }
+
+    @Override
+    public void onPacketSend(@NotNull Object packet) {
+        if (PlayerInfoClass == null || !PlayerInfoClass.isInstance(packet)) return;
+        if (BukkitReflection.is1_19_3Plus()) {
+            onPlayerInfo1_19_3(packet);
+        } else {
+            onPlayerInfo1_19_2(packet);
+        }
+    }
+
+    @SneakyThrows
+    private void onPlayerInfo1_19_3(@NotNull Object packet) {
+        List<String> actions = ((EnumSet<?>)ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
+        List<Object> updatedList = new ArrayList<>();
+        for (Object nmsData : (List<?>) PLAYERS.get(packet)) {
+            GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
+            UUID id;
+            id = (UUID) PlayerInfoData_UUID.get(nmsData);
+            Object displayName = null;
+            int latency = 0;
+            if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name())) {
+                displayName = PlayerInfoData_DisplayName.get(nmsData);
+                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, id);
+                if (newDisplayName != null) displayName = toComponent(newDisplayName);
+            }
+            if (actions.contains(TabList.Action.UPDATE_LATENCY.name())) {
+                latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, PlayerInfoData_Latency.getInt(nmsData));
+            }
+            if (actions.contains(TabList.Action.ADD_PLAYER.name())) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
+            }
+            // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
+            updatedList.add(newPlayerInfoData.newInstance(
+                    id,
+                    profile,
+                    PlayerInfoData_Listed.getBoolean(nmsData),
+                    latency,
+                    PlayerInfoData_GameMode.get(nmsData),
+                    displayName,
+                    PlayerInfoData_RemoteChatSession.get(nmsData)));
+        }
+        PLAYERS.set(packet, updatedList);
+    }
+
+    @SneakyThrows
+    private void onPlayerInfo1_19_2(@NotNull Object packet) {
+        String action = ACTION.get(packet).toString();
+        for (Object nmsData : (List<?>) PLAYERS.get(packet)) {
+            GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
+            UUID id = profile.getId();
+            if (action.equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.equals(TabList.Action.ADD_PLAYER.name())) {
+                Object displayName = PlayerInfoData_DisplayName.get(nmsData);
+                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, id);
+                if (newDisplayName != null) displayName = toComponent(newDisplayName);
+                PlayerInfoData_DisplayName.set(nmsData, displayName);
+            }
+            if (action.equals(TabList.Action.UPDATE_LATENCY.name()) || action.equals(TabList.Action.ADD_PLAYER.name())) {
+                int latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, PlayerInfoData_Latency.getInt(nmsData));
+                PlayerInfoData_Latency.set(nmsData, latency);
+            }
+            if (action.equals(TabList.Action.ADD_PLAYER.name())) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
+            }
+        }
     }
 
     private static class SkinData {
