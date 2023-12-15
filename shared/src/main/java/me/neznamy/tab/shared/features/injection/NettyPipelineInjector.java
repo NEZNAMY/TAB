@@ -63,14 +63,6 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         }
     }
 
-    public @Nullable TabPlayer getPlayer(@NotNull String name) {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (p.getNickname().equals(name))
-                return p; // Nicked name
-        }
-        return TAB.getInstance().getPlayer(name); // Try original name
-    }
-
     public abstract void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet);
 
     public abstract void onObjective(@NotNull TabPlayer player, @NotNull Object packet);
@@ -79,17 +71,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     public abstract boolean isObjective(@NotNull Object packet);
 
-    public abstract boolean isTeam(@NotNull Object packet);
-
     public abstract boolean isLogin(@NotNull Object packet);
-
-    /**
-     * Removes all real players from team if packet does not come from TAB and reports this to override log
-     *
-     * @param   teamPacket
-     *          team packet
-     */
-    public abstract void modifyPlayers(@NotNull Object teamPacket);
 
     @RequiredArgsConstructor
     public class TabChannelDuplexHandler extends ChannelDuplexHandler {
@@ -104,9 +86,9 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                                                 player.getTabList().onPacketSend(packet);
                 if (isDisplayObjective(packet)) onDisplayObjective(player, packet);
                 if (isObjective(packet))        onObjective(player, packet);
-                if (antiOverrideTeams && isTeam(packet)) {
+                if (antiOverrideTeams && player.getScoreboard().isTeamPacket(packet)) {
                     long time = System.nanoTime();
-                    modifyPlayers(packet);
+                    player.getScoreboard().onTeamPacket(packet);
                     TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
                 }
                 if (isLogin(packet)) {

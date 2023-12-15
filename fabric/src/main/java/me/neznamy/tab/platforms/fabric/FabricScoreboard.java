@@ -1,10 +1,18 @@
 package me.neznamy.tab.platforms.fabric;
 
+import lombok.SneakyThrows;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -13,6 +21,8 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,6 +120,46 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
         player.sendPacket(FabricMultiVersion.removeScore.apply(objective, scoreHolder));
+    }
+
+    @Override
+    public boolean isTeamPacket(@NotNull Object packet) {
+        return FabricMultiVersion.isTeamPacket.apply((Packet<?>) packet);
+    }
+
+    @Override
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public void onTeamPacket(@NotNull Object packet) {
+        if (TAB.getInstance().getNameTagManager() == null) return;
+        int action = ReflectionUtils.getInstanceFields(packet.getClass(), int.class).get(0).getInt(packet);
+        if (action == 1 || action == 2 || action == 4) return;
+        Field playersField = ReflectionUtils.getFields(packet.getClass(), Collection.class).get(0);
+        Collection<String> players = (Collection<String>) playersField.get(packet);
+        String teamName = String.valueOf(ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet));
+        if (players == null) return;
+        //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
+        Collection<String> newList = new ArrayList<>();
+        for (String entry : players) {
+            TabPlayer p = getPlayer(entry);
+            if (p == null) {
+                newList.add(entry);
+                continue;
+            }
+            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            String expectedTeam = sorting.getShortTeamName(p);
+            if (expectedTeam == null) {
+                newList.add(entry);
+                continue;
+            }
+            if (!((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
+                    !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
+                logTeamOverride(teamName, p.getName(), expectedTeam);
+            } else {
+                newList.add(entry);
+            }
+        }
+        playersField.set(packet, newList);
     }
 
     @NotNull

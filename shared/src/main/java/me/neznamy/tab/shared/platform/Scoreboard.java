@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class Scoreboard<T extends TabPlayer> {
 
+    /** Static to prevent spam when packet is sent to each player */
+    private static String lastTeamOverrideMessage;
+
     /** Player this scoreboard belongs to */
     protected final T player;
 
@@ -170,6 +173,52 @@ public abstract class Scoreboard<T extends TabPlayer> {
             return legacyText.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
         } else {
             return legacyText.substring(0, length);
+        }
+    }
+
+    /**
+     * Returns {@code true} if packet is a team packet, {@code false} if not.
+     *
+     * @param   packet
+     *          Minecraft packet to check
+     * @return  {@code true} if is a team packet, {@code false} if not.
+     */
+    public boolean isTeamPacket(@NotNull Object packet) {
+        return false;
+    }
+
+    /**
+     * Removes all real players from team if packet does not come from TAB and reports this to override log.
+     *
+     * @param   packet
+     *          Packet to process
+     */
+    public void onTeamPacket(@NotNull Object packet) {
+        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
+    }
+
+    /**
+     * Returns player by given nickname.
+     *
+     * @param   name
+     *          Nickname of player
+     * @return  Player from given nickname
+     */
+    @Nullable
+    protected static TabPlayer getPlayer(@NotNull String name) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            if (p.getNickname().equals(name))
+                return p; // Nicked name
+        }
+        return TAB.getInstance().getPlayer(name); // Try original name
+    }
+
+    protected static void logTeamOverride(@NotNull String team, @NotNull String player, @NotNull String expectedTeam) {
+        String message = "Blocked attempt to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
+        //not logging the same message for every online player who received the packet
+        if (!message.equals(lastTeamOverrideMessage)) {
+            lastTeamOverrideMessage = message;
+            TAB.getInstance().getErrorManager().printError(message, null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
         }
     }
 

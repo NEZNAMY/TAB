@@ -4,9 +4,14 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -184,6 +190,16 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         player.sendPacket(scorePacketData.removeScore(objective, scoreHolder));
     }
 
+    @Override
+    public boolean isTeamPacket(@NotNull Object packet) {
+        return teamPacketData.TeamPacketClass.isInstance(packet);
+    }
+
+    @Override
+    public void onTeamPacket(@NotNull Object team) {
+        teamPacketData.onTeamPacket(team);
+    }
+
     /**
      * Creates a new Scoreboard Objective with given parameters.
      *
@@ -322,14 +338,14 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     public static class TeamPacketData {
 
-        public Class<?> TeamPacketClass;
+        private final Class<?> TeamPacketClass;
         private Constructor<?> newTeamPacket;
         private final Constructor<?> newScoreboardTeam;
         private Method TeamPacketConstructor_of;
         private Method TeamPacketConstructor_ofBoolean;
-        public Field TeamPacket_NAME;
-        public Field TeamPacket_ACTION;
-        public Field TeamPacket_PLAYERS;
+        private final Field TeamPacket_NAME;
+        private final Field TeamPacket_ACTION;
+        private final Field TeamPacket_PLAYERS;
         private final Method ScoreboardTeam_getPlayerNameSet;
         private Method ScoreboardTeam_setNameTagVisibility;
         private Method ScoreboardTeam_setCollisionRule;
@@ -477,6 +493,38 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             if (BukkitReflection.getMinorVersion() >= 9)
                 ScoreboardTeam_setCollisionRule.invoke(team, collisionRules[collision.ordinal()]);
             return team;
+        }
+
+        @SneakyThrows
+        public void onTeamPacket(@NotNull Object team) {
+            if (TAB.getInstance().getNameTagManager() == null) return;
+            int action = TeamPacket_ACTION.getInt(team);
+            if (action == 1 || action == 2 || action == 4) return;
+            Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(team);
+            String teamName = (String) TeamPacket_NAME.get(team);
+            if (players == null) return;
+            //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
+            Collection<String> newList = new ArrayList<>();
+            for (String entry : players) {
+                TabPlayer p = getPlayer(entry);
+                if (p == null) {
+                    newList.add(entry);
+                    continue;
+                }
+                Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+                String expectedTeam = sorting.getShortTeamName(p);
+                if (expectedTeam == null) {
+                    newList.add(entry);
+                    continue;
+                }
+                if (!((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
+                        !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
+                    logTeamOverride(teamName, p.getName(), expectedTeam);
+                } else {
+                    newList.add(entry);
+                }
+            }
+            TeamPacket_PLAYERS.set(team, newList);
         }
     }
 

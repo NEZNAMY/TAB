@@ -1,35 +1,30 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import java.lang.reflect.Field;
-
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.packet.*;
+import net.md_5.bungee.protocol.packet.Login;
+import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+import net.md_5.bungee.protocol.packet.ScoreboardObjective;
+import net.md_5.bungee.protocol.packet.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -102,43 +97,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     @Override
     public boolean isObjective(@NotNull Object packet) {
         return packet instanceof ScoreboardObjective;
-    }
-
-    @Override
-    public boolean isTeam(@NotNull Object packet) {
-        return packet instanceof Team;
-    }
-
-    @Override
-    public void modifyPlayers(@NotNull Object team) {
-        if (TAB.getInstance().getNameTagManager() == null) return;
-        Team packet = (Team) team;
-        if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
-        Collection<String> col = Lists.newArrayList(packet.getPlayers());
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-            String expectedTeam = sorting.getShortTeamName(p);
-            if (expectedTeam != null && (col.contains(p.getNickname()) || col.contains(p.getName())) &&
-                    !((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
-                    !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
-                logTeamOverride(packet.getName(), p.getName(), expectedTeam);
-                col.remove(p.getNickname());
-                col.remove(p.getName());
-            }
-        }
-        RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-        if (redis != null) {
-            RedisTeams teams = redis.getRedisTeams();
-            if (teams != null) {
-                for (RedisPlayer p : redis.getRedisPlayers().values()) {
-                    if (col.contains(p.getNickname()) && !packet.getName().equals(teams.getTeamNames().get(p))) {
-                        logTeamOverride(packet.getName(), p.getNickname(), teams.getTeamNames().get(p));
-                        col.remove(p.getNickname());
-                    }
-                }
-            }
-        }
-        packet.setPlayers(col.toArray(new String[0]));
     }
 
     @Override

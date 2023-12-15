@@ -22,9 +22,6 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
 
     @Getter private final String featureName = "Pipeline injection";
 
-    //preventing spam when packet is sent to everyone
-    private String lastTeamOverrideMessage;
-
     //anti-override rules
     protected boolean antiOverrideTeams;
     protected boolean byteBufDeserialization;
@@ -55,14 +52,5 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         inject(connectedPlayer);
-    }
-
-    protected void logTeamOverride(@NotNull String team, @NotNull String player, @NotNull String expectedTeam) {
-        String message = "Something just tried to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
-        //not logging the same message for every online player who received the packet
-        if (!message.equals(lastTeamOverrideMessage)) {
-            lastTeamOverrideMessage = message;
-            TAB.getInstance().getErrorManager().printError(message, null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
-        }
     }
 }
