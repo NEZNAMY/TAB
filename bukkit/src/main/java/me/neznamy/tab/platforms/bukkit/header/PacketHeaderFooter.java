@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -47,7 +48,7 @@ public class PacketHeaderFooter extends HeaderFooter {
                     HEADER = ReflectionUtils.getFields(HeaderFooterClass, IChatBaseComponent).get(0);
                     FOOTER = ReflectionUtils.getFields(HeaderFooterClass, IChatBaseComponent).get(1);
                 }
-                available = true;
+                available = PacketSender.isAvailable();
             }
         } catch (Exception ignored) {
             // Print exception to find out what went wrong
@@ -58,12 +59,12 @@ public class PacketHeaderFooter extends HeaderFooter {
     @Override
     public void set(@NotNull BukkitTabPlayer player, @NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         if (BukkitReflection.getMinorVersion() >= 17) {
-            player.sendPacket(newHeaderFooter.newInstance(convert(header, player), convert(footer, player)));
+            PacketSender.sendPacket(player.getPlayer(), newHeaderFooter.newInstance(convert(header, player), convert(footer, player)));
         } else {
             Object packet = newHeaderFooter.newInstance();
             HEADER.set(packet, convert(header, player));
             FOOTER.set(packet, convert(footer, player));
-            player.sendPacket(packet);
+            PacketSender.sendPacket(player.getPlayer(), packet);
         }
     }
 

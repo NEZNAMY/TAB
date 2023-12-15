@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -140,35 +141,35 @@ public class BukkitTabList implements TabList {
         if (PlayerInfoClass == null) return;
         if (ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
-            player.sendPacket(newClientboundPlayerInfoRemovePacket.newInstance(Collections.singletonList(entry)));
+            PacketSender.sendPacket(player.getPlayer(), newClientboundPlayerInfoRemovePacket.newInstance(Collections.singletonList(entry)));
         } else {
             //1.19.2-
-            player.sendPacket(createPacket(Action.REMOVE_PLAYER, new Builder(entry).build()));
+            PacketSender.sendPacket(player.getPlayer(), createPacket(Action.REMOVE_PLAYER, new Builder(entry).build()));
         }
     }
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (PlayerInfoClass == null) return;
-        player.sendPacket(createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
+        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
         if (PlayerInfoClass == null) return;
-        player.sendPacket(createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
+        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
         if (PlayerInfoClass == null) return;
-        player.sendPacket(createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
+        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
     }
 
     @Override
     public void addEntry(@NotNull Entry entry) {
         if (PlayerInfoClass == null) return;
-        player.sendPacket(createPacket(Action.ADD_PLAYER, entry));
+        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.ADD_PLAYER, entry));
     }
 
     @Override

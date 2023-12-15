@@ -41,7 +41,7 @@ public class PacketSender {
 
     @SneakyThrows
     public static void sendPacket(@NotNull Player player, @NotNull Object packet) {
-        if (!player.isOnline() || sendPacket == null) return;
+        if (!player.isOnline() || !available) return;
         sendPacket.invoke(PLAYER_CONNECTION.get(getHandle.invoke(player)), packet);
     }
 }

@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.header;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.bukkit.Bukkit;
@@ -25,7 +24,7 @@ public abstract class HeaderFooter {
     public static void findInstance() {
         if (PaperHeaderFooter.isAvailable()) {
             instance = new PaperHeaderFooter();
-        } else if (PacketHeaderFooter.isAvailable() && PacketSender.isAvailable()) {
+        } else if (PacketHeaderFooter.isAvailable()) {
             instance = new PacketHeaderFooter();
         } else if (BukkitHeaderFooter.isAvailable()) {
             instance = new BukkitHeaderFooter();

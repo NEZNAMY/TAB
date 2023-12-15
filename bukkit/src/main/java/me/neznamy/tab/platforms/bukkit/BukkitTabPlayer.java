@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
-import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
@@ -69,11 +68,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @SneakyThrows
     public int getPing() {
         return PingRetriever.getPing(getPlayer());
-    }
-
-    @SneakyThrows
-    public void sendPacket(@NotNull Object nmsPacket) {
-        PacketSender.sendPacket(getPlayer(), nmsPacket);
     }
 
     @Override

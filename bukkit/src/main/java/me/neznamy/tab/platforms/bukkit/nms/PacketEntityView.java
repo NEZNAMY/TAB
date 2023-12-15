@@ -231,9 +231,9 @@ public class PacketEntityView implements EntityView {
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location l, @NotNull EntityData data) {
         int minorVersion = BukkitReflection.getMinorVersion();
         if (minorVersion >= 19) {
-            player.sendPacket(newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0d));
+            PacketSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0d));
         } else if (minorVersion >= 17) {
-            player.sendPacket(newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty));
+            PacketSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty));
         } else {
             Object nmsPacket = newSpawnEntity.newInstance();
             SpawnEntity_EntityId.set(nmsPacket, entityId);
@@ -251,7 +251,7 @@ public class PacketEntityView implements EntityView {
                 SpawnEntity_Z.set(nmsPacket, floor(l.getZ()*32));
             }
             SpawnEntity_EntityType.set(nmsPacket, entityIds.get((EntityType) entityType));
-            player.sendPacket(nmsPacket);
+            PacketSender.sendPacket(player.getPlayer(), nmsPacket);
         }
         if (BukkitReflection.getMinorVersion() >= 15) {
             updateEntityMetadata(entityId, data);
@@ -263,9 +263,9 @@ public class PacketEntityView implements EntityView {
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
         if (newEntityMetadata.getParameterCount() == 2) {
             //1.19.3+
-            player.sendPacket(newEntityMetadata.newInstance(entityId, DataWatcher.DataWatcher_packDirty.invoke(data.build())));
+            PacketSender.sendPacket(player.getPlayer(), newEntityMetadata.newInstance(entityId, DataWatcher.DataWatcher_packDirty.invoke(data.build())));
         } else {
-            player.sendPacket(newEntityMetadata.newInstance(entityId, data.build(), true));
+            PacketSender.sendPacket(player.getPlayer(), newEntityMetadata.newInstance(entityId, data.build(), true));
         }
     }
 
@@ -288,18 +288,18 @@ public class PacketEntityView implements EntityView {
             EntityTeleport_Y.set(nmsPacket, floor(location.getY()*32));
             EntityTeleport_Z.set(nmsPacket, floor(location.getZ()*32));
         }
-        player.sendPacket(nmsPacket);
+        PacketSender.sendPacket(player.getPlayer(), nmsPacket);
     }
 
     @SneakyThrows
     @Override
     public void destroyEntities(int... entities) {
         if (newEntityDestroy.getParameterTypes()[0] != int.class) {
-            player.sendPacket(newEntityDestroy.newInstance(new Object[]{entities}));
+            PacketSender.sendPacket(player.getPlayer(), newEntityDestroy.newInstance(new Object[]{entities}));
         } else {
             //1.17.0 Mojank
             for (int entity : entities) {
-                player.sendPacket(newEntityDestroy.newInstance(entity));
+                PacketSender.sendPacket(player.getPlayer(), newEntityDestroy.newInstance(entity));
             }
         }
     }
