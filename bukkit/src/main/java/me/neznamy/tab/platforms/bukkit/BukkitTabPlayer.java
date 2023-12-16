@@ -8,6 +8,7 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
+import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -38,7 +39,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     private final Scoreboard<BukkitTabPlayer> scoreboard = ScoreboardLoader.getInstance().apply(this);
 
     @NotNull
-    private final BukkitTabList tabList = new BukkitTabList(this);
+    private final TabListBase tabList = TabListBase.getInstance().apply(this);
 
     @NotNull
     private final BossBar bossBar = BukkitReflection.getMinorVersion() >= 9 ? new BukkitBossBar(this) :

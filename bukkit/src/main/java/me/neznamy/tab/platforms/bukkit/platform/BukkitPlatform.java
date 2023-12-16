@@ -10,6 +10,7 @@ import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
+import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
@@ -90,6 +91,7 @@ public class BukkitPlatform implements BackendPlatform {
         PingRetriever.tryLoad();
         PacketSender.tryLoad();
         ScoreboardLoader.findInstance();
+        TabListBase.findInstance();
         if (BukkitReflection.getMinorVersion() >= 8) {
             BukkitPipelineInjector.tryLoad();
             HeaderFooter.findInstance();

@@ -42,7 +42,6 @@ public class BukkitTAB extends JavaPlugin {
         try {
             DataWatcher.load();
             PacketEntityView.load();
-            BukkitTabList.load();
             return true;
         } catch (Exception ex) {
             if (ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]) == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
