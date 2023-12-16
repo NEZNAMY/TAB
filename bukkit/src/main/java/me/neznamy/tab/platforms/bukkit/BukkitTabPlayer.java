@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 public class BukkitTabPlayer extends BackendTabPlayer {
 
-    private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
+    private static final boolean spigot = ReflectionUtils.classExists("net.md_5.bungee.chat.ComponentSerializer");
 
     @NotNull
     private final Scoreboard<BukkitTabPlayer> scoreboard = ScoreboardLoader.getInstance().apply(this);
