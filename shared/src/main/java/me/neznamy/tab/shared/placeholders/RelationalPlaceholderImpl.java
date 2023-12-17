@@ -53,7 +53,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
      *          target who is the text displayed on
      * @return  true if value changed, false if not
      */
-    public boolean update(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
+    public synchronized boolean update(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
         Object output = request(viewer, target);
         if (output == null) return false; //bridge placeholders, they are updated using updateValue method
         String newValue = getReplacements().findReplacement(String.valueOf(output));
@@ -129,12 +129,19 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
      * @return  last known value for entered player duo
      */
     public String getLastValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
-        WeakHashMap<me.neznamy.tab.api.TabPlayer, String> viewerMap = lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>());
-        if (!viewerMap.containsKey(target)) {
-            viewerMap.put(target, getReplacements().findReplacement(identifier));
-            update(viewer, target);
-        }
-        return setPlaceholders(EnumChatFormat.color(viewerMap.get(target)), target);
+        return setPlaceholders(
+                EnumChatFormat.color(
+                        lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).computeIfAbsent(target, t -> retrieveValue(viewer, target))
+                ),
+                target
+        );
+    }
+
+    @NotNull
+    private String retrieveValue(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        Object output = request(viewer, target);
+        if (output == null) output = identifier;
+        return replacements.findReplacement(output.toString());
     }
 
     @Override
