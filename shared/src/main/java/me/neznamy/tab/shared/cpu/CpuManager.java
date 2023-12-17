@@ -47,7 +47,14 @@ public class CpuManager {
      */
     public CpuManager() {
         startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), () -> {
-            lastReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
+            CpuReport newReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
+            if (lastReport != null) {
+                long timeDiff = newReport.getTimeStamp() - lastReport.getTimeStamp();
+                if (timeDiff > 12000 && TAB.getInstance().getConfiguration().isDebugMode()) { // Extra time to prevent false trigger
+                    newReport.printToConsole(timeDiff);
+                }
+            }
+            lastReport = newReport;
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
         });
