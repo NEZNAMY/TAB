@@ -41,6 +41,9 @@ public class FeatureManager {
     @NotNull
     @Getter private TabFeature[] values = new TabFeature[0];
 
+    /** Flag tracking presence of a feature listening to raw packets for faster check with better performance */
+    private boolean hasPacketSendListener;
+
     /**
      * Calls load() on all features.
      * This function is called on plugin startup.
@@ -195,6 +198,7 @@ public class FeatureManager {
      *          OUT packet coming from the server
      */
     public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) {
+        if (!hasPacketSendListener) return;
         for (TabFeature f : values) {
             if (!(f instanceof PacketSendListener)) continue;
             long time = System.nanoTime();
@@ -297,6 +301,9 @@ public class FeatureManager {
         }
         if (featureHandler instanceof GameModeListener) {
             TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.GAMEMODE));
+        }
+        if (featureHandler instanceof PacketSendListener) {
+            hasPacketSendListener = true;
         }
     }
 
