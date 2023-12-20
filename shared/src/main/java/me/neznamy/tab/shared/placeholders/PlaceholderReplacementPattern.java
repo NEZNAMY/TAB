@@ -18,6 +18,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PlaceholderReplacementPattern {
 
+    /** Flag tracking if any replacements are set */
+    private final boolean hasReplacements;
+
     /**
      * Full replacement map with values colored and keys being duplicated,
      * once with and once without colors
@@ -43,6 +46,7 @@ public class PlaceholderReplacementPattern {
      *          replacement map from config
      */
     public PlaceholderReplacementPattern(@NonNull String identifier, @NonNull Map<Object, Object> map) {
+        hasReplacements = !map.isEmpty();
         for (Entry<Object, Object> entry : map.entrySet()) {
             String key = String.valueOf(entry.getKey());
             String value = String.valueOf(entry.getValue()).replace(identifier, "%value%");
@@ -77,6 +81,7 @@ public class PlaceholderReplacementPattern {
      * @return  replacement or {@code output} if no pattern is matching
      */
     public @NotNull String findReplacement(@NonNull String output) {
+        if (!hasReplacements) return output;
         String replacement = findReplacement0(output);
         if (replacement.contains("%value%")) {
             replacement = replacement.replace("%value%", output);
@@ -93,9 +98,6 @@ public class PlaceholderReplacementPattern {
      * @return  replacement or {@code output} if no pattern is matching
      */
     private @NotNull String findReplacement0(@NonNull String output) {
-        //skipping check if no replacements are defined
-        if (replacements.isEmpty()) return output;
-        
         //exact output
         if (replacements.containsKey(output)) {
             return replacements.get(output);
