@@ -22,7 +22,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     @NonNull private final Function<me.neznamy.tab.api.TabPlayer, Object> function;
 
     /** Last known values for each online player after applying replacements and nested placeholders */
-    private final WeakHashMap<TabPlayer, String> lastValues = new WeakHashMap<>();
+    private final Map<TabPlayer, String> lastValues = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Constructs new instance with given parameters

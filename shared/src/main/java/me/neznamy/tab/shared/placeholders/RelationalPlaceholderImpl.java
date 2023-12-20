@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.placeholders;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
@@ -24,7 +26,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     @NonNull private final BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function;
 
     /** Last known values for each online player duo after applying replacements and nested placeholders */
-    @NonNull private final WeakHashMap<me.neznamy.tab.api.TabPlayer, WeakHashMap<me.neznamy.tab.api.TabPlayer, String>> lastValues = new WeakHashMap<>();
+    @NonNull private final Map<me.neznamy.tab.api.TabPlayer, Map<me.neznamy.tab.api.TabPlayer, String>> lastValues =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Constructs new instance with given parameters
@@ -57,7 +60,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         Object output = request(viewer, target);
         if (output == null) return false; //bridge placeholders, they are updated using updateValue method
         String newValue = getReplacements().findReplacement(String.valueOf(output));
-        if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) || !lastValues.get(viewer).get(target).equals(newValue)) {
+        if (!lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).containsKey(target) || !lastValues.get(viewer).get(target).equals(newValue)) {
             lastValues.get(viewer).put(target, newValue);
             TAB.getInstance().getCPUManager().runMeasuredTask(TAB.getInstance().getPlaceholderManager().getFeatureName(),
                     TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
@@ -85,7 +88,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
      */
     private void updateValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target, @Nullable Object value, boolean force) {
         String s = getReplacements().findReplacement(String.valueOf(value));
-        if (lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) && lastValues.get(viewer).get(target).equals(s) && !force) return;
+        if (lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).containsKey(target) && lastValues.get(viewer).get(target).equals(s) && !force) return;
         lastValues.get(viewer).put(target, s);
         Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
         if (usage == null) return;
@@ -131,7 +134,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     public String getLastValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
         return setPlaceholders(
                 EnumChatFormat.color(
-                        lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).computeIfAbsent(target, t -> retrieveValue(viewer, target))
+                        lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).computeIfAbsent(target, t -> retrieveValue(viewer, target))
                 ),
                 target
         );
