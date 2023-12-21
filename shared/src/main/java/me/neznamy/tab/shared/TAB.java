@@ -80,6 +80,9 @@ public class TAB extends TabAPI {
     /** Feature manager forwarding events into all loaded features */
     @Getter private FeatureManager featureManager;
 
+    /** Placeholder manager for fast access */
+    @Getter private PlaceholderManagerImpl placeholderManager;
+
     /** Plugin's configuration files and values storage */
     @Getter private Configs configuration;
 
@@ -162,7 +165,8 @@ public class TAB extends TabAPI {
             cpu = new CpuManager();
             configuration = new Configs();
             featureManager = new FeatureManager();
-            featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
+            placeholderManager = new PlaceholderManagerImpl();
+            featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, placeholderManager);
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, platform.detectPermissionPlugin());
             platform.registerPlaceholders();
             featureManager.loadFeaturesFromConfig();
@@ -272,11 +276,6 @@ public class TAB extends TabAPI {
     public @Nullable NameTagManager getNameTagManager() {
         if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
         return featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
-    }
-
-    @Override
-    public @NotNull PlaceholderManagerImpl getPlaceholderManager() {
-        return featureManager.getFeature(TabConstants.Feature.PLACEHOLDER_MANAGER);
     }
 
     @Override

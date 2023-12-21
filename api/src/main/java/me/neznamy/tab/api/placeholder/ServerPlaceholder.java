@@ -1,6 +1,6 @@
 package me.neznamy.tab.api.placeholder;
 
-import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An interface for server placeholders (returning same value for all players)
@@ -15,7 +15,7 @@ public interface ServerPlaceholder extends Placeholder {
      * @param   value
      *          New value
      */
-    void updateValue(@NonNull Object value);
+    void updateValue(@Nullable Object value);
 
     /**
      * Force-updates placeholder value using previously provided update function.

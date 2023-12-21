@@ -7,7 +7,6 @@ import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -46,79 +45,58 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         if (!identifier.startsWith("%rel_")) throw new IllegalArgumentException("Relational placeholder identifiers must start with \"rel_\"");
         this.function = function;
     }
-    
-    /**
-     * Updates value for given players and returns true if value changed, false if not
-     *
-     * @param   viewer
-     *          viewer of the placeholder
-     * @param   target
-     *          target who is the text displayed on
-     * @return  true if value changed, false if not
-     */
-    public synchronized boolean update(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
-        Object output = request(viewer, target);
-        if (output == null) return false; //bridge placeholders, they are updated using updateValue method
-        String newValue = getReplacements().findReplacement(String.valueOf(output));
-        if (!lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).containsKey(target) || !lastValues.get(viewer).get(target).equals(newValue)) {
+
+    @Override
+    public void update(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target) {
+        updateValue(viewer, target, request((TabPlayer) viewer, (TabPlayer) target));
+    }
+
+    @Override
+    public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target, @Nullable Object value) {
+        if (hasValueChanged((TabPlayer) viewer, (TabPlayer) target, value)) {
+            for (Refreshable r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
+                long startTime = System.nanoTime();
+                r.refresh((TabPlayer) target, false);
+                TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+            }
+        }
+    }
+
+    public boolean hasValueChanged(@NonNull TabPlayer viewer, @NonNull TabPlayer target, @Nullable Object value) {
+        if (value == null) return false; //bridge placeholders, they are updated using updateValue method
+        String newValue = getReplacements().findReplacement(String.valueOf(value));
+        if (!lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).containsKey(target) ||
+                !lastValues.get(viewer).get(target).equals(newValue)) {
             lastValues.get(viewer).put(target, newValue);
-            TAB.getInstance().getCPUManager().runMeasuredTask(TAB.getInstance().getPlaceholderManager().getFeatureName(),
-                    TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
-                        updateParents(viewer);
-                        updateParents(target);
-                    });
+            updateParents(viewer);
+            updateParents(target);
             return true;
         }
         return false;
     }
 
-    /**
-     * Internal method with an additional parameter {@code force}, which, if set to true,
-     * features using the placeholder will refresh despite placeholder seemingly not
-     * changing output, which is caused by nested placeholder changing value.
-     *
-     * @param   viewer
-     *          viewer of the placeholder
-     * @param   target
-     *          target who is the text displayed on
-     * @param   value
-     *          new placeholder output
-     * @param   force
-     *          whether refreshing should be forced or not
-     */
-    private void updateValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target, @Nullable Object value, boolean force) {
-        String s = getReplacements().findReplacement(String.valueOf(value));
-        if (lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).containsKey(target) && lastValues.get(viewer).get(target).equals(s) && !force) return;
-        lastValues.get(viewer).put(target, s);
-        Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
-        if (usage == null) return;
+    @Override
+    public void updateFromNested(@NonNull TabPlayer viewer) {
+        Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier);
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+            Object value = request(viewer, target);
+            String s = getReplacements().findReplacement(String.valueOf(value));
+            lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
+            if (!target.isLoaded()) return; // Updated on join
+            for (Refreshable f : usage) {
+                long time = System.nanoTime();
+                f.refresh(target, true);
+                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
+            }
+            updateParents(target);
+        }
+        if (!viewer.isLoaded()) return; // Updated on join
         for (Refreshable f : usage) {
             long time = System.nanoTime();
             f.refresh(viewer, true);
-            f.refresh(target, true);
             TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
         }
         updateParents(viewer);
-        updateParents(target);
-    }
-
-    @Override
-    public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target, @NonNull Object value) {
-        updateValue((TabPlayer) viewer, (TabPlayer) target, value, false);
-    }
-
-    @Override
-    public void update(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target) {
-        PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
-        TAB.getInstance().getCPUManager().runMeasuredTask(pm.getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
-            if (update((TabPlayer) viewer, (TabPlayer) target)) {
-                for (Refreshable r : pm.getPlaceholderUsage().get(identifier)) {
-                    long startTime = System.nanoTime();
-                    r.refresh((TabPlayer) target, false);
-                    TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
-                }
-            }
-        });
     }
 
     /**
@@ -134,7 +112,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     public String getLastValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
         return setPlaceholders(
                 EnumChatFormat.color(
-                        lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).computeIfAbsent(target, t -> retrieveValue(viewer, target))
+                        lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>()))
+                                .computeIfAbsent(target, t -> retrieveValue(viewer, target))
                 ),
                 target
         );
@@ -150,13 +129,6 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     @Override
     public @NotNull String getLastValue(@Nullable TabPlayer p) {
         return identifier;
-    }
-
-    @Override
-    public void updateFromNested(@NonNull TabPlayer player) {
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            updateValue(player, all, request(player, all), true);
-        }
     }
 
     /**

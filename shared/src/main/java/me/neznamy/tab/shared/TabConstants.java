@@ -55,7 +55,9 @@ public class TabConstants {
         public static final String PACKET_LOGIN = "Login packet";
         public static final String TABLIST_CLEAR = "TabList entry re-add";
 
-        public static final String PLACEHOLDER_REFRESHING = "Refreshing placeholders";
+        public static final String PLACEHOLDER_REFRESH_INIT = "Phase #1 - Preparing for request";
+        public static final String PLACEHOLDER_REQUEST = "Phase #2 - Requesting new values";
+        public static final String PLACEHOLDER_SAVE = "Phase #3 - Saving results";
 
         public static final String REFRESHING_NAME_TAG_VISIBILITY = "Refreshing NameTag visibility";
         public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";

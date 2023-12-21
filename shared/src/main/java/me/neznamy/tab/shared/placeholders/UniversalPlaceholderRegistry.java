@@ -73,7 +73,7 @@ public class UniversalPlaceholderRegistry {
             manager.registerServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, -1, () -> "");
         }
         for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
-            Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"),
+            Animation a = new Animation((PlaceholderManagerImpl) manager, s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"),
                     TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
             List<String> nested = Arrays.asList(a.getNestedPlaceholders());
             ((PlaceholderManagerImpl) manager).registerPlaceholder(new PlayerPlaceholderImpl(TabConstants.Placeholder.animation(a.getName()), a.getRefresh(), p -> a.getMessage()) {

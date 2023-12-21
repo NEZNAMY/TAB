@@ -7,7 +7,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +32,7 @@ public class CpuManager {
             new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
     /** Scheduler for placeholder refreshing task to prevent inefficient placeholders from lagging the entire plugin */
+    @Getter
     private final ScheduledExecutorService placeholderThread = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder().setNameFormat("TAB Placeholder Refreshing Thread").build());
 
@@ -73,21 +73,10 @@ public class CpuManager {
      */
     public void enable() {
         enabled = true;
-
         Runnable r;
         while ((r = taskQueue.poll()) != null) {
             submit(r);
         }
-        // This one cannot be queued to processing thread, because we want it in different thread
-        placeholderThread.scheduleAtFixedRate(() -> run(() -> {
-                    long time = System.nanoTime();
-                    TAB.getInstance().getPlaceholderManager().refresh();
-                    addTime(TAB.getInstance().getPlaceholderManager().getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, System.nanoTime() - time);
-                }),
-                TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL,
-                TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL,
-                TimeUnit.MILLISECONDS
-        );
     }
 
     /**

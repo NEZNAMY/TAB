@@ -2,6 +2,7 @@ package me.neznamy.tab.api.placeholder;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An interface for relational placeholders (returning different value for each player duo)
@@ -20,7 +21,7 @@ public interface RelationalPlaceholder extends Placeholder {
      * @param   value
      *          New value
      */
-    void updateValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target, @NonNull Object value);
+    void updateValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target, @Nullable Object value);
 
     /**
      * Force-updates placeholder value using previously provided update function.

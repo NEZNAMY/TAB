@@ -2,6 +2,7 @@ package me.neznamy.tab.api.placeholder;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Interface for player placeholders (placeholders returning different value for each player)
@@ -18,7 +19,7 @@ public interface PlayerPlaceholder extends Placeholder {
      * @param   value
      *          New value
      */
-    void updateValue(@NonNull TabPlayer player, @NonNull Object value);
+    void updateValue(@NonNull TabPlayer player, @Nullable Object value);
 
     /**
      * Force-updates placeholder value using previously provided update function.

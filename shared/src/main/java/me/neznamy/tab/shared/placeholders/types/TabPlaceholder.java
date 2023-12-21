@@ -154,7 +154,10 @@ public abstract class TabPlaceholder implements Placeholder {
      */
     public void updateParents(@NonNull TabPlayer player) {
         if (parents.isEmpty()) return;
-        parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(player));
+        parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> {
+            placeholder.updateFromNested(player);
+            placeholder.updateParents(player);
+        });
     }
 
     /**

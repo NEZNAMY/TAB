@@ -1,11 +1,9 @@
 package me.neznamy.tab.shared.placeholders.types;
 
-import java.util.Set;
 import java.util.function.Supplier;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
@@ -40,92 +38,55 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         super(identifier, refresh);
         if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
         this.supplier = supplier;
-        update0();
-        if (lastValue == null) lastValue = identifier;
+        Object value = request();
+        lastValue = value == null ? identifier : value.toString();
     }
 
-    /**
-     * Updates placeholder, saves it and returns true if value changed, false if not
-     *
-     * @return  true if value changed, false if not
-     */
-    public boolean update0() {
-        String obj = getReplacements().findReplacement(String.valueOf(request()));
-        String newValue = setPlaceholders(obj, null);
+    @Override
+    public void update() {
+        updateValue(request());
+    }
+
+    @Override
+    public void updateValue(@Nullable Object value) {
+        if (hasValueChanged(value)) {
+            for (Refreshable r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                    if (!all.isLoaded()) return; // Updated on join
+                    long startTime = System.nanoTime();
+                    r.refresh(all, false);
+                    TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+                }
+            }
+        }
+    }
+
+    public boolean hasValueChanged(@Nullable Object value) {
+        String newValue = setPlaceholders(getReplacements().findReplacement(String.valueOf(value)), null);
 
         //make invalid placeholders return identifier instead of nothing
         if (identifier.equals(newValue) && lastValue == null) {
             lastValue = identifier;
         }
-        if (!"ERROR".equals(newValue) && !identifier.equals(newValue) && (lastValue == null || !lastValue.equals(newValue))) {
+        if (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && (lastValue == null || !lastValue.equals(newValue))) {
             lastValue = newValue;
-            TAB.getInstance().getCPUManager().runMeasuredTask(TAB.getInstance().getPlaceholderManager().getFeatureName(),
-                    TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
-                        for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                            updateParents(player);
-                            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
-                        }
-                    });
+            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                updateParents(player);
+                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
+            }
             return true;
         }
         return false;
     }
 
-    /**
-     * Internal method with an additional parameter {@code force}, which, if set to true,
-     * features using the placeholder will refresh despite placeholder seemingly not
-     * changing output, which is caused by nested placeholder changing value.
-     *
-     * @param   value
-     *          new placeholder output
-     * @param   force
-     *          whether refreshing should be forced or not
-     */
-    private void updateValue(@Nullable Object value, boolean force) {
-        String s = getReplacements().findReplacement(value == null ? lastValue == null ? identifier : lastValue : value.toString());
-        if (s.equals(lastValue) && !force) return;
-        lastValue = s;
-        Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
-        if (usage == null) return;
-        for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-            for (Refreshable f : usage) {
-                long time = System.nanoTime();
-                f.refresh(player, false);
-                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
-            }
-            updateParents(player);
-            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
-        }
+    @Override
+    public void updateFromNested(@NonNull TabPlayer unused) {
+        hasValueChanged(request());
     }
 
     @Override
-    public void updateValue(@NonNull Object value) {
-        updateValue(value, false);
-    }
-
-    @Override
-    public void update() {
-        PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
-        TAB.getInstance().getCPUManager().runMeasuredTask(pm.getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
-            if (update0()) {
-                for (Refreshable r : pm.getPlaceholderUsage().get(identifier)) {
-                    for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        long startTime = System.nanoTime();
-                        r.refresh(all, false);
-                        TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
-                    }
-                 }
-            }
-        });
-    }
-
-    @Override
-    public void updateFromNested(@NonNull TabPlayer player) {
-        updateValue(request(), true);
-    }
-
-    @Override
-    public @NotNull String getLastValue(@Nullable TabPlayer p) {
+    @NotNull
+    public String getLastValue(@Nullable TabPlayer p) {
         return lastValue;
     }
 
@@ -136,7 +97,8 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      *
      * @return  value placeholder returned or {@link #ERROR_VALUE} if it threw an error
      */
-    public @Nullable Object request() {
+    @Nullable
+    public Object request() {
         long time = System.currentTimeMillis();
         try {
             return supplier.get();
