@@ -29,7 +29,7 @@ public class VelocityTabList implements TabList {
     }
 
     /**
-     * https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133
+     * <a href="https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133">VelocityTabListLegacy</a>
      * You are supposed to be overriding
      * {@link com.velocitypowered.api.proxy.player.TabList#buildEntry(GameProfile, Component, int, int, ChatSession, boolean)},
      * not the outdated {@link com.velocitypowered.api.proxy.player.TabList#buildEntry(GameProfile, Component, int, int)},
@@ -68,7 +68,7 @@ public class VelocityTabList implements TabList {
                 .tabList(player.getPlayer().getTabList())
                 .profile(new GameProfile(
                         entry.getUniqueId(),
-                        entry.getName() == null ? "" : entry.getName(),
+                        entry.getName(),
                         entry.getSkin() == null ? Collections.emptyList() : Collections.singletonList(
                                 new GameProfile.Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), Objects.requireNonNull(entry.getSkin().getSignature())))
                 ))

@@ -21,6 +21,7 @@ public class FabricEntityView implements EntityView {
     private final FabricTabPlayer player;
 
     @NotNull
+    @SuppressWarnings("DataFlowIssue") // It actually is nullable
     private static final ArmorStand dummyEntity = new ArmorStand(null, 0, 0, 0);
 
     @Override

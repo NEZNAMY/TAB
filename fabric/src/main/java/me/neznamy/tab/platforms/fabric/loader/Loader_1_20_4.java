@@ -31,11 +31,15 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.util.*;
 
+@SuppressWarnings({
+        "unchecked", // Java generic types
+        "DataFlowIssue", // Profile is not null on add action
+        "unused" // Actually used, just via reflection
+})
 public class Loader_1_20_4 {
 
     private static final Scoreboard dummyScoreboard = new Scoreboard();
 
-    @SuppressWarnings("unchecked")
     public Loader_1_20_4(ProtocolVersion serverVersion) {
         if (serverVersion.getMinorVersion() >= 15) {
             FabricMultiVersion.isSneaking = Entity::isCrouching;

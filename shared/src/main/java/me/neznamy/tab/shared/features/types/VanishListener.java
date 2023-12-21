@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public interface VanishListener {
 
     /**
-     * Called when player's vanish status changes. New status
+     * Called when a player's vanish status changes. New status
      * is available in {@link TabPlayer#isVanished()}.
      *
      * @param   player

@@ -81,7 +81,7 @@ public class PacketTabList17 extends TabListBase {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        String name = entry.getDisplayName() == null ? String.valueOf(entry.getName()) : entry.getDisplayName().toLegacyText();
+        String name = entry.getDisplayName() == null ? entry.getName() : entry.getDisplayName().toLegacyText();
         if (name.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7) name = name.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
         PacketSender.sendPacket(player.getPlayer(), createPacket(name, true, entry.getLatency()));
         userNames.put(entry.getUniqueId(), entry.getName());

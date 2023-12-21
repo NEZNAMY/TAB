@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
  * This requires the Team feature to be enabled in config, otherwise the method will
  * return {@code null}.
  */
+@SuppressWarnings("unused") // API class
 public interface NameTagManager {
 
     /**

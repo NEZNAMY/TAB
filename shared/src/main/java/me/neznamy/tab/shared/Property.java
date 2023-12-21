@@ -105,7 +105,7 @@ public class Property {
         }
         String rawFormattedValue0 = value;
         for (String placeholder : placeholders0) {
-            rawFormattedValue0 = replaceFirst(rawFormattedValue0, placeholder, "%s");
+            rawFormattedValue0 = replaceFirst(rawFormattedValue0, placeholder);
         }
         if (!placeholders0.isEmpty() && rawFormattedValue0.contains("%")) {
             int index = rawFormattedValue0.lastIndexOf('%');
@@ -131,10 +131,10 @@ public class Property {
         }
     }
 
-    private String replaceFirst(String original, String searchString, String replacement) {
+    private String replaceFirst(String original, String searchString) {
         int index = original.indexOf(searchString);
         if (index != -1) {
-            return original.substring(0, index) + replacement + original.substring(index + searchString.length());
+            return original.substring(0, index) + "%s" + original.substring(index + searchString.length());
         } else {
             return original;
         }

@@ -5,6 +5,7 @@ import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused") // API class
 public interface SortingManager {
 
     /**

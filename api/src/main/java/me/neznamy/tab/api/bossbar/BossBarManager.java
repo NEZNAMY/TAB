@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * This requires the BossBar feature to be enabled in config, otherwise the method will
  * return {@code null}.
  */
+@SuppressWarnings("unused") // API class
 public interface BossBarManager {
 
     /**

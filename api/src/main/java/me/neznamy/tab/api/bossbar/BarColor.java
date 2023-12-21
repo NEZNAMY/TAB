@@ -4,6 +4,7 @@ package me.neznamy.tab.api.bossbar;
  * An enum representing all available BossBar colors.
  * Calling ordinal() will return color's network ID.
  */
+@SuppressWarnings("unused") // API class
 public enum BarColor {
 
     PINK,

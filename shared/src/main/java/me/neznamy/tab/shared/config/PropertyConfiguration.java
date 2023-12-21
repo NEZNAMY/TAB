@@ -36,7 +36,7 @@ public interface PropertyConfiguration {
      * are not {@code null}, per-server / per-world settings are checked first
      * to try to find a match. If no match is found, global value is returned.
      * Returned value is an array with 2 elements, with first argument being value
-     * and second being source. If nothing is found, empty array is returned.
+     * and second being the source. If nothing is found, empty array is returned.
      *
      * @param   groupOrUser
      *          Name of group or user, depending on what this instance handles

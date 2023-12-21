@@ -63,7 +63,7 @@ public class BungeeTabList17 extends BungeeTabList {
     @Override
     public void addEntry(@NotNull Entry entry) {
         addUuid(entry.getUniqueId());
-        String displayNameString = entry.getDisplayName() == null ? String.valueOf(entry.getName()) : entry.getDisplayName().toLegacyText();
+        String displayNameString = entry.getDisplayName() == null ? entry.getName() : entry.getDisplayName().toLegacyText();
         if (displayNameString.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7)
             displayNameString = displayNameString.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
         update(PlayerListItem.Action.ADD_PLAYER, createItem(entry.getName(), displayNameString, entry.getLatency()));

@@ -36,6 +36,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
             return SharedConstants.getCurrentVersion().getName();
         } catch (Throwable e) {
             // 1.19.3-
+            @SuppressWarnings("JavaReflectionMemberAccess") // Fabric-mapped method name
             Object gameVersion = SharedConstants.class.getMethod("method_16673").invoke(null);
             return (String) gameVersion.getClass().getMethod("getName").invoke(gameVersion);
         }

@@ -13,6 +13,7 @@ import java.util.function.Supplier;
  * An interface allowing placeholder registration. Instance can be
  * obtained using {@link TabAPI#getPlaceholderManager()}
  */
+@SuppressWarnings("unused") // API class
 public interface PlaceholderManager {
 
     /**

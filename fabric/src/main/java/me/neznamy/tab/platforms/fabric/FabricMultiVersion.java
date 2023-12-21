@@ -70,6 +70,7 @@ public class FabricMultiVersion {
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.V1_17) {
             for (int entity : entities) {
                 // While the actual packet name is different, fabric-mapped name is the same
+                //noinspection JavaReflectionMemberAccess
                 player.sendPacket(ClientboundRemoveEntitiesPacket.class.getConstructor(int.class).newInstance(entity));
             }
         } else {

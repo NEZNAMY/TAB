@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     api(projects.api)
-    api("org.yaml:snakeyaml:1.33")
+    api("org.yaml:snakeyaml:2.0")
     api("com.github.NEZNAMY:yamlassist:1.0.5")
     api("com.googlecode.json-simple:json-simple:1.1.1") {
         exclude("junit", "junit")

@@ -90,7 +90,7 @@ public interface TabList {
         @NotNull private UUID uniqueId;
 
         /** Real name of affected player */
-        @Nullable private String name;
+        @NotNull private String name;
 
         /** Player's skin, null for empty skin */
         @Nullable private Skin skin;
@@ -111,17 +111,17 @@ public interface TabList {
         public static class Builder {
 
             @NotNull private UUID uniqueId;
-            @Nullable private String name;
+            @NotNull private String name = "";
             @Nullable private Skin skin;
             private int latency;
             private int gameMode;
             @Nullable private IChatBaseComponent displayName;
 
-            public @NotNull Builder name(String name) { this.name = name; return this; }
-            public @NotNull Builder skin(Skin skin) { this.skin = skin; return this; }
+            public @NotNull Builder name(@NotNull String name) { this.name = name; return this; }
+            public @NotNull Builder skin(@Nullable Skin skin) { this.skin = skin; return this; }
             public @NotNull Builder latency(int latency) { this.latency = latency; return this; }
             public @NotNull Builder gameMode(int gameMode) { this.gameMode = gameMode; return this; }
-            public @NotNull Builder displayName(IChatBaseComponent displayName) { this.displayName = displayName; return this; }
+            public @NotNull Builder displayName(@Nullable IChatBaseComponent displayName) { this.displayName = displayName; return this; }
 
             public @NotNull Entry build() {
                 return new Entry(uniqueId, name, skin, latency, gameMode, displayName);

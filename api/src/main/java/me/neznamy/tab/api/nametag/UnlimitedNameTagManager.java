@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * This requires both Team and Unlimited name tag features to be enabled in config, otherwise the method will
  * return {@code null} or not be an instance of this class.
  */
+@SuppressWarnings("unused") // API class
 public interface UnlimitedNameTagManager extends NameTagManager {
 
     /**

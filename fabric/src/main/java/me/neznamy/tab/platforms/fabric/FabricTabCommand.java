@@ -46,6 +46,7 @@ public class FabricTabCommand {
         return args;
     }
 
+    @SuppressWarnings("SameReturnValue") // Unused by plugin
     private int executeCommand(@NotNull CommandSourceStack source, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
             boolean hasReloadPermission = ((FabricPlatform)TAB.getInstance().getPlatform()).hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);

@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("unused") // Actually used, just via reflection
 public class Loader_1_18_2 {
 
     public Loader_1_18_2(ProtocolVersion serverVersion) {

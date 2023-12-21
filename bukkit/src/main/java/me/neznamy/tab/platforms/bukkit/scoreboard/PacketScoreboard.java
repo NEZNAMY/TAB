@@ -263,6 +263,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         return newFixedFormat.newInstance(toComponent(numberFormat));
     }
 
+    @SuppressWarnings("JavaReflectionInvocation") // Different versions have different constructors
     private static class ScorePacketData {
 
         private final Constructor<?> newSetScorePacket;

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An interface for relational placeholders (returning different value for each player duo)
  */
+@SuppressWarnings("unused") // API class
 public interface RelationalPlaceholder extends Placeholder {
 
     /**

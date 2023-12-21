@@ -11,6 +11,7 @@ import java.util.List;
  * {@link ScoreboardManager#createScoreboard(String, String, List)},
  * for scoreboards from config {@link ScoreboardManager#getRegisteredScoreboards()}.
  */
+@SuppressWarnings("unused") // API class
 public interface Scoreboard {
 
     /**

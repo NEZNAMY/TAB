@@ -8,6 +8,7 @@ import java.util.UUID;
 /**
  * An interface representing a player
  */
+@SuppressWarnings("unused") // API class
 public interface TabPlayer {
 
     /**
@@ -27,7 +28,7 @@ public interface TabPlayer {
     /**
      * Returns platform-specific entity
      *
-     * @return  an instance of bukkit/bungee player depending on platform
+     * @return  platform's player object
      */
     @NotNull Object getPlayer();
 

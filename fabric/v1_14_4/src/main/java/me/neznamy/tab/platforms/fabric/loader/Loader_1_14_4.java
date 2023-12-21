@@ -28,12 +28,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings({
+        "unchecked", // Java generic types
+        "Convert2MethodRef", // Would throw if method does not exist
+        "unused" // Actually used, just via reflection
+})
 public class Loader_1_14_4 {
 
     private final ArmorStand dummyEntity = new ArmorStand(null, 0, 0, 0);
     private final Scoreboard dummyScoreboard = new Scoreboard();
 
-    @SuppressWarnings("unchecked")
     public Loader_1_14_4(ProtocolVersion serverVersion) {
         FabricMultiVersion.getLevelName = level -> level.getLevelData().getLevelName() + level.dimension.getType().getFileSuffix();
         FabricMultiVersion.propertyToSkin = property -> new TabList.Skin(property.getValue(), property.getSignature());

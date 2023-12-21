@@ -6,6 +6,7 @@ import lombok.NonNull;
  * The event bus. This is used to register event listeners/handlers for
  * handling events that may be fired by TAB.
  */
+@SuppressWarnings("unused") // API class
 public interface EventBus {
 
     /**

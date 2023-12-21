@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link TabAPI#getLayoutManager()}. If the feature is disabled in
  * config, it will return {@code null}.
  */
+@SuppressWarnings("unused") // API class
 public interface LayoutManager {
 
     /**

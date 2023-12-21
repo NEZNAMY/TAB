@@ -102,7 +102,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     @Override
     @NotNull
     public String getDisplayName() {
-        return getPlayer().getDisplayName().getString(); // Will make it work properly if someone asks
+        return getPlayer().getGameProfile().getName(); // Will make it work properly if someone asks
     }
 
     /**

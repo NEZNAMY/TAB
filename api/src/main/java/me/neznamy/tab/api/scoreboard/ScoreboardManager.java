@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * This requires the scoreboard feature to be enabled in config,
  * the method will return {@code null} otherwise.
  */
+@SuppressWarnings("unused") // API class
 public interface ScoreboardManager {
 
     /**

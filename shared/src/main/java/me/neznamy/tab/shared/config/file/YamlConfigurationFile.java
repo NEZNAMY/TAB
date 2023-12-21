@@ -2,12 +2,12 @@ package me.neznamy.tab.shared.config.file;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -71,7 +71,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
     @Override
     public void save() {
         try {
-            Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+            Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8);
             DumperOptions options = new DumperOptions();
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
             new Yaml(options).dump(values, writer);

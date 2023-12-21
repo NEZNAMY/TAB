@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Interface representing a layout.
  */
+@SuppressWarnings("unused") // API class
 public interface Layout {
 
     /**
