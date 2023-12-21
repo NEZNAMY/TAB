@@ -59,9 +59,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     @Override
     public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         // Velocity clears header/footer on server switch, resend regardless of whether values changed or not
-        p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER));
-        p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER));
-        sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get());
+        refresh(p, true);
     }
 
     @Override
