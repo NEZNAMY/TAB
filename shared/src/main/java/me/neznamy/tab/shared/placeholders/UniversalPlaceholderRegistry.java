@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.placeholders;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
+import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
@@ -20,7 +21,7 @@ import java.util.Map.Entry;
  * An implementation of PlaceholderRegistry for universal placeholders
  * which work on all platforms.
  */
-public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
+public class UniversalPlaceholderRegistry {
 
     /** Decimal formatter for 2 decimal places */
     private final DecimalFormat decimal2;
@@ -31,8 +32,13 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
         decimal2 = new DecimalFormat("#.##", symbols);
     }
 
+    /**
+     * Registers all placeholders into placeholder manager
+     *
+     * @param   manager
+     *          placeholder manager to register placeholders to
+     */
     @SuppressWarnings("unchecked")
-    @Override
     public void registerPlaceholders(@NotNull PlaceholderManager manager) {
         manager.registerServerPlaceholder("%%", -1, () -> "%");
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, p -> ((TabPlayer)p).isVanished());

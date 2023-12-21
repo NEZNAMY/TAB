@@ -1,8 +1,9 @@
-package me.neznamy.tab.shared.placeholders;
+package me.neznamy.tab.shared.placeholders.types;
 
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.placeholders.PlaceholderReplacementPattern;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.placeholders;
+package me.neznamy.tab.shared.placeholders.types;
 
 import java.util.Set;
 import java.util.function.Supplier;
