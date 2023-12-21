@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.fabric;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.platforms.fabric.features.FabricNameTagX;
@@ -30,13 +28,9 @@ import java.io.File;
 /**
  * Platform implementation for Fabric
  */
-@RequiredArgsConstructor
-@Getter
-public class FabricPlatform implements BackendPlatform {
+public record FabricPlatform(MinecraftServer server) implements BackendPlatform {
 
     private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
-
-    private final MinecraftServer server;
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
