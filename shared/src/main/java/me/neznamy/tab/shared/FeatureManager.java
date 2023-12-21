@@ -44,6 +44,9 @@ public class FeatureManager {
     /** Flag tracking presence of a feature listening to raw packets for faster check with better performance */
     private boolean hasPacketSendListener;
 
+    /** Flag tracking presence of a feature listening to latency change for faster check with better performance */
+    private boolean hasLatencyChangeListener;
+
     /**
      * Calls load() on all features.
      * This function is called on plugin startup.
@@ -264,6 +267,7 @@ public class FeatureManager {
     }
 
     public int onLatencyChange(TabPlayer packetReceiver, UUID id, int latency) {
+        if (!hasLatencyChangeListener) return latency;
         int newLatency = latency;
         for (TabFeature f : values) {
             if (!(f instanceof LatencyListener)) continue;
@@ -304,6 +308,9 @@ public class FeatureManager {
         }
         if (featureHandler instanceof PacketSendListener) {
             hasPacketSendListener = true;
+        }
+        if (featureHandler instanceof LatencyListener) {
+            hasLatencyChangeListener = true;
         }
     }
 
