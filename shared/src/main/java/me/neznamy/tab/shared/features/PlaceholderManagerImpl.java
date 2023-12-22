@@ -79,8 +79,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     private void processRefreshResults(@NotNull PlaceholderRefreshTask task) {
         long time = System.nanoTime();
-        Map<TabPlayer, Set<Refreshable>> update = updateServerPlaceholders(task.getServerPlaceholderResults());
-        update.putAll(updatePlayerPlaceholders(task.getPlayerPlaceholderResults()));
+        Map<TabPlayer, Set<Refreshable>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
+        updateServerPlaceholders(task.getServerPlaceholderResults(), update);
+        updatePlayerPlaceholders(task.getPlayerPlaceholderResults(), update);
         Map<TabPlayer, Set<Refreshable>> forceUpdate = updateRelationalPlaceholders(task.getRelationalPlaceholderResults());
         TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.PLACEHOLDER_SAVE, System.nanoTime() - time);
 
@@ -122,9 +123,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         return update;
     }
 
-    @NotNull
-    private Map<TabPlayer, Set<Refreshable>> updatePlayerPlaceholders(@NotNull Map<PlayerPlaceholderImpl, Map<TabPlayer, Object>> results) {
-        Map<TabPlayer, Set<Refreshable>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
+    private void updatePlayerPlaceholders(@NotNull Map<PlayerPlaceholderImpl, Map<TabPlayer, Object>> results,
+                                          @NotNull Map<TabPlayer, Set<Refreshable>> update) {
         for (Entry<PlayerPlaceholderImpl, Map<TabPlayer, Object>> entry : results.entrySet()) {
             PlayerPlaceholderImpl placeholder = entry.getKey();
             for (Entry<TabPlayer, Object> playerResult : entry.getValue().entrySet()) {
@@ -140,12 +140,10 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
                 }
             }
         }
-        return update;
     }
 
-    @NotNull
-    private Map<TabPlayer, Set<Refreshable>> updateServerPlaceholders(@NotNull Map<ServerPlaceholderImpl, Object> results) {
-        Map<TabPlayer, Set<Refreshable>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
+    private void updateServerPlaceholders(@NotNull Map<ServerPlaceholderImpl, Object> results,
+                                          @NotNull Map<TabPlayer, Set<Refreshable>> update) {
         for (Entry<ServerPlaceholderImpl, Object> entry : results.entrySet()) {
             ServerPlaceholderImpl placeholder = entry.getKey();
             if (placeholder.hasValueChanged(entry.getValue())) {
@@ -155,7 +153,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
                 }
             }
         }
-        return update;
     }
 
     public int getRefreshInterval(@NonNull String identifier) {
