@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import java.io.File;
 import java.util.*;
 
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -365,6 +366,15 @@ public class MisconfigurationHelper {
             } else if (pattern.getCondition() == null) {
                 noConditionGroup = pattern.getName();
             }
+        }
+    }
+
+    public void checkErrorLog() {
+        File errorLog = TAB.getInstance().getErrorManager().getErrorLog();
+        if (errorLog.length() > 1000000) {
+            startupWarn("File " + errorLog.getPath() + " has reached its size limit (1MB). No new errors will be logged. " +
+                    "Take a look at the existing reported errors, as they may have caused the plugin to not work properly " +
+                    "in the past and if not fixed, will most likely cause problems in the future as well.");
         }
     }
 

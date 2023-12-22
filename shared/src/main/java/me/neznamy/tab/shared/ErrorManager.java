@@ -27,7 +27,7 @@ public class ErrorManager {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
     /** errors.log file for internal plugin errors */
-    private final File errorLog;
+    @Getter private final File errorLog;
 
     /** anti-override.log file when some plugin or server itself attempts to override the plugin */
     @Getter private final File antiOverrideLog;
