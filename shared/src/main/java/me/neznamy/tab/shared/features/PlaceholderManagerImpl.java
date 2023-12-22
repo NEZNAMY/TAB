@@ -16,6 +16,7 @@ import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshTask;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.features.types.*;
@@ -37,6 +38,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Getter private final String featureName = "Refreshing placeholders";
     @Getter private final String refreshDisplayName = "Other";
 
+    private final boolean registerExpansion = TAB.getInstance().getConfig().getBoolean("placeholders.register-tab-expansion", true);
     private final Map<String, Integer> refreshIntervals = TAB.getInstance().getConfig().getConfigurationSection("placeholderapi-refresh-intervals");
     private final int defaultRefresh;
 
@@ -48,7 +50,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     @Getter private int loopTime;
 
-    @NonNull @Getter private final TabExpansion tabExpansion = TAB.getInstance().getPlatform().createTabExpansion();
+    @NotNull @Getter private final TabExpansion tabExpansion = registerExpansion ?
+            TAB.getInstance().getPlatform().createTabExpansion() : new EmptyTabExpansion();
 
     public PlaceholderManagerImpl() {
         TAB.getInstance().getMisconfigurationHelper().fixRefreshIntervals(refreshIntervals);

@@ -424,10 +424,9 @@ public class Converter {
     }
 
     public void convert403to404(@NotNull ConfigurationFile config) {
-        if (config.removeOption("placeholders.register-tab-expansion")) {
+        if (config.removeOption("global-playerlist.update-latency")) {
             TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 4.0.3 to 4.0.4"));
         }
-        config.removeOption("global-playerlist.update-latency");
     }
 
     public void convert409to410(@NotNull ConfigurationFile config) {
