@@ -17,7 +17,14 @@ public class BungeePremiumVanishHook extends PremiumVanishHook {
 
     private final boolean canSeeEnabled;
 
-    public BungeePremiumVanishHook(Platform platform) {
+    /**
+     * Constructs new instance. If using an old version of PV, warn
+     * is printed into the platform's logger.
+     *
+     * @param   platform
+     *          Platform to print potential warn to
+     */
+    public BungeePremiumVanishHook(@NotNull Platform platform) {
         if (ReflectionUtils.methodExists(BungeeVanishAPI.class, "canSee", ProxiedPlayer.class, ProxiedPlayer.class)) {
             canSeeEnabled = true;
         } else {

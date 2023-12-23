@@ -19,11 +19,24 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BungeeEventListener extends EventListener<ProxiedPlayer> implements Listener {
 
+    /**
+     * Listens to player disconnecting from the server.
+     *
+     * @param   e
+     *          Disconnect event
+     */
     @EventHandler
     public void onQuit(PlayerDisconnectEvent e) {
         quit(e.getPlayer().getUniqueId());
     }
 
+    /**
+     * Listens to player connecting to a backend server. This handles
+     * both initial connections and server switch.
+     *
+     * @param   e
+     *          Server switch event
+     */
     @EventHandler
     public void onSwitch(ServerSwitchEvent e) {
         TAB tab = TAB.getInstance();
@@ -58,6 +71,12 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
         });
     }
 
+    /**
+     * Listens to command execute event to potentially cancel it.
+     *
+     * @param   e
+     *          Command execute event
+     */
     @EventHandler
     public void onCommand(ChatEvent e) {
         if (e.isCommand() && command(((ProxiedPlayer)e.getSender()).getUniqueId(), e.getMessage())) {
@@ -65,8 +84,14 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
         }
     }
 
+    /**
+     * Listens to plugin messages.
+     *
+     * @param   e
+     *          Plugin message event
+     */
     @EventHandler
-    public void on(PluginMessageEvent e) {
+    public void onPluginMessage(PluginMessageEvent e) {
         if (!e.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (e.getReceiver() instanceof ProxiedPlayer) {
             e.setCancelled(true);

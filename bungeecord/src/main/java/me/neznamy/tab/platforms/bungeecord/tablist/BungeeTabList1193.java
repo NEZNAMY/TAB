@@ -17,6 +17,12 @@ import java.util.UUID;
  */
 public class BungeeTabList1193 extends BungeeTabList {
 
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   player
+     *          Player this tablist will belong to
+     */
     public BungeeTabList1193(@NotNull BungeeTabPlayer player) {
         super(player);
     }

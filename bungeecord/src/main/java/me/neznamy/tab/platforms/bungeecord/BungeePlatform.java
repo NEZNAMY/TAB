@@ -41,6 +41,12 @@ public class BungeePlatform extends ProxyPlatform {
     @NotNull
     private final BungeeTAB plugin;
 
+    /**
+     * Constructs new instance with given plugin instance.
+     *
+     * @param   plugin
+     *          Plugin instance
+     */
     public BungeePlatform(@NotNull BungeeTAB plugin) {
         this.plugin = plugin;
         if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {

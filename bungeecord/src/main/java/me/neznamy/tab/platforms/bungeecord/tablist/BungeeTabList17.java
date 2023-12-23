@@ -29,6 +29,12 @@ public class BungeeTabList17 extends BungeeTabList {
     @NotNull
     private final Map<UUID, String> displayNames = new HashMap<>();
 
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   player
+     *          Player this tablist will belong to
+     */
     public BungeeTabList17(@NotNull BungeeTabPlayer player) {
         super(player);
     }

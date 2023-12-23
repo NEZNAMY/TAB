@@ -13,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 
+/**
+ * Command handler for plugin's command on BungeeCord.
+ */
 public class BungeeTabCommand extends Command implements TabExecutor {
 
     /**

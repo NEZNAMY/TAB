@@ -29,6 +29,12 @@ import java.util.Collection;
  */
 public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
+    /**
+     * Constructs new instance with given parameter
+     *
+     * @param   player
+     *          Player this scoreboard will belong to
+     */
     public BungeeScoreboard(@NotNull BungeeTabPlayer player) {
         super(player);
     }

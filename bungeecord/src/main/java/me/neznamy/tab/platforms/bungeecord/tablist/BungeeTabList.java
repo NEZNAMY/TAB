@@ -18,6 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * Abstract TabList class for BungeeCord containing
+ * common code for all implementations.
+ */
 public abstract class BungeeTabList implements TabList {
 
     /** Player this TabList belongs to */
@@ -27,9 +31,15 @@ public abstract class BungeeTabList implements TabList {
     /** Pointer to UUIDs in player's TabList */
     private final Collection<UUID> uuids;
 
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   player
+     *          Player this tablist will belong to
+     */
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public BungeeTabList(@NotNull BungeeTabPlayer player) {
+    protected BungeeTabList(@NotNull BungeeTabPlayer player) {
         this.player = player;
         uuids = (Collection<UUID>) ReflectionUtils.getField(ServerUnique.class, "uuids").get(((UserConnection)player.getPlayer()).getTabListHandler());
     }
@@ -42,6 +52,13 @@ public abstract class BungeeTabList implements TabList {
         ));
     }
 
+    /**
+     * Creates new {@link Item} with given UUID.
+     *
+     * @param   id
+     *          UUID to use
+     * @return  New {@link Item} with given UUID.
+     */
     @NotNull
     public Item item(@NotNull UUID id) {
         Item item = new Item();
@@ -49,6 +66,13 @@ public abstract class BungeeTabList implements TabList {
         return item;
     }
 
+    /**
+     * Converts {@link Entry} to {@link Item}.
+     *
+     * @param   entry
+     *          Entry to convert
+     * @return  Converted {@link Item}
+     */
     @NotNull
     public Item entryToItem(Entry entry) {
         Item item = item(entry.getUniqueId());
@@ -67,11 +91,23 @@ public abstract class BungeeTabList implements TabList {
         return item;
     }
 
-    public void addUuid(UUID id) {
+    /**
+     * Adds given UUID to BungeeCord's tablist uuid tracker.
+     *
+     * @param   id
+     *          UUID to add
+     */
+    public void addUuid(@NotNull UUID id) {
         uuids.add(id);
     }
 
-    public void removeUuid(UUID id) {
+    /**
+     * Removes given UUID from BungeeCord's tablist uuid tracker.
+     *
+     * @param   id
+     *          UUID to remove
+     */
+    public void removeUuid(@NotNull UUID id) {
         uuids.remove(id);
     }
 
