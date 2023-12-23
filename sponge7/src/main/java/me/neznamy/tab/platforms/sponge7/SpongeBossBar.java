@@ -16,7 +16,7 @@ import java.util.UUID;
 public class SpongeBossBar implements BossBar {
 
     /** Color array for fast access */
-    private static final BossBarColor[] colors = new BossBarColor[] {
+    private static final BossBarColor[] colors = {
             BossBarColors.PINK,
             BossBarColors.BLUE,
             BossBarColors.RED,
@@ -27,7 +27,7 @@ public class SpongeBossBar implements BossBar {
     };
 
     /** Style array for fast access */
-    private static final BossBarOverlay[] styles = new BossBarOverlay[] {
+    private static final BossBarOverlay[] styles = {
             BossBarOverlays.PROGRESS,
             BossBarOverlays.NOTCHED_6,
             BossBarOverlays.NOTCHED_10,

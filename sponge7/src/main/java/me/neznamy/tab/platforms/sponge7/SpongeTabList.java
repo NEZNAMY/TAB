@@ -23,7 +23,7 @@ import java.util.WeakHashMap;
 public class SpongeTabList implements TabList {
 
     /** Gamemode array for fast access */
-    private static final GameMode[] gameModes = new GameMode[]{
+    private static final GameMode[] gameModes = {
             GameModes.SURVIVAL, GameModes.CREATIVE, GameModes.ADVENTURE, GameModes.SPECTATOR
     };
 

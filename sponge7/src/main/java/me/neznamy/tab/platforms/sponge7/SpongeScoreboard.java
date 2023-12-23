@@ -20,7 +20,7 @@ import java.util.Collection;
 public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     /** Collision rule array for fast access */
-    private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = new org.spongepowered.api.scoreboard.CollisionRule[]{
+    private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = {
             CollisionRules.ALWAYS,
             CollisionRules.NEVER,
             CollisionRules.PUSH_OTHER_TEAMS,
@@ -28,7 +28,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     };
 
     /** Visibility array for fast access */
-    private static final Visibility[] visibilities = new Visibility[] {
+    private static final Visibility[] visibilities = {
             Visibilities.ALWAYS,
             Visibilities.NEVER,
             Visibilities.HIDE_FOR_OTHER_TEAMS,
@@ -36,14 +36,14 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     };
 
     /** DisplaySlot array for fast access */
-    private static final org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] displaySlots = new org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] {
+    private static final org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] displaySlots = {
             DisplaySlots.LIST,
             DisplaySlots.SIDEBAR,
             DisplaySlots.BELOW_NAME
     };
 
     /** Health display array for fast access */
-    private static final ObjectiveDisplayMode[] healthDisplays = new ObjectiveDisplayMode[] {
+    private static final ObjectiveDisplayMode[] healthDisplays = {
             ObjectiveDisplayModes.INTEGER,
             ObjectiveDisplayModes.HEARTS
     };
