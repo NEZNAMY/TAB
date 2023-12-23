@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric.loader;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
-import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
