@@ -98,7 +98,7 @@ public class SpongePlatform implements BackendPlatform {
 
     @Override
     public void startMetrics() {
-        Metrics metrics = plugin.getMetricsFactory().make(17732);
+        Metrics metrics = plugin.getMetricsFactory().make(TabConstants.BSTATS_PLUGIN_ID_SPONGE);
         metrics.startup(null);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
                 () -> TAB.getInstance().getServerVersion().getFriendlyName()));

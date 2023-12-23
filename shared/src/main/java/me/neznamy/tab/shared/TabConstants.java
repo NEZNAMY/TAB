@@ -26,6 +26,12 @@ public class TabConstants {
     public static final String COMMAND_BACKEND = "tab";
     public static final String COMMAND_PROXY = "btab";
 
+    public static final int BSTATS_PLUGIN_ID_BUKKIT = 5304;
+    public static final int BSTATS_PLUGIN_ID_BUNGEE = 10535;
+    public static final int BSTATS_PLUGIN_ID_SPONGE = 17732;
+    public static final int BSTATS_PLUGIN_ID_VELOCITY = 10533;
+
+
     /**
      * Feature sub-category explaining why / when a certain feature
      * needed CPU time to process tasks.
