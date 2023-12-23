@@ -155,7 +155,7 @@ public class Loader_1_20_4 {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
             FabricMultiVersion.getMSPT = server -> (float) server.getAverageTickTimeNanos() / 1000000;
             FabricMultiVersion.removeScore = (objective, holder) -> new ClientboundResetScorePacket(holder, objective);
-            new Register1_20_3();
+            Register1_20_3.register();
         }
     }
 
@@ -166,7 +166,7 @@ public class Loader_1_20_4 {
      */
     private static class Register1_20_3 {
 
-        private Register1_20_3() {
+        public static void register() {
             FabricMultiVersion.newObjective = (name, displayName, renderType, numberFormat) ->
                     new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType, false,
                             numberFormat == null ? null : new FixedFormat(numberFormat));
