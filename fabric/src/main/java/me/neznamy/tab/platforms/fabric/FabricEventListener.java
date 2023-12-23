@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.fabric;
 
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -22,7 +21,7 @@ public class FabricEventListener extends EventListener<ServerPlayer> {
         ServerPlayConnectionEvents.DISCONNECT.register((connection, $) -> quit(connection.player.getUUID()));
         ServerPlayConnectionEvents.JOIN.register((connection, $, $$) -> join(connection.player));
         //TODO command preprocess
-        if (ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion).getMinorVersion() >= 16) {
+        if (FabricTAB.supportsEntityEvents()) {
             // Added in 1.16
             ServerPlayerEvents.AFTER_RESPAWN.register(
                     (oldPlayer, newPlayer, alive) -> {

@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.fabric.features;
 
 import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
+import me.neznamy.tab.platforms.fabric.FabricTAB;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -28,7 +28,7 @@ public class FabricNameTagX extends BackendNameTagX {
      * Constructs new instance and registers event listener.
      */
     public FabricNameTagX() {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 16) {
+        if (FabricTAB.supportsEntityEvents()) {
             // Added in 1.16
             ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
                 if (enabled) respawn(oldPlayer.getUUID());

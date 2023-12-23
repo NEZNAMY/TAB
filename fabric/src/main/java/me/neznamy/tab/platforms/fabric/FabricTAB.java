@@ -45,4 +45,13 @@ public class FabricTAB implements DedicatedServerModInitializer {
             return (String) gameVersion.getClass().getMethod("getName").invoke(gameVersion);
         }
     }
+
+    /**
+     * Returns {@code true} if fabric api contains entity events, {@code false} if not.
+     *
+     * @return  {@code true} if supports entity events, {@code false} if not
+     */
+    public static boolean supportsEntityEvents() {
+        return ProtocolVersion.fromFriendlyName(minecraftVersion).getMinorVersion() >= 16;
+    }
 }
