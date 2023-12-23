@@ -116,7 +116,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
      * deserialized manually are used. If they are disabled, deserialization is
      * disabled for better performance.
      */
-    public class DeserializableBungeeChannelDuplexHandler extends TabChannelDuplexHandler {
+    private class DeserializableBungeeChannelDuplexHandler extends TabChannelDuplexHandler {
 
         /**
          * Constructs new instance with given player
@@ -124,7 +124,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          * @param   player
          *          player to inject
          */
-        public DeserializableBungeeChannelDuplexHandler(@NotNull TabPlayer player) {
+        private DeserializableBungeeChannelDuplexHandler(@NotNull TabPlayer player) {
             super(player);
         }
 
