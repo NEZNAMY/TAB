@@ -78,28 +78,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                ((ScoreboardDisplay)packet).getPosition(), ((ScoreboardDisplay) packet).getName());
-    }
-
-    @Override
-    public void onObjective(@NotNull TabPlayer player, @NotNull Object packet) {
-        TAB.getInstance().getFeatureManager().onObjective(player,
-                ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
-    }
-
-    @Override
-    public boolean isDisplayObjective(@NotNull Object packet) {
-        return packet instanceof ScoreboardDisplay;
-    }
-
-    @Override
-    public boolean isObjective(@NotNull Object packet) {
-        return packet instanceof ScoreboardObjective;
-    }
-
-    @Override
     public boolean isLogin(@NotNull Object packet) {
         return packet instanceof Login;
     }

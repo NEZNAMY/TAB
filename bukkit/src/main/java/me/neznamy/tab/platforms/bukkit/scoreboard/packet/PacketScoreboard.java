@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -36,10 +37,10 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static Constructor<?> newFixedFormat;
 
     // Objective packet
-    public static Class<?> ObjectivePacketClass;
+    private static Class<?> ObjectivePacketClass;
     private static Constructor<?> newObjectivePacket;
-    public static Field Objective_OBJECTIVE_NAME;
-    public static Field Objective_METHOD;
+    private static Field Objective_OBJECTIVE_NAME;
+    private static Field Objective_METHOD;
     private static Field Objective_RENDER_TYPE;
     private static Constructor<?> newScoreboardObjective;
     private static Method ScoreboardObjective_setDisplayName;
@@ -197,6 +198,28 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Override
     public void onTeamPacket(@NotNull Object team) {
         teamPacketData.onTeamPacket(team);
+    }
+
+    @Override
+    public boolean isDisplayObjective(@NotNull Object packet) {
+        return displayPacketData.isDisplayObjective(packet);
+    }
+
+    @Override
+    public void onDisplayObjective(@NotNull Object packet) {
+        displayPacketData.onDisplayObjective(player, packet);
+    }
+
+    @Override
+    public boolean isObjective(@NotNull Object packet) {
+        return ObjectivePacketClass.isInstance(packet);
+    }
+
+    @Override
+    @SneakyThrows
+    public void onObjective(@NotNull Object packet) {
+        TAB.getInstance().getFeatureManager().onObjective(player,
+                Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
     }
 
     /**

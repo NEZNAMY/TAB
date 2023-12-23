@@ -198,6 +198,48 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     /**
+     * Returns {@code true} if packet is a display objective packet, {@code false} if not.
+     *
+     * @param   packet
+     *          Minecraft packet to check
+     * @return  {@code true} if is a display objective packet, {@code false} if not.
+     */
+    public boolean isDisplayObjective(@NotNull Object packet) {
+        return false;
+    }
+
+    /**
+     * Processes display objective packet.
+     *
+     * @param   packet
+     *          Packet to process
+     */
+    public void onDisplayObjective(@NotNull Object packet) {
+        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
+    }
+
+    /**
+     * Returns {@code true} if packet is an objective packet, {@code false} if not.
+     *
+     * @param   packet
+     *          Minecraft packet to check
+     * @return  {@code true} if is an objective packet, {@code false} if not.
+     */
+    public boolean isObjective(@NotNull Object packet) {
+        return false;
+    }
+
+    /**
+     * Processes objective packet.
+     *
+     * @param   packet
+     *          Packet to process
+     */
+    public void onObjective(@NotNull Object packet) {
+        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
+    }
+
+    /**
      * Returns player by given nickname.
      *
      * @param   name

@@ -202,4 +202,26 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         }
         packet.setPlayers(col.toArray(new String[0]));
     }
+
+    @Override
+    public boolean isDisplayObjective(@NotNull Object packet) {
+        return packet instanceof ScoreboardDisplay;
+    }
+
+    @Override
+    public void onDisplayObjective(@NotNull Object packet) {
+        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
+                ((ScoreboardDisplay)packet).getPosition(), ((ScoreboardDisplay) packet).getName());
+    }
+
+    @Override
+    public boolean isObjective(@NotNull Object packet) {
+        return packet instanceof ScoreboardObjective;
+    }
+
+    @Override
+    public void onObjective(@NotNull Object packet) {
+        TAB.getInstance().getFeatureManager().onObjective(player,
+                ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
+    }
 }

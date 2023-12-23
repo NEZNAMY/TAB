@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -168,6 +169,32 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
             }
         }
         playersField.set(packet, newList);
+    }
+
+    @Override
+    public boolean isDisplayObjective(@NotNull Object packet) {
+        return packet instanceof ClientboundSetDisplayObjectivePacket;
+    }
+
+    @Override
+    @SneakyThrows
+    public void onDisplayObjective(@NotNull Object packet) {
+        int slot = FabricMultiVersion.getDisplaySlot.apply((ClientboundSetDisplayObjectivePacket) packet);
+        String objective = (String) ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet);
+        TAB.getInstance().getFeatureManager().onDisplayObjective(player, slot, objective);
+    }
+
+    @Override
+    public boolean isObjective(@NotNull Object packet) {
+        return packet instanceof ClientboundSetObjectivePacket;
+    }
+
+    @Override
+    @SneakyThrows
+    public void onObjective(@NotNull Object packet) {
+        int action = ReflectionUtils.getFields(packet.getClass(), int.class).get(0).getInt(packet);
+        String objective = (String) ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet);
+        TAB.getInstance().getFeatureManager().onObjective(player, action, objective);
     }
 
     @NotNull

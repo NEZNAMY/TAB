@@ -4,8 +4,6 @@ import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -70,34 +68,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @SneakyThrows
     protected Channel getChannel(@NotNull TabPlayer player) {
         return (Channel) CHANNEL.get(NETWORK_MANAGER.get(PLAYER_CONNECTION.get(getHandle.invoke(player.getPlayer()))));
-    }
-
-    @Override
-    @SneakyThrows
-    public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
-        if (PacketScoreboard.isAvailable()) {
-            PacketScoreboard.getDisplayPacketData().onDisplayObjective(player, packet);
-        }
-    }
-
-    @Override
-    @SneakyThrows
-    public void onObjective(@NotNull TabPlayer player, @NotNull Object packet) {
-        if (!PacketScoreboard.isAvailable()) return;
-        TAB.getInstance().getFeatureManager().onObjective(player,
-                PacketScoreboard.Objective_METHOD.getInt(packet),
-                (String) PacketScoreboard.Objective_OBJECTIVE_NAME.get(packet));
-    }
-
-    @Override
-    public boolean isDisplayObjective(@NotNull Object packet) {
-        return PacketScoreboard.isAvailable() && PacketScoreboard.getDisplayPacketData().isDisplayObjective(packet);
-    }
-
-    @Override
-    public boolean isObjective(@NotNull Object packet) {
-        if (!PacketScoreboard.isAvailable()) return false;
-        return PacketScoreboard.ObjectivePacketClass.isInstance(packet);
     }
 
     @Override
