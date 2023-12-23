@@ -77,10 +77,10 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
     private String[] replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
         Property scoreProperty = p.getProperty(parent.getName() + "-" + teamName);
         if (scoreProperty == null) return EMPTY_ARRAY; //not actually loaded yet (force refresh called from placeholder manager register method)
-        boolean emptyBefore = scoreProperty.get().isEmpty();
+        boolean emptyBefore = scoreProperty.get().isEmpty();;
         if (!scoreProperty.update() && !force) return EMPTY_ARRAY;
         String replaced = scoreProperty.get();
-        if (p.getVersion().getMinorVersion() < 16) {
+        if (!p.getVersion().supportsRGB()) {
             replaced = RGBUtils.getInstance().convertRGBtoLegacy(replaced); //converting RGB to legacy here to avoid splitting in the middle of RGB code
         }
         String[] split = split(p, replaced);

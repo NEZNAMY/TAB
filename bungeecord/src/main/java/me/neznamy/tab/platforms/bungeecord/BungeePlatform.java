@@ -148,7 +148,7 @@ public class BungeePlatform extends ProxyPlatform {
         TextComponent textComponent = new TextComponent(component.getText());
         ChatModifier modifier = component.getModifier();
         if (modifier.getColor() != null) textComponent.setColor(ChatColor.of(
-                modifier.getColor().toString(version.getMinorVersion() >= 16)));
+                modifier.getColor().toString(version.supportsRGB())));
 
         if (modifier.isBold()) textComponent.setBold(true);
         if (modifier.isItalic()) textComponent.setItalic(true);

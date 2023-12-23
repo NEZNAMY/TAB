@@ -76,7 +76,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         if (spigot) {
             getPlayer().spigot().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
         } else {
-            getPlayer().sendMessage(BukkitUtils.toBukkitFormat(message, getVersion().getMinorVersion() >= 16));
+            getPlayer().sendMessage(BukkitUtils.toBukkitFormat(message, getVersion().supportsRGB()));
         }
     }
 

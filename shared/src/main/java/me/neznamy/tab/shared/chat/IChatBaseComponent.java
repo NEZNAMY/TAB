@@ -110,7 +110,7 @@ public class IChatBaseComponent {
     public @NotNull String toString() {
         JSONObject json = new JSONObject();
         if (text != null) json.put("text", text);
-        json.putAll(modifier.serialize(targetVersion == null || targetVersion.getMinorVersion() >= 16));
+        json.putAll(modifier.serialize(targetVersion == null || targetVersion.supportsRGB()));
         if (extra != null) json.put("extra", extra);
         return json.toString();
     }

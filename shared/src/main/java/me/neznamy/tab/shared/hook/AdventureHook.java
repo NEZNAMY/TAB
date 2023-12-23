@@ -49,7 +49,7 @@ public class AdventureHook {
         ChatModifier modifier = component.getModifier();
         TextColor color = null;
         if (modifier.getColor() != null) {
-            if (clientVersion.getMinorVersion() >= 16) {
+            if (clientVersion.supportsRGB()) {
                 color = TextColor.color(modifier.getColor().getRgb());
             } else {
                 color = TextColor.color(modifier.getColor().getLegacyColor().getHexCode());

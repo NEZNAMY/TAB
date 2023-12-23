@@ -26,8 +26,8 @@ public class BukkitHeaderFooter extends HeaderFooter {
     @SuppressWarnings("deprecation") // Marked as deprecated by Paper to make us use their methods instead
     public void set(@NotNull BukkitTabPlayer player, @NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().setPlayerListHeaderFooter(
-                BukkitUtils.toBukkitFormat(header, player.getVersion().getMinorVersion() >= 16),
-                BukkitUtils.toBukkitFormat(footer, player.getVersion().getMinorVersion() >= 16)
+                BukkitUtils.toBukkitFormat(header, player.getVersion().supportsRGB()),
+                BukkitUtils.toBukkitFormat(footer, player.getVersion().supportsRGB())
         );
     }
 }
