@@ -16,10 +16,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Unlimited nametag mode implementation for Fabric.
+ */
 public class FabricNameTagX extends BackendNameTagX {
 
-    public boolean enabled = true;
+    /** Flag tracking whether this instance is still running or not */
+    private boolean enabled = true;
 
+    /**
+     * Constructs new instance and registers event listener.
+     */
     public FabricNameTagX() {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 16) {
             // Added in 1.16

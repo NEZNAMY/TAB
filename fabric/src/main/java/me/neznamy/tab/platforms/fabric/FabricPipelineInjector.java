@@ -10,8 +10,14 @@ import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Pipeline injector for Fabric.
+ */
 public class FabricPipelineInjector extends NettyPipelineInjector {
 
+    /**
+     * Constructs new instance.
+     */
     public FabricPipelineInjector() {
         super("packet_handler");
     }

@@ -14,12 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * BossBar implementation for Fabric using packets.
+ */
 @RequiredArgsConstructor
 public class FabricBossBar implements BossBar {
 
+    /** Player this BossBar belongs to */
     @NotNull
     private final FabricTabPlayer player;
 
+    /** Map of BossBars visible to the player */
     @NotNull
     private final Map<UUID, ServerBossEvent> bars = new HashMap<>();
 

@@ -65,6 +65,14 @@ public class FabricMultiVersion {
     public static FunctionWithException<ClientboundSetDisplayObjectivePacket, Integer> getDisplaySlot;
     public static Function<Packet<?>, Boolean> isTeamPacket;
 
+    /**
+     * Sends entity destroy packet to specified player.
+     *
+     * @param   player
+     *          Player to send packet to
+     * @param   entities
+     *          Entities to destroy
+     */
     @SneakyThrows
     public static void destroyEntities(FabricTabPlayer player, int... entities) {
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.V1_17) {
@@ -78,6 +86,13 @@ public class FabricMultiVersion {
         }
     }
 
+    /**
+     * Gets array of destroyed entities from packet.
+     *
+     * @param   packet
+     *          Packet to get entities from.
+     * @return  Array of destroyed entities
+     */
     @SneakyThrows
     public static int[] getDestroyedEntities(@NotNull Object packet) {
         if (TAB.getInstance().getPlatform().getServerVersion().getMinorVersion() >= 17) {

@@ -22,12 +22,16 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Method loader compiled using Minecraft 1.14.4.
+ */
 @SuppressWarnings({
         "unchecked", // Java generic types
         "Convert2MethodRef", // Would throw if method does not exist
@@ -38,7 +42,13 @@ public class Loader_1_14_4 {
     private final ArmorStand dummyEntity = new ArmorStand(null, 0, 0, 0);
     private final Scoreboard dummyScoreboard = new Scoreboard();
 
-    public Loader_1_14_4(ProtocolVersion serverVersion) {
+    /**
+     * Constructs new instance and registers all method implementations as per 1.14.4.
+     *
+     * @param   serverVersion
+     *          Exact server version
+     */
+    public Loader_1_14_4(@NotNull ProtocolVersion serverVersion) {
         FabricMultiVersion.getLevelName = level -> level.getLevelData().getLevelName() + level.dimension.getType().getFileSuffix();
         FabricMultiVersion.propertyToSkin = property -> new TabList.Skin(property.getValue(), property.getSignature());
         FabricMultiVersion.newEntityMetadata = (entityId, data) -> new ClientboundSetEntityDataPacket(entityId, (SynchedEntityData) data.build(), true);

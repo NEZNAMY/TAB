@@ -15,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
+/**
+ * TabPlayer implementation for Fabric.
+ */
 @Getter
 public class FabricTabPlayer extends BackendTabPlayer {
 
@@ -30,6 +33,14 @@ public class FabricTabPlayer extends BackendTabPlayer {
     @NotNull
     private final EntityView entityView = new FabricEntityView(this);
 
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   platform
+     *          Server platform
+     * @param   player
+     *          Platform's player object
+     */
     public FabricTabPlayer(@NotNull FabricPlatform platform, @NotNull ServerPlayer player) {
         super(platform, player, player.getUUID(), player.getGameProfile().getName(),
                 FabricMultiVersion.getLevelName.apply(FabricMultiVersion.getLevel.apply(player)));

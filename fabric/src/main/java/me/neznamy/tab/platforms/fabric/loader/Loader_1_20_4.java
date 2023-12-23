@@ -28,9 +28,13 @@ import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+/**
+ * Method loader compiled using Minecraft 1.20.4.
+ */
 @SuppressWarnings({
         "unchecked", // Java generic types
         "DataFlowIssue", // Profile is not null on add action
@@ -40,7 +44,13 @@ public class Loader_1_20_4 {
 
     private static final Scoreboard dummyScoreboard = new Scoreboard();
 
-    public Loader_1_20_4(ProtocolVersion serverVersion) {
+    /**
+     * Constructs new instance and overrides all methods to their current format based on server version.
+     *
+     * @param   serverVersion
+     *          Exact server version
+     */
+    public Loader_1_20_4(@NotNull ProtocolVersion serverVersion) {
         if (serverVersion.getMinorVersion() >= 15) {
             FabricMultiVersion.isSneaking = Entity::isCrouching;
         }
@@ -81,10 +91,10 @@ public class Loader_1_20_4 {
                 );
             };
             FabricMultiVersion.buildTabListPacket = (action, entry) -> {
-                if (action == FabricTabList.Action.REMOVE_PLAYER) {
+                if (action == TabList.Action.REMOVE_PLAYER) {
                     return new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry.getId()));
                 }
-                EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = action == FabricTabList.Action.ADD_PLAYER ?
+                EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = action == TabList.Action.ADD_PLAYER ?
                         EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class) :
                         Register1_19_3.convertAction(action);
                 ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
@@ -169,7 +179,7 @@ public class Loader_1_20_4 {
      */
     private static class Register1_20_3 {
 
-        public Register1_20_3() {
+        private Register1_20_3() {
             FabricMultiVersion.newObjective = (name, displayName, renderType, numberFormat) ->
                     new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType, false,
                             numberFormat == null ? null : new FixedFormat(numberFormat));

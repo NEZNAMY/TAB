@@ -15,9 +15,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
+/**
+ * EntityView implementation for Fabric using packets.
+ */
 @RequiredArgsConstructor
 public class FabricEntityView implements EntityView {
 
+    /** Player this view belongs to */
     private final FabricTabPlayer player;
 
     @NotNull

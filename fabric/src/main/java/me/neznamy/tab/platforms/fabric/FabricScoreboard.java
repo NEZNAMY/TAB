@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Scoreboard implementation for Fabric using packets.
+ */
 public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @NotNull
@@ -34,6 +37,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     private final Map<String, Objective> objectives = new HashMap<>();
 
+    /**
+     * Constructs new instance with given player.
+     *
+     * @param   player
+     *          Player this scoreboard will belong to
+     */
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);
     }

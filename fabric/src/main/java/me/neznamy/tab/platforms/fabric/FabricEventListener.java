@@ -10,8 +10,14 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Event listener for Fabric.
+ */
 public class FabricEventListener extends EventListener<ServerPlayer> {
 
+    /**
+     * Registers all event listeners.
+     */
     public void register() {
         ServerPlayConnectionEvents.DISCONNECT.register((connection, $) -> quit(connection.player.getUUID()));
         ServerPlayConnectionEvents.JOIN.register((connection, $, $$) -> join(connection.player));

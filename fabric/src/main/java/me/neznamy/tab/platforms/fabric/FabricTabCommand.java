@@ -18,8 +18,17 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Command handler for plugin's command for Fabric.
+ */
 public class FabricTabCommand {
 
+    /**
+     * Handles command register request from server and registers own command.
+     *
+     * @param   dispatcher
+     *          Dispatcher to register command to
+     */
     public void onRegisterCommands(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralCommandNode<CommandSourceStack> command = Commands.literal(TabConstants.COMMAND_BACKEND)
                 .executes(context -> executeCommand(context.getSource(), new String[0]))

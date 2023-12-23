@@ -9,8 +9,12 @@ import net.minecraft.SharedConstants;
 
 import java.util.Arrays;
 
+/**
+ * Main class for Fabric.
+ */
 public class FabricTAB implements DedicatedServerModInitializer {
 
+    /** Minecraft version string */
     public static final String minecraftVersion = getServerVersion();
 
     @Override

@@ -14,9 +14,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * TabList implementation for Fabric using packets.
+ */
 @RequiredArgsConstructor
 public class FabricTabList implements TabList {
 
+    /** Player this tablist belongs to */
     @NotNull
     private final FabricTabPlayer player;
 
@@ -78,6 +82,9 @@ public class FabricTabList implements TabList {
         }
     }
 
+    /**
+     * TabList entry builder.
+     */
     @RequiredArgsConstructor
     @Getter
     public static class Builder {
@@ -89,36 +96,76 @@ public class FabricTabList implements TabList {
         private int gameMode;
         @Nullable private Component displayName;
 
+        /**
+         * Sets entry name.
+         *
+         * @param   name
+         *          Name to use
+         * @return  this
+         */
         @NotNull
         public Builder setName(@NotNull String name) {
             this.name = name;
             return this;
         }
 
+        /**
+         * Sets entry skin.
+         *
+         * @param   skin
+         *          Skin to use
+         * @return  this
+         */
         @NotNull
         public Builder setSkin(@Nullable Skin skin) {
             this.skin = skin;
             return this;
         }
 
+        /**
+         * Sets entry latency.
+         *
+         * @param   latency
+         *          Latency to use
+         * @return  this
+         */
         @NotNull
         public Builder setLatency(int latency) {
             this.latency = latency;
             return this;
         }
 
+        /**
+         * Sets entry gamemode.
+         *
+         * @param   gameMode
+         *          gamemode to use
+         * @return  this
+         */
         @NotNull
         public Builder setGameMode(int gameMode) {
             this.gameMode = gameMode;
             return this;
         }
 
+        /**
+         * Sets entry display name.
+         *
+         * @param   displayName
+         *          Display name to use
+         * @return  this
+         */
         @NotNull
         public Builder setDisplayName(@Nullable Component displayName) {
             this.displayName = displayName;
             return this;
         }
 
+        /**
+         * Creates profile of this entry.
+         *
+         * @return  Profile of this entry
+         */
         @NotNull
         public GameProfile createProfile() {
             GameProfile profile = new GameProfile(id, name);

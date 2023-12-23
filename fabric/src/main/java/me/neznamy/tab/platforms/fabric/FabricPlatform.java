@@ -149,6 +149,15 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
         return FabricMultiVersion.getMSPT.apply(server);
     }
 
+    /**
+     * Checks for permission and returns the result.
+     *
+     * @param   source
+     *          Source to check permission of
+     * @param   permission
+     *          Permission node to check
+     * @return  {@code true} if has permission, {@code false} if not
+     */
     public boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {
         if (source.hasPermission(4)) return true;
         return fabricPermissionsApi && Permissions.check(source, permission);

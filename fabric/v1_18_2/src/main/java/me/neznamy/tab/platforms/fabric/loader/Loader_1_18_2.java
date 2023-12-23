@@ -10,16 +10,26 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.world.level.GameType;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Method loader compiled using Minecraft 1.18.2.
+ */
 @SuppressWarnings("unused") // Actually used, just via reflection
 public class Loader_1_18_2 {
 
-    public Loader_1_18_2(ProtocolVersion serverVersion) {
+    /**
+     * Constructs new instance and registers methods only available in this version.
+     *
+     * @param   serverVersion
+     *          Exact server version
+     */
+    public Loader_1_18_2(@NotNull ProtocolVersion serverVersion) {
         if (serverVersion.getMinorVersion() >= 16) {
             FabricMultiVersion.sendMessage = (player, message) -> player.sendMessage(message, new UUID(0, 0));
         }
