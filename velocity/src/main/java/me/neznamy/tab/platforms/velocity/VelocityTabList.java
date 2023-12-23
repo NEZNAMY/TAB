@@ -13,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * TabList implementation for Velocity using its API.
+ */
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
 public class VelocityTabList implements TabList {

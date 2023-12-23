@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * BossBar implementation for Sponge 7 using its API.
+ */
 @RequiredArgsConstructor
 public class SpongeBossBar implements BossBar {
 

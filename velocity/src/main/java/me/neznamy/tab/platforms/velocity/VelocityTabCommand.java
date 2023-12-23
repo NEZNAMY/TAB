@@ -13,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Command handler for plugin's command for Velocity.
+ */
 public class VelocityTabCommand implements SimpleCommand {
 
     @Override

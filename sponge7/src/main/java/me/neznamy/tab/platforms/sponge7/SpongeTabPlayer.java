@@ -21,6 +21,9 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Collection;
 
+/**
+ * TabPlayer implementation for Sponge 7.
+ */
 @Getter
 public class SpongeTabPlayer extends BackendTabPlayer {
 
@@ -36,6 +39,14 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @NotNull
     private final EntityView entityView = new DummyEntityView();
 
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   platform
+     *          Server platform
+     * @param   player
+     *          Platform's player object
+     */
     public SpongeTabPlayer(@NotNull SpongePlatform platform, @NotNull Player player) {
         super(platform, player, player.getUniqueId(), player.getName(), player.getWorld().getName());
     }

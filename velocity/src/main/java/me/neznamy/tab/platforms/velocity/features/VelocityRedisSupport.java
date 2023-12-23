@@ -19,6 +19,12 @@ public class VelocityRedisSupport extends RedisSupport {
     @NotNull
     private final VelocityTAB plugin;
 
+    /**
+     * Listens to messages coming from other proxies.
+     *
+     * @param   e
+     *          Message event
+     */
     @Subscribe
     public void onMessage(PubSubMessageEvent e) {
         if (!e.getChannel().equals(TabConstants.REDIS_CHANNEL_NAME)) return;

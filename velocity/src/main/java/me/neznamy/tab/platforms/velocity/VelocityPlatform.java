@@ -34,6 +34,12 @@ public class VelocityPlatform extends ProxyPlatform {
     @Getter
     private final MinecraftChannelIdentifier MCI = MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
 
+    /**
+     * Constructs new instance with given plugin reference.
+     *
+     * @param   plugin
+     *          Plugin instance
+     */
     public VelocityPlatform(VelocityTAB plugin) {
         this.plugin = plugin;
         if (plugin.getServer().getPluginManager().isLoaded("premiumvanish")) {

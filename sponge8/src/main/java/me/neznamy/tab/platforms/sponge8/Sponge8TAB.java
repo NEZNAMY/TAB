@@ -18,6 +18,9 @@ import org.spongepowered.plugin.PluginContainer;
 
 import java.nio.file.Path;
 
+/**
+ * Main class for Sponge 8.
+ */
 @Getter
 public class Sponge8TAB {
 
@@ -25,16 +28,34 @@ public class Sponge8TAB {
     @Inject private PluginContainer container;
     @Inject private Metrics.Factory metricsFactory;
 
+    /**
+     * Enables the plugin.
+     *
+     * @param   event
+     *          Server start event
+     */
     @Listener
     public void onServerStart(@Nullable StartingEngineEvent<Server> event) {
         TAB.create(new SpongePlatform(this));
     }
 
+    /**
+     * Registers plugin's command.
+     *
+     * @param   event
+     *          Event to register command to
+     */
     @Listener
     public void onRegisterCommands(@NotNull RegisterCommandEvent<Command.Raw> event) {
         event.register(container, new SpongeTabCommand(), TabConstants.COMMAND_BACKEND);
     }
 
+    /**
+     * Disables the plugin.
+     *
+     * @param   event
+     *          Server stop event
+     */
     @Listener
     public void onServerStop(@Nullable StoppingEngineEvent<Server> event) {
         TAB.getInstance().unload();

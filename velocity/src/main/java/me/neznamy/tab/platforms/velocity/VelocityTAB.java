@@ -25,7 +25,7 @@ import java.nio.file.Path;
         version = TabConstants.PLUGIN_VERSION,
         description = TabConstants.PLUGIN_DESCRIPTION,
         url = TabConstants.PLUGIN_WEBSITE,
-        authors = {TabConstants.PLUGIN_AUTHOR}
+        authors = TabConstants.PLUGIN_AUTHOR
 )
 @Getter
 public class VelocityTAB {

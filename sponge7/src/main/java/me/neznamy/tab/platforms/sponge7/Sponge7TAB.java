@@ -14,13 +14,16 @@ import org.spongepowered.api.plugin.Plugin;
 
 import java.io.File;
 
+/**
+ * Main class for Sponge 7.
+ */
 @Plugin(
         id = TabConstants.PLUGIN_ID,
         name = TabConstants.PLUGIN_NAME,
         version = TabConstants.PLUGIN_VERSION,
         description = TabConstants.PLUGIN_DESCRIPTION,
         url = TabConstants.PLUGIN_WEBSITE,
-        authors = {TabConstants.PLUGIN_AUTHOR}
+        authors = TabConstants.PLUGIN_AUTHOR
 )
 @Getter
 public class Sponge7TAB {
@@ -28,11 +31,23 @@ public class Sponge7TAB {
     @Inject @ConfigDir(sharedRoot = false) private File configDir;
     @Inject private Logger logger;
 
+    /**
+     * Enables the plugin.
+     *
+     * @param   event
+     *          Server start event
+     */
     @Listener
     public void onServerStart(@Nullable GameStartedServerEvent event) {
         TAB.create(new SpongePlatform(this));
     }
 
+    /**
+     * Disables the plugin.
+     *
+     * @param   event
+     *          Server stop event
+     */
     @Listener
     public void onServerStop(@Nullable GameStoppedServerEvent event) {
         TAB.getInstance().unload();

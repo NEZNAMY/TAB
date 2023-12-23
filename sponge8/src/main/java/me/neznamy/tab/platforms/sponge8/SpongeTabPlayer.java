@@ -23,6 +23,9 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * TabPlayer implementation for Sponge 8.
+ */
 @Getter
 public class SpongeTabPlayer extends BackendTabPlayer {
 
@@ -38,6 +41,14 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @NotNull
     private final EntityView entityView = new DummyEntityView();
 
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   platform
+     *          Server platform
+     * @param   player
+     *          Platform's player object
+     */
     public SpongeTabPlayer(@NotNull SpongePlatform platform, @NotNull ServerPlayer player) {
         super(platform, player, player.uniqueId(), player.name(), player.world().key().value());
     }

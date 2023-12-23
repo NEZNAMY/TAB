@@ -18,6 +18,9 @@ import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMo
 
 import java.util.Collection;
 
+/**
+ * Scoreboard implementation for Sponge 8 using its API.
+ */
 public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     /** Collision rule array for fast access */
@@ -52,7 +55,13 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     /** Scoreboard of the player */
     @NotNull
     private final org.spongepowered.api.scoreboard.Scoreboard sb = org.spongepowered.api.scoreboard.Scoreboard.builder().build();
-    
+
+    /**
+     * Constructs new instance and puts player into new scoreboard.
+     *
+     * @param   player
+     *          Player this scoreboard will belong to
+     */
     public SpongeScoreboard(@NotNull SpongeTabPlayer player) {
         super(player);
 

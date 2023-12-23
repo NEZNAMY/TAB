@@ -21,11 +21,24 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("UnstableApiUsage")
 public class VelocityEventListener extends EventListener<Player> {
 
+    /**
+     * Listens to player disconnecting from the server.
+     *
+     * @param   e
+     *          Disconnect event
+     */
     @Subscribe
     public void onQuit(@NotNull DisconnectEvent e) {
         quit(e.getPlayer().getUniqueId());
     }
 
+    /**
+     * Listens to player connecting to a backend server. This handles
+     * both initial connections and server switch.
+     *
+     * @param   e
+     *          Server switch event
+     */
     @Subscribe
     public void onConnect(@NotNull ServerPostConnectEvent e) {
         TAB tab = TAB.getInstance();
@@ -45,6 +58,12 @@ public class VelocityEventListener extends EventListener<Player> {
         });
     }
 
+    /**
+     * Listens to command execute event to potentially cancel it.
+     *
+     * @param   e
+     *          Command execute event
+     */
     @Subscribe
     public void onCommand(@NotNull CommandExecuteEvent e) {
         BossBarManagerImpl bossBarManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
@@ -57,6 +76,12 @@ public class VelocityEventListener extends EventListener<Player> {
         }
     }
 
+    /**
+     * Listens to plugin messages.
+     *
+     * @param   e
+     *          Plugin message event
+     */
     @Subscribe
     public void onPluginMessageEvent(@NotNull PluginMessageEvent e) {
         if (!e.getIdentifier().getId().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;

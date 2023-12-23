@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Command processor for plugin's command for Sponge 8.
+ */
 public class SpongeTabCommand implements Command.Raw {
 
     @Override

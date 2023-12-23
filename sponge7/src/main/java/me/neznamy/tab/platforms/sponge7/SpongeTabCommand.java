@@ -19,6 +19,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Command processor for plugin's command for Sponge 7.
+ */
 public class SpongeTabCommand extends CommandElement implements CommandExecutor {
 
     protected SpongeTabCommand() {
