@@ -24,6 +24,9 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class WitherBossBar extends BossBarManagerImpl implements Listener, WorldSwitchListener {
 
+    /** Distance of the wither in blocks */
+    private static final int WITHER_DISTANCE = 60;
+
     /**
      * Constructs new instance and registers events
      *
@@ -53,7 +56,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
             for (BossBar line : getRegisteredBossBars().values()) {
                 if (!line.getPlayers().contains(p)) continue;
                 Location eyeLocation = ((BukkitTabPlayer)p).getPlayer().getEyeLocation();
-                Location loc = eyeLocation.add(eyeLocation.getDirection().normalize().multiply(60)); // Wither distance
+                Location loc = eyeLocation.add(eyeLocation.getDirection().normalize().multiply(WITHER_DISTANCE));
                 if (loc.getY() < 1) loc.setY(1);
                 ((BackendTabPlayer)p).getEntityView().teleportEntity(line.getUniqueId().hashCode(), new me.neznamy.tab.shared.backend.Location(loc.getX(), loc.getY(), loc.getZ()));
             }

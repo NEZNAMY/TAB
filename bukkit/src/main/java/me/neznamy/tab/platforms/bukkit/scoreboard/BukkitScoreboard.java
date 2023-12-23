@@ -45,6 +45,18 @@ import java.util.concurrent.CountDownLatch;
 @SuppressWarnings({"ConstantConditions", "deprecation"})
 public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
+    /** Version in which team colors were added */
+    private static final int TEAM_COLOR_VERSION = 13;
+
+    /** Version in which render type was added into the API */
+    private static final int RENDER_TYPE_VERSION = 14;
+
+    /** Pointless limit on 1.13+ servers introduced by Bukkit to limit us */
+    private static final int PREFIX_SUFFIX_LIMIT_MODERN = 64;
+
+    /** Pointless limit on 1.13+ servers introduced by Bukkit to limit us */
+    private static final int TITLE_LIMIT_MODERN = 128;
+
     /** Flag tracking whether this implementation is available for use */
     @Getter
     private static final boolean available;
@@ -130,7 +142,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         checkPlayerScoreboard();
         Objective obj = scoreboard.getObjective(objectiveName);
         setDisplayName(obj, title);
-        if (serverMinorVersion >= 14) obj.setRenderType(RenderType.values()[display]);
+        if (serverMinorVersion >= RENDER_TYPE_VERSION) obj.setRenderType(RenderType.values()[display]);
     }
 
     @Override
@@ -145,12 +157,12 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
             team.setNameTagVisibility(NameTagVisibility.valueOf(visibility.name()));
         if (serverMinorVersion >= 9)
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.values()[collision.ordinal()]);
-        if (serverMinorVersion >= 13)
+        if (serverMinorVersion >= TEAM_COLOR_VERSION)
             team.setColor(ChatColor.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
         if (serverMinorVersion >= 7 && TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
             players.forEach(team::addEntry);
         } else {
-            players.forEach(player -> team.addPlayer(Bukkit.getOfflinePlayer(player)));
+            players.forEach(p -> team.addPlayer(Bukkit.getOfflinePlayer(p)));
         }
         team.setAllowFriendlyFire((options & 0x01) != 0);
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
@@ -173,7 +185,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
             team.setNameTagVisibility(NameTagVisibility.valueOf(visibility.name()));
         if (serverMinorVersion >= 9)
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.values()[collision.ordinal()]);
-        if (serverMinorVersion >= 13)
+        if (serverMinorVersion >= TEAM_COLOR_VERSION)
             team.setColor(ChatColor.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
         team.setAllowFriendlyFire((options & 0x01) != 0);
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
@@ -192,11 +204,11 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      *          Score display type
      */
     public void newObjective(String objectiveName, String criteria, String title, int display) {
-        if (serverMinorVersion >= 14) {
+        if (serverMinorVersion >= RENDER_TYPE_VERSION) {
             scoreboard.registerNewObjective(
                     objectiveName,
                     criteria,
-                    transform(title, 128, Limitations.SCOREBOARD_TITLE_PRE_1_13),
+                    transform(title, TITLE_LIMIT_MODERN, Limitations.SCOREBOARD_TITLE_PRE_1_13),
                     RenderType.values()[display]
             );
         } else {
@@ -213,7 +225,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      *          New display name
      */
     public void setDisplayName(@NotNull Objective objective, @NotNull String displayName) {
-        objective.setDisplayName(transform(displayName, 128, Limitations.SCOREBOARD_TITLE_PRE_1_13));
+        objective.setDisplayName(transform(displayName, TITLE_LIMIT_MODERN, Limitations.SCOREBOARD_TITLE_PRE_1_13));
     }
 
     /**
@@ -225,7 +237,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      *          Prefix to change to
      */
     public void setPrefix(@NotNull Team team, @NotNull String prefix) {
-        team.setPrefix(transform(prefix, 64, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
+        team.setPrefix(transform(prefix, PREFIX_SUFFIX_LIMIT_MODERN, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
     /**
@@ -237,7 +249,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      *          Suffix to change to
      */
     public void setSuffix(@NotNull Team team, @NotNull String suffix) {
-        team.setSuffix(transform(suffix, 64, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
+        team.setSuffix(transform(suffix, PREFIX_SUFFIX_LIMIT_MODERN, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
     /**
@@ -254,7 +266,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     @NotNull
     private String transform(@NotNull String text, int maxLengthModern, int maxLengthLegacy) {
         String transformed = BukkitUtils.toBukkitFormat(IChatBaseComponent.optimizedComponent(text), player.getVersion().supportsRGB());
-        if (serverMinorVersion >= 16 && maxLengthModern < 128) { // Scoreboard title is not stripping colors
+        if (TAB.getInstance().getServerVersion().supportsRGB() && maxLengthModern < TITLE_LIMIT_MODERN) { // Scoreboard title is not stripping colors
             while (ChatColor.stripColor(transformed).length() > maxLengthModern)
                 transformed = transformed.substring(0, transformed.length()-1);
         } else if (serverMinorVersion >= 13) {

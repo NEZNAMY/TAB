@@ -15,6 +15,9 @@ import java.lang.reflect.Method;
  */
 public class PingRetriever {
 
+    /** First version with proper ping getter */
+    private static final int PING_GETTER_VERSION = 17;
+
     private static Method getHandle;
     private static Field PING;
 
@@ -24,7 +27,7 @@ public class PingRetriever {
      */
     public static void tryLoad() {
         try {
-            if (BukkitReflection.getMinorVersion() < 17) {
+            if (BukkitReflection.getMinorVersion() < PING_GETTER_VERSION) {
                 getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
                 Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
                 PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
@@ -48,7 +51,7 @@ public class PingRetriever {
      */
     @SneakyThrows
     public static int getPing(@NotNull Player player) {
-        if (BukkitReflection.getMinorVersion() >= 17) {
+        if (BukkitReflection.getMinorVersion() >= PING_GETTER_VERSION) {
             return player.getPing();
         }
         if (PING == null) return -1;

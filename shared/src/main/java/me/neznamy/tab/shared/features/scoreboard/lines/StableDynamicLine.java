@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -114,7 +115,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      */
     private String[] split(@NonNull TabPlayer p, @NonNull String text) {
         if (p.getVersion().getMinorVersion() >= 13) return new String[] {EnumChatFormat.WHITE.getFormat() + text, ""};
-        int charLimit = 16;
+        int charLimit = Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13;
         if (text.length() > charLimit) {
             StringBuilder prefix = new StringBuilder(text);
             StringBuilder suffix = new StringBuilder(text);

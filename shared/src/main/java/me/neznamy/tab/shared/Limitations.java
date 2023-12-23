@@ -1,13 +1,9 @@
 package me.neznamy.tab.shared;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Class containing constants representing value length
  * limits on different versions.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Limitations {
 
     /** Player name length limit for scoreboard score on 1.7 and lower */
@@ -24,4 +20,10 @@ public class Limitations {
 
     /** Max tablist entry length for 1.7 and lower */
     public static final int MAX_DISPLAY_NAME_LENGTH_1_7 = 16;
+
+    /** Max bossbar name length for 1.7 and lower */
+    public static final int BOSSBAR_NAME_LENGTH_1_7 = 64;
+
+    /** Max team name length on <1.18 (still forced on all versions by the plugin) */
+    public static final int TEAM_NAME_LENGTH = 16;
 }

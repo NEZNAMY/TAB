@@ -20,6 +20,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EntityBossBar implements BossBar {
 
+    /** Max health of wither */
+    private static final int WITHER_MAX_HEALTH = 300;
+
+    /** Ideal value for invulnerable time for minimal wither size */
+    private static final int IDEAL_INVULNERABLE_TIME = 880;
+
+    /** Flag making entity invisible */
+    private static final byte INVISIBLE_FLAG = 1 << 5;
+
     /** Player this handler belongs to */
     @NotNull
     private final BukkitTabPlayer player;
@@ -27,12 +36,12 @@ public class EntityBossBar implements BossBar {
     @Override
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         DataWatcher w = new DataWatcher();
-        float health = 300*progress;
+        float health = WITHER_MAX_HEALTH*progress;
         if (health == 0) health = 1;
         w.setHealth(health);
         w.setCustomName(title, player.getVersion());
-        w.setEntityFlags((byte) 32);
-        w.setWitherInvulnerableTime(880); // Magic number
+        w.setEntityFlags(INVISIBLE_FLAG);
+        w.setWitherInvulnerableTime(IDEAL_INVULNERABLE_TIME);
         player.getEntityView().spawnEntity(id.hashCode(), new UUID(0, 0), EntityType.WITHER, new Location(0, 0, 0), w);
     }
 
@@ -46,7 +55,7 @@ public class EntityBossBar implements BossBar {
     @Override
     public void update(@NotNull UUID id, float progress) {
         DataWatcher w = new DataWatcher();
-        float health = 300*progress;
+        float health = WITHER_MAX_HEALTH*progress;
         if (health == 0) health = 1;
         w.setHealth(health);
         player.getEntityView().updateEntityMetadata(id.hashCode(), w);

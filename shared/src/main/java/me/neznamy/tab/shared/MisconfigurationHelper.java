@@ -371,7 +371,7 @@ public class MisconfigurationHelper {
 
     public void checkErrorLog() {
         File errorLog = TAB.getInstance().getErrorManager().getErrorLog();
-        if (errorLog.length() > 1000000) {
+        if (errorLog.length() > TabConstants.MAX_LOG_SIZE) {
             startupWarn("File " + errorLog.getPath() + " has reached its size limit (1MB). No new errors will be logged. " +
                     "Take a look at the existing reported errors, as they may have caused the plugin to not work properly " +
                     "in the past and if not fixed, will most likely cause problems in the future as well.");

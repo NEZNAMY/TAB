@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.*;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -151,7 +152,8 @@ public class DataWatcher implements EntityData {
             setValue(2, DataWatcherSerializer_STRING, customName);
         } else {
             //name length is limited to 64 characters on <1.8
-            String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
+            String cutName = (customName.length() > Limitations.BOSSBAR_NAME_LENGTH_1_7 ?
+                    customName.substring(0, Limitations.BOSSBAR_NAME_LENGTH_1_7) : customName);
             if (BukkitReflection.getMinorVersion() >= 6) {
                 setValue(10, null, cutName);
             } else {

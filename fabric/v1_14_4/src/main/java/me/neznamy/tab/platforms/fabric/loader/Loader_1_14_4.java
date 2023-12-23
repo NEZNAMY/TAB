@@ -89,7 +89,7 @@ public class Loader_1_14_4 {
             data.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
             data.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT), name);
             data.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
-            data.define(new EntityDataAccessor<>(EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion()), EntityDataSerializers.BYTE), (byte)16);
+            data.define(new EntityDataAccessor<>(EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion()), EntityDataSerializers.BYTE), EntityData.MARKER_FLAG);
             return () -> data;
         };
         FabricMultiVersion.buildTabListPacket = (action, entry) -> {

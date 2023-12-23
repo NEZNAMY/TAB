@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class CpuReport {
 
+    private static final int LINE_CHAR = 9553;
+
     /** Active time in % from features */
     @NotNull private final Map<String, Map<String, Float>> featureUsage;
 
@@ -71,7 +73,6 @@ public class CpuReport {
     public void printToConsole(long timeDiff) {
         message("Took " + timeDiff + "ms to create a CPU report, but the period is set to 10000ms. This means the plugin is overloaded. " +
                 "Printing CPU report.");
-        char LINE_CHAR = 9553;
         DecimalFormat decimal3 = new DecimalFormat("#.###");
         message(" ");
         message(LINE_CHAR + "             [ TAB CPU Stats ]             ");

@@ -33,6 +33,9 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
+    /** First version with static constructor-like methods */
+    private static final int STATIC_CONSTRUCTOR_VERSION = 17;
+
     @Getter
     private static boolean available;
 
@@ -437,7 +440,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                         String.class
                 );
             }
-            if (minorVersion >= 17) {
+            if (minorVersion >= STATIC_CONSTRUCTOR_VERSION) {
                 TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam);
                 TeamPacketConstructor_ofBoolean = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam, boolean.class);
             } else {
@@ -452,7 +455,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                                    @NotNull Collection<String> players, int options) {
             Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options);
             ((Collection<String>)ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(players);
-            if (BukkitReflection.getMinorVersion() >= 17) {
+            if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
                 return TeamPacketConstructor_ofBoolean.invoke(null, team, true);
             } else {
                 return newTeamPacket.newInstance(team, TeamAction.CREATE);
@@ -462,7 +465,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         @SneakyThrows
         public Object unregisterTeam(@NotNull String name) {
             Object team = newScoreboardTeam.newInstance(emptyScoreboard, name);
-            if (BukkitReflection.getMinorVersion() >= 17) {
+            if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
                 return TeamPacketConstructor_of.invoke(null, team);
             } else {
                 return newTeamPacket.newInstance(team, TeamAction.REMOVE);
@@ -474,7 +477,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                                  @NotNull String suffix, @Nullable Object suffixComponent,
                                  @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
             Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options);
-            if (BukkitReflection.getMinorVersion() >= 17) {
+            if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
                 return TeamPacketConstructor_ofBoolean.invoke(null, team, false);
             } else {
                 return newTeamPacket.newInstance(team, TeamAction.UPDATE);

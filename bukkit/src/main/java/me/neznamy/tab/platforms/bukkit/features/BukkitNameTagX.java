@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
  */
 public class BukkitNameTagX extends BackendNameTagX implements Listener {
 
+    /** Version in which multiple passenger option was added */
+    private static final int MULTI_PASSENGER_VERSION = 11;
+
     /**
      * Constructs new instance and registers the class listener.
      *
@@ -92,7 +95,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     @NotNull
     public List<Integer> getPassengers(@NotNull Object entity) {
         Entity vehicle = (Entity) entity;
-        if (BukkitReflection.getMinorVersion() >= 11) {
+        if (BukkitReflection.getMinorVersion() >= MULTI_PASSENGER_VERSION) {
             return vehicle.getPassengers().stream().map(Entity::getEntityId).collect(Collectors.toList());
         } else {
             if (vehicle.getPassenger() != null) {
@@ -170,7 +173,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
         datawatcher.setEntityFlags(flags);
         datawatcher.setCustomName(displayName, viewer.getVersion());
         datawatcher.setCustomNameVisible(nameVisible);
-        datawatcher.setArmorStandFlags((byte)16);
+        datawatcher.setArmorStandFlags(datawatcher.MARKER_FLAG);
         return datawatcher;
     }
 

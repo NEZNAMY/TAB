@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.bukkit.Bukkit;
@@ -52,7 +52,7 @@ public class BukkitUtils {
     public static String toBukkitFormat(@NotNull IChatBaseComponent component, boolean rgbClient) {
         StringBuilder sb = new StringBuilder();
         if (component.getModifier().getColor() != null) {
-            if (BukkitReflection.getMinorVersion() >= 16 && rgbClient) {
+            if (TAB.getInstance().getServerVersion().supportsRGB() && rgbClient) {
                 String hexCode = component.getModifier().getColor().getHexCode();
                 char c = EnumChatFormat.COLOR_CHAR;
                 sb.append(c).append("x").append(c).append(hexCode.charAt(0)).append(c).append(hexCode.charAt(1))

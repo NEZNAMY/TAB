@@ -17,6 +17,9 @@ import java.util.UUID;
 
 public abstract class BackendNameTagX extends NameTagX implements GameModeListener, PacketSendListener {
 
+    /** Entity tracking range in blocks */
+    private static final int ENTITY_TRACKING_RANGE = 48;
+
     /** Vehicle manager reference */
     @Getter private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
 
@@ -94,7 +97,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
         if (viewer.getVersion().getMinorVersion() < 8) return;
         if (target == viewer || isPlayerDisabled(target) || isDead(target)) return;
         if (!areInSameWorld(viewer, target)) return;
-        if (getDistance(viewer, target) <= 48 && canSee(viewer, target) && !target.isVanished())
+        if (getDistance(viewer, target) <= ENTITY_TRACKING_RANGE && canSee(viewer, target) && !target.isVanished())
             getArmorStandManager(target).spawn((BackendTabPlayer) viewer);
     }
 

@@ -20,6 +20,9 @@ public class BukkitReflection {
     @Getter
     private static final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
+    /** Server version since which minecraft code uses mojang packaging */
+    private static final int MOJANG_PACKAGING_VERSION_START = 17;
+
     /** Flag determining whether the server version is at least 1.19.3 or not */
     @Getter
     private static final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
@@ -50,7 +53,7 @@ public class BukkitReflection {
         ClassLoader loader = BukkitReflection.class.getClassLoader();
         for (String name : names) {
             try {
-                if (minorVersion >= 17) {
+                if (minorVersion >= MOJANG_PACKAGING_VERSION_START) {
                     return Class.forName("net.minecraft." + name);
                 } else {
                     return loader.loadClass("net.minecraft.server." + serverPackage + "." + name);

@@ -87,7 +87,7 @@ public class Loader_1_20_4 {
                         new SynchedEntityData.DataValue<>(0, EntityDataSerializers.BYTE, flags),
                         new SynchedEntityData.DataValue<>(2, EntityDataSerializers.OPTIONAL_COMPONENT, name),
                         new SynchedEntityData.DataValue<>(3, EntityDataSerializers.BOOLEAN, nameVisible),
-                        new SynchedEntityData.DataValue<>(EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion()), EntityDataSerializers.BYTE, (byte) 16)
+                        new SynchedEntityData.DataValue<>(EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion()), EntityDataSerializers.BYTE, EntityData.MARKER_FLAG)
                 );
             };
             FabricMultiVersion.buildTabListPacket = (action, entry) -> {

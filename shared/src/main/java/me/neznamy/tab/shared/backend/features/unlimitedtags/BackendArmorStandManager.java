@@ -12,6 +12,9 @@ import java.util.*;
 
 public class BackendArmorStandManager implements ArmorStandManager {
 
+    /** Space in blocks between armor stand lines */
+    private final double SPACE_BETWEEN_LINES = 0.26;
+
     private final BackendNameTagX nameTagX;
 
     @Getter private boolean sneaking;
@@ -43,7 +46,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
         List<ArmorStand> armorStands = new ArrayList<>();
         for (String line : nameTagX.getDynamicLines()) {
             armorStands.add(new ArmorStand((BackendNameTagX) nameTagX, this, owner, line, height, false));
-            height += 0.26;
+            height += SPACE_BETWEEN_LINES;
         }
         for (Map.Entry<String, Object> line : nameTagX.getStaticLines().entrySet()) {
             armorStands.add(new ArmorStand((BackendNameTagX) nameTagX, this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
@@ -141,11 +144,11 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * Fixes heights of all armor stands due to dynamic lines
      */
     public void fixArmorStandHeights() {
-        double currentY = -0.26;
+        double currentY = -SPACE_BETWEEN_LINES;
         for (ArmorStand as : armorStandArray) {
             if (as.isStaticOffset()) continue;
             if (!as.getProperty().get().isEmpty()) {
-                currentY += 0.26;
+                currentY += SPACE_BETWEEN_LINES;
                 as.setOffset(currentY);
             }
         }

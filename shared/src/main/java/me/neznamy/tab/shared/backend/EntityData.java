@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 public interface EntityData {
 
+    /** Marker flag in armor stand flags */
+    byte MARKER_FLAG = 1 << 4;
+
     static int getArmorStandFlagsPosition(int minorVersion) {
         if (minorVersion >= 17) {
             //1.17.x, 1.18.x, 1.19.x, 1.20.x

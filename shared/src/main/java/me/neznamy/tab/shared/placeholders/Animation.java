@@ -73,7 +73,7 @@ public class Animation {
             int localRefresh;
             if (placeholder.startsWith("%animation:")) {
                 //nested animations may not be loaded into the system yet due to load order, manually getting the refresh interval
-                String nestedAnimation = placeholder.substring(11, placeholder.length()-1);
+                String nestedAnimation = placeholder.substring("%animation:".length(), placeholder.length()-1);
                 localRefresh = TAB.getInstance().getConfiguration().getAnimationFile().hasConfigOption(nestedAnimation + ".change-interval") ?
                         TAB.getInstance().getConfiguration().getAnimationFile().getInt(nestedAnimation + ".change-interval") : this.interval;
             } else {

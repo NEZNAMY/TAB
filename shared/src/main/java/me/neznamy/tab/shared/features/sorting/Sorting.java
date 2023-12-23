@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.tablist.SortingManager;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
@@ -138,8 +139,8 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
             //which add empty player into a team such as LibsDisguises
             shortName.insert(0, Character.MAX_VALUE);
         }
-        if (shortName.length() > 15) {
-            shortName.setLength(15);
+        if (shortName.length() >= Limitations.TEAM_NAME_LENGTH) {
+            shortName.setLength(Limitations.TEAM_NAME_LENGTH-1);
         }
         String finalShortName = checkTeamName(p, shortName, 65);
         shortTeamNames.put(p, finalShortName);
@@ -205,7 +206,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     @Override
     public void forceTeamName(@NonNull me.neznamy.tab.api.TabPlayer player, String name) {
         if (Objects.equals(forcedTeamName.get(player), name)) return;
-        if (name != null && name.length() > 16) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
+        if (name != null && name.length() > Limitations.TEAM_NAME_LENGTH) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
         if (name != null) setTeamNameNote((TabPlayer) player, "Set using API");
         NameTag nametag = (NameTag) TAB.getInstance().getNameTagManager();
         if (nametag != null) nametag.unregisterTeam((TabPlayer) player, getShortTeamName((TabPlayer) player));

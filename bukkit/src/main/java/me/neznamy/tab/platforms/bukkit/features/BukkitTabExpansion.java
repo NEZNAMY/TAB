@@ -101,7 +101,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             return text;
         }
         if (identifier.startsWith("placeholder_")) {
-            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", TAB.getInstance().getPlaceholderManager());
+            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring("placeholder_".length()) + "%", TAB.getInstance().getPlaceholderManager());
         }
         if (player == null) return "<Player cannot be null>";
         TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());

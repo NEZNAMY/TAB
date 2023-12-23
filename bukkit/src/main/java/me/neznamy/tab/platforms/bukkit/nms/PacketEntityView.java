@@ -231,7 +231,7 @@ public class PacketEntityView implements EntityView {
     }
 
     private static int floor(double paramDouble) {
-        int i = (int)paramDouble;
+        int i = (int) (paramDouble*32);
         return paramDouble < i ? i - 1 : i;
     }
 
@@ -255,9 +255,9 @@ public class PacketEntityView implements EntityView {
                 SpawnEntity_Y.set(nmsPacket, l.getY());
                 SpawnEntity_Z.set(nmsPacket, l.getZ());
             } else {
-                SpawnEntity_X.set(nmsPacket, floor(l.getX()*32));
-                SpawnEntity_Y.set(nmsPacket, floor(l.getY()*32));
-                SpawnEntity_Z.set(nmsPacket, floor(l.getZ()*32));
+                SpawnEntity_X.set(nmsPacket, floor(l.getX()));
+                SpawnEntity_Y.set(nmsPacket, floor(l.getY()));
+                SpawnEntity_Z.set(nmsPacket, floor(l.getZ()));
             }
             SpawnEntity_EntityType.set(nmsPacket, entityIds.get((EntityType) entityType));
             PacketSender.sendPacket(player.getPlayer(), nmsPacket);
@@ -293,9 +293,9 @@ public class PacketEntityView implements EntityView {
             EntityTeleport_Y.set(nmsPacket, location.getY());
             EntityTeleport_Z.set(nmsPacket, location.getZ());
         } else {
-            EntityTeleport_X.set(nmsPacket, floor(location.getX()*32));
-            EntityTeleport_Y.set(nmsPacket, floor(location.getY()*32));
-            EntityTeleport_Z.set(nmsPacket, floor(location.getZ()*32));
+            EntityTeleport_X.set(nmsPacket, floor(location.getX()));
+            EntityTeleport_Y.set(nmsPacket, floor(location.getY()));
+            EntityTeleport_Z.set(nmsPacket, floor(location.getZ()));
         }
         PacketSender.sendPacket(player.getPlayer(), nmsPacket);
     }

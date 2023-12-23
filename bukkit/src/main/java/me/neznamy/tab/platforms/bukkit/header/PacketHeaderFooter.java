@@ -21,6 +21,9 @@ import java.lang.reflect.Method;
  */
 public class PacketHeaderFooter extends HeaderFooter {
 
+    /** First version with proper 2-arg constructor */
+    private static final int PROPER_CONSTRUCTOR_VERSION = 17;
+
     private static Constructor<?> newHeaderFooter;
     private static Field HEADER;
     private static Field FOOTER;
@@ -41,7 +44,7 @@ public class PacketHeaderFooter extends HeaderFooter {
                 Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
                         "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
                 ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
-                if (BukkitReflection.getMinorVersion() >= 17) {
+                if (BukkitReflection.getMinorVersion() >= PROPER_CONSTRUCTOR_VERSION) {
                     newHeaderFooter = HeaderFooterClass.getConstructor(IChatBaseComponent, IChatBaseComponent);
                 } else {
                     newHeaderFooter = HeaderFooterClass.getConstructor();
@@ -58,7 +61,7 @@ public class PacketHeaderFooter extends HeaderFooter {
     @SneakyThrows
     @Override
     public void set(@NotNull BukkitTabPlayer player, @NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        if (BukkitReflection.getMinorVersion() >= 17) {
+        if (BukkitReflection.getMinorVersion() >= PROPER_CONSTRUCTOR_VERSION) {
             PacketSender.sendPacket(player.getPlayer(), newHeaderFooter.newInstance(convert(header, player), convert(footer, player)));
         } else {
             Object packet = newHeaderFooter.newInstance();
