@@ -42,7 +42,7 @@ import java.util.concurrent.CountDownLatch;
  *      making per-player view of teams, especially sidebar not working.
  */
 // Throw the NPE if something is not as expected, parent class should ensure it anyway
-@SuppressWarnings({"ConstantConditions", "deprecation"})
+@SuppressWarnings({"deprecation", "DataFlowIssue"})
 public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     /** Version in which team colors were added */

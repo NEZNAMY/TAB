@@ -237,7 +237,7 @@ public class DataWatcher implements EntityData {
      */
     @RequiredArgsConstructor
     @Getter
-    public static class Item {
+    private static class Item {
 
         /** Item position */
         private final int position;

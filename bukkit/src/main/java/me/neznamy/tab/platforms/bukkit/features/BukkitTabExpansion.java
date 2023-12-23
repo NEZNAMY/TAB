@@ -12,11 +12,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * TAB's expansion for PlaceholderAPI
@@ -30,7 +26,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
 
     /** List of all placeholders offered by the plugin for command suggestions */
     @NotNull
-    private final List<String> placeholders = Arrays.asList(
+    private final List<String> placeholders = Collections.unmodifiableList(Arrays.asList(
             "%tab_tabprefix%",
             "%tab_tabsuffix%",
             "%tab_tagprefix%",
@@ -54,7 +50,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             "%tab_nametag_visibility%",
             "%tab_replace_<placeholder>%",
             "%tab_placeholder_<placeholder>%"
-    );
+    ));
 
     @Override
     public boolean persist() {

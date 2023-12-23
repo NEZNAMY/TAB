@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.bukkit.Bukkit;

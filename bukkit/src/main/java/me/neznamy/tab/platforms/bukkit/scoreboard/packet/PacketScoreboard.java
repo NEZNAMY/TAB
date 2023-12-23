@@ -1,18 +1,12 @@
-package me.neznamy.tab.platforms.bukkit.scoreboard;
+package me.neznamy.tab.platforms.bukkit.scoreboard.packet;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -21,20 +15,15 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Scoreboard implementation for Bukkit, which uses packets
+ * Scoreboard implementation which uses packets
  * to send scoreboards to use the full potential on all versions
  * and server software without any artificial limits.
  */
-@SuppressWarnings("unchecked")
 public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
-
-    /** First version with static constructor-like methods */
-    private static final int STATIC_CONSTRUCTOR_VERSION = 17;
 
     @Getter
     private static boolean available;
@@ -58,8 +47,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static Object IScoreboardCriteria_dummy;
 
     private static ScorePacketData scorePacketData;
-    public static TeamPacketData teamPacketData;
-    public static DisplayPacketData displayPacketData;
+    @Getter private static TeamPacketData teamPacketData;
+    @Getter private static DisplayPacketData displayPacketData;
 
     private static Method ChatSerializer_DESERIALIZE;
     private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
@@ -202,7 +191,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public boolean isTeamPacket(@NotNull Object packet) {
-        return teamPacketData.TeamPacketClass.isInstance(packet);
+        return teamPacketData.getTeamPacketClass().isInstance(packet);
     }
 
     @Override
@@ -283,7 +272,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         private Enum<?>[] scoreboardActions;             // 1.20.2-
 
         @SneakyThrows
-        public ScorePacketData() {
+        private ScorePacketData() {
             Class<?> SetScorePacket = BukkitReflection.getClass(
                     "network.protocol.game.ClientboundSetScorePacket", // Mojang mapped
                     "network.protocol.game.PacketPlayOutScoreboardScore", // Bukkit 1.17+
@@ -344,233 +333,6 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             } else {
                 return newSetScorePacket_String.newInstance(scoreHolder);
             }
-        }
-    }
-
-    public static class TeamPacketData {
-
-        private final Class<?> TeamPacketClass;
-        private Constructor<?> newTeamPacket;
-        private final Constructor<?> newScoreboardTeam;
-        private Method TeamPacketConstructor_of;
-        private Method TeamPacketConstructor_ofBoolean;
-        private final Field TeamPacket_NAME;
-        private final Field TeamPacket_ACTION;
-        private final Field TeamPacket_PLAYERS;
-        private final Method ScoreboardTeam_getPlayerNameSet;
-        private Method ScoreboardTeam_setNameTagVisibility;
-        private Method ScoreboardTeam_setCollisionRule;
-        private final Method ScoreboardTeam_setPrefix;
-        private final Method ScoreboardTeam_setSuffix;
-        private Method ScoreboardTeam_setColor;
-        private final Method ScoreboardTeam_setAllowFriendlyFire;
-        private final Method ScoreboardTeam_setCanSeeFriendlyInvisibles;
-        private final Enum<?>[] chatFormats;
-        private Enum<?>[] nameVisibilities;
-        private Enum<?>[] collisionRules;
-
-        @SneakyThrows
-        public TeamPacketData() {
-            int minorVersion = BukkitReflection.getMinorVersion();
-            Class<?> scoreboardTeam = BukkitReflection.getClass("world.scores.PlayerTeam", "world.scores.ScoreboardTeam", "ScoreboardTeam");
-            Class<?> enumChatFormatClass = BukkitReflection.getClass("ChatFormatting", "EnumChatFormat", "EnumChatFormat");
-            TeamPacketClass = BukkitReflection.getClass(
-                    "network.protocol.game.ClientboundSetPlayerTeamPacket", // Mojang mapped
-                    "network.protocol.game.PacketPlayOutScoreboardTeam", // Bukkit 1.17+
-                    "PacketPlayOutScoreboardTeam", // Bukkit 1.7 - 1.16.5
-                    "Packet209SetScoreboardTeam" // 1.5 - 1.6.4
-            );
-            newScoreboardTeam = scoreboardTeam.getConstructor(Scoreboard, String.class);
-            TeamPacket_NAME = ReflectionUtils.getFields(TeamPacketClass, String.class).get(0);
-            TeamPacket_ACTION = ReflectionUtils.getInstanceFields(TeamPacketClass, int.class).get(0);
-            TeamPacket_PLAYERS = ReflectionUtils.getOnlyField(TeamPacketClass, Collection.class);
-            ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getOnlyMethod(scoreboardTeam, Collection.class);
-            chatFormats = (Enum<?>[]) enumChatFormatClass.getMethod("values").invoke(null);
-            ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(
-                    scoreboardTeam,
-                    new String[] {"func_96660_a", "setAllowFriendlyFire", "a", "m_83355_"}, // {Thermos, 1.5.1+, 1.5 & 1.18+, Mohist 1.18.2}
-                    boolean.class
-            );
-            ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(
-                    scoreboardTeam,
-                    new String[] {"func_98300_b", "setCanSeeFriendlyInvisibles", "b", "m_83362_", "setSeeFriendlyInvisibles"}, // {Thermos, 1.5.1+, 1.5 & 1.18+, Mohist 1.18.2, 1.20.2+}
-                    boolean.class
-            );
-            if (minorVersion >= 8) {
-                Class<?> enumNameTagVisibility = BukkitReflection.getClass(
-                        "world.scores.Team$Visibility", // Mojang mapped
-                        "world.scores.ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.17+
-                        "ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.8.1 - 1.16.5
-                        "EnumNameTagVisibility" // Bukkit 1.8.0
-                );
-                nameVisibilities = (Enum<?>[]) enumNameTagVisibility.getMethod("values").invoke(null);
-                ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(
-                        scoreboardTeam,
-                        new String[] {"setNameTagVisibility", "a", "m_83346_"}, // {1.8.1+, 1.8 & 1.18+, Mohist 1.18.2}
-                        enumNameTagVisibility
-                );
-            }
-            if (minorVersion >= 9) {
-                Class<?> enumTeamPush = BukkitReflection.getClass("world.scores.Team$CollisionRule",
-                        "world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
-                ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumTeamPush);
-                collisionRules = (Enum<?>[]) enumTeamPush.getMethod("values").invoke(null);
-            }
-            if (minorVersion >= 13) {
-                ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumChatFormatClass);
-                ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(
-                        scoreboardTeam,
-                        new String[]{"setPrefix", "b", "m_83360_", "setPlayerPrefix"}, // {1.17.1-, 1.18 - 1.20.1, Mohist 1.18.2, 1.20.2+}
-                        Component
-                );
-                ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(
-                        scoreboardTeam,
-                        new String[]{"setSuffix", "c", "m_83365_", "setPlayerSuffix"}, // {1.17.1-, 1.18 - 1.20.1, Mohist 1.18.2, 1.20.2+}
-                        Component
-                );
-            } else {
-                ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(
-                        scoreboardTeam,
-                        new String[] {"func_96666_b", "setPrefix", "b"}, // {Thermos, 1.5.1+, 1.5}
-                        String.class
-                );
-                ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(
-                        scoreboardTeam,
-                        new String[] {"func_96662_c", "setSuffix", "c"}, // {Thermos, 1.5.1+, 1.5}
-                        String.class
-                );
-            }
-            if (minorVersion >= STATIC_CONSTRUCTOR_VERSION) {
-                TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam);
-                TeamPacketConstructor_ofBoolean = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam, boolean.class);
-            } else {
-                newTeamPacket = TeamPacketClass.getConstructor(scoreboardTeam, int.class);
-            }
-        }
-
-        @SneakyThrows
-        public Object registerTeam(@NotNull String name, @NotNull String prefix, @Nullable Object prefixComponent,
-                                   @NotNull String suffix, @Nullable Object suffixComponent,
-                                   @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                                   @NotNull Collection<String> players, int options) {
-            Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options);
-            ((Collection<String>)ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(players);
-            if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-                return TeamPacketConstructor_ofBoolean.invoke(null, team, true);
-            } else {
-                return newTeamPacket.newInstance(team, TeamAction.CREATE);
-            }
-        }
-
-        @SneakyThrows
-        public Object unregisterTeam(@NotNull String name) {
-            Object team = newScoreboardTeam.newInstance(emptyScoreboard, name);
-            if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-                return TeamPacketConstructor_of.invoke(null, team);
-            } else {
-                return newTeamPacket.newInstance(team, TeamAction.REMOVE);
-            }
-        }
-
-        @SneakyThrows
-        public Object updateTeam(@NotNull String name, @NotNull String prefix, @Nullable Object prefixComponent,
-                                 @NotNull String suffix, @Nullable Object suffixComponent,
-                                 @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
-            Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options);
-            if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-                return TeamPacketConstructor_ofBoolean.invoke(null, team, false);
-            } else {
-                return newTeamPacket.newInstance(team, TeamAction.UPDATE);
-            }
-        }
-
-        @SneakyThrows
-        private Object createTeam(@NotNull String teamName, @NotNull String prefix, @Nullable Object prefixComponent,
-                                  @NotNull String suffix, @Nullable Object suffixComponent,
-                                  @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
-            Object team = newScoreboardTeam.newInstance(emptyScoreboard, teamName);
-            ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
-            ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
-            if (BukkitReflection.getMinorVersion() >= 13) {
-                ScoreboardTeam_setPrefix.invoke(team, prefixComponent);
-                ScoreboardTeam_setSuffix.invoke(team, suffixComponent);
-                ScoreboardTeam_setColor.invoke(team, chatFormats[EnumChatFormat.lastColorsOf(prefix).ordinal()]);
-            } else {
-                ScoreboardTeam_setPrefix.invoke(team, prefix);
-                ScoreboardTeam_setSuffix.invoke(team, suffix);
-            }
-            if (BukkitReflection.getMinorVersion() >= 8)
-                ScoreboardTeam_setNameTagVisibility.invoke(team, nameVisibilities[visibility.ordinal()]);
-            if (BukkitReflection.getMinorVersion() >= 9)
-                ScoreboardTeam_setCollisionRule.invoke(team, collisionRules[collision.ordinal()]);
-            return team;
-        }
-
-        @SneakyThrows
-        public void onTeamPacket(@NotNull Object team) {
-            if (TAB.getInstance().getNameTagManager() == null) return;
-            int action = TeamPacket_ACTION.getInt(team);
-            if (action == 1 || action == 2 || action == 4) return;
-            Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(team);
-            String teamName = (String) TeamPacket_NAME.get(team);
-            if (players == null) return;
-            //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
-            Collection<String> newList = new ArrayList<>();
-            for (String entry : players) {
-                TabPlayer p = getPlayer(entry);
-                if (p == null) {
-                    newList.add(entry);
-                    continue;
-                }
-                Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-                String expectedTeam = sorting.getShortTeamName(p);
-                if (expectedTeam == null) {
-                    newList.add(entry);
-                    continue;
-                }
-                if (!((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
-                        !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
-                    logTeamOverride(teamName, p.getName(), expectedTeam);
-                } else {
-                    newList.add(entry);
-                }
-            }
-            TeamPacket_PLAYERS.set(team, newList);
-        }
-    }
-
-    public static class DisplayPacketData {
-
-        public final Class<?> DisplayObjectiveClass;
-        private final Constructor<?> newDisplayObjective;
-        public final Field DisplayObjective_POSITION;
-        public final Field DisplayObjective_OBJECTIVE_NAME;
-        private final Object[] displaySlots;
-
-        @SneakyThrows
-        public DisplayPacketData() {
-            DisplayObjectiveClass = BukkitReflection.getClass(
-                    "network.protocol.game.ClientboundSetDisplayObjectivePacket", // Mojang mapped
-                    "network.protocol.game.PacketPlayOutScoreboardDisplayObjective", // Bukkit 1.17+
-                    "PacketPlayOutScoreboardDisplayObjective", // Bukkit 1.7 - 1.16.5
-                    "Packet208SetScoreboardDisplayObjective" // Bukkit 1.5 - 1.6.4
-            );
-            DisplayObjective_OBJECTIVE_NAME = ReflectionUtils.getOnlyField(DisplayObjectiveClass, String.class);
-            if (BukkitReflection.is1_20_2Plus()) {
-                Class<?> DisplaySlot = BukkitReflection.getClass("world.scores.DisplaySlot");
-                displaySlots = (Object[]) DisplaySlot.getDeclaredMethod("values").invoke(null);
-                DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, DisplaySlot);
-                newDisplayObjective = DisplayObjectiveClass.getConstructor(DisplaySlot, ScoreboardObjective);
-            } else {
-                displaySlots = new Object[]{0, 1, 2};
-                DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, int.class);
-                newDisplayObjective = DisplayObjectiveClass.getConstructor(int.class, ScoreboardObjective);
-            }
-        }
-
-        @SneakyThrows
-        public Object setDisplaySlot(int slot, @NotNull Object objective) {
-            return newDisplayObjective.newInstance(displaySlots[slot], objective);
         }
     }
 }

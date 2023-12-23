@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
+import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
@@ -37,6 +37,10 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         super("packet_handler");
     }
 
+    /**
+     * Attempts to load required classes, fields and methods and marks class as available.
+     * If something fails, error message is printed and class is not marked as available.
+     */
     public static void tryLoad() {
         try {
             Class<?> NetworkManager = BukkitReflection.getClass("network.Connection", "network.NetworkManager", "NetworkManager");
@@ -71,15 +75,9 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @Override
     @SneakyThrows
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
-        if (!PacketScoreboard.isAvailable()) return;
-        int position;
-        if (BukkitReflection.is1_20_2Plus()) {
-            position = ((Enum<?>)PacketScoreboard.displayPacketData.DisplayObjective_POSITION.get(packet)).ordinal();
-        } else {
-            position = PacketScoreboard.displayPacketData.DisplayObjective_POSITION.getInt(packet);
+        if (PacketScoreboard.isAvailable()) {
+            PacketScoreboard.getDisplayPacketData().onDisplayObjective(player, packet);
         }
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player, position,
-                (String) PacketScoreboard.displayPacketData.DisplayObjective_OBJECTIVE_NAME.get(packet));
     }
 
     @Override
@@ -93,8 +91,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isDisplayObjective(@NotNull Object packet) {
-        if (!PacketScoreboard.isAvailable()) return false;
-        return PacketScoreboard.displayPacketData.DisplayObjectiveClass.isInstance(packet);
+        return PacketScoreboard.isAvailable() && PacketScoreboard.getDisplayPacketData().isDisplayObjective(packet);
     }
 
     @Override

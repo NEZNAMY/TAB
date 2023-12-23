@@ -29,6 +29,9 @@ import java.util.Collection;
  */
 public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
+    /** Version with a minor team recode */
+    private final int TEAM_REWORK_VERSION = 13;
+
     /**
      * Constructs new instance with given parameter
      *
@@ -86,7 +89,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
                               @NotNull Collection<String> players, int options) {
         int color = 0;
-        if (player.getVersion().getMinorVersion() >= 13) {
+        if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
         player.sendPacket(new Team(
@@ -112,7 +115,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                             @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         int color = 0;
-        if (player.getVersion().getMinorVersion() >= 13) {
+        if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
         player.sendPacket(new Team(
@@ -153,7 +156,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     private Either<String, BaseComponent> either(@NotNull String text) {
-        if (player.getVersion().getMinorVersion() >= 13) {
+        if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
             return Either.right(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion()));
         } else {
             return Either.left(text);
@@ -167,19 +170,22 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void onTeamPacket(@NotNull Object team) {
-        if (TAB.getInstance().getNameTagManager() == null) return;
+        NameTag nameTag = TAB.getInstance().getNameTagManager();
+        if (nameTag == null) return;
         Team packet = (Team) team;
         if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
+        Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         Collection<String> col = Lists.newArrayList(packet.getPlayers());
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-            String expectedTeam = sorting.getShortTeamName(p);
-            if (expectedTeam != null && (col.contains(p.getNickname()) || col.contains(p.getName())) &&
-                    !((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
-                    !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
-                logTeamOverride(packet.getName(), p.getName(), expectedTeam);
-                col.remove(p.getNickname());
-                col.remove(p.getName());
+        for (String entry : packet.getPlayers()) {
+            TabPlayer player = getPlayer(entry);
+            if (player != null) {
+                String expectedTeam = sorting.getShortTeamName(player);
+                if (expectedTeam == null || nameTag.getDisableChecker().isDisabledPlayer(player) ||
+                        nameTag.hasTeamHandlingPaused(player)) continue;
+                if (!packet.getName().equals(expectedTeam)) {
+                    logTeamOverride(packet.getName(), player.getName(), expectedTeam);
+                    col.remove(player.getNickname());
+                }
             }
         }
         RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);

@@ -11,8 +11,8 @@ import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
-import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.cpu.CpuManager;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
@@ -277,7 +277,7 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public @Nullable NameTagManager getNameTagManager() {
+    public @Nullable NameTag getNameTagManager() {
         if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
         return featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
     }

@@ -5,7 +5,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -161,7 +160,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                 newList.add(entry);
                 continue;
             }
-            if (!((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
+            if (!TAB.getInstance().getNameTagManager().getDisableChecker().isDisabledPlayer(p) &&
                     !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
                 logTeamOverride(teamName, p.getName(), expectedTeam);
             } else {

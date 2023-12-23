@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -120,7 +121,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     @Override
     @NotNull
     public String getEntityType(@NotNull Object entity) {
-        return ((Entity) entity).getType().toString().toLowerCase();
+        return ((Entity) entity).getType().toString().toLowerCase(Locale.US);
     }
 
     @Override
