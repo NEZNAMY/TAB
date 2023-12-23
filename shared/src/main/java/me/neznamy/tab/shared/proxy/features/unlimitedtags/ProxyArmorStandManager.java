@@ -9,11 +9,22 @@ import me.neznamy.tab.shared.proxy.message.outgoing.nametags.Destroy;
 import me.neznamy.tab.shared.proxy.message.outgoing.nametags.SetText;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Armor stand manager for proxies.
+ */
 public class ProxyArmorStandManager implements ArmorStandManager {
 
     private final NameTagX nameTagX;
     private final ProxyTabPlayer owner;
 
+    /**
+     * Constructs new instance and loads lines.
+     *
+     * @param   nameTagX
+     *          Main feature
+     * @param   owner
+     *          Owner of the armor stand manager
+     */
     public ProxyArmorStandManager(@NotNull NameTagX nameTagX, @NotNull TabPlayer owner) {
         this.nameTagX = nameTagX;
         this.owner = (ProxyTabPlayer) owner;

@@ -97,8 +97,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         this.version = ProtocolVersion.fromNetworkId(protocolVersion);
         this.bedrockPlayer = FloodgateHook.getInstance().isFloodgatePlayer(uniqueId, name);
         this.permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
-        UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
-        this.tablistId = useRealId ? getUniqueId() : offlineId;
+        this.tablistId = useRealId ? uniqueId : UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -207,6 +206,13 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         TAB.getInstance().getFeatureManager().refresh(this, true);
     }
 
+    /**
+     * Returns property with given name.
+     *
+     * @param   name
+     *          Name of the property
+     * @return  Property with given name
+     */
     public Property getProperty(@NotNull String name) {
         return properties.get(name);
     }
@@ -219,6 +225,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /**
      * Loads property from config using standard property loading algorithm
      *
+     * @param   feature
+     *          Feature using this property
      * @param   property
      *          property name to load
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
@@ -231,6 +239,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * Loads property from config using standard property loading algorithm. If the property is
      * not set in config, {@code ifNotSet} value is used.
      *
+     * @param   feature
+     *          Feature using this property
      * @param   property
      *          property name to load
      * @param   ifNotSet
@@ -238,9 +248,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
     public boolean loadPropertyFromConfig(@Nullable Refreshable feature, @NotNull String property, @NotNull String ifNotSet) {
-        String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
+        String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(name, property, server, world);
         if (value.length == 0) {
-            value = TAB.getInstance().getConfiguration().getUsers().getProperty(getUniqueId().toString(), property, server, world);
+            value = TAB.getInstance().getConfiguration().getUsers().getProperty(uniqueId.toString(), property, server, world);
         }
         if (value.length == 0) {
             value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), property, server, world);

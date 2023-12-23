@@ -97,6 +97,12 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Forwards gamemode change to all enabled features.
+     *
+     * @param   player
+     *          Player whose gamemode has changed.
+     */
     public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof GameModeListener)) continue;
@@ -106,6 +112,16 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Forwards display name change to all features and returns new display name to use.
+     * Will return null if display name should not change.
+     *
+     * @param   packetReceiver
+     *          Player who received the packet
+     * @param   id
+     *          UUID of the player
+     * @return  New display name or {@code null} if it should not be changed
+     */
     public IChatBaseComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
         IChatBaseComponent newDisplayName = null;
         for (TabFeature f : values) {
@@ -118,6 +134,12 @@ public class FeatureManager {
         return newDisplayName;
     }
 
+    /**
+     * Forwards player quit to all features
+     *
+     * @param   disconnectedPlayer
+     *          Player who left
+     */
     public void onQuit(@Nullable TabPlayer disconnectedPlayer) {
         if (disconnectedPlayer == null) return;
         long millis = System.currentTimeMillis();
@@ -131,6 +153,12 @@ public class FeatureManager {
         TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
     }
 
+    /**
+     * Handles player join and forwards it to all features.
+     *
+     * @param   connectedPlayer
+     *          Player who joined
+     */
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         if (!connectedPlayer.isOnline()) return;
         long millis = System.currentTimeMillis();
@@ -151,6 +179,14 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Processed world change and forwards it to all features.
+     *
+     * @param   playerUUID
+     *          UUID of player who switched worlds
+     * @param   to
+     *          New world name
+     */
     public void onWorldChange(@NotNull UUID playerUUID, @NotNull String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
@@ -165,6 +201,14 @@ public class FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
 
+    /**
+     * Processed server switch and forwards it to all features.
+     *
+     * @param   playerUUID
+     *          UUID of player who switched server
+     * @param   to
+     *          New server name
+     */
     public void onServerChange(@NotNull UUID playerUUID, @NotNull String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
@@ -180,6 +224,16 @@ public class FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
     }
 
+    /**
+     * Forwards command event to all features. Returns {@code true} if the event
+     * should be cancelled, {@code false} if not.
+     *
+     * @param   sender
+     *          Command sender
+     * @param   command
+     *          Executed command
+     * @return  {@code true} if event should be cancelled, {@code false} if not.
+     */
     public boolean onCommand(@Nullable TabPlayer sender, @NotNull String command) {
         if (sender == null) return false;
         boolean cancel = false;
@@ -248,6 +302,12 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Forwards vanish status change to all features.
+     *
+     * @param   player
+     *          Player whose vanish status changed
+     */
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof VanishListener)) continue;
@@ -257,6 +317,16 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Forwards entry add to all features.
+     *
+     * @param   packetReceiver
+     *          Player who received the packet
+     * @param   id
+     *          UUID of the entry
+     * @param   name
+     *          Player name of the entry
+     */
     public void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
         for (TabFeature f : values) {
             if (!(f instanceof EntryAddListener)) continue;
@@ -266,6 +336,17 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Forwards latency change to all features and returns new latency to use.
+     *
+     * @param   packetReceiver
+     *          Player who received the packet
+     * @param   id
+     *          UUID of player whose ping changed
+     * @param   latency
+     *          Latency in the packet
+     * @return  New latency to use
+     */
     public int onLatencyChange(TabPlayer packetReceiver, UUID id, int latency) {
         if (!hasLatencyChangeListener) return latency;
         int newLatency = latency;
@@ -278,6 +359,12 @@ public class FeatureManager {
         return newLatency;
     }
 
+    /**
+     * Forwards login packet send to enabled features.
+     *
+     * @param   packetReceiver
+     *          Player who received the packet
+     */
     public void onLoginPacket(TabPlayer packetReceiver) {
         packetReceiver.getScoreboard().unfreeze();
         for (TabFeature f : values) {
@@ -288,6 +375,12 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Forwards tablist clear to all enabled features.
+     *
+     * @param   packetReceiver
+     *          Player whose tablist got cleared
+     */
     public void onTabListClear(TabPlayer packetReceiver) {
         for (TabFeature f : values) {
             if (!(f instanceof TabListClearListener)) continue;
@@ -297,6 +390,14 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Registers feature with given parameters.
+     *
+     * @param   featureName
+     *          Name of feature to register as
+     * @param   featureHandler
+     *          Feature handler
+     */
     public void registerFeature(@NotNull String featureName, @NotNull TabFeature featureHandler) {
         features.put(featureName, featureHandler);
         values = features.values().toArray(new TabFeature[0]);
@@ -314,15 +415,37 @@ public class FeatureManager {
         }
     }
 
+    /**
+     * Unregisters feature with given name.
+     *
+     * @param   featureName
+     *          Name of the feature it was previously registered with.
+     */
     public void unregisterFeature(@NotNull String featureName) {
         features.remove(featureName);
         values = features.values().toArray(new TabFeature[0]);
     }
 
+    /**
+     * Returns {@code true} if feature is enabled, {@code false} if not.
+     *
+     * @param   name
+     *          Name of the feature
+     * @return  {@code true} if enabled, {@code false} if not
+     */
     public boolean isFeatureEnabled(@NotNull String name) {
         return features.containsKey(name);
     }
 
+    /**
+     * Returns feature by given name.
+     *
+     * @param   name
+     *          Name of the feature
+     * @return  Feature handler
+     * @param   <T>
+     *          class extending TabFeature
+     */
     @SuppressWarnings("unchecked")
     public <T extends TabFeature> T getFeature(@NotNull String name) {
         return (T) features.get(name);

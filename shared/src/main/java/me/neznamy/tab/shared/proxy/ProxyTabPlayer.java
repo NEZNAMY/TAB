@@ -142,6 +142,12 @@ public abstract class ProxyTabPlayer extends TabPlayer {
         return hasPermission0(permission);
     }
 
+    /**
+     * Sends plugin message to the player.
+     *
+     * @param   message
+     *          Plugin message to send
+     */
     public void sendPluginMessage(@NotNull OutgoingMessage message) {
         sendPluginMessage(message.write().toByteArray());
     }

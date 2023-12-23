@@ -126,7 +126,7 @@ public class TAB extends TabAPI {
         this.platform = platform;
         this.serverVersion = platform.getServerVersion();
         this.dataFolder = platform.getDataFolder();
-        this.errorManager = new ErrorManager(this);
+        this.errorManager = new ErrorManager(dataFolder);
         try {
             eventBus = new EventBusImpl();
         } catch (NoSuchMethodError e) {
@@ -158,6 +158,9 @@ public class TAB extends TabAPI {
      * and then calls events on success. If it fails for any reason,
      * plugin will be marked as disabled and error message will be
      * printed into the console.
+     * Returns load status message, which is either success or failure.
+     *
+     * @return  Load status message.
      */
     public String load() {
         try {
@@ -297,6 +300,10 @@ public class TAB extends TabAPI {
         return featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
     }
 
+    /**
+     * Returns the config file.
+     * @return  The config file
+     */
     public @NotNull ConfigurationFile getConfig() {
         return configuration.getConfig();
     }

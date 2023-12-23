@@ -35,10 +35,16 @@ public class ErrorManager {
     /** placeholder-errors.log file for errors thrown by placeholders */
     private final File placeholderErrorLog;
 
-    public ErrorManager(@NotNull TAB tab) {
-        errorLog = new File(tab.getDataFolder(), "errors.log");
-        antiOverrideLog = new File(tab.getDataFolder(), "anti-override.log");
-        placeholderErrorLog = new File(tab.getDataFolder(), "placeholder-errors.log");
+    /**
+     * Constructs new instance.
+     *
+     * @param   dataFolder
+     *          Data folder for error files
+     */
+    public ErrorManager(@NotNull File dataFolder) {
+        errorLog = new File(dataFolder, "errors.log");
+        antiOverrideLog = new File(dataFolder, "anti-override.log");
+        placeholderErrorLog = new File(dataFolder, "placeholder-errors.log");
     }
 
     /**

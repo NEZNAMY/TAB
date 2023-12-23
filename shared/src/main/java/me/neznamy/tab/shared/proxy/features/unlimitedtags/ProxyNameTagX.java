@@ -6,8 +6,14 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.nametags.*;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Unlimited nametag mode implementation for proxies.
+ */
 public class ProxyNameTagX extends NameTagX {
 
+    /**
+     * Constructs new instance.
+     */
     public ProxyNameTagX() {
         super(ProxyArmorStandManager::new);
     }

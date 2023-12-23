@@ -68,6 +68,8 @@ public class Property {
      * Constructs new instance with given parameters and prepares
      * the formatter for use by detecting placeholders and reformatting the text.
      *
+     * @param   name
+     *          Property name to use in expansion (nullable if not use)
      * @param   listener
      *          Feature which should receive refresh method if placeholder changes value
      * @param   owner
@@ -264,6 +266,11 @@ public class Property {
         return EnumChatFormat.color(format);
     }
 
+    /**
+     * Returns a new unique property name.
+     *
+     * @return  A new unique property name.
+     */
     public static String randomName() {
         return String.valueOf(counter++);
     }

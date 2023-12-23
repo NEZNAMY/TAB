@@ -22,6 +22,9 @@ public class PluginMessageHandler {
 
     private final Map<String, BiConsumer<ProxyTabPlayer, ByteArrayDataInput>> messages = new HashMap<>();
 
+    /**
+     * Constructs new instance.
+     */
     public PluginMessageHandler() {
         messages.put("Placeholder", this::placeholder);
         messages.put("Vanished", this::vanished);

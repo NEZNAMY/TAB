@@ -7,6 +7,7 @@ package me.neznamy.tab.shared.util;
  * @param   <B>
  *          Function return type
  */
+@FunctionalInterface
 public interface FunctionWithException<A, B> {
 
     /**

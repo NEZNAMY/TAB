@@ -168,6 +168,8 @@ public class ReflectionUtils {
      * @param   o
      *          Object to make accessible
      * @return  Provided object
+     * @param   <T>
+     *          AccessibleObject
      */
     @NotNull
     public static <T extends AccessibleObject> T setAccessible(@NotNull T o) {
@@ -186,7 +188,7 @@ public class ReflectionUtils {
      *          If class has more than 1 constructor or doesn't have any
      */
     @NotNull
-    public static Constructor<?> getOnlyConstructor(@NotNull Class<?> clazz) throws IllegalStateException {
+    public static Constructor<?> getOnlyConstructor(@NotNull Class<?> clazz) {
         Constructor<?>[] constructors = clazz.getConstructors();
         if (constructors.length != 1) {
             throw new IllegalStateException("Class " + clazz.getName() + " is expected to have 1 constructor, but has " +
@@ -208,7 +210,7 @@ public class ReflectionUtils {
      *          If more than 1 field meets the criteria or if none do.
      */
     @NotNull
-    public static Field getOnlyField(@NotNull Class<?> clazz, @NotNull Class<?> type) throws IllegalStateException {
+    public static Field getOnlyField(@NotNull Class<?> clazz, @NotNull Class<?> type) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == type) {
@@ -259,7 +261,7 @@ public class ReflectionUtils {
      *          If class has more than 1 field or has none
      */
     @NotNull
-    public static Field getOnlyField(@NotNull Class<?> clazz) throws IllegalStateException{
+    public static Field getOnlyField(@NotNull Class<?> clazz) {
         Field[] fields = clazz.getDeclaredFields();
         if (fields.length != 1) {
             throw new IllegalStateException("Class " + clazz.getName() + " is expected to have 1 field, but has " +
@@ -280,7 +282,7 @@ public class ReflectionUtils {
      *          If no such field is found
      */
     @NotNull
-    public static Field getField(@NotNull Class<?> clazz, @NotNull String... names) throws IllegalArgumentException {
+    public static Field getField(@NotNull Class<?> clazz, @NotNull String... names) {
         for (String name : names) {
             try {
                 return setAccessible(clazz.getDeclaredField(name));

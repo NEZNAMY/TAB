@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+/**
+ * Expansion handler for proxies via bridge.
+ */
 public class ProxyTabExpansion implements TabExpansion {
 
     /** Map holding all values for all players for resending on server switch */
@@ -25,6 +28,12 @@ public class ProxyTabExpansion implements TabExpansion {
         // Don't do anything on proxy side
     }
 
+    /**
+     * Resends all values to the player, typically on server switch.
+     *
+     * @param   player
+     *          Player to resend all values to
+     */
     public void resendAllValues(@NotNull ProxyTabPlayer player) {
         for (Map.Entry<String, String> entry : values.computeIfAbsent(player, p -> new HashMap<>()).entrySet()) {
             player.sendPluginMessage(new ExpansionPlaceholder(entry.getKey(), entry.getValue()));
