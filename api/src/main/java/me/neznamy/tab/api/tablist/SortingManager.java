@@ -1,10 +1,17 @@
 package me.neznamy.tab.api.tablist;
 
 import lombok.NonNull;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Interface for managing player sorting by directly configuring
+ * team names of players. Instance can be obtained using
+ * {@link TabAPI#getSortingManager()}. If the feature is disabled,
+ * it will return {@code null}.
+ */
 @SuppressWarnings("unused") // API class
 public interface SortingManager {
 

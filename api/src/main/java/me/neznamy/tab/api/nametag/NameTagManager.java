@@ -151,13 +151,51 @@ public interface NameTagManager {
      */
     void setSuffix(@NonNull TabPlayer player, @Nullable String suffix);
 
-    @Nullable String getCustomPrefix(@NonNull TabPlayer player);
+    /**
+     * Returns custom prefix assigned using {@link #setPrefix(TabPlayer, String)}.
+     * If no custom prefix is set, returns {@code null}.
+     *
+     * @param   player
+     *          Player to get custom prefix of
+     * @return  Custom prefix assigned using the API.
+     * @see     #setPrefix(TabPlayer, String)
+     * @see     #getOriginalPrefix(TabPlayer)
+     */
+    @Nullable
+    String getCustomPrefix(@NonNull TabPlayer player);
 
-    @Nullable String getCustomSuffix(@NonNull TabPlayer player);
+    /**
+     * Returns custom suffix assigned using {@link #setSuffix(TabPlayer, String)}.
+     * If no custom suffix is set, returns {@code null}.
+     *
+     * @param   player
+     *          Player to get custom suffix of
+     * @return  Custom suffix assigned using the API.
+     * @see     #setSuffix(TabPlayer, String)
+     * @see     #getOriginalSuffix(TabPlayer)
+     */
+    @Nullable
+    String getCustomSuffix(@NonNull TabPlayer player);
 
-    @NonNull String getOriginalPrefix(@NonNull TabPlayer player);
+    /**
+     * Returns original prefix assigned by the plugin using internal logic.
+     * @param   player
+     *          Player to get original prefix of
+     * @return  Original prefix assigned by the plugin's internal logic.
+     * @see     #getCustomPrefix(TabPlayer)
+     */
+    @NonNull
+    String getOriginalPrefix(@NonNull TabPlayer player);
 
-    @NonNull String getOriginalSuffix(@NonNull TabPlayer player);
+    /**
+     * Returns original suffix assigned by the plugin using internal logic.
+     * @param   player
+     *          Player to get original suffix of
+     * @return  Original suffix assigned by the plugin's internal logic.
+     * @see     #getCustomSuffix(TabPlayer)
+     */
+    @NonNull
+    String getOriginalSuffix(@NonNull TabPlayer player);
 
     /**
      * Toggles name tag visibility view on all players for specified player.
