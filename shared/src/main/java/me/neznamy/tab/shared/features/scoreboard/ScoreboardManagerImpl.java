@@ -246,12 +246,14 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             }
             if (rememberToggleChoice) {
                 if (hiddenByDefault) {
-                    if (!sbOffPlayers.contains(player.getName())) sbOffPlayers.add(player.getName());
+                    if (!sbOffPlayers.contains(player.getName())) {
+                        sbOffPlayers.add(player.getName());
+                        savePlayers();
+                    }
                 } else {
-                    sbOffPlayers.remove(player.getName());
-                }
-                synchronized (sbOffPlayers) {
-                    TAB.getInstance().getConfiguration().getPlayerDataFile().set("scoreboard-off", new ArrayList<>(sbOffPlayers));
+                    if (sbOffPlayers.remove(player.getName())) {
+                        savePlayers();
+                    }
                 }
             }
         } else {
@@ -262,16 +264,24 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             }
             if (rememberToggleChoice) {
                 if (hiddenByDefault) {
-                    sbOffPlayers.remove(player.getName());
+                    if (sbOffPlayers.remove(player.getName())) {
+                        savePlayers();
+                    }
                 } else {
-                    if (!sbOffPlayers.contains(player.getName())) sbOffPlayers.add(player.getName());
-                }
-                synchronized (sbOffPlayers) {
-                    TAB.getInstance().getConfiguration().getPlayerDataFile().set("scoreboard-off", new ArrayList<>(sbOffPlayers));
+                    if (!sbOffPlayers.contains(player.getName())) {
+                        sbOffPlayers.add(player.getName());
+                        savePlayers();
+                    }
                 }
             }
         }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(player, visible);
+    }
+
+    private void savePlayers() {
+        synchronized (sbOffPlayers) {
+            TAB.getInstance().getConfiguration().getPlayerDataFile().set("scoreboard-off", new ArrayList<>(sbOffPlayers));
+        }
     }
 
     @Override

@@ -201,11 +201,15 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
             if (sendToggleMessage) player.sendMessage(toggleOnMessage, true);
             if (rememberToggleChoice) {
                 if (hiddenByDefault) {
-                    if (!bossBarOffPlayers.contains(player.getName())) bossBarOffPlayers.add(player.getName());
+                    if (!bossBarOffPlayers.contains(player.getName())) {
+                        bossBarOffPlayers.add(player.getName());
+                        savePlayers();
+                    }
                 } else {
-                    bossBarOffPlayers.remove(player.getName());
+                    if (bossBarOffPlayers.remove(player.getName())) {
+                        savePlayers();
+                    }
                 }
-                TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", new ArrayList<>(bossBarOffPlayers));
             }
         } else {
             visiblePlayers.remove(player);
@@ -215,14 +219,24 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
             if (sendToggleMessage) player.sendMessage(toggleOffMessage, true);
             if (rememberToggleChoice) {
                 if (hiddenByDefault) {
-                    bossBarOffPlayers.remove(player.getName());
+                    if (bossBarOffPlayers.remove(player.getName())) {
+                        savePlayers();
+                    }
                 } else {
-                    if (!bossBarOffPlayers.contains(player.getName())) bossBarOffPlayers.add(player.getName());
+                    if (!bossBarOffPlayers.contains(player.getName())) {
+                        bossBarOffPlayers.add(player.getName());
+                        savePlayers();
+                    }
                 }
-                TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", new ArrayList<>(bossBarOffPlayers));
             }
         }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setBossBarVisible(player, visible);
+    }
+
+    private void savePlayers() {
+        synchronized (bossBarOffPlayers) {
+            TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", new ArrayList<>(bossBarOffPlayers));
+        }
     }
 
     @Override
