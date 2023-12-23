@@ -27,6 +27,12 @@ public class PaperScoreboard extends BukkitScoreboard {
     private static final boolean available = ReflectionUtils.classExists("net.kyori.adventure.text.Component") &&
             ReflectionUtils.methodExists(Team.class, "prefix", Component.class);
 
+    /**
+     * Constructs new instance with given player and puts them into new scoreboard.
+     *
+     * @param   player
+     *          Player this scoreboard will belong to
+     */
     public PaperScoreboard(@NotNull BukkitTabPlayer player) {
         super(player);
     }

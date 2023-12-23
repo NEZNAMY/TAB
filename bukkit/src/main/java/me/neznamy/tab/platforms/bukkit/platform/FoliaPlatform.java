@@ -18,10 +18,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 /**
- * Platform override for Folia
+ * Platform override for Folia.
  */
 public class FoliaPlatform extends BukkitPlatform {
 
+    /**
+     * Constructs new instance with given plugin.
+     *
+     * @param   plugin
+     *          Plugin
+     */
     public FoliaPlatform(@NotNull JavaPlugin plugin) {
         super(plugin);
     }

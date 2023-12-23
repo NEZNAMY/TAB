@@ -39,7 +39,7 @@ import java.util.concurrent.CountDownLatch;
  * #3 - Other plugins can decide to put players into their own
  *      scoreboard, automatically destroying all visuals made by the
  *      plugin. They might also put all players into the same scoreboard,
- *      making per-player view of teams, especially sidebar not working.<p>
+ *      making per-player view of teams, especially sidebar not working.
  */
 // Throw the NPE if something is not as expected, parent class should ensure it anyway
 @SuppressWarnings({"ConstantConditions", "deprecation"})
@@ -68,7 +68,12 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         }
     }
 
-    @SneakyThrows
+    /**
+     * Constructs new instance with given player and puts them into new scoreboard.
+     *
+     * @param   player
+     *          Player this scoreboard will belong to
+     */
     public BukkitScoreboard(@NotNull BukkitTabPlayer player) {
         super(player);
 
@@ -174,6 +179,18 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
     }
 
+    /**
+     * Creates new Scoreboard objective with given parameters.
+     *
+     * @param   objectiveName
+     *          Objective name, max 16 characters
+     * @param   criteria
+     *          Objective criteria
+     * @param   title
+     *          Objective title
+     * @param   display
+     *          Score display type
+     */
     public void newObjective(String objectiveName, String criteria, String title, int display) {
         if (serverMinorVersion >= 14) {
             scoreboard.registerNewObjective(
@@ -187,14 +204,38 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         }
     }
 
+    /**
+     * Changes objective's display name.
+     *
+     * @param   objective
+     *          Objective to change display name of
+     * @param   displayName
+     *          New display name
+     */
     public void setDisplayName(@NotNull Objective objective, @NotNull String displayName) {
         objective.setDisplayName(transform(displayName, 128, Limitations.SCOREBOARD_TITLE_PRE_1_13));
     }
 
+    /**
+     * Changes prefix of a team.
+     *
+     * @param   team
+     *          Team to change prefix of
+     * @param   prefix
+     *          Prefix to change to
+     */
     public void setPrefix(@NotNull Team team, @NotNull String prefix) {
         team.setPrefix(transform(prefix, 64, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
+    /**
+     * Changes suffix of a team.
+     *
+     * @param   team
+     *          Team to change suffix of
+     * @param   suffix
+     *          Suffix to change to
+     */
     public void setSuffix(@NotNull Team team, @NotNull String suffix) {
         team.setSuffix(transform(suffix, 64, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }

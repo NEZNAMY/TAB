@@ -10,11 +10,18 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * Class for retrieving ping of players.
+ */
 public class PingRetriever {
 
     private static Method getHandle;
     private static Field PING;
 
+    /**
+     * Attempts to load required classes, fields and methods and marks class as available.
+     * If something fails, error message is printed and class is not marked as available.
+     */
     public static void tryLoad() {
         try {
             if (BukkitReflection.getMinorVersion() < 17) {
@@ -30,6 +37,15 @@ public class PingRetriever {
         }
     }
 
+    /**
+     * Returns player's ping. If ping getter is not available and fields
+     * failed to load, returns {@code -1}. If an exception was throws by
+     * reflective operation, it is re-thrown.
+     *
+     * @param   player
+     *          Player to get ping of
+     * @return  Player's ping or {@code -1} if it failed
+     */
     @SneakyThrows
     public static int getPing(@NotNull Player player) {
         if (BukkitReflection.getMinorVersion() >= 17) {

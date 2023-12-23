@@ -19,6 +19,9 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * EntityView implementation for Bukkit using packets.
+ */
 @RequiredArgsConstructor
 @SuppressWarnings("unchecked")
 public class PacketEntityView implements EntityView {
@@ -171,6 +174,12 @@ public class PacketEntityView implements EntityView {
         PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
     }
 
+    /**
+     * Loads required NMS classes, fields and methods. If it fails, exception is thrown.
+     *
+     * @throws  ReflectiveOperationException
+     *          If anything fails
+     */
     private static void loadEntitySpawn() throws ReflectiveOperationException {
         SpawnEntityClass = BukkitReflection.getClass("network.protocol.game.ClientboundAddEntityPacket",
                 "network.protocol.game.PacketPlayOutSpawnEntity", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
@@ -231,7 +240,7 @@ public class PacketEntityView implements EntityView {
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location l, @NotNull EntityData data) {
         int minorVersion = BukkitReflection.getMinorVersion();
         if (minorVersion >= 19) {
-            PacketSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0d));
+            PacketSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0.0d));
         } else if (minorVersion >= 17) {
             PacketSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty));
         } else {
@@ -358,7 +367,7 @@ public class PacketEntityView implements EntityView {
     @Override
     @SneakyThrows
     public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
-        Object entities = PacketEntityView.EntityDestroy_Entities.get(destroyPacket);
+        Object entities = EntityDestroy_Entities.get(destroyPacket);
         if (BukkitReflection.getMinorVersion() >= 17) {
             if (entities instanceof List) {
                 return ((List<Integer>)entities).stream().mapToInt(i -> i).toArray();

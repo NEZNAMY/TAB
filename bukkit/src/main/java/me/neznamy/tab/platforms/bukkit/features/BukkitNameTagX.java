@@ -33,15 +33,33 @@ import java.util.stream.Collectors;
  */
 public class BukkitNameTagX extends BackendNameTagX implements Listener {
 
+    /**
+     * Constructs new instance and registers the class listener.
+     *
+     * @param   plugin
+     *          Plugin instance to use for registering listener
+     */
     public BukkitNameTagX(@NotNull JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    /**
+     * Listener to player sneak event to sneak armor stands.
+     *
+     * @param   e
+     *          Sneak event
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSneak(PlayerToggleSneakEvent e) {
         sneak(e.getPlayer().getUniqueId(), e.isSneaking());
     }
 
+    /**
+     * Listener to respawn event to resend armor stands.
+     *
+     * @param   e
+     *          Respawn event
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onRespawn(PlayerRespawnEvent e) {
         respawn(e.getPlayer().getUniqueId());

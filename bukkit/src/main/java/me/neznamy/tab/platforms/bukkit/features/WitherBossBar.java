@@ -67,7 +67,10 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
     }
     
     /**
-     * Respawning wither as respawn screen destroys all entities in client
+     * Respawning wither as respawn screen destroys all entities in client.
+     *
+     * @param   e
+     *          Respawn event
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {

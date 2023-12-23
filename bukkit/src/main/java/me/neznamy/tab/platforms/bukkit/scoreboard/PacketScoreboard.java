@@ -119,6 +119,12 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         }
     }
 
+    /**
+     * Constructs new instance with given player.
+     *
+     * @param   player
+     *          Player this scoreboard will belong to
+     */
     public PacketScoreboard(@NotNull BukkitTabPlayer player) {
         super(player);
     }

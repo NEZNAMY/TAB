@@ -5,9 +5,13 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
+/**
+ * Loader finding the best available Scoreboard implementation.
+ */
 public class ScoreboardLoader {
 
     /** Instance function */
@@ -35,7 +39,7 @@ public class ScoreboardLoader {
         }
     }
 
-    private static void sendMessage(String implementationName) {
+    private static void sendMessage(@NotNull String implementationName) {
         Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
                 "Scoreboards due to a compatibility error. Using fallback solution using " + implementationName + " API. " +
                 "This may result in features not working properly, mainly compatibility with other plugins. " +

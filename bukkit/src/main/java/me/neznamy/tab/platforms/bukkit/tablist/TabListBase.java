@@ -15,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
+/**
+ * Base TabList class for all implementations.
+ */
 @RequiredArgsConstructor
 public abstract class TabListBase implements TabList {
 
@@ -60,6 +63,12 @@ public abstract class TabListBase implements TabList {
         if (HeaderFooter.getInstance() != null) HeaderFooter.getInstance().set(player, header, footer);
     }
 
+    /**
+     * Returns player's skin. If NMS fields did not load or server is in
+     * offline mode, returns {@code null}.
+     *
+     * @return  Player's skin or {@code null}.
+     */
     @Nullable
     public Skin getSkin() {
         if (skinData == null) return null;

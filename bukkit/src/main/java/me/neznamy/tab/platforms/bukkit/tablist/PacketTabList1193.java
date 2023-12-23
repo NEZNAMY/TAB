@@ -51,12 +51,24 @@ public class PacketTabList1193 extends TabListBase {
     private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
+    /**
+     * Constructs new instance with given player.
+     *
+     * @param   player
+     *          Player this tablist will belong to.
+     */
     public PacketTabList1193(@NotNull BukkitTabPlayer player) {
         super(player);
     }
 
-    @SneakyThrows
-    public static void load() {
+    /**
+     * Attempts to load all required NMS classes, fields and methods.
+     * If anything fails, throws an exception.
+     *
+     * @throws  ReflectiveOperationException
+     *          If something goes wrong
+     */
+    public static void load() throws ReflectiveOperationException {
         Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
                 "network.chat.IChatBaseComponent$ChatSerializer");
         ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
@@ -152,7 +164,14 @@ public class PacketTabList1193 extends TabListBase {
         return packet;
     }
 
-    public Object toComponent(IChatBaseComponent component) {
+    /**
+     * Converts TAB component into NMS component.
+     *
+     * @param   component
+     *          Component to convert
+     * @return  Converted component
+     */
+    public Object toComponent(@NotNull IChatBaseComponent component) {
         return componentCache.get(component, player.getVersion());
     }
 

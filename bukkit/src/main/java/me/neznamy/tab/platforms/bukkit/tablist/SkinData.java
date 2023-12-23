@@ -13,13 +13,21 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+/**
+ * Class for getting skin of players.
+ */
 public class SkinData {
 
     private final Method getHandle;
     private final Method getProfile;
 
-    @SneakyThrows
-    public SkinData() {
+    /**
+     * Constructs new instance and loads NMS fields. If it fails, throws an Exception.
+     *
+     * @throws  ReflectiveOperationException
+     *          If something goes wrong
+     */
+    public SkinData() throws ReflectiveOperationException {
         Class<?> EntityHuman = BukkitReflection.getClass("world.entity.player.Player", "world.entity.player.EntityHuman", "EntityHuman");
         getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
         // There is only supposed to be one, however there are exceptions:
@@ -29,6 +37,13 @@ public class SkinData {
         getProfile = ReflectionUtils.getMethods(EntityHuman, GameProfile.class).get(0);
     }
 
+    /**
+     * Returns player's skin. If server is in offline mode, returns {@code null}.
+     *
+     * @param   player
+     *          Player to get skin of
+     * @return  Player's skin or {@code null}.
+     */
     @Nullable
     @SneakyThrows
     public TabList.Skin getSkin(@NotNull Player player) {

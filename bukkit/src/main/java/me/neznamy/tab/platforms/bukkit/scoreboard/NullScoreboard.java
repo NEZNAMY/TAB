@@ -8,8 +8,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
+/**
+ * Dummy implementation if no scoreboard implementation is available.
+ */
 public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
 
+    /**
+     * Constructs new instance with given player.
+     *
+     * @param   player
+     *          Player this scoreboard will belong to
+     */
     public NullScoreboard(@NotNull BukkitTabPlayer player) {
         super(player);
     }

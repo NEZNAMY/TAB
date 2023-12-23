@@ -77,6 +77,12 @@ public class BukkitPlatform implements BackendPlatform {
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
+    /**
+     * Constructs new instance with given plugin.
+     *
+     * @param   plugin
+     *          Plugin
+     */
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         try {
@@ -182,6 +188,14 @@ public class BukkitPlatform implements BackendPlatform {
         }
     }
 
+    /**
+     * Registers a sync placeholder with given identifier and refresh.
+     *
+     * @param   identifier
+     *          Placeholder identifier
+     * @param   refresh
+     *          Placeholder refresh
+     */
     public void registerSyncPlaceholder(@NotNull String identifier, int refresh) {
         String syncedPlaceholder = "%" + identifier.substring(6);
         PlayerPlaceholderImpl[] ppl = new PlayerPlaceholderImpl[1];
@@ -286,10 +300,26 @@ public class BukkitPlatform implements BackendPlatform {
         return -1;
     }
 
+    /**
+     * Runs task in the main thread for given entity.
+     *
+     * @param   entity
+     *          Entity's main thread
+     * @param   task
+     *          Task to run
+     */
     public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
         Bukkit.getScheduler().runTask(plugin, task);
     }
 
+    /**
+     * Runs an entity task that may or may not need to use its main thread.
+     *
+     * @param   entity
+     *          Entity to work with
+     * @param   task
+     *          Task to run
+     */
     public void runEntityTask(@NotNull Entity entity, @NotNull Runnable task) {
         task.run();
     }

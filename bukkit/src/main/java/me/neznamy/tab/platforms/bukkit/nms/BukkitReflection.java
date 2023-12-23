@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
+/**
+ * Class containing main NMS-related information and methods.
+ */
 public class BukkitReflection {
 
     /** Server's NMS/CraftBukkit package */

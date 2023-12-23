@@ -72,6 +72,9 @@ public class DataWatcher implements EntityData {
     
     /**
      * Loads all required Fields and throws Exception if something went wrong
+     *
+     * @throws  ReflectiveOperationException
+     *          If something goes wrong
      */
     public static void load() throws ReflectiveOperationException {
         int minorVersion = BukkitReflection.getMinorVersion();
@@ -251,6 +254,9 @@ public class DataWatcher implements EntityData {
         return nmsWatcher;
     }
 
+    /**
+     * Class for specific data watcher item.
+     */
     @RequiredArgsConstructor
     @Getter
     public static class Item {

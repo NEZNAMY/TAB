@@ -63,6 +63,12 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
         HandlerList.unregisterAll(this);
     }
 
+    /**
+     * Join event listener to synchronously perform hiding.
+     *
+     * @param   e
+     *          Join event
+     */
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         long time = System.nanoTime();
@@ -70,6 +76,12 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
         TAB.getInstance().getCPUManager().addTime(this, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
     }
 
+    /**
+     * World change listener to synchronously perform player showing/hiding.
+     *
+     * @param   e
+     *          World change event
+     */
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
         long time = System.nanoTime();

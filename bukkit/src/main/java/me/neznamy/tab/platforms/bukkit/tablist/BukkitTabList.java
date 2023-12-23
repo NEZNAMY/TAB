@@ -15,6 +15,12 @@ import java.util.UUID;
  */
 public class BukkitTabList extends TabListBase {
 
+    /**
+     * Constructs new instance with given player.
+     *
+     * @param   player
+     *          Player this tablist will belong to.
+     */
     public BukkitTabList(@NotNull BukkitTabPlayer player) {
         super(player);
     }

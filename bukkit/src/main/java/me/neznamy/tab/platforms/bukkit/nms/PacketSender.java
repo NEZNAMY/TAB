@@ -11,6 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * Class for sending packets to players.
+ */
 public class PacketSender {
 
     private static Method getHandle;
@@ -18,6 +21,10 @@ public class PacketSender {
     private static Method sendPacket;
     @Getter private static boolean available;
 
+    /**
+     * Attempts to load required classes, fields and methods and marks class as available.
+     * If something fails, error message is printed and class is not marked as available.
+     */
     public static void tryLoad() {
         try {
             Class<?> Packet = BukkitReflection.getClass("network.protocol.Packet", "Packet");
@@ -39,6 +46,15 @@ public class PacketSender {
         }
     }
 
+    /**
+     * Sends packet to specified player. If initialization fails, nothing happens.
+     * If something goes wrong, throws an exception.
+     *
+     * @param   player
+     *          Player to send packet to
+     * @param   packet
+     *          Packet to send
+     */
     @SneakyThrows
     public static void sendPacket(@NotNull Player player, @NotNull Object packet) {
         if (!player.isOnline() || !available) return;

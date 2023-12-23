@@ -34,10 +34,20 @@ public class PacketTabList17 extends TabListBase {
     @NotNull
     private final Map<UUID, String> displayNames = new HashMap<>();
 
+    /**
+     * Constructs new instance with given player.
+     *
+     * @param   player
+     *          Player this tablist will belong to.
+     */
     public PacketTabList17(@NotNull BukkitTabPlayer player) {
         super(player);
     }
 
+    /**
+     * Attempts to load all required NMS classes, fields and methods.
+     * If anything fails, throws an exception.
+     */
     @SneakyThrows
     public static void load() {
         Class<?> PlayerInfoClass = BukkitReflection.getClass("PacketPlayOutPlayerInfo", "Packet201PlayerInfo");
