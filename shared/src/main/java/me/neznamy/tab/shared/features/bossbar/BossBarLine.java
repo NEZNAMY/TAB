@@ -267,7 +267,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Getter
-    public class TextRefresher extends TabFeature implements Refreshable {
+    private class TextRefresher extends TabFeature implements Refreshable {
 
         private final String featureName = "BossBar";
         private final String refreshDisplayName = "Updating text";
@@ -280,7 +280,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Getter
-    public class ProgressRefresher extends TabFeature implements Refreshable {
+    private class ProgressRefresher extends TabFeature implements Refreshable {
 
         private final String featureName = "BossBar";
         private final String refreshDisplayName = "Updating progress";
@@ -293,7 +293,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Getter
-    public class ColorRefresher extends TabFeature implements Refreshable {
+    private class ColorRefresher extends TabFeature implements Refreshable {
 
         private final String featureName = "BossBar";
         private final String refreshDisplayName = "Updating color";
@@ -306,7 +306,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Getter
-    public class StyleRefresher extends TabFeature implements Refreshable {
+    private class StyleRefresher extends TabFeature implements Refreshable {
 
         private final String featureName = "BossBar";
         private final String refreshDisplayName = "Updating style";

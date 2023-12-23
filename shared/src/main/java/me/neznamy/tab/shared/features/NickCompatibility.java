@@ -28,7 +28,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
 
     @Getter private final String featureName = "Nick compatibility";
 
-    @Nullable private final NameTag nameTags = (NameTag)TAB.getInstance().getNameTagManager();
+    @Nullable private final NameTag nameTags = TAB.getInstance().getNameTagManager();
     @Nullable private final BelowName belowname = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
     @Nullable private final YellowNumber yellownumber = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.YELLOW_NUMBER);
     @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);

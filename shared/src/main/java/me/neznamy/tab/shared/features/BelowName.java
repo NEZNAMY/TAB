@@ -159,7 +159,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     @RequiredArgsConstructor
-    public static class TextRefresher extends TabFeature implements Refreshable {
+    private static class TextRefresher extends TabFeature implements Refreshable {
 
         @Getter private final String refreshDisplayName = "Updating BelowName text";
         @Getter private final String featureName = "BelowName";

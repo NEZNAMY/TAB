@@ -9,6 +9,7 @@ package me.neznamy.tab.shared.util;
  * @param   <C>
  *          Function return type
  */
+@FunctionalInterface
 public interface BiFunctionWithException<A, B, C> {
 
     /**

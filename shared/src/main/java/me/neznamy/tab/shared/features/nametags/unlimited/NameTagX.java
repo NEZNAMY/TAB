@@ -31,7 +31,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     private final BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction;
     @Getter private final DisableChecker unlimitedDisableChecker;
 
-    public NameTagX(@NonNull BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
+    protected NameTagX(@NonNull BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
         this.armorStandFunction = armorStandFunction;
         Collections.reverse(dynamicLines);
         Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("scoreboard-teams.unlimited-nametag-mode.disable-condition"));

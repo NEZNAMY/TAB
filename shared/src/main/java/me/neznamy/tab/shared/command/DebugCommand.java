@@ -94,7 +94,7 @@ public class DebugCommand extends SubCommand {
             sendMessage(sender, "&acustomtabname: &cDisabled");
         }
         if (tab.getNameTagManager() != null) {
-            boolean disabledNametags = ((NameTag) tab.getNameTagManager()).getDisableChecker().isDisabledPlayer(analyzed);
+            boolean disabledNametags = tab.getNameTagManager().getDisableChecker().isDisabledPlayer(analyzed);
             showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, disabledNametags);
             showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, disabledNametags);
             NameTagX nameTagX = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
@@ -163,7 +163,7 @@ public class DebugCommand extends SubCommand {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getNameTagManager() != null &&
-                ((NameTag) TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(analyzed)) {
+                TAB.getInstance().getNameTagManager().getDisableChecker().isDisabledPlayer(analyzed)) {
             return "&eTeam name: &cSorting is disabled in player's world/server";
         }
         return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
@@ -181,7 +181,7 @@ public class DebugCommand extends SubCommand {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getNameTagManager() != null &&
-                ((NameTag) TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(analyzed)) {
+                TAB.getInstance().getNameTagManager().getDisableChecker().isDisabledPlayer(analyzed)) {
             return "";
         }
         return "&eSorting note: &r" + sorting.getTeamNameNote(analyzed);

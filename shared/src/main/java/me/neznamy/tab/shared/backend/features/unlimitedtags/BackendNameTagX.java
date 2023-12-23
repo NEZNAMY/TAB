@@ -26,7 +26,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     /** Packet Listener reference */
     protected final PacketListener packetListener = new PacketListener(this);
 
-    public BackendNameTagX() {
+    protected BackendNameTagX() {
         super(BackendArmorStandManager::new);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);

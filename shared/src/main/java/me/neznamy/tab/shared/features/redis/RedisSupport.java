@@ -51,7 +51,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @NotNull private final Map<String, Supplier<RedisMessage>> messages = new HashMap<>();
     @NotNull private final Map<Class<? extends RedisMessage>, String> classStringMap = new HashMap<>();
 
-    public RedisSupport() {
+    protected RedisSupport() {
         registerMessage("load", Load.class, Load::new);
         registerMessage("loadrequest", LoadRequest.class, LoadRequest::new);
         registerMessage("join", PlayerJoin.class, PlayerJoin::new);
@@ -140,7 +140,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             features.add(redisPlayerList);
         }
         if (TAB.getInstance().getNameTagManager() != null) {
-            redisTeams = new RedisTeams(this, (NameTag) TAB.getInstance().getNameTagManager());
+            redisTeams = new RedisTeams(this, TAB.getInstance().getNameTagManager());
             features.add(redisTeams);
         }
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST)) {

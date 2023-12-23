@@ -40,7 +40,7 @@ public class IChatBaseComponent {
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
 
     /** Text of the component */
-    @Getter @Setter private String text;
+    @Getter @Setter @Nullable private String text;
 
     /** Chat modifier containing color, magic codes, hover and click event */
     @Getter @Setter @NotNull private ChatModifier modifier = new ChatModifier();
@@ -244,7 +244,7 @@ public class IChatBaseComponent {
                     component.modifier.setColor(color);
                     component.modifier.setFont(font);
                 } else {
-                    builder.append(c);
+                    builder.append('#');
                 }
             } else {
                 builder.append(c);

@@ -41,6 +41,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             .getStringList("scoreboard-off", new ArrayList<>()) : Collections.emptyList();
 
     //active scoreboard announcement
+    @Nullable
     private me.neznamy.tab.api.scoreboard.Scoreboard announcement;
 
     private final Set<TabPlayer> joinDelayed = Collections.newSetFromMap(new WeakHashMap<>());

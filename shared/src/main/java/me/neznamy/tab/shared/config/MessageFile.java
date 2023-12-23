@@ -8,7 +8,6 @@ import java.util.List;
 import lombok.Getter;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import org.jetbrains.annotations.NotNull;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.shared.TAB;
 

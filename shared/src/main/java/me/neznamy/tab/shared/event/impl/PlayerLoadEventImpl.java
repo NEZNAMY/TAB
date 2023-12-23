@@ -6,7 +6,7 @@ import me.neznamy.tab.api.event.player.PlayerLoadEvent;
 import org.jetbrains.annotations.NotNull;
 
 @Data
-public final class PlayerLoadEventImpl implements PlayerLoadEvent {
+public class PlayerLoadEventImpl implements PlayerLoadEvent {
 
     @NotNull private final TabPlayer player;
     private final boolean join;

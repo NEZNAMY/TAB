@@ -18,7 +18,7 @@ import net.kyori.event.method.MethodSubscriptionAdapter;
 import net.kyori.event.method.SimpleMethodSubscriptionAdapter;
 import org.jetbrains.annotations.NotNull;
 
-public final class EventBusImpl implements EventBus {
+public class EventBusImpl implements EventBus {
 
     private final SimpleEventBus<TabEvent> bus;
     private final MethodSubscriptionAdapter<Object> methodAdapter;
@@ -66,7 +66,7 @@ public final class EventBusImpl implements EventBus {
         bus.unregister(subscriber -> subscriber instanceof HandlerWrapper && ((HandlerWrapper<?>) subscriber).handler == handler);
     }
 
-    private static final class TabMethodScanner implements MethodScanner<Object> {
+    private static class TabMethodScanner implements MethodScanner<Object> {
 
         @Override
         public boolean shouldRegister(@NotNull Object listener, @NotNull Method method) {
@@ -85,7 +85,7 @@ public final class EventBusImpl implements EventBus {
     }
 
     @AllArgsConstructor
-    private static final class HandlerWrapper<E> implements EventSubscriber<E> {
+    private static class HandlerWrapper<E> implements EventSubscriber<E> {
 
         private final EventHandler<E> handler;
 

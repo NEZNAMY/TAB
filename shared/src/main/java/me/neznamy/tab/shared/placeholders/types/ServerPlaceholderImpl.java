@@ -21,7 +21,9 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     private final Supplier<Object> supplier;
 
     /** Last known output of the placeholder */
-    @Getter private String lastValue;
+    @Getter
+    @NotNull
+    private String lastValue = identifier;
 
     /**
      * Constructs new instance with given parameters
@@ -63,11 +65,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     public boolean hasValueChanged(@Nullable Object value) {
         String newValue = setPlaceholders(getReplacements().findReplacement(String.valueOf(value)), null);
 
-        //make invalid placeholders return identifier instead of nothing
-        if (identifier.equals(newValue) && lastValue == null) {
-            lastValue = identifier;
-        }
-        if (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && (lastValue == null || !lastValue.equals(newValue))) {
+        if (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValue.equals(newValue)) {
             lastValue = newValue;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 updateParents(player);

@@ -12,7 +12,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 

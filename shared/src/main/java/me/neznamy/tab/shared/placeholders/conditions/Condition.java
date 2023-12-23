@@ -238,7 +238,7 @@ public class Condition {
      * @return  compiled condition or null if no valid pattern was found
      */
     private static Function<TabPlayer, Boolean> compile(String line) {
-        for (Map.Entry<String, Function<String, Function<TabPlayer, Boolean>>> entry : getConditionTypes().entrySet()) {
+        for (Map.Entry<String, Function<String, Function<TabPlayer, Boolean>>> entry : conditionTypes.entrySet()) {
             if (line.contains(entry.getKey())) {
                 return entry.getValue().apply(line);
             }

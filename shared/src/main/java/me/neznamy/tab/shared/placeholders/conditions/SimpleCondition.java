@@ -23,7 +23,7 @@ public abstract class SimpleCondition {
     /** Placeholders used on the right side */
     @NonNull private final String[] rightSidePlaceholders;
 
-    public SimpleCondition(@NonNull String[] arr) {
+    protected SimpleCondition(@NonNull String[] arr) {
         leftSide = arr.length < 1 ? "" : arr[0];
         leftSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(leftSide).toArray(new String[0]);
         rightSide = arr.length < 2 ? "" : arr[1];

@@ -8,7 +8,6 @@ import java.util.*;
 import me.neznamy.tab.shared.TabConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.TAB;
