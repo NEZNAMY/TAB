@@ -37,7 +37,7 @@ public class DataWatcher implements EntityData {
     private static Object DataWatcherSerializer_OPTIONAL_COMPONENT;
     private static Object DataWatcherSerializer_BOOLEAN;
 
-    private static final int armorStandFlagsPosition = getArmorStandFlagsPosition();
+    private static final int armorStandFlagsPosition = EntityData.getArmorStandFlagsPosition(BukkitReflection.getMinorVersion());
 
     private static Method ChatSerializer_DESERIALIZE;
     private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
@@ -46,30 +46,6 @@ public class DataWatcher implements EntityData {
     /** Watched data */
     private final Map<Integer, Item> dataValues = new HashMap<>();
 
-    /**
-     * Returns armor stand flags position based on server version
-     *
-     * @return  armor stand flags position based on server version
-     */
-    private static int getArmorStandFlagsPosition() {
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            //1.17.x, 1.18.x, 1.19.x, 1.20.x
-            return 15;
-        } else if (BukkitReflection.getMinorVersion() >= 15) {
-            //1.15.x, 1.16.x
-            return 14;
-        } else if (BukkitReflection.getMinorVersion() == 14) {
-            //1.14.x
-            return 13;
-        } else if (BukkitReflection.getMinorVersion() >= 10) {
-            //1.10.x - 1.13.x
-            return 11;
-        } else {
-            //1.8.x - 1.9.x
-            return 10;
-        }
-    }
-    
     /**
      * Loads all required Fields and throws Exception if something went wrong
      *

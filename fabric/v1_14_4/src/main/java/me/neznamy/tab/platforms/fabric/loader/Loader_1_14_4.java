@@ -6,6 +6,7 @@ import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -88,7 +89,7 @@ public class Loader_1_14_4 {
             data.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
             data.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT), name);
             data.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
-            data.define(new EntityDataAccessor<>(getMarkerPosition(serverVersion.getMinorVersion()), EntityDataSerializers.BYTE), (byte)16);
+            data.define(new EntityDataAccessor<>(EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion()), EntityDataSerializers.BYTE), (byte)16);
             return () -> data;
         };
         FabricMultiVersion.buildTabListPacket = (action, entry) -> {
@@ -131,18 +132,5 @@ public class Loader_1_14_4 {
             }
         };
         FabricMultiVersion.isPlayerInfo = packet -> packet instanceof ClientboundPlayerInfoPacket;
-    }
-
-    private int getMarkerPosition(int serverMinorVersion) {
-        if (serverMinorVersion >= 17) {
-            //1.17.x, 1.18.x, 1.19.x, 1.20.x
-            return 15;
-        } else if (serverMinorVersion >= 15) {
-            //1.15.x, 1.16.x
-            return 14;
-        } else {
-            //1.14.x
-            return 13;
-        }
     }
 }
