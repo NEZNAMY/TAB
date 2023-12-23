@@ -62,7 +62,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     }
 
     private void processNameChange(TabPlayer player) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(nameTags.getSorting().getShortTeamName(player));
@@ -91,7 +91,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     }
 
     private void processNameChange(RedisPlayer player) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
             if (redisTeams != null) {
                 String teamName = redisTeams.getTeamNames().get(player);
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {

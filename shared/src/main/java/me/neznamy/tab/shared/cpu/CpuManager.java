@@ -40,7 +40,7 @@ public class CpuManager {
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
 
     /** Enabled flag used to queue incoming tasks if plugin is not enabled yet */
-    private volatile boolean enabled = false;
+    private volatile boolean enabled;
 
     /**
      * Constructs new instance and starts repeating task that resets values in configured interval

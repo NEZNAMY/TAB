@@ -85,7 +85,7 @@ public class MessageFile extends YamlConfigurationFile {
             "/tab bossbar announce <name> <length>"
     ));
 
-    public MessageFile() throws YAMLException, IOException {
+    public MessageFile() throws IOException {
         super(MessageFile.class.getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));
     }
 

@@ -28,7 +28,7 @@ public class IChatBaseComponent {
      */
     private static final ComponentCache<String, IChatBaseComponent> stringCache = new ComponentCache<>(1000, (text, clientVersion) -> {
                 return text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x") || text.contains("<") ?
-                    IChatBaseComponent.fromColoredText(text) : //contains RGB colors or font
+                    fromColoredText(text) : //contains RGB colors or font
                     new IChatBaseComponent(text); //no RGB
             });
 
@@ -57,10 +57,10 @@ public class IChatBaseComponent {
      *          component to clone
      */
     public IChatBaseComponent(@NotNull IChatBaseComponent component) {
-        this.text = component.text;
-        this.modifier = new ChatModifier(component.modifier);
-        this.extra = component.extra == null ? null : component.extra.stream().map(IChatBaseComponent::new).collect(Collectors.toList());
-        this.targetVersion = component.targetVersion;
+        text = component.text;
+        modifier = new ChatModifier(component.modifier);
+        extra = component.extra == null ? null : component.extra.stream().map(IChatBaseComponent::new).collect(Collectors.toList());
+        targetVersion = component.targetVersion;
     }
 
     /**
@@ -94,7 +94,7 @@ public class IChatBaseComponent {
      */
     public @NotNull IChatBaseComponent setExtra(@NotNull List<IChatBaseComponent> components) {
         if (components.isEmpty()) throw new IllegalArgumentException("Unexpected empty array of components"); //exception taken from minecraft
-        this.extra = components;
+        extra = components;
         return this;
     }
 
@@ -154,8 +154,8 @@ public class IChatBaseComponent {
                 // Process text with font
                 String match = m.group();
                 components.addAll(toComponentArray(
-                        match.substring(match.indexOf(">")+1, match.length()-7),
-                        match.substring(6, match.indexOf(">"))
+                        match.substring(match.indexOf('>')+1, match.length()-7),
+                        match.substring(6, match.indexOf('>'))
                 ));
                 // Prepare the rest for next loop
                 remainingText = remainingText.substring(m.start() + match.length());

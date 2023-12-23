@@ -250,7 +250,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
                 currentSuffix,
                 visible ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 collisionManager.getCollision(p) ? CollisionRule.ALWAYS : CollisionRule.NEVER,
-                getTeamOptions()
+                teamOptions
         );
     }
 
@@ -280,7 +280,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 collisionManager.getCollision(p) ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 Collections.singletonList(p.getNickname()),
-                getTeamOptions()
+                teamOptions
         );
     }
 

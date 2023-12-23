@@ -71,9 +71,8 @@ public class CpuReport {
     public void printToConsole(long timeDiff) {
         message("Took " + timeDiff + "ms to create a CPU report, but the period is set to 10000ms. This means the plugin is overloaded. " +
                 "Printing CPU report.");
-        char LINE_CHAR = (char)9553;
+        char LINE_CHAR = 9553;
         DecimalFormat decimal3 = new DecimalFormat("#.###");
-        Map<String, Map<String, Float>> features = getFeatureUsage();
         message(" ");
         message(LINE_CHAR + "             [ TAB CPU Stats ]             ");
         message(LINE_CHAR + " CPU stats from the last 10 seconds");
@@ -93,7 +92,7 @@ public class CpuReport {
         // Features
         message(LINE_CHAR + "                                                    ");
         message(LINE_CHAR + " Features:");
-        for (Map.Entry<String, Map<String, Float>> entry : features.entrySet()) {
+        for (Map.Entry<String, Map<String, Float>> entry : featureUsage.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
             message(String.format("%s %s (%s%%):", LINE_CHAR, entry.getKey(), decimal3.format(featureTotal)));
             for (Map.Entry<String, Float> type : entry.getValue().entrySet()) {
@@ -103,9 +102,9 @@ public class CpuReport {
         
         // Totals
         message(LINE_CHAR + "                                                    ");
-        message(String.format("%s Placeholders Total: %s%%", LINE_CHAR, decimal3.format(getPlaceholderUsageTotal())));
-        message(String.format("%s Plugin internals: %s%%", LINE_CHAR, decimal3.format(getFeatureUsageTotal()-getPlaceholderUsageTotal())));
-        message(String.format("%s Total: %s%%", LINE_CHAR, decimal3.format(getFeatureUsageTotal())));
+        message(String.format("%s Placeholders Total: %s%%", LINE_CHAR, decimal3.format(placeholderUsageTotal)));
+        message(String.format("%s Plugin internals: %s%%", LINE_CHAR, decimal3.format(featureUsageTotal - placeholderUsageTotal)));
+        message(String.format("%s Total: %s%%", LINE_CHAR, decimal3.format(featureUsageTotal)));
         message(LINE_CHAR + "             [ TAB CPU Stats ]             ");
         message(" ");
     }

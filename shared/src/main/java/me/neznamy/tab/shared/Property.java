@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Property {
 
-    private static long counter = 0;
+    private static long counter;
 
     /** Internal identifier for this text for PlaceholderAPI expansion, null if it should not be exposed */
     @Nullable private final String name;
@@ -85,8 +85,8 @@ public class Property {
         this.listener = listener;
         this.owner = owner;
         this.source = source;
-        this.originalRawValue = rawValue;
-        analyze(this.originalRawValue);
+        originalRawValue = rawValue;
+        analyze(originalRawValue);
     }
 
     /**

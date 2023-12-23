@@ -43,7 +43,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
      * @throws  IOException
      *          if I/O operation with the file unexpectedly fails
      */
-    public YamlConfigurationFile(@Nullable InputStream source, @NonNull File destination) throws YAMLException, IOException {
+    public YamlConfigurationFile(@Nullable InputStream source, @NonNull File destination) throws IOException {
         super(source, destination);
         FileInputStream input = null;
         try {

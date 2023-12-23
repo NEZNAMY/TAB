@@ -91,13 +91,13 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         this.player = player;
         this.uniqueId = uniqueId;
         this.name = name;
-        this.nickname = name;
         this.server = server;
         this.world = world;
-        this.version = ProtocolVersion.fromNetworkId(protocolVersion);
-        this.bedrockPlayer = FloodgateHook.getInstance().isFloodgatePlayer(uniqueId, name);
-        this.permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
-        this.tablistId = useRealId ? uniqueId : UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        nickname = name;
+        version = ProtocolVersion.fromNetworkId(protocolVersion);
+        bedrockPlayer = FloodgateHook.getInstance().isFloodgatePlayer(uniqueId, name);
+        permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
+        tablistId = useRealId ? uniqueId : UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -192,13 +192,11 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      */
     public void sendMessage(@NotNull String message, boolean translateColors) {
         if (message.isEmpty()) return;
-        IChatBaseComponent component;
         if (translateColors) {
-            component = IChatBaseComponent.fromColoredText(message);
+            sendMessage(IChatBaseComponent.fromColoredText(message));
         } else {
-            component = new IChatBaseComponent(message);
+            sendMessage(new IChatBaseComponent(message));
         }
-        sendMessage(component);
     }
 
     public void forceRefresh() {

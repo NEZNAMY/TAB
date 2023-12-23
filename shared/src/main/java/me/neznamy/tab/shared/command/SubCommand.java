@@ -42,7 +42,7 @@ public abstract class SubCommand {
      *          subcommand to register
      */
     public void registerSubCommand(@NotNull SubCommand subcommand) {
-        getSubcommands().put(subcommand.getName(), subcommand);
+        subcommands.put(subcommand.name, subcommand);
     }
 
     /**
@@ -155,12 +155,12 @@ public abstract class SubCommand {
         }
         if (arguments.length < 2) {
             List<String> suggestions = new ArrayList<>();
-            for (String subcommand : getSubcommands().keySet()) {
+            for (String subcommand : subcommands.keySet()) {
                 if (subcommand.startsWith(argument)) suggestions.add(subcommand);
             }
             return suggestions;
         }
-        SubCommand subcommand = getSubcommands().get(argument);
+        SubCommand subcommand = subcommands.get(argument);
         if (subcommand != null) {
             return subcommand.complete(sender, Arrays.copyOfRange(arguments, 1, arguments.length));
         }

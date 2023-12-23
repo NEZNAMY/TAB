@@ -150,7 +150,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
 
     @Override
     public void unregister() {
-        for (TabPlayer all : getPlayers().toArray(new TabPlayer[0])) {
+        for (TabPlayer all : players.toArray(new TabPlayer[0])) {
             removePlayer(all);
         }
         players.clear();
@@ -217,7 +217,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         Collections.reverse(linesReversed);
         int score = 1;
         for (Line line : linesReversed) {
-            if (line instanceof StaticLine || !p.getProperty(getName() + "-" + ((ScoreboardLine) line).getTeamName()).get().isEmpty()) {
+            if (line instanceof StaticLine || !p.getProperty(name + "-" + ((ScoreboardLine) line).getTeamName()).get().isEmpty()) {
                 p.getScoreboard().setScore(
                         ScoreboardManagerImpl.OBJECTIVE_NAME,
                         ((ScoreboardLine)line).getPlayerName(p),

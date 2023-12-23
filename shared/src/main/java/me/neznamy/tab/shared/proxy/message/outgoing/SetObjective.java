@@ -18,7 +18,7 @@ public class SetObjective implements OutgoingMessage {
 
     public SetObjective(String objectiveName) {
         this.objectiveName = objectiveName;
-        this.action = Scoreboard.ObjectiveAction.UNREGISTER;
+        action = Scoreboard.ObjectiveAction.UNREGISTER;
     }
 
     @Override

@@ -116,7 +116,7 @@ public enum EnumChatFormat {
      * @return  last used color code in given string or WHITE if nothing is found
      */
     public static @NotNull EnumChatFormat lastColorsOf(@NotNull String string) {
-        if (string.isEmpty()) return EnumChatFormat.WHITE;
+        if (string.isEmpty()) return WHITE;
         String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
         String last = getLastColors(legacyText);
         if (!last.isEmpty()) {
@@ -125,7 +125,7 @@ public enum EnumChatFormat {
                 if (e.character == c) return e;
             }
         }
-        return EnumChatFormat.WHITE;
+        return WHITE;
     }
 
     /**

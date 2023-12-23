@@ -58,7 +58,7 @@ public class Configs {
      * @throws  YAMLException
      *          if files contain syntax errors
      */
-    public Configs() throws YAMLException, IOException {
+    public Configs() throws IOException {
         Converter converter = new Converter();
         converter.convert2810to290(animationFile);
         converter.convert292to300(config);

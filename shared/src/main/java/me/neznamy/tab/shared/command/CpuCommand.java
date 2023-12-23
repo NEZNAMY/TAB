@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public class CpuCommand extends SubCommand {
 
     private final DecimalFormat decimal3 = new DecimalFormat("#.###");
-    private final char LINE_CHAR = (char)9553;
+    private final char LINE_CHAR = 9553;
 
     /**
      * Constructs new instance

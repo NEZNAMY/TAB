@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class AdventureHook {
                 color = TextColor.color(modifier.getColor().getLegacyColor().getHexCode());
             }
         }
-        Set<TextDecoration> decorations = new HashSet<>();
+        Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
         if (modifier.isBold()) decorations.add(TextDecoration.BOLD);
         if (modifier.isItalic()) decorations.add(TextDecoration.ITALIC);
         if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);

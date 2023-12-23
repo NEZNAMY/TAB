@@ -78,7 +78,7 @@ public enum ProtocolVersion {
     V1_4_6  (51);
 
     /** Newest MC version this plugin jar knows */
-    public static final ProtocolVersion LATEST_KNOWN_VERSION = ProtocolVersion.V1_20_4;
+    public static final ProtocolVersion LATEST_KNOWN_VERSION = V1_20_4;
 
     /** Version's network id found at <a href="https://wiki.vg/Protocol_version_numbers">wiki.vg</a> */
     private final int networkId;
@@ -100,8 +100,8 @@ public enum ProtocolVersion {
      */
     ProtocolVersion(int networkId) {
         this.networkId = networkId;
-        this.minorVersion = Integer.parseInt(toString().split("_")[1]);
-        this.friendlyName = toString().substring(1).replace("_", ".");
+        minorVersion = Integer.parseInt(toString().split("_")[1]);
+        friendlyName = toString().substring(1).replace("_", ".");
     }
 
     /**
@@ -111,8 +111,8 @@ public enum ProtocolVersion {
      *          friendly name to display
      */
     ProtocolVersion(@NotNull String friendlyName) {
-        this.networkId = 999;
-        this.minorVersion = 20;
+        networkId = 999;
+        minorVersion = 20;
         this.friendlyName = friendlyName;
     }
 
@@ -151,7 +151,7 @@ public enum ProtocolVersion {
      */
     public static @NotNull ProtocolVersion fromNetworkId(int networkId) {
         for (ProtocolVersion v : values()) {
-            if (networkId == v.getNetworkId()) return v;
+            if (networkId == v.networkId) return v;
         }
         return UNKNOWN_CLIENT_VERSION;
     }

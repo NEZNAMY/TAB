@@ -165,9 +165,8 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
                 return checkTeamName(p, currentName, id+1);
             }
         }
-        if (redis != null) {
+        if (redis != null && redis.getRedisTeams() != null) {
             for (RedisPlayer all : redis.getRedisPlayers().values()) {
-                assert redis.getRedisTeams() != null;
                 if (redis.getRedisTeams().getTeamNames().get(all).equals(potentialTeamName)) {
                     return checkTeamName(p, currentName, id+1);
                 }

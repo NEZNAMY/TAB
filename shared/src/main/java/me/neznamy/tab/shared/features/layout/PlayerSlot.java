@@ -22,7 +22,7 @@ public class PlayerSlot {
 
     public void setPlayer(@Nullable TabPlayer newPlayer) {
         if (player == newPlayer) return;
-        this.player = newPlayer;
+        player = newPlayer;
         if (player != null) text = "";
         if (layout.getViewer().getVersion().getMinorVersion() < 8 || layout.getViewer().isBedrockPlayer()) return;
         layout.getViewer().getTabList().removeEntry(uniqueId);

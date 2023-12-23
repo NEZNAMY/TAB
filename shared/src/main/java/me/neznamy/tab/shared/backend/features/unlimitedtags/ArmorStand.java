@@ -63,12 +63,12 @@ public class ArmorStand {
      */
     public ArmorStand(@NotNull BackendNameTagX feature, @NotNull BackendArmorStandManager asm, @NotNull TabPlayer owner,
                       @NotNull String propertyName, double yOffset, boolean staticOffset) {
-        this.manager = feature;
+        manager = feature;
         this.asm = asm;
         this.owner = owner;
         this.staticOffset = staticOffset;
-        this.offset = yOffset;
-        this.property = owner.getProperty(propertyName);
+        offset = yOffset;
+        property = owner.getProperty(propertyName);
         visible = calculateVisibility();
         visibleWPotion = visible && !owner.hasInvisibilityPotion();
     }
@@ -154,7 +154,7 @@ public class ArmorStand {
      * @return  Y to add to player's location
      */
     public double getYAdd(boolean sleeping, boolean sneaking, @NotNull TabPlayer viewer) {
-        double y = getOffset();
+        double y = offset;
         if (!sleeping) {
             if (sneaking) {
                 if (viewer.getVersion().getMinorVersion() >= 15) {

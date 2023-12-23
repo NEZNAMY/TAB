@@ -22,7 +22,7 @@ public abstract class SkinSource {
     protected SkinSource(@NotNull ConfigurationFile file, @NotNull String path) {
         this.file = file;
         this.path = path;
-        this.cache = file.getConfigurationSection(path);
+        cache = file.getConfigurationSection(path);
     }
 
     public @NotNull List<String> getSkin(@NotNull String skin) {

@@ -66,7 +66,7 @@ public class TextColor {
      */
     public TextColor(@NotNull String hexCode, @NotNull EnumChatFormat legacyColor) {
         this.hexCode = hexCode;
-        this.legacyColorForced = true;
+        legacyColorForced = true;
         this.legacyColor = legacyColor;
     }
 
@@ -79,8 +79,8 @@ public class TextColor {
      *          if {@code legacyColor} is {@code null}
      */
     public TextColor(@NotNull EnumChatFormat legacyColor) {
-        this.rgb = (legacyColor.getRed() << 16) + (legacyColor.getGreen() << 8) + legacyColor.getBlue();
-        this.hexCode = String.format("%06X", legacyColor.getHexCode());
+        rgb = (legacyColor.getRed() << 16) + (legacyColor.getGreen() << 8) + legacyColor.getBlue();
+        hexCode = String.format("%06X", legacyColor.getHexCode());
     }
 
     /**
@@ -96,7 +96,7 @@ public class TextColor {
      *          if {@code red}, {@code green} or {@code blue} is out of range ({@code 0-255})
      */
     public TextColor(int red, int green, int blue) {
-        this.rgb = (red << 16) + (green << 8) + blue;
+        rgb = (red << 16) + (green << 8) + blue;
     }
 
     /**

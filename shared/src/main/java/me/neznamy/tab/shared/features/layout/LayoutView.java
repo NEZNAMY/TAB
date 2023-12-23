@@ -31,8 +31,8 @@ public class LayoutView {
         this.manager = manager;
         this.viewer = viewer;
         this.pattern = pattern;
-        this.fixedSlots = pattern.getFixedSlots().values();
-        this.displayCondition = pattern.getCondition();
+        fixedSlots = pattern.getFixedSlots().values();
+        displayCondition = pattern.getCondition();
         for (FixedSlot slot : fixedSlots) {
             emptySlots.remove((Integer) slot.getSlot());
         }

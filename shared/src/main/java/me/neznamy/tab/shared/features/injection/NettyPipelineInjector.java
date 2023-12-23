@@ -37,7 +37,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
      */
     @Override
     public void inject(@NotNull TabPlayer player) {
-        final Channel channel = getChannel(player);
+        Channel channel = getChannel(player);
         if (player.getVersion().getMinorVersion() < 8 || channel == null) return; //hello A248
         if (!channel.pipeline().names().contains(injectPosition)) {
             //fake player or waterfall bug
@@ -53,7 +53,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     @Override
     public void uninject(@NotNull TabPlayer player) {
-        final Channel channel = getChannel(player);
+        Channel channel = getChannel(player);
         if (player.getVersion().getMinorVersion() < 8 || channel == null) return; //hello A248
         try {
             if (channel.pipeline().names().contains(TabConstants.PIPELINE_HANDLER_NAME)) channel.pipeline().remove(TabConstants.PIPELINE_HANDLER_NAME);

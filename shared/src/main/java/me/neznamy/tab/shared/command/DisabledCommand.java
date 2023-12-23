@@ -35,7 +35,7 @@ public class DisabledCommand {
             }
         } else {
             if (hasAdminPermission) {
-                String command = "/" + (TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY ? TabConstants.COMMAND_BACKEND : TabConstants.COMMAND_PROXY);
+                String command = "/" + (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ? TabConstants.COMMAND_PROXY : TabConstants.COMMAND_BACKEND);
                 messages.add("&m                                                                                ");
                 messages.add(" &cPlugin is disabled due to an error. Check console for more details.");
                 messages.add(" &8>> &3&l" + command + " reload");

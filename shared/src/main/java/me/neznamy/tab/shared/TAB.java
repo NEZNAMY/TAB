@@ -124,9 +124,9 @@ public class TAB extends TabAPI {
      */
     private TAB(@NotNull Platform platform) {
         this.platform = platform;
-        this.serverVersion = platform.getServerVersion();
-        this.dataFolder = platform.getDataFolder();
-        this.errorManager = new ErrorManager(dataFolder);
+        serverVersion = platform.getServerVersion();
+        dataFolder = platform.getDataFolder();
+        errorManager = new ErrorManager(dataFolder);
         try {
             eventBus = new EventBusImpl();
         } catch (NoSuchMethodError e) {

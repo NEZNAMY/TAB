@@ -177,7 +177,7 @@ public class Condition {
             }
             Condition c = new Condition(type, "AnonymousCondition[" + string + "]", conditions, "true", "false");
             c.finishSetup();
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(),
+            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.name), c.refresh,
                     p -> c.getText((TabPlayer) p));
             return c;
         }
@@ -238,7 +238,7 @@ public class Condition {
      * @return  compiled condition or null if no valid pattern was found
      */
     private static Function<TabPlayer, Boolean> compile(String line) {
-        for (Map.Entry<String, Function<String, Function<TabPlayer, Boolean>>> entry : Condition.getConditionTypes().entrySet()) {
+        for (Map.Entry<String, Function<String, Function<TabPlayer, Boolean>>> entry : getConditionTypes().entrySet()) {
             if (line.contains(entry.getKey())) {
                 return entry.getValue().apply(line);
             }

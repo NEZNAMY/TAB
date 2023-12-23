@@ -45,7 +45,7 @@ public abstract class ConfigurationFile {
      *          if I/O operation with the file unexpectedly fails
      */
     protected ConfigurationFile(@Nullable InputStream source, @NonNull File destination) throws IOException {
-        this.file = destination;
+        file = destination;
         if (file.getParentFile() != null && !file.getParentFile().exists()) Files.createDirectories(file.getParentFile().toPath());
         if (!file.exists()) {
             if (source == null) throw new IllegalStateException("File does not exist and source is null");

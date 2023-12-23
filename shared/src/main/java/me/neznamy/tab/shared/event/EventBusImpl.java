@@ -24,24 +24,24 @@ public final class EventBusImpl implements EventBus {
     private final MethodSubscriptionAdapter<Object> methodAdapter;
 
     public EventBusImpl() {
-        this.bus = new SimpleEventBus<TabEvent>(TabEvent.class) {
+        bus = new SimpleEventBus<TabEvent>(TabEvent.class) {
 
             @Override
             protected boolean shouldPost(@NotNull TabEvent event, @NotNull EventSubscriber<?> subscriber) {
                 return true;
             }
         };
-        this.methodAdapter = new SimpleMethodSubscriptionAdapter<>(bus, new MethodHandleEventExecutorFactory<>(), new TabMethodScanner());
+        methodAdapter = new SimpleMethodSubscriptionAdapter<>(bus, new MethodHandleEventExecutorFactory<>(), new TabMethodScanner());
     }
 
-    public <E extends TabEvent> void fire(final E event) {
+    public <E extends TabEvent> void fire(E event) {
         if (!bus.hasSubscribers(event.getClass())) return;
-        final PostResult result = bus.post(event);
+        PostResult result = bus.post(event);
         if (result.exceptions().isEmpty()) return;
 
         TAB.getInstance().getErrorManager().printError("Some errors occurred whilst trying to fire event " + event);
         int i = 0;
-        for (final Throwable exception : result.exceptions().values()) {
+        for (Throwable exception : result.exceptions().values()) {
             TAB.getInstance().getErrorManager().printError("#" + i++ + ": \n", exception);
         }
     }

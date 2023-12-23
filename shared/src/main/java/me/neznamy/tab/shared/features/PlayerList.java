@@ -41,14 +41,14 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
      * display name by setting it to null value and not force the value back
      * with the anti-override.
      */
-    private boolean disabling = false;
+    private boolean disabling;
 
     public PlayerList() {
         Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("tablist-name-formatting.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
         if (antiOverrideTabList) {
-            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, () -> {
+            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, featureName, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, () -> {
                 for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                     p.getTabList().checkDisplayNames();
                 }

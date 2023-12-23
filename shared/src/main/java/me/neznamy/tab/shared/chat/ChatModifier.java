@@ -20,13 +20,13 @@ public class ChatModifier {
 
     public ChatModifier(@NotNull ChatModifier modifier) {
         if (modifier.color != null) color = new TextColor(modifier.color);
-        this.bold = modifier.bold;
-        this.italic = modifier.italic;
-        this.underlined = modifier.underlined;
-        this.strikethrough = modifier.strikethrough;
-        this.obfuscated = modifier.obfuscated;
-        if (modifier.clickEvent != null) this.clickEvent = new ClickEvent(modifier.clickEvent.getAction(), modifier.clickEvent.getValue());
-        this.font = modifier.font;
+        bold = modifier.bold;
+        italic = modifier.italic;
+        underlined = modifier.underlined;
+        strikethrough = modifier.strikethrough;
+        obfuscated = modifier.obfuscated;
+        if (modifier.clickEvent != null) clickEvent = new ClickEvent(modifier.clickEvent.getAction(), modifier.clickEvent.getValue());
+        font = modifier.font;
     }
 
     @SuppressWarnings("unchecked")

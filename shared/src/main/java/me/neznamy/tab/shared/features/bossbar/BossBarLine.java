@@ -89,7 +89,7 @@ public class BossBarLine implements BossBar {
         this.style = style;
         this.title = title;
         this.progress = progress;
-        this.announcementBar = announcementOnly;
+        announcementBar = announcementOnly;
         propertyTitle = TabConstants.Property.bossbarTitle(name);
         propertyProgress = TabConstants.Property.bossbarProgress(name);
         propertyColor = TabConstants.Property.bossbarColor(name);

@@ -19,8 +19,8 @@ public class ParentGroup {
 
     public ParentGroup(@NotNull LayoutView layout, @NotNull GroupPattern pattern, @NotNull TabPlayer viewer) {
         this.layout = layout;
-        this.condition = pattern.getCondition();
-        this.slots = pattern.getSlots();
+        condition = pattern.getCondition();
+        slots = pattern.getSlots();
         this.viewer = viewer;
         for (int slot : slots) {
             playerSlots.put(slot, new PlayerSlot(slot, layout, layout.getManager().getUUID(slot)));
