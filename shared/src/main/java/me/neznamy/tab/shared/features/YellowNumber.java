@@ -64,25 +64,18 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     @Override
     public void load() {
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
             loaded.setProperty(this, PROPERTY_VALUE, rawValue);
             loaded.setProperty(this, PROPERTY_VALUE_FANCY, rawValueFancy);
             if (disableChecker.isDisableConditionMet(loaded)) {
                 disableChecker.addDisabledPlayer(loaded);
-                continue;
+            } else {
+                register(loaded);
             }
-            if (loaded.isBedrockPlayer()) continue;
-            register(loaded);
-        }
-
-        Map<TabPlayer, Integer> values = new HashMap<>();
-        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-            if (disableChecker.isDisabledPlayer(target)) continue;
-            values.put(target, getValueNumber(target));
-            target.getProperty(PROPERTY_VALUE_FANCY).updateAndGet();
+            values.put(loaded, getValueNumber(loaded));
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (disableChecker.isDisabledPlayer(viewer)) continue;
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
                 setScore(viewer, entry.getKey(), entry.getValue(), entry.getKey().getProperty(PROPERTY_VALUE_FANCY).getFormat(viewer));
             }
@@ -103,23 +96,15 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         connectedPlayer.setProperty(this, PROPERTY_VALUE_FANCY, rawValueFancy);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             disableChecker.addDisabledPlayer(connectedPlayer);
-            return;
-        }
-        if (!connectedPlayer.isBedrockPlayer()) {
+        } else {
             register(connectedPlayer);
         }
         int value = getValueNumber(connectedPlayer);
         Property valueFancy = connectedPlayer.getProperty(PROPERTY_VALUE_FANCY);
         valueFancy.update();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!disableChecker.isDisabledPlayer(all)) {
-                if (!all.isBedrockPlayer()) {
-                    setScore(all, connectedPlayer, value, valueFancy.getFormat(connectedPlayer));
-                }
-                if (!connectedPlayer.isBedrockPlayer()) {
-                    setScore(connectedPlayer, all, getValueNumber(all), all.getProperty(PROPERTY_VALUE_FANCY).getFormat(connectedPlayer));
-                }
-            }
+            setScore(all, connectedPlayer, value, valueFancy.getFormat(connectedPlayer));
+            setScore(connectedPlayer, all, getValueNumber(all), all.getProperty(PROPERTY_VALUE_FANCY).getFormat(connectedPlayer));
         }
         if (redis != null) redis.updateYellowNumber(connectedPlayer, value, valueFancy.get());
     }
@@ -138,7 +123,6 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         Property fancy = refreshed.getProperty(PROPERTY_VALUE_FANCY);
         fancy.update();
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (disableChecker.isDisabledPlayer(viewer) || viewer.isBedrockPlayer()) continue;
             setScore(viewer, refreshed, value, fancy.getFormat(viewer));
         }
         if (redis != null) redis.updateYellowNumber(refreshed, value, fancy.get());
@@ -146,7 +130,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
 
     @Override
     public void onLoginPacket(@NotNull TabPlayer p) {
-        if (disableChecker.isDisabledPlayer(p) || p.isBedrockPlayer() || !p.isLoaded()) return;
+        if (disableChecker.isDisabledPlayer(p) || !p.isLoaded()) return;
         register(p);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.isLoaded()) setScore(p, all, getValueNumber(all), all.getProperty(PROPERTY_VALUE_FANCY).getFormat(p));
@@ -154,11 +138,13 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     private void register(@NotNull TabPlayer player) {
+        if (player.isBedrockPlayer()) return;
         player.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType, new IChatBaseComponent(""));
         player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
     }
 
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyValue) {
+        if (viewer.isBedrockPlayer() || disableChecker.isDisabledPlayer(viewer)) return;
         viewer.getScoreboard().setScore(
                 OBJECTIVE_NAME,
                 scoreHolder.getNickname(),
