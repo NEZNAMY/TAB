@@ -65,6 +65,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             if (placeholder.getRefresh() == -1 || loopTime % placeholder.getRefresh() != 0) continue;
             placeholders.add(placeholder);
         }
+        if (placeholders.isEmpty()) return;
         PlaceholderRefreshTask task = new PlaceholderRefreshTask(placeholders);
         TAB.getInstance().getCPUManager().getPlaceholderThread().submit(() -> {
             // Run in placeholder refreshing thread
