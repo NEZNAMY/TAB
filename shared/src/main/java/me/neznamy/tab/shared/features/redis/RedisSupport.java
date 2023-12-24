@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.feature.*;
 import me.neznamy.tab.shared.features.redis.message.*;
 import me.neznamy.tab.shared.features.types.*;
@@ -147,25 +146,49 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             features.add(new RedisGlobalPlayerList(this, TAB.getInstance().getFeatureManager().getFeature(
                     TabConstants.Feature.GLOBAL_PLAYER_LIST)));
         }
+        overridePlaceholders();
+        TAB.getInstance().getEventBus().register(TabPlaceholderRegisterEvent.class, eventHandler);
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
+        sendMessage(new LoadRequest());
+    }
+
+    private void overridePlaceholders() {
         eventHandler = event -> {
             String identifier = event.getIdentifier();
             if (identifier.startsWith("%online_")) {
                 String server = identifier.substring(8, identifier.length()-1);
-                event.setServerPlaceholder(() ->
-                        Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
-                                redisPlayers.values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count());
-
+                event.setServerPlaceholder(() -> {
+                    int count = 0;
+                    for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                        if (player.getServer().equals(server) && !player.isVanished()) count++;
+                    }
+                    for (RedisPlayer player : redisPlayers.values()) {
+                        if (player.getServer().equals(server) && !player.isVanished()) count++;
+                    }
+                    return count;
+                });
             }
         };
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () ->
-                Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
-                        redisPlayers.values().stream().filter(all -> !all.isVanished()).count());
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () ->
-                Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
-                        redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
-        TAB.getInstance().getEventBus().register(TabPlaceholderRegisterEvent.class, eventHandler);
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
-        sendMessage(new LoadRequest());
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
+            int count = 0;
+            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                if (!player.isVanished()) count++;
+            }
+            for (RedisPlayer player : redisPlayers.values()) {
+                if (!player.isVanished()) count++;
+            }
+            return count;
+        });
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () -> {
+            int count = 0;
+            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                if (!player.isVanished() && player.hasPermission(TabConstants.Permission.STAFF)) count++;
+            }
+            for (RedisPlayer player : redisPlayers.values()) {
+                if (!player.isVanished() && player.isStaff()) count++;
+            }
+            return count;
+        });
     }
 
     @Override

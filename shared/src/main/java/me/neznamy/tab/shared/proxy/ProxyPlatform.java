@@ -19,7 +19,6 @@ import me.neznamy.tab.shared.proxy.message.outgoing.RegisterPlaceholder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,8 +50,13 @@ public abstract class ProxyPlatform implements Platform {
         //internal dynamic %online_<server>% placeholder
         if (identifier.startsWith("%online_")) {
             String server = identifier.substring(8, identifier.length()-1);
-            pl.registerServerPlaceholder(identifier, 1000, () ->
-                    Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count());
+            pl.registerServerPlaceholder(identifier, 1000, () -> {
+                int count = 0;
+                for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                    if (player.getServer().equals(server) && !player.isVanished()) count++;
+                }
+                return count;
+            });
             return;
         }
         Placeholder placeholder;

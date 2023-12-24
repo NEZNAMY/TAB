@@ -30,8 +30,13 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
 
     public GlobalPlayerList() {
         for (Map.Entry<String, List<String>> entry : sharedServers.entrySet()) {
-            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000,
-                    () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> entry.getValue().contains(p.getServer()) && !p.isVanished()).count());
+            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
+                int count = 0;
+                for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                    if (entry.getValue().contains(player.getServer()) && !player.isVanished()) count++;
+                }
+                return count;
+            });
         }
     }
 
