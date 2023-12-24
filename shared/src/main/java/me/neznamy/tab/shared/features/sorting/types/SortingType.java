@@ -75,10 +75,13 @@ public abstract class SortingType {
      */
     public String compressNumber(double number) {
         int wholePart = (int) number;
-        char decimalChar = (char) ((number - wholePart) * Character.MAX_VALUE);
+        char decimalChar = (char) ((number - wholePart) * (Character.MAX_VALUE - 1));
+        // The \ symbol breaks json syntax, skip it (and reduce range) (why is it not being escaped by json writer?)
+        if (decimalChar >= '\\') decimalChar++;
         StringBuilder sb = new StringBuilder();
         while (wholePart > 0) {
-            char digit = (char) (wholePart % Character.MAX_VALUE);
+            char digit = (char) (wholePart % (Character.MAX_VALUE - 1));
+            if (digit >= '\\') digit++;
             sb.append(digit);
             wholePart /= Character.MAX_VALUE;
         }
