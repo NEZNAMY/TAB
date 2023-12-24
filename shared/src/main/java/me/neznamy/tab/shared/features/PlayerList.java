@@ -30,7 +30,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     @Getter private final String refreshDisplayName = "Updating TabList format";
 
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
-    @Getter protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
+    @Getter protected final boolean antiOverrideTabList = config().getBoolean("tablist-name-formatting.anti-override", true);
 
     private final LayoutManagerImpl layoutManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
     private RedisSupport redis;
@@ -44,7 +44,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     private boolean disabling;
 
     public PlayerList() {
-        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("tablist-name-formatting.disable-condition"));
+        Condition disableCondition = Condition.getCondition(config().getString("tablist-name-formatting.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
         if (antiOverrideTabList) {

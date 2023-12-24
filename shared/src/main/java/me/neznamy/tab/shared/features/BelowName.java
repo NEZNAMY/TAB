@@ -31,17 +31,17 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     private final String DEFAULT_FORMAT_PROPERTY = Property.randomName();
     @Getter private final String FANCY_FORMAT_PROPERTY = Property.randomName();
     
-    private final String rawNumber = TAB.getInstance().getConfig().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
-    private final String rawText = TAB.getInstance().getConfig().getString("belowname-objective.text", "Health");
-    private final String fancyDisplayDefault = TAB.getInstance().getConfig().getString("belowname-objective.fancy-display-default", "NPC");
-    private final String fancyDisplayPlayers = TAB.getInstance().getConfig().getString("belowname-objective.fancy-display-players", "&c" + TabConstants.Placeholder.HEALTH);
+    private final String rawNumber = config().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
+    private final String rawText = config().getString("belowname-objective.text", "Health");
+    private final String fancyDisplayDefault = config().getString("belowname-objective.fancy-display-default", "NPC");
+    private final String fancyDisplayPlayers = config().getString("belowname-objective.fancy-display-players", "&c" + TabConstants.Placeholder.HEALTH);
 
     private final TextRefresher textRefresher = new TextRefresher(this);
     private final DisableChecker disableChecker;
     private RedisSupport redis;
 
     public BelowName() {
-        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("belowname-objective.disable-condition"));
+        Condition disableCondition = Condition.getCondition(config().getString("belowname-objective.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);

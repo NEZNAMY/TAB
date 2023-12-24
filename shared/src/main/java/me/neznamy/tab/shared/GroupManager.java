@@ -24,10 +24,10 @@ public class GroupManager extends TabFeature implements Refreshable {
     @NotNull private final Function<TabPlayer, String> groupFunction;
 
     /** If enabled, groups are assigned via permissions instead of permission plugin */
-    private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
+    private final boolean groupsByPermissions = config().getBoolean("assign-groups-by-permissions", false);
 
     /** List of group permissions to iterate through if {@link #groupsByPermissions} is {@code true} */
-    private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
+    private final List<String> primaryGroupFindingList = config().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
     private final String featureName = "Permission group refreshing";
     private final String refreshDisplayName = "Processing group change";

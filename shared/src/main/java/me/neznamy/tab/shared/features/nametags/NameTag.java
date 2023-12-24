@@ -26,9 +26,9 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Getter private final String featureName = "NameTags";
     @Getter private final String refreshDisplayName = "Updating prefix/suffix";
-    protected final boolean invisibleNameTags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
-    private final boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
-    private final boolean canSeeFriendlyInvisibles = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
+    protected final boolean invisibleNameTags = config().getBoolean("scoreboard-teams.invisible-nametags", false);
+    private final boolean collisionRule = config().getBoolean("scoreboard-teams.enable-collision", true);
+    private final boolean canSeeFriendlyInvisibles = config().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
     @Getter private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     @Getter private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
     @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
@@ -48,10 +48,10 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
     public NameTag() {
-        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("scoreboard-teams.disable-condition"));
+        Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
-        if (!TAB.getInstance().getConfig().getBoolean("scoreboard-teams.anti-override", true))
+        if (!config().getBoolean("scoreboard-teams.anti-override", true))
             TAB.getInstance().getMisconfigurationHelper().teamAntiOverrideDisabled();
     }
 

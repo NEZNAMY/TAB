@@ -7,7 +7,6 @@ import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.tablist.SortingManager;
 import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
@@ -298,14 +297,6 @@ public class TAB extends TabAPI {
     @Override
     public @Nullable HeaderFooterManager getHeaderFooterManager() {
         return featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
-    }
-
-    /**
-     * Returns the config file.
-     * @return  The config file
-     */
-    public @NotNull ConfigurationFile getConfig() {
-        return configuration.getConfig();
     }
 
     @Override

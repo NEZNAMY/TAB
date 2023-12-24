@@ -92,7 +92,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
                 TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                     !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
                 ((ProxyPlatform) getPlatform()).getBridgePlaceholders(),
-                TAB.getInstance().getConfig().getConfigurationSection("placeholder-output-replacements"),
+                TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements"),
                 settings
         ));
         ((ProxyTabExpansion) TAB.getInstance().getPlaceholderManager().getTabExpansion()).resendAllValues(this);

@@ -22,15 +22,15 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     @Getter private final String featureName = "Header/Footer";
     @Getter private final String refreshDisplayName = "Updating header/footer";
-    private final List<Object> worldGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-world").keySet());
-    private final List<Object> serverGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-server").keySet());
+    private final List<Object> worldGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-world").keySet());
+    private final List<Object> serverGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-server").keySet());
     private final DisableChecker disableChecker;
 
     public HeaderFooter() {
-        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("header-footer.disable-condition"));
+        Condition disableCondition = Condition.getCondition(config().getString("header-footer.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
-        TAB.getInstance().getMisconfigurationHelper().checkHeaderFooterForRedundancy(TAB.getInstance().getConfig().getConfigurationSection("header-footer"));
+        TAB.getInstance().getMisconfigurationHelper().checkHeaderFooterForRedundancy(config().getConfigurationSection("header-footer"));
     }
 
     @Override
@@ -113,12 +113,12 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         if (value.length > 0) {
             return value[0];
         }
-        List<String> lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.getWorld()) + "." + property);
+        List<String> lines = config().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.getWorld()) + "." + property);
         if (lines == null) {
-            lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getGroup(serverGroups, p.getServer()) + "." + property);
+            lines = config().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getGroup(serverGroups, p.getServer()) + "." + property);
         }
         if (lines == null) {
-             lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer." + property);
+             lines = config().getStringList("header-footer." + property);
         }
         if (lines == null) lines = new ArrayList<>();
         return String.join("\n", lines);

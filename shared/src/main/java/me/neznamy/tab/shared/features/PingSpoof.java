@@ -23,7 +23,7 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
     @Getter private final String featureName = "Ping spoof";
 
     /** Value to display as ping instead of real ping */
-    private final int value = TAB.getInstance().getConfig().getInt("ping-spoof.value", 0);
+    private final int value = config().getInt("ping-spoof.value", 0);
 
     private LayoutManagerImpl layoutManager;
 

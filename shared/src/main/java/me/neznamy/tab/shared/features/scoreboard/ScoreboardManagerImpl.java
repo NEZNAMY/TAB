@@ -24,13 +24,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
     //config options
-    @Getter private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
-    @Getter private final boolean usingNumbers = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.use-numbers", false);
-    private final boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
-    private final boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
-    private final boolean respectOtherPlugins = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
-    @Getter private final int staticNumber = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.static-number", 0);
-    private final int joinDelay = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
+    @Getter private final String toggleCommand = config().getString("scoreboard.toggle-command", "/sb");
+    @Getter private final boolean usingNumbers = config().getBoolean("scoreboard.use-numbers", false);
+    private final boolean rememberToggleChoice = config().getBoolean("scoreboard.remember-toggle-choice", false);
+    private final boolean hiddenByDefault = config().getBoolean("scoreboard.hidden-by-default", false);
+    private final boolean respectOtherPlugins = config().getBoolean("scoreboard.respect-other-plugins", true);
+    @Getter private final int staticNumber = config().getInt("scoreboard.static-number", 0);
+    private final int joinDelay = config().getInt("scoreboard.delay-on-join-milliseconds", 0);
 
     //defined scoreboards
     @Getter private final Map<String, me.neznamy.tab.api.scoreboard.Scoreboard> registeredScoreboards = new LinkedHashMap<>();
@@ -54,7 +54,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void load() {
-        Map<String, Map<String, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
+        Map<String, Map<String, Object>> map = config().getConfigurationSection("scoreboard.scoreboards");
         boolean noConditionScoreboardFound = false;
         String noConditionScoreboard = null;
         for (Entry<String, Map<String, Object>> entry : map.entrySet()) {

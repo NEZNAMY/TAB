@@ -34,8 +34,8 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     private static final String TITLE = "PlayerListObjectiveTitle"; // Unused by this objective slot (on Java, only visible on Bedrock)
 
     /** Numeric value to display */
-    private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("playerlist-objective.value", TabConstants.Placeholder.PING);
-    private final String rawValueFancy = TAB.getInstance().getConfiguration().getConfig().getString("playerlist-objective.fancy-value", "&7Ping: %ping%");
+    private final String rawValue = config().getString("playerlist-objective.value", TabConstants.Placeholder.PING);
+    private final String rawValueFancy = config().getString("playerlist-objective.fancy-value", "&7Ping: %ping%");
 
     /** Scoreboard display type */
     private final int displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) ||
@@ -45,7 +45,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     private RedisSupport redis;
 
     public YellowNumber() {
-        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("playerlist-objective.disable-condition"));
+        Condition disableCondition = Condition.getCondition(config().getString("playerlist-objective.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
     }

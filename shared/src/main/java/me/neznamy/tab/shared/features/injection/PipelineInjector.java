@@ -32,10 +32,10 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
 
     @Override
     public void load() {
-        antiOverrideTeams = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.enabled", true) &&
-                TAB.getInstance().getConfig().getBoolean("scoreboard-teams.anti-override", true);
-        boolean respectOtherScoreboardPlugins = TAB.getInstance().getConfig().getBoolean("scoreboard.enabled", false) &&
-                TAB.getInstance().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
+        antiOverrideTeams = config().getBoolean("scoreboard-teams.enabled", true) &&
+                config().getBoolean("scoreboard-teams.anti-override", true);
+        boolean respectOtherScoreboardPlugins = config().getBoolean("scoreboard.enabled", false) &&
+                config().getBoolean("scoreboard.respect-other-plugins", true);
         byteBufDeserialization = antiOverrideTeams || respectOtherScoreboardPlugins;
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             inject(p);

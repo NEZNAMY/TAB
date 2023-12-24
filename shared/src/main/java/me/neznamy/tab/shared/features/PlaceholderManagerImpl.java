@@ -38,8 +38,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Getter private final String featureName = "Refreshing placeholders";
     @Getter private final String refreshDisplayName = "Other";
 
-    private final boolean registerExpansion = TAB.getInstance().getConfig().getBoolean("placeholders.register-tab-expansion", true);
-    private final Map<String, Integer> refreshIntervals = TAB.getInstance().getConfig().getConfigurationSection("placeholderapi-refresh-intervals");
+    private final boolean registerExpansion = config().getBoolean("placeholders.register-tab-expansion", true);
+    private final Map<String, Integer> refreshIntervals = config().getConfigurationSection("placeholderapi-refresh-intervals");
     private final int defaultRefresh;
 
     private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();

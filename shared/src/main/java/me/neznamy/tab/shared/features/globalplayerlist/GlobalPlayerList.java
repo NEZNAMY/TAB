@@ -19,11 +19,11 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         Loadable, UnLoadable, ServerSwitchListener, TabListClearListener {
 
     // config options
-    private final List<String> spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));
-    private final Map<String, List<String>> sharedServers = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("global-playerlist.server-groups");
-    private final boolean othersAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
-    private final boolean vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
-    private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
+    private final List<String> spyServers = config().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));
+    private final Map<String, List<String>> sharedServers = config().getConfigurationSection("global-playerlist.server-groups");
+    private final boolean othersAsSpectators = config().getBoolean("global-playerlist.display-others-as-spectators", false);
+    private final boolean vanishedAsSpectators = config().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
+    private final boolean isolateUnlistedServers = config().getBoolean("global-playerlist.isolate-unlisted-servers", false);
 
     private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
     @Getter private final String featureName = "Global PlayerList";

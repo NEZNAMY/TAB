@@ -46,7 +46,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
     
     //if sorting is case-sensitive or not
-    @Getter private final boolean caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
+    @Getter private final boolean caseSensitiveSorting = config().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
     
     //active sorting types
     private final SortingType[] usedSortingTypes;
@@ -68,7 +68,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         types.put("PLACEHOLDER_Z_TO_A", PlaceholderZtoA::new);
         types.put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
         types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
-        usedSortingTypes = compile(TAB.getInstance().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
+        usedSortingTypes = compile(config().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
     }
     
     @Override

@@ -30,9 +30,9 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     protected BossBar[] lineValues;
 
     //config options
-    @Getter private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
-    private final boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
-    private final boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
+    @Getter private final String toggleCommand = config().getString("bossbar.toggle-command", "/bossbar");
+    private final boolean hiddenByDefault = config().getBoolean("bossbar.hidden-by-default", false);
+    private final boolean rememberToggleChoice = config().getBoolean("bossbar.remember-toggle-choice", false);
     private final String toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
     private final String toggleOffMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOff();
 
@@ -55,7 +55,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      * Constructs new instance and loads configuration
      */
     public BossBarManagerImpl() {
-        for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()) {
+        for (Object bar : config().getConfigurationSection("bossbar.bars").keySet()) {
             BossBarLine line = loadFromConfig(bar.toString());
             registeredBossBars.put(bar.toString(), line);
             if (!line.isAnnouncementBar()) defaultBars.add(bar.toString());
@@ -71,7 +71,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      * @return  loaded BossBar
      */
     private @NotNull BossBarLine loadFromConfig(@NonNull String bar) {
-        Map<String, Object> bossBar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
+        Map<String, Object> bossBar = config().getConfigurationSection("bossbar.bars." + bar);
         TAB.getInstance().getMisconfigurationHelper().checkBossBarProperties(bossBar, bar);
         return new BossBarLine(
                 this,
