@@ -31,8 +31,8 @@ public class TeamPacketData {
     /** First version with static constructor-like methods */
     private final int STATIC_CONSTRUCTOR_VERSION = 17;
 
-    private static Class<?> Component;
-    private static Object emptyScoreboard;
+    private Class<?> Component;
+    private final Object emptyScoreboard;
     @Getter private final Class<?> TeamPacketClass;
     private Constructor<?> newTeamPacket;
     private final Constructor<?> newScoreboardTeam;
