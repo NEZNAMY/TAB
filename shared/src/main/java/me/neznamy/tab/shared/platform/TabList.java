@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.NotNull;
@@ -129,7 +128,7 @@ public interface TabList {
     }
 
     /**
-     * TabList action
+     * TabList action.
      */
     enum Action {
 
@@ -160,7 +159,7 @@ public interface TabList {
         @NotNull private UUID uniqueId;
 
         /** Real name of affected player */
-        @NotNull private String name;
+        @NotNull private String name = "";
 
         /** Player's skin, null for empty skin */
         @Nullable private Skin skin;
@@ -178,27 +177,52 @@ public interface TabList {
         @Nullable private IChatBaseComponent displayName;
 
         /**
-         * TabList entry builder.
+         * Constructs new instance with given parameter.
+         *
+         * @param   uniqueId
+         *          Entry ID
          */
-        @RequiredArgsConstructor
-        public static class Builder {
+        public Entry(@NotNull UUID uniqueId) {
+            this.uniqueId = uniqueId;
+        }
 
-            @NotNull private UUID uniqueId;
-            @NotNull private String name = "";
-            @Nullable private Skin skin;
-            private int latency;
-            private int gameMode;
-            @Nullable private IChatBaseComponent displayName;
+        /**
+         * Creates new instance with given display name.
+         *
+         * @param   id
+         *          Entry ID
+         * @param   displayName
+         *          Entry display name
+         * @return  Entry with given parameters
+         */
+        public static Entry displayName(@NotNull UUID id, @Nullable IChatBaseComponent displayName) {
+            return new Entry(id, "", null, 0, 0, displayName);
+        }
 
-            public @NotNull Builder name(@NotNull String name) { this.name = name; return this; }
-            public @NotNull Builder skin(@Nullable Skin skin) { this.skin = skin; return this; }
-            public @NotNull Builder latency(int latency) { this.latency = latency; return this; }
-            public @NotNull Builder gameMode(int gameMode) { this.gameMode = gameMode; return this; }
-            public @NotNull Builder displayName(@Nullable IChatBaseComponent displayName) { this.displayName = displayName; return this; }
+        /**
+         * Creates new instance with given latency.
+         *
+         * @param   id
+         *          Entry ID
+         * @param   latency
+         *          Entry latency
+         * @return  Entry with given parameters
+         */
+        public static Entry latency(@NotNull UUID id, int latency) {
+            return new Entry(id, "", null, latency, 0, null);
+        }
 
-            public @NotNull Entry build() {
-                return new Entry(uniqueId, name, skin, latency, gameMode, displayName);
-            }
+        /**
+         * Creates new instance with given game mode.
+         *
+         * @param   id
+         *          Entry ID
+         * @param   gameMode
+         *          Entry game mode
+         * @return  Entry with given parameters
+         */
+        public static Entry gameMode(@NotNull UUID id, int gameMode) {
+            return new Entry(id, "", null, 0, gameMode, null);
         }
     }
 

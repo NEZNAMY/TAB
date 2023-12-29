@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.TabList.Entry.Builder;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
@@ -116,22 +115,22 @@ public class PacketTabList18 extends TabListBase {
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.REMOVE_PLAYER, new Builder(entry).build()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.REMOVE_PLAYER, new Entry(entry)));
     }
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, Entry.displayName(entry, displayName)));
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_LATENCY, Entry.latency(entry, latency)));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_GAME_MODE, Entry.gameMode(entry, gameMode)));
     }
 
     @Override

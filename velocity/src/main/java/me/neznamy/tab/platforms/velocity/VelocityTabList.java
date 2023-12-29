@@ -49,7 +49,7 @@ public class VelocityTabList implements TabList {
             } else {
                 String username = e.getProfile().getName();
                 removeEntry(entry);
-                addEntry(new Entry.Builder(entry).name(username).displayName(displayName).build());
+                addEntry(new Entry(entry, username, null, 0, 0, displayName));
             }
         });
     }

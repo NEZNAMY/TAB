@@ -54,7 +54,7 @@ public class BungeeTabList17 extends BungeeTabList {
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));
-        addEntry(new Entry.Builder(entry).displayName(displayName).name(userNames.get(entry)).build());
+        addEntry(new Entry(entry, userNames.get(entry), null, 0, 0, displayName));
     }
 
     @Override
