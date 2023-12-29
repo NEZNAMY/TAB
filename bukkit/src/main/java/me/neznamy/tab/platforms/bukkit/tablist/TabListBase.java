@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
@@ -58,7 +57,6 @@ public abstract class TabListBase implements TabList {
     }
 
     @Override
-    @SneakyThrows
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         if (HeaderFooter.getInstance() != null) HeaderFooter.getInstance().set(player, header, footer);
     }

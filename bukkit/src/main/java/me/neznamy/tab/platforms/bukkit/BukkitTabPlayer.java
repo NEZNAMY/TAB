@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
@@ -66,7 +65,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    @SneakyThrows
     public int getPing() {
         return PingRetriever.getPing(getPlayer());
     }

@@ -23,8 +23,13 @@ public class DisplayPacketData {
     private final Object[] displaySlots;
     private final FunctionWithException<Object, Integer> packetToSlot;
 
-    @SneakyThrows
-    DisplayPacketData() {
+    /**
+     * Constructs new instance and loads all required NMS fields.
+     *
+     * @throws  ReflectiveOperationException
+     *          If something fails
+     */
+    public DisplayPacketData() throws ReflectiveOperationException {
         Class<?> ScoreboardObjective = BukkitReflection.getClass("world.scores.Objective", "world.scores.ScoreboardObjective", "ScoreboardObjective");
         DisplayObjectiveClass = BukkitReflection.getClass(
                 "network.protocol.game.ClientboundSetDisplayObjectivePacket", // Mojang mapped

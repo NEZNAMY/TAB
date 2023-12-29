@@ -125,13 +125,11 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     public void setDisplaySlot0(int slot, @NotNull String objective) {
         packetSender.sendPacket(player.getPlayer(), displayPacketData.setDisplaySlot(slot, newObjective(objective, "", 0, null)));
     }
 
     @Override
-    @SneakyThrows
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
                                    @Nullable IChatBaseComponent numberFormat) {
         packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.REGISTER, objectiveName, title, display, numberFormat));
@@ -159,7 +157,6 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
                               @NotNull Collection<String> players, int options) {
@@ -168,13 +165,11 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     public void unregisterTeam0(@NotNull String name) {
         packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(name));
     }
 
     @Override
-    @SneakyThrows
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                             @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(name, prefix, toComponent(prefix), suffix,
@@ -296,8 +291,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         private Field SetScorePacket_SCORE;              // 1.12-
         private Enum<?>[] scoreboardActions;             // 1.20.2-
 
-        @SneakyThrows
-        private ScorePacketData() {
+        private ScorePacketData() throws ReflectiveOperationException {
             Class<?> SetScorePacket = BukkitReflection.getClass(
                     "network.protocol.game.ClientboundSetScorePacket", // Mojang mapped
                     "network.protocol.game.PacketPlayOutScoreboardScore", // Bukkit 1.17+

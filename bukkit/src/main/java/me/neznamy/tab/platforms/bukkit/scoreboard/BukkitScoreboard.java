@@ -291,7 +291,6 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      * Sadly there is no efficient solution to this, which md_5 fails
      * to understand and keeps saying you don't need packets for scoreboards.
      */
-    @SneakyThrows
     private void checkPlayerScoreboard() {
         if (player.getPlayer().getScoreboard() != scoreboard) {
             TAB.getInstance().getErrorManager().printError("Player " + player.getName() + " was in a different scoreboard " +

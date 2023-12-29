@@ -115,7 +115,6 @@ public class PacketTabList18 extends TabListBase {
     }
 
     @Override
-    @SneakyThrows
     public void removeEntry(@NotNull UUID entry) {
         packetSender.sendPacket(player.getPlayer(), createPacket(Action.REMOVE_PLAYER, new Builder(entry).build()));
     }
