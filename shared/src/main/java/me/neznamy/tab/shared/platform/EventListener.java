@@ -61,7 +61,7 @@ public abstract class EventListener<T> {
     public void pluginMessage(@NotNull UUID player, byte[] message) {
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () ->
-                    ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(player, message));
+                    ((ProxyPlatform)TAB.getInstance().getPlatform()).onPluginMessage(player, message));
     }
 
     /**

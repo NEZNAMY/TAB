@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.proxy;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -15,12 +17,16 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
+import me.neznamy.tab.shared.proxy.message.incoming.*;
 import me.neznamy.tab.shared.proxy.message.outgoing.RegisterPlaceholder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 /**
  * Abstract class containing common variables and methods
@@ -29,11 +35,29 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public abstract class ProxyPlatform implements Platform {
 
-    /** Plugin message handler for sending and receiving plugin messages */
-    protected final PluginMessageHandler pluginMessageHandler = new PluginMessageHandler();
+    /** Registered plugin messages the plugin can receive from Bridge */
+    private final Map<String, Supplier<IncomingMessage>> registeredMessages = new HashMap<>();
 
     /** Placeholders which are refreshed on backend server */
     private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
+
+    /**
+     * Constructs new instance.
+     */
+    protected ProxyPlatform() {
+        registeredMessages.put("PlaceholderError", PlaceholderError::new);
+        registeredMessages.put("UpdateGameMode", UpdateGameMode::new);
+        registeredMessages.put("Permission", HasPermission::new);
+        registeredMessages.put("Invisible", Invisible::new);
+        registeredMessages.put("Disguised", Disguised::new);
+        registeredMessages.put("Boat", OnBoat::new);
+        registeredMessages.put("World", SetWorld::new);
+        registeredMessages.put("Group", SetGroup::new);
+        registeredMessages.put("Vanished", Vanished::new);
+        registeredMessages.put("Placeholder", UpdatePlaceholder::new);
+        registeredMessages.put("PlayerJoinResponse", PlayerJoinResponse::new);
+        registeredMessages.put("RegisterPlaceholder", me.neznamy.tab.shared.proxy.message.incoming.RegisterPlaceholder::new);
+    }
 
     @Override
     public @NotNull GroupManager detectPermissionPlugin() {
@@ -98,8 +122,28 @@ public abstract class ProxyPlatform implements Platform {
     }
 
     /**
+     * Handles incoming plugin message with tab's channel name
+     *
+     * @param   uuid
+     *          plugin message receiver
+     * @param   bytes
+     *          incoming message
+     */
+    @SuppressWarnings("UnstableApiUsage")
+    public void onPluginMessage(@NotNull UUID uuid, byte[] bytes) {
+        ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
+        if (player == null) return;
+        ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
+        Supplier<IncomingMessage> supplier = registeredMessages.get(in.readUTF());
+        if (supplier != null) {
+            IncomingMessage msg = supplier.get();
+            msg.read(in);
+            msg.process(player);
+        }
+    }
+
+    /**
      * Registers plugin's plugin message channel
      */
     public abstract void registerChannel();
-
 }
