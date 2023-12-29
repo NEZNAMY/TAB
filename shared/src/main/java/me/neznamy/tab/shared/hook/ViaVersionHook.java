@@ -17,7 +17,8 @@ import java.util.UUID;
 public class ViaVersionHook {
 
     /** Instance of the class */
-    @Getter private static final ViaVersionHook instance = new ViaVersionHook();
+    @Getter
+    private static final ViaVersionHook instance = new ViaVersionHook();
 
     /** Flag tracking if ViaVersion is installed or not */
     private final boolean installed = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");

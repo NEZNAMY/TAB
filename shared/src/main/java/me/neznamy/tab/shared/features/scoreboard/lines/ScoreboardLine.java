@@ -83,6 +83,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     /**
      * Returns forced name start of this line to specified viewer
      *
+     * @param   viewer
+     *          Player to get forced name start for
      * @return  forced name start of this line to specified viewer
      */
     public String getPlayerName(@NonNull TabPlayer viewer) {
@@ -206,6 +208,14 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
         return new String[]{prefixValue, nameValue, suffixValue};
     }
 
+    /**
+     * Returns {@code true} if this line is visible to specified player,
+     * {@code false} if not.
+     *
+     * @param   player
+     *          Player to check
+     * @return  {@code true} if shown, {@code false} if not
+     */
     public boolean isShownTo(@NonNull TabPlayer player) {
         return shownPlayers.contains(player);
     }

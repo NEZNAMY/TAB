@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Feature handler for header and footer
+ * Feature handler for header and footer.
  */
 public class HeaderFooter extends TabFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, Refreshable {
@@ -26,6 +26,9 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     private final List<Object> serverGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-server").keySet());
     private final DisableChecker disableChecker;
 
+    /**
+     * Constructs new instance and registers disable condition checker to feature manager.
+     */
     public HeaderFooter() {
         Condition disableCondition = Condition.getCondition(config().getString("header-footer.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
@@ -86,6 +89,14 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).updateAndGet(), p.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
+    /**
+     * Processes disable condition change.
+     *
+     * @param   p
+     *          Player who the condition has changed for
+     * @param   disabledNow
+     *          Whether the feature is disabled now or not
+     */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
             p.getTabList().setPlayerListHeaderFooter(new IChatBaseComponent(""), new IChatBaseComponent(""));

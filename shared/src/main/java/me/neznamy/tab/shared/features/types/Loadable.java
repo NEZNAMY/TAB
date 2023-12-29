@@ -6,7 +6,7 @@ package me.neznamy.tab.shared.features.types;
 public interface Loadable {
 
     /**
-     * Called on plugin (re)load
+     * Called on plugin (re)load.
      */
     void load();
 }

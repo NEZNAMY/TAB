@@ -8,17 +8,23 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Sorting by permission nodes
  */
 public class Permissions extends SortingType {
 
-    //map of permissions
+    /** Map of permissions with priorities */
     private final LinkedHashMap<String, Integer> sortedGroups;
 
     /**
-     * Constructs new instance
+     * Constructs new instance with given parameters and registers internal permission placeholders.
+     *
+     * @param   sorting
+     *          Sorting feature
+     * @param   options
+     *          Permission nodes separated with ","
      */
     public Permissions(Sorting sorting, String options) {
         super(sorting, "PERMISSIONS");
@@ -34,7 +40,7 @@ public class Permissions extends SortingType {
     }
 
     @Override
-    public String getChars(TabPlayer p) {
+    public String getChars(@NotNull TabPlayer p) {
         int position = 0;
         for (String permission : sortedGroups.keySet()) {
             if (p.hasPermission(permission)) {

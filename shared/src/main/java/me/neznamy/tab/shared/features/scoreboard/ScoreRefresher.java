@@ -11,6 +11,9 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Feature refreshing NumberFormat in scoreboard for players.
+ */
 @RequiredArgsConstructor
 public class ScoreRefresher extends TabFeature implements Refreshable {
 
@@ -18,7 +21,10 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
     @Getter private final String featureName = "Scoreboard";
     @Getter private final String refreshDisplayName = "Updating scores";
 
+    /** Line this score belongs to */
     private final ScoreboardLine line;
+
+    /** Configured number format */
     private final String numberFormat;
 
     @Override
@@ -33,10 +39,23 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
         );
     }
 
+    /**
+     * Registers properties for player.
+     *
+     * @param   player
+     *          Player to register properties for
+     */
     public void registerProperties(@NotNull TabPlayer player) {
         player.setProperty(this, NUMBER_FORMAT_PROPERTY, numberFormat);
     }
 
+    /**
+     * Returns new number format value for specified player.
+     *
+     * @param   player
+     *          Player to get number format for
+     * @return  New number format based on current placeholder results
+     */
     @Nullable
     public IChatBaseComponent getNumberFormat(@NotNull TabPlayer player) {
         return IChatBaseComponent.emptyToNullOptimizedComponent(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());

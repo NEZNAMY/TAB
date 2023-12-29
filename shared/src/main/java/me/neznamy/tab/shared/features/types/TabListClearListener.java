@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for features listening to tablist entry clear
@@ -15,5 +16,5 @@ public interface TabListClearListener {
      * @param   player
      *          Player who got their TabList entries cleared
      */
-    void onTabListClear(TabPlayer player);
+    void onTabListClear(@NotNull TabPlayer player);
 }

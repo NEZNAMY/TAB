@@ -23,18 +23,19 @@ import java.util.UUID;
 /**
  * Feature handler for TabList display names
  */
+@Getter
 public class PlayerList extends TabFeature implements TabListFormatManager, JoinListener, DisplayNameListener, Loadable,
         UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, VanishListener {
 
-    @Getter protected final String featureName = "Tablist name formatting";
-    @Getter private final String refreshDisplayName = "Updating TabList format";
+    protected final String featureName = "Tablist name formatting";
+    private final String refreshDisplayName = "Updating TabList format";
 
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
-    @Getter protected final boolean antiOverrideTabList = config().getBoolean("tablist-name-formatting.anti-override", true);
+    protected final boolean antiOverrideTabList = config().getBoolean("tablist-name-formatting.anti-override", true);
 
     private final LayoutManagerImpl layoutManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
     private RedisSupport redis;
-    @Getter protected final DisableChecker disableChecker;
+    protected final DisableChecker disableChecker;
 
     /**
      * Flag tracking when the plugin is disabling to properly clear
@@ -43,6 +44,9 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
      */
     private boolean disabling;
 
+    /**
+     * Constructs new instance, registers disable checker into feature manager and starts anti-override.
+     */
     public PlayerList() {
         Condition disableCondition = Condition.getCondition(config().getString("tablist-name-formatting.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
@@ -187,6 +191,14 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         if (updateProperties(changed) && !disableChecker.isDisabledPlayer(changed)) updatePlayer(changed, true);
     }
 
+    /**
+     * Processes disable condition change.
+     *
+     * @param   p
+     *          Player who the condition has changed for
+     * @param   disabledNow
+     *          Whether the feature is disabled now or not
+     */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         updatePlayer(p, !disabledNow);
     }

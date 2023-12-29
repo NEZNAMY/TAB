@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -10,17 +11,23 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Abstract class for sorting types.
+ */
 @RequiredArgsConstructor
 public abstract class SortingType {
 
+    /** Sorting feature */
     protected final Sorting sorting;
 
+    /** Display name of this sorting type */
+    @Getter
     private final String displayName;
 
-    //number to add to / subtract from to prevent incorrect sorting with negative values
+    /** Number to add to / subtract from to prevent incorrect sorting with negative values */
     protected final int DEFAULT_NUMBER = Integer.MAX_VALUE / 2;
     
-    //placeholder to sort by, if sorting type uses it
+    /** Placeholder to sort by, if sorting type uses it */
     protected String sortingPlaceholder;
 
     /**
@@ -51,7 +58,14 @@ public abstract class SortingType {
         if (sortingPlaceholder == null) return "";
         return TAB.getInstance().getPlaceholderManager().getPlaceholder(sortingPlaceholder).set(sortingPlaceholder, player);
     }
-    
+
+    /**
+     * Converts array of elements into map with priorities where 1 is highest.
+     *
+     * @param   elements
+     *          Configured sorting values
+     * @return  Converted map with priorities
+     */
     protected LinkedHashMap<String, Integer> convertSortingElements(String[] elements) {
         LinkedHashMap<String, Integer> sortedGroups = new LinkedHashMap<>();
         int index = 1;
@@ -114,11 +128,6 @@ public abstract class SortingType {
         }
     }
 
-    @Override
-    public final String toString() {
-        return displayName;
-    }
-    
     /**
      * Returns current sorting characters of this sorting type for specified player
      *
@@ -126,5 +135,5 @@ public abstract class SortingType {
      *          player to get chars for
      * @return  an as-short-as-possible character sequence for unique sorting
      */
-    public abstract String getChars(TabPlayer p);
+    public abstract String getChars(@NotNull TabPlayer p);
 }

@@ -142,7 +142,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         if (shortName.length() >= Limitations.TEAM_NAME_LENGTH) {
             shortName.setLength(Limitations.TEAM_NAME_LENGTH-1);
         }
-        String finalShortName = checkTeamName(p, shortName, 65);
+        String finalShortName = checkTeamName(p, shortName, 'A');
         shortTeamNames.put(p, finalShortName);
         fullTeamNames.put(p, fullName.append(finalShortName.charAt(finalShortName.length() - 1)).toString());
     }
@@ -182,23 +182,55 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
      * @return  user-friendly representation of sorting types
      */
     public @NotNull String typesToString() {
-        return Arrays.stream(usedSortingTypes).map(Object::toString).collect(Collectors.joining(" -> "));
+        return Arrays.stream(usedSortingTypes).map(SortingType::getDisplayName).collect(Collectors.joining(" -> "));
     }
 
+    /**
+     * Returns short team name of specified player.
+     *
+     * @param   p
+     *          Player to get short team name of
+     * @return  short team name of specified player
+     */
+    @NotNull
     public String getShortTeamName(@NotNull TabPlayer p) {
         String forced = getForcedTeamName(p);
         if (forced != null) return forced;
         return shortTeamNames.get(p);
     }
 
-    public @NotNull String getFullTeamName(@NotNull TabPlayer p) {
+    /**
+     * Returns full team name of specified player.
+     *
+     * @param   p
+     *          Player to get full team name of
+     * @return  full team name of specified player
+     */
+    @NotNull
+    public String getFullTeamName(@NotNull TabPlayer p) {
         return fullTeamNames.get(p);
     }
 
-    public @NotNull String getTeamNameNote(@NotNull TabPlayer p) {
+    /**
+     * Returns team name note for player.
+     *
+     * @param   p
+     *          Player to get team name note of
+     * @return  team name note for player
+     */
+    @NotNull
+    public String getTeamNameNote(@NotNull TabPlayer p) {
         return teamNameNotes.get(p);
     }
 
+    /**
+     * Sets team note for player.
+     *
+     * @param   p
+     *          Player to set team name note of
+     * @param   note
+     *          Team name note
+     */
     public void setTeamNameNote(@NotNull TabPlayer p, @NotNull String note) {
         teamNameNotes.put(p, note);
     }

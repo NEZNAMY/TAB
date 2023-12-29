@@ -80,6 +80,8 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      *          scoreboard title
      * @param   lines
      *          lines of scoreboard
+     * @param   dynamicLinesOnly
+     *          Whether this scoreboard should only use dynamic lines or not
      */
     public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull String title,
                           @NonNull List<String> lines, boolean dynamicLinesOnly) {
@@ -129,6 +131,13 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         return displayCondition == null || displayCondition.isMet(p);
     }
 
+    /**
+     * Adds the player into scoreboard. This includes registering properties,
+     * as well as scoreboard and all lines.
+     *
+     * @param   p
+     *          Player to send this scoreboard to
+     */
     public void addPlayer(@NonNull TabPlayer p) {
         if (players.contains(p)) return; //already registered
         players.add(p);
@@ -156,6 +165,12 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         players.clear();
     }
 
+    /**
+     * Unregisters player from this scoreboard.
+     *
+     * @param   p
+     *          Player to unregister
+     */
     public void removePlayer(@NonNull TabPlayer p) {
         if (!players.contains(p)) return; //not registered
         p.getScoreboard().unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
@@ -211,6 +226,13 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         TAB.getInstance().getFeatureManager().unregisterFeature(TabConstants.Feature.scoreboardLine(name, index));
     }
 
+    /**
+     * Recalculate scores for each line if using numbers. This takes into
+     * consideration lines that are not visible.
+     *
+     * @param   p
+     *          Player to recalculate scores for
+     */
     public void recalculateScores(@NonNull TabPlayer p) {
         if (!manager.isUsingNumbers()) return;
         List<Line> linesReversed = new ArrayList<>(lines);
@@ -229,6 +251,13 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         }
     }
 
+    /**
+     * Removes this player from list of players who can see it.
+     * Used on Login packet which clears all scoreboards.
+     *
+     * @param   player
+     *          Player to remove from set
+     */
     public void removePlayerFromSet(@NonNull TabPlayer player) {
         players.remove(player);
     }

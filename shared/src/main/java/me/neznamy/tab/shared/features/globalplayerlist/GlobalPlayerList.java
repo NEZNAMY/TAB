@@ -123,7 +123,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onTabListClear(TabPlayer player) {
+    public void onTabListClear(@NotNull TabPlayer player) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             // Ignore players on the same server, since the server already sends add packet
             if (!all.getServer().equals(player.getServer()) && shouldSee(player, all)) {

@@ -16,16 +16,17 @@ import java.util.function.Function;
 /**
  * Class that hooks into LuckPerms if installed.
  */
+@Getter
 public class LuckPermsHook {
 
     /** Instance of the class */
     @Getter private static final LuckPermsHook instance = new LuckPermsHook();
 
     /** Flag tracking if LuckPerms is installed or not */
-    @Getter private final boolean installed = ReflectionUtils.classExists("net.luckperms.api.LuckPerms");
+    private final boolean installed = ReflectionUtils.classExists("net.luckperms.api.LuckPerms");
 
     /** Function retrieving group of player from LuckPerms */
-    @Getter private final Function<TabPlayer, String> groupFunction = p -> {
+    private final Function<TabPlayer, String> groupFunction = p -> {
         User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
         if (user == null) return TabConstants.NO_GROUP;
         return user.getPrimaryGroup();

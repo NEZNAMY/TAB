@@ -15,6 +15,9 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Class for Adventure component conversion.
+ */
 public class AdventureHook {
 
     /** Component cache for adventure components */

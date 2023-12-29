@@ -199,7 +199,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     }
 
     @Override
-    public void onTabListClear(TabPlayer player) {
+    public void onTabListClear(@NotNull TabPlayer player) {
         LayoutView view = views.get(player);
         if (view != null) view.send();
     }

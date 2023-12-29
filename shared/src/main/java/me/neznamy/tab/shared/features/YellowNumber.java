@@ -44,6 +44,9 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     private final DisableChecker disableChecker;
     private RedisSupport redis;
 
+    /**
+     * Constructs new instance and registers disable condition checker to feature manager.
+     */
     public YellowNumber() {
         Condition disableCondition = Condition.getCondition(config().getString("playerlist-objective.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
@@ -109,6 +112,14 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         if (redis != null) redis.updateYellowNumber(connectedPlayer, value, valueFancy.get());
     }
 
+    /**
+     * Processes disable condition change.
+     *
+     * @param   p
+     *          Player who the condition has changed for
+     * @param   disabledNow
+     *          Whether the feature is disabled now or not
+     */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
@@ -143,6 +154,18 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
     }
 
+    /**
+     * Updates score of specified entry to player.
+     *
+     * @param   viewer
+     *          Player to send update to
+     * @param   scoreHolder
+     *          Owner of the score
+     * @param   value
+     *          Numeric value of the score
+     * @param   fancyValue
+     *          NumberFormat display of the score
+     */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyValue) {
         if (viewer.isBedrockPlayer() || disableChecker.isDisabledPlayer(viewer)) return;
         viewer.getScoreboard().setScore(

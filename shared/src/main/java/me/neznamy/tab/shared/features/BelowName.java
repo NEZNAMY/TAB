@@ -22,6 +22,7 @@ import java.util.Map;
 public class BelowName extends TabFeature implements JoinListener, Loadable, UnLoadable,
         Refreshable, LoginPacketListener {
 
+    /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
 
     @Getter private final String refreshDisplayName = "Updating BelowName number";
@@ -40,6 +41,9 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     private final DisableChecker disableChecker;
     private RedisSupport redis;
 
+    /**
+     * Constructs new instance and registers disable condition checker and text refresher to feature manager.
+     */
     public BelowName() {
         Condition disableCondition = Condition.getCondition(config().getString("belowname-objective.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
@@ -99,6 +103,14 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         if (redis != null) redis.updateBelowName(connectedPlayer, number, fancy.get());
     }
 
+    /**
+     * Processes disable condition change.
+     *
+     * @param   p
+     *          Player who the condition has changed for
+     * @param   disabledNow
+     *          Whether the feature is disabled now or not
+     */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
@@ -107,6 +119,13 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         }
     }
 
+    /**
+     * Returns current value for specified player parsed to int.
+     *
+     * @param   p
+     *          Player to get value of
+     * @return  Current value for player
+     */
     public int getValue(@NotNull TabPlayer p) {
         return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(NUMBER_PROPERTY).updateAndGet(), 0);
     }
@@ -141,6 +160,18 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
     }
 
+    /**
+     * Updates score of specified entry to player.
+     *
+     * @param   viewer
+     *          Player to send update to
+     * @param   scoreHolder
+     *          Owner of the score
+     * @param   value
+     *          Numeric value of the score
+     * @param   fancyDisplay
+     *          NumberFormat display of the score
+     */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyDisplay) {
         if (disableChecker.isDisabledPlayer(viewer)) return;
         viewer.getScoreboard().setScore(

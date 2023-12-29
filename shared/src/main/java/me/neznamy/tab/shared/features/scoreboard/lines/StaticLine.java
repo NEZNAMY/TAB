@@ -26,6 +26,16 @@ public class StaticLine extends ScoreboardLine {
     protected String name;
     protected String suffix;
 
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   parent
+     *          Scoreboard this line belongs to
+     * @param   lineNumber
+     *          Number of this line
+     * @param   text
+     *          Configured text
+     */
     public StaticLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
         super(parent, lineNumber, EnumChatFormat.color(text));
         setValues(this.text);

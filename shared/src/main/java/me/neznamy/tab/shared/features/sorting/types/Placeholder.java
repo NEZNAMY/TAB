@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -12,7 +13,7 @@ import java.util.Locale;
  */
 public class Placeholder extends SortingType {
 
-    //map Value-Number where number is used in team name based on value
+    /** Map of priorities for each output */
     private final LinkedHashMap<String, Integer> sortingMap;
 
     /**
@@ -29,7 +30,7 @@ public class Placeholder extends SortingType {
         if (args.length > 1)
             sortingMap = convertSortingElements(args[args.length-1].split(","));
         else
-            // Invalid configuration
+            // Invalid configuration // TODO add console warn
             sortingMap = new LinkedHashMap<>();
     }
 
@@ -48,7 +49,7 @@ public class Placeholder extends SortingType {
     }
 
     @Override
-    public String getChars(TabPlayer p) {
+    public String getChars(@NotNull TabPlayer p) {
         String output = EnumChatFormat.color(setPlaceholders(p));
         sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\"");
         int position;

@@ -53,6 +53,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @NotNull @Getter private final TabExpansion tabExpansion = registerExpansion ?
             TAB.getInstance().getPlatform().createTabExpansion() : new EmptyTabExpansion();
 
+    /**
+     * Constructs new instance and loads refresh intervals from config.
+     */
     public PlaceholderManagerImpl() {
         TAB.getInstance().getMisconfigurationHelper().fixRefreshIntervals(refreshIntervals);
         defaultRefresh = refreshIntervals.getOrDefault("default-refresh-interval", 500);
@@ -156,15 +159,38 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         }
     }
 
-    public int getRefreshInterval(@NonNull String identifier) {
+    /**
+     * Returns refresh interval the placeholder has configured. If not configured,
+     * default refresh interval is returned.
+     *
+     * @param   identifier
+     *          Placeholder identifier
+     * @return  Configured refresh interval for placeholder
+     */
+    public int getRefreshInterval(@NotNull String identifier) {
         return refreshIntervals.getOrDefault(identifier, defaultRefresh);
     }
 
-    public @NotNull Collection<Placeholder> getAllPlaceholders() {
+    /**
+     * Returns collection of all currently registered placeholders.
+     *
+     * @return  collection of all currently registered placeholders
+     */
+    @NotNull
+    public Collection<Placeholder> getAllPlaceholders() {
         return new ArrayList<>(registeredPlaceholders.values());
     }
 
-    public <T extends Placeholder> T registerPlaceholder(@NonNull T placeholder) {
+    /**
+     * Registers placeholder into the system.
+     *
+     * @param   placeholder
+     *          Placeholder to register
+     * @return  Registered placeholder (input)
+     * @param   <T>
+     *          Specific placeholder class
+     */
+    public <T extends Placeholder> T registerPlaceholder(@NotNull T placeholder) {
         boolean override = registeredPlaceholders.containsKey(placeholder.getIdentifier());
         registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
         recalculateUsedPlaceholders();
@@ -218,6 +244,14 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         return placeholders;
     }
 
+    /**
+     * Marks placeholder as used by specified feature.
+     *
+     * @param   identifier
+     *          Placeholder to mark as used
+     * @param   feature
+     *          Feature using the placeholder
+     */
     public void addUsedPlaceholder(@NonNull String identifier, @NonNull Refreshable feature) {
         if (placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature)) {
             recalculateUsedPlaceholders();
@@ -228,14 +262,35 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         }
     }
 
-    public void recalculateUsedPlaceholders() {
+    /**
+     * Updates array of used placeholders.
+     */
+    private void recalculateUsedPlaceholders() {
         usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).distinct().toArray(Placeholder[]::new);
     }
 
-    public @NotNull String findReplacement(@NonNull String placeholder, @NonNull String output) {
+    /**
+     * Finds replacement for specified placeholder and output.
+     *
+     * @param   placeholder
+     *          Placeholder to find replacement for
+     *
+     * @param   output
+     *          Output the placeholder has returned
+     * @return  New output based on configuration, may be identical to {@code output}
+     */
+    @NotNull
+    public String findReplacement(@NonNull String placeholder, @NonNull String output) {
         return getPlaceholder(placeholder).getReplacements().findReplacement(output);
     }
 
+    /**
+     * Returns set of features using specified placeholder.
+     *
+     * @param   identifier
+     *          Placeholder to get usage of
+     * @return  Set of features using the placeholder
+     */
     @NotNull
     public Set<Refreshable> getPlaceholderUsage(@NotNull String identifier) {
         Set<Refreshable> usage = placeholderUsage.getOrDefault(identifier, new HashSet<>());
@@ -318,6 +373,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         recalculateUsedPlaceholders();
     }
 
+    /**
+     * Returns {@code true} if placeholder is registered, {@code false} if not.
+     *
+     * @param   identifier
+     *          Placeholder to check
+     * @return  {@code true} if placeholder is registered, {@code false} if not
+     */
     public boolean isPlaceholderRegistered(@NotNull String identifier) {
         return registeredPlaceholders.containsKey(identifier);
     }

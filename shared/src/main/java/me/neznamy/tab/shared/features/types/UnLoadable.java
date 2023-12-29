@@ -6,7 +6,7 @@ package me.neznamy.tab.shared.features.types;
 public interface UnLoadable {
 
     /**
-     * Called on plugin unload
+     * Called on plugin unload.
      */
     void unload();
 }

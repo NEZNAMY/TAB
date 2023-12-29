@@ -59,22 +59,64 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         registerMessage("vanish", UpdateVanishStatus.class, UpdateVanishStatus::new);
     }
 
+    /**
+     * Updates tablist format of specified player.
+     *
+     * @param   p
+     *          Player to format
+     * @param   format
+     *          Format to use
+     */
     public void updateTabFormat(@NotNull TabPlayer p, @NotNull String format) {
         if (redisPlayerList == null) return; // Plugin still loading
         sendMessage(redisPlayerList.new Update(p.getTablistId(), format));
     }
 
+    /**
+     * Updates team info of player.
+     *
+     * @param   p
+     *          Player to update
+     * @param   teamName
+     *          Team name
+     * @param   tagPrefix
+     *          Team prefix
+     * @param   tagSuffix
+     *          Team suffix
+     * @param   nameVisibility
+     *          Nametag visibility
+     */
     public void updateTeam(@NotNull TabPlayer p, @NotNull String teamName, @NotNull String tagPrefix,
                               @NotNull String tagSuffix, @NotNull Scoreboard.NameVisibility nameVisibility) {
         if (redisTeams == null) return; // Plugin still loading
         sendMessage(redisTeams.new Update(p.getTablistId(), teamName, tagPrefix, tagSuffix, nameVisibility));
     }
 
+    /**
+     * Updates belowname value of player.
+     *
+     * @param   p
+     *          Player to update
+     * @param   value
+     *          Numeric value of player
+     * @param   fancyValue
+     *          NumberFormat value of player
+     */
     public void updateBelowName(@NotNull TabPlayer p, int value, @NotNull String fancyValue) {
         if (redisBelowName == null) return; // Plugin still loading
         sendMessage(redisBelowName.new Update(p.getTablistId(), value, fancyValue));
     }
 
+    /**
+     * Updates playerlist objective value of player.
+     *
+     * @param   p
+     *          Player to update
+     * @param   value
+     *          Numeric value of player
+     * @param   fancyValue
+     *          NumberFormat value of player
+     */
     public void updateYellowNumber(@NotNull TabPlayer p, int value, String fancyValue) {
         if (redisYellowNumber == null) return; // Plugin still loading
         sendMessage(redisYellowNumber.new Update(p.getTablistId(), value, fancyValue));
@@ -226,6 +268,12 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         return null;
     }
 
+    /**
+     * Sends message to other proxies.
+     *
+     * @param   message
+     *          Message to send
+     */
     public void sendMessage(@NotNull RedisMessage message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(proxy.toString());
@@ -234,6 +282,16 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         sendMessage(Base64.getEncoder().encodeToString(out.toByteArray()));
     }
 
+    /**
+     * Registers redis message.
+     *
+     * @param   name
+     *          Message name
+     * @param   clazz
+     *          Message class
+     * @param   supplier
+     *          Message supplier
+     */
     public void registerMessage(@NotNull String name, @NotNull Class<? extends RedisMessage> clazz, @NotNull Supplier<RedisMessage> supplier) {
         messages.put(name, supplier);
         classStringMap.put(clazz, name);
@@ -245,7 +303,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     }
 
     @Override
-    public void onTabListClear(TabPlayer player) {
+    public void onTabListClear(@NotNull TabPlayer player) {
         features.forEach(f -> f.onTabListClear(player));
     }
 

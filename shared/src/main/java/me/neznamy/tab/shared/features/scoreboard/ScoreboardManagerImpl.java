@@ -15,12 +15,13 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * Feature handler for scoreboard feature
+ * Feature handler for scoreboard feature.
  */
 public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager, JoinListener,
         CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable, Refreshable,
         QuitListener, LoginPacketListener {
 
+    /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
     //config options

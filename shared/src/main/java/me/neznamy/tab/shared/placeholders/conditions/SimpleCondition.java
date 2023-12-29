@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -12,18 +11,18 @@ import org.jetbrains.annotations.NotNull;
 public abstract class SimpleCondition {
 
     /** Text on the left side of condition */
-    @NonNull protected final String leftSide;
+    @NotNull protected final String leftSide;
     
     /** Placeholders used on the left side */
-    @NonNull private final String[] leftSidePlaceholders;
+    @NotNull private final String[] leftSidePlaceholders;
 
     /** Text on the right side of condition */
-    @NonNull protected final String rightSide;
+    @NotNull protected final String rightSide;
 
     /** Placeholders used on the right side */
-    @NonNull private final String[] rightSidePlaceholders;
+    @NotNull private final String[] rightSidePlaceholders;
 
-    protected SimpleCondition(@NonNull String[] arr) {
+    protected SimpleCondition(@NotNull String[] arr) {
         leftSide = arr.length < 1 ? "" : arr[0];
         leftSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(leftSide).toArray(new String[0]);
         rightSide = arr.length < 2 ? "" : arr[1];
@@ -37,7 +36,7 @@ public abstract class SimpleCondition {
      *          player to replace placeholders for
      * @return  replaced left side
      */
-    public @NotNull String parseLeftSide(@NonNull TabPlayer p) {
+    public @NotNull String parseLeftSide(@NotNull TabPlayer p) {
         return parseSide(p, leftSide, leftSidePlaceholders);
     }
     
@@ -48,7 +47,7 @@ public abstract class SimpleCondition {
      *           player to replace placeholders for
      * @return   replaced right side
      */
-    public @NotNull String parseRightSide(@NonNull TabPlayer p) {
+    public @NotNull String parseRightSide(@NotNull TabPlayer p) {
         return parseSide(p, rightSide, rightSidePlaceholders);
     }
     
@@ -63,7 +62,7 @@ public abstract class SimpleCondition {
      *          used placeholders
      * @return  replaced string
      */
-    public String parseSide(@NonNull TabPlayer p, @NonNull String value, @NonNull String[] placeholders) {
+    public String parseSide(@NotNull TabPlayer p, @NotNull String value, @NotNull String[] placeholders) {
         String result = value;
         for (String identifier : placeholders) {
             result = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(result, p);
@@ -78,5 +77,5 @@ public abstract class SimpleCondition {
      *          player to check condition for
      * @return  {@code true} if met, {@code false} if not
      */
-    public abstract boolean isMet(@NonNull TabPlayer p);
+    public abstract boolean isMet(@NotNull TabPlayer p);
 }
