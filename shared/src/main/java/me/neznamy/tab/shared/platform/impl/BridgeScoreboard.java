@@ -18,6 +18,12 @@ import java.util.Collection;
  */
 public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
 
+    /**
+     * Constructs new instance.
+     *
+     * @param   player
+     *          Player this scoreboard belongs to
+     */
     public BridgeScoreboard(@NotNull ProxyTabPlayer player) {
         super(player);
     }

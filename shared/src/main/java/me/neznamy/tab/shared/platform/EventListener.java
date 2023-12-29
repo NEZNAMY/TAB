@@ -9,6 +9,9 @@ import java.util.UUID;
 
 /**
  * Class for methods called by platform's event listener.
+ *
+ * @param   <T>
+ *          Platform's player class
  */
 public abstract class EventListener<T> {
 
@@ -81,10 +84,27 @@ public abstract class EventListener<T> {
         p.setPlayer(newPlayer);
     }
 
+    /**
+     * Forwards command preprocess to all features. Returns {@code true}
+     * if the event should be cancelled, {@code false} if not.
+     *
+     * @param   player
+     *          Player who ran the command
+     * @param   command
+     *          Executed command including /
+     * @return  {@code true} if event should be cancelled, {@code false} if not.
+     */
     public boolean command(@NotNull UUID player, @NotNull String command) {
         if (TAB.getInstance().isPluginDisabled()) return false;
         return TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(player), command);
     }
 
+    /**
+     * Creates new TabPlayer instance from given player object.
+     *
+     * @param   player
+     *          Platform's player object
+     * @return  New TabPlayer from given player object
+     */
     public abstract TabPlayer createPlayer(T player);
 }

@@ -11,30 +11,83 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * Interface for managing tablist entries.
+ */
 public interface TabList {
 
+    /** Name of the textures property in game profile */
     String TEXTURES_PROPERTY = "textures";
 
+    /**
+     * Removes entries from the TabList.
+     *
+     * @param   entries
+     *          Entries to remove
+     */
     default void removeEntries(@NotNull Collection<UUID> entries) {
         entries.forEach(this::removeEntry);
     }
 
+    /**
+     * Adds specified entries into the TabList.
+     *
+     * @param   entries
+     *          Entries to add
+     */
     default void addEntries(@NotNull Collection<Entry> entries) {
         entries.forEach(this::addEntry);
     }
 
+    /**
+     * Removes entry from the TabList.
+     *
+     * @param   entry
+     *          Entry to remove
+     */
     void removeEntry(@NotNull UUID entry);
 
+    /**
+     * Updates display name of an entry. Using {@code null} makes it undefined and
+     * scoreboard team prefix/suffix will be visible instead.
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   displayName
+     *          New display name
+     */
     void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName);
 
+    /**
+     * Updates latency of specified entry.
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   latency
+     *          New latency
+     */
     void updateLatency(@NotNull UUID entry, int latency);
 
+    /**
+     * Updates game mode of specified entry.
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   gameMode
+     *          New game mode
+     */
     void updateGameMode(@NotNull UUID entry, int gameMode);
 
+    /**
+     * Adds specified entry into the TabList.
+     *
+     * @param   entry
+     *          Entry to add
+     */
     void addEntry(@NotNull Entry entry);
 
     /**
-     * Sets header and footer to specified values
+     * Sets header and footer to specified values.
      *
      * @param   header
      *          Header to use
@@ -75,8 +128,25 @@ public interface TabList {
                 "for viewer " + viewer.getName() + " than expected, fixing.");
     }
 
+    /**
+     * TabList action
+     */
     enum Action {
-        ADD_PLAYER, REMOVE_PLAYER, UPDATE_DISPLAY_NAME, UPDATE_LATENCY, UPDATE_GAME_MODE
+
+        /** Adds player into the TabList */
+        ADD_PLAYER,
+
+        /** Removes player from the TabList */
+        REMOVE_PLAYER,
+
+        /** Updates display name */
+        UPDATE_DISPLAY_NAME,
+
+        /** Updates latency */
+        UPDATE_LATENCY,
+
+        /** Updates game mode*/
+        UPDATE_GAME_MODE
     }
 
     /**
@@ -107,6 +177,9 @@ public interface TabList {
          */
         @Nullable private IChatBaseComponent displayName;
 
+        /**
+         * TabList entry builder.
+         */
         @RequiredArgsConstructor
         public static class Builder {
 

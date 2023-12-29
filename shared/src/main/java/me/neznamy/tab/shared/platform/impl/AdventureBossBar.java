@@ -15,11 +15,16 @@ import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Shared BossBar implementation using Adventure API.
+ */
 @AllArgsConstructor
 public class AdventureBossBar implements BossBar {
 
+    /** Player this BossBar belongs to */
     private final TabPlayer player;
 
+    /** BossBars currently visible to the player */
     private final Map<UUID, net.kyori.adventure.bossbar.BossBar> bossBars = new LinkedHashMap<>();
 
     @Override

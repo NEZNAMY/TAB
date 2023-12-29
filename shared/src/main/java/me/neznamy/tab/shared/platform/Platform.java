@@ -18,7 +18,7 @@ import java.io.File;
 
 /**
  * An interface with methods that are called in universal code,
- * but require platform-specific API calls
+ * but require platform-specific API calls.
  */
 public interface Platform {
 

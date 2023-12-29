@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
+/**
+ * Interface for sending BossBars to players.
+ */
 public interface BossBar {
 
     /**
