@@ -47,6 +47,8 @@ public class PacketTabList18 extends TabListBase {
     private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
+    private static PacketSender packetSender;
+
     /**
      * Constructs new instance with given player.
      *
@@ -101,7 +103,7 @@ public class PacketTabList18 extends TabListBase {
                 Enum.valueOf(EnumGamemodeClass, "ADVENTURE"),
                 Enum.valueOf(EnumGamemodeClass, "SPECTATOR")
         };
-
+        packetSender = new PacketSender();
         try {
             skinData = new SkinData();
         } catch (Exception e) {
@@ -115,27 +117,27 @@ public class PacketTabList18 extends TabListBase {
     @Override
     @SneakyThrows
     public void removeEntry(@NotNull UUID entry) {
-        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.REMOVE_PLAYER, new Builder(entry).build()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.REMOVE_PLAYER, new Builder(entry).build()));
     }
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
-        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
     }
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        PacketSender.sendPacket(player.getPlayer(), createPacket(Action.ADD_PLAYER, entry));
+        packetSender.sendPacket(player.getPlayer(), createPacket(Action.ADD_PLAYER, entry));
     }
 
     @SneakyThrows

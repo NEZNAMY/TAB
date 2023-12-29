@@ -26,6 +26,7 @@ public class PacketTabList17 extends TabListBase {
     private static Field ACTION;
     private static Field PING;
     private static boolean protocolHack;
+    private static PacketSender packetSender;
 
     /** Because entries are identified by names and not uuids on 1.7- */
     @NotNull
@@ -47,9 +48,11 @@ public class PacketTabList17 extends TabListBase {
     /**
      * Attempts to load all required NMS classes, fields and methods.
      * If anything fails, throws an exception.
+     *
+     * @throws  ReflectiveOperationException
+     *          If something goes wrong
      */
-    @SneakyThrows
-    public static void load() {
+    public static void load() throws ReflectiveOperationException {
         Class<?> PlayerInfoClass = BukkitReflection.getClass("PacketPlayOutPlayerInfo", "Packet201PlayerInfo");
         try {
             newPlayerInfo = PlayerInfoClass.getConstructor(String.class, boolean.class, int.class);
@@ -61,12 +64,13 @@ public class PacketTabList17 extends TabListBase {
             ACTION = ReflectionUtils.getField(PlayerInfoClass, "action");
             PING = ReflectionUtils.getField(PlayerInfoClass, "ping");
         }
+        packetSender = new PacketSender();
     }
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-        PacketSender.sendPacket(player.getPlayer(), createPacket(displayNames.get(entry), false, 0));
+        packetSender.sendPacket(player.getPlayer(), createPacket(displayNames.get(entry), false, 0));
         userNames.remove(entry);
         displayNames.remove(entry);
     }
@@ -74,14 +78,14 @@ public class PacketTabList17 extends TabListBase {
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-        PacketSender.sendPacket(player.getPlayer(), createPacket(displayNames.get(entry), false, 0));
+        packetSender.sendPacket(player.getPlayer(), createPacket(displayNames.get(entry), false, 0));
         addEntry(new Entry.Builder(entry).displayName(displayName).name(userNames.get(entry)).build());
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-        PacketSender.sendPacket(player.getPlayer(), createPacket(displayNames.get(entry), true, latency));
+        packetSender.sendPacket(player.getPlayer(), createPacket(displayNames.get(entry), true, latency));
     }
 
     @Override
@@ -93,7 +97,7 @@ public class PacketTabList17 extends TabListBase {
     public void addEntry(@NotNull Entry entry) {
         String name = entry.getDisplayName() == null ? entry.getName() : entry.getDisplayName().toLegacyText();
         if (name.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7) name = name.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
-        PacketSender.sendPacket(player.getPlayer(), createPacket(name, true, entry.getLatency()));
+        packetSender.sendPacket(player.getPlayer(), createPacket(name, true, entry.getLatency()));
         userNames.put(entry.getUniqueId(), entry.getName());
         displayNames.put(entry.getUniqueId(), name);
     }

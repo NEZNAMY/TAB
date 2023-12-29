@@ -28,6 +28,7 @@ public class PacketHeaderFooter extends HeaderFooter {
     private static Field HEADER;
     private static Field FOOTER;
     private static Method ChatSerializer_DESERIALIZE;
+    private static PacketSender packetSender;
     private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
@@ -51,7 +52,8 @@ public class PacketHeaderFooter extends HeaderFooter {
                     HEADER = ReflectionUtils.getFields(HeaderFooterClass, IChatBaseComponent).get(0);
                     FOOTER = ReflectionUtils.getFields(HeaderFooterClass, IChatBaseComponent).get(1);
                 }
-                available = PacketSender.isAvailable();
+                packetSender = new PacketSender();
+                available = true;
             }
         } catch (Exception ignored) {
             // Print exception to find out what went wrong
@@ -62,12 +64,12 @@ public class PacketHeaderFooter extends HeaderFooter {
     @Override
     public void set(@NotNull BukkitTabPlayer player, @NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         if (BukkitReflection.getMinorVersion() >= PROPER_CONSTRUCTOR_VERSION) {
-            PacketSender.sendPacket(player.getPlayer(), newHeaderFooter.newInstance(convert(header, player), convert(footer, player)));
+            packetSender.sendPacket(player.getPlayer(), newHeaderFooter.newInstance(convert(header, player), convert(footer, player)));
         } else {
             Object packet = newHeaderFooter.newInstance();
             HEADER.set(packet, convert(header, player));
             FOOTER.set(packet, convert(footer, player));
-            PacketSender.sendPacket(player.getPlayer(), packet);
+            packetSender.sendPacket(player.getPlayer(), packet);
         }
     }
 

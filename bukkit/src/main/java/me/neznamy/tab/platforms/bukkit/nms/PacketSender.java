@@ -1,10 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,38 +13,41 @@ import java.lang.reflect.Method;
  */
 public class PacketSender {
 
-    private static Method getHandle;
-    private static Field PLAYER_CONNECTION;
-    private static Method sendPacket;
-    @Getter private static boolean available;
+    /** Method for getting player's NMS object */
+    @NotNull
+    private final Method getHandle;
+
+    /** Player connection field in player class */
+    @NotNull
+    private final Field PLAYER_CONNECTION;
+
+    /** Method for sending packet */
+    @NotNull
+    private final Method sendPacket;
 
     /**
-     * Attempts to load required classes, fields and methods and marks class as available.
-     * If something fails, error message is printed and class is not marked as available.
+     * Constructs new instance and attempts to load required classes, fields and methods.
+     * If something fails, error is thrown.
+     *
+     * @throws  ReflectiveOperationException
+     *          If something fails
      */
-    public static void tryLoad() {
-        try {
-            Class<?> Packet = BukkitReflection.getClass("network.protocol.Packet", "Packet");
-            Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
-            Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
-                    "server.network.PlayerConnection", "PlayerConnection");
-            getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
-            PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
-            if (BukkitReflection.getMinorVersion() >= 7) {
-                sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
-            } else {
-                sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
-            }
-            available = true;
-        } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
-                    "sending packets due to a compatibility error. Majority of the features will not work / be very limited. " +
-                    "Please update the plugin to a version with proper support for your server version.");
+    public PacketSender() throws ReflectiveOperationException {
+        Class<?> Packet = BukkitReflection.getClass("network.protocol.Packet", "Packet");
+        Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
+        Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
+                "server.network.PlayerConnection", "PlayerConnection");
+        getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
+        PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
+        if (BukkitReflection.getMinorVersion() >= 7) {
+            sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
+        } else {
+            sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
     }
 
     /**
-     * Sends packet to specified player. If initialization fails, nothing happens.
+     * Sends packet to specified player.
      * If something goes wrong, throws an exception.
      *
      * @param   player
@@ -56,8 +56,7 @@ public class PacketSender {
      *          Packet to send
      */
     @SneakyThrows
-    public static void sendPacket(@NotNull Player player, @NotNull Object packet) {
-        if (!player.isOnline() || !available) return;
+    public void sendPacket(@NotNull Player player, @NotNull Object packet) {
         sendPacket.invoke(PLAYER_CONNECTION.get(getHandle.invoke(player)), packet);
     }
 }

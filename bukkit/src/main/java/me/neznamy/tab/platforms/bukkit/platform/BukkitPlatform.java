@@ -7,7 +7,6 @@ import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
@@ -95,7 +94,6 @@ public class BukkitPlatform implements BackendPlatform {
             PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
         }
         PingRetriever.tryLoad();
-        PacketSender.tryLoad();
         ScoreboardLoader.findInstance();
         TabListBase.findInstance();
         if (BukkitReflection.getMinorVersion() >= 8) {

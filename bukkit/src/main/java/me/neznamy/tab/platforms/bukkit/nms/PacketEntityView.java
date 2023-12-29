@@ -72,6 +72,8 @@ public class PacketEntityView implements EntityView {
 
     private static Object dummyEntity;
 
+    private static PacketSender packetSender;
+
     @Getter
     private static boolean available;
 
@@ -94,6 +96,7 @@ public class PacketEntityView implements EntityView {
             ClientboundBundlePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundBundlePacket");
             ClientboundBundlePacket_packets = ReflectionUtils.getOnlyField(ClientboundBundlePacket.getSuperclass(), Iterable.class);
         }
+        packetSender = new PacketSender();
         available = true;
     }
 
@@ -240,9 +243,9 @@ public class PacketEntityView implements EntityView {
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location l, @NotNull EntityData data) {
         int minorVersion = BukkitReflection.getMinorVersion();
         if (minorVersion >= 19) {
-            PacketSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0.0d));
+            packetSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0.0d));
         } else if (minorVersion >= 17) {
-            PacketSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty));
+            packetSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty));
         } else {
             Object nmsPacket = newSpawnEntity.newInstance();
             SpawnEntity_EntityId.set(nmsPacket, entityId);
@@ -260,7 +263,7 @@ public class PacketEntityView implements EntityView {
                 SpawnEntity_Z.set(nmsPacket, floor(l.getZ()));
             }
             SpawnEntity_EntityType.set(nmsPacket, entityIds.get((EntityType) entityType));
-            PacketSender.sendPacket(player.getPlayer(), nmsPacket);
+            packetSender.sendPacket(player.getPlayer(), nmsPacket);
         }
         if (BukkitReflection.getMinorVersion() >= 15) {
             updateEntityMetadata(entityId, data);
@@ -272,9 +275,9 @@ public class PacketEntityView implements EntityView {
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
         if (newEntityMetadata.getParameterCount() == 2) {
             //1.19.3+
-            PacketSender.sendPacket(player.getPlayer(), newEntityMetadata.newInstance(entityId, DataWatcher.DataWatcher_packDirty.invoke(data.build())));
+            packetSender.sendPacket(player.getPlayer(), newEntityMetadata.newInstance(entityId, DataWatcher.DataWatcher_packDirty.invoke(data.build())));
         } else {
-            PacketSender.sendPacket(player.getPlayer(), newEntityMetadata.newInstance(entityId, data.build(), true));
+            packetSender.sendPacket(player.getPlayer(), newEntityMetadata.newInstance(entityId, data.build(), true));
         }
     }
 
@@ -297,18 +300,18 @@ public class PacketEntityView implements EntityView {
             EntityTeleport_Y.set(nmsPacket, floor(location.getY()));
             EntityTeleport_Z.set(nmsPacket, floor(location.getZ()));
         }
-        PacketSender.sendPacket(player.getPlayer(), nmsPacket);
+        packetSender.sendPacket(player.getPlayer(), nmsPacket);
     }
 
     @SneakyThrows
     @Override
     public void destroyEntities(int... entities) {
         if (newEntityDestroy.getParameterTypes()[0] != int.class) {
-            PacketSender.sendPacket(player.getPlayer(), newEntityDestroy.newInstance(new Object[]{entities}));
+            packetSender.sendPacket(player.getPlayer(), newEntityDestroy.newInstance(new Object[]{entities}));
         } else {
             //1.17.0 Mojank
             for (int entity : entities) {
-                PacketSender.sendPacket(player.getPlayer(), newEntityDestroy.newInstance(entity));
+                packetSender.sendPacket(player.getPlayer(), newEntityDestroy.newInstance(entity));
             }
         }
     }
