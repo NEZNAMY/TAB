@@ -22,11 +22,24 @@ import java.util.UUID;
 public class FabricEntityView implements EntityView {
 
     /** Player this view belongs to */
+    @NotNull
     private final FabricTabPlayer player;
 
     @NotNull
-    @SuppressWarnings("DataFlowIssue") // It actually is nullable
-    private static final ArmorStand dummyEntity = new ArmorStand(null, 0, 0, 0);
+    private final ArmorStand dummyEntity;
+
+    /**
+     * Constructs new instance.
+     *
+     * @param   player
+     *          Player this view will belong to
+     */
+    public FabricEntityView(@NotNull FabricTabPlayer player) {
+        this.player = player;
+
+        // Make level not null, because some mods hacking deep into the server code cause NPE
+        dummyEntity = new ArmorStand(FabricMultiVersion.getLevel.apply(player.getPlayer()), 0, 0, 0);
+    }
 
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location,
