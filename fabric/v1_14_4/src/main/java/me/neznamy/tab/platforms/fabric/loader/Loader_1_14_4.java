@@ -40,7 +40,7 @@ import java.util.Optional;
 })
 public class Loader_1_14_4 {
 
-    private final ArmorStand dummyEntity = new ArmorStand(null, 0, 0, 0);
+    private ArmorStand dummyEntity;
     private final Scoreboard dummyScoreboard = new Scoreboard();
 
     /**
@@ -76,7 +76,8 @@ public class Loader_1_14_4 {
         };
         FabricMultiVersion.sendMessage = (player, message) -> player.sendMessage(message);
         FabricMultiVersion.sendMessage2 = (sender, message) -> sender.sendSuccess(message, false);
-        FabricMultiVersion.spawnEntity = (entityId, id, entityType, location) -> {
+        FabricMultiVersion.spawnEntity = (level, entityId, id, entityType, location) -> {
+            if (dummyEntity == null) dummyEntity = new ArmorStand(level, 0, 0, 0);
             dummyEntity.setId(entityId);
             dummyEntity.setUUID(id);
             dummyEntity.setPos(location.getX(), location.getY(), location.getZ());

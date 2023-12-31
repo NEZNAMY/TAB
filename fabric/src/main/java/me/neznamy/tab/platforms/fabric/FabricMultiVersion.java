@@ -48,7 +48,7 @@ public class FabricMultiVersion {
     public static FunctionWithException<ServerPlayer, Channel> getChannel;
     public static BiConsumer<ServerPlayer, Component> sendMessage;
     public static BiConsumer<CommandSourceStack, Component> sendMessage2;
-    public static QuadFunction<Integer, UUID, Object, Location, Packet<?>> spawnEntity;
+    public static QuintFunction<Level, Integer, UUID, Object, Location, Packet<?>> spawnEntity;
     public static QuadFunction<TabPlayer, Byte, String, Boolean, EntityData> createDataWatcher;
     public static BiFunctionWithException<TabList.Action, FabricTabList.Builder, Packet<?>> buildTabListPacket;
     public static BiFunctionWithException<Component, Component, Packet<?>> newHeaderFooter;

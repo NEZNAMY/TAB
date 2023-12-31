@@ -44,7 +44,7 @@ public class FabricEntityView implements EntityView {
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location,
                             @NotNull EntityData data) {
-        player.sendPacket(FabricMultiVersion.spawnEntity.apply(entityId, id, entityType, location));
+        player.sendPacket(FabricMultiVersion.spawnEntity.apply(FabricMultiVersion.getLevel.apply(player.getPlayer()), entityId, id, entityType, location));
         updateEntityMetadata(entityId, data);
     }
 

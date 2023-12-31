@@ -75,7 +75,7 @@ public class Loader_1_20_4 {
         if (serverVersion.getMinorVersion() >= 19) {
             FabricMultiVersion.sendMessage = ServerPlayer::sendSystemMessage;
             FabricMultiVersion.sendMessage2 = CommandSourceStack::sendSystemMessage;
-            FabricMultiVersion.spawnEntity = (entityId, id, entityType, location) ->
+            FabricMultiVersion.spawnEntity = (level, entityId, id, entityType, location) ->
                     new ClientboundAddEntityPacket(entityId, id, location.getX(), location.getY(), location.getZ(),
                             0, 0, (EntityType<?>) entityType, 0, Vec3.ZERO, 0);
         }
