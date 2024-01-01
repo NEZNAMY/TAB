@@ -49,7 +49,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
-        TAB.getInstance().getMisconfigurationHelper().checkBelowNameText(rawText);
+        TAB.getInstance().getConfigHelper().startup().checkBelowNameText(rawText);
     }
 
     @Override

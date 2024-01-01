@@ -60,8 +60,8 @@ public class Animation {
     public Animation(@NotNull PlaceholderManagerImpl placeholderManager, @NonNull String name, @Nullable List<String> list, int interval) {
         this.placeholderManager = placeholderManager;
         this.name = name;
-        messages = TAB.getInstance().getMisconfigurationHelper().fixAnimationFrames(name, list).toArray(new String[0]);
-        this.interval = TAB.getInstance().getMisconfigurationHelper().fixAnimationInterval(name, interval);
+        messages = TAB.getInstance().getConfigHelper().startup().fixAnimationFrames(name, list).toArray(new String[0]);
+        this.interval = TAB.getInstance().getConfigHelper().startup().fixAnimationInterval(name, interval);
         int refresh = this.interval;
         List<String> nestedPlaceholders0 = new ArrayList<>();
         for (int i=0; i<messages.length; i++) {

@@ -57,7 +57,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
      * Constructs new instance and loads refresh intervals from config.
      */
     public PlaceholderManagerImpl() {
-        TAB.getInstance().getMisconfigurationHelper().fixRefreshIntervals(refreshIntervals);
+        TAB.getInstance().getConfigHelper().startup().fixRefreshIntervals(refreshIntervals);
         defaultRefresh = refreshIntervals.getOrDefault("default-refresh-interval", 500);
     }
 

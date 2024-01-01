@@ -90,7 +90,7 @@ public class Condition {
             if (condition != null) {
                 subConditions.add(condition);
             } else {
-                TAB.getInstance().getMisconfigurationHelper().invalidConditionPattern(name, line);
+                TAB.getInstance().getConfigHelper().startup().invalidConditionPattern(name, line);
             }
         }
         PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();

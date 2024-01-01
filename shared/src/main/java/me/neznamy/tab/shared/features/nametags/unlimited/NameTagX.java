@@ -50,7 +50,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     @Override
     public void load() {
         if (invisibleNameTags) {
-            TAB.getInstance().getMisconfigurationHelper().invisibleAndUnlimitedNameTagsAreMutuallyExclusive();
+            TAB.getInstance().getConfigHelper().startup().invisibleAndUnlimitedNameTagsAreMutuallyExclusive();
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);

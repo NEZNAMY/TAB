@@ -1,36 +1,31 @@
-package me.neznamy.tab.shared;
-
-import java.io.File;
-import java.util.*;
+package me.neznamy.tab.shared.config.helper;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.shared.TabConstants.Placeholder;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.layout.GroupPattern;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
-import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.util.*;
+
 /**
- * Class for detecting misconfiguration in config files and fix mistakes
- * to avoid headaches when making a configuration mistake.
+ * Class for printing startup warns when features are
+ * clearly not configured properly when loading them.
  */
-public class MisconfigurationHelper {
+public class StartupWarnPrinter {
 
     /** Amount of logged warns on startup */
     private int warnCount;
 
-    // ------------------------
-    // Startup Errors
-    // ------------------------
-
     /**
      * Checks if configured refresh intervals are non-negative, non-zero and
-     * divisible by {@link Placeholder#MINIMUM_REFRESH_INTERVAL}. If not,
+     * divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}. If not,
      * value is fixed in the map and console warn is sent.
      *
      * @param   refreshIntervals
@@ -43,7 +38,7 @@ public class MisconfigurationHelper {
             if (entry.getValue() == null) {
                 startupWarn("Refresh interval of " + entry.getKey() +
                         " is set to null. Define a valid value or remove it if you don't want to override default value.");
-                valuesToFix.put(entry.getKey(), Placeholder.MINIMUM_REFRESH_INTERVAL);
+                valuesToFix.put(entry.getKey(), TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
                 continue;
             }
             if (!(entry.getValue() instanceof Integer)) {
@@ -54,7 +49,7 @@ public class MisconfigurationHelper {
             }
             int interval = (int) entry.getValue();
             if (!entry.getKey().equals("default-refresh-interval") && interval == defaultRefresh) {
-                hint("Refresh interval of " + entry.getKey() + " is same as default interval, therefore there is no need to override it.");
+                TAB.getInstance().getConfigHelper().hint().redundantRefreshInterval(entry.getKey());
             }
             if (interval < 0) {
                 startupWarn("Invalid refresh interval configured for " + entry.getKey() +
@@ -62,17 +57,17 @@ public class MisconfigurationHelper {
             } else if (interval == 0) {
                 startupWarn("Invalid refresh interval configured for " + entry.getKey() +
                         " (0). Value cannot be zero.");
-            } else if (interval % Placeholder.MINIMUM_REFRESH_INTERVAL != 0) {
+            } else if (interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0) {
                 startupWarn("Invalid refresh interval configured for " + entry.getKey() +
-                        " (" + interval + "). Value must be divisible by " + Placeholder.MINIMUM_REFRESH_INTERVAL + ".");
+                        " (" + interval + "). Value must be divisible by " + TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL + ".");
             } else continue;
-            valuesToFix.put(entry.getKey(), Placeholder.MINIMUM_REFRESH_INTERVAL);
+            valuesToFix.put(entry.getKey(), TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
         }
         refreshIntervals.putAll(valuesToFix);
     }
 
     /**
-     * Makes interval divisible by {@link Placeholder#MINIMUM_REFRESH_INTERVAL}
+     * Makes interval divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      * and sends error message if it was not already or was 0 or less
      *
      * @param   name
@@ -399,78 +394,5 @@ public class MisconfigurationHelper {
         TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Found a total of " + warnCount + " issues."));
         // Reset after printing to prevent count going up on each reload
         warnCount = 0;
-    }
-
-    // ------------------------
-    // Runtime Errors
-    // ------------------------
-
-    public void invalidNumberForBossBarProgress(@NotNull String bossBar, @NotNull String input, @NotNull String configuredValue, TabPlayer player) {
-        // Placeholders are not initialized, because bridge did not respond yet (typically on join)
-        if (player instanceof ProxyTabPlayer && !((ProxyTabPlayer)player).isBridgeConnected()) return;
-
-        if (configuredValue.contains("%")) {
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Placeholder \"" + configuredValue +
-                    "\" used in BossBar progress of \"" + bossBar + "\" returned value, which cannot be evaluated to a number between 0 and 100 (\"" + input + "\")"));
-
-        } else {
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("BossBar \"" + bossBar +
-                    "\" has invalid input configured for progress (\"" + configuredValue + "\"). Expecting a number between 0 and 100 or a placeholder returning one."));
-        }
-    }
-
-    public void invalidInputForNumericSorting(SortingType type, String placeholder, String output, TabPlayer player) {
-        // Placeholders are not initialized, because bridge did not respond yet (typically on join)
-        if (player instanceof ProxyTabPlayer && !((ProxyTabPlayer)player).isBridgeConnected()) return;
-
-        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Placeholder " + placeholder + " used in sorting type " +
-                type + " returned \"" + output + "\" for player " + player.getName() + ", which is not a valid number."));
-    }
-
-    // ------------------------
-    // Hints
-    // ------------------------
-
-    @SuppressWarnings("unchecked")
-    public void checkHeaderFooterForRedundancy(Map<String, Object> configSection) {
-        String defaultHeader = String.valueOf(configSection.get("header"));
-        String defaultFooter = String.valueOf(configSection.get("footer"));
-        if (configSection.get("per-world") instanceof Map) {
-            Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) configSection.get("per-world");
-            for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
-                String world = entry.getKey();
-                if (String.valueOf(entry.getValue().getOrDefault("header", "-")).equals(defaultHeader)) {
-                    hint("Per-world header for world \"" + world + "\" is identical to default header. " +
-                            "This is redundant and can be removed for cleaner config.");
-                }
-                if (String.valueOf(entry.getValue().getOrDefault("footer", "-")).equals(defaultFooter)) {
-                    hint("Per-world footer for world \"" + world + "\" is identical to default footer. " +
-                            "This is redundant and can be removed for cleaner config.");
-                }
-            }
-        }
-        if (configSection.get("per-server") instanceof Map) {
-            Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) configSection.get("per-server");
-            for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
-                String server = entry.getKey();
-                if (String.valueOf(entry.getValue().getOrDefault("header", "-")).equals(defaultHeader)) {
-                    hint("Per-server header for server \"" + server + "\" is identical to default header. " +
-                            "This is redundant and can be removed for cleaner config.");
-                }
-                if (String.valueOf(entry.getValue().getOrDefault("footer", "-")).equals(defaultFooter)) {
-                    hint("Per-server footer for server \"" + server + "\" is identical to default footer. " +
-                            "This is redundant and can be removed for cleaner config.");
-                }
-            }
-        }
-    }
-
-    public void layoutIncludesPreventSpectatorEffect() {
-        hint("Layout feature automatically includes prevent-spectator-effect, therefore the feature can be disabled " +
-                "for better performance, as it is not needed at all (assuming it is configured to always display some layout).");
-    }
-
-    public void hint(@NotNull String message) {
-        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&6[Hint] " + message));
     }
 }

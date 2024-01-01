@@ -60,7 +60,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         String noConditionScoreboard = null;
         for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
             if (entry.getValue() == null) {
-                TAB.getInstance().getMisconfigurationHelper().invalidScoreboardSection(entry.getKey());
+                TAB.getInstance().getConfigHelper().startup().invalidScoreboardSection(entry.getKey());
                 continue;
             }
             String condition = (String) entry.getValue().get("display-condition");
@@ -68,11 +68,11 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
                 noConditionScoreboardFound = true;
                 noConditionScoreboard = entry.getKey();
             } else if (noConditionScoreboardFound) {
-                TAB.getInstance().getMisconfigurationHelper().nonLastNoConditionScoreboard(noConditionScoreboard, entry.getKey());
+                TAB.getInstance().getConfigHelper().startup().nonLastNoConditionScoreboard(noConditionScoreboard, entry.getKey());
             }
-            String title = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(entry.getValue(), "title", "<Title not defined>",
+            String title = TAB.getInstance().getConfigHelper().startup().fromMapOrElse(entry.getValue(), "title", "<Title not defined>",
                     "Scoreboard \"" + entry.getKey() + "\" is missing title!");
-            List<String> lines = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(entry.getValue(), "lines",
+            List<String> lines = TAB.getInstance().getConfigHelper().startup().fromMapOrElse(entry.getValue(), "lines",
                     Arrays.asList("scoreboard \"" + entry.getKey() +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?"),
                     "Scoreboard \"" + entry.getKey() + "\" is missing lines!");
             ScoreboardImpl sb = new ScoreboardImpl(this, entry.getKey(), title, lines, condition);

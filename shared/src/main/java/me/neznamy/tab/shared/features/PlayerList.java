@@ -58,7 +58,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
                 }
             });
         } else {
-            TAB.getInstance().getMisconfigurationHelper().tablistAntiOverrideDisabled();
+            TAB.getInstance().getConfigHelper().startup().tablistAntiOverrideDisabled();
         }
     }
 

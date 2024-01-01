@@ -59,7 +59,7 @@ public class SkinManager {
                 return new TabList.Skin(value.get(0), value.get(1));
             }
         }
-        TAB.getInstance().getMisconfigurationHelper().invalidLayoutSkinDefinition(skin);
+        TAB.getInstance().getConfigHelper().startup().invalidLayoutSkinDefinition(skin);
         return null;
     }
 }

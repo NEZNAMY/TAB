@@ -112,7 +112,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         for (String element : options) {
             String[] arr = element.split(":");
             if (!types.containsKey(arr[0].toUpperCase())) {
-                TAB.getInstance().getMisconfigurationHelper().invalidSortingTypeElement(arr[0].toUpperCase(), types.keySet());
+                TAB.getInstance().getConfigHelper().startup().invalidSortingTypeElement(arr[0].toUpperCase(), types.keySet());
             } else {
                 list.add(types.get(arr[0].toUpperCase()).apply(this, arr.length == 1 ? "" : element.substring(arr[0].length() + 1)));
             }

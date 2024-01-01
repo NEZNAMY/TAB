@@ -473,10 +473,10 @@ public class FeatureManager {
         boolean globalPlayerList   = configuration.getConfig().getBoolean("global-playerlist.enabled", false);
         boolean tablistFormatting  = configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true);
 
-        if (perWorldPlayerList && layout) TAB.getInstance().getMisconfigurationHelper().bothPerWorldPlayerListAndLayoutEnabled();
-        if (yellowNumber && layout)       TAB.getInstance().getMisconfigurationHelper().layoutBreaksYellowNumber();
-        if (spectatorFix && layout)       TAB.getInstance().getMisconfigurationHelper().layoutIncludesPreventSpectatorEffect();
-        if (globalPlayerList && layout)   TAB.getInstance().getMisconfigurationHelper().bothGlobalPlayerListAndLayoutEnabled();
+        if (perWorldPlayerList && layout) TAB.getInstance().getConfigHelper().startup().bothPerWorldPlayerListAndLayoutEnabled();
+        if (yellowNumber && layout)       TAB.getInstance().getConfigHelper().startup().layoutBreaksYellowNumber();
+        if (spectatorFix && layout)       TAB.getInstance().getConfigHelper().hint().layoutIncludesPreventSpectatorEffect();
+        if (globalPlayerList && layout)   TAB.getInstance().getConfigHelper().startup().bothGlobalPlayerListAndLayoutEnabled();
 
         if (configuration.isPipelineInjection()) {
             PipelineInjector inj = TAB.getInstance().getPlatform().createPipelineInjector();

@@ -52,7 +52,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         if (!config().getBoolean("scoreboard-teams.anti-override", true))
-            TAB.getInstance().getMisconfigurationHelper().teamAntiOverrideDisabled();
+            TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
     }
 
     @Override

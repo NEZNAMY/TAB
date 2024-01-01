@@ -30,7 +30,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
     public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull Map<String, Object> map) {
         this.manager = manager;
         this.name = name;
-        TAB.getInstance().getMisconfigurationHelper().checkLayoutMap(name, map);
+        TAB.getInstance().getConfigHelper().startup().checkLayoutMap(name, map);
         condition = Condition.getCondition((String) map.get("condition"));
         if (condition != null) manager.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(condition.getName())));
         for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
@@ -41,7 +41,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
             for (Map.Entry<String, Map<String, Object>> group : groups.entrySet()) {
                 String groupName = group.getKey();
                 Map<String, Object> groupData = group.getValue();
-                TAB.getInstance().getMisconfigurationHelper().checkLayoutGroupMap(name, groupName, groupData);
+                TAB.getInstance().getConfigHelper().startup().checkLayoutGroupMap(name, groupName, groupData);
                 List<Integer> positions = new ArrayList<>();
                 for (String line : (List<String>) groupData.get("slots")) {
                     String[] arr = line.split("-");
@@ -54,7 +54,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
                 addGroup(groupName, Condition.getCondition((String) groupData.get("condition")), positions.stream().mapToInt(i->i).toArray());
             }
         }
-        TAB.getInstance().getMisconfigurationHelper().checkLayoutGroups(name, this.groups);
+        TAB.getInstance().getConfigHelper().startup().checkLayoutGroups(name, this.groups);
     }
 
     public void addFixedSlot(@NotNull String lineDefinition) {

@@ -58,14 +58,14 @@ public class FixedSlot extends TabFeature implements Refreshable {
     public static @Nullable FixedSlot fromLine(@NotNull String line, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
         String[] array = line.split("\\|");
         if (array.length < 1) {
-            TAB.getInstance().getMisconfigurationHelper().invalidFixedSlotDefinition(pattern.getName(), line);
+            TAB.getInstance().getConfigHelper().startup().invalidFixedSlotDefinition(pattern.getName(), line);
             return null;
         }
         int slot;
         try {
             slot = Integer.parseInt(array[0]);
         } catch (NumberFormatException e) {
-            TAB.getInstance().getMisconfigurationHelper().invalidFixedSlotDefinition(pattern.getName(), line);
+            TAB.getInstance().getConfigHelper().startup().invalidFixedSlotDefinition(pattern.getName(), line);
             return null;
         }
         String text = array.length > 1 ? array[1] : "";

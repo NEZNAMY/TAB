@@ -72,7 +72,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      */
     private @NotNull BossBarLine loadFromConfig(@NonNull String bar) {
         Map<String, Object> bossBar = config().getConfigurationSection("bossbar.bars." + bar);
-        TAB.getInstance().getMisconfigurationHelper().checkBossBarProperties(bossBar, bar);
+        TAB.getInstance().getConfigHelper().startup().checkBossBarProperties(bossBar, bar);
         return new BossBarLine(
                 this,
                 bar,

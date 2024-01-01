@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
+import me.neznamy.tab.shared.config.helper.ConfigHelper;
 import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.Platform;
@@ -33,28 +34,30 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Main class of the plugin storing data and implementing API
  */
+@Getter
 public class TAB extends TabAPI {
 
     /** Instance of this class */
-    @Getter private static TAB instance;
+    @Getter
+    private static TAB instance;
 
     /** Player data storage */
     private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
 
     /** Players by their TabList UUID for faster lookup */
     private final Map<UUID, TabPlayer> playersByTabListId = new ConcurrentHashMap<>();
-    
+
     /** Online player array to avoid memory allocation when iterating */
-    @Getter private volatile TabPlayer[] onlinePlayers = new TabPlayer[0];
+    private volatile TabPlayer[] onlinePlayers = new TabPlayer[0];
 
     /** Instance of plugin's main command */
-    @Getter private TabCommand command;
+    private TabCommand command;
 
     /** Command executor to use when the plugin is disabled due to an error */
-    @Getter private final DisabledCommand disabledCommand = new DisabledCommand();
+    private final DisabledCommand disabledCommand = new DisabledCommand();
 
     /** Implementation of platform the plugin is installed on for platform-specific calls */
-    @Getter private final Platform platform;
+    private final Platform platform;
 
     /**
      * CPU manager for thread and task management as well as
@@ -67,41 +70,41 @@ public class TAB extends TabAPI {
      * Platform-independent event executor allowing other plugins
      * to listen to universal platform-independent event objects
      */
-    @Getter private EventBusImpl eventBus;
+    private EventBusImpl eventBus;
 
     /**
      * Error manager for printing any and all errors that may
      * occur in any part of the code including hooks into other plugins
      * into files instead of flooding the already flooded console.
      */
-    @Getter private final ErrorManager errorManager;
+    private final ErrorManager errorManager;
 
     /** Feature manager forwarding events into all loaded features */
-    @Getter private FeatureManager featureManager;
+    private FeatureManager featureManager;
 
     /** Placeholder manager for fast access */
-    @Getter private PlaceholderManagerImpl placeholderManager;
+    private PlaceholderManagerImpl placeholderManager;
 
     /** Plugin's configuration files and values storage */
-    @Getter private Configs configuration;
+    private Configs configuration;
 
     /**
      * Boolean tracking whether this plugin is enabled or not,
      * which is due to either internal error on load or yaml syntax error
      */
-    @Getter private boolean pluginDisabled;
+    private boolean pluginDisabled;
 
     /** Minecraft version the server is running on, always using the latest on proxies */
-    @Getter private final ProtocolVersion serverVersion;
+    private final ProtocolVersion serverVersion;
 
     /** TAB's data folder */
-    @Getter private final File dataFolder;
+    private final File dataFolder;
 
     /** File with YAML syntax error, which prevented plugin from loading */
-    @Getter @Setter private String brokenFile;
+    @Setter private String brokenFile;
 
     /** Helper for detecting misconfiguration in configs and send it to user */
-    @Getter private final MisconfigurationHelper misconfigurationHelper = new MisconfigurationHelper();
+    private final ConfigHelper configHelper = new ConfigHelper();
 
     /**
      * Creates new instance using given platform and loads it
@@ -179,8 +182,8 @@ public class TAB extends TabAPI {
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
             cpu.enable();
-            misconfigurationHelper.checkErrorLog();
-            misconfigurationHelper.printWarnCount();
+            configHelper.startup().checkErrorLog();
+            configHelper.startup().printWarnCount();
             platform.logInfo(IChatBaseComponent.fromColoredText("&aEnabled in " + (System.currentTimeMillis()-time) + "ms"));
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {

@@ -90,7 +90,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
         try {
             return Direction.valueOf(value);
         } catch (IllegalArgumentException e) {
-            TAB.getInstance().getMisconfigurationHelper().invalidLayoutDirection(value);
+            TAB.getInstance().getConfigHelper().startup().invalidLayoutDirection(value);
             return Direction.COLUMNS;
         }
     }

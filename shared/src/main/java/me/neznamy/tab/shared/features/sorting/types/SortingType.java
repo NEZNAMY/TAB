@@ -40,7 +40,7 @@ public abstract class SortingType {
         this.sorting = sorting;
         this.displayName = displayName;
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
-            TAB.getInstance().getMisconfigurationHelper().invalidSortingPlaceholder(sortingPlaceholder, this);
+            TAB.getInstance().getConfigHelper().startup().invalidSortingPlaceholder(sortingPlaceholder, this);
         } else {
             sorting.addUsedPlaceholders(Collections.singletonList(sortingPlaceholder));
             this.sortingPlaceholder = sortingPlaceholder;
@@ -123,7 +123,7 @@ public abstract class SortingType {
         try {
             return Double.parseDouble(output.replace(",", "."));
         } catch (NumberFormatException e) {
-            TAB.getInstance().getMisconfigurationHelper().invalidInputForNumericSorting(this, placeholder, output, player);
+            TAB.getInstance().getConfigHelper().runtime().invalidInputForNumericSorting(this, placeholder, output, player);
             return defaultValue;
         }
     }

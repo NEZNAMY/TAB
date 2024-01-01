@@ -122,7 +122,7 @@ public class UniversalPlaceholderRegistry {
             String yes = condition.getValue().getOrDefault(true, true).toString();
             String no = condition.getValue().getOrDefault(false, false).toString();
             if (list == null) {
-                TAB.getInstance().getMisconfigurationHelper().conditionHasNoConditions(condition.getKey());
+                TAB.getInstance().getConfigHelper().startup().conditionHasNoConditions(condition.getKey());
                 continue;
             }
             Condition c = new Condition(!"OR".equals(type), condition.getKey(), list, yes, no);
@@ -160,7 +160,7 @@ public class UniversalPlaceholderRegistry {
         try {
             return new SimpleDateFormat(value, Locale.ENGLISH);
         } catch (IllegalArgumentException e) {
-            TAB.getInstance().getMisconfigurationHelper().invalidDateFormat(value);
+            TAB.getInstance().getConfigHelper().startup().invalidDateFormat(value);
             return new SimpleDateFormat(defaultValue);
         }
     }
