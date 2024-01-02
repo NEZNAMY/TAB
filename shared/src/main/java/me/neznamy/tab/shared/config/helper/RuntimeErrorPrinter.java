@@ -65,12 +65,30 @@ public class RuntimeErrorPrinter {
     }
 
     /**
+     * Logs a warning if placeholder for numeric condition did not return a number.
+     *
+     * @param   placeholder
+     *          Configured placeholder
+     * @param   output
+     *          Output returned by the placeholder
+     * @param   player
+     *          Player the output was received for
+     */
+    public void invalidNumberForCondition(@NotNull String placeholder, @NotNull String output, @NotNull TabPlayer player) {
+        // Placeholders are not initialized, because bridge did not respond yet (typically on join)
+        if (player instanceof ProxyTabPlayer && !((ProxyTabPlayer)player).isBridgeConnected()) return;
+
+        error(String.format("Placeholder %s used in a numeric condition returned \"%s\" for player %s, which is not a valid number.",
+                placeholder, output, player.getName()));
+    }
+
+    /**
      * Logs the message.
      *
      * @param   message
      *          Message to log
      */
     private void error(@NotNull String message) {
-        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText(message));
+        TAB.getInstance().getPlatform().logWarn(IChatBaseComponent.fromColoredText(message));
     }
 }

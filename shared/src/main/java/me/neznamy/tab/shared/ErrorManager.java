@@ -205,22 +205,4 @@ public class ErrorManager {
             return defaultValue;
         }
     }
-
-    /**
-     * Parses double in given string and returns it.
-     * Returns second argument if string is not valid.
-     *
-     * @param   string
-     *          string to parse
-     * @param   defaultValue
-     *          value to return if string is not valid
-     * @return  parsed float or {@code defaultValue} if input is invalid
-     */
-    public double parseDouble(@NotNull String string, double defaultValue) {
-        try {
-            return Double.parseDouble(string.replace(",", "."));
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
 }
