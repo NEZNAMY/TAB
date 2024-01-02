@@ -43,8 +43,14 @@ public class LongLine extends ScoreboardLine implements Refreshable {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
-                refreshed.getScoreboard().updateTeam(teamName, EnumChatFormat.WHITE.getFormat() + refreshed.getProperty(textProperty).get(),
-                        "", Scoreboard.NameVisibility.ALWAYS, Scoreboard.CollisionRule.ALWAYS, 0);
+                refreshed.getScoreboard().updateTeam(
+                        teamName,
+                        refreshed.getProperty(textProperty).get() + EnumChatFormat.WHITE.getFormat(),
+                        "",
+                        Scoreboard.NameVisibility.ALWAYS,
+                        Scoreboard.CollisionRule.ALWAYS,
+                        0
+                );
             } else {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());
                 String[] values = splitText(
@@ -64,7 +70,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
         getScoreRefresher().registerProperties(p);
         String value = p.getProperty(textProperty).get();
         if (p.getVersion().getMinorVersion() >= 13) {
-            addLine(p, playerName, EnumChatFormat.WHITE.getFormat() + value, "");
+            addLine(p, playerName, value + EnumChatFormat.WHITE.getFormat(), "");
             p.setProperty(this, nameProperty, playerName);
         } else {
             String[] values = splitText(

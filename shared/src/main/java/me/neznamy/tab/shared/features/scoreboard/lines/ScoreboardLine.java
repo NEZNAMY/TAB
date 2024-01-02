@@ -140,8 +140,15 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
                 null, // Makes no sense for TAB
                 scoreRefresher.getNumberFormat(p)
         );
-        p.getScoreboard().registerTeam(teamName, prefix, suffix, Scoreboard.NameVisibility.NEVER,
-                Scoreboard.CollisionRule.NEVER, Collections.singletonList(fakePlayer), 0);
+        p.getScoreboard().registerTeam(
+                teamName,
+                prefix,
+                suffix,
+                Scoreboard.NameVisibility.NEVER,
+                Scoreboard.CollisionRule.NEVER,
+                Collections.singletonList(fakePlayer),
+                0
+        );
         shownPlayers.add(p);
     }
     

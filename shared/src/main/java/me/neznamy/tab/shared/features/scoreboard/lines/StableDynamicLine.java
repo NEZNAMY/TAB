@@ -43,8 +43,14 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         String[] prefixSuffix = replaceText(refreshed, force, false);
         if (prefixSuffix.length == 0) return;
-        refreshed.getScoreboard().updateTeam(teamName, prefixSuffix[0], prefixSuffix[1], Scoreboard.NameVisibility.NEVER,
-                Scoreboard.CollisionRule.NEVER, 0);
+        refreshed.getScoreboard().updateTeam(
+                teamName,
+                prefixSuffix[0],
+                prefixSuffix[1],
+                Scoreboard.NameVisibility.NEVER,
+                Scoreboard.CollisionRule.NEVER,
+                0
+        );
     }
 
     @Override
@@ -114,7 +120,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      * @return  array of 2 elements for prefix and suffix
      */
     private String[] split(@NonNull TabPlayer p, @NonNull String text) {
-        if (p.getVersion().getMinorVersion() >= 13) return new String[] {EnumChatFormat.WHITE.getFormat() + text, ""};
+        if (p.getVersion().getMinorVersion() >= 13) return new String[] {text + EnumChatFormat.WHITE.getFormat(), ""};
         int charLimit = Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13;
         if (text.length() > charLimit) {
             StringBuilder prefix = new StringBuilder(text);

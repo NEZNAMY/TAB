@@ -187,14 +187,12 @@ public class IChatBaseComponent {
                 }
                 EnumChatFormat format = EnumChatFormat.getByChar(c);
                 if (format != null) {
-                    if (builder.length() > 0) {
-                        component.setText(builder.toString());
-                        components.add(component);
-                        component = new IChatBaseComponent(component);
-                        component.text = null;
-                        component.modifier.setFont(font);
-                        builder = new StringBuilder();
-                    }
+                    component.setText(builder.toString());
+                    components.add(component);
+                    component = new IChatBaseComponent(component);
+                    component.text = null;
+                    component.modifier.setFont(font);
+                    builder = new StringBuilder();
                     switch (format) {
                     case BOLD: 
                         component.modifier.setBold(true);
@@ -277,14 +275,12 @@ public class IChatBaseComponent {
      * @return  new formatting, might be identical to previous one
      */
     private @NotNull String append(@NotNull StringBuilder builder, @NotNull String previousFormatting) {
-        String formatting = previousFormatting;
+        String formatting = getFormatting();
+        if (!formatting.equals(previousFormatting)) {
+            builder.append(formatting);
+        }
         if (text != null) {
-            formatting = getFormatting();
-            if (!formatting.equals(previousFormatting)) {
-                builder.append(formatting);
-            }
             builder.append(text);
-
         }
         for (IChatBaseComponent component : getExtra()) {
             formatting = component.append(builder, formatting);
