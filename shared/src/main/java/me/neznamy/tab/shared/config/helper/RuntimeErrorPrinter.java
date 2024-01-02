@@ -8,6 +8,8 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+
 /**
  * Logger for runtime errors from poor configuration
  * causing the plugin to not work as expected.
@@ -80,6 +82,53 @@ public class RuntimeErrorPrinter {
 
         error(String.format("Placeholder %s used in a numeric condition returned \"%s\" for player %s, which is not a valid number.",
                 placeholder, output, player.getName()));
+    }
+
+    /**
+     * Logs a warning if player's group is not in sorting list.
+     *
+     * @param   list
+     *          Configured sorting list
+     * @param   group
+     *          Player's group
+     * @param   player
+     *          Player with the group
+     */
+    public void groupNotInSortingList(@NotNull Collection<String> list, @NotNull String group, @NotNull TabPlayer player) {
+        error(String.format("Player %s's group (%s) is not in sorting list! Sorting list: %s. Player will be sorted on the bottom.",
+                player.getName(), group, String.join(",", list)));
+    }
+
+    /**
+     * Logs a warning if player does not have any of the defined sorting permissions.
+     *
+     * @param   list
+     *          Configured permissions
+     * @param   player
+     *          Player with none of the permissions
+     */
+    public void noPermissionFromSortingList(@NotNull Collection<String> list, @NotNull TabPlayer player) {
+        error(String.format("Player %s does not have any of the defined permissions in sorting list! Sorting list: %s. Player will be sorted on the bottom.",
+                player.getName(), String.join(",", list)));
+    }
+
+    /**
+     * Logs a warning if placeholder value is not in predefined values.
+     *
+     * @param   placeholder
+     *          Configured sorting placeholder
+     * @param   list
+     *          Configured predefined values
+     * @param   output
+     *          Output of the placeholder
+     * @param   player
+     *          Player with the output
+     */
+    public void valueNotInPredefinedValues(@NotNull String placeholder, @NotNull Collection<String> list,
+                                           @NotNull String output, @NotNull TabPlayer player) {
+        error(String.format("Sorting placeholder %s with pre-defined values [%s] returned \"%s\" for player %s, " +
+                        "which is not defined. Player will be sorted on the bottom.",
+                placeholder, String.join(",", list), output, player.getName()));
     }
 
     /**

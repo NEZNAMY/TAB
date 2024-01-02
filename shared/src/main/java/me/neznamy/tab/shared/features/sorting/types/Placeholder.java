@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -54,6 +55,7 @@ public class Placeholder extends SortingType {
         sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\"");
         int position;
         if (!sortingMap.containsKey(output.toLowerCase(Locale.US))) {
+            TAB.getInstance().getConfigHelper().runtime().valueNotInPredefinedValues(sortingPlaceholder, sortingMap.keySet(), output, p);
             position = sortingMap.size()+1;
             sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&c (not in list)&r. ");
         } else {

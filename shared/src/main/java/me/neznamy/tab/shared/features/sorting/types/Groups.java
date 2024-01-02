@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 
 import java.util.LinkedHashMap;
 
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -33,6 +34,7 @@ public class Groups extends SortingType {
         String group = p.getGroup().toLowerCase();
         int position;
         if (!sortedGroups.containsKey(group)) {
+            TAB.getInstance().getConfigHelper().runtime().groupNotInSortingList(sortedGroups.keySet(), group, p);
             position = sortedGroups.size() + 1;
             sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> &cPrimary group (&e" + p.getGroup() + "&c) is not in sorting list. &r");
         } else {

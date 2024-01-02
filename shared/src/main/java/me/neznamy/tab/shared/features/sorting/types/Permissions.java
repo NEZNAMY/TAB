@@ -53,6 +53,7 @@ public class Permissions extends SortingType {
             }
         }
         if (position == 0) {
+            TAB.getInstance().getConfigHelper().runtime().noPermissionFromSortingList(sortedGroups.keySet(), p);
             position = sortedGroups.size()+1;
             sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> &cPlayer does not have any of the defined permissions. &r");
         }
