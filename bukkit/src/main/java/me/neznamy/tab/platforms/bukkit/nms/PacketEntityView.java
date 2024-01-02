@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.UUID;
@@ -68,6 +69,7 @@ public class PacketEntityView implements EntityView {
     private static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 
     private static Class<?> ClientboundBundlePacket;
+    private static Constructor<?> newClientboundBundlePacket;
     private static Field ClientboundBundlePacket_packets;
 
     private static Object dummyEntity;
@@ -94,6 +96,7 @@ public class PacketEntityView implements EntityView {
         loadEntitySpawn();
         if (BukkitReflection.is1_19_4Plus()) {
             ClientboundBundlePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundBundlePacket");
+            newClientboundBundlePacket = ClientboundBundlePacket.getConstructor(Iterable.class);
             ClientboundBundlePacket_packets = ReflectionUtils.getOnlyField(ClientboundBundlePacket.getSuperclass(), Iterable.class);
         }
         packetSender = new PacketSender();
@@ -243,8 +246,20 @@ public class PacketEntityView implements EntityView {
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location l, @NotNull EntityData data) {
         int minorVersion = BukkitReflection.getMinorVersion();
         if (minorVersion >= 19) {
-            packetSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0.0d));
-        } else if (minorVersion >= 17) {
+            List<Object> packets = new ArrayList<>();
+            packets.add(newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0.0d));
+            packets.add(createEntityMetadata(entityId, data));
+            if (BukkitReflection.is1_19_4Plus()) {
+                // Send bundle packet to avoid rare flicker when frame is rendered between packets
+                packetSender.sendPacket(player.getPlayer(), newClientboundBundlePacket.newInstance(packets));
+            } else {
+                for (Object packet : packets) {
+                    packetSender.sendPacket(player.getPlayer(), packet);
+                }
+            }
+            return;
+        }
+        if (minorVersion >= 17) {
             packetSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty));
         } else {
             Object nmsPacket = newSpawnEntity.newInstance();
@@ -270,14 +285,18 @@ public class PacketEntityView implements EntityView {
         }
     }
 
-    @SneakyThrows
     @Override
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
+        packetSender.sendPacket(player.getPlayer(), createEntityMetadata(entityId, data));
+    }
+
+    @SneakyThrows
+    private Object createEntityMetadata(int entityId, @NotNull EntityData data) {
         if (newEntityMetadata.getParameterCount() == 2) {
             //1.19.3+
-            packetSender.sendPacket(player.getPlayer(), newEntityMetadata.newInstance(entityId, DataWatcher.DataWatcher_packDirty.invoke(data.build())));
+            return newEntityMetadata.newInstance(entityId, DataWatcher.DataWatcher_packDirty.invoke(data.build()));
         } else {
-            packetSender.sendPacket(player.getPlayer(), newEntityMetadata.newInstance(entityId, data.build(), true));
+            return newEntityMetadata.newInstance(entityId, data.build(), true);
         }
     }
 

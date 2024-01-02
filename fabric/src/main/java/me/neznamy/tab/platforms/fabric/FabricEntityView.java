@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -44,8 +45,10 @@ public class FabricEntityView implements EntityView {
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location,
                             @NotNull EntityData data) {
-        player.sendPacket(FabricMultiVersion.spawnEntity.apply(FabricMultiVersion.getLevel.apply(player.getPlayer()), entityId, id, entityType, location));
-        updateEntityMetadata(entityId, data);
+        FabricMultiVersion.sendPackets.accept(player.getPlayer(), Arrays.asList(
+                FabricMultiVersion.spawnEntity.apply(FabricMultiVersion.getLevel.apply(player.getPlayer()), entityId, id, entityType, location),
+                FabricMultiVersion.newEntityMetadata.apply(entityId, data)
+        ));
     }
 
     @Override

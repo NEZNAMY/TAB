@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.util.*;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.server.MinecraftServer;
@@ -36,7 +37,7 @@ public class FabricMultiVersion {
 
     public static Function<Level, String> getLevelName;
     public static Function<Property, TabList.Skin> propertyToSkin;
-    public static BiFunction<Integer, EntityData, Packet<?>> newEntityMetadata;
+    public static BiFunction<Integer, EntityData, Packet<ClientGamePacketListener>> newEntityMetadata;
     public static Function<Packet<?>, Boolean> isSpawnPlayerPacket;
     public static Function<ServerPlayer, Boolean> isSneaking;
     public static Function<ServerPlayer, Level> getLevel;
@@ -48,12 +49,13 @@ public class FabricMultiVersion {
     public static FunctionWithException<ServerPlayer, Channel> getChannel;
     public static BiConsumer<ServerPlayer, Component> sendMessage;
     public static BiConsumer<CommandSourceStack, Component> sendMessage2;
-    public static QuintFunction<Level, Integer, UUID, Object, Location, Packet<?>> spawnEntity;
+    public static QuintFunction<Level, Integer, UUID, Object, Location, Packet<ClientGamePacketListener>> spawnEntity;
     public static QuadFunction<TabPlayer, Byte, String, Boolean, EntityData> createDataWatcher;
     public static BiFunctionWithException<TabList.Action, FabricTabList.Builder, Packet<?>> buildTabListPacket;
     public static BiFunctionWithException<Component, Component, Packet<?>> newHeaderFooter;
     public static BiConsumerWithException<TabPlayer, Object> onPlayerInfo;
     public static Function<Packet<?>, Boolean> isPlayerInfo;
+    public static BiConsumer<ServerPlayer, Iterable<Packet<ClientGamePacketListener>>> sendPackets;
 
     public static Function<PlayerTeam, Packet<?>> registerTeam;
     public static Function<PlayerTeam, Packet<?>> unregisterTeam;

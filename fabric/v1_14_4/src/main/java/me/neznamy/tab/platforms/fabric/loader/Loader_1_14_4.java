@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -133,5 +134,10 @@ public class Loader_1_14_4 {
             }
         };
         FabricMultiVersion.isPlayerInfo = packet -> packet instanceof ClientboundPlayerInfoPacket;
+        FabricMultiVersion.sendPackets = (player, packets) -> {
+            for (Packet<?> packet : packets) {
+                player.connection.send(packet);
+            }
+        };
     }
 }

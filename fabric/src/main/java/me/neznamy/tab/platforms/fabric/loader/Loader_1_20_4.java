@@ -137,6 +137,7 @@ public class Loader_1_20_4 {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) {
             FabricMultiVersion.isBundlePacket = packet -> packet instanceof ClientboundBundlePacket;
             FabricMultiVersion.getBundledPackets = packet -> (Iterable<Object>) (Object) ((ClientboundBundlePacket)packet).subPackets();
+            FabricMultiVersion.sendPackets = (player, packets) -> player.connection.send(new ClientboundBundlePacket(packets));
         }
         if (serverVersion.getMinorVersion() >= 20) {
             FabricMultiVersion.getLevel = Entity::level;
