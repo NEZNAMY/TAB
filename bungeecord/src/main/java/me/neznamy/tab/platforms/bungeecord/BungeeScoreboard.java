@@ -87,11 +87,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     @Override
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options) {
-        int color = 0;
-        if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
-            color = EnumChatFormat.lastColorsOf(prefix).ordinal();
-        }
+                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         player.sendPacket(new Team(
                 name,
                 (byte) TeamAction.CREATE,
@@ -100,7 +96,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 either(suffix),
                 visibility.toString(),
                 collision.toString(),
-                color,
+                player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? color.ordinal() : 0,
                 (byte)options,
                 players.toArray(new String[0])
         ));
@@ -113,11 +109,8 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
-        int color = 0;
-        if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
-            color = EnumChatFormat.lastColorsOf(prefix).ordinal();
-        }
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                            int options, @NotNull EnumChatFormat color) {
         player.sendPacket(new Team(
                 name,
                 (byte) TeamAction.UPDATE,
@@ -126,7 +119,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 either(suffix),
                 visibility.toString(),
                 collision.toString(),
-                color,
+                player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? color.ordinal() : 0,
                 (byte)options,
                 null
         ));

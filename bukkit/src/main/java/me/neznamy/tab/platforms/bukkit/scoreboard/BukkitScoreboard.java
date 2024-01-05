@@ -151,7 +151,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Override
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options) {
+                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         checkPlayerScoreboard();
         Team team = scoreboard.registerNewTeam(name);
         setPrefix(team, prefix);
@@ -161,7 +161,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (serverMinorVersion >= 9)
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.values()[collision.ordinal()]);
         if (serverMinorVersion >= TEAM_COLOR_VERSION)
-            team.setColor(ChatColor.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
+            team.setColor(ChatColor.valueOf(color.name()));
         if (serverMinorVersion >= 7 && TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
             players.forEach(team::addEntry);
         } else {
@@ -179,7 +179,8 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                            int options, @NotNull EnumChatFormat color) {
         checkPlayerScoreboard();
         Team team = scoreboard.getTeam(name);
         setPrefix(team, prefix);
@@ -189,7 +190,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         if (serverMinorVersion >= 9)
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.values()[collision.ordinal()]);
         if (serverMinorVersion >= TEAM_COLOR_VERSION)
-            team.setColor(ChatColor.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
+            team.setColor(ChatColor.valueOf(color.name()));
         team.setAllowFriendlyFire((options & 0x01) != 0);
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
     }

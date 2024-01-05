@@ -82,11 +82,11 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @Override
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options) {
+                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
         team.setAllowFriendlyFire((options & 0x01) > 0);
         team.setSeeFriendlyInvisibles((options & 0x02) > 0);
-        team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
+        team.setColor(ChatFormatting.valueOf(color.name()));
         team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(toComponent(prefix));
@@ -102,11 +102,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                            int options, @NotNull EnumChatFormat color) {
         PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
         team.setAllowFriendlyFire((options & 0x01) != 0);
         team.setSeeFriendlyInvisibles((options & 0x02) != 0);
-        team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
+        team.setColor(ChatFormatting.valueOf(color.name()));
         team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(toComponent(prefix));

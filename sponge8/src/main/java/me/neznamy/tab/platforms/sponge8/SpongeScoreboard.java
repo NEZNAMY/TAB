@@ -1,9 +1,11 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.scoreboard.CollisionRules;
@@ -103,12 +105,13 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     @Override
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options) {
+                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         Team team = Team.builder()
                 .name(name)
                 .displayName(adventure(name))
                 .prefix(adventure(prefix))
                 .suffix(adventure(suffix))
+                .color(NamedTextColor.namedColor(color.getHexCode()))
                 .allowFriendlyFire((options & 0x01) != 0)
                 .canSeeFriendlyInvisibles((options & 0x02) != 0)
                 .collisionRule(collisionRules[collision.ordinal()])
@@ -127,11 +130,13 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                            int options, @NotNull EnumChatFormat color) {
         sb.team(name).ifPresent(team -> {
             team.setDisplayName(adventure(name));
             team.setPrefix(adventure(prefix));
             team.setSuffix(adventure(suffix));
+            team.setColor(NamedTextColor.namedColor(color.getHexCode()));
             team.setAllowFriendlyFire((options & 0x01) != 0);
             team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
             team.setCollisionRule(collisionRules[collision.ordinal()]);

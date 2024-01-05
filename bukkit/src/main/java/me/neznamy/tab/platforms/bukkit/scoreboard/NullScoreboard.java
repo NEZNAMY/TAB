@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +60,7 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Override
     protected void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                                  @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                                 @NotNull Collection<String> players, int options) {
+                                 @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         // Do nothing
     }
 
@@ -70,7 +71,8 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     protected void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                               int options, @NotNull EnumChatFormat color) {
         // Do nothing
     }
 }

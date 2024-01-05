@@ -6,6 +6,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -159,9 +160,9 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Override
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options) {
+                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(name, prefix, toComponent(prefix), suffix,
-                toComponent(suffix), visibility, collision, players, options));
+                toComponent(suffix), visibility, collision, players, options, color));
     }
 
     @Override
@@ -171,9 +172,10 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                            int options, @NotNull EnumChatFormat color) {
         packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(name, prefix, toComponent(prefix), suffix,
-                toComponent(suffix), visibility, collision, options));
+                toComponent(suffix), visibility, collision, options, color));
     }
 
     @Override

@@ -49,7 +49,8 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
                 prefixSuffix[1],
                 Scoreboard.NameVisibility.NEVER,
                 Scoreboard.CollisionRule.NEVER,
-                0
+                0,
+                EnumChatFormat.RESET
         );
     }
 
@@ -120,7 +121,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      * @return  array of 2 elements for prefix and suffix
      */
     private String[] split(@NonNull TabPlayer p, @NonNull String text) {
-        if (p.getVersion().getMinorVersion() >= 13) return new String[] {text + EnumChatFormat.WHITE.getFormat(), ""};
+        if (p.getVersion().getMinorVersion() >= 13) return new String[] {text, ""};
         int charLimit = Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13;
         if (text.length() > charLimit) {
             StringBuilder prefix = new StringBuilder(text);

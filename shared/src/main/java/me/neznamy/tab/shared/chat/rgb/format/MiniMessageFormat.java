@@ -18,10 +18,9 @@ public class MiniMessageFormat implements RGBFormatter {
     @NotNull
     public String reformat(@NotNull String text) {
         if (!text.contains("<")) return text; // User did not even attempt to use MiniMessage
-        String modified = text.replace(EnumChatFormat.WHITE.getFormat(), "<white>"); // Forced &f in scoreboard
-        if (modified.contains(EnumChatFormat.COLOR_STRING)) return text;
+        if (text.contains(EnumChatFormat.COLOR_STRING)) return text;
         try {
-            return SERIALIZER.serialize(MiniMessage.miniMessage().deserialize(modified));
+            return SERIALIZER.serialize(MiniMessage.miniMessage().deserialize(text));
         } catch (Throwable ignored) {
             return text;
         }

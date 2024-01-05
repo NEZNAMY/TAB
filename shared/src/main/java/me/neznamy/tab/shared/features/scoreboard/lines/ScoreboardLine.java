@@ -147,7 +147,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
                 Scoreboard.NameVisibility.NEVER,
                 Scoreboard.CollisionRule.NEVER,
                 Collections.singletonList(fakePlayer),
-                0
+                0,
+                EnumChatFormat.RESET
         );
         shownPlayers.add(p);
     }

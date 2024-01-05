@@ -84,8 +84,9 @@ public abstract class Scoreboard<T extends TabPlayer> {
         updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
-    public final void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
-                             @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
+    public final void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
+                                   @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                                   @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         if (frozen) return;
         if (!registeredTeams.add(name)) {
             error("Tried to register duplicated team %s to player ", name);
@@ -98,7 +99,8 @@ public abstract class Scoreboard<T extends TabPlayer> {
                 visibility,
                 collision,
                 players,
-                options
+                options,
+                color
         );
     }
 
@@ -111,8 +113,9 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterTeam0(name);
     }
 
-    public final void updateTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
-                           @NotNull CollisionRule collision, int options) {
+    public final void updateTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
+                                 @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                                 int options, @NotNull EnumChatFormat color) {
         if (frozen) return;
         if (!registeredTeams.contains(name)) {
             error("Tried to modify non-existing team %s for player ", name);
@@ -124,7 +127,8 @@ public abstract class Scoreboard<T extends TabPlayer> {
                 cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 visibility,
                 collision,
-                options
+                options,
+                color
         );
     }
 
@@ -279,13 +283,15 @@ public abstract class Scoreboard<T extends TabPlayer> {
     protected abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title,
                                           int display, @Nullable IChatBaseComponent numberFormat);
 
-    protected abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
-                                                 @NotNull CollisionRule collision, @NotNull Collection<String> players, int options);
+    protected abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
+                                          @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                                          @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color);
 
     protected abstract void unregisterTeam0(@NotNull String name);
 
-    protected abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
-                                     @NotNull CollisionRule collision, int options);
+    protected abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
+                                        @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                                        int options, @NotNull EnumChatFormat color);
 
     @AllArgsConstructor
     public enum CollisionRule {

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.api.nametag.NameTagManager;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
@@ -242,15 +243,15 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
         boolean visible = getTeamVisibility(p, viewer);
-        String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
-        String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
+        String prefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         viewer.getScoreboard().updateTeam(
                 sorting.getShortTeamName(p),
-                currentPrefix,
-                currentSuffix,
+                prefix,
+                p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer),
                 visible ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 collisionManager.getCollision(p) ? CollisionRule.ALWAYS : CollisionRule.NEVER,
-                teamOptions
+                teamOptions,
+                EnumChatFormat.lastColorsOf(prefix)
         );
     }
 
@@ -271,16 +272,16 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (hasTeamHandlingPaused(p)) return;
         if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
-        String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
-        String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
+        String prefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         viewer.getScoreboard().registerTeam(
                 sorting.getShortTeamName(p),
-                replacedPrefix,
-                replacedSuffix,
+                prefix,
+                p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer),
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 collisionManager.getCollision(p) ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 Collections.singletonList(p.getNickname()),
-                teamOptions
+                teamOptions,
+                EnumChatFormat.lastColorsOf(prefix)
         );
     }
 

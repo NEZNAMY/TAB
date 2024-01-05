@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -65,15 +66,17 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
         TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                    String prefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
                     viewer.getScoreboard().unregisterTeam(nameTags.getSorting().getShortTeamName(player));
                     viewer.getScoreboard().registerTeam(
                             nameTags.getSorting().getShortTeamName(player),
-                            player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer),
+                            prefix,
                             player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer),
                             nameTags.getTeamVisibility(player, viewer) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER,
                             nameTags.getCollisionManager().getCollision(player) ? Scoreboard.CollisionRule.ALWAYS : Scoreboard.CollisionRule.NEVER,
                             Collections.singletonList(player.getNickname()),
-                            nameTags.getTeamOptions()
+                            nameTags.getTeamOptions(),
+                            EnumChatFormat.lastColorsOf(prefix)
                     );
                 }
             if (belowname != null) {
@@ -103,7 +106,8 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                             redisTeams.getNameVisibilities().get(player),
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(player.getNickname()),
-                            redisTeams.getNameTags().getTeamOptions()
+                            redisTeams.getNameTags().getTeamOptions(),
+                            EnumChatFormat.lastColorsOf(redisTeams.getPrefixes().get(player))
                     );
                 }
             }

@@ -164,14 +164,16 @@ public class TeamPacketData {
      *          Team members
      * @param   options
      *          Team flags
+     * @param   color
+     *          Team color for 1.13+
      * @return  Register team packet with specified parameters
      */
     @SneakyThrows
     public Object registerTeam(@NotNull String name, @NotNull String prefix, @Nullable Object prefixComponent,
                                @NotNull String suffix, @Nullable Object suffixComponent,
                                @NotNull Scoreboard.NameVisibility visibility, @NotNull Scoreboard.CollisionRule collision,
-                               @NotNull Collection<String> players, int options) {
-        Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options);
+                               @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+        Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
         ((Collection<String>) ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(players);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_ofBoolean.invoke(null, team, true);
@@ -216,13 +218,16 @@ public class TeamPacketData {
      *          Player collision rule
      * @param   options
      *          Team flags
+     * @param   color
+     *          Team color for 1.13+
      * @return  Update team packet with specified parameters
      */
     @SneakyThrows
     public Object updateTeam(@NotNull String name, @NotNull String prefix, @Nullable Object prefixComponent,
                              @NotNull String suffix, @Nullable Object suffixComponent,
-                             @NotNull Scoreboard.NameVisibility visibility, @NotNull Scoreboard.CollisionRule collision, int options) {
-        Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options);
+                             @NotNull Scoreboard.NameVisibility visibility, @NotNull Scoreboard.CollisionRule collision,
+                             int options, @NotNull EnumChatFormat color) {
+        Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_ofBoolean.invoke(null, team, false);
         } else {
@@ -249,19 +254,22 @@ public class TeamPacketData {
      *          Player collision rule
      * @param   options
      *          Team flags
+     * @param   color
+     *          Team color for 1.13+
      * @return  Team with specified parameters
      */
     @SneakyThrows
     private Object createTeam(@NotNull String teamName, @NotNull String prefix, @Nullable Object prefixComponent,
                               @NotNull String suffix, @Nullable Object suffixComponent,
-                              @NotNull Scoreboard.NameVisibility visibility, @NotNull Scoreboard.CollisionRule collision, int options) {
+                              @NotNull Scoreboard.NameVisibility visibility, @NotNull Scoreboard.CollisionRule collision,
+                              int options, @NotNull EnumChatFormat color) {
         Object team = newScoreboardTeam.newInstance(emptyScoreboard, teamName);
         ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
         if (BukkitReflection.getMinorVersion() >= MODERN_TEAM_DATA_VERSION) {
             ScoreboardTeam_setPrefix.invoke(team, prefixComponent);
             ScoreboardTeam_setSuffix.invoke(team, suffixComponent);
-            ScoreboardTeam_setColor.invoke(team, chatFormats[EnumChatFormat.lastColorsOf(prefix).ordinal()]);
+            ScoreboardTeam_setColor.invoke(team, chatFormats[color.ordinal()]);
         } else {
             ScoreboardTeam_setPrefix.invoke(team, prefix);
             ScoreboardTeam_setSuffix.invoke(team, suffix);

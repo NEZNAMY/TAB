@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge7;
 
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
@@ -102,7 +103,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     @Override
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options) {
+                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         Team team = Team.builder()
                 .name(name)
                 .displayName(Text.of(name))
@@ -126,7 +127,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                            int options, @NotNull EnumChatFormat color) {
         sb.getTeam(name).ifPresent(team -> {
             team.setDisplayName(Text.of(name));
             team.setPrefix(Text.of(prefix));

@@ -55,9 +55,9 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
     @Override
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options) {
+                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.CREATE, prefix, suffix, options,
-                visibility.toString(), collision.toString(), EnumChatFormat.lastColorsOf(prefix).ordinal(), players));
+                visibility.toString(), collision.toString(), color.ordinal(), players));
     }
 
     @Override
@@ -67,9 +67,10 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
 
     @Override
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                            int options, @NotNull EnumChatFormat color) {
         player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.UPDATE, prefix, suffix, options,
-                visibility.toString(), collision.toString(), EnumChatFormat.lastColorsOf(prefix).ordinal(), null));
+                visibility.toString(), collision.toString(), color.ordinal(), null));
     }
 
     @Override
