@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
@@ -105,10 +105,9 @@ public class PacketEntityView implements EntityView {
             packetSender = new PacketSender();
             available = true;
         } catch (ReflectiveOperationException e) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
-                    "entity packet sending due to a compatibility error. This will " +
-                    "result in unlimited nametag feature and 1.8- bossbar not working. " +
-                    "Please update the plugin a to version with native support for your server version to unlock the feature.");
+            BukkitUtils.compatibilityError("sending entity packets", null,
+                    "Unlimited nametag mode not working and being replaced with regular nametags",
+                    "Bossbar on 1.8 servers and lower not working");
         }
     }
 

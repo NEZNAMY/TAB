@@ -102,6 +102,7 @@ public class BukkitPlatform implements BackendPlatform {
             BukkitPipelineInjector.tryLoad();
             HeaderFooter.findInstance();
         }
+        BukkitUtils.sendCompatibilityMessage();
     }
 
     @Override

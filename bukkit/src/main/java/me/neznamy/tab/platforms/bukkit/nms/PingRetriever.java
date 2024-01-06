@@ -1,9 +1,8 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,10 +32,7 @@ public class PingRetriever {
                 PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
             }
         } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
-                    "getting player's ping due to a compatibility error. This will " +
-                    "result in ping showing \"-1\". " +
-                    "Please update the plugin a to version with native support for your server version to properly show ping.");
+            BukkitUtils.compatibilityError("getting player's ping", null, "%ping% returning -1");
         }
     }
 

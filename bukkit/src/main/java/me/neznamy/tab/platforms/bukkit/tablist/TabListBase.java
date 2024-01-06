@@ -3,12 +3,11 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,11 +46,12 @@ public abstract class TabListBase implements TabList {
                 instance = PacketTabList17::new;
             }
         } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
-                    "tablist management due to a compatibility error. This will " +
-                    "result in tablist-related features not working properly (Layout, spectator fix & ping spoof not working, " +
-                    "tablist formatting being limited). " +
-                    "Please update the plugin to version with proper support for your server version for optimal experience.");
+            BukkitUtils.compatibilityError("tablist entry management", "Bukkit API",
+                    "Layout feature will not work",
+                    "Prevent-spectator-effect feature will not work",
+                    "Ping spoof feature will not work",
+                    "Tablist formatting missing anti-override",
+                    "Tablist formatting not supporting relational placeholders");
             instance = BukkitTabList::new;
         }
     }

@@ -4,11 +4,9 @@ import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,11 +53,11 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
             available = true;
         } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
-                    "network channel injection due to a compatibility error. This will make the following features not work: " +
-                    "Unlimited nametag mode, anti-override for tablist formatting & nametags, detecting nickname change for compatibility " +
-                    "with nick plugins and compatibility with other scoreboard plugins. " +
-                    "Please update the plugin a to version with native support for your server version to unlock the features.");
+            BukkitUtils.compatibilityError("network channel injection", null,
+                    "Unlimited nametag mode not working and being replaced with regular nametags",
+                    "Anti-override for tablist & nametags not working",
+                    "Compatibility with nickname plugins changing player names will not work",
+                    "Scoreboard will not be checking for other plugins");
         }
     }
 

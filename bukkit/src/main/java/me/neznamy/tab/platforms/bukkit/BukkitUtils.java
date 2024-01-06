@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -17,6 +18,8 @@ import java.util.Collection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BukkitUtils {
+
+    private static boolean compatibilityIssue;
 
     /**
      * Returns online players from Bukkit API. This requires reflection, as return type changed in 1.8,
@@ -68,5 +71,43 @@ public class BukkitUtils {
             sb.append(toBukkitFormat(extra, rgbClient));
         }
         return sb.toString();
+    }
+
+    /**
+     * Prints a console warn that some compatibility issue was found.
+     *
+     * @param   failedCheck
+     *          Check that failed
+     * @param   fallback
+     *          Fallback implementation, if available
+     * @param   missingFeatures
+     *          Features that will be broken because of the incompatibility
+     */
+    public static void compatibilityError(@NotNull String failedCheck, @Nullable String fallback, @NotNull String... missingFeatures) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(EnumChatFormat.RED.getFormat());
+        sb.append("[TAB] Failed to initialize minecraft fields for ");
+        sb.append(failedCheck);
+        sb.append(" due to a compatibility error. ");
+        if (fallback != null) {
+            sb.append("Using fallback solution using ").append(fallback).append(". ");
+        } else {
+            sb.append("No fallback solution was found. ");
+        }
+        sb.append("This will result in: ");
+        for (int i=0; i<missingFeatures.length; i++) {
+            sb.append("\n").append("#").append(i + 1).append(": ").append(missingFeatures[i]);
+        }
+        Bukkit.getConsoleSender().sendMessage(sb.toString());
+        compatibilityIssue = true;
+    }
+
+    /**
+     * Sends a message asking user to update the plugin if some compatibility issue was found.
+     */
+    public static void sendCompatibilityMessage() {
+        if (!compatibilityIssue) return;
+        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Please update the plugin to " +
+                "a version with native support for your server version for optimal experience.");
     }
 }
