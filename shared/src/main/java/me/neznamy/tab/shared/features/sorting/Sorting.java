@@ -145,6 +145,11 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         String finalShortName = checkTeamName(p, shortName, 'A');
         shortTeamNames.put(p, finalShortName);
         fullTeamNames.put(p, fullName.append(finalShortName.charAt(finalShortName.length() - 1)).toString());
+
+        // Do not randomly override note
+        if (forcedTeamName.get(p) != null) {
+            teamNameNotes.put(p, "Set using API");
+        }
     }
 
     /**
