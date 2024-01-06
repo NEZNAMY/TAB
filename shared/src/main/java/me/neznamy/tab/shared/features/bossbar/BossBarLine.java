@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -55,10 +56,10 @@ public class BossBarLine implements BossBar {
     private final StyleRefresher styleRefresher;
 
     //property names
-    private final String propertyTitle;
-    private final String propertyProgress;
-    private final String propertyColor;
-    private final String propertyStyle;
+    private final String propertyTitle = Property.randomName();
+    private final String propertyProgress = Property.randomName();
+    private final String propertyColor = Property.randomName();
+    private final String propertyStyle = Property.randomName();
 
     /**
      * Constructs new instance with given parameters
@@ -90,10 +91,6 @@ public class BossBarLine implements BossBar {
         this.title = title;
         this.progress = progress;
         announcementBar = announcementOnly;
-        propertyTitle = TabConstants.Property.bossbarTitle(name);
-        propertyProgress = TabConstants.Property.bossbarProgress(name);
-        propertyColor = TabConstants.Property.bossbarColor(name);
-        propertyStyle = TabConstants.Property.bossbarStyle(name);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarTitle(name),
                 textRefresher = new TextRefresher());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarProgress(name),

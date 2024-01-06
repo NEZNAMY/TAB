@@ -3,11 +3,11 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import org.jetbrains.annotations.NotNull;
@@ -19,8 +19,8 @@ public class LongLine extends ScoreboardLine implements Refreshable {
 
     @Getter private final String featureName = "Scoreboard";
     @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
-    private final String textProperty;
-    private final String nameProperty;
+    private final String textProperty = Property.randomName();
+    private final String nameProperty = Property.randomName();
 
     /**
      * Constructs new instance with given parameters
@@ -34,8 +34,6 @@ public class LongLine extends ScoreboardLine implements Refreshable {
      */
     public LongLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
         super(parent, lineNumber, text);
-        nameProperty = TabConstants.Property.scoreboardName(parent.getName(), lineNumber);
-        textProperty = parent.getName() + "-" + teamName;
     }
 
     @Override

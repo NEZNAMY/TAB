@@ -143,26 +143,6 @@ public class TabConstants {
         public static final String ABOVENAME = "abovename";
         public static final String NAMETAG = "nametag";
         public static final String BELOWNAME = "belowname";
-
-        public static String bossbarTitle(String name) {
-            return "bossbar-title-" + name;
-        }
-
-        public static String bossbarProgress(String name) {
-            return "bossbar-progress-" + name;
-        }
-
-        public static String bossbarColor(String name) {
-            return "bossbar-color-" + name;
-        }
-
-        public static String bossbarStyle(String name) {
-            return "bossbar-style-" + name;
-        }
-
-        public static String scoreboardName(String scoreboard, int lineNumber) {
-            return scoreboard + "-" + lineNumber + "-name";
-        }
     }
 
     /**
