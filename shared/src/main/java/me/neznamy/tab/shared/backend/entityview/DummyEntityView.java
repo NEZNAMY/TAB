@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.UUID;
 
+/**
+ * Dummy implementation for platforms that do not support entity view.
+ */
 public class DummyEntityView implements EntityView {
 
     @Override
@@ -30,57 +33,57 @@ public class DummyEntityView implements EntityView {
     }
 
     @Override
-    public boolean isDestroyPacket(Object packet) {
+    public boolean isDestroyPacket(@NotNull Object packet) {
         return false;
     }
 
     @Override
-    public boolean isTeleportPacket(Object packet) {
+    public boolean isTeleportPacket(@NotNull Object packet) {
         return false;
     }
 
     @Override
-    public boolean isNamedEntitySpawnPacket(Object packet) {
+    public boolean isNamedEntitySpawnPacket(@NotNull Object packet) {
         return false;
     }
 
     @Override
-    public boolean isMovePacket(Object packet) {
+    public boolean isMovePacket(@NotNull Object packet) {
         return false;
     }
 
     @Override
-    public boolean isLookPacket(Object packet) {
+    public boolean isLookPacket(@NotNull Object packet) {
         return false;
     }
 
     @Override
-    public int getTeleportEntityId(Object teleportPacket) {
+    public int getTeleportEntityId(@NotNull Object teleportPacket) {
         return 0;
     }
 
     @Override
-    public int getMoveEntityId(Object movePacket) {
+    public int getMoveEntityId(@NotNull Object movePacket) {
         return 0;
     }
 
     @Override
-    public int getSpawnedPlayer(Object playerSpawnPacket) {
+    public int getSpawnedPlayer(@NotNull Object playerSpawnPacket) {
         return 0;
     }
 
     @Override
-    public int[] getDestroyedEntities(Object destroyPacket) {
+    public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
         return new int[0];
     }
 
     @Override
-    public boolean isBundlePacket(Object packet) {
+    public boolean isBundlePacket(@NotNull Object packet) {
         return false;
     }
 
     @Override
-    public Iterable<Object> getPackets(Object bundlePacket) {
+    public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
         return Collections.emptyList();
     }
 }

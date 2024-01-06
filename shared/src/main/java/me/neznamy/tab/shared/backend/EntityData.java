@@ -2,11 +2,21 @@ package me.neznamy.tab.shared.backend;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Interface representing entity metadata. Implementation can vary based on server version.
+ */
 public interface EntityData {
 
     /** Marker flag in armor stand flags */
     byte MARKER_FLAG = 1 << 4;
 
+    /**
+     * Returns position of armor stands flags in data watcher.
+     *
+     * @param   minorVersion
+     *          Server's minor version
+     * @return  Position of armor stand flags
+     */
     static int getArmorStandFlagsPosition(int minorVersion) {
         if (minorVersion >= 17) {
             //1.17.x, 1.18.x, 1.19.x, 1.20.x
@@ -25,6 +35,12 @@ public interface EntityData {
             return 10;
         }
     }
-    
-    @NotNull Object build();
+
+    /**
+     * Builds the object.
+     *
+     * @return  Built metadata
+     */
+    @NotNull
+    Object build();
 }

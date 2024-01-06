@@ -10,6 +10,9 @@ import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Interface for backend platforms with a few default implementations, as well as new methods.
+ */
 public interface BackendPlatform extends Platform {
 
     @Override
