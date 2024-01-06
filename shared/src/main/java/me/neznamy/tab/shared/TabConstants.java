@@ -40,6 +40,7 @@ public class TabConstants {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CpuUsageCategory {
 
+        // Events
         public static final String PLAYER_JOIN = "Player Join";
         public static final String PLAYER_QUIT = "Player Quit";
         public static final String WORLD_SWITCH = "World Switch";
@@ -47,27 +48,32 @@ public class TabConstants {
         public static final String COMMAND_PREPROCESS = "Command Preprocess";
         public static final String PLAYER_SNEAK = "Player Sneak";
         public static final String PLAYER_RESPAWN = "Player Respawn";
-        public static final String PLUGIN_MESSAGE = "PluginMessageEvent";
-        public static final String REDIS_BUNGEE_MESSAGE = "PubSubMessageEvent";
-        public static final String VANISH_CHANGE = "Vanish status change";
-        public static final String ANTI_OVERRIDE = "Anti override";
+        public static final String PLUGIN_MESSAGE = "Plugin Message processing";
+        public static final String REDIS_BUNGEE_MESSAGE = "Redis Message processing";
 
+        // Packets
+        public static final String ANTI_OVERRIDE = "Anti override";
+        public static final String PING_CHANGE = "Processing ping change";
+        public static final String NICK_PLUGIN_COMPATIBILITY = "Compatibility with nick plugins";
         public static final String BYTE_BUF = "ByteBuf";
-        public static final String PACKET_PLAYER_INFO = "PacketPlayOutPlayerInfo";
-        public static final String PACKET_ENTITY_MOVE = "PacketPlayOutEntity";
-        public static final String PACKET_ENTITY_MOVE_PASSENGER = "PacketPlayOutEntity (passenger)";
-        public static final String PACKET_ENTITY_SPAWN = "PacketPlayOutNamedEntitySpawn";
-        public static final String PACKET_ENTITY_DESTROY = "PacketPlayOutEntityDestroy";
+        public static final String PACKET_PLAYER_MOVE = "Processing player move";
+        public static final String PACKET_ENTITY_MOVE_PASSENGER = "Processing entity move (with player passenger)";
+        public static final String PACKET_ENTITY_SPAWN = "Processing entity spawn";
+        public static final String PACKET_ENTITY_DESTROY = "Processing entity destroy";
         public static final String RAW_PACKET_OUT = "Packet reading (out)";
         public static final String PACKET_LOGIN = "Login packet";
-        public static final String TABLIST_CLEAR = "TabList entry re-add";
+        public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
 
+        // Placeholders
         public static final String PLACEHOLDER_REFRESH_INIT = "Phase #1 - Preparing for request";
         public static final String PLACEHOLDER_REQUEST = "Phase #2 - Requesting new values";
         public static final String PLACEHOLDER_SAVE = "Phase #3 - Saving results";
 
+        // Other
+        public static final String GAMEMODE_CHANGE = "Processing gamemode change";
+        public static final String TABLIST_CLEAR = "TabList entry re-add";
+        public static final String VANISH_CHANGE = "Vanish status change";
         public static final String REFRESHING_NAME_TAG_VISIBILITY = "Refreshing NameTag visibility";
-        public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
         public static final String PROCESSING_PLAYER_MOVEMENT = "Processing player movement";
         public static final String TELEPORTING_WITHER = "Teleporting wither";
     }

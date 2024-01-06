@@ -108,7 +108,7 @@ public class FeatureManager {
             if (!(f instanceof GameModeListener)) continue;
             long time = System.nanoTime();
             ((GameModeListener) f).onGameModeChange(player);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.GAMEMODE_CHANGE, System.nanoTime() - time);
         }
     }
 
@@ -129,7 +129,7 @@ public class FeatureManager {
             long time = System.nanoTime();
             IChatBaseComponent value = ((DisplayNameListener) f).onDisplayNameChange(packetReceiver, id);
             if (value != null) newDisplayName = value;
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime() - time);
         }
         return newDisplayName;
     }
@@ -332,7 +332,7 @@ public class FeatureManager {
             if (!(f instanceof EntryAddListener)) continue;
             long time = System.nanoTime();
             ((EntryAddListener)f).onEntryAdd(packetReceiver, id, name);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, System.nanoTime() - time);
         }
     }
 
@@ -354,7 +354,7 @@ public class FeatureManager {
             if (!(f instanceof LatencyListener)) continue;
             long time = System.nanoTime();
             newLatency = ((LatencyListener)f).onLatencyChange(packetReceiver, id, newLatency);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PING_CHANGE, System.nanoTime() - time);
         }
         return newLatency;
     }
