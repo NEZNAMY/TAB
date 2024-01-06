@@ -5,7 +5,7 @@ import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.entity.DataWatcher;
 import me.neznamy.tab.shared.backend.Location;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;

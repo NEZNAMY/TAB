@@ -1,6 +1,7 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.entity;
 
 import lombok.*;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -48,7 +49,7 @@ public class DataWatcher implements EntityData {
     private final Map<Integer, Item> dataValues = new HashMap<>();
 
     /**
-     * Loads all required Fields and throws Exception if something went wrong
+     * Loads all required Fields and throws Exception if something went wrong.
      *
      * @throws  ReflectiveOperationException
      *          If something goes wrong

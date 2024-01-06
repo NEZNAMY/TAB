@@ -1,13 +1,9 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import me.neznamy.tab.platforms.bukkit.nms.*;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.platform.FoliaPlatform;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -17,43 +13,12 @@ public class BukkitTAB extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!isVersionSupported()) {
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
-        TAB.create(ReflectionUtils.classExists("io.papermc.paper.threadedregions.RegionizedServer") ?
-                new FoliaPlatform(this) : new BukkitPlatform(this));
+        boolean folia = ReflectionUtils.classExists("io.papermc.paper.threadedregions.RegionizedServer");
+        TAB.create(folia ? new FoliaPlatform(this) : new BukkitPlatform(this));
     }
 
     @Override
     public void onDisable() {
-        //null check due to compatibility check making instance not get set on unsupported versions
-        if (TAB.getInstance() != null) TAB.getInstance().unload();
-    }
-    
-    /**
-     * Initializes all used NMS classes, constructors, fields and methods.
-     * Returns {@code true} if everything went successfully,
-     * {@code false} if anything went wrong.
-     *
-     * @return  {@code true} if server version is compatible, {@code false} if not
-     */
-    private boolean isVersionSupported() {
-        try {
-            DataWatcher.load();
-            PacketEntityView.load();
-            return true;
-        } catch (Exception ex) {
-            if (ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]) == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
-                Bukkit.getConsoleSender().sendMessage(String.format(
-                        "%s[TAB] Your server version is not compatible. This plugin version was made for %s - %s. Disabling.",
-                        EnumChatFormat.RED.getFormat(), ProtocolVersion.V1_5.getFriendlyName(), ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName()
-                ));
-            } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] A compatibility issue " +
-                        "with your server was found. Unless you are running some really weird server software, this is a bug.");
-            }
-            return false;
-        }
+        TAB.getInstance().unload();
     }
 }

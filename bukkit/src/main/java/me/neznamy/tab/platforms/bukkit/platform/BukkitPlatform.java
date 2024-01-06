@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
+import me.neznamy.tab.platforms.bukkit.entity.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
@@ -93,6 +94,7 @@ public class BukkitPlatform implements BackendPlatform {
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
         }
+        PacketEntityView.tryLoad();
         PingRetriever.tryLoad();
         ScoreboardLoader.findInstance();
         TabListBase.findInstance();
@@ -143,7 +145,10 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public NameTag getUnlimitedNameTags() {
-        return BukkitReflection.getMinorVersion() >= 8 ? new BukkitNameTagX(plugin) : new NameTag();
+        return BukkitReflection.getMinorVersion() >= 8 &&
+                PacketEntityView.isAvailable() &&
+                BukkitPipelineInjector.isAvailable() ?
+                new BukkitNameTagX(plugin) : new NameTag();
     }
 
     @Override

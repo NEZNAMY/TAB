@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.features;
 
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.entity.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;

@@ -1,12 +1,15 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
@@ -83,24 +86,30 @@ public class PacketEntityView implements EntityView {
     private final BukkitTabPlayer player;
 
     /**
-     * Loads all required classes and fields and throws Exception if something went wrong
-     *
-     * @throws  ReflectiveOperationException
-     *          If something fails
+     * Loads all required classes and fields and marks class as available.
+     * If something goes wrong, a warning is printed and class is not marked as available.
      */
-    public static void load() throws ReflectiveOperationException {
-        loadEntityMetadata();
-        loadEntityDestroy();
-        loadEntityTeleport();
-        loadEntityMove();
-        loadEntitySpawn();
-        if (BukkitReflection.is1_19_4Plus()) {
-            ClientboundBundlePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundBundlePacket");
-            newClientboundBundlePacket = ClientboundBundlePacket.getConstructor(Iterable.class);
-            ClientboundBundlePacket_packets = ReflectionUtils.getOnlyField(ClientboundBundlePacket.getSuperclass(), Iterable.class);
+    public static void tryLoad() {
+        try {
+            DataWatcher.load();
+            loadEntityMetadata();
+            loadEntityDestroy();
+            loadEntityTeleport();
+            loadEntityMove();
+            loadEntitySpawn();
+            if (BukkitReflection.is1_19_4Plus()) {
+                ClientboundBundlePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundBundlePacket");
+                newClientboundBundlePacket = ClientboundBundlePacket.getConstructor(Iterable.class);
+                ClientboundBundlePacket_packets = ReflectionUtils.getOnlyField(ClientboundBundlePacket.getSuperclass(), Iterable.class);
+            }
+            packetSender = new PacketSender();
+            available = true;
+        } catch (ReflectiveOperationException e) {
+            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Failed to initialize NMS fields for " +
+                    "entity packet sending due to a compatibility error. This will " +
+                    "result in unlimited nametag feature and 1.8- bossbar not working. " +
+                    "Please update the plugin a to version with native support for your server version to unlock the feature.");
         }
-        packetSender = new PacketSender();
-        available = true;
     }
 
     private static void loadEntityMetadata() throws ReflectiveOperationException {
