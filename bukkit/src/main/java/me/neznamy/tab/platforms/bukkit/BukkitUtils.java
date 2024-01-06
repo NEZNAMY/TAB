@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -108,6 +109,7 @@ public class BukkitUtils {
     public static void sendCompatibilityMessage() {
         if (!compatibilityIssue) return;
         Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Please update the plugin to " +
-                "a version with native support for your server version for optimal experience.");
+                "a version with native support for your server version for optimal experience. This plugin version " +
+                "was made for " + ProtocolVersion.V1_5.getFriendlyName() + " - " + ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName() + ".");
     }
 }
