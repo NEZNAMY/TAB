@@ -14,6 +14,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Line using all 3 values - prefix, name and suffix. Line may flicker when placeholder changes value.
+ * Limitations:
+ *   1.5.x - 1.7.x: up to 42 characters
+ *   1.8.x - 1.12.x: up to 66 characters
+ *   1.13+: unlimited
  */
 public class LongLine extends ScoreboardLine implements Refreshable {
 

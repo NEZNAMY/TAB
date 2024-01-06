@@ -110,14 +110,14 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      * @return  most optimal line from provided text
      */
     private @NotNull ScoreboardLine registerLine(int lineNumber, @Nullable String text) {
-        if (text == null) return new StaticLine(this, lineNumber, "");
+        if (text == null) return new LongLine(this, lineNumber, "");
         if (text.startsWith("Long|")) {
             return new LongLine(this, lineNumber, text.substring(5));
         }
         if (text.contains("%")) {
             return new StableDynamicLine(this, lineNumber, text);
         }
-        return new StaticLine(this, lineNumber, text);
+        return new LongLine(this, lineNumber, text);
     }
 
     /**
@@ -239,7 +239,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         Collections.reverse(linesReversed);
         int score = 1;
         for (Line line : linesReversed) {
-            if (line instanceof StaticLine || !p.getProperty(name + "-" + ((ScoreboardLine) line).getTeamName()).get().isEmpty()) {
+            if (!p.getProperty(name + "-" + ((ScoreboardLine) line).getTeamName()).get().isEmpty()) {
                 p.getScoreboard().setScore(
                         ScoreboardManagerImpl.OBJECTIVE_NAME,
                         ((ScoreboardLine)line).getPlayerName(p),
