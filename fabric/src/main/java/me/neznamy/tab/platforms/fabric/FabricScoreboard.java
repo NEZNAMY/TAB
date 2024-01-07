@@ -116,6 +116,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     }
 
     @Override
+    @SneakyThrows
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                           @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
         player.sendPacket(FabricMultiVersion.setScore.apply(

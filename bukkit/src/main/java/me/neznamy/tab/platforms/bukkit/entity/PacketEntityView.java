@@ -10,20 +10,17 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
-import me.neznamy.tab.shared.util.BiConsumerWithException;
-import me.neznamy.tab.shared.util.BiFunctionWithException;
-import me.neznamy.tab.shared.util.ReflectionUtils;
+import me.neznamy.tab.shared.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 /**
@@ -33,39 +30,26 @@ import java.util.function.Function;
 @SuppressWarnings("unchecked")
 public class PacketEntityView implements EntityView {
 
+    /** Version with entity metadata being split from spawn packet */
+    private static final int SPLIT_METADATA_VERSION = 15;
+
+    private static PacketSender packetSender;
+
     /** PacketPlayOutEntityDestroy */
     private static Class<?> EntityDestroyClass;
     private static BiConsumerWithException<BukkitTabPlayer, int[]> destroyEntities;
-    private static Field EntityDestroy_Entities;
+    private static FunctionWithException<Object, int[]> getDestroyedEntities;
 
     /** PacketPlayOutEntityMetadata */
     private static BiFunctionWithException<Integer, EntityData, Object> newEntityMetadata;
     
     /** PacketPlayOutEntityTeleport */
+    private static BiFunctionWithException<Integer, Location, Object> newEntityTeleport;
     private static Class<?> EntityTeleportClass;
-    private static Constructor<?> newEntityTeleport;
     private static Field EntityTeleport_EntityId;
-    private static Field EntityTeleport_X;
-    private static Field EntityTeleport_Y;
-    private static Field EntityTeleport_Z;
 
     /** PacketPlayOutSpawnEntityLiving */
-    private static Class<?> SpawnEntityClass;
-    private static Constructor<?> newSpawnEntity;
-
-    /** 1.17+ */
-    private static Object Vec3D_Empty;
-    private static Object EntityTypes_ARMOR_STAND;
-
-    /** 1.16.5- */
-    private static Field SpawnEntity_EntityId;
-    private static Field SpawnEntity_EntityType;
-    private static Field SpawnEntity_UUID;
-    private static Field SpawnEntity_X;
-    private static Field SpawnEntity_Y;
-    private static Field SpawnEntity_Z;
-    private static Field SpawnEntity_DataWatcher;
-    private static final EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
+    private static QuintFunction<Integer, UUID, Object, Location, EntityData, Object> newSpawnEntity;
 
     /** Other entity packets */
     private static Class<?> PacketPlayOutEntity;
@@ -74,13 +58,14 @@ public class PacketEntityView implements EntityView {
     private static Class<?> PacketPlayOutNamedEntitySpawn;
     private static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 
-    private static Function<Object, Boolean> isBundlePacket = packet -> false;
     private static Constructor<?> newClientboundBundlePacket;
     private static Field ClientboundBundlePacket_packets;
-
-    private static Object dummyEntity;
-
-    private static PacketSender packetSender;
+    private static Function<Object, Boolean> isBundlePacket = packet -> false;
+    private static BiConsumerWithException<BukkitTabPlayer, Iterable<?>> sendAsBundle = (player, packets) -> {
+        for (Object packet : packets) {
+            packetSender.sendPacket(player.getPlayer(), packet);
+        }
+    };
 
     @Getter
     private static boolean available;
@@ -105,6 +90,7 @@ public class PacketEntityView implements EntityView {
                 newClientboundBundlePacket = ClientboundBundlePacket.getConstructor(Iterable.class);
                 ClientboundBundlePacket_packets = ReflectionUtils.getOnlyField(ClientboundBundlePacket.getSuperclass(), Iterable.class);
                 isBundlePacket = ClientboundBundlePacket::isInstance;
+                sendAsBundle = (player, packets) -> packetSender.sendPacket(player.getPlayer(), newClientboundBundlePacket.newInstance(packets));
             }
             packetSender = new PacketSender();
             available = true;
@@ -119,12 +105,11 @@ public class PacketEntityView implements EntityView {
     private static void loadEntityMetadata() throws ReflectiveOperationException {
         Class<?> entityMetadataClass = BukkitReflection.getClass("network.protocol.game.ClientboundSetEntityDataPacket",
                 "network.protocol.game.PacketPlayOutEntityMetadata", "PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
-        Constructor<?> constructor;
         if (BukkitReflection.is1_19_3Plus()) {
-            constructor = entityMetadataClass.getConstructor(int.class, List.class);
+            Constructor<?> constructor = entityMetadataClass.getConstructor(int.class, List.class);
             newEntityMetadata = (entityId, data) -> constructor.newInstance(entityId, DataWatcher.DataWatcher_packDirty.invoke(data.build()));
         } else {
-            constructor = entityMetadataClass.getConstructor(int.class, DataWatcher.DataWatcher, boolean.class);
+            Constructor<?> constructor = entityMetadataClass.getConstructor(int.class, DataWatcher.DataWatcher, boolean.class);
             newEntityMetadata = (entityId, data) -> constructor.newInstance(entityId, data.build(), true);
         }
     }
@@ -132,36 +117,47 @@ public class PacketEntityView implements EntityView {
     private static void loadEntityDestroy() throws ReflectiveOperationException {
         EntityDestroyClass = BukkitReflection.getClass("network.protocol.game.ClientboundRemoveEntitiesPacket",
                 "network.protocol.game.PacketPlayOutEntityDestroy", "PacketPlayOutEntityDestroy", "Packet29DestroyEntity");
+        Field entities = ReflectionUtils.getOnlyField(EntityDestroyClass);
         try {
             Constructor<?> constructor = EntityDestroyClass.getConstructor(int[].class);
             destroyEntities = (player, ids) -> packetSender.sendPacket(player.getPlayer(), constructor.newInstance(new Object[]{ids}));
+            if (BukkitReflection.getMinorVersion() >= 17) {
+                getDestroyedEntities = packet -> ((List<Integer>) entities.get(packet)).stream().mapToInt(i -> i).toArray();
+            } else {
+                getDestroyedEntities = packet -> (int[]) entities.get(packet);
+            }
         } catch (NoSuchMethodException e) {
             //1.17.0 Mojank
             Constructor<?> constructor = EntityDestroyClass.getConstructor(int.class);
-            destroyEntities = (player, ids) -> {
-                for (int entity : ids) {
-                    packetSender.sendPacket(player.getPlayer(), constructor.newInstance(entity));
-                }
-            };
+            destroyEntities = (player, ids) -> { for (int entity : ids) packetSender.sendPacket(player.getPlayer(), constructor.newInstance(entity));};
+            getDestroyedEntities = packet -> new int[]{entities.getInt(packet)};
         }
-        // Field
-        EntityDestroy_Entities = ReflectionUtils.getOnlyField(EntityDestroyClass);
     }
 
     private static void loadEntityTeleport() throws ReflectiveOperationException {
-        // Class
         EntityTeleportClass = BukkitReflection.getClass("network.protocol.game.ClientboundTeleportEntityPacket",
                 "network.protocol.game.PacketPlayOutEntityTeleport", "PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
-
-        // Constructor
+        Callable<Object> newPacket;
         if (BukkitReflection.getMinorVersion() >= 17) {
-            newEntityTeleport = EntityTeleportClass.getConstructor(BukkitReflection.getClass("world.entity.Entity"));
+            // Dummy armor stand for constructor
+            Class<?> world = BukkitReflection.getClass("world.level.Level", "world.level.World", "World");
+            Class<?> entityArmorStand = BukkitReflection.getClass("world.entity.decoration.ArmorStand",
+                    "world.entity.decoration.EntityArmorStand", "EntityArmorStand");
+            Constructor<?> newEntityArmorStand = entityArmorStand.getConstructor(world, double.class, double.class, double.class);
+            Method World_getHandle = BukkitReflection.getBukkitClass("CraftWorld").getMethod("getHandle");
+            Object dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
+
+            Constructor<?> constructor = EntityTeleportClass.getConstructor(BukkitReflection.getClass("world.entity.Entity"));
+            newPacket = () -> constructor.newInstance(dummyEntity);
         } else {
-            newEntityTeleport = EntityTeleportClass.getConstructor();
+            Constructor<?> constructor = EntityTeleportClass.getConstructor();
+            newPacket = constructor::newInstance;
         }
 
-        // Fields
         EntityTeleport_EntityId = ReflectionUtils.getFields(EntityTeleportClass, int.class).get(0);
+        Field EntityTeleport_X;
+        Field EntityTeleport_Y;
+        Field EntityTeleport_Z;
         if (BukkitReflection.getMinorVersion() >= 9) {
             EntityTeleport_X = ReflectionUtils.getFields(EntityTeleportClass, double.class).get(0);
             EntityTeleport_Y = ReflectionUtils.getFields(EntityTeleportClass, double.class).get(1);
@@ -171,16 +167,14 @@ public class PacketEntityView implements EntityView {
             EntityTeleport_Y = ReflectionUtils.getFields(EntityTeleportClass, int.class).get(2);
             EntityTeleport_Z = ReflectionUtils.getFields(EntityTeleportClass, int.class).get(3);
         }
-
-        // Dummy armor stand for constructor
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            Class<?> world = BukkitReflection.getClass("world.level.Level", "world.level.World", "World");
-            Class<?> entityArmorStand = BukkitReflection.getClass("world.entity.decoration.ArmorStand",
-                    "world.entity.decoration.EntityArmorStand", "EntityArmorStand");
-            Constructor<?> newEntityArmorStand = entityArmorStand.getConstructor(world, double.class, double.class, double.class);
-            Method World_getHandle = BukkitReflection.getBukkitClass("CraftWorld").getMethod("getHandle");
-            dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
-        }
+        newEntityTeleport = (entityId, location) -> {
+            Object packet = newPacket.call();
+            EntityTeleport_EntityId.set(packet, entityId);
+            EntityTeleport_X.set(packet, toPosition(location.getX()));
+            EntityTeleport_Y.set(packet, toPosition(location.getY()));
+            EntityTeleport_Z.set(packet, toPosition(location.getZ()));
+            return packet;
+        };
     }
 
     private static void loadEntityMove() throws ReflectiveOperationException {
@@ -202,92 +196,105 @@ public class PacketEntityView implements EntityView {
      *          If anything fails
      */
     private static void loadEntitySpawn() throws ReflectiveOperationException {
-        SpawnEntityClass = BukkitReflection.getClass("network.protocol.game.ClientboundAddEntityPacket",
-                "network.protocol.game.PacketPlayOutSpawnEntity", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
-        SpawnEntity_EntityId = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(0);
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            Class<?> Vec3D = BukkitReflection.getClass("world.phys.Vec3", "world.phys.Vec3D");
-            Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
-            Class<?> EntityTypes = BukkitReflection.getClass("world.entity.EntityType", "world.entity.EntityTypes");
-            if (BukkitReflection.getMinorVersion() >= 19) {
-                EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "ARMOR_STAND", "d").get(null);
-            } else {
-                EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "ARMOR_STAND", "c", "f_20529_").get(null); // Mohist 1.18.2
-            }
-            if (BukkitReflection.getMinorVersion() >= 19) {
-                newSpawnEntity = SpawnEntityClass.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D, double.class);
-            } else {
-                newSpawnEntity = SpawnEntityClass.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D);
-            }
-        } else {
-            newSpawnEntity = SpawnEntityClass.getConstructor();
-            if (BukkitReflection.getMinorVersion() >= 9) {
-                SpawnEntity_UUID = ReflectionUtils.getOnlyField(SpawnEntityClass, UUID.class);
-                SpawnEntity_X = ReflectionUtils.getFields(SpawnEntityClass, double.class).get(0);
-                SpawnEntity_Y = ReflectionUtils.getFields(SpawnEntityClass, double.class).get(1);
-                SpawnEntity_Z = ReflectionUtils.getFields(SpawnEntityClass, double.class).get(2);
-            } else {
-                SpawnEntity_X = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(2);
-                SpawnEntity_Y = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(3);
-                SpawnEntity_Z = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(4);
-            }
-            SpawnEntity_EntityType = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(1);
-            if (BukkitReflection.getMinorVersion() <= 14) {
-                SpawnEntity_DataWatcher = ReflectionUtils.getOnlyField(SpawnEntityClass, DataWatcher.DataWatcher);
-            }
-        }
-        if (BukkitReflection.getMinorVersion() >= 13) {
+        int minorVersion = BukkitReflection.getMinorVersion();
+
+        // Entity ids
+        EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
+        if (minorVersion >= 13) {
             entityIds.put(EntityType.ARMOR_STAND, 1);
         } else {
             entityIds.put(EntityType.WITHER, 64);
-            if (BukkitReflection.getMinorVersion() >= 8) {
+            if (minorVersion >= 8) {
                 entityIds.put(EntityType.ARMOR_STAND, 30);
             }
         }
-        if (!BukkitReflection.is1_20_2Plus()) {
+
+        Class<?> SpawnEntityClass = BukkitReflection.getClass("network.protocol.game.ClientboundAddEntityPacket",
+                "network.protocol.game.PacketPlayOutSpawnEntity", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
+        Field SpawnEntity_EntityId = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(0);
+        if (BukkitReflection.is1_20_2Plus()) {
+            PacketPlayOutNamedEntitySpawn = SpawnEntityClass;
+            PacketPlayOutNamedEntitySpawn_ENTITYID = SpawnEntity_EntityId;
+        } else {
             PacketPlayOutNamedEntitySpawn = BukkitReflection.getClass("network.protocol.game.ClientboundAddPlayerPacket",
                     "network.protocol.game.PacketPlayOutNamedEntitySpawn", "PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
             PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
+        }
+        Constructor<?> constructor;
+
+        // 1.17+ constructor using Spawn entity packet
+        if (minorVersion >= 17) {
+            Class<?> Vec3D = BukkitReflection.getClass("world.phys.Vec3", "world.phys.Vec3D");
+            Object Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
+            Class<?> EntityTypes = BukkitReflection.getClass("world.entity.EntityType", "world.entity.EntityTypes");
+            if (minorVersion >= 19) {
+                Object EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "ARMOR_STAND", "d").get(null);
+                constructor = SpawnEntityClass.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D, double.class);
+                newSpawnEntity = (id, uuid, type, l, data) -> constructor.newInstance(id, uuid, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0.0d);
+            } else {
+                Object EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "ARMOR_STAND", "c", "f_20529_").get(null); // Mohist 1.18.2
+                constructor = SpawnEntityClass.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D);
+                newSpawnEntity = (id, uuid, type, l, data) -> constructor.newInstance(id, uuid, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty);
+            }
+            return;
+        }
+
+        // 1.16- constructor using spawn entity living packet
+        constructor = SpawnEntityClass.getConstructor();
+        @Nullable Field SpawnEntity_UUID;
+        Field SpawnEntity_X;
+        Field SpawnEntity_Y;
+        Field SpawnEntity_Z;
+        @Nullable Field SpawnEntity_DataWatcher;
+        Field SpawnEntity_EntityType = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(1);
+        if (minorVersion >= 9) {
+            SpawnEntity_UUID = ReflectionUtils.getOnlyField(SpawnEntityClass, UUID.class);
+            SpawnEntity_X = ReflectionUtils.getFields(SpawnEntityClass, double.class).get(0);
+            SpawnEntity_Y = ReflectionUtils.getFields(SpawnEntityClass, double.class).get(1);
+            SpawnEntity_Z = ReflectionUtils.getFields(SpawnEntityClass, double.class).get(2);
+        } else {
+            SpawnEntity_UUID = null;
+            SpawnEntity_X = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(2);
+            SpawnEntity_Y = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(3);
+            SpawnEntity_Z = ReflectionUtils.getFields(SpawnEntityClass, int.class).get(4);
+        }
+        if (minorVersion < SPLIT_METADATA_VERSION) {
+            SpawnEntity_DataWatcher = ReflectionUtils.getOnlyField(SpawnEntityClass, DataWatcher.DataWatcher);
+        } else {
+            SpawnEntity_DataWatcher = null;
+        }
+        newSpawnEntity = (id, uuid, type, l, data) -> {
+            Object nmsPacket = constructor.newInstance();
+            SpawnEntity_EntityId.set(nmsPacket, id);
+            if (minorVersion < SPLIT_METADATA_VERSION) SpawnEntity_DataWatcher.set(nmsPacket, data.build());
+            if (minorVersion >= 9) SpawnEntity_UUID.set(nmsPacket, uuid);
+            SpawnEntity_X.set(nmsPacket, toPosition(l.getX()));
+            SpawnEntity_Y.set(nmsPacket, toPosition(l.getY()));
+            SpawnEntity_Z.set(nmsPacket, toPosition(l.getZ()));
+            SpawnEntity_EntityType.set(nmsPacket, entityIds.get((EntityType) type));
+            return nmsPacket;
+        };
+    }
+
+    private static Object toPosition(double paramDouble) {
+        if (BukkitReflection.getMinorVersion() >= 9) {
+            return paramDouble;
+        } else {
+            int i = (int) (paramDouble*32);
+            return paramDouble < i ? i - 1 : i;
         }
     }
 
     @SneakyThrows
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location l, @NotNull EntityData data) {
-        int minorVersion = BukkitReflection.getMinorVersion();
-        if (minorVersion >= 19) {
-            List<Object> packets = new ArrayList<>();
-            packets.add(newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty, 0.0d));
-            packets.add(newEntityMetadata.apply(entityId, data));
-            if (BukkitReflection.is1_19_4Plus()) {
-                // Send bundle packet to avoid rare flicker when frame is rendered between packets
-                packetSender.sendPacket(player.getPlayer(), newClientboundBundlePacket.newInstance(packets));
-            } else {
-                for (Object packet : packets) {
-                    packetSender.sendPacket(player.getPlayer(), packet);
-                }
-            }
-            return;
-        }
-        if (minorVersion >= 17) {
-            packetSender.sendPacket(player.getPlayer(), newSpawnEntity.newInstance(entityId, id, l.getX(), l.getY(), l.getZ(), 0, 0, EntityTypes_ARMOR_STAND, 0, Vec3D_Empty));
+        if (BukkitReflection.getMinorVersion() >= SPLIT_METADATA_VERSION) {
+            sendAsBundle.accept(player, Arrays.asList(
+                    newSpawnEntity.apply(entityId, id, entityType, l, null),
+                    newEntityMetadata.apply(entityId, data)
+            ));
         } else {
-            Object nmsPacket = newSpawnEntity.newInstance();
-            SpawnEntity_EntityId.set(nmsPacket, entityId);
-            if (minorVersion <= 14) {
-                SpawnEntity_DataWatcher.set(nmsPacket, data.build());
-            }
-            if (minorVersion >= 9) {
-                SpawnEntity_UUID.set(nmsPacket, id);
-            }
-            SpawnEntity_X.set(nmsPacket, toPosition(l.getX()));
-            SpawnEntity_Y.set(nmsPacket, toPosition(l.getY()));
-            SpawnEntity_Z.set(nmsPacket, toPosition(l.getZ()));
-            SpawnEntity_EntityType.set(nmsPacket, entityIds.get((EntityType) entityType));
-            packetSender.sendPacket(player.getPlayer(), nmsPacket);
-        }
-        if (BukkitReflection.getMinorVersion() >= 15) {
-            updateEntityMetadata(entityId, data);
+            packetSender.sendPacket(player.getPlayer(), newSpawnEntity.apply(entityId, id, entityType, l, data));
         }
     }
 
@@ -300,26 +307,7 @@ public class PacketEntityView implements EntityView {
     @SneakyThrows
     @Override
     public void teleportEntity(int entityId, @NotNull Location location) {
-        Object nmsPacket;
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            nmsPacket = newEntityTeleport.newInstance(dummyEntity);
-        } else {
-            nmsPacket = newEntityTeleport.newInstance();
-        }
-        EntityTeleport_EntityId.set(nmsPacket, entityId);
-        EntityTeleport_X.set(nmsPacket, toPosition(location.getX()));
-        EntityTeleport_Y.set(nmsPacket, toPosition(location.getY()));
-        EntityTeleport_Z.set(nmsPacket, toPosition(location.getZ()));
-        packetSender.sendPacket(player.getPlayer(), nmsPacket);
-    }
-
-    private static Object toPosition(double paramDouble) {
-        if (BukkitReflection.getMinorVersion() >= 9) {
-            return paramDouble;
-        } else {
-            int i = (int) (paramDouble*32);
-            return paramDouble < i ? i - 1 : i;
-        }
+        packetSender.sendPacket(player.getPlayer(), newEntityTeleport.apply(entityId, location));
     }
 
     @SneakyThrows
@@ -340,11 +328,7 @@ public class PacketEntityView implements EntityView {
 
     @Override
     public boolean isNamedEntitySpawnPacket(@NotNull Object packet) {
-        if (BukkitReflection.is1_20_2Plus()) {
-            return SpawnEntityClass.isInstance(packet);
-        } else {
-            return PacketPlayOutNamedEntitySpawn.isInstance(packet);
-        }
+        return PacketPlayOutNamedEntitySpawn.isInstance(packet);
     }
 
     @Override
@@ -372,27 +356,13 @@ public class PacketEntityView implements EntityView {
     @Override
     @SneakyThrows
     public int getSpawnedPlayer(@NotNull Object playerSpawnPacket) {
-        if (BukkitReflection.is1_20_2Plus()) {
-            return SpawnEntity_EntityId.getInt(playerSpawnPacket);
-        } else {
-            return PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(playerSpawnPacket);
-        }
+        return PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(playerSpawnPacket);
     }
 
     @Override
     @SneakyThrows
     public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
-        Object entities = EntityDestroy_Entities.get(destroyPacket);
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            if (entities instanceof List) {
-                return ((List<Integer>)entities).stream().mapToInt(i -> i).toArray();
-            } else {
-                //1.17.0
-                return new int[]{(int) entities};
-            }
-        } else {
-            return (int[]) entities;
-        }
+        return getDestroyedEntities.apply(destroyPacket);
     }
 
     @Override
