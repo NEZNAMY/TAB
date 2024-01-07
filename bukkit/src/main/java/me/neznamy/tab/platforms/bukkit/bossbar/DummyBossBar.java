@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.bossbar;
 
-import lombok.Getter;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.platform.BossBar;
