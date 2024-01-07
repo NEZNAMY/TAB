@@ -20,9 +20,6 @@ import java.lang.reflect.Method;
  */
 public class PacketHeaderFooter extends HeaderFooter {
 
-    private final Constructor<?> newHeaderFooter;
-    private Field HEADER;
-    private Field FOOTER;
     private Method ChatSerializer_DESERIALIZE;
     private final PacketSender packetSender;
     private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
@@ -43,12 +40,12 @@ public class PacketHeaderFooter extends HeaderFooter {
                 "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
         ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
         if (BukkitReflection.getMinorVersion() >= 17) {
-            newHeaderFooter = HeaderFooterClass.getConstructor(Component, Component);
+            Constructor<?> newHeaderFooter = HeaderFooterClass.getConstructor(Component, Component);
             createPacket = newHeaderFooter::newInstance;
         } else {
-            newHeaderFooter = HeaderFooterClass.getConstructor();
-            HEADER = ReflectionUtils.getFields(HeaderFooterClass, Component).get(0);
-            FOOTER = ReflectionUtils.getFields(HeaderFooterClass, Component).get(1);
+            Constructor<?> newHeaderFooter = HeaderFooterClass.getConstructor();
+            Field HEADER = ReflectionUtils.getFields(HeaderFooterClass, Component).get(0);
+            Field FOOTER = ReflectionUtils.getFields(HeaderFooterClass, Component).get(1);
             createPacket = (header, footer) -> {
                 Object packet = newHeaderFooter.newInstance();
                 HEADER.set(packet, header);
