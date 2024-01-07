@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 public class PacketHeaderFooter extends HeaderFooter {
 
     private Method ChatSerializer_DESERIALIZE;
-    private final PacketSender packetSender;
+    private final PacketSender packetSender = new PacketSender();
     private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
     private final BiFunctionWithException<Object, Object, Object> createPacket;
@@ -53,7 +53,6 @@ public class PacketHeaderFooter extends HeaderFooter {
                 return packet;
             };
         }
-        packetSender = new PacketSender();
     }
 
     @SneakyThrows

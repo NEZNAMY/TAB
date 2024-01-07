@@ -18,8 +18,14 @@ import java.util.Collection;
  */
 public class SkinData {
 
-    private final Method getHandle;
-    private final Method getProfile;
+    private final Method getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
+
+    // There is only supposed to be one, however there are exceptions:
+    // #1 - CatServer adds another method
+    // #2 - Random mods may perform deep hack into the server and add another one (see #1089)
+    // Get first and hope for the best, alternatively players may not have correct skins in layout, but who cares
+    private final Method getProfile = ReflectionUtils.getMethods(BukkitReflection.getClass(
+            "world.entity.player.Player", "world.entity.player.EntityHuman", "EntityHuman"), GameProfile.class).get(0);
 
     /**
      * Constructs new instance and loads NMS fields. If it fails, throws an Exception.
@@ -27,15 +33,7 @@ public class SkinData {
      * @throws  ReflectiveOperationException
      *          If something goes wrong
      */
-    public SkinData() throws ReflectiveOperationException {
-        Class<?> EntityHuman = BukkitReflection.getClass("world.entity.player.Player", "world.entity.player.EntityHuman", "EntityHuman");
-        getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
-        // There is only supposed to be one, however there are exceptions:
-        // #1 - CatServer adds another method
-        // #2 - Random mods may perform deep hack into the server and add another one (see #1089)
-        // Get first and hope for the best, alternatively players may not have correct skins in layout, but who cares
-        getProfile = ReflectionUtils.getMethods(EntityHuman, GameProfile.class).get(0);
-    }
+    public SkinData() throws ReflectiveOperationException {}
 
     /**
      * Returns player's skin. If server is in offline mode, returns {@code null}.
