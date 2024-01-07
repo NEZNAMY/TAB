@@ -33,11 +33,11 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Getter
     private static Exception exception;
 
-    private static Class<?> Component;
-    private static Class<?> Scoreboard;
-    private static Class<?> ScoreboardObjective;
-    private static Object emptyScoreboard;
-    private static Class<?> NumberFormat;
+    static Class<?> Component;
+    static Class<?> Scoreboard;
+    static Class<?> ScoreboardObjective;
+    static Object emptyScoreboard;
+    static Class<?> NumberFormat;
     private static Constructor<?> newFixedFormat;
 
     // Objective packet
@@ -46,10 +46,10 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static Field Objective_OBJECTIVE_NAME;
     private static Field Objective_METHOD;
     private static Field Objective_RENDER_TYPE;
-    private static Constructor<?> newScoreboardObjective;
+    static Constructor<?> newScoreboardObjective;
     private static Method ScoreboardObjective_setDisplayName;
     private static Enum<?>[] healthDisplays;
-    private static Object IScoreboardCriteria_dummy;
+    static Object IScoreboardCriteria_dummy;
 
     private static ScorePacketData scorePacketData;
     @Getter private static TeamPacketData teamPacketData;
@@ -284,79 +284,5 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private Object toFixedFormat(@Nullable IChatBaseComponent numberFormat) {
         if (numberFormat == null || newFixedFormat == null) return null;
         return newFixedFormat.newInstance(toComponent(numberFormat));
-    }
-
-    @SuppressWarnings("JavaReflectionInvocation") // Different versions have different constructors
-    private static class ScorePacketData {
-
-        private final Constructor<?> newSetScorePacket;
-        private Constructor<?> newResetScorePacket;      // 1.20.3+
-        private Constructor<?> newSetScorePacket_String; // 1.12-
-        private Constructor<?> newScoreboardScore;       // 1.12-
-        private Field SetScorePacket_SCORE;              // 1.12-
-        private Enum<?>[] scoreboardActions;             // 1.20.2-
-
-        private ScorePacketData() throws ReflectiveOperationException {
-            Class<?> SetScorePacket = BukkitReflection.getClass(
-                    "network.protocol.game.ClientboundSetScorePacket", // Mojang mapped
-                    "network.protocol.game.PacketPlayOutScoreboardScore", // Bukkit 1.17+
-                    "PacketPlayOutScoreboardScore", // 1.7 - 1.16.5
-                    "Packet207SetScoreboardScore" // 1.5 - 1.6.4
-            );
-            if (BukkitReflection.is1_20_3Plus()) {
-                newResetScorePacket = BukkitReflection.getClass("network.protocol.game.ClientboundResetScorePacket").getConstructor(String.class, String.class);
-                newSetScorePacket = SetScorePacket.getConstructor(String.class, String.class, int.class, Component, NumberFormat);
-            } else if (BukkitReflection.getMinorVersion() >= 13) {
-                Class<?> EnumScoreboardAction = BukkitReflection.getClass("server.ServerScoreboard$Method",
-                        "server.ScoreboardServer$Action", "ScoreboardServer$Action");
-                newSetScorePacket = SetScorePacket.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
-                scoreboardActions = (Enum<?>[]) EnumScoreboardAction.getMethod("values").invoke(null);
-            } else {
-                Class<?> ScoreboardScore = BukkitReflection.getClass("ScoreboardScore");
-                newSetScorePacket_String = SetScorePacket.getConstructor(String.class);
-                SetScorePacket_SCORE = ReflectionUtils.getFields(SetScorePacket, int.class).get(0);
-                newScoreboardScore = ScoreboardScore.getConstructor(Scoreboard, ScoreboardObjective, String.class);
-                if (BukkitReflection.getMinorVersion() >= 8) {
-                    newSetScorePacket = SetScorePacket.getConstructor(ScoreboardScore);
-                } else {
-                    newSetScorePacket = SetScorePacket.getConstructor(ScoreboardScore, int.class);
-                }
-            }
-        }
-
-        @SneakyThrows
-        public Object setScore(@NotNull String objective, @NotNull String scoreHolder, int score,
-                              @Nullable Object displayName, @Nullable Object numberFormat) {
-            if (BukkitReflection.is1_20_3Plus()) {
-                return newSetScorePacket.newInstance(scoreHolder, objective, score, displayName, numberFormat);
-            } else if (BukkitReflection.getMinorVersion() >= 13) {
-                return newSetScorePacket.newInstance(scoreboardActions[0], objective, scoreHolder, score);
-            } else {
-                Object scoreboardScore = newScoreboardScore.newInstance(
-                        emptyScoreboard,
-                        newScoreboardObjective.newInstance(emptyScoreboard, objective, IScoreboardCriteria_dummy),
-                        scoreHolder
-                );
-                Object packet;
-                if (BukkitReflection.getMinorVersion() >= 8) {
-                    packet = newSetScorePacket.newInstance(scoreboardScore);
-                } else {
-                    packet = newSetScorePacket.newInstance(scoreboardScore, ScoreAction.CHANGE);
-                }
-                SetScorePacket_SCORE.set(packet, score);
-                return packet;
-            }
-        }
-
-        @SneakyThrows
-        public Object removeScore(@NotNull String objective, @NotNull String scoreHolder) {
-            if (BukkitReflection.is1_20_3Plus()) {
-                return newResetScorePacket.newInstance(scoreHolder, objective);
-            } else if (BukkitReflection.getMinorVersion() >= 13) {
-                return newSetScorePacket.newInstance(scoreboardActions[1], objective, scoreHolder, 0);
-            } else {
-                return newSetScorePacket_String.newInstance(scoreHolder);
-            }
-        }
     }
 }

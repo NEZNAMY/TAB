@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.util;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Interface for 5-argument functions.
  *
@@ -35,5 +37,5 @@ public interface QuintFunction<T, U, V, W, X, R> {
      *          Fifth argument
      * @return  Function result
      */
-    R apply(T t, U u, V v, W w, X x);
+    R apply(T t, U u, V v, W w, X x) throws InvocationTargetException, InstantiationException, IllegalAccessException;
 }

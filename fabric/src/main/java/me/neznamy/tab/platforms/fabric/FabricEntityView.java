@@ -43,6 +43,7 @@ public class FabricEntityView implements EntityView {
     }
 
     @Override
+    @SneakyThrows
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location,
                             @NotNull EntityData data) {
         FabricMultiVersion.sendPackets.accept(player.getPlayer(), Arrays.asList(
