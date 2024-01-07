@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard;
 
@@ -21,21 +22,25 @@ public class ScoreboardLoader {
      * Finds the best available instance for current server software.
      */
     public static void findInstance() {
+        if (BukkitReflection.getMinorVersion() < 5) {
+            instance = NullScoreboard::new;
+            return;
+        }
         if (PacketScoreboard.isAvailable()) {
             instance = PacketScoreboard::new;
         } else if (PaperScoreboard.isAvailable()) {
             instance = PaperScoreboard::new;
-            BukkitUtils.compatibilityError("Scoreboards", "Paper API",
+            BukkitUtils.compatibilityError(PacketScoreboard.getException(), "Scoreboards", "Paper API",
                     "Compatibility with other plugins being reduced",
                     "1.20.3+ visuals not working due to lack of API"); // hopefully only temporarily
         } else if (BukkitScoreboard.isAvailable()) {
             instance = BukkitScoreboard::new;
-            BukkitUtils.compatibilityError("Scoreboards", "Bukkit API",
+            BukkitUtils.compatibilityError(PacketScoreboard.getException(), "Scoreboards", "Bukkit API",
                     "Compatibility with other plugins being reduced",
                     "1.20.3+ visuals not working due to lack of API"); // hopefully only temporarily
         } else {
             instance = NullScoreboard::new;
-            BukkitUtils.compatibilityError("Scoreboards", null,
+            BukkitUtils.compatibilityError(PacketScoreboard.getException(), "Scoreboards", null,
                     "Scoreboard feature will not work",
                     "Belowname feature will not work",
                     "Player objective feature will not work",

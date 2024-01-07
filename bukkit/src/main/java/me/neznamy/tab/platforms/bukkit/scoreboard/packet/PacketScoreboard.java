@@ -30,6 +30,9 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Getter
     private static boolean available;
 
+    @Getter
+    private static Exception exception;
+
     private static Class<?> Component;
     private static Class<?> Scoreboard;
     private static Class<?> ScoreboardObjective;
@@ -110,8 +113,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             displayPacketData = new DisplayPacketData();
             packetSender = new PacketSender();
             available = true;
-        } catch (Exception ignored) {
-            // Print exception to find out what went wrong
+        } catch (Exception e) {
+            exception = e;
         }
     }
 

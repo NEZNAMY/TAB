@@ -105,7 +105,7 @@ public class PacketEntityView implements EntityView {
             packetSender = new PacketSender();
             available = true;
         } catch (ReflectiveOperationException e) {
-            BukkitUtils.compatibilityError("sending entity packets", null,
+            BukkitUtils.compatibilityError(e, "sending entity packets", null,
                     "Unlimited nametag mode not working and being replaced with regular nametags",
                     "Bossbar on 1.8 servers and lower not working");
         }

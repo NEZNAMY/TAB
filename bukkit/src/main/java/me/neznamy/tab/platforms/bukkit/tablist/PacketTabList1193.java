@@ -107,7 +107,7 @@ public class PacketTabList1193 extends TabListBase {
         try {
             skinData = new SkinData();
         } catch (Exception e) {
-            BukkitUtils.compatibilityError("getting player's game profile", null,
+            BukkitUtils.compatibilityError(e, "getting player's game profile", null,
                     "Player skins not working in layout feature");
         }
     }

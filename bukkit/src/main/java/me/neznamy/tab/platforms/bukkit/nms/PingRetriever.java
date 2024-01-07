@@ -32,7 +32,7 @@ public class PingRetriever {
                 PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
             }
         } catch (Exception e) {
-            BukkitUtils.compatibilityError("getting player's ping", null, "%ping% returning -1");
+            BukkitUtils.compatibilityError(e, "getting player's ping", null, "%ping% returning -1");
         }
     }
 

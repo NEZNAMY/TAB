@@ -21,18 +21,25 @@ public abstract class HeaderFooter {
      * Finds the best available instance for current server software.
      */
     public static void findInstance() {
-        if (PaperHeaderFooter.isAvailable()) {
-            instance = new PaperHeaderFooter();
-        } else if (PacketHeaderFooter.isAvailable()) {
-            instance = new PacketHeaderFooter();
-        } else if (BukkitHeaderFooter.isAvailable()) {
-            instance = new BukkitHeaderFooter();
-            BukkitUtils.compatibilityError("sending Header/Footer", "Bukkit API",
-                    "Header/Footer having drastically increased CPU usage",
-                    "Header/Footer not supporting fonts (1.16+)");
-        } else {
-            BukkitUtils.compatibilityError("sending Header/Footer", null,
-                    "Header/Footer feature not working");
+        instance = findInstance0();
+    }
+
+    @Nullable
+    private static HeaderFooter findInstance0() {
+        if (PaperHeaderFooter.isAvailable()) return new PaperHeaderFooter();
+        try {
+            return new PacketHeaderFooter();
+        } catch (Exception e) {
+            if (BukkitHeaderFooter.isAvailable()) {
+                BukkitUtils.compatibilityError(e, "sending Header/Footer", "Bukkit API",
+                        "Header/Footer having drastically increased CPU usage",
+                        "Header/Footer not supporting fonts (1.16+)");
+                return new BukkitHeaderFooter();
+            } else {
+                BukkitUtils.compatibilityError(e, "sending Header/Footer", null,
+                        "Header/Footer feature not working");
+                return null;
+            }
         }
     }
 

@@ -46,7 +46,7 @@ public abstract class TabListBase implements TabList {
                 instance = PacketTabList17::new;
             }
         } catch (Exception e) {
-            BukkitUtils.compatibilityError("tablist entry management", "Bukkit API",
+            BukkitUtils.compatibilityError(e, "tablist entry management", "Bukkit API",
                     "Layout feature will not work",
                     "Prevent-spectator-effect feature will not work",
                     "Ping spoof feature will not work",

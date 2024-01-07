@@ -53,7 +53,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
             available = true;
         } catch (Exception e) {
-            BukkitUtils.compatibilityError("network channel injection", null,
+            BukkitUtils.compatibilityError(e, "network channel injection", null,
                     "Unlimited nametag mode not working and being replaced with regular nametags",
                     "Anti-override for tablist & nametags not working",
                     "Compatibility with nickname plugins changing player names will not work",

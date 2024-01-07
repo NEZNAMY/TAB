@@ -20,6 +20,9 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BukkitUtils {
 
+    /** Whether compatibility exceptions should be printed or not, enabling when adding support for new versions */
+    private static final boolean PRINT_EXCEPTIONS = false;
+
     private static boolean compatibilityIssue;
 
     /**
@@ -77,6 +80,8 @@ public class BukkitUtils {
     /**
      * Prints a console warn that some compatibility issue was found.
      *
+     * @param   exception
+     *          Exception thrown when initializing fields, if applicable
      * @param   failedCheck
      *          Check that failed
      * @param   fallback
@@ -84,7 +89,8 @@ public class BukkitUtils {
      * @param   missingFeatures
      *          Features that will be broken because of the incompatibility
      */
-    public static void compatibilityError(@NotNull String failedCheck, @Nullable String fallback, @NotNull String... missingFeatures) {
+    public static void compatibilityError(@NotNull Exception exception, @NotNull String failedCheck,
+                                          @Nullable String fallback, @NotNull String... missingFeatures) {
         StringBuilder sb = new StringBuilder();
         sb.append(EnumChatFormat.RED.getFormat());
         sb.append("[TAB] Failed to initialize minecraft fields for ");
@@ -100,6 +106,7 @@ public class BukkitUtils {
             sb.append("\n").append("#").append(i + 1).append(": ").append(missingFeatures[i]);
         }
         Bukkit.getConsoleSender().sendMessage(sb.toString());
+        if (PRINT_EXCEPTIONS) exception.printStackTrace();
         compatibilityIssue = true;
     }
 
