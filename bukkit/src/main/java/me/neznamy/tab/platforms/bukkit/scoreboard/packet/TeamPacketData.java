@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.BiConsumerWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,16 +43,15 @@ public class TeamPacketData {
     private final Field TeamPacket_ACTION;
     private final Field TeamPacket_PLAYERS;
     private final Method ScoreboardTeam_getPlayerNameSet;
-    private Method ScoreboardTeam_setNameTagVisibility;
-    private Method ScoreboardTeam_setCollisionRule;
     private final Method ScoreboardTeam_setPrefix;
     private final Method ScoreboardTeam_setSuffix;
     private Method ScoreboardTeam_setColor;
     private final Method ScoreboardTeam_setAllowFriendlyFire;
     private final Method ScoreboardTeam_setCanSeeFriendlyInvisibles;
     private final Enum<?>[] chatFormats;
-    private Enum<?>[] nameVisibilities;
-    private Enum<?>[] collisionRules;
+
+    private BiConsumerWithException<Object, Scoreboard.NameVisibility> setVisibility = (team, visibility) -> {};
+    private BiConsumerWithException<Object, Scoreboard.CollisionRule> setCollision = (team, collision) -> {};
 
     /**
      * Constructs new instance and loads all required NMS classes, fields and methods.
@@ -91,26 +91,8 @@ public class TeamPacketData {
         if (minorVersion >= 7) {
             Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         }
-        if (minorVersion >= 8) {
-            Class<?> enumNameTagVisibility = BukkitReflection.getClass(
-                    "world.scores.Team$Visibility", // Mojang mapped
-                    "world.scores.ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.17+
-                    "ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.8.1 - 1.16.5
-                    "EnumNameTagVisibility" // Bukkit 1.8.0
-            );
-            nameVisibilities = (Enum<?>[]) enumNameTagVisibility.getMethod("values").invoke(null);
-            ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(
-                    scoreboardTeam,
-                    new String[]{"setNameTagVisibility", "a", "m_83346_"}, // {1.8.1+, 1.8 & 1.18+, Mohist 1.18.2}
-                    enumNameTagVisibility
-            );
-        }
-        if (minorVersion >= 9) {
-            Class<?> enumTeamPush = BukkitReflection.getClass("world.scores.Team$CollisionRule",
-                    "world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
-            ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumTeamPush);
-            collisionRules = (Enum<?>[]) enumTeamPush.getMethod("values").invoke(null);
-        }
+        if (minorVersion >= 8) loadVisibility(scoreboardTeam);
+        if (minorVersion >= 9) loadCollision(scoreboardTeam);
         if (minorVersion >= MODERN_TEAM_DATA_VERSION) {
             ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumChatFormatClass);
             ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(
@@ -141,6 +123,32 @@ public class TeamPacketData {
         } else {
             newTeamPacket = TeamPacketClass.getConstructor(scoreboardTeam, int.class);
         }
+    }
+
+    @SneakyThrows
+    private void loadVisibility(@NotNull Class<?> scoreboardTeam) {
+        Class<?> enumNameTagVisibility = BukkitReflection.getClass(
+                "world.scores.Team$Visibility", // Mojang mapped
+                "world.scores.ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.17+
+                "ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.8.1 - 1.16.5
+                "EnumNameTagVisibility" // Bukkit 1.8.0
+        );
+        Enum<?>[] nameVisibilities = (Enum<?>[]) enumNameTagVisibility.getMethod("values").invoke(null);
+        Method setNameTagVisibility = ReflectionUtils.getMethod(
+                scoreboardTeam,
+                new String[]{"setNameTagVisibility", "a", "m_83346_"}, // {1.8.1+, 1.8 & 1.18+, Mohist 1.18.2}
+                enumNameTagVisibility
+        );
+        setVisibility = (team, visibility) -> setNameTagVisibility.invoke(team, nameVisibilities[visibility.ordinal()]);
+    }
+
+    @SneakyThrows
+    private void loadCollision(@NotNull Class<?> scoreboardTeam) {
+        Class<?> enumTeamPush = BukkitReflection.getClass("world.scores.Team$CollisionRule",
+                "world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
+        Enum<?>[] collisionRules = (Enum<?>[]) enumTeamPush.getMethod("values").invoke(null);
+        Method setCollisionRule = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumTeamPush);
+        setCollision = (team, collision) -> setCollisionRule.invoke(team, collisionRules[collision.ordinal()]);
     }
 
     /**
@@ -274,10 +282,8 @@ public class TeamPacketData {
             ScoreboardTeam_setPrefix.invoke(team, prefix);
             ScoreboardTeam_setSuffix.invoke(team, suffix);
         }
-        if (BukkitReflection.getMinorVersion() >= 8)
-            ScoreboardTeam_setNameTagVisibility.invoke(team, nameVisibilities[visibility.ordinal()]);
-        if (BukkitReflection.getMinorVersion() >= 9)
-            ScoreboardTeam_setCollisionRule.invoke(team, collisionRules[collision.ordinal()]);
+        setVisibility.accept(team, visibility);
+        setCollision.accept(team, collision);
         return team;
     }
 

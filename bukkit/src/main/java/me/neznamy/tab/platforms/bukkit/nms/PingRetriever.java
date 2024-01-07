@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
+import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -14,11 +15,8 @@ import java.lang.reflect.Method;
  */
 public class PingRetriever {
 
-    /** First version with proper ping getter */
-    private static final int PING_GETTER_VERSION = 17;
-
-    private static Method getHandle;
-    private static Field PING;
+    /** Ping getter function */
+    private static FunctionWithException<Player, Integer> getPing;
 
     /**
      * Attempts to load required classes, fields and methods and marks class as available.
@@ -26,12 +24,16 @@ public class PingRetriever {
      */
     public static void tryLoad() {
         try {
-            if (BukkitReflection.getMinorVersion() < PING_GETTER_VERSION) {
-                getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
+            if (BukkitReflection.getMinorVersion() >= 17) {
+                getPing = Player::getPing;
+            } else {
+                Method getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
                 Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
-                PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
+                Field PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
+                getPing = player -> PING.getInt(getHandle.invoke(player));
             }
         } catch (Exception e) {
+            getPing = p -> -1;
             BukkitUtils.compatibilityError(e, "getting player's ping", null, "%ping% returning -1");
         }
     }
@@ -47,10 +49,6 @@ public class PingRetriever {
      */
     @SneakyThrows
     public static int getPing(@NotNull Player player) {
-        if (BukkitReflection.getMinorVersion() >= PING_GETTER_VERSION) {
-            return player.getPing();
-        }
-        if (PING == null) return -1;
-        return PING.getInt(getHandle.invoke(player));
+        return getPing.apply(player);
     }
 }

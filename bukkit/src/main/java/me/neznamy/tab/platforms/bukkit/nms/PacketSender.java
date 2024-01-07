@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.SneakyThrows;
+import me.neznamy.tab.shared.util.BiConsumerWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,17 +14,9 @@ import java.lang.reflect.Method;
  */
 public class PacketSender {
 
-    /** Method for getting player's NMS object */
+    /** Function for sending packet */
     @NotNull
-    private final Method getHandle;
-
-    /** Player connection field in player class */
-    @NotNull
-    private final Field PLAYER_CONNECTION;
-
-    /** Method for sending packet */
-    @NotNull
-    private final Method sendPacket;
+    private final BiConsumerWithException<Player, Object> send;
 
     /**
      * Constructs new instance and attempts to load required classes, fields and methods.
@@ -35,15 +28,16 @@ public class PacketSender {
     public PacketSender() throws ReflectiveOperationException {
         Class<?> Packet = BukkitReflection.getClass("network.protocol.Packet", "Packet");
         Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
-        Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
-                "server.network.PlayerConnection", "PlayerConnection");
-        getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
-        PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
+        Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl", "server.network.PlayerConnection", "PlayerConnection");
+        Method getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
+        Field PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
+        Method sendPacket;
         if (BukkitReflection.getMinorVersion() >= 7) {
             sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         } else {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
+        send = (player, packet) -> sendPacket.invoke(PLAYER_CONNECTION.get(getHandle.invoke(player)), packet);
     }
 
     /**
@@ -57,6 +51,6 @@ public class PacketSender {
      */
     @SneakyThrows
     public void sendPacket(@NotNull Player player, @NotNull Object packet) {
-        sendPacket.invoke(PLAYER_CONNECTION.get(getHandle.invoke(player)), packet);
+        send.accept(player, packet);
     }
 }

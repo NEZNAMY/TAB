@@ -18,7 +18,6 @@ public class DisplayPacketData {
 
     private final Class<?> DisplayObjectiveClass;
     private final Constructor<?> newDisplayObjective;
-    private final Field DisplayObjective_POSITION;
     private final Field DisplayObjective_OBJECTIVE_NAME;
     private final Object[] displaySlots;
     private final FunctionWithException<Object, Integer> packetToSlot;
@@ -41,12 +40,12 @@ public class DisplayPacketData {
         if (BukkitReflection.is1_20_2Plus()) {
             Class<?> DisplaySlot = BukkitReflection.getClass("world.scores.DisplaySlot");
             displaySlots = (Object[]) DisplaySlot.getDeclaredMethod("values").invoke(null);
-            DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, DisplaySlot);
+            Field DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, DisplaySlot);
             newDisplayObjective = DisplayObjectiveClass.getConstructor(DisplaySlot, ScoreboardObjective);
             packetToSlot = packet -> ((Enum<?>)DisplayObjective_POSITION.get(packet)).ordinal();
         } else {
             displaySlots = new Object[]{0, 1, 2};
-            DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, int.class);
+            Field DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, int.class);
             newDisplayObjective = DisplayObjectiveClass.getConstructor(int.class, ScoreboardObjective);
             packetToSlot = DisplayObjective_POSITION::getInt;
         }
