@@ -85,6 +85,7 @@ public class BukkitPlatform implements BackendPlatform {
      */
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
+        long time = System.currentTimeMillis();
         try {
             server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
             spigotTps = server.getClass().getField("recentTps");
@@ -103,6 +104,7 @@ public class BukkitPlatform implements BackendPlatform {
             HeaderFooter.findInstance();
         }
         BukkitUtils.sendCompatibilityMessage();
+        Bukkit.getConsoleSender().sendMessage("[TAB] " + EnumChatFormat.GRAY.getFormat() + "Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
     }
 
     @Override
