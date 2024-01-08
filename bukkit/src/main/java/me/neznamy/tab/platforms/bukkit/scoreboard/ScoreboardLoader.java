@@ -3,9 +3,9 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
-import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -16,16 +16,13 @@ public class ScoreboardLoader {
 
     /** Instance function */
     @Getter
-    private static Function<BukkitTabPlayer, Scoreboard<BukkitTabPlayer>> instance;
+    @NotNull
+    private static Function<BukkitTabPlayer, Scoreboard<BukkitTabPlayer>> instance = NullScoreboard::new;
 
     /**
      * Finds the best available instance for current server software.
      */
     public static void findInstance() {
-        if (BukkitReflection.getMinorVersion() < 5) {
-            instance = NullScoreboard::new;
-            return;
-        }
         if (PacketScoreboard.isAvailable()) {
             instance = PacketScoreboard::new;
         } else if (PaperScoreboard.isAvailable()) {
@@ -39,7 +36,6 @@ public class ScoreboardLoader {
                     "Compatibility with other plugins being reduced",
                     "1.20.3+ visuals not working due to lack of API"); // hopefully only temporarily
         } else {
-            instance = NullScoreboard::new;
             BukkitUtils.compatibilityError(PacketScoreboard.getException(), "Scoreboards", null,
                     "Scoreboard feature will not work",
                     "Belowname feature will not work",
