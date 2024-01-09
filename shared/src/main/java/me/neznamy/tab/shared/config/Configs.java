@@ -138,21 +138,27 @@ public class Configs {
     }
 
     public String getServerGroup(@NotNull List<Object> serverGroups, @Nullable String server) {
-        if (serverGroups.isEmpty() || server == null) return server;
+        String globalGroup = tryServerGroup(serverGroups, server);
+        if (globalGroup != null) return globalGroup;
+
+        // Use existing logic to check config key for server group (separated by ';')
+        return getGroup(serverGroups, server);
+    }
+
+    private @Nullable String tryServerGroup(@NotNull List<Object> serverGroups, @Nullable String server) {
+        if (serverGroups.isEmpty() || server == null) return null;
 
         // Check global-playerlist server-groups for this server
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
-        if (!featureManager.isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST)) return server;
+        if (!featureManager.isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST)) return null;
 
         GlobalPlayerList t = featureManager.getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
-        if (t == null) return server;
+        if (t == null) return null;
 
         String globalGroup = t.getServerGroup(server);
         for (Object serverGroup : serverGroups) {
             if (globalGroup.equals(serverGroup.toString())) return globalGroup;
         }
-
-        // Use existing logic to check config key for server group (separated by ';')
-        return getGroup(serverGroups, server);
+        return null;
     }
 }
