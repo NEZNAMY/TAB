@@ -65,7 +65,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         this(manager, name, title, lines, false);
         this.displayCondition = Condition.getCondition(displayCondition);
         if (this.displayCondition != null) {
-            manager.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(this.displayCondition.getName())));
+            manager.addUsedPlaceholder(TabConstants.Placeholder.condition(this.displayCondition.getName()));
         }
     }
 

@@ -47,7 +47,7 @@ public class DisableChecker extends TabFeature implements Refreshable {
         this.featureName = featureName;
         this.disableCondition = disableCondition;
         this.action = action;
-        if (disableCondition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(disableCondition.getName())));
+        if (disableCondition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(disableCondition.getName()));
     }
 
     @Override

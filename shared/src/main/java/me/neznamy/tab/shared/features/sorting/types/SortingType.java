@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import lombok.Getter;
@@ -42,7 +41,7 @@ public abstract class SortingType {
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
             TAB.getInstance().getConfigHelper().startup().invalidSortingPlaceholder(sortingPlaceholder, this);
         } else {
-            sorting.addUsedPlaceholders(Collections.singletonList(sortingPlaceholder));
+            sorting.addUsedPlaceholder(sortingPlaceholder);
             this.sortingPlaceholder = sortingPlaceholder;
         }
     }

@@ -32,7 +32,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
         this.name = name;
         TAB.getInstance().getConfigHelper().startup().checkLayoutMap(name, map);
         condition = Condition.getCondition((String) map.get("condition"));
-        if (condition != null) manager.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(condition.getName())));
+        if (condition != null) manager.addUsedPlaceholder(TabConstants.Placeholder.condition(condition.getName()));
         for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
             addFixedSlot(fixedSlot);
         }
@@ -64,7 +64,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
 
     public void addGroup(@NotNull String name, @Nullable Condition condition, int[] slots) {
         groups.add(new GroupPattern(name, condition, Arrays.stream(slots).filter(slot -> !fixedSlots.containsKey(slot)).toArray()));
-        if (condition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(condition.getName())));
+        if (condition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(condition.getName()));
     }
 
     public boolean isConditionMet(@NotNull TabPlayer p) {

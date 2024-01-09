@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features.nametags;
 
-import java.util.Collections;
 import java.util.Objects;
 import java.util.WeakHashMap;
 
@@ -41,7 +40,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
             collision.put((TabPlayer) p, newCollision);
             return newCollision;
         });
-        addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.COLLISION));
+        addUsedPlaceholder(TabConstants.Placeholder.COLLISION);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             collision.put(all, true);
         }

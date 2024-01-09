@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -402,10 +401,10 @@ public class FeatureManager {
         features.put(featureName, featureHandler);
         values = features.values().toArray(new TabFeature[0]);
         if (featureHandler instanceof VanishListener) {
-            TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
+            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.VANISHED);
         }
         if (featureHandler instanceof GameModeListener) {
-            TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.GAMEMODE));
+            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.GAMEMODE);
         }
         if (featureHandler instanceof PacketSendListener) {
             hasPacketSendListener = true;

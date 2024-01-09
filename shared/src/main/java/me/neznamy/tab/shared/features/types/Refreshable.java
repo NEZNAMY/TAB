@@ -41,6 +41,16 @@ public interface Refreshable {
     }
 
     /**
+     * Registers this feature as one using specified placeholder.
+     *
+     * @param   placeholder
+     *          placeholder to add as used in this feature
+     */
+    default void addUsedPlaceholder(@NotNull String placeholder) {
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(placeholder, this);
+    }
+
+    /**
      * Returns name of this feature displayed in /tab cpu
      *
      * @return  name of this feature display in /tab cpu

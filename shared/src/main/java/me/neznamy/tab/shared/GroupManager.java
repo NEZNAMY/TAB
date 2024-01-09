@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -45,7 +44,7 @@ public class GroupManager extends TabFeature implements Refreshable {
         this.groupFunction = groupFunction;
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, 1000,
                 p -> detectPermissionGroup((TabPlayer) p));
-        addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.GROUP));
+        addUsedPlaceholder(TabConstants.Placeholder.GROUP);
     }
 
     /**

@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared.features.nametags;
 
-import java.util.Collections;
-
 import lombok.Getter;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.Refreshable;
@@ -20,7 +18,7 @@ public class VisibilityRefresher extends TabFeature implements Refreshable {
         this.nameTags = nameTags;
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, 500,
                 p -> ((TabPlayer)p).hasInvisibilityPotion());
-        addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.INVISIBLE));
+        addUsedPlaceholder(TabConstants.Placeholder.INVISIBLE);
     }
 
     @Override

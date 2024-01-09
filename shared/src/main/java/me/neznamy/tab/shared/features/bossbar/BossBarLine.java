@@ -84,7 +84,7 @@ public class BossBarLine implements BossBar {
         this.name = name;
         this.displayCondition = Condition.getCondition(displayCondition);
         if (this.displayCondition != null) {
-            manager.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(this.displayCondition.getName())));
+            manager.addUsedPlaceholder(TabConstants.Placeholder.condition(this.displayCondition.getName()));
         }
         this.color = color;
         this.style = style;
