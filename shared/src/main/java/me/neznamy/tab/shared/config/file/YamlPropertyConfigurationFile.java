@@ -46,10 +46,10 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
         if ((value = getObject(new String[] {PER_WORLD, TAB.getInstance().getConfiguration().getGroup(worldGroups, world), TabConstants.DEFAULT_GROUP, property})) != null) {
             return new String[] {toString(value), category + "=" + TabConstants.DEFAULT_GROUP + ", world=" + world};
         }
-        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getGroup(serverGroups, server), name, property})) != null) {
+        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getServerGroup(serverGroups, server), name, property})) != null) {
             return new String[] {toString(value), category + "=" + name + ", server=" + server};
         }
-        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getGroup(serverGroups, server), TabConstants.DEFAULT_GROUP, property})) != null) {
+        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getServerGroup(serverGroups, server), TabConstants.DEFAULT_GROUP, property})) != null) {
             return new String[] {toString(value), category + "=" + TabConstants.DEFAULT_GROUP + ", server=" + server};
         }
         if ((value = getObject(new String[] {name, property})) != null) {
