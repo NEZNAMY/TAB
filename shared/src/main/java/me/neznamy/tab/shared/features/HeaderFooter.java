@@ -126,10 +126,10 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         }
         List<String> lines = config().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.getWorld()) + "." + property);
         if (lines == null) {
-            lines = config().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getGroup(serverGroups, p.getServer()) + "." + property);
+            lines = config().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getServerGroup(serverGroups, p.getServer()) + "." + property);
         }
         if (lines == null) {
-             lines = config().getStringList("header-footer." + property);
+            lines = config().getStringList("header-footer." + property);
         }
         if (lines == null) lines = new ArrayList<>();
         return String.join("\n", lines);
