@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.Getter;
@@ -262,6 +263,7 @@ public class Property {
             if (!identifier.startsWith("%rel_")) continue;
             RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
             format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
+            if (listener != null) listener.addUsedPlaceholders(Collections.singletonList(identifier));
         }
         return EnumChatFormat.color(format);
     }

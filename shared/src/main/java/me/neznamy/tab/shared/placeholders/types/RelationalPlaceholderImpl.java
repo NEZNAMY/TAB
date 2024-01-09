@@ -56,7 +56,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         if (hasValueChanged((TabPlayer) viewer, (TabPlayer) target, value)) {
             for (Refreshable r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
                 long startTime = System.nanoTime();
-                r.refresh((TabPlayer) target, false);
+                r.refresh((TabPlayer) target, true);
                 TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
             }
         }
