@@ -12,7 +12,10 @@ import java.util.Arrays;
  */
 public class BukkitReflection {
 
-    /** Server's NMS/CraftBukkit package */
+    /** CraftBukkit package */
+    private static final String CRAFTBUKKIT_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
+
+    /** Server's NMS package */
     @Getter
     private static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
@@ -75,6 +78,6 @@ public class BukkitReflection {
      *          If class does not exist
      */
     public static Class<?> getBukkitClass(@NotNull String name) throws ClassNotFoundException {
-        return Class.forName("org.bukkit.craftbukkit." + serverPackage + "." + name);
+        return Class.forName(CRAFTBUKKIT_PACKAGE + "." + name);
     }
 }
