@@ -40,7 +40,7 @@ public class ViaVersionHook {
             return TAB.getInstance().getServerVersion().getNetworkId();
         }
         ProtocolVersion protocol = ProtocolVersion.fromNetworkId(version);
-        if (protocol == ProtocolVersion.UNKNOWN_CLIENT_VERSION) {
+        if (protocol == ProtocolVersion.UNKNOWN) {
             TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(String.format(
                     "ViaVersion returned unknown protocol version %d for player %s. " +
                             "Latest version recognized by this plugin version is %d (%s). " +

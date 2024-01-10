@@ -10,8 +10,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public enum ProtocolVersion {
 
-    UNKNOWN_SERVER_VERSION ("Unknown"),
-    UNKNOWN_CLIENT_VERSION ("Unknown"),
+    UNKNOWN ("Unknown"),
     PROXY   ("Proxy"),
     V1_20_4 (765),
     V1_20_3 (765),
@@ -138,7 +137,7 @@ public enum ProtocolVersion {
         try {
             return valueOf("V" + friendlyName.replace(".", "_"));
         } catch (IllegalArgumentException e) {
-            return UNKNOWN_SERVER_VERSION;
+            return UNKNOWN;
         }
     }
 
@@ -153,6 +152,6 @@ public enum ProtocolVersion {
         for (ProtocolVersion v : values()) {
             if (networkId == v.networkId) return v;
         }
-        return UNKNOWN_CLIENT_VERSION;
+        return UNKNOWN;
     }
 }
