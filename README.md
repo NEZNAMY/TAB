@@ -46,12 +46,13 @@ Here is the full list of potential services and their status:
 | Wiki updates<sup>1</sup>      | ✔            |
 | Feature requests              | ❌            |
 | Customer support<sup>2</sup>  | ✔            |
-| Free user support<sup>3</sup> | ❌            |
+| Free user support<sup>3</sup> | ❌*           |
 | Optimization<sup>4</sup>      | ✔            |
 
 <sup>1</sup> - Adding new examples, guides and other kind of useful information people ask about.  
-<sup>2</sup> - Assistance with the plugin on discord, including answering any questions and helping with 
-configuration to those, who bought a copy of the plugin when it was purchasable.  
-<sup>3</sup> - Like <sup>2</sup>, but for anyone in the world who asks for it.  
+<sup>2</sup> - Unrestricted assistance with the plugin for those, who bought a copy of the plugin when it was purchasable.  
+<sup>3</sup> - Unlimited access to my free time for everyone in the world.  
 <sup>4</sup> - Improving plugin's performance while not losing out on any features. This was done 
 proactively a lot in the past, so there isn't much to do anymore, only if someone actually finds and reports something.  
+  
+*Instead, you can use [this fresh new community discord](https://discord.gg/YPqXt63YQj) made by a nice person who will provide this service.  
