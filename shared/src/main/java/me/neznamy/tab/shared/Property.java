@@ -97,6 +97,7 @@ public class Property {
      *          raw value to analyze
      */
     private void analyze(@NotNull String value) {
+        // Identify placeholders used directly
         List<String> placeholders0 = new ArrayList<>();
         List<String> relPlaceholders0 = new ArrayList<>();
         for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(value)) {
@@ -105,10 +106,14 @@ public class Property {
                 relPlaceholders0.add(identifier);
             }
         }
+
+        // Convert all placeholders to %s for String formatter
         String rawFormattedValue0 = value;
         for (String placeholder : placeholders0) {
             rawFormattedValue0 = replaceFirst(rawFormattedValue0, placeholder);
         }
+
+        // Make % symbol not break String formatter by adding another one to display it
         if (!placeholders0.isEmpty() && rawFormattedValue0.contains("%")) {
             int index = rawFormattedValue0.lastIndexOf('%');
             if (rawFormattedValue0.length() == index+1 || rawFormattedValue0.charAt(index+1) != 's') {
@@ -117,8 +122,19 @@ public class Property {
                 rawFormattedValue0 = sb.toString();
             }
         }
+
+        // Apply gradients that do not include placeholders to avoid applying them on every refresh
         rawFormattedValue0 = RGBUtils.getInstance().applyCleanGradients(rawFormattedValue0);
+
+        // Make \n work even if used in '', which snakeyaml does not convert to newline
+        if (rawFormattedValue0.contains("\\n")) {
+            rawFormattedValue0 = rawFormattedValue0.replace("\\n", "\n");
+        }
+
+        // Apply static colors to not need to do it on every refresh
         rawFormattedValue = EnumChatFormat.color(rawFormattedValue0);
+
+        // Update and save values
         placeholders = placeholders0.toArray(new String[0]);
         relPlaceholders = relPlaceholders0.toArray(new String[0]);
         if (listener != null) {
