@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @Getter
 public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable,
-        ServerSwitchListener, WorldSwitchListener {
+        ServerSwitchListener, WorldSwitchListener, VanishListener {
 
     private final String featureName = "Spectator fix";
 
@@ -85,9 +85,19 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     @Override
     public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         // Some server versions may resend gamemode on world switch, resend false value again
+        if (changed.getGamemode() != 3) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer == changed || changed.getGamemode() != 3 || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
+            if (viewer == changed || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
             viewer.getTabList().updateGameMode(changed.getTablistId(), 0);
+        }
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        if (player.isVanished() || player.getGamemode() != 3) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer == player || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
+            viewer.getTabList().updateGameMode(player.getTablistId(), 0);
         }
     }
 }
