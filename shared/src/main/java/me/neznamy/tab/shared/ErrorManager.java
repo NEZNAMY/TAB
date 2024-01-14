@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -96,18 +97,30 @@ public class ErrorManager {
      *          file to print error to
      */
     public void printError(@Nullable String message, @Nullable Throwable t, boolean intoConsoleToo, @NotNull File file) {
-        Throwable error = t;
-        while (error != null && error.getCause() != null) {
-            error = error.getCause();
-        }
-        List<String> lines = new ArrayList<>();
-        if (error != null) {
-            lines.add(error.getClass().getName() + ": " + error.getMessage());
-            for (StackTraceElement ste : error.getStackTrace()) {
-                lines.add("\tat " + ste.toString());
-            }
-        }
+        List<String> lines = t == null ? Collections.emptyList() : throwableToList(t, false);
         printError(message, lines, intoConsoleToo, file);
+    }
+
+    /**
+     * Converts throwable into a list of lines.
+     *
+     * @param   t
+     *          Throwable to print
+     * @param   nested
+     *          Whether this throwable is nested or not
+     * @return  List of lines from given throwable
+     */
+    private List<String> throwableToList(@NotNull Throwable t, boolean nested) {
+        List<String> list = new ArrayList<>();
+        String causedText = nested ? "Caused by: " : "";
+        list.add(causedText + t.getClass().getName() + ": " + t.getMessage());
+        for (StackTraceElement ste : t.getStackTrace()) {
+            list.add("\tat " + ste.toString());
+        }
+        if (t.getCause() != null) {
+            list.addAll(throwableToList(t.getCause(), true));
+        }
+        return list;
     }
 
     /**
