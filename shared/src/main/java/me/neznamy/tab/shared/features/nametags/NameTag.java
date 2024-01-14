@@ -41,8 +41,8 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Getter private final DisableChecker disableChecker;
     private RedisSupport redis;
 
-    // Key - Vanished player, Value = List of players who cannot see the player
-    private final WeakHashMap<TabPlayer, List<TabPlayer>> vanishedPlayers = new WeakHashMap<>();
+    // Key - Vanished player, Value = List of players who cannot see the player (UUIDs to prevent memory leak)
+    private final WeakHashMap<TabPlayer, List<UUID>> vanishedPlayers = new WeakHashMap<>();
 
     private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
             ReflectionUtils.classExists("de.gerrygames.viarewind.ViaRewind") ||
@@ -74,7 +74,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.isVanished() && !TAB.getInstance().getPlatform().canSee(viewer, target)) {
-                    vanishedPlayers.computeIfAbsent(target, p -> new ArrayList<>()).add(viewer);
+                    vanishedPlayers.computeIfAbsent(target, p -> new ArrayList<>()).add(viewer.getUniqueId());
                 }
                 if (!disableChecker.isDisabledPlayer(target)) registerTeam(target, viewer);
             }
@@ -113,10 +113,10 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == connectedPlayer) continue; //avoiding double registration
             if (connectedPlayer.isVanished() && !TAB.getInstance().getPlatform().canSee(all, connectedPlayer)) {
-                vanishedPlayers.computeIfAbsent(connectedPlayer, p -> new ArrayList<>()).add(all);
+                vanishedPlayers.computeIfAbsent(connectedPlayer, p -> new ArrayList<>()).add(all.getUniqueId());
             }
             if (all.isVanished() && !TAB.getInstance().getPlatform().canSee(connectedPlayer, all)) {
-                vanishedPlayers.computeIfAbsent(all, p -> new ArrayList<>()).add(connectedPlayer);
+                vanishedPlayers.computeIfAbsent(all, p -> new ArrayList<>()).add(connectedPlayer.getUniqueId());
             }
             if (!disableChecker.isDisabledPlayer(all)) {
                 registerTeam(all, connectedPlayer);
@@ -369,13 +369,14 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == player) continue;
                 if (!TAB.getInstance().getPlatform().canSee(viewer, player)) {
-                    vanishedPlayers.computeIfAbsent(player, p -> new ArrayList<>()).add(viewer);
+                    vanishedPlayers.computeIfAbsent(player, p -> new ArrayList<>()).add(viewer.getUniqueId());
                     viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(player));
                 }
             }
         } else {
-            for (TabPlayer viewer : vanishedPlayers.getOrDefault(player, Collections.emptyList())) {
-                registerTeam(player, viewer);
+            for (UUID id : vanishedPlayers.getOrDefault(player, Collections.emptyList())) {
+                TabPlayer viewer = TAB.getInstance().getPlayer(id);
+                if (viewer != null) registerTeam(player, viewer);
             }
             vanishedPlayers.remove(player);
         }
