@@ -72,14 +72,14 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @SneakyThrows
     public void logInfo(@NotNull IChatBaseComponent message) {
         Object logger = getLogger();
-        logger.getClass().getMethod("info", String.class).invoke(logger, message.toRawText());
+        logger.getClass().getMethod("info", String.class).invoke(logger, "[TAB] " + message.toRawText());
     }
 
     @Override
     @SneakyThrows
     public void logWarn(@NotNull IChatBaseComponent message) {
         Object logger = getLogger();
-        logger.getClass().getMethod("warn", String.class).invoke(logger, message.toRawText());
+        logger.getClass().getMethod("warn", String.class).invoke(logger, "[TAB] " + message.toRawText());
     }
 
     @SneakyThrows
