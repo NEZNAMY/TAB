@@ -28,7 +28,7 @@ public class ReflectionUtils {
         try {
             Class.forName(path);
             return true;
-        } catch (ClassNotFoundException | NullPointerException e) {
+        } catch (ClassNotFoundException | NullPointerException | NoClassDefFoundError e) {
             return false;
         }
     }
