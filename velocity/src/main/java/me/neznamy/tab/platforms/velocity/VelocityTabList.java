@@ -4,9 +4,11 @@ import com.velocitypowered.api.proxy.player.ChatSession;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +26,7 @@ public class VelocityTabList implements TabList {
     @NotNull private final VelocityTabPlayer player;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabListEntry, Component> expectedDisplayNames = new WeakHashMap<>();
+    private final Map<TabPlayer, Component> expectedDisplayNames = new WeakHashMap<>();
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
@@ -45,7 +47,7 @@ public class VelocityTabList implements TabList {
             if (player.getVersion().getMinorVersion() >= 8) {
                 Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
                 e.setDisplayName(component);
-                expectedDisplayNames.put(e, component);
+                setExpectedDisplayName(entry, component);
             } else {
                 String username = e.getProfile().getName();
                 removeEntry(entry);
@@ -79,7 +81,7 @@ public class VelocityTabList implements TabList {
                 .gameMode(entry.getGameMode())
                 .displayName(displayName)
                 .build();
-        expectedDisplayNames.put(e, displayName);
+        setExpectedDisplayName(entry.getUniqueId(), displayName);
 
         // Remove entry because:
         // #1 - If player is 1.8 - 1.19.2, KeyedVelocityTabList#addEntry will throw IllegalArgumentException
@@ -102,17 +104,19 @@ public class VelocityTabList implements TabList {
 
     @Override
     public void checkDisplayNames() {
-        try {
-            for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-                Component expectedComponent = expectedDisplayNames.get(entry);
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+            player.getPlayer().getTabList().getEntry(target.getUniqueId()).ifPresent(entry -> {
+                Component expectedComponent = expectedDisplayNames.get(target);
                 if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
                     displayNameWrong(entry.getProfile().getName(), player);
                     entry.setDisplayName(expectedComponent);
                 }
-            }
-        } catch (ConcurrentModificationException VelocityBug) {
-            // Error when copying collection (player joined/left in the meantime), retry
-            checkDisplayNames();
+            });
         }
+    }
+
+    private void setExpectedDisplayName(@NotNull UUID entry, @Nullable Component displayName) {
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(entry);
+        if (player != null) expectedDisplayNames.put(player, displayName);
     }
 }

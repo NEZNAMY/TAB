@@ -1,9 +1,11 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +35,7 @@ public class SpongeTabList implements TabList {
     private final SpongeTabPlayer player;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabListEntry, Component> expectedDisplayNames = new WeakHashMap<>();
+    private final Map<TabPlayer, Component> expectedDisplayNames = new WeakHashMap<>();
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
@@ -45,7 +47,7 @@ public class SpongeTabList implements TabList {
         player.getPlayer().tabList().entry(entry).ifPresent(e -> {
             Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
             e.setDisplayName(component);
-            expectedDisplayNames.put(e, component);
+            setExpectedDisplayName(entry, component);
         });
     }
 
@@ -73,7 +75,7 @@ public class SpongeTabList implements TabList {
                 .displayName(displayName)
                 .build();
         player.getPlayer().tabList().addEntry(tabListEntry);
-        expectedDisplayNames.put(tabListEntry, displayName);
+        setExpectedDisplayName(entry.getUniqueId(), displayName);
     }
 
     @Override
@@ -86,12 +88,19 @@ public class SpongeTabList implements TabList {
 
     @Override
     public void checkDisplayNames() {
-        for (TabListEntry entry : player.getPlayer().tabList().entries()) {
-            Component expectedComponent = expectedDisplayNames.get(entry);
-            if (expectedComponent != null && entry.displayName().orElse(null) != expectedComponent) {
-                displayNameWrong(entry.profile().name().orElse(null), player);
-                entry.setDisplayName(expectedComponent);
-            }
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+            player.getPlayer().tabList().entry(target.getUniqueId()).ifPresent(entry -> {
+                Component expectedComponent = expectedDisplayNames.get(target);
+                if (expectedComponent != null && entry.displayName().orElse(null) != expectedComponent) {
+                    displayNameWrong(target.getName(), player);
+                    entry.setDisplayName(expectedComponent);
+                }
+            });
         }
+    }
+
+    private void setExpectedDisplayName(@NotNull UUID entry, @Nullable Component displayName) {
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(entry);
+        if (player != null) expectedDisplayNames.put(player, displayName);
     }
 }
