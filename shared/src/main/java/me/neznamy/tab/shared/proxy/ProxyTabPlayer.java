@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -95,7 +96,10 @@ public abstract class ProxyTabPlayer extends TabPlayer {
                 TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements"),
                 settings
         ));
-        ((ProxyTabExpansion) TAB.getInstance().getPlaceholderManager().getTabExpansion()).resendAllValues(this);
+        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+        if (expansion instanceof ProxyTabExpansion) {
+            ((ProxyTabExpansion) expansion).resendAllValues(this);
+        }
         bridgeRequestTime = System.currentTimeMillis();
     }
 
