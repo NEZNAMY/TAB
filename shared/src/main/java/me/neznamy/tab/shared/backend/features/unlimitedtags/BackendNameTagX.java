@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
 import me.neznamy.tab.shared.features.types.GameModeListener;
 import me.neznamy.tab.shared.features.types.PacketSendListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
