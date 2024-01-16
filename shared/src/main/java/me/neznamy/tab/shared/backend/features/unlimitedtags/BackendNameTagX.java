@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
 import me.neznamy.tab.shared.features.types.GameModeListener;
 import me.neznamy.tab.shared.features.types.PacketSendListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -190,8 +191,15 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     public void sneak(UUID playerUUID, boolean sneaking) {
         TabPlayer p = TAB.getInstance().getPlayer(playerUUID);
         if (p == null || isPlayerDisabled(p)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_SNEAK,
-                () -> getArmorStandManager(p).sneak(sneaking));
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> {
+            BackendArmorStandManager asm = getArmorStandManager(p);
+            if (asm != null) {
+                asm.sneak(sneaking);
+            } else {
+                TAB.getInstance().getErrorManager().printError("ArmorStandManager of player " + p.getName() +
+                        " is null when trying to process sneaking, which is unexpected. Online = " + p.isOnline() + ", loaded = " + p.isLoaded());
+            }
+        });
     }
 
     public void respawn(UUID playerUUID) {
