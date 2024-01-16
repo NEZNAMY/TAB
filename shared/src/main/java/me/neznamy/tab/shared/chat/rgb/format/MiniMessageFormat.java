@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class MiniMessageFormat implements RGBFormatter {
 
     /** Serializer that uses &x format on all platforms, even those that do not have it enabled by default */
-    private final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
+    private static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
             .hexColors().useUnusualXRepeatedCharacterHexFormat().build();
 
     @Override
