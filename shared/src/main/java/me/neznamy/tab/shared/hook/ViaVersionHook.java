@@ -34,7 +34,14 @@ public class ViaVersionHook {
      */
     public int getPlayerVersion(@NotNull UUID player, @NotNull String playerName) {
         if (!installed) return TAB.getInstance().getServerVersion().getNetworkId();
-        int version = Via.getAPI().getPlayerVersion(player);
+        int version;
+        try {
+            version = Via.getAPI().getPlayerVersion(player);
+        } catch (IllegalArgumentException e) {
+            // java.lang.IllegalArgumentException: ViaVersion has not loaded the platform yet
+            // Most likely another plugin shading Via API, just ignore it
+            return TAB.getInstance().getServerVersion().getNetworkId();
+        }
         if (version == -1) {
             // Player got instantly disconnected with a packet error
             return TAB.getInstance().getServerVersion().getNetworkId();
