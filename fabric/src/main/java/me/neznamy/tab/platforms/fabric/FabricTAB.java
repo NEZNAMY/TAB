@@ -20,7 +20,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
     @Override
     @SneakyThrows
     public void onInitializeServer() {
-        for (String module : Arrays.asList("1_14_4", "1_18_2", "1_19_2", "1_20_4")) {
+        for (String module : Arrays.asList("1_14_4", "1_20_4")) {
             Class.forName("me.neznamy.tab.platforms.fabric.loader.Loader_" + module)
                     .getConstructor(ProtocolVersion.class).newInstance(ProtocolVersion.fromFriendlyName(minecraftVersion));
         }

@@ -47,7 +47,7 @@ public class FabricMultiVersion {
     public static Function<Packet<?>, Boolean> isBundlePacket = packet -> false;
     public static Function<Packet<?>, Iterable<Object>> getBundledPackets = packet -> Collections.emptyList();
     public static FunctionWithException<ServerPlayer, Channel> getChannel;
-    public static BiConsumer<ServerPlayer, Component> sendMessage;
+    public static BiConsumerWithException<ServerPlayer, Component> sendMessage;
     public static BiConsumer<CommandSourceStack, Component> sendMessage2;
     public static QuintFunction<Level, Integer, UUID, Object, Location, Packet<ClientGamePacketListener>> spawnEntity;
     public static QuadFunction<TabPlayer, Byte, String, Boolean, EntityData> createDataWatcher;

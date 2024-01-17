@@ -2,7 +2,9 @@ package me.neznamy.tab.platforms.fabric.loader;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
+import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -14,6 +16,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket.PlayerUpdate;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -26,7 +29,9 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -37,12 +42,14 @@ import java.util.Optional;
 @SuppressWarnings({
         "unchecked", // Java generic types
         "Convert2MethodRef", // Would throw if method does not exist
-        "unused" // Actually used, just via reflection
+        "unused", // Actually used, just via reflection
+        "rawtypes" // raw enums
 })
 public class Loader_1_14_4 {
 
     private ArmorStand dummyEntity;
     private final Scoreboard dummyScoreboard = new Scoreboard();
+    private Class<Enum> tablistActionClass;
 
     /**
      * Constructs new instance and registers all method implementations as per 1.14.4.
@@ -50,7 +57,15 @@ public class Loader_1_14_4 {
      * @param   serverVersion
      *          Exact server version
      */
+    @SneakyThrows
     public Loader_1_14_4(@NotNull ProtocolVersion serverVersion) {
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_19_3.getNetworkId()) {
+            if (serverVersion.getMinorVersion() >= 17) {
+                tablistActionClass = (Class<Enum>) Class.forName("net.minecraft.class_2703$class_5893");
+            } else {
+                tablistActionClass = (Class<Enum>) Class.forName("net.minecraft.class_2703$class_2704");
+            }
+        }
         FabricMultiVersion.getLevelName = level -> level.getLevelData().getLevelName() + level.dimension.getType().getFileSuffix();
         FabricMultiVersion.propertyToSkin = property -> new TabList.Skin(property.getValue(), property.getSignature());
         FabricMultiVersion.newEntityMetadata = (entityId, data) -> new ClientboundSetEntityDataPacket(entityId, (SynchedEntityData) data.build(), true);
@@ -95,14 +110,8 @@ public class Loader_1_14_4 {
             return () -> data;
         };
         FabricMultiVersion.buildTabListPacket = (action, entry) -> {
-            ClientboundPlayerInfoPacket packet = new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.valueOf(action.name()), Collections.emptyList());
-            ReflectionUtils.getFields(ClientboundPlayerInfoPacket.class, List.class).get(0).set(packet,
-                    Collections.singletonList(packet.new PlayerUpdate(
-                            entry.createProfile(),
-                            entry.getLatency(),
-                            GameType.byId(entry.getGameMode()),
-                            entry.getDisplayName()
-                    )));
+            ClientboundPlayerInfoPacket packet = createInfoPacket(serverVersion, action);
+            ReflectionUtils.getFields(ClientboundPlayerInfoPacket.class, List.class).get(0).set(packet, Collections.singletonList(createUpdate(serverVersion, entry)));
             return packet;
         };
         FabricMultiVersion.newHeaderFooter = (header, footer) -> {
@@ -114,21 +123,20 @@ public class Loader_1_14_4 {
         };
         FabricMultiVersion.isTeamPacket = packet -> packet instanceof ClientboundSetPlayerTeamPacket;
         FabricMultiVersion.onPlayerInfo = (receiver, packet) -> {
-            // Getters are client only
-            ClientboundPlayerInfoPacket.Action action = (ClientboundPlayerInfoPacket.Action) ReflectionUtils.getFields(packet.getClass(), ClientboundPlayerInfoPacket.Action.class).get(0).get(packet);
-            List<ClientboundPlayerInfoPacket.PlayerUpdate> players = (List<ClientboundPlayerInfoPacket.PlayerUpdate>) ReflectionUtils.getFields(packet.getClass(), List.class).get(0).get(packet);
-            for (ClientboundPlayerInfoPacket.PlayerUpdate nmsData : players) {
+            Enum action = (Enum) ReflectionUtils.getFields(packet.getClass(), tablistActionClass).get(0).get(packet);
+            List<PlayerUpdate> players = (List<PlayerUpdate>) ReflectionUtils.getFields(packet.getClass(), List.class).get(0).get(packet);
+            for (PlayerUpdate nmsData : players) {
                 GameProfile profile = nmsData.getProfile();
-                Field displayNameField = ReflectionUtils.getFields(ClientboundPlayerInfoPacket.PlayerUpdate.class, Component.class).get(0);
-                Field latencyField = ReflectionUtils.getFields(ClientboundPlayerInfoPacket.PlayerUpdate.class, int.class).get(0);
-                if (action == ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME) {
+                Field displayNameField = ReflectionUtils.getFields(PlayerUpdate.class, Component.class).get(0);
+                Field latencyField = ReflectionUtils.getFields(PlayerUpdate.class, int.class).get(0);
+                if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name())) {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
                     if (newDisplayName != null) displayNameField.set(nmsData, ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion()));
                 }
-                if (action == ClientboundPlayerInfoPacket.Action.UPDATE_LATENCY) {
+                if (action.name().equals(TabList.Action.UPDATE_LATENCY.name())) {
                     latencyField.set(nmsData, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latencyField.getInt(nmsData)));
                 }
-                if (action == ClientboundPlayerInfoPacket.Action.ADD_PLAYER) {
+                if (action.name().equals(TabList.Action.ADD_PLAYER.name())) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
                 }
             }
@@ -139,5 +147,31 @@ public class Loader_1_14_4 {
                 player.connection.send(packet);
             }
         };
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    private PlayerUpdate createUpdate(@NotNull ProtocolVersion serverVersion, @NotNull FabricTabList.Builder entry) {
+        Constructor<PlayerUpdate> constructor = (Constructor<PlayerUpdate>) PlayerUpdate.class.getConstructors()[0];
+        if (serverVersion.getMinorVersion() >= 19) {
+            // 1.19 - 1.19.2
+            return constructor.newInstance(
+                    entry.createProfile(), entry.getLatency(), GameType.byId(entry.getGameMode()), entry.getDisplayName(), null);
+        } else if (serverVersion.getMinorVersion() >= 17) {
+            // 1.17 - 1.18.2
+            return constructor.newInstance(
+                    entry.createProfile(), entry.getLatency(), GameType.byId(entry.getGameMode()), entry.getDisplayName());
+        } else {
+            // 1.14 - 1.16.5
+            return constructor.newInstance(new ClientboundPlayerInfoPacket(null, Collections.emptyList()),
+                    entry.createProfile(), entry.getLatency(), GameType.byId(entry.getGameMode()), entry.getDisplayName());
+        }
+    }
+
+    @SneakyThrows
+    private ClientboundPlayerInfoPacket createInfoPacket(@NotNull ProtocolVersion serverVersion, @NotNull TabList.Action action) {
+        Class<?> classType = serverVersion.getMinorVersion() >= 17 ? Collection.class : Iterable.class;
+        return ClientboundPlayerInfoPacket.class.getConstructor(tablistActionClass, classType)
+                .newInstance(Enum.valueOf(tablistActionClass, action.name()), Collections.emptyList());
     }
 }

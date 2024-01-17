@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -57,6 +58,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @SneakyThrows
     public void sendMessage(@NotNull IChatBaseComponent message) {
         FabricMultiVersion.sendMessage.accept(getPlayer(), getPlatform().toComponent(message, getVersion()));
     }

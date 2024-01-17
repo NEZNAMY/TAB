@@ -67,6 +67,9 @@ public class Loader_1_20_4 {
                     default -> "_" + path; // End + default behavior for other dimensions created by mods
                 };
             };
+            // sendMessage on 1.16 - 1.18.2 using UUID sender
+            FabricMultiVersion.sendMessage = (player, message) ->
+                    player.getClass().getMethod("method_9203", Component.class, UUID.class).invoke(player, message, new UUID(0, 0));
         }
         if (serverVersion.getMinorVersion() >= 17) {
             FabricMultiVersion.registerTeam = team -> ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);
