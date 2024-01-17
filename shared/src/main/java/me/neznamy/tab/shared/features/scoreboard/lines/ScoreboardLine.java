@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -22,27 +23,30 @@ import java.util.WeakHashMap;
 /**
  * Abstract class representing a line of scoreboard
  */
+@Getter
 public abstract class ScoreboardLine extends TabFeature implements Line {
 
-    @Getter private final String featureName = "Scoreboard";
+    private final String featureName = "Scoreboard";
 
     //ID of this line
     protected final int lineNumber;
-    
+
+    protected final String textProperty = Property.randomName();
+
     //text to display
-    @Getter protected String text;
-    @Getter protected String numberFormat;
+    protected String text;
+    protected String numberFormat;
     
     //scoreboard this line belongs to
-    @Getter protected final ScoreboardImpl parent;
+    protected final ScoreboardImpl parent;
     
     //scoreboard team name of player in this line
-    @Getter protected final String teamName;
+    protected final String teamName;
     
     //forced player name start to make lines unique & sort them by names
-    @Getter protected final String playerName;
+    protected final String playerName;
 
-    @Getter private final ScoreRefresher scoreRefresher;
+    private final ScoreRefresher scoreRefresher;
 
     private final Set<TabPlayer> shownPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     

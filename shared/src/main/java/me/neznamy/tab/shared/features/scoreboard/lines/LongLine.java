@@ -23,7 +23,6 @@ public class LongLine extends ScoreboardLine implements Refreshable {
 
     @Getter private final String featureName = "Scoreboard";
     @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
-    private final String textProperty = Property.randomName();
     private final String nameProperty = Property.randomName();
 
     /**

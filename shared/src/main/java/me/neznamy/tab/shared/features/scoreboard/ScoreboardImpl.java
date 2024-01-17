@@ -239,7 +239,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         Collections.reverse(linesReversed);
         int score = 1;
         for (Line line : linesReversed) {
-            if (!p.getProperty(name + "-" + ((ScoreboardLine) line).getTeamName()).get().isEmpty()) {
+            if (!p.getProperty(((ScoreboardLine) line).getTextProperty()).get().isEmpty()) {
                 p.getScoreboard().setScore(
                         ScoreboardManagerImpl.OBJECTIVE_NAME,
                         ((ScoreboardLine)line).getPlayerName(p),

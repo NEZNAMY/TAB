@@ -56,7 +56,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
 
     @Override
     public void register(@NonNull TabPlayer p) {
-        p.setProperty(this, parent.getName() + "-" + teamName, text);
+        p.setProperty(this, textProperty, text);
         getScoreRefresher().registerProperties(p);
         String[] prefixSuffix = replaceText(p, true, true);
         if (prefixSuffix.length == 0) return;
@@ -65,7 +65,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
 
     @Override
     public void unregister(@NonNull TabPlayer p) {
-        if (parent.getPlayers().contains(p) && !p.getProperty(parent.getName() + "-" + teamName).get().isEmpty()) {
+        if (parent.getPlayers().contains(p) && !p.getProperty(textProperty).get().isEmpty()) {
             removeLine(p, getPlayerName());
         }
     }
@@ -83,7 +83,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      * @return  array of 2 elements for prefix/suffix
      */
     private String[] replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
-        Property scoreProperty = p.getProperty(parent.getName() + "-" + teamName);
+        Property scoreProperty = p.getProperty(textProperty);
         if (scoreProperty == null) return EMPTY_ARRAY; //not actually loaded yet (force refresh called from placeholder manager register method)
         boolean emptyBefore = scoreProperty.get().isEmpty();
         if (!scoreProperty.update() && !force) return EMPTY_ARRAY;
@@ -144,7 +144,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
     public void setText(@NonNull String text) {
         this.text = text;
         for (TabPlayer p : parent.getPlayers()) {
-            p.setProperty(this, parent.getName() + "-" + teamName, text);
+            p.setProperty(this, textProperty, text);
             refresh(p, true);
         }
     }
