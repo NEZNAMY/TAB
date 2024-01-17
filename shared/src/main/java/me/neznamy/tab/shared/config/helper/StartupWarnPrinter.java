@@ -373,6 +373,10 @@ public class StartupWarnPrinter {
         }
     }
 
+    public void incompleteSortingLine(@NotNull String configuredLine) {
+        startupWarn("Sorting line \"" + configuredLine + "\" is incomplete.");
+    }
+
     /**
      * Sends a startup warn message into console
      *
