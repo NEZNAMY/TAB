@@ -1,23 +1,16 @@
 package me.neznamy.tab.platforms.bukkit.tablist;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,31 +18,14 @@ import java.util.stream.Collectors;
  * TabList handler for 1.19.3+ servers using packets.
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class PacketTabList1193 extends TabListBase {
+public class PacketTabList1193 extends PacketTabList18 {
 
-    private static Class<?> PlayerInfoClass;
-    private static Constructor<?> newPlayerInfo;
-    private static Field ACTION;
-    private static Field PLAYERS;
-    private static Class<Enum> ActionClass;
     private static Constructor<?> newRemovePacket;
 
-    private static Constructor<?> newPlayerInfoData;
     private static Field PlayerInfoData_UUID;
-    private static Field PlayerInfoData_Profile;
-    private static Field PlayerInfoData_Latency;
     private static Field PlayerInfoData_GameMode;
-    private static Field PlayerInfoData_DisplayName;
     private static Field PlayerInfoData_Listed;
     private static Field PlayerInfoData_RemoteChatSession;
-
-    private static Object[] gameModes;
-
-    private static Method ChatSerializer_DESERIALIZE;
-    private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
-            (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
-
-    private static PacketSender packetSender;
 
     /**
      * Constructs new instance with given player.
@@ -68,7 +44,7 @@ public class PacketTabList1193 extends TabListBase {
      * @throws  ReflectiveOperationException
      *          If something goes wrong
      */
-    public static void load() throws ReflectiveOperationException {
+    public static void loadNew() throws ReflectiveOperationException {
         Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
                 "network.chat.IChatBaseComponent$ChatSerializer");
         ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
@@ -84,32 +60,17 @@ public class PacketTabList1193 extends TabListBase {
                 "network.protocol.game.ClientboundPlayerInfoUpdatePacket$b" // Bukkit
         );
 
-        PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
-        newPlayerInfoData = playerInfoDataClass.getConstructors()[0];
-        PlayerInfoData_Profile = ReflectionUtils.getOnlyField(playerInfoDataClass, GameProfile.class);
-        PlayerInfoData_Latency = ReflectionUtils.getOnlyField(playerInfoDataClass, int.class);
-        PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
-        PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(playerInfoDataClass, IChatBaseComponent);
-        Class<?> RemoteChatSession$Data = BukkitReflection.getClass("network.chat.RemoteChatSession$Data", "network.chat.RemoteChatSession$a");
-        newRemovePacket = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoRemovePacket").getConstructor(List.class);
         newPlayerInfo = PlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
         ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, EnumSet.class);
+
+        loadSharedContent(playerInfoDataClass, EnumGamemodeClass, IChatBaseComponent);
+
         PlayerInfoData_Listed = ReflectionUtils.getOnlyField(playerInfoDataClass, boolean.class);
+        PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
+        Class<?> RemoteChatSession$Data = BukkitReflection.getClass("network.chat.RemoteChatSession$Data", "network.chat.RemoteChatSession$a");
         PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
         PlayerInfoData_UUID = ReflectionUtils.getOnlyField(playerInfoDataClass, UUID.class);
-        gameModes = new Object[] {
-                Enum.valueOf(EnumGamemodeClass, "SURVIVAL"),
-                Enum.valueOf(EnumGamemodeClass, "CREATIVE"),
-                Enum.valueOf(EnumGamemodeClass, "ADVENTURE"),
-                Enum.valueOf(EnumGamemodeClass, "SPECTATOR")
-        };
-        packetSender = new PacketSender();
-        try {
-            skinData = new SkinData();
-        } catch (Exception e) {
-            BukkitUtils.compatibilityError(e, "getting player's game profile", null,
-                    "Player skins not working in layout feature");
-        }
+        newRemovePacket = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoRemovePacket").getConstructor(List.class);
     }
 
     @Override
@@ -118,29 +79,10 @@ public class PacketTabList1193 extends TabListBase {
         packetSender.sendPacket(player.getPlayer(), newRemovePacket.newInstance(Collections.singletonList(entry)));
     }
 
-    @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, Entry.displayName(entry, displayName)));
-    }
-
-    @Override
-    public void updateLatency(@NotNull UUID entry, int latency) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_LATENCY, Entry.latency(entry, latency)));
-    }
-
-    @Override
-    public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_GAME_MODE, Entry.gameMode(entry, gameMode)));
-    }
-
-    @Override
-    public void addEntry(@NotNull Entry entry) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.ADD_PLAYER, entry));
-    }
-
     @SneakyThrows
     @NotNull
-    private Object createPacket(@NotNull Action action, @NotNull Entry entry) {
+    @Override
+    public Object createPacket(@NotNull Action action, @NotNull Entry entry) {
         List<Object> players = new ArrayList<>();
         EnumSet<?> actions;
         if (action == Action.ADD_PLAYER) {
@@ -160,27 +102,6 @@ public class PacketTabList1193 extends TabListBase {
         ));
         PLAYERS.set(packet, players);
         return packet;
-    }
-
-    /**
-     * Converts TAB component into NMS component.
-     *
-     * @param   component
-     *          Component to convert
-     * @return  Converted component
-     */
-    public Object toComponent(@NotNull IChatBaseComponent component) {
-        return componentCache.get(component, player.getVersion());
-    }
-
-    @NotNull
-    private GameProfile createProfile(@NotNull UUID id, @Nullable String name, @Nullable Skin skin) {
-        GameProfile profile = new GameProfile(id, name == null ? "" : name);
-        if (skin != null) {
-            profile.getProperties().put(TabList.TEXTURES_PROPERTY,
-                    new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
-        }
-        return profile;
     }
 
     @Override

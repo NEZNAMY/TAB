@@ -36,7 +36,7 @@ public abstract class TabListBase implements TabList {
     public static void findInstance() {
         try {
             if (BukkitReflection.is1_19_3Plus()) {
-                PacketTabList1193.load();
+                PacketTabList1193.loadNew();
                 instance = PacketTabList1193::new;
             } else if (BukkitReflection.getMinorVersion() >= 8) {
                 PacketTabList18.load();

@@ -26,24 +26,24 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PacketTabList18 extends TabListBase {
 
-    private static Class<?> PlayerInfoClass;
-    private static Constructor<?> newPlayerInfo;
-    private static Field ACTION;
-    private static Field PLAYERS;
-    private static Class<Enum> ActionClass;
+    protected static Class<?> PlayerInfoClass;
+    protected static Constructor<?> newPlayerInfo;
+    protected static Field ACTION;
+    protected static Field PLAYERS;
+    protected static Class<Enum> ActionClass;
 
-    private static Constructor<?> newPlayerInfoData;
-    private static Field PlayerInfoData_Profile;
-    private static Field PlayerInfoData_Latency;
-    private static Field PlayerInfoData_DisplayName;
+    protected static Constructor<?> newPlayerInfoData;
+    protected static Field PlayerInfoData_Profile;
+    protected static Field PlayerInfoData_Latency;
+    protected static Field PlayerInfoData_DisplayName;
 
-    private static Object[] gameModes;
+    protected static Object[] gameModes;
 
-    private static Method ChatSerializer_DESERIALIZE;
+    protected static Method ChatSerializer_DESERIALIZE;
     private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
-    private static PacketSender packetSender;
+    protected static PacketSender packetSender;
 
     /**
      * Constructs new instance with given player.
@@ -85,19 +85,25 @@ public class PacketTabList18 extends TabListBase {
                 "PlayerInfoData" // Bukkit 1.8.0
         );
 
-        PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
-        newPlayerInfoData = playerInfoDataClass.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
-        PlayerInfoData_Profile = ReflectionUtils.getOnlyField(playerInfoDataClass, GameProfile.class);
-        PlayerInfoData_Latency = ReflectionUtils.getOnlyField(playerInfoDataClass, int.class);
-        PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(playerInfoDataClass, IChatBaseComponent);
         Class<?> classType = BukkitReflection.getMinorVersion() >= 17 ? Collection.class : Iterable.class;
         newPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, classType);
         ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
+
+        loadSharedContent(playerInfoDataClass, EnumGamemodeClass, IChatBaseComponent);
+    }
+
+    protected static void loadSharedContent(Class<?> infoData, Class<Enum> gameMode,
+                                            Class<?> component) throws ReflectiveOperationException {
+        newPlayerInfoData = infoData.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
+        PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
+        PlayerInfoData_Profile = ReflectionUtils.getOnlyField(infoData, GameProfile.class);
+        PlayerInfoData_Latency = ReflectionUtils.getOnlyField(infoData, int.class);
+        PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(infoData, component);
         gameModes = new Object[] {
-                Enum.valueOf(EnumGamemodeClass, "SURVIVAL"),
-                Enum.valueOf(EnumGamemodeClass, "CREATIVE"),
-                Enum.valueOf(EnumGamemodeClass, "ADVENTURE"),
-                Enum.valueOf(EnumGamemodeClass, "SPECTATOR")
+                Enum.valueOf(gameMode, "SURVIVAL"),
+                Enum.valueOf(gameMode, "CREATIVE"),
+                Enum.valueOf(gameMode, "ADVENTURE"),
+                Enum.valueOf(gameMode, "SPECTATOR")
         };
         packetSender = new PacketSender();
         try {
@@ -135,7 +141,7 @@ public class PacketTabList18 extends TabListBase {
 
     @SneakyThrows
     @NotNull
-    private Object createPacket(@NotNull Action action, @NotNull Entry entry) {
+    public Object createPacket(@NotNull Action action, @NotNull Entry entry) {
         List<Object> players = new ArrayList<>();
         Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Collections.emptyList());
         List<Object> parameters = new ArrayList<>();
@@ -164,7 +170,7 @@ public class PacketTabList18 extends TabListBase {
     }
 
     @NotNull
-    private GameProfile createProfile(@NotNull UUID id, @Nullable String name, @Nullable Skin skin) {
+    public GameProfile createProfile(@NotNull UUID id, @Nullable String name, @Nullable Skin skin) {
         GameProfile profile = new GameProfile(id, name == null ? "" : name);
         if (skin != null) {
             profile.getProperties().put(TabList.TEXTURES_PROPERTY,
