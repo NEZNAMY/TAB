@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -32,7 +31,6 @@ public class PacketTabList18 extends TabListBase {
     private static Field ACTION;
     private static Field PLAYERS;
     private static Class<Enum> ActionClass;
-    private static Class<?> EntityPlayer;
 
     private static Constructor<?> newPlayerInfoData;
     private static Field PlayerInfoData_Profile;
@@ -71,7 +69,6 @@ public class PacketTabList18 extends TabListBase {
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType",
                 "world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode");
-        EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
         ActionClass = (Class<Enum>) BukkitReflection.getClass(
                 "network.protocol.game.ClientboundPlayerInfoPacket$Action", // Mojang 1.17 - 1.19.2
                 "network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", // Bukkit 1.17 - 1.19.2
@@ -93,7 +90,8 @@ public class PacketTabList18 extends TabListBase {
         PlayerInfoData_Profile = ReflectionUtils.getOnlyField(playerInfoDataClass, GameProfile.class);
         PlayerInfoData_Latency = ReflectionUtils.getOnlyField(playerInfoDataClass, int.class);
         PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(playerInfoDataClass, IChatBaseComponent);
-        newPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, Array.newInstance(EntityPlayer, 0).getClass());
+        Class<?> classType = BukkitReflection.getMinorVersion() >= 17 ? Collection.class : Iterable.class;
+        newPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, classType);
         ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
         gameModes = new Object[] {
                 Enum.valueOf(EnumGamemodeClass, "SURVIVAL"),
@@ -139,7 +137,7 @@ public class PacketTabList18 extends TabListBase {
     @NotNull
     private Object createPacket(@NotNull Action action, @NotNull Entry entry) {
         List<Object> players = new ArrayList<>();
-        Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Array.newInstance(EntityPlayer, 0));
+        Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Collections.emptyList());
         List<Object> parameters = new ArrayList<>();
         if (newPlayerInfoData.getParameterTypes()[0] == PlayerInfoClass) {
             parameters.add(packet);
