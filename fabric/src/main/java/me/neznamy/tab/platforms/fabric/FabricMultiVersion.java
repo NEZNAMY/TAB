@@ -55,7 +55,7 @@ public class FabricMultiVersion {
     public static BiFunctionWithException<Component, Component, Packet<?>> newHeaderFooter;
     public static BiConsumerWithException<TabPlayer, Object> onPlayerInfo;
     public static Function<Packet<?>, Boolean> isPlayerInfo;
-    public static BiConsumer<ServerPlayer, Iterable<Packet<ClientGamePacketListener>>> sendPackets;
+    public static BiConsumerWithException<ServerPlayer, Iterable<Packet<ClientGamePacketListener>>> sendPackets;
 
     public static Function<PlayerTeam, Packet<?>> registerTeam;
     public static Function<PlayerTeam, Packet<?>> unregisterTeam;

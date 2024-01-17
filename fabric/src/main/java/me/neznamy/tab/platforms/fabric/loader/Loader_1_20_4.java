@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.fabric.loader;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -14,6 +15,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.FixedFormat;
+import net.minecraft.network.chat.numbers.NumberFormat;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -30,6 +32,7 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 /**
@@ -137,7 +140,12 @@ public class Loader_1_20_4 {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) {
             FabricMultiVersion.isBundlePacket = packet -> packet instanceof ClientboundBundlePacket;
             FabricMultiVersion.getBundledPackets = packet -> (Iterable<Object>) (Object) ((ClientboundBundlePacket)packet).subPackets();
-            FabricMultiVersion.sendPackets = (player, packets) -> player.connection.send(new ClientboundBundlePacket(packets));
+            FabricMultiVersion.sendPackets = (player, packets) ->
+                    // Reflection because
+                    // 1.20.4- uses Iterable<Packet<ClientGamePacketListener>
+                    // 1.20.5+ uses Iterable<Packet<? super ClientGamePacketListener>
+                    // this is the only way to merge them
+                    player.connection.send(ClientboundBundlePacket.class.getConstructor(Iterable.class).newInstance(packets));
         }
         if (serverVersion.getMinorVersion() >= 20) {
             FabricMultiVersion.getLevel = Entity::level;
@@ -167,13 +175,28 @@ public class Loader_1_20_4 {
      */
     private static class Register1_20_3 {
 
+        @SneakyThrows
         public static void register() {
             FabricMultiVersion.newObjective = (name, displayName, renderType, numberFormat) ->
                     new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType, false,
                             numberFormat == null ? null : new FixedFormat(numberFormat));
-            FabricMultiVersion.setScore = (objective, scoreHolder, score, displayName, numberFormat) ->
-                    new ClientboundSetScorePacket(scoreHolder, objective, score, displayName,
-                            numberFormat == null ? null : new FixedFormat(numberFormat));
+            try {
+                // 1.20.5+
+                Constructor<ClientboundSetScorePacket> constructor = ClientboundSetScorePacket.class.getConstructor(
+                        String.class, String.class, int.class, Component.class, Optional.class
+                );
+                FabricMultiVersion.setScore = (objective, scoreHolder, score, displayName, numberFormat) ->
+                        constructor.newInstance(scoreHolder, objective, score, displayName,
+                                Optional.ofNullable(numberFormat == null ? null : new FixedFormat(numberFormat)));
+            } catch (NoSuchMethodException e) {
+                // 1.20.3 / 1.20.4
+                Constructor<ClientboundSetScorePacket> constructor = ClientboundSetScorePacket.class.getConstructor(
+                        String.class, String.class, int.class, Component.class, NumberFormat.class
+                );
+                FabricMultiVersion.setScore = (objective, scoreHolder, score, displayName, numberFormat) ->
+                        constructor.newInstance(scoreHolder, objective, score, displayName,
+                                numberFormat == null ? null : new FixedFormat(numberFormat));
+            }
         }
     }
 
