@@ -237,7 +237,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         if (!manager.isUsingNumbers()) return;
         List<Line> linesReversed = new ArrayList<>(lines);
         Collections.reverse(linesReversed);
-        int score = 1;
+        int score = manager.getStaticNumber();
         for (Line line : linesReversed) {
             Property pr = p.getProperty(((ScoreboardLine) line).getTextProperty());
             if (pr.getCurrentRawValue().isEmpty() || (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {
