@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 /**
  * Class containing data for scoreboard score set/reset packets.
@@ -34,9 +35,16 @@ public class ScorePacketData {
                 "Packet207SetScoreboardScore" // 1.5 - 1.6.4
         );
         if (BukkitReflection.is1_20_3Plus()) {
-            Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, PacketScoreboard.Component, PacketScoreboard.NumberFormat);
+            if (BukkitReflection.is1_20_5Plus()) {
+                Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, PacketScoreboard.Component, Optional.class);
+                setScore = (objective, holder, score, displayName, numberFormat) ->
+                        newSetScore.newInstance(holder, objective, score, displayName, Optional.ofNullable(numberFormat));
+            } else {
+                Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, PacketScoreboard.Component, PacketScoreboard.NumberFormat);
+                setScore = (objective, holder, score, displayName, numberFormat) ->
+                        newSetScore.newInstance(holder, objective, score, displayName, numberFormat);
+            }
             Constructor<?> newResetScore = BukkitReflection.getClass("network.protocol.game.ClientboundResetScorePacket").getConstructor(String.class, String.class);
-            setScore = (objective, holder, score, displayName, numberFormat) -> newSetScore.newInstance(holder, objective, score, displayName, numberFormat);
             removeScore = (objective, holder) -> newResetScore.newInstance(holder, objective);
         } else if (BukkitReflection.getMinorVersion() >= 13) {
             Class<?> actionClass = BukkitReflection.getClass("server.ServerScoreboard$Method", "server.ScoreboardServer$Action", "ScoreboardServer$Action");
