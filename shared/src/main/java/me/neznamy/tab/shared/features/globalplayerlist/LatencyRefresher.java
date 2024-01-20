@@ -15,7 +15,7 @@ public class LatencyRefresher extends TabFeature implements Refreshable {
     private final String refreshDisplayName = "Updating latency";
 
     public LatencyRefresher() {
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.PING, this);
+        addUsedPlaceholder(TabConstants.Placeholder.PING);
     }
 
     @Override

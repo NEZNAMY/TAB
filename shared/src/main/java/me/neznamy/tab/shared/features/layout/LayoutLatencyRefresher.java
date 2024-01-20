@@ -16,7 +16,7 @@ public class LayoutLatencyRefresher extends TabFeature implements Refreshable {
 
     public LayoutLatencyRefresher(@NotNull LayoutManagerImpl manager) {
         this.manager = manager;
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.PING, this);
+        addUsedPlaceholder(TabConstants.Placeholder.PING);
     }
 
     @Override
