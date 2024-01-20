@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import lombok.Getter;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.config.Configs;
@@ -38,7 +37,7 @@ public class FeatureManager {
 
     /** All registered features in an array to avoid memory allocations on iteration */
     @NotNull
-    @Getter private TabFeature[] values = new TabFeature[0];
+    private TabFeature[] values = new TabFeature[0];
 
     /** Flag tracking presence of a feature listening to raw packets for faster check with better performance */
     private boolean hasPacketSendListener;
