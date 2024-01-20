@@ -87,6 +87,12 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         return lastValue;
     }
 
+    @Override
+    @NotNull
+    public String getLastValueSafe(@NotNull TabPlayer player) {
+        return identifier;
+    }
+
     /**
      * Calls the placeholder request function and returns the output.
      * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}

@@ -131,6 +131,11 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         return identifier;
     }
 
+    @Override
+    public @NotNull String getLastValueSafe(@NotNull TabPlayer player) {
+        return identifier;
+    }
+
     /**
      * Calls the placeholder request function and returns the output.
      * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}

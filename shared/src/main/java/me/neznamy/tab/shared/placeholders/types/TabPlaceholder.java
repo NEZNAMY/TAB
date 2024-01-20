@@ -177,4 +177,14 @@ public abstract class TabPlaceholder implements Placeholder {
      * @return  last known value for specified player
      */
     public abstract @NotNull String getLastValue(@Nullable TabPlayer player);
+
+    /**
+     * Returns last known value of defined player without refreshing it if not present.
+     *
+     * @param   player
+     *          player to get value of
+     * @return  last known value for specified player or identifier if not available
+     */
+    @NotNull
+    public abstract String getLastValueSafe(@NotNull TabPlayer player);
 }

@@ -91,6 +91,12 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         return lastValues.get(p);
     }
 
+    @Override
+    @NotNull
+    public String getLastValueSafe(@NotNull TabPlayer player) {
+        return lastValues.getOrDefault(player, identifier);
+    }
+
     /**
      * Calls the placeholder request function and returns the output.
      * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}

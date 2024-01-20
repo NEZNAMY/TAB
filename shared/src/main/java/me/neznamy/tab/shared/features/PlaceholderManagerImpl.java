@@ -257,7 +257,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             recalculateUsedPlaceholders();
             TabPlaceholder p = getPlaceholder(identifier);
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
+                tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValueSafe(all));
             }
         }
     }
