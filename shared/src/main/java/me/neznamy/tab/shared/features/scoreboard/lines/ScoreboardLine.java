@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.features.scoreboard.ScoreRefresher;
+import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -24,9 +25,10 @@ import java.util.WeakHashMap;
  * Abstract class representing a line of scoreboard
  */
 @Getter
-public abstract class ScoreboardLine extends TabFeature implements Line {
+public abstract class ScoreboardLine extends TabFeature implements Line, Refreshable {
 
     private final String featureName = "Scoreboard";
+    private final String refreshDisplayName = "Updating Scoreboard lines";
 
     //ID of this line
     protected final int lineNumber;
@@ -243,5 +245,27 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
         String[] split = text.split("\\|\\|");
         this.text = split[0];
         numberFormat = split.length >= 2 ? split[1] : "";
+    }
+
+    /**
+     * Updates prefix/suffix of the fake player.
+     *
+     * @param   player
+     *          Player to send the update to
+     * @param   prefix
+     *          Prefix to use
+     * @param   suffix
+     *          Suffix to use
+     */
+    protected void updateTeam(@NotNull TabPlayer player, @NotNull String prefix, @NotNull String suffix) {
+        player.getScoreboard().updateTeam(
+                teamName,
+                prefix,
+                suffix,
+                Scoreboard.NameVisibility.ALWAYS,
+                Scoreboard.CollisionRule.ALWAYS,
+                0,
+                EnumChatFormat.RESET
+        );
     }
 }

@@ -1,14 +1,10 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,10 +15,8 @@ import org.jetbrains.annotations.NotNull;
  *   1.8.x - 1.12.x: up to 66 characters
  *   1.13+: unlimited
  */
-public class LongLine extends ScoreboardLine implements Refreshable {
+public class LongLine extends ScoreboardLine {
 
-    @Getter private final String featureName = "Scoreboard";
-    @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
     private final String nameProperty = Property.randomName();
 
     /**
@@ -44,15 +38,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
-                refreshed.getScoreboard().updateTeam(
-                        teamName,
-                        refreshed.getProperty(textProperty).get(),
-                        "",
-                        Scoreboard.NameVisibility.ALWAYS,
-                        Scoreboard.CollisionRule.ALWAYS,
-                        0,
-                        EnumChatFormat.RESET
-                );
+                updateTeam(refreshed, refreshed.getProperty(textProperty).get(), "");
             } else {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());
                 String[] values = splitText(
@@ -94,7 +80,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
 
     @Override
     public void setText(@NonNull String text) {
-        this.text = text;
+        initializeText(text);
         for (TabPlayer p : parent.getPlayers()) {
             p.setProperty(this, textProperty, text);
             refresh(p, true);
