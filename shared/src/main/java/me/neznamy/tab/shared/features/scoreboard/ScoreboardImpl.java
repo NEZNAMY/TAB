@@ -140,7 +140,6 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      */
     public void addPlayer(@NonNull TabPlayer p) {
         if (players.contains(p)) return; //already registered
-        players.add(p);
         p.setProperty(this, titleProperty, title);
         p.getScoreboard().registerObjective(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
@@ -152,6 +151,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }
+        players.add(p);
         manager.getActiveScoreboards().put(p, this);
         recalculateScores(p);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, name);
