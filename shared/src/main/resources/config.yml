@@ -109,7 +109,7 @@ scoreboard:
   scoreboards:
     scoreboard-1.20.3+:
       title: "<#E0B11E>MyServer</#FF0000>"
-      display-condition: "%player-version-id%>=765" # Only display it to 1.20.3+ players
+      display-condition: "%player-version-id%>=765;%bedrock%=false" # Only display it to players using 1.20.3+ AND NOT bedrock edition
       lines:
         - "&7%date%"
         - "%animation:MyAnimation1%"
