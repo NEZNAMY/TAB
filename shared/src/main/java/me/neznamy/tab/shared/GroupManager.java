@@ -65,14 +65,16 @@ public class GroupManager extends TabFeature implements Refreshable {
      *          Player to get permission group of
      * @return  Permission group from permission plugin
      */
-    private @NotNull String getByPrimary(@NotNull TabPlayer player) {
+    @NotNull
+    private String getByPrimary(@NotNull TabPlayer player) {
         try {
             String group = groupFunction.apply(player);
-            return group == null ? TabConstants.NO_GROUP : group;
+            if (group != null) return group;
+            TAB.getInstance().getErrorManager().nullGroupReturned(permissionPlugin, player);
         } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + player.getName() + " using " + permissionPlugin, e);
-            return TabConstants.NO_GROUP;
+            TAB.getInstance().getErrorManager().groupRetrieveException(permissionPlugin, player, e);
         }
+        return TabConstants.NO_GROUP;
     }
 
     /**

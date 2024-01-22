@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import lombok.Getter;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -217,5 +218,31 @@ public class ErrorManager {
         } catch (NumberFormatException e) {
             return defaultValue;
         }
+    }
+
+    /**
+     * Prints error message when permission plugin throws error when retrieving group.
+     *
+     * @param   pluginName
+     *          Name of permission plugin
+     * @param   player
+     *          Player whose group failed to retrieve
+     * @param   t
+     *          Thrown error
+     */
+    public void groupRetrieveException(@NotNull String pluginName, @NotNull TabPlayer player, Throwable t) {
+        printError("Permission system " + pluginName + " threw an exception when getting group of " + player.getName(), t);
+    }
+
+    /**
+     * Prints error message when permission plugin returned null group.
+     *
+     * @param   pluginName
+     *          Name of permission plugin
+     * @param   player
+     *          Player who null group was returned for
+     */
+    public void nullGroupReturned(@NotNull String pluginName, @NotNull TabPlayer player) {
+        printError("Permission system " + pluginName + " returned null group for player " + player.getName());
     }
 }
