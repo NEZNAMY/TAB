@@ -13,18 +13,24 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A class that refreshes all requested placeholders using given refresh
+ * function and returns the results.
+ */
 @RequiredArgsConstructor
+@Getter
 public class PlaceholderRefreshTask implements Runnable {
 
+    /** Placeholders that should be refreshed in this loop */
     private final Collection<Placeholder> placeholdersToRefresh;
 
-    @Getter
+    /** Map of server placeholder results */
     private final Map<ServerPlaceholderImpl, Object> serverPlaceholderResults = new HashMap<>();
 
-    @Getter
+    /** Map of player placeholder results */
     private final Map<PlayerPlaceholderImpl, Map<TabPlayer, Object>> playerPlaceholderResults = new HashMap<>();
 
-    @Getter
+    /** Map of relational placeholder results */
     private final Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> relationalPlaceholderResults = new HashMap<>();
 
     @Override
@@ -33,28 +39,32 @@ public class PlaceholderRefreshTask implements Runnable {
         for (Placeholder placeholder : placeholdersToRefresh) {
             long nanoTime = 0;
             if (placeholder instanceof ServerPlaceholderImpl) {
+                ServerPlaceholderImpl serverPlaceholder = (ServerPlaceholderImpl) placeholder;
                 long startTime = System.nanoTime();
-                Object result = ((ServerPlaceholderImpl)placeholder).request();
+                Object result = serverPlaceholder.request();
                 nanoTime += System.nanoTime()-startTime;
-                serverPlaceholderResults.put((ServerPlaceholderImpl) placeholder, result);
+                serverPlaceholderResults.put(serverPlaceholder, result);
             }
             if (placeholder instanceof PlayerPlaceholderImpl) {
+                PlayerPlaceholderImpl playerPlaceholder = (PlayerPlaceholderImpl) placeholder;
+                playerPlaceholderResults.put(playerPlaceholder, new HashMap<>());
                 for (TabPlayer player : players) {
                     long startTime = System.nanoTime();
-                    Object result = ((PlayerPlaceholderImpl)placeholder).request(player);
+                    Object result = playerPlaceholder.request(player);
                     nanoTime += System.nanoTime()-startTime;
-                    playerPlaceholderResults.computeIfAbsent((PlayerPlaceholderImpl) placeholder, p -> new HashMap<>(players.length + 1, 1)).put(player, result);
+                    playerPlaceholderResults.get(playerPlaceholder).put(player, result);
                 }
             }
             if (placeholder instanceof RelationalPlaceholderImpl) {
+                RelationalPlaceholderImpl relationalPlaceholder = (RelationalPlaceholderImpl) placeholder;
+                relationalPlaceholderResults.put(relationalPlaceholder, new HashMap<>());
                 for (TabPlayer viewer : players) {
+                    relationalPlaceholderResults.get(relationalPlaceholder).put(viewer, new HashMap<>());
                     for (TabPlayer target : players) {
                         long startTime = System.nanoTime();
-                        Object result = ((RelationalPlaceholderImpl)placeholder).request(viewer, target);
+                        Object result = relationalPlaceholder.request(viewer, target);
                         nanoTime += System.nanoTime()-startTime;
-                        relationalPlaceholderResults.computeIfAbsent((RelationalPlaceholderImpl) placeholder, p -> new HashMap<>(players.length + 1, 1))
-                                .computeIfAbsent(viewer, v -> new HashMap<>(players.length + 1, 1))
-                                .put(target, result);
+                        relationalPlaceholderResults.get(relationalPlaceholder).get(viewer).put(target, result);
                     }
                 }
             }
