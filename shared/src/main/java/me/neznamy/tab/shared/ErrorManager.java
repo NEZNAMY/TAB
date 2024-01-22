@@ -154,14 +154,13 @@ public class ErrorManager {
                 }
             }
         } catch (IOException ex) {
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("An error occurred when printing error message into file"));
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(ex.getClass().getName() + ": " + ex.getMessage()));
-            for (StackTraceElement e : ex.getStackTrace()) {
-                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("\t" + e.toString()));
-            }
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Original error: " + message));
-            for (String line : error) {
-                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(line));
+            List<String> lines = new ArrayList<>();
+            lines.add("An error occurred when printing error message into file");
+            lines.addAll(throwableToList(ex, false));
+            lines.add("Original error: " + message);
+            lines.addAll(error);
+            for (String line : lines) {
+                TAB.getInstance().getPlatform().logWarn(IChatBaseComponent.fromColoredText(line));
             }
         }
     }
