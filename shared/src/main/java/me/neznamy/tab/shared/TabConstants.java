@@ -255,6 +255,7 @@ public class TabConstants {
         public static final String LUCKPERMS_SUFFIX = "%luckperms-suffix%";
         public static final String COUNTDOWN = "%countdown%";
         public static final String GAMEMODE = "%gamemode%";
+        public static final String BEDROCK = "%bedrock%";
 
         // Placeholders for internal use
         public static final String COLLISION = "%collision%";
