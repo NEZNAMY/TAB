@@ -35,7 +35,7 @@ public class Texture extends SkinSource {
             String signature = (String) texture2.get("signature");
             return Arrays.asList(value, signature);
         } catch (IOException | ParseException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to load skin by texture: " + e.getMessage(), e);
+            TAB.getInstance().getErrorManager().textureSkinDownloadError(texture, e);
             return Collections.emptyList();
         }
     }

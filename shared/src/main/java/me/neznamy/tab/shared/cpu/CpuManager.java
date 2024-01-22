@@ -168,7 +168,7 @@ public class CpuManager {
         try {
             task.run();
         } catch (Exception | LinkageError | StackOverflowError e) {
-            TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
+            TAB.getInstance().getErrorManager().taskThrewError(e);
         }
     }
 }

@@ -132,6 +132,26 @@ public class RuntimeErrorPrinter {
     }
 
     /**
+     * Logs a warning if MineSkin ID is invalid.
+     *
+     * @param   id
+     *          MineSkin ID
+     */
+    public void unknownMineSkin(@NotNull String id) {
+        error("Failed to load skin by id: No skin with the id '" + id + "' was found");
+    }
+
+    /**
+     * Logs a warning if player with given name does not exist.
+     *
+     * @param   name
+     *          Given player name
+     */
+    public void unknownPlayerSkin(@NotNull String name) {
+        error("Failed to load skin by player: No user with the name '" + name + "' was found");
+    }
+
+    /**
      * Logs the message.
      *
      * @param   message

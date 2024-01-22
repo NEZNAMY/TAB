@@ -155,16 +155,4 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     public void sendPluginMessage(@NotNull OutgoingMessage message) {
         sendPluginMessage(message.write().toByteArray());
     }
-
-    /**
-     * Prints an error message saying player was not connected to any server,
-     * therefore plugin message could not be sent.
-     *
-     * @param   message
-     *          Message that failed to send
-     */
-    public void errorNoServer(byte[] message) {
-        TAB.getInstance().getErrorManager().printError("Skipped plugin message send to " + getName() + ", because player is not " +
-                "connected to any server (message=" + new String(message) + ")");
-    }
 }

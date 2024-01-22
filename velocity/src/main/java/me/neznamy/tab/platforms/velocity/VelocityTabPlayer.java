@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.Getter;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.BossBar;
@@ -91,11 +92,11 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         try {
             getPlayer().getCurrentServer().ifPresentOrElse(
                     server -> server.sendPluginMessage(getPlatform().getMCI(), message),
-                    () -> errorNoServer(message)
+                    () -> TAB.getInstance().getErrorManager().noServerPluginMessage(this, message)
             );
         } catch (IllegalStateException VelocityBeingVelocityException) {
             // java.lang.IllegalStateException: Not connected to server!
-            errorNoServer(message);
+            TAB.getInstance().getErrorManager().noServerPluginMessage(this, message);
         }
     }
 }

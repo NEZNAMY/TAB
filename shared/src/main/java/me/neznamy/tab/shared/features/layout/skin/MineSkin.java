@@ -36,11 +36,10 @@ public class MineSkin extends SkinSource {
             String signature = (String) texture.get("signature");
             return Arrays.asList(value, signature);
         } catch (FileNotFoundException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to load skin by id: No skin with the id '" + input + "' was found");
-            return Collections.emptyList();
+            TAB.getInstance().getConfigHelper().runtime().unknownMineSkin(input);
         } catch (IOException | ParseException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to load skin by id: " + e.getMessage(), e);
-            return Collections.emptyList();
+            TAB.getInstance().getErrorManager().mineSkinDownloadError(input, e);
         }
+        return Collections.emptyList();
     }
 }

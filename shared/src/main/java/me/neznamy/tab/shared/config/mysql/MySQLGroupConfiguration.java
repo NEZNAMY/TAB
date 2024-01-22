@@ -43,7 +43,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
             setProperty0(lowercaseGroup, property, server, world, value);
             if (value != null) mysql.execute("insert into `tab_groups` (`group`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", lowercaseGroup, property, value, world, server);
         } catch (SQLException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to execute MySQL query", e);
+            TAB.getInstance().getErrorManager().mysqlQueryFailed(e);
         }
     }
     

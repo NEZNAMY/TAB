@@ -35,7 +35,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
             if (p != null) setProperty0(p, property, server, world, value);
             if (value != null) mysql.execute("insert into `tab_users` (`user`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", lowercaseUser, property, value, world, server);
         } catch (SQLException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to execute MySQL query", e);
+            TAB.getInstance().getErrorManager().mysqlQueryFailed(e);
         }
     }
 
@@ -74,7 +74,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
         try {
             mysql.execute("delete from `tab_users` where `user` = ?", player);
         } catch (SQLException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to execute MySQL query", e);
+            TAB.getInstance().getErrorManager().mysqlQueryFailed(e);
         }
         TabPlayer user = getPlayer(player);
         if (user == null) return;
@@ -144,7 +144,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
                     player.forceRefresh();
                 }
             } catch (SQLException e) {
-                TAB.getInstance().getErrorManager().printError("Failed to load data of " + player.getName() + " from MySQL", e);
+                TAB.getInstance().getErrorManager().mysqlQueryFailed(e);
             }
         });
     }

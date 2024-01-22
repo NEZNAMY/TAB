@@ -294,8 +294,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      */
     private void checkPlayerScoreboard() {
         if (player.getPlayer().getScoreboard() != scoreboard) {
-            TAB.getInstance().getErrorManager().printError("Player " + player.getName() + " was in a different scoreboard " +
-                    "than expected. This means another plugin changed player's scoreboard.");
+            TAB.getInstance().getErrorManager().playerInWrongScoreboard(player);
             runSync(() -> player.getPlayer().setScoreboard(scoreboard));
         }
     }

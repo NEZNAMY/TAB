@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
+import me.neznamy.tab.api.event.TabEvent;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -13,10 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * An error assistant to print internal errors into error file
@@ -50,16 +48,6 @@ public class ErrorManager {
     }
 
     /**
-     * Prints error message into errors.log file
-     *
-     * @param   message
-     *          message to print
-     */
-    public void printError(@Nullable String message) {
-        printError(message, null, false);
-    }
-
-    /**
      * Prints error message and stack trace into errors.log file
      *
      * @param   message
@@ -68,21 +56,7 @@ public class ErrorManager {
      *          thrown error
      */
     public void printError(@Nullable String message, @Nullable Throwable t) {
-        printError(message, t, false);
-    }
-
-    /**
-     * Prints error message and stack trace into errors.log file
-     *
-     * @param   message
-     *          message to print
-     * @param   t
-     *          thrown error
-     * @param   intoConsoleToo
-     *          if the message should be printed into console as well or not
-     */
-    public void printError(@Nullable String message, @Nullable Throwable t, boolean intoConsoleToo) {
-        printError(message, t, intoConsoleToo, errorLog);
+        printError(message, t, false, errorLog);
     }
 
     /**
@@ -136,7 +110,7 @@ public class ErrorManager {
      * @param   file
      *          file to print error to
      */
-    private synchronized void printError(@Nullable String message, @NotNull List<String> error, boolean intoConsoleToo, @NotNull File file) {
+    public synchronized void printError(@Nullable String message, @NotNull List<String> error, boolean intoConsoleToo, @NotNull File file) {
         try {
             if (!file.exists()) Files.createFile(file.toPath());
             try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))) {
@@ -198,7 +172,7 @@ public class ErrorManager {
      *          thrown error
      */
     public void criticalError(@Nullable String message, @Nullable Throwable t) {
-        printError(message, t, true);
+        printError(message, t, true, errorLog);
     }
 
     /**
@@ -230,7 +204,8 @@ public class ErrorManager {
      *          Thrown error
      */
     public void groupRetrieveException(@NotNull String pluginName, @NotNull TabPlayer player, Throwable t) {
-        printError("Permission system " + pluginName + " threw an exception when getting group of " + player.getName(), t);
+        printError("Permission system " + pluginName + " threw an exception when getting group of " + player.getName(),
+                t, false, errorLog);
     }
 
     /**
@@ -242,6 +217,149 @@ public class ErrorManager {
      *          Player who null group was returned for
      */
     public void nullGroupReturned(@NotNull String pluginName, @NotNull TabPlayer player) {
-        printError("Permission system " + pluginName + " returned null group for player " + player.getName());
+        printError("Permission system " + pluginName + " returned null group for player " + player.getName(),
+                Collections.emptyList(), false, errorLog);
+    }
+
+    /**
+     * Prints error message when parse command throws an error.
+     *
+     * @param   placeholder
+     *          Placeholder input that threw the error
+     * @param   target
+     *          Player the placeholder was parsed for
+     * @param   t
+     *          Thrown error
+     */
+    public void parseCommandError(@NotNull String placeholder, @NotNull TabPlayer target, @NotNull Throwable t) {
+        printError("Placeholder " + placeholder + " threw an exception when parsing for player " + target.getName(),
+                t, true, errorLog);
+    }
+
+    /**
+     * Prints error message when attempting to send plugin message to player
+     * who is not connected to any server.
+     *
+     * @param   player
+     *          Player message was attempted to be sent to
+     * @param   message
+     *          Message that failed to deliver
+     */
+    public void noServerPluginMessage(@NotNull TabPlayer player, byte[] message) {
+        printError("Skipped plugin message send to " + player.getName() + ", because player is not " +
+                "connected to any server (message=" + new String(message) + ")", Collections.emptyList(), false, errorLog);
+    }
+
+    /**
+     * Prints error message when RedidSupport received message with unknown action.
+     *
+     * @param   action
+     *          Message action
+     */
+    public void unknownRedisMessage(@NotNull String action) {
+        printError("RedisSupport received unknown action: \"" + action +
+                "\". Does it come from a feature enabled on another proxy, but not here?",
+                Collections.emptyList(), false, errorLog);
+    }
+
+    /**
+     * Prints error message when MineSkin download failed with an error.
+     *
+     * @param   id
+     *          Skin that failed to download
+     * @param   t
+     *          Thrown error
+     */
+    public void mineSkinDownloadError(@NotNull String id, @NotNull Throwable t) {
+        printError("Failed to download skin \"" + id + "\" from MineSkin: " + t.getMessage(),
+                t, true, errorLog);
+    }
+
+    /**
+     * Prints error message when player skin download failed with an error.
+     *
+     * @param   name
+     *          Player name that failed to download
+     * @param   t
+     *          Thrown error
+     */
+    public void playerSkinDownloadError(@NotNull String name, @NotNull Throwable t) {
+        printError("Failed to download skin of player \"" + name + "\": " + t.getMessage(),
+                t, true, errorLog);
+    }
+
+    /**
+     * Prints error message when texture skin download failed with an error.
+     *
+     * @param   texture
+     *          Texture that failed to download
+     * @param   t
+     *          Thrown error
+     */
+    public void textureSkinDownloadError(@NotNull String texture, @NotNull Throwable t) {
+        printError("Failed to download skin from texture \"" + texture + "\": " + t.getMessage(),
+                t, true, errorLog);
+    }
+
+    /**
+     * Prints warn if player is not in plugin's scoreboard.
+     *
+     * @param   player
+     *          Player who was in the wrong scoreboard
+     */
+    public void playerInWrongScoreboard(@NotNull TabPlayer player) {
+        printError("Player " + player.getName() + " was in a different scoreboard " +
+                "than expected. This means another plugin changed player's scoreboard.",
+                Collections.emptyList(), false, errorLog);
+    }
+
+    /**
+     * Prints error message if armor stand manager of player is unexpectedly {@code null}.
+     *
+     * @param   player
+     *          Player with null armor stand manager
+     * @param   action
+     *          Action during which armor stand manager was null
+     */
+    public void armorStandNull(@NotNull TabPlayer player, @NotNull String action) {
+        TAB.getInstance().getErrorManager().printError("ArmorStandManager of player " + player.getName() +
+                " is null when trying to process " + action + ", which is unexpected. Online = " + player.isOnline() +
+                ", loaded = " + player.isLoaded(), Collections.emptyList(), false, errorLog);
+    }
+
+    /**
+     * Prints error message when a task throws an error.
+     *
+     * @param   t
+     *          Thrown error
+     */
+    public void taskThrewError(@NotNull Throwable t) {
+        printError("An error was thrown when executing task", t, false, errorLog);
+    }
+
+    /**
+     * Prints error message if a MySQL query fails.
+     *
+     * @param   t
+     *          Thrown error
+     */
+    public void mysqlQueryFailed(@NotNull Throwable t) {
+        printError("Failed to execute MySQL query", t, false, errorLog);
+    }
+
+    /**
+     * Prints error message if errors were thrown when firing a TAB event.
+     *
+     * @param   event
+     *          Event that threw errors
+     * @param   exceptions
+     *          Errors thrown
+     */
+    public void errorFiringEvent(@NotNull TabEvent event, @NotNull Collection<Throwable> exceptions) {
+        printError("Some errors occurred whilst trying to fire event " + event, Collections.emptyList(), false, errorLog);
+        int i = 0;
+        for (Throwable exception : exceptions) {
+            printError("#" + i++ + ": \n", exception, false, errorLog);
+        }
     }
 }

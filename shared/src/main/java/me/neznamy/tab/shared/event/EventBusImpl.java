@@ -38,12 +38,7 @@ public class EventBusImpl implements EventBus {
         if (!bus.hasSubscribers(event.getClass())) return;
         PostResult result = bus.post(event);
         if (result.exceptions().isEmpty()) return;
-
-        TAB.getInstance().getErrorManager().printError("Some errors occurred whilst trying to fire event " + event);
-        int i = 0;
-        for (Throwable exception : result.exceptions().values()) {
-            TAB.getInstance().getErrorManager().printError("#" + i++ + ": \n", exception);
-        }
+        TAB.getInstance().getErrorManager().errorFiringEvent(event, result.exceptions().values());
     }
 
     @Override

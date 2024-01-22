@@ -264,7 +264,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         //not logging the same message for every online player who received the packet
         if (!message.equals(lastTeamOverrideMessage)) {
             lastTeamOverrideMessage = message;
-            TAB.getInstance().getErrorManager().printError(message, null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
+            TAB.getInstance().getErrorManager().printError(message, Collections.emptyList(), false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
         }
     }
 

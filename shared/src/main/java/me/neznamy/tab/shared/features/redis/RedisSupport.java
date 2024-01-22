@@ -136,8 +136,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             String action = in.readUTF();
             Supplier<RedisMessage> supplier = messages.get(action);
             if (supplier == null) {
-                TAB.getInstance().getErrorManager().printError("RedisSupport received unknown action: \"" + action +
-                        "\". Does it come from a feature enabled on another proxy, but not here?");
+                TAB.getInstance().getErrorManager().unknownRedisMessage(action);
                 return;
             }
             RedisMessage redisMessage = supplier.get();

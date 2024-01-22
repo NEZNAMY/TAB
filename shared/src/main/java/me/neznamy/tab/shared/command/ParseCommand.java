@@ -61,7 +61,7 @@ public class ParseCommand extends SubCommand {
             replaced = new Property(null, null, target, replaced, null).get();
         } catch (Exception e) {
             sendMessage(sender, "&cThe placeholder threw an exception when parsing. Check console for more info.");
-            TAB.getInstance().getErrorManager().printError("Placeholder " + replaced + " threw an exception when parsing for player " + target.getName(), e, true);
+            TAB.getInstance().getErrorManager().parseCommandError(replaced, target, e);
             return;
         }
         IChatBaseComponent colored = IChatBaseComponent.optimizedComponent(EnumChatFormat.color("&3Colored output: &e\"&r" + replaced + "&e\""));

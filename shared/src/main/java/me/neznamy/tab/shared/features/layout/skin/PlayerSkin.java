@@ -29,11 +29,10 @@ public class PlayerSkin extends SkinSource {
             String signature = (String) raw.get("signature");
             return Arrays.asList(value, signature);
         } catch (FileNotFoundException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to load skin by player: No user with the name '" + input + "' was found");
-            return Collections.emptyList();
+            TAB.getInstance().getConfigHelper().runtime().unknownPlayerSkin(input);
         } catch (IOException | ParseException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to load skin by player: " + e.getMessage(), e);
-            return Collections.emptyList();
+            TAB.getInstance().getErrorManager().playerSkinDownloadError(input, e);
         }
+        return Collections.emptyList();
     }
 }
