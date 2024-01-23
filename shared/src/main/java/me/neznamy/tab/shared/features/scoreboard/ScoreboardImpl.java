@@ -158,11 +158,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
 
     @Override
     public void unregister() {
-
-        players.removeIf(all -> {
-            removePlayer(all);
-            return true;
-        });
+        new ArrayList<>(players).forEach(this::removePlayer);
     }
 
     /**
@@ -234,18 +230,18 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      */
     public void recalculateScores(@NonNull TabPlayer p) {
         if (!manager.isUsingNumbers()) return;
-        List<Line> linesReversed = new ArrayList<>(lines);
-        Collections.reverse(linesReversed);
         int score = manager.getStaticNumber();
-        for (Line line : linesReversed) {
-            Property pr = p.getProperty(((ScoreboardLine) line).getTextProperty());
-            if (pr.getCurrentRawValue().isEmpty() || (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {
+        for (int i = lines.size() - 1; i >= 0; --i) {
+            ScoreboardLine line = ((ScoreboardLine) lines.get(i));
+            Property pr = p.getProperty(line.getTextProperty());
+            if (pr.getCurrentRawValue().isEmpty() ||
+                    (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {
                 p.getScoreboard().setScore(
                         ScoreboardManagerImpl.OBJECTIVE_NAME,
-                        ((ScoreboardLine)line).getPlayerName(p),
+                        line.getPlayerName(p),
                         score++,
                         null, // Makes no sense for TAB
-                        ((ScoreboardLine) line).getScoreRefresher().getNumberFormat(p)
+                        line.getScoreRefresher().getNumberFormat(p)
                 );
             }
         }

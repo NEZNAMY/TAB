@@ -35,18 +35,22 @@ public class AdventureBossBar implements BossBar {
                        @NotNull BarStyle style) {
 
         Audience audience = (Audience) player.getPlayer();
-        audience.showBossBar(bossBars.compute(id, (k,v) -> {
-            if (v != null) {
-                audience.hideBossBar(v);
-                return v;
-            }
-            return net.kyori.adventure.bossbar.BossBar.bossBar(
-                    AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
-                    progress,
-                    Color.valueOf(color.name()),
-                    Overlay.valueOf(style.name())
-            );
-        }));
+
+        net.kyori.adventure.bossbar.BossBar prev = bossBars.get(id);
+        if (prev != null) {
+            // Can happen on 1.20.2+ on Velocity on server switch
+            audience.hideBossBar(prev);
+            audience.showBossBar(prev);
+            return;
+        }
+        net.kyori.adventure.bossbar.BossBar bar = net.kyori.adventure.bossbar.BossBar.bossBar(
+                AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                progress,
+                Color.valueOf(color.name()),
+                Overlay.valueOf(style.name())
+        );
+        bossBars.put(id, bar);
+        audience.showBossBar(bar);
     }
 
     @Override
