@@ -35,7 +35,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     //defined scoreboards
     @Getter private final Map<String, me.neznamy.tab.api.scoreboard.Scoreboard> registeredScoreboards = new LinkedHashMap<>();
-    private me.neznamy.tab.api.scoreboard.Scoreboard[] definedScoreboards;
 
     //list of players with disabled scoreboard
     private final List<String> sbOffPlayers = rememberToggleChoice ? TAB.getInstance().getConfiguration().getPlayerDataFile()
@@ -43,7 +42,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     //active scoreboard announcement
     @Nullable
-    private me.neznamy.tab.api.scoreboard.Scoreboard announcement;
+    private volatile me.neznamy.tab.api.scoreboard.Scoreboard announcement;
 
     private final Set<TabPlayer> joinDelayed = Collections.newSetFromMap(new WeakHashMap<>());
     private final WeakHashMap<me.neznamy.tab.api.TabPlayer, ScoreboardImpl> forcedScoreboard = new WeakHashMap<>();
@@ -79,7 +78,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             registeredScoreboards.put(entry.getKey(), sb);
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(entry.getKey()), sb);
         }
-        definedScoreboards = registeredScoreboards.values().toArray(new me.neznamy.tab.api.scoreboard.Scoreboard[0]);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
@@ -94,9 +92,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void unload() {
-        for (me.neznamy.tab.api.scoreboard.Scoreboard board : definedScoreboards) {
-            board.unregister();
-        }
+        registeredScoreboards.values()
+                .forEach(me.neznamy.tab.api.scoreboard.Scoreboard::unregister);
     }
 
     @Override
@@ -155,11 +152,14 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
      * @return  highest scoreboard player should see
      */
     public @Nullable me.neznamy.tab.api.scoreboard.Scoreboard detectHighestScoreboard(@NonNull TabPlayer p) {
-        if (forcedScoreboard.containsKey(p)) return forcedScoreboard.get(p);
-        for (me.neznamy.tab.api.scoreboard.Scoreboard sb : definedScoreboards) {
-            if (((ScoreboardImpl)sb).isConditionMet(p)) return sb;
-        }
-        return null;
+
+        me.neznamy.tab.api.scoreboard.Scoreboard val = forcedScoreboard.get(p);
+        if (val != null)
+            return val;
+        return registeredScoreboards.values().stream()
+                .filter(x -> ((ScoreboardImpl)x).isConditionMet(p))
+                .findAny()
+                .orElse(null);
     }
 
     @Override
@@ -196,33 +196,31 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     public @NotNull me.neznamy.tab.api.scoreboard.Scoreboard createScoreboard(@NonNull String name, @NonNull String title, @NonNull List<String> lines) {
         me.neznamy.tab.api.scoreboard.Scoreboard sb = new ScoreboardImpl(this, name, title, lines, true);
         registeredScoreboards.put(name, sb);
-        definedScoreboards = registeredScoreboards.values().toArray(new me.neznamy.tab.api.scoreboard.Scoreboard[0]);
         return sb;
     }
 
     @Override
     public void showScoreboard(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.scoreboard.Scoreboard scoreboard) {
-        if (forcedScoreboard.containsKey(player)) {
-            forcedScoreboard.get(player).removePlayer((TabPlayer) player);
+        ScoreboardImpl forced = forcedScoreboard.put(player, (ScoreboardImpl) scoreboard);
+        if (forced != null) {
+            forced.removePlayer((TabPlayer) player);
         }
-        if (activeScoreboards.containsKey(player)) {
-            activeScoreboards.get(player).removePlayer((TabPlayer) player);
-            activeScoreboards.remove(player);
+        ScoreboardImpl active = activeScoreboards.remove(player);
+        if (active != null) {
+            active.removePlayer((TabPlayer) player);
         }
-        forcedScoreboard.put(player, (ScoreboardImpl) scoreboard);
         if (hasScoreboardVisible(player)) ((ScoreboardImpl) scoreboard).addPlayer((TabPlayer) player);
     }
 
     @Override
     public void resetScoreboard(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        if (!forcedScoreboard.containsKey(player)) return;
-        forcedScoreboard.get(player).removePlayer((TabPlayer) player);
-        forcedScoreboard.remove(player);
+        ScoreboardImpl forced = forcedScoreboard.remove(player);
+        if (forced == null) return;
+        forced.removePlayer((TabPlayer) player);
         me.neznamy.tab.api.scoreboard.Scoreboard sb = detectHighestScoreboard((TabPlayer) player);
         if (sb == null) return; //no scoreboard available
         activeScoreboards.put(player, (ScoreboardImpl) sb);
         ((ScoreboardImpl) sb).addPlayer((TabPlayer) player);
-        forcedScoreboard.remove(player);
     }
 
     @Override
@@ -238,7 +236,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     @Override
     public void setScoreboardVisible(me.neznamy.tab.api.@NonNull TabPlayer p, boolean visible, boolean sendToggleMessage) {
         TabPlayer player = (TabPlayer) p;
-        if (visiblePlayers.contains(player) == visible) return;
+        if (visiblePlayers.contains(player) == visible)
+            return;
+
         if (visible) {
             visiblePlayers.add(player);
             sendHighestScoreboard(player);
@@ -296,12 +296,17 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         ScoreboardImpl sb = (ScoreboardImpl) registeredScoreboards.get(scoreboard);
         if (sb == null) throw new IllegalArgumentException("No registered scoreboard found with name " + scoreboard);
         Map<TabPlayer, ScoreboardImpl> previous = new HashMap<>();
+
+        // todo: maybe a race
         TAB.getInstance().getCPUManager().runMeasuredTask(featureName, "Adding announced Scoreboard", () -> {
             announcement = sb;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!hasScoreboardVisible(all)) continue;
-                previous.put(all, activeScoreboards.get(all));
-                if (activeScoreboards.containsKey(all)) activeScoreboards.get(all).removePlayer(all);
+                ScoreboardImpl p = activeScoreboards.get(all);
+                if (p != null) {
+                    previous.put(all, p);
+                    p.removePlayer(all);
+                }
                 sb.addPlayer(all);
             }
         });
@@ -310,7 +315,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!hasScoreboardVisible(all)) continue;
                 sb.removePlayer(all);
-                if (previous.get(all) != null) previous.get(all).addPlayer(all);
+
+                ScoreboardImpl p = previous.get(all);
+                if (p != null) p.addPlayer(all);
             }
             announcement = null;
         });

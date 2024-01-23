@@ -27,6 +27,8 @@ import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,6 +50,8 @@ public class TAB extends TabAPI {
     private final Map<UUID, TabPlayer> playersByTabListId = new ConcurrentHashMap<>();
 
     /** Online player array to avoid memory allocation when iterating */
+
+    @SuppressWarnings("forRemoval")
     private volatile TabPlayer[] onlinePlayers = new TabPlayer[0];
 
     /** Instance of plugin's main command */
@@ -282,6 +286,11 @@ public class TAB extends TabAPI {
     public @Nullable NameTag getNameTagManager() {
         if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
         return featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+    }
+
+    @Override
+    public @NotNull Collection<me.neznamy.tab.api.TabPlayer> getOnlineTabPlayers() {
+        return Collections.unmodifiableCollection(data.values());
     }
 
     @Override

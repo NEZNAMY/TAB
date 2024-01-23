@@ -1,6 +1,6 @@
 package me.neznamy.tab.api;
 
-import java.util.UUID;
+import java.util.*;
 
 import lombok.NonNull;
 import lombok.Setter;
@@ -63,11 +63,23 @@ public abstract class TabAPI {
     public abstract @Nullable TabPlayer getPlayer(@NonNull String name);
 
     /**
+     * Returns array of all online players. Will return empty array if plugin is disabled (due to a broken configuration file for example).
+     *
+     * @return  array of online players
+     */
+    @Deprecated
+    public abstract @NotNull TabPlayer[] getOnlinePlayers();
+
+    /**
      * Returns collection of all online players. Will return empty list if plugin is disabled (due to a broken configuration file for example).
      *
      * @return  collection of online players
      */
-    public abstract @NotNull TabPlayer[] getOnlinePlayers();
+
+    public @NotNull Collection<TabPlayer> getOnlineTabPlayers() {
+        return Collections.unmodifiableList(
+                Arrays.asList(getOnlinePlayers()));
+    }
 
     /**
      * Return BossBar manager instance if the feature is enabled. If not, returns {@code null}.

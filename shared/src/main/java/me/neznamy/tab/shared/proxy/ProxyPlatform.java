@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.proxy.message.outgoing.RegisterPlaceholder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -36,7 +37,25 @@ import java.util.function.Supplier;
 public abstract class ProxyPlatform implements Platform {
 
     /** Registered plugin messages the plugin can receive from Bridge */
-    private final Map<String, Supplier<IncomingMessage>> registeredMessages = new HashMap<>();
+    private final static Map<String, Supplier<IncomingMessage>> registeredMessages;
+
+    static {
+        Map<String, Supplier<IncomingMessage>> m = new HashMap<>();
+        m.put("PlaceholderError", PlaceholderError::new);
+        m.put("UpdateGameMode", UpdateGameMode::new);
+        m.put("Permission", HasPermission::new);
+        m.put("Invisible", Invisible::new);
+        m.put("Disguised", Disguised::new);
+        m.put("Boat", OnBoat::new);
+        m.put("World", SetWorld::new);
+        m.put("Group", SetGroup::new);
+        m.put("Vanished", Vanished::new);
+        m.put("Placeholder", UpdatePlaceholder::new);
+        m.put("PlayerJoinResponse", PlayerJoinResponse::new);
+        m.put("RegisterPlaceholder", me.neznamy.tab.shared.proxy.message.incoming.RegisterPlaceholder::new);
+
+        registeredMessages = Collections.unmodifiableMap(m);
+    }
 
     /** Placeholders which are refreshed on backend server */
     private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
@@ -44,20 +63,7 @@ public abstract class ProxyPlatform implements Platform {
     /**
      * Constructs new instance.
      */
-    protected ProxyPlatform() {
-        registeredMessages.put("PlaceholderError", PlaceholderError::new);
-        registeredMessages.put("UpdateGameMode", UpdateGameMode::new);
-        registeredMessages.put("Permission", HasPermission::new);
-        registeredMessages.put("Invisible", Invisible::new);
-        registeredMessages.put("Disguised", Disguised::new);
-        registeredMessages.put("Boat", OnBoat::new);
-        registeredMessages.put("World", SetWorld::new);
-        registeredMessages.put("Group", SetGroup::new);
-        registeredMessages.put("Vanished", Vanished::new);
-        registeredMessages.put("Placeholder", UpdatePlaceholder::new);
-        registeredMessages.put("PlayerJoinResponse", PlayerJoinResponse::new);
-        registeredMessages.put("RegisterPlaceholder", me.neznamy.tab.shared.proxy.message.incoming.RegisterPlaceholder::new);
-    }
+    protected ProxyPlatform() { }
 
     @Override
     public @NotNull GroupManager detectPermissionPlugin() {

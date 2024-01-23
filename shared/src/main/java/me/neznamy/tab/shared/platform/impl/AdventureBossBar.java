@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.platform.impl;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -25,24 +25,28 @@ public class AdventureBossBar implements BossBar {
     private final TabPlayer player;
 
     /** BossBars currently visible to the player */
-    private final Map<UUID, net.kyori.adventure.bossbar.BossBar> bossBars = new LinkedHashMap<>();
+    private final Map<UUID, net.kyori.adventure.bossbar.BossBar> bossBars
+            = new HashMap<>();
 
     @Override
-    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
-        if (bossBars.containsKey(id)) {
-            // Can happen on 1.20.2+ on Velocity on server switch
-            ((Audience)player.getPlayer()).hideBossBar(bossBars.get(id));
-            ((Audience)player.getPlayer()).showBossBar(bossBars.get(id));
-            return;
-        }
-        net.kyori.adventure.bossbar.BossBar bar = net.kyori.adventure.bossbar.BossBar.bossBar(
-                AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
-                progress,
-                Color.valueOf(color.name()),
-                Overlay.valueOf(style.name())
-        );
-        bossBars.put(id, bar);
-        ((Audience)player.getPlayer()).showBossBar(bar);
+    public void create(@NotNull UUID id,
+                       @NotNull String title,
+                       float progress, @NotNull BarColor color,
+                       @NotNull BarStyle style) {
+
+        Audience audience = (Audience) player.getPlayer();
+        audience.showBossBar(bossBars.compute(id, (k,v) -> {
+            if (v != null) {
+                audience.hideBossBar(v);
+                return v;
+            }
+            return net.kyori.adventure.bossbar.BossBar.bossBar(
+                    AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                    progress,
+                    Color.valueOf(color.name()),
+                    Overlay.valueOf(style.name())
+            );
+        }));
     }
 
     @Override

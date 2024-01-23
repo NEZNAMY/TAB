@@ -139,8 +139,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      *          Player to send this scoreboard to
      */
     public void addPlayer(@NonNull TabPlayer p) {
-        if (players.contains(p)) return; //already registered
-        players.add(p);
+        if (!players.add(p)) return; //already registered
         p.setProperty(this, titleProperty, title);
         p.getScoreboard().registerObjective(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
@@ -159,10 +158,11 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
 
     @Override
     public void unregister() {
-        for (TabPlayer all : players.toArray(new TabPlayer[0])) {
+
+        players.removeIf(all -> {
             removePlayer(all);
-        }
-        players.clear();
+            return true;
+        });
     }
 
     /**
@@ -172,13 +172,12 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      *          Player to unregister
      */
     public void removePlayer(@NonNull TabPlayer p) {
-        if (!players.contains(p)) return; //not registered
+        if (!players.remove(p)) return; //not registered
         p.getScoreboard().unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line line : lines) {
             if (((ScoreboardLine)line).isShownTo(p))
                 p.getScoreboard().unregisterTeam(((ScoreboardLine)line).getTeamName());
         }
-        players.remove(p);
         manager.getActiveScoreboards().remove(p);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, "");
     }
