@@ -116,10 +116,14 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         for (Entry<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> entry : results.entrySet()) {
             RelationalPlaceholderImpl placeholder = entry.getKey();
             for (Entry<TabPlayer, Map<TabPlayer, Object>> viewerResult : entry.getValue().entrySet()) {
+                TabPlayer viewer = viewerResult.getKey();
+                if (!viewer.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                 for (Entry<TabPlayer, Object> targetResult : viewerResult.getValue().entrySet()) {
-                    if (placeholder.hasValueChanged(viewerResult.getKey(), targetResult.getKey(), targetResult.getValue())) {
-                        placeholder.updateParents(targetResult.getKey());
-                        update.computeIfAbsent(targetResult.getKey(), x -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+                    TabPlayer target = targetResult.getKey();
+                    if (!target.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
+                    if (placeholder.hasValueChanged(viewer, target, targetResult.getValue())) {
+                        placeholder.updateParents(target);
+                        update.computeIfAbsent(target, x -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
                     }
                 }
             }
@@ -132,14 +136,16 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         for (Entry<PlayerPlaceholderImpl, Map<TabPlayer, Object>> entry : results.entrySet()) {
             PlayerPlaceholderImpl placeholder = entry.getKey();
             for (Entry<TabPlayer, Object> playerResult : entry.getValue().entrySet()) {
-                if (placeholder.hasValueChanged(playerResult.getKey(), playerResult.getValue())) {
-                    placeholder.updateParents(playerResult.getKey());
-                    update.computeIfAbsent(playerResult.getKey(), k -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+                TabPlayer player = playerResult.getKey();
+                if (!player.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
+                if (placeholder.hasValueChanged(player, playerResult.getValue())) {
+                    placeholder.updateParents(player);
+                    update.computeIfAbsent(player, k -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
                     if (placeholder.getIdentifier().equals(TabConstants.Placeholder.VANISHED)) {
-                        TAB.getInstance().getFeatureManager().onVanishStatusChange(playerResult.getKey());
+                        TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
                     }
                     if (placeholder.getIdentifier().equals(TabConstants.Placeholder.GAMEMODE)) {
-                        TAB.getInstance().getFeatureManager().onGameModeChange(playerResult.getKey());
+                        TAB.getInstance().getFeatureManager().onGameModeChange(player);
                     }
                 }
             }
