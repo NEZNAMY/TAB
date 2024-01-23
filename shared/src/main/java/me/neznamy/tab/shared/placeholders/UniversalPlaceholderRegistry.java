@@ -45,7 +45,7 @@ public class UniversalPlaceholderRegistry {
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).getWorld());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD_ONLINE, 1000, p -> {
             int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                 if (((TabPlayer)p).getWorld().equals(player.getWorld()) && !player.isVanished()) count++;
             }
             return count;
@@ -53,7 +53,7 @@ public class UniversalPlaceholderRegistry {
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer)p).getServer());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
             int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                 if (((TabPlayer)p).getServer().equals(player.getServer()) && !player.isVanished()) count++;
             }
             return count;
@@ -73,21 +73,21 @@ public class UniversalPlaceholderRegistry {
         manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX_GB, -1, () -> decimal2.format((float)Runtime.getRuntime().maxMemory()/1024/1024/1024));
         manager.registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
             int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                 if (!player.isVanished()) count++;
             }
             return count;
         });
         manager.registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 2000, () -> {
             int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                 if (player.hasPermission(TabConstants.Permission.STAFF) && !player.isVanished()) count++;
             }
             return count;
         });
         manager.registerServerPlaceholder(TabConstants.Placeholder.NON_STAFF_ONLINE, 2000, () -> {
             int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                 if (!player.hasPermission(TabConstants.Permission.STAFF) && !player.isVanished()) count++;
             }
             return count;

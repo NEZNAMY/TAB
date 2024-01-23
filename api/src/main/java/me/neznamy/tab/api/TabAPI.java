@@ -76,7 +76,7 @@ public abstract class TabAPI {
      * @return  collection of online players
      */
 
-    public @NotNull Collection<TabPlayer> getOnlineTabPlayers() {
+    public @NotNull Collection<? extends TabPlayer> getOnlineTabPlayers() {
         return Collections.unmodifiableList(
                 Arrays.asList(getOnlinePlayers()));
     }

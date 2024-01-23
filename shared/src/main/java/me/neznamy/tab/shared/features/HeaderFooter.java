@@ -38,14 +38,14 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     @Override
     public void load() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             onJoin(p);
         }
     }
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             if (disableChecker.isDisabledPlayer(p)) continue;
             sendHeaderFooter(p, "","");
         }

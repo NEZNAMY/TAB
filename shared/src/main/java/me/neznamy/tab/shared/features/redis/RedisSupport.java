@@ -190,7 +190,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         }
         overridePlaceholders();
         TAB.getInstance().getEventBus().register(TabPlaceholderRegisterEvent.class, eventHandler);
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
+        TAB.getInstance().getOnlineTabPlayers().forEach(this::onJoin);
         sendMessage(new LoadRequest());
     }
 
@@ -201,7 +201,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
                 String server = identifier.substring(8, identifier.length()-1);
                 event.setServerPlaceholder(() -> {
                     int count = 0;
-                    for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                    for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                         if (player.getServer().equals(server) && !player.isVanished()) count++;
                     }
                     for (RedisPlayer player : redisPlayers.values()) {
@@ -213,7 +213,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         };
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
             int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                 if (!player.isVanished()) count++;
             }
             for (RedisPlayer player : redisPlayers.values()) {
@@ -223,7 +223,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         });
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () -> {
             int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                 if (!player.isVanished() && player.hasPermission(TabConstants.Permission.STAFF)) count++;
             }
             for (RedisPlayer player : redisPlayers.values()) {
@@ -235,7 +235,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onQuit(p);
+        TAB.getInstance().getOnlineTabPlayers().forEach(this::onQuit);
         TAB.getInstance().getEventBus().unregister(eventHandler);
         unregister();
     }

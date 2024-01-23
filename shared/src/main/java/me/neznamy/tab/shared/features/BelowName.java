@@ -56,7 +56,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     public void load() {
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         Map<TabPlayer, Integer> values = new HashMap<>();
-        for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer loaded : TAB.getInstance().getOnlineTabPlayers()) {
             loaded.setProperty(this, NUMBER_PROPERTY, rawNumber);
             loaded.setProperty(this, FANCY_FORMAT_PROPERTY, fancyDisplayPlayers);
             loaded.setProperty(textRefresher, TEXT_PROPERTY, rawText);
@@ -68,7 +68,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
             }
             values.put(loaded, getValue(loaded));
         }
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
                 setScore(viewer, entry.getKey(), entry.getValue(), entry.getKey().getProperty(FANCY_FORMAT_PROPERTY).getFormat(viewer));
             }
@@ -77,7 +77,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             if (disableChecker.isDisabledPlayer(p)) continue;
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
@@ -96,7 +96,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         }
         int number = getValue(connectedPlayer);
         Property fancy = connectedPlayer.getProperty(FANCY_FORMAT_PROPERTY);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             setScore(all, connectedPlayer, number, fancy.getFormat(all));
             setScore(connectedPlayer, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(connectedPlayer));
         }
@@ -135,7 +135,8 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         int number = getValue(refreshed);
         Property fancy = refreshed.getProperty(FANCY_FORMAT_PROPERTY);
         fancy.update();
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             setScore(viewer, refreshed, number, fancy.getFormat(viewer));
         }
         if (redis != null) redis.updateBelowName(refreshed, number, fancy.get());
@@ -145,7 +146,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     public void onLoginPacket(@NotNull TabPlayer player) {
         if (disableChecker.isDisabledPlayer(player) || !player.isLoaded()) return;
         register(player);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             if (all.isLoaded()) setScore(player, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(player));
         }
     }

@@ -46,7 +46,7 @@ public class RedisTeams extends RedisFeature {
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             viewer.getScoreboard().registerTeam(teamNames.get(player), prefixes.get(player), suffixes.get(player),
                     nameVisibilities.get(player), CollisionRule.ALWAYS,
                     Collections.singletonList(player.getNickname()), 2, EnumChatFormat.lastColorsOf(prefixes.get(player)));
@@ -55,7 +55,7 @@ public class RedisTeams extends RedisFeature {
 
     @Override
     public void onQuit(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             viewer.getScoreboard().unregisterTeam(teamNames.get(player));
         }
     }
@@ -85,7 +85,7 @@ public class RedisTeams extends RedisFeature {
 
     private @NotNull String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15, int id) {
         String potentialTeamName = currentName15 + (char)id;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             if (nameTags.getSorting().getShortTeamName(all).equals(potentialTeamName)) {
                 return checkTeamName(player, currentName15, id+1);
             }
@@ -137,13 +137,13 @@ public class RedisTeams extends RedisFeature {
             prefixes.put(target, prefix);
             suffixes.put(target, suffix);
             if (!oldTeamName.equals(newTeamName)) {
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
                     viewer.getScoreboard().unregisterTeam(oldTeamName);
                     viewer.getScoreboard().registerTeam(newTeamName, prefix, suffix, nameVisibility,
                             CollisionRule.ALWAYS, Collections.singletonList(target.getNickname()), 2, EnumChatFormat.lastColorsOf(prefix));
                 }
             } else {
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
                     viewer.getScoreboard().updateTeam(oldTeamName, prefix, suffix, nameVisibility,
                             CollisionRule.ALWAYS, 2, EnumChatFormat.lastColorsOf(prefix));
                 }

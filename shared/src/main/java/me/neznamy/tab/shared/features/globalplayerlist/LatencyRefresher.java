@@ -21,7 +21,7 @@ public class LatencyRefresher extends TabFeature implements Refreshable {
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         //player ping changed, must manually update latency for players on other servers
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             if (!p.getServer().equals(all.getServer())) all.getTabList().updateLatency(p.getTablistId(), p.getPing());
         }
     }

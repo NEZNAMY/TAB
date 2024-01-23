@@ -38,7 +38,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     private void startVisibilityRefreshTask() {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, featureName, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 
-            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
                 if (isPlayerDisabled(p)) continue;
                 getArmorStandManager(p).updateVisibility(false);
             }
@@ -53,9 +53,9 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     @Override
     public void load() {
         super.load();
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             if (isPlayerDisabled(all)) continue;
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
                 spawnArmorStands(viewer, all);
             }
         }
@@ -72,7 +72,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         super.onJoin(connectedPlayer);
         if (isPlayerDisabled(connectedPlayer)) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             spawnArmorStands(viewer, connectedPlayer);
             spawnArmorStands(connectedPlayer, viewer);
         }
@@ -104,7 +104,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         super.onQuit(disconnectedPlayer);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             getArmorStandManager(all).unregisterPlayer((BackendTabPlayer) disconnectedPlayer);
         }
         armorStandManagerMap.get(disconnectedPlayer).destroy();
@@ -114,7 +114,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     @Override
     public void resumeArmorStands(@NotNull TabPlayer player) {
         if (isPlayerDisabled(player)) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             spawnArmorStands(viewer, player);
         }
     }
@@ -135,7 +135,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
 
     @Override
     public void updateNameTagVisibilityView(@NotNull TabPlayer player) {
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             getArmorStandManager(all).updateVisibility(true);
         }
     }
@@ -147,7 +147,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
             getArmorStandManager(p).spawn((BackendTabPlayer) p);
         }
         //for some reason this is needed for some users
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             if (viewer.getWorld().equals(from)) {
                 getArmorStandManager(p).destroy((BackendTabPlayer) viewer);
             }
@@ -156,7 +156,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
 
     @Override
     public void onGameModeChange(@NotNull TabPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             getArmorStandManager(player).updateMetadata((BackendTabPlayer) viewer);
         }
     }

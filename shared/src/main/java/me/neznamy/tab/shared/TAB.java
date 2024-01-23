@@ -49,11 +49,6 @@ public class TAB extends TabAPI {
     /** Players by their TabList UUID for faster lookup */
     private final Map<UUID, TabPlayer> playersByTabListId = new ConcurrentHashMap<>();
 
-    /** Online player array to avoid memory allocation when iterating */
-
-    @SuppressWarnings("forRemoval")
-    private volatile TabPlayer[] onlinePlayers = new TabPlayer[0];
-
     /** Instance of plugin's main command */
     private TabCommand command;
 
@@ -182,7 +177,7 @@ public class TAB extends TabAPI {
             platform.loadPlayers();
             command = new TabCommand();
             featureManager.load();
-            for (TabPlayer p : onlinePlayers) p.markAsLoaded(false);
+            data.values().forEach(p -> p.markAsLoaded(false));
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
             cpu.enable();
@@ -226,7 +221,6 @@ public class TAB extends TabAPI {
         pluginDisabled = true;
         data.clear();
         playersByTabListId.clear();
-        onlinePlayers = new TabPlayer[0];
         cpu.cancelAllTasks();
     }
 
@@ -239,7 +233,6 @@ public class TAB extends TabAPI {
     public void addPlayer(@NotNull TabPlayer player) {
         data.put(player.getUniqueId(), player);
         playersByTabListId.put(player.getTablistId(), player);
-        onlinePlayers = data.values().toArray(new TabPlayer[0]);
     }
 
     /**
@@ -251,7 +244,6 @@ public class TAB extends TabAPI {
     public void removePlayer(@NotNull TabPlayer player) {
         data.remove(player.getUniqueId());
         playersByTabListId.remove(player.getTablistId());
-        onlinePlayers = data.values().toArray(new TabPlayer[0]);
     }
 
     /**
@@ -289,7 +281,13 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public @NotNull Collection<me.neznamy.tab.api.TabPlayer> getOnlineTabPlayers() {
+    @Deprecated
+    public @NotNull TabPlayer[] getOnlinePlayers() {
+        return data.values().toArray(new TabPlayer[0]);
+    }
+
+    @Override
+    public @NotNull Collection<TabPlayer> getOnlineTabPlayers() {
         return Collections.unmodifiableCollection(data.values());
     }
 

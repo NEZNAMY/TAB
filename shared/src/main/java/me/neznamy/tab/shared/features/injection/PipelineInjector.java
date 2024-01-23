@@ -37,14 +37,14 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
         boolean respectOtherScoreboardPlugins = config().getBoolean("scoreboard.enabled", false) &&
                 config().getBoolean("scoreboard.respect-other-plugins", true);
         byteBufDeserialization = antiOverrideTeams || respectOtherScoreboardPlugins;
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             inject(p);
         }
     }
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             uninject(p);
         }
     }

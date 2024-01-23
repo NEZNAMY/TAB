@@ -81,7 +81,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
         playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
         teamsEnabled = TAB.getInstance().getNameTagManager() != null;
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             onJoin(p);
         }
     }
@@ -119,7 +119,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
         // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
         if (highest == null) return;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             p.getTabList().updateDisplayName(all.getTablistId(), null);
         }
     }
@@ -151,7 +151,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
             p.getTabList().removeEntries(uuids.values());
         }

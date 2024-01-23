@@ -20,6 +20,6 @@ public class LoadRequest extends RedisMessage {
 
     @Override
     public void process(@NotNull RedisSupport redisSupport) {
-        redisSupport.sendMessage(new Load(redisSupport, TAB.getInstance().getOnlinePlayers()));
+        redisSupport.sendMessage(new Load(redisSupport, TAB.getInstance().getOnlineTabPlayers()));
     }
 }

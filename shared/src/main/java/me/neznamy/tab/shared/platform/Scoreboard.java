@@ -252,7 +252,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      */
     @Nullable
     public static TabPlayer getPlayer(@NotNull String name) {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             if (p.getNickname().equals(name))
                 return p; // Nicked name
         }

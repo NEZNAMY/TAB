@@ -41,7 +41,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
             return newCollision;
         });
         addUsedPlaceholder(TabConstants.Placeholder.COLLISION);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
             collision.put(all, true);
         }
     }

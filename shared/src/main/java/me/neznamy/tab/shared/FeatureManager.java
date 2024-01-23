@@ -59,7 +59,7 @@ public class FeatureManager {
         }
         if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
             MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
-            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) users.load(p);
+            TAB.getInstance().getOnlineTabPlayers().forEach(users::load);
         }
     }
 
@@ -76,7 +76,7 @@ public class FeatureManager {
         }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().unregisterExpansion();
         if (TAB.getInstance().getPlatform() instanceof ProxyPlatform) {
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlineTabPlayers()) {
                 ((ProxyTabPlayer)player).sendPluginMessage(new Unload());
             }
         }

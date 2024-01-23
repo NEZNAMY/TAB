@@ -29,7 +29,8 @@ public class PlaceholderRefreshTask implements Runnable {
 
     @Override
     public void run() {
-        TabPlayer[] players = TAB.getInstance().getOnlinePlayers();
+        Collection<TabPlayer> players = TAB.getInstance().getOnlineTabPlayers();
+        int minCapacity = players.size() + 1;
         for (Placeholder placeholder : placeholdersToRefresh) {
             long nanoTime = 0;
             if (placeholder instanceof ServerPlaceholderImpl) {
@@ -43,7 +44,10 @@ public class PlaceholderRefreshTask implements Runnable {
                     long startTime = System.nanoTime();
                     Object result = ((PlayerPlaceholderImpl)placeholder).request(player);
                     nanoTime += System.nanoTime()-startTime;
-                    playerPlaceholderResults.computeIfAbsent((PlayerPlaceholderImpl) placeholder, p -> new HashMap<>(players.length + 1, 1)).put(player, result);
+                    playerPlaceholderResults.computeIfAbsent(
+                            (PlayerPlaceholderImpl) placeholder,
+                            p -> new HashMap<>(minCapacity, 1)
+                    ).put(player, result);
                 }
             }
             if (placeholder instanceof RelationalPlaceholderImpl) {
@@ -52,9 +56,13 @@ public class PlaceholderRefreshTask implements Runnable {
                         long startTime = System.nanoTime();
                         Object result = ((RelationalPlaceholderImpl)placeholder).request(viewer, target);
                         nanoTime += System.nanoTime()-startTime;
-                        relationalPlaceholderResults.computeIfAbsent((RelationalPlaceholderImpl) placeholder, p -> new HashMap<>(players.length + 1, 1))
-                                .computeIfAbsent(viewer, v -> new HashMap<>(players.length + 1, 1))
-                                .put(target, result);
+
+                        relationalPlaceholderResults
+                                .computeIfAbsent((RelationalPlaceholderImpl) placeholder,
+                                        p -> new HashMap<>(minCapacity, 1))
+                                .computeIfAbsent(viewer,
+                                        v -> new HashMap<>(minCapacity, 1)
+                                ).put(target, result);
                     }
                 }
             }

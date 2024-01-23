@@ -34,7 +34,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             if (shouldSee(viewer, player) && !viewer.getServer().equals(player.getServer())) {
                 viewer.getTabList().addEntry(getEntry(player));
             }
@@ -44,7 +44,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     @Override
     public void onServerSwitch(@NotNull RedisPlayer player) {
         TAB.getInstance().getCPUManager().runTaskLater(200, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
                 if (viewer.getServer().equals(player.getServer())) continue;
                 if (shouldSee(viewer, player)) {
                     viewer.getTabList().addEntry(getEntry(player));
@@ -57,7 +57,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
 
     @Override
     public void onQuit(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             if (!player.getServer().equals(viewer.getServer())) {
                 viewer.getTabList().removeEntry(player.getUniqueId());
             }
@@ -108,13 +108,13 @@ public class RedisGlobalPlayerList extends RedisFeature {
     @Override
     public void onVanishStatusChange(@NotNull RedisPlayer player) {
         if (player.isVanished()) {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
                 if (!shouldSee(all, player)) {
                     all.getTabList().removeEntry(player.getUniqueId());
                 }
             }
         } else {
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
                 if (shouldSee(viewer, player)) {
                     viewer.getTabList().addEntry(getEntry(player));
                 }

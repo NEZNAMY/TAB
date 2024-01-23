@@ -39,7 +39,7 @@ public class RedisPlayerList extends RedisFeature {
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             viewer.getTabList().updateDisplayName(player.getUniqueId(), IChatBaseComponent.optimizedComponent(values.get(player)));
         }
@@ -69,7 +69,7 @@ public class RedisPlayerList extends RedisFeature {
     @Override
     public void onVanishStatusChange(@NotNull RedisPlayer player) {
         if (player.isVanished()) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlineTabPlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             viewer.getTabList().updateDisplayName(player.getUniqueId(), IChatBaseComponent.optimizedComponent(getFormat(player)));
         }

@@ -78,7 +78,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     @Override
     public void updateFromNested(@NonNull TabPlayer viewer) {
         Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier);
-        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer target : TAB.getInstance().getOnlineTabPlayers()) {
             Object value = request(viewer, target);
             String s = getReplacements().findReplacement(String.valueOf(value));
             lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);

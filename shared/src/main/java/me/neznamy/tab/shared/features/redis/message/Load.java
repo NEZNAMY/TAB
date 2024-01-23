@@ -7,21 +7,23 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+
 @NoArgsConstructor
 public class Load extends RedisMessage {
 
     private RedisSupport redisSupport;
-    private TabPlayer[] players;
+    private Collection<TabPlayer> players;
     private PlayerJoin[] decodedPlayers;
 
-    public Load(@NotNull RedisSupport redisSupport, @NotNull TabPlayer[] players) {
+    public Load(@NotNull RedisSupport redisSupport, @NotNull Collection<TabPlayer> players) {
         this.redisSupport = redisSupport;
         this.players = players;
     }
 
     @Override
     public void write(@NotNull ByteArrayDataOutput out) {
-        out.writeInt(players.length);
+        out.writeInt(players.size());
         for (TabPlayer player : players) {
             new PlayerJoin(redisSupport, player).write(out);
         }

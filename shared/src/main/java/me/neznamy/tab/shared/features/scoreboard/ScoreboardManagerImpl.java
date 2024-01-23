@@ -78,7 +78,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             registeredScoreboards.put(entry.getKey(), sb);
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(entry.getKey()), sb);
         }
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             onJoin(p);
         }
     }
@@ -300,7 +300,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         // todo: maybe a race
         TAB.getInstance().getCPUManager().runMeasuredTask(featureName, "Adding announced Scoreboard", () -> {
             announcement = sb;
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
                 if (!hasScoreboardVisible(all)) continue;
                 ScoreboardImpl p = activeScoreboards.get(all);
                 if (p != null) {
@@ -312,7 +312,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         });
         TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
                 featureName, "Removing announced Scoreboard", () -> {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer all : TAB.getInstance().getOnlineTabPlayers()) {
                 if (!hasScoreboardVisible(all)) continue;
                 sb.removePlayer(all);
 

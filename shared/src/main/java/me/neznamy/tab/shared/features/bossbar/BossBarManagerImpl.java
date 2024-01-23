@@ -88,7 +88,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     @Override
     public void load() {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.COUNTDOWN, 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             onJoin(p);
         }
     }
@@ -112,7 +112,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlineTabPlayers()) {
             for (BossBar line : lineValues) {
                 line.removePlayer(p);
             }
@@ -253,8 +253,12 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     public void announceBossBar(@NonNull String bossBar, int duration) {
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-        List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(
-                this::hasBossBarVisible).collect(Collectors.toList());
+        List<TabPlayer> players = TAB.getInstance()
+                .getOnlineTabPlayers()
+                .stream()
+                .filter(this::hasBossBarVisible)
+                .collect(Collectors.toList());
+
         TAB.getInstance().getCPUManager().runMeasuredTask(featureName, "Adding announced BossBar", () -> {
             announcedBossBars.add(line);
             announceEndTime = System.currentTimeMillis() + duration* 1000L;
@@ -264,9 +268,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
         });
         TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
                 featureName, "Removing announced BossBar", () -> {
-            for (TabPlayer all : players) {
-                line.removePlayer(all);
-            }
+            players.forEach(line::removePlayer);
             announcedBossBars.remove(line);
         });
     }
