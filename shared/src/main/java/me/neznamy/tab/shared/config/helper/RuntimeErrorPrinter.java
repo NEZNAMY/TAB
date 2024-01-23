@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.config.helper;
 
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -84,6 +85,22 @@ public class RuntimeErrorPrinter {
                 placeholder, output, player.getName()));
     }
 
+    public void invalidNumberForBelowName(@NotNull TabPlayer target, @NotNull String configuredValue, @NotNull String output) {
+        // Placeholders are not initialized, because bridge did not respond yet (typically on join)
+        if (target instanceof ProxyTabPlayer && !((ProxyTabPlayer)target).isBridgeConnected()) return;
+
+        error(EnumChatFormat.decolor(String.format("Belowname number is configured to show \"%s\", but returned \"%s\" for player %s, which cannot be evaluated to a number.",
+                configuredValue, output, target.getName())));
+    }
+
+    public void invalidNumberForPlayerlistObjective(@NotNull TabPlayer target, @NotNull String configuredValue, @NotNull String output) {
+        // Placeholders are not initialized, because bridge did not respond yet (typically on join)
+        if (target instanceof ProxyTabPlayer && !((ProxyTabPlayer)target).isBridgeConnected()) return;
+
+        error(EnumChatFormat.decolor(String.format("Playerlist objective number is configured to show \"%s\", but returned \"%s\" for player %s, which cannot be evaluated to a number.",
+                configuredValue, output, target.getName())));
+    }
+
     /**
      * Logs a warning if player's group is not in sorting list.
      *
@@ -158,6 +175,6 @@ public class RuntimeErrorPrinter {
      *          Message to log
      */
     private void error(@NotNull String message) {
-        TAB.getInstance().getPlatform().logWarn(IChatBaseComponent.fromColoredText(message));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(message));
     }
 }

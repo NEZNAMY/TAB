@@ -176,24 +176,6 @@ public class ErrorManager {
     }
 
     /**
-     * Parses integer in given string and returns it.
-     * Returns second argument if string is not valid.
-     *
-     * @param   string
-     *          string to parse
-     * @param   defaultValue
-     *          value to return if string is not valid
-     * @return  parsed integer or {@code defaultValue} if input is invalid
-     */
-    public int parseInteger(@NotNull String string, int defaultValue) {
-        try {
-            return (int) Math.round(Double.parseDouble(string));
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
-    /**
      * Prints error message when permission plugin throws error when retrieving group.
      *
      * @param   pluginName

@@ -127,7 +127,13 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
      * @return  Current value for player
      */
     public int getValue(@NotNull TabPlayer p) {
-        return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(NUMBER_PROPERTY).updateAndGet(), 0);
+        String string = p.getProperty(NUMBER_PROPERTY).updateAndGet();
+        try {
+            return (int) Math.round(Double.parseDouble(string));
+        } catch (NumberFormatException e) {
+            TAB.getInstance().getConfigHelper().runtime().invalidNumberForBelowName(p, rawNumber, string);
+            return 0;
+        }
     }
 
     @Override

@@ -70,7 +70,14 @@ public class FixedSlot extends TabFeature implements Refreshable {
         }
         String text = array.length > 1 ? array[1] : "";
         String skin = array.length > 2 ? array[2] : "";
-        int ping = array.length > 3 ? TAB.getInstance().getErrorManager().parseInteger(array[3], manager.getEmptySlotPing()) : manager.getEmptySlotPing();
+        int ping = manager.getEmptySlotPing();
+        if (array.length > 3) {
+            try {
+                ping = (int) Math.round(Double.parseDouble(array[3]));
+            } catch (NumberFormatException ignored) {
+                // Maybe a warning?
+            }
+        }
         FixedSlot f = new FixedSlot(
                 manager,
                 slot,

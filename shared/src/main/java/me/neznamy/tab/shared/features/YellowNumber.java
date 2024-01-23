@@ -61,7 +61,13 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
      * @return  Current value of player
      */
     public int getValueNumber(@NotNull TabPlayer p) {
-        return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(PROPERTY_VALUE).updateAndGet(), 0);
+        String string = p.getProperty(PROPERTY_VALUE).updateAndGet();
+        try {
+            return (int) Math.round(Double.parseDouble(string));
+        } catch (NumberFormatException e) {
+            TAB.getInstance().getConfigHelper().runtime().invalidNumberForPlayerlistObjective(p, rawValue, string);
+            return 0;
+        }
     }
 
     @Override

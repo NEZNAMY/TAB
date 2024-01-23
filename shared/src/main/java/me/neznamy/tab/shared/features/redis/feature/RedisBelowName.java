@@ -60,7 +60,7 @@ public class RedisBelowName extends RedisFeature {
 
     @Override
     public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {
-        out.writeInt(TAB.getInstance().getErrorManager().parseInteger(player.getProperty(belowName.getNUMBER_PROPERTY()).get(), 0));
+        out.writeInt(belowName.getValue(player));
         out.writeUTF(player.getProperty(belowName.getFANCY_FORMAT_PROPERTY()).get());
     }
 
