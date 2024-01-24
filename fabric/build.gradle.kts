@@ -12,16 +12,16 @@ repositories {
 
 dependencies {
     api(projects.shared)
-    minecraft("com.mojang:minecraft:24w03b")
+    minecraft("com.mojang:minecraft:24w04a")
     mappings(loom.officialMojangMappings())
     modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
     modImplementation("net.fabricmc:fabric-loader:0.14.17")
-    val version = "0.91.4+1.20.5"
+    val version = "0.95.1+1.20.5"
     modImplementation(fabricApi.module("fabric-api-base", version))
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", version))
     modImplementation(fabricApi.module("fabric-networking-api-v1", version))
     modImplementation(fabricApi.module("fabric-entity-events-v1", version))
-    modImplementation(fabricApi.module("fabric-command-api-v1", "0.76.0+1.18.2"))
+    modImplementation(fabricApi.module("fabric-command-api-v1", "0.77.0+1.18.2"))
     modImplementation(fabricApi.module("fabric-command-api-v2", version))
 }
 
