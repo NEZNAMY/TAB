@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.tablist;
 
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -35,7 +34,7 @@ public class BukkitTabList extends TabListBase {
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         Player p = Bukkit.getPlayer(entry);
         if (p == null) return;
-        p.setPlayerListName(displayName == null ? null : BukkitUtils.toBukkitFormat(displayName, true));
+        p.setPlayerListName(displayName == null ? null : player.getPlatform().toBukkitFormat(displayName, true));
     }
 
     @Override

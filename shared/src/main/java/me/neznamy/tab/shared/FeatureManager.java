@@ -9,7 +9,6 @@ import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.*;
-import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
@@ -455,7 +454,6 @@ public class FeatureManager {
     public void loadFeaturesFromConfig() {
         Configs configuration = TAB.getInstance().getConfiguration();
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
-        int minorVersion = TAB.getInstance().getServerVersion().getMinorVersion();
 
         boolean pingSpoof          = configuration.getConfig().getBoolean("ping-spoof.enabled", false);
         boolean bossbar            = configuration.getConfig().getBoolean("bossbar.enabled", false);
@@ -485,10 +483,7 @@ public class FeatureManager {
             TabFeature pwp = TAB.getInstance().getPlatform().getPerWorldPlayerList();
             if (pwp != null) featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, pwp);
         }
-        if (bossbar) {
-            featureManager.registerFeature(TabConstants.Feature.BOSS_BAR,
-                    minorVersion >= 9 ? new BossBarManagerImpl() : TAB.getInstance().getPlatform().getLegacyBossBar());
-        }
+        if (bossbar)      featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, TAB.getInstance().getPlatform().getBossBar());
         if (pingSpoof)    featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
         if (headerFooter) featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
         if (spectatorFix) featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());

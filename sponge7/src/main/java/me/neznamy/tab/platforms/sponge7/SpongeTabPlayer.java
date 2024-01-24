@@ -48,7 +48,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
      *          Platform's player object
      */
     public SpongeTabPlayer(@NotNull SpongePlatform platform, @NotNull Player player) {
-        super(platform, player, player.getUniqueId(), player.getName(), player.getWorld().getName());
+        super(platform, player, player.getUniqueId(), player.getName(), player.getWorld().getName(), platform.getServerVersion().getNetworkId());
     }
 
     @Override

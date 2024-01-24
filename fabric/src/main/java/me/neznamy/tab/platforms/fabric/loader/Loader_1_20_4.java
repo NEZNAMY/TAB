@@ -77,6 +77,11 @@ public class Loader_1_20_4 {
             FabricMultiVersion.updateTeam = team -> ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false);
             FabricMultiVersion.newHeaderFooter = ClientboundTabListPacket::new;
             FabricMultiVersion.isTeamPacket = packet -> packet instanceof ClientboundSetPlayerTeamPacket; // Fabric-mapped name changed
+            if (serverVersion.getNetworkId() >= ProtocolVersion.V1_17_1.getNetworkId()) {
+                FabricMultiVersion.getDestroyedEntities = packet -> ((ClientboundRemoveEntitiesPacket) packet).getEntityIds().toIntArray();
+            } else {
+                FabricMultiVersion.getDestroyedEntities = packet -> new int[]{ReflectionUtils.getOnlyField(packet.getClass()).getInt(packet)};
+            }
         }
         if (serverVersion.getMinorVersion() >= 19) {
             FabricMultiVersion.sendMessage = ServerPlayer::sendSystemMessage;

@@ -53,7 +53,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      *          bukkit player
      */
     public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
-        super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName());
+        super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName(), platform.getServerVersion().getNetworkId());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         if (spigot) {
             getPlayer().spigot().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
         } else {
-            getPlayer().sendMessage(BukkitUtils.toBukkitFormat(message, getVersion().supportsRGB()));
+            getPlayer().sendMessage(getPlatform().toBukkitFormat(message, getVersion().supportsRGB()));
         }
     }
 

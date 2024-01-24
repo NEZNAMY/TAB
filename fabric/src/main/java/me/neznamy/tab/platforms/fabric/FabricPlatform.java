@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.fabric;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.platforms.fabric.features.FabricNameTagX;
@@ -28,9 +30,18 @@ import java.io.File;
 /**
  * Platform implementation for Fabric
  */
-public record FabricPlatform(MinecraftServer server) implements BackendPlatform {
+@RequiredArgsConstructor
+@Getter
+public class FabricPlatform implements BackendPlatform {
 
-    private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
+    /** Minecraft server reference */
+    private final MinecraftServer server;
+
+    /** Flag tracking presence of permission API */
+    private final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
+
+    /** Server version */
+    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion);
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -85,7 +96,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @SneakyThrows
     private Object getLogger() {
         Class<?> loggerClass;
-        if (getServerVersion().getNetworkId() >= ProtocolVersion.V1_18_2.getNetworkId()) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_18_2.getNetworkId()) {
             loggerClass = Class.forName("org.slf4j.Logger");
         } else {
             loggerClass = Class.forName("org.apache.logging.log4j.Logger");
@@ -112,12 +123,6 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @Override
     public void startMetrics() {
         // Not available
-    }
-
-    @Override
-    @NotNull
-    public ProtocolVersion getServerVersion() {
-        return ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion);
     }
 
     @Override

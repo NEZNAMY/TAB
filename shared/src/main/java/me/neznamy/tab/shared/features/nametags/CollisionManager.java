@@ -32,9 +32,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
 
     @Override
     public void load() {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return; //cannot control collision anyway
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
-
             if (forcedCollision.containsKey(p)) return forcedCollision.get(p);
             boolean newCollision = !((TabPlayer)p).isDisguised() && refreshCondition.isMet((TabPlayer) p);
             collision.put((TabPlayer) p, newCollision);

@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features.nametags;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -15,7 +14,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,10 +41,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     // Key - Vanished player, Value = List of players who cannot see the player (UUIDs to prevent memory leak)
     private final WeakHashMap<TabPlayer, List<UUID>> vanishedPlayers = new WeakHashMap<>();
 
-    private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() ||
-            ReflectionUtils.classExists("de.gerrygames.viarewind.ViaRewind") ||
-            TAB.getInstance().getServerVersion().getMinorVersion() == 8;
-
     public NameTag() {
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
@@ -60,7 +54,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void load() {
         // RedisSupport is instantiated after NameTags, so must be loaded after
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-        if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             hiddenNameTagFor.put(all, new ArrayList<>());
@@ -292,7 +286,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         return !hasHiddenNameTag(p) && !hasHiddenNameTag(p, viewer) && !invisibleNameTags
-                && (!accepting18x || !p.hasInvisibilityPotion()) && !playersWithInvisibleNameTagView.contains(viewer);
+                && !p.hasInvisibilityPotion() && !playersWithInvisibleNameTagView.contains(viewer);
     }
 
     @Override

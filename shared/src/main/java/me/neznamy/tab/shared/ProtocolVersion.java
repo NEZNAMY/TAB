@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 public enum ProtocolVersion {
 
     UNKNOWN ("Unknown"),
-    PROXY   ("Proxy"),
     V1_20_4 (765),
     V1_20_3 (765),
     V1_20_2 (764),

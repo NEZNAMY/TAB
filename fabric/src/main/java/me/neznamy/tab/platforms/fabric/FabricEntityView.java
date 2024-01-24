@@ -65,8 +65,9 @@ public class FabricEntityView implements EntityView {
     }
 
     @Override
+    @SneakyThrows
     public void destroyEntities(int... entities) {
-        FabricMultiVersion.destroyEntities(player, entities);
+        FabricMultiVersion.destroyEntities.accept(player, entities);
     }
 
     @Override
@@ -115,8 +116,9 @@ public class FabricEntityView implements EntityView {
     }
 
     @Override
+    @SneakyThrows
     public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
-        return FabricMultiVersion.getDestroyedEntities(destroyPacket);
+        return FabricMultiVersion.getDestroyedEntities.apply(destroyPacket);
     }
 
     @Override

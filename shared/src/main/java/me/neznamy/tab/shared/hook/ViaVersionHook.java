@@ -30,21 +30,23 @@ public class ViaVersionHook {
      *          Player's UUID
      * @param   playerName
      *          Player's name for debug messages
+     * @param   serverVersion
+     *          Server version to return if Via is not installed or something went wrong
      * @return  Player's network version
      */
-    public int getPlayerVersion(@NotNull UUID player, @NotNull String playerName) {
-        if (!installed) return TAB.getInstance().getServerVersion().getNetworkId();
+    public int getPlayerVersion(@NotNull UUID player, @NotNull String playerName, int serverVersion) {
+        if (!installed) return serverVersion;
         int version;
         try {
             version = Via.getAPI().getPlayerVersion(player);
         } catch (IllegalArgumentException e) {
             // java.lang.IllegalArgumentException: ViaVersion has not loaded the platform yet
             // Most likely another plugin shading Via API, just ignore it
-            return TAB.getInstance().getServerVersion().getNetworkId();
+            return serverVersion;
         }
         if (version == -1) {
             // Player got instantly disconnected with a packet error
-            return TAB.getInstance().getServerVersion().getNetworkId();
+            return serverVersion;
         }
         ProtocolVersion protocol = ProtocolVersion.fromNetworkId(version);
         if (protocol == ProtocolVersion.UNKNOWN) {

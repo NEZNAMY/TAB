@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.shared.GroupManager;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
@@ -30,11 +29,11 @@ public interface Platform {
     @NotNull GroupManager detectPermissionPlugin();
 
     /**
-     * Returns bossbar feature for servers 1.8 and lower
+     * Returns bossbar feature.
      *
-     * @return  bossbar feature for 1.8 and lower
+     * @return  bossbar feature
      */
-    default @NotNull BossBarManagerImpl getLegacyBossBar() {
+    default @NotNull BossBarManagerImpl getBossBar() {
         return new BossBarManagerImpl();
     }
 
@@ -132,13 +131,6 @@ public interface Platform {
      * Starts metrics
      */
     void startMetrics();
-
-    /**
-     * Returns server's version
-     *
-     * @return  server's version
-     */
-    ProtocolVersion getServerVersion();
 
     /**
      * Returns plugin's data folder for configuration files

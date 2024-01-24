@@ -17,6 +17,8 @@ public abstract class BackendTabPlayer extends TabPlayer {
     /**
      * Constructs new instance with given parameters
      *
+     * @param   platform
+     *          Server platform reference
      * @param   player
      *          platform-specific player object
      * @param   uniqueId
@@ -25,11 +27,13 @@ public abstract class BackendTabPlayer extends TabPlayer {
      *          Player's name
      * @param   world
      *          Player's world
+     * @param   serverVersion
+     *          Server version
      */
     protected BackendTabPlayer(@NotNull BackendPlatform platform, @NotNull Object player, @NotNull UUID uniqueId,
-                               @NotNull String name, @NotNull String world) {
+                               @NotNull String name, @NotNull String world, int serverVersion) {
         super(platform, player, uniqueId, name, TAB.getInstance().getConfiguration().getServerName(),
-                world, ViaVersionHook.getInstance().getPlayerVersion(uniqueId, name), true);
+                world, ViaVersionHook.getInstance().getPlayerVersion(uniqueId, name, serverVersion), true);
     }
 
     /**

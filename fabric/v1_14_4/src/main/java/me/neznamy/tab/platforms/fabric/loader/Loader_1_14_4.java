@@ -147,6 +147,18 @@ public class Loader_1_14_4 {
                 player.connection.send(packet);
             }
         };
+        FabricMultiVersion.getDestroyedEntities = packet -> (int[]) ReflectionUtils.getOnlyField(packet.getClass()).get(packet);
+        if (serverVersion == ProtocolVersion.V1_17) {
+            FabricMultiVersion.destroyEntities = (player, entities) -> {
+                for (int entity : entities) {
+                    // While the actual packet name is different, fabric-mapped name is the same
+                    //noinspection JavaReflectionMemberAccess
+                    player.sendPacket(ClientboundRemoveEntitiesPacket.class.getConstructor(int.class).newInstance(entity));
+                }
+            };
+        } else {
+            FabricMultiVersion.destroyEntities = (player, entities) -> player.sendPacket(new ClientboundRemoveEntitiesPacket(entities));
+        }
     }
 
     @SneakyThrows

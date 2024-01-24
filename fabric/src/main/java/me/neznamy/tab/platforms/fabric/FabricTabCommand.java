@@ -57,12 +57,13 @@ public class FabricTabCommand {
 
     @SuppressWarnings("SameReturnValue") // Unused by plugin
     private int executeCommand(@NotNull CommandSourceStack source, @NotNull String[] args) {
+        FabricPlatform platform = (FabricPlatform) TAB.getInstance().getPlatform();
         if (TAB.getInstance().isPluginDisabled()) {
-            boolean hasReloadPermission = ((FabricPlatform)TAB.getInstance().getPlatform()).hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
-            boolean hasAdminPermission = ((FabricPlatform)TAB.getInstance().getPlatform()).hasPermission(source, TabConstants.Permission.COMMAND_ALL);
+            boolean hasReloadPermission = platform.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
+            boolean hasAdminPermission = platform.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
-                FabricMultiVersion.sendMessage2.accept(source, ((FabricPlatform)TAB.getInstance().getPlatform()).toComponent(
-                        IChatBaseComponent.optimizedComponent(message), TAB.getInstance().getServerVersion()));
+                FabricMultiVersion.sendMessage2.accept(source, platform.toComponent(
+                        IChatBaseComponent.optimizedComponent(message), platform.getServerVersion()));
             }
         } else {
             if (source.getEntity() == null) {

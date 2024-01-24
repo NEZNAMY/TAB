@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge7;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -31,6 +32,10 @@ public class SpongePlatform implements BackendPlatform {
     /** Plugin reference */
     @NotNull
     private final Sponge7TAB plugin;
+
+    /** Server version */
+    @Getter
+    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Sponge.getGame().getPlatform().getMinecraftVersion().getName());
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -101,12 +106,6 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public void startMetrics() {
         // Not available
-    }
-
-    @Override
-    @NotNull
-    public ProtocolVersion getServerVersion() {
-        return ProtocolVersion.fromFriendlyName(Sponge.getGame().getPlatform().getMinecraftVersion().getName());
     }
 
     @Override

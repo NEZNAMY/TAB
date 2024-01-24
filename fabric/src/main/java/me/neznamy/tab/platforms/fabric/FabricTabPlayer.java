@@ -45,7 +45,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
      */
     public FabricTabPlayer(@NotNull FabricPlatform platform, @NotNull ServerPlayer player) {
         super(platform, player, player.getUUID(), player.getGameProfile().getName(),
-                FabricMultiVersion.getLevelName.apply(FabricMultiVersion.getLevel.apply(player)));
+                FabricMultiVersion.getLevelName.apply(FabricMultiVersion.getLevel.apply(player)), platform.getServerVersion().getNetworkId());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean isOnline() {
-        return PlayerLookup.all(getPlatform().server()).contains(getPlayer());
+        return PlayerLookup.all(getPlatform().getServer()).contains(getPlayer());
     }
 
     @Override

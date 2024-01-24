@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -109,7 +108,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
                           @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
         checkPlayerScoreboard();
-        if (serverMinorVersion >= 7 && TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
+        if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
             scoreboard.getObjective(objective).getScore(scoreHolder).setScore(score);
         } else {
             scoreboard.getObjective(objective).getScore(Bukkit.getOfflinePlayer(scoreHolder)).setScore(score);
@@ -119,7 +118,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
         checkPlayerScoreboard();
-        if (serverMinorVersion >= 7 && TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
+        if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
             scoreboard.resetScores(scoreHolder);
         } else {
             scoreboard.resetScores(Bukkit.getOfflinePlayer(scoreHolder));
@@ -162,7 +161,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.values()[collision.ordinal()]);
         if (serverMinorVersion >= TEAM_COLOR_VERSION)
             team.setColor(ChatColor.valueOf(color.name()));
-        if (serverMinorVersion >= 7 && TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
+        if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
             players.forEach(team::addEntry);
         } else {
             players.forEach(p -> team.addPlayer(Bukkit.getOfflinePlayer(p)));
@@ -269,8 +268,8 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      */
     @NotNull
     private String transform(@NotNull String text, int maxLengthModern, int maxLengthLegacy) {
-        String transformed = BukkitUtils.toBukkitFormat(IChatBaseComponent.optimizedComponent(text), player.getVersion().supportsRGB());
-        if (TAB.getInstance().getServerVersion().supportsRGB() && maxLengthModern < TITLE_LIMIT_MODERN) { // Scoreboard title is not stripping colors
+        String transformed = player.getPlatform().toBukkitFormat(IChatBaseComponent.optimizedComponent(text), player.getVersion().supportsRGB());
+        if (player.getPlatform().getServerVersion().supportsRGB() && maxLengthModern < TITLE_LIMIT_MODERN) { // Scoreboard title is not stripping colors
             while (ChatColor.stripColor(transformed).length() > maxLengthModern)
                 transformed = transformed.substring(0, transformed.length()-1);
         } else if (serverMinorVersion >= 13) {

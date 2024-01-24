@@ -60,6 +60,10 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     private final JavaPlugin plugin;
 
+    /** Server version */
+    @Getter
+    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
+
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
 
@@ -89,7 +93,7 @@ public class BukkitPlatform implements BackendPlatform {
         try {
             server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
             spigotTps = server.getClass().getField("recentTps");
-        } catch (ReflectiveOperationException e) {
+        } catch (ReflectiveOperationException ignored) {
             //not spigot
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
@@ -111,8 +115,9 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     @NotNull
-    public BossBarManagerImpl getLegacyBossBar() {
-        return new WitherBossBar(plugin);
+    public BossBarManagerImpl getBossBar() {
+        if (BukkitReflection.getMinorVersion() <= 8) return new WitherBossBar(plugin);
+        return new BossBarManagerImpl();
     }
 
     @Override
@@ -219,12 +224,12 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull IChatBaseComponent message) {
-        Bukkit.getConsoleSender().sendMessage("[TAB] " + BukkitUtils.toBukkitFormat(message, true));
+        Bukkit.getConsoleSender().sendMessage("[TAB] " + toBukkitFormat(message, true));
     }
 
     @Override
     public void logWarn(@NotNull IChatBaseComponent message) {
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] [WARN] " + BukkitUtils.toBukkitFormat(message, true));
+        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] [WARN] " + toBukkitFormat(message, true));
     }
 
     @Override
@@ -261,12 +266,6 @@ public class BukkitPlatform implements BackendPlatform {
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
                 () -> "1." + BukkitReflection.getMinorVersion() + ".x"));
-    }
-
-    @Override
-    @NotNull
-    public ProtocolVersion getServerVersion() {
-        return ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
     }
 
     @Override
@@ -336,5 +335,37 @@ public class BukkitPlatform implements BackendPlatform {
     public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         if (BackendPlatform.super.canSee(viewer, target)) return true;
         return ((BukkitTabPlayer)viewer).getPlayer().canSee(((BukkitTabPlayer)target).getPlayer());
+    }
+
+    /**
+     * Converts component to legacy string using bukkit RGB format if supported by both server and client.
+     * If not, closest legacy color is used instead.
+     *
+     * @param   component
+     *          Component to convert
+     * @param   rgbClient
+     *          Whether client accepts RGB colors or not.
+     * @return  Converted string using bukkit color format
+     */
+    @NotNull
+    public String toBukkitFormat(@NotNull IChatBaseComponent component, boolean rgbClient) {
+        StringBuilder sb = new StringBuilder();
+        if (component.getModifier().getColor() != null) {
+            if (serverVersion.supportsRGB() && rgbClient) {
+                String hexCode = component.getModifier().getColor().getHexCode();
+                char c = EnumChatFormat.COLOR_CHAR;
+                sb.append(c).append("x").append(c).append(hexCode.charAt(0)).append(c).append(hexCode.charAt(1))
+                        .append(c).append(hexCode.charAt(2)).append(c).append(hexCode.charAt(3))
+                        .append(c).append(hexCode.charAt(4)).append(c).append(hexCode.charAt(5));
+            } else {
+                sb.append(component.getModifier().getColor().getLegacyColor().getFormat());
+            }
+        }
+        sb.append(component.getModifier().getMagicCodes());
+        if (component.getText() != null) sb.append(component.getText());
+        for (IChatBaseComponent extra : component.getExtra()) {
+            sb.append(toBukkitFormat(extra, rgbClient));
+        }
+        return sb.toString();
     }
 }

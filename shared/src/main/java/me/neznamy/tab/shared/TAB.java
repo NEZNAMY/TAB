@@ -94,9 +94,6 @@ public class TAB extends TabAPI {
      */
     private boolean pluginDisabled;
 
-    /** Minecraft version the server is running on, always using the latest on proxies */
-    private final ProtocolVersion serverVersion;
-
     /** TAB's data folder */
     private final File dataFolder;
 
@@ -126,7 +123,6 @@ public class TAB extends TabAPI {
      */
     private TAB(@NotNull Platform platform) {
         this.platform = platform;
-        serverVersion = platform.getServerVersion();
         dataFolder = platform.getDataFolder();
         errorManager = new ErrorManager(dataFolder);
         try {

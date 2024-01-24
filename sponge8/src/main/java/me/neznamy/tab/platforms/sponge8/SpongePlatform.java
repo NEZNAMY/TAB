@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -31,6 +32,10 @@ public class SpongePlatform implements BackendPlatform {
     /** Main class reference */
     @NotNull
     private final Sponge8TAB plugin;
+
+    /** Server version */
+    @Getter
+    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Sponge.game().platform().minecraftVersion().name());
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -71,13 +76,13 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public void logInfo(@NotNull IChatBaseComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(
-                AdventureHook.toAdventureComponent(message, TAB.getInstance().getServerVersion())));
+                AdventureHook.toAdventureComponent(message, serverVersion)));
     }
 
     @Override
     public void logWarn(@NotNull IChatBaseComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(
-                AdventureHook.toAdventureComponent(message, TAB.getInstance().getServerVersion()))); // Sponge console does not support colors
+                AdventureHook.toAdventureComponent(message, serverVersion))); // Sponge console does not support colors
     }
 
     @Override
@@ -100,14 +105,7 @@ public class SpongePlatform implements BackendPlatform {
     public void startMetrics() {
         Metrics metrics = plugin.getMetricsFactory().make(TabConstants.BSTATS_PLUGIN_ID_SPONGE);
         metrics.startup(null);
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
-                () -> TAB.getInstance().getServerVersion().getFriendlyName()));
-    }
-
-    @Override
-    @NotNull
-    public ProtocolVersion getServerVersion() {
-        return ProtocolVersion.fromFriendlyName(Sponge.game().platform().minecraftVersion().name());
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, serverVersion::getFriendlyName));
     }
 
     @Override

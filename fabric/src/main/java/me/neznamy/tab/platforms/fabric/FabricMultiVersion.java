@@ -2,9 +2,6 @@ package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
-import lombok.SneakyThrows;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.platform.TabList;
@@ -14,7 +11,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,7 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -56,6 +51,8 @@ public class FabricMultiVersion {
     public static BiConsumerWithException<TabPlayer, Object> onPlayerInfo;
     public static Function<Packet<?>, Boolean> isPlayerInfo;
     public static BiConsumerWithException<ServerPlayer, Iterable<Packet<ClientGamePacketListener>>> sendPackets;
+    public static FunctionWithException<Object, int[]> getDestroyedEntities;
+    public static BiConsumerWithException<FabricTabPlayer, int[]> destroyEntities;
 
     public static Function<PlayerTeam, Packet<?>> registerTeam;
     public static Function<PlayerTeam, Packet<?>> unregisterTeam;
@@ -66,46 +63,4 @@ public class FabricMultiVersion {
     public static BiFunction<String, String, Packet<?>> removeScore;
     public static FunctionWithException<ClientboundSetDisplayObjectivePacket, Integer> getDisplaySlot;
     public static Function<Packet<?>, Boolean> isTeamPacket;
-
-    /**
-     * Sends entity destroy packet to specified player.
-     *
-     * @param   player
-     *          Player to send packet to
-     * @param   entities
-     *          Entities to destroy
-     */
-    @SneakyThrows
-    public static void destroyEntities(FabricTabPlayer player, int... entities) {
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.V1_17) {
-            for (int entity : entities) {
-                // While the actual packet name is different, fabric-mapped name is the same
-                //noinspection JavaReflectionMemberAccess
-                player.sendPacket(ClientboundRemoveEntitiesPacket.class.getConstructor(int.class).newInstance(entity));
-            }
-        } else {
-            player.sendPacket(new ClientboundRemoveEntitiesPacket(entities));
-        }
-    }
-
-    /**
-     * Gets array of destroyed entities from packet.
-     *
-     * @param   packet
-     *          Packet to get entities from.
-     * @return  Array of destroyed entities
-     */
-    @SneakyThrows
-    public static int[] getDestroyedEntities(@NotNull Object packet) {
-        if (TAB.getInstance().getPlatform().getServerVersion().getMinorVersion() >= 17) {
-            if (TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_17_1.getNetworkId()) {
-                return ((ClientboundRemoveEntitiesPacket) packet).getEntityIds().toIntArray();
-            } else {
-                return new int[]{ReflectionUtils.getOnlyField(packet.getClass()).getInt(packet)};
-            }
-        } else {
-            // Getter is client-only, so we have to use reflection regardless
-            return (int[]) ReflectionUtils.getOnlyField(packet.getClass()).get(packet);
-        }
-    }
 }
