@@ -47,7 +47,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @Getter @Setter private String server;
 
     /** Player's permission group defined in permission plugin or with permission nodes */
-    private String permissionGroup;
+    private String permissionGroup = TabConstants.NO_GROUP;
 
     /** Player's permission group override using API */
     private String temporaryGroup;
