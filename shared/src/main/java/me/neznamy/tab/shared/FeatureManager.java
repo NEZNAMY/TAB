@@ -518,7 +518,7 @@ public class FeatureManager {
         if (tablistFormatting) featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
 
         // Must be loaded after: PlayerList
-        if (globalPlayerList && TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
+        if (globalPlayerList && TAB.getInstance().getPlatform().isProxy()) {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
         }
 

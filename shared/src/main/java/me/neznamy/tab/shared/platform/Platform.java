@@ -148,6 +148,13 @@ public interface Platform {
     File getDataFolder();
 
     /**
+     * Returns {@code true} if this platform is a proxy, {@code false} if not.
+     *
+     * @return  {@code true} if this platform is a proxy, {@code false} if not
+     */
+    boolean isProxy();
+
+    /**
      * Returns {@code true} if the viewer can see the target, {@code false} otherwise.
      * This includes all vanish, permission & plugin API checks.
      *

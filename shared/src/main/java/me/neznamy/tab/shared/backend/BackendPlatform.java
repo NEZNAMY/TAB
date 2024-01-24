@@ -40,6 +40,11 @@ public interface BackendPlatform extends Platform {
         registry.registerPlaceholders(manager);
     }
 
+    @Override
+    default boolean isProxy() {
+        return false;
+    }
+
     /**
      * Registers a dummy placeholder implementation for specified identifier in case
      * no placeholder plugin was found.

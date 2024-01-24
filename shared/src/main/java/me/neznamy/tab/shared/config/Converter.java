@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.config;
 
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -103,7 +102,7 @@ public class Converter {
         newConfig.set("scoreboard-teams.anti-override", oldConfig.getBoolean("anti-override.scoreboard-teams", true));
         newConfig.set("scoreboard-teams.enable-collision", oldConfig.getBoolean("enable-collision", true));
         newConfig.set("scoreboard-teams.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.nametag", Collections.singletonList("disabledworld")));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
+        if (TAB.getInstance().getPlatform().isProxy()) {
             newConfig.set("scoreboard-teams.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.nametag", Collections.singletonList("disabledserver")));
         } else {
             newConfig.set("scoreboard-teams.unlimited-nametag-mode.enabled", oldConfig.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false));
@@ -155,7 +154,7 @@ public class Converter {
         newConfig.set("tablist-name-formatting.enabled", oldConfig.getBoolean("change-tablist-prefix-suffix", true));
         newConfig.set("tablist-name-formatting.anti-override", oldConfig.getBoolean("anti-override.tablist-names", true));
         newConfig.set("tablist-name-formatting.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.tablist-names", Collections.singletonList("disabledworld")));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
+        if (TAB.getInstance().getPlatform().isProxy())
             newConfig.set("tablist-name-formatting.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.tablist-names", Collections.singletonList("disabledserver")));
     }
 
@@ -163,14 +162,14 @@ public class Converter {
         newConfig.set("yellow-number-in-tablist.enabled", !oldConfig.getString("yellow-number-in-tablist", TabConstants.Placeholder.PING).isEmpty());
         newConfig.set("yellow-number-in-tablist.value", oldConfig.getString("yellow-number-in-tablist", TabConstants.Placeholder.PING));
         newConfig.set("yellow-number-in-tablist.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.yellow-number", Collections.singletonList("disabledworld")));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
+        if (TAB.getInstance().getPlatform().isProxy())
             newConfig.set("yellow-number-in-tablist.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.yellow-number", Collections.singletonList("disabledserver")));
     }
 
     private void convertBelowName(@NotNull ConfigurationFile oldConfig, @NotNull ConfigurationFile newConfig) {
         newConfig.set("belowname-objective", oldConfig.getConfigurationSection("classic-vanilla-belowname"));
         newConfig.set("belowname-objective.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.belowname", Collections.singletonList("disabledworld")));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
+        if (TAB.getInstance().getPlatform().isProxy())
             newConfig.set("belowname-objective.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.belowname", Collections.singletonList("disabledserver")));
     }
 
@@ -182,7 +181,7 @@ public class Converter {
         Map<Object, Map<String, Object>> bars = bossBar.getConfigurationSection("bars");
         Map<String, List<Object>> perWorldBossBars = bossBar.getConfigurationSection("per-world");
         List<Object> activeBossBars = new ArrayList<>(bossBar.getStringList("default-bars", new ArrayList<>()));
-        String separator = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ? "server" : "world";
+        String separator = TAB.getInstance().getPlatform().isProxy() ? "server" : "world";
         for (Map.Entry<String, List<Object>> entry : perWorldBossBars.entrySet()) {
             for (Object bar : entry.getValue()) {
                 if (!bars.containsKey(bar)) continue;
@@ -203,7 +202,7 @@ public class Converter {
     }
 
     private void convertScoreboard(@NotNull ConfigurationFile newConfig, @NotNull ConfigurationFile premiumConfig) {
-        String separator = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ? "server" : "world";
+        String separator = TAB.getInstance().getPlatform().isProxy() ? "server" : "world";
         newConfig.set("scoreboard", premiumConfig.getObject("scoreboard"));
         newConfig.set("scoreboard.permission-required-to-toggle", null);
         Map<String, Map<String,Object>> scoreboards = premiumConfig.getConfigurationSection("scoreboards");
@@ -255,10 +254,10 @@ public class Converter {
         newConfig.set("header-footer.header", oldConfig.getStringList("header"));
         newConfig.set("header-footer.footer", oldConfig.getStringList("footer"));
         newConfig.set("header-footer.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.header-footer", Collections.singletonList("disabledworld")));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
+        if (TAB.getInstance().getPlatform().isProxy())
             newConfig.set("header-footer.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.header-footer", Collections.singletonList("disabledserver")));
 
-        String separator = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ? "server" : "world";
+        String separator = TAB.getInstance().getPlatform().isProxy() ? "server" : "world";
         Map<String, Map<String, Object>> perWorldSettings = oldConfig.getConfigurationSection("per-" + separator + "-settings");
         Map<String, Object> headerFooterMap = new LinkedHashMap<>();
         for (Map.Entry<String, Map<String, Object>> worldEntry : new LinkedHashMap<>(perWorldSettings).entrySet()) {
@@ -301,7 +300,7 @@ public class Converter {
         newConfig.set("mysql.username", "user");
         newConfig.set("mysql.password", "password");
 
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
+        if (TAB.getInstance().getPlatform().isProxy()) {
             newConfig.set("global-playerlist", oldConfig.getConfigurationSection("global-playerlist"));
             newConfig.set("global-playerlist.update-latency", false);
             newConfig.set("use-bukkit-permissions-manager", false);
@@ -314,7 +313,7 @@ public class Converter {
         groups.setValues(oldConfig.getConfigurationSection("Groups"));
         users.setValues(oldConfig.getConfigurationSection("Users"));
 
-        String separator = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ? "server" : "world";
+        String separator = TAB.getInstance().getPlatform().isProxy() ? "server" : "world";
         Map<String,Map<String,Object>> perWorldSettings = oldConfig.getConfigurationSection("per-" + separator + "-settings");
         Map<String,Object> groupMap = new LinkedHashMap<>();
         Map<String,Object> userMap = new LinkedHashMap<>();

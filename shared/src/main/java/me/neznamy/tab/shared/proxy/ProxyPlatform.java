@@ -121,6 +121,11 @@ public abstract class ProxyPlatform implements Platform {
         return ProtocolVersion.PROXY;
     }
 
+    @Override
+    public boolean isProxy() {
+        return true;
+    }
+
     /**
      * Handles incoming plugin message with tab's channel name
      *

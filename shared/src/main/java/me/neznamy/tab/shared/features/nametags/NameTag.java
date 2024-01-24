@@ -43,7 +43,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     // Key - Vanished player, Value = List of players who cannot see the player (UUIDs to prevent memory leak)
     private final WeakHashMap<TabPlayer, List<UUID>> vanishedPlayers = new WeakHashMap<>();
 
-    private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
+    private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() ||
             ReflectionUtils.classExists("de.gerrygames.viarewind.ViaRewind") ||
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
