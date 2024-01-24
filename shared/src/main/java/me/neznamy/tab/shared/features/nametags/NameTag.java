@@ -28,10 +28,9 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Getter private final String featureName = "NameTags";
     @Getter private final String refreshDisplayName = "Updating prefix/suffix";
     protected final boolean invisibleNameTags = config().getBoolean("scoreboard-teams.invisible-nametags", false);
-    private final boolean collisionRule = config().getBoolean("scoreboard-teams.enable-collision", true);
     private final boolean canSeeFriendlyInvisibles = config().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
     @Getter private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-    @Getter private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
+    @Getter private final CollisionManager collisionManager = new CollisionManager(this);
     @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
 
     private final Set<me.neznamy.tab.api.TabPlayer> hiddenNameTag = Collections.newSetFromMap(new WeakHashMap<>());
@@ -52,6 +51,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
         disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         if (!config().getBoolean("scoreboard-teams.anti-override", true))
             TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
     }
@@ -61,7 +61,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         // RedisSupport is instantiated after NameTags, so must be loaded after
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             hiddenNameTagFor.put(all, new ArrayList<>());

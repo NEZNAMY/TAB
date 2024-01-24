@@ -163,6 +163,8 @@ public class Condition {
      */
     public static Condition getCondition(String string) {
         if (string == null || string.isEmpty()) return null;
+        if (string.equals("true")) return TrueCondition.INSTANCE;
+        if (string.equals("false")) return FalseCondition.INSTANCE;
         if (registeredConditions.containsKey(string)) {
             return registeredConditions.get(string);
         } else {
