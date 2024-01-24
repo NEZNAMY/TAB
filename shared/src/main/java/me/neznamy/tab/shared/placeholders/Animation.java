@@ -38,12 +38,6 @@ public class Animation {
      */
     @Getter private final int refresh;
     
-    /** All nested placeholders used in all frames, preloading for
-     * better performance since they can be detected immediately and
-     * don't change at runtime.
-     */
-    @Getter private final String[] nestedPlaceholders;
-    
     /**
      * Constructs new instance with given arguments which are fixed if necessary, such as when
      * refresh is not divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
@@ -63,13 +57,13 @@ public class Animation {
         messages = TAB.getInstance().getConfigHelper().startup().fixAnimationFrames(name, list).toArray(new String[0]);
         this.interval = TAB.getInstance().getConfigHelper().startup().fixAnimationInterval(name, interval);
         int refresh = this.interval;
-        List<String> nestedPlaceholders0 = new ArrayList<>();
+        List<String> nestedPlaceholders = new ArrayList<>();
         for (int i=0; i<messages.length; i++) {
             messages[i] = RGBUtils.getInstance().applyCleanGradients(messages[i]);
             messages[i] = EnumChatFormat.color(messages[i]);
-            nestedPlaceholders0.addAll(placeholderManager.detectPlaceholders(messages[i]));
+            nestedPlaceholders.addAll(placeholderManager.detectPlaceholders(messages[i]));
         }
-        for (String placeholder : nestedPlaceholders0) {
+        for (String placeholder : nestedPlaceholders) {
             int localRefresh;
             if (placeholder.startsWith("%animation:")) {
                 //nested animations may not be loaded into the system yet due to load order, manually getting the refresh interval
@@ -84,8 +78,6 @@ public class Animation {
             }
         }
         this.refresh = refresh;
-        placeholderManager.addUsedPlaceholders(nestedPlaceholders0);
-        nestedPlaceholders = nestedPlaceholders0.toArray(new String[0]);
     }
 
     /**

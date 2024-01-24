@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.placeholders;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
-import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
@@ -104,16 +103,13 @@ public class UniversalPlaceholderRegistry {
             manager.registerServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, -1, () -> "");
         }
         for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
-            Animation a = new Animation((PlaceholderManagerImpl) manager, s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"),
-                    TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
-            List<String> nested = Arrays.asList(a.getNestedPlaceholders());
-            ((PlaceholderManagerImpl) manager).registerPlaceholder(new PlayerPlaceholderImpl(TabConstants.Placeholder.animation(a.getName()), a.getRefresh(), p -> a.getMessage()) {
-
-                @Override
-                public List<String> getNestedPlaceholders(@NonNull String output) {
-                    return nested;
-                }
-            });
+            Animation a = new Animation(
+                    (PlaceholderManagerImpl) manager,
+                    s.toString(),
+                    TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"),
+                    TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0)
+            );
+            manager.registerPlayerPlaceholder(TabConstants.Placeholder.animation(a.getName()), a.getRefresh(), p -> a.getMessage());
         }
         Condition.clearConditions();
         Map<String, Map<Object, Object>> conditions = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("conditions");
