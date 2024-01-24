@@ -109,8 +109,8 @@ public class PlaceholderReplacementPattern {
                 //supporting placeholders with fancy output using "," every 3 digits
                 String cleanValue = output.contains(",") ? output.replace(",", "") : output;
                 float value = Float.parseFloat(cleanValue);
-                for (float[] interval : numberIntervals.keySet()) {
-                    if (interval[0] <= value && value <= interval[1]) return numberIntervals.get(interval);
+                for (Entry<float[], String> entry : numberIntervals.entrySet()) {
+                    if (entry.getKey()[0] <= value && value <= entry.getKey()[1]) return entry.getValue();
                 }
             } catch (NumberFormatException e) {
                 //placeholder output is not a number
