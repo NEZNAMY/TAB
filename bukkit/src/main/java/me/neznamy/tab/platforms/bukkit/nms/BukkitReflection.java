@@ -1,6 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -15,16 +18,8 @@ public class BukkitReflection {
     /** CraftBukkit package */
     private static final String CRAFTBUKKIT_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
 
-    /** Server's NMS package */
-    @Getter
-    private static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-
-    /** Server's minor version */
-    @Getter
-    private static final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
-
-    /** Server version since which minecraft code uses mojang packaging */
-    private static final int MOJANG_PACKAGING_VERSION_START = 17;
+    /** Server version data */
+    private static final ServerVersion serverVersion = detectServerVersion();
 
     /** Flag determining whether the server version is at least 1.19.3 or not */
     @Getter
@@ -46,6 +41,34 @@ public class BukkitReflection {
     @Getter
     private static final boolean is1_20_5Plus = false; // Hopefully something will be added
 
+    private static ServerVersion detectServerVersion() {
+        FunctionWithException<String, Class<?>> classFunction = name -> Class.forName("net.minecraft." + name);
+        String[] array = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+        int minorVersion;
+        if (array.length > 3) {
+            // Normal packaging
+            String serverPackage = array[3];
+            minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
+            if (minorVersion < 17) {
+                ClassLoader loader = BukkitReflection.class.getClassLoader();
+                classFunction = name -> loader.loadClass("net.minecraft.server." + serverPackage + "." + name);
+            }
+        } else {
+            // Paper without CB relocation
+            minorVersion = Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]);
+        }
+        return new ServerVersion(classFunction, minorVersion);
+    }
+
+    /**
+     * Returns server's minor version, such as 20 for 1.20.4
+     *
+     * @return  server's minor version
+     */
+    public static int getMinorVersion() {
+        return serverVersion.getMinorVersion();
+    }
+
     /**
      * Returns class with given potential names in same order. For 1.17+ it takes packaged class names
      * without "net.minecraft." prefix, for <1.17 it takes class name only.
@@ -56,15 +79,11 @@ public class BukkitReflection {
      * @throws  ClassNotFoundException
      *          if class does not exist
      */
+    @SneakyThrows
     public static Class<?> getClass(@NotNull String... names) throws ClassNotFoundException {
-        ClassLoader loader = BukkitReflection.class.getClassLoader();
         for (String name : names) {
             try {
-                if (minorVersion >= MOJANG_PACKAGING_VERSION_START) {
-                    return Class.forName("net.minecraft." + name);
-                } else {
-                    return loader.loadClass("net.minecraft.server." + serverPackage + "." + name);
-                }
+                return serverVersion.getClass.apply(name);
             } catch (ClassNotFoundException | NullPointerException ignored) {
                 // not the first class name in array
             }
@@ -83,5 +102,16 @@ public class BukkitReflection {
      */
     public static Class<?> getBukkitClass(@NotNull String name) throws ClassNotFoundException {
         return Class.forName(CRAFTBUKKIT_PACKAGE + "." + name);
+    }
+
+    /**
+     * Class with server version information.
+     */
+    @RequiredArgsConstructor
+    @Getter
+    private static class ServerVersion {
+
+        private final FunctionWithException<String, Class<?>> getClass;
+        private final int minorVersion;
     }
 }

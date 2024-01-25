@@ -235,9 +235,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public String getServerVersionInfo() {
-        return "[Bukkit] " + Bukkit.getName() + " - " +
-                Bukkit.getBukkitVersion().split("-")[0] +
-                " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")";
+        return "[Bukkit] " + Bukkit.getName() + " - " + Bukkit.getBukkitVersion().split("-")[0];
     }
 
     @Override
