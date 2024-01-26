@@ -112,6 +112,9 @@ public class RuntimeErrorPrinter {
      *          Player with the group
      */
     public void groupNotInSortingList(@NotNull Collection<String> list, @NotNull String group, @NotNull TabPlayer player) {
+        // Ignore if groups are taken from bridge and it did not respond yet
+        if (player instanceof ProxyTabPlayer && !((ProxyTabPlayer)player).isBridgeConnected()) return;
+
         error(String.format("Player %s's group (%s) is not in sorting list! Sorting list: %s. Player will be sorted on the bottom.",
                 player.getName(), group, String.join(",", list)));
     }
