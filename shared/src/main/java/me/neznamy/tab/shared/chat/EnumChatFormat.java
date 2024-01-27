@@ -27,12 +27,12 @@ public enum EnumChatFormat {
     LIGHT_PURPLE('d', 0xFF55FF),
     YELLOW('e', 0xFFFF55),
     WHITE('f', 0xFFFFFF),
-    OBFUSCATED('k'),
-    BOLD('l'),
-    STRIKETHROUGH('m'),
-    UNDERLINE('n'),
-    ITALIC('o'),
-    RESET('r');
+    OBFUSCATED('k', 0),
+    BOLD('l', 0),
+    STRIKETHROUGH('m', 0),
+    UNDERLINE('n', 0),
+    ITALIC('o', 0),
+    RESET('r', 0);
 
     /** Creating a constant to avoid memory allocations on each request */
     public static final EnumChatFormat[] VALUES = values();
@@ -56,7 +56,7 @@ public enum EnumChatFormat {
     private final short blue;
 
     /** Color as a hex code, 0 for magic codes */
-    private final int hexCode;
+    private final int rgb;
 
     /** Color symbol followed by constant's character */
     private final String format;
@@ -66,31 +66,16 @@ public enum EnumChatFormat {
      *
      * @param   character
      *          character which the color goes by
-     * @param   hexCode
+     * @param   rgb
      *          hex code of the color
      */
-    EnumChatFormat(char character, int hexCode) {
+    EnumChatFormat(char character, int rgb) {
         this.character = character;
-        this.hexCode = hexCode;
+        this.rgb = rgb;
         format = String.valueOf(COLOR_CHAR) + character;
-        red = (short) ((hexCode >> 16) & 0xFF);
-        green = (short) ((hexCode >> 8) & 0xFF);
-        blue = (short) (hexCode & 0xFF);
-    }
-
-    /**
-     * Constructs new magic code instance with given character
-     *
-     * @param   character
-     *          character representing the magic code
-     */
-    EnumChatFormat(char character) {
-        this.character = character;
-        format = String.valueOf(COLOR_CHAR) + character;
-        red = 0;
-        green = 0;
-        blue = 0;
-        hexCode = 0;
+        red = (short) ((rgb >> 16) & 0xFF);
+        green = (short) ((rgb >> 8) & 0xFF);
+        blue = (short) (rgb & 0xFF);
     }
 
     /**
@@ -131,17 +116,14 @@ public enum EnumChatFormat {
     /**
      * Returns enum value with exact red, green and blue values or null if no match was found
      *
-     * @param   red
-     *          exact red value
-     * @param   green
-     *          exact green value
-     * @param   blue
-     *          exact blue value
+     * @param   rgb
+     *          RGB code
      * @return  enum value or null if no such combination exists
      */
-    public static @Nullable EnumChatFormat fromRGBExact(int red, int green, int blue) {
+    @Nullable
+    public static EnumChatFormat fromRGBExact(int rgb) {
         for (EnumChatFormat format : VALUES) {
-            if (format.red == red && format.green == green && format.blue == blue) return format;
+            if (format.rgb == rgb) return format;
         }
         return null;
     }

@@ -55,7 +55,7 @@ public class AdventureHook {
             if (clientVersion.supportsRGB()) {
                 color = TextColor.color(modifier.getColor().getRgb());
             } else {
-                color = TextColor.color(modifier.getColor().getLegacyColor().getHexCode());
+                color = TextColor.color(modifier.getColor().getLegacyColor().getRgb());
             }
         }
         Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
