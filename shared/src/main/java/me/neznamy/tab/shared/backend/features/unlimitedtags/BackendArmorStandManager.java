@@ -204,6 +204,12 @@ public class BackendArmorStandManager implements ArmorStandManager {
         if (fix) fixArmorStandHeights();
     }
 
+    public void updateMetadata() {
+        for (BackendTabPlayer viewer : nearbyPlayers) {
+            updateMetadata(viewer);
+        }
+    }
+
     public void updateMetadata(@NotNull BackendTabPlayer viewer) {
         for (ArmorStand a : armorStandArray) {
             viewer.getEntityView().updateEntityMetadata(a.entityId, a.createDataWatcher(a.getProperty().getFormat(viewer), viewer));
