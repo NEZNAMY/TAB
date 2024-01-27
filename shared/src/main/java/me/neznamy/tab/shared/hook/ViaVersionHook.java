@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.hook;
 
 import com.viaversion.viaversion.api.Via;
 import lombok.Getter;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -48,16 +47,7 @@ public class ViaVersionHook {
             // Player got instantly disconnected with a packet error
             return serverVersion;
         }
-        ProtocolVersion protocol = ProtocolVersion.fromNetworkId(version);
-        if (protocol == ProtocolVersion.UNKNOWN) {
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(String.format(
-                    "ViaVersion returned unknown protocol version %d for player %s. " +
-                            "Latest version recognized by this plugin version is %d (%s). " +
-                            "Did a new MC version come out without you updating the plugin? This may result in plugin not working correctly for them.",
-                    version, playerName, ProtocolVersion.LATEST_KNOWN_VERSION.getNetworkId(), ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName())));
-        } else {
-            TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
-        }
+        TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
         return version;
     }
 
