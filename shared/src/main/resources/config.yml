@@ -193,9 +193,6 @@ placeholder-output-replacements:
   "%essentials_vanished%":
     "yes": "&7| Vanished"
     "no": ""
-  # bukkit-only placeholders used in default groups.yml, doing this as a fix
-  "%essentials_nickname%":
-    "%essentials_nickname%": "%player%" # placeholder did not parse correctly, show real name instead
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders
 conditions:
