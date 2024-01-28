@@ -64,7 +64,7 @@ public class RuntimeErrorPrinter {
         if (player instanceof ProxyTabPlayer && !((ProxyTabPlayer)player).isBridgeConnected()) return;
 
         error(String.format("Placeholder %s used in sorting type %s returned \"%s\" for player %s, which is not a valid number.",
-                placeholder, type, output, player.getName()));
+                placeholder, type.getDisplayName(), output, player.getName()));
     }
 
     /**
