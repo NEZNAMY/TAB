@@ -64,7 +64,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line, Refresh
         initializeText(text);
         this.parent = parent;
         this.lineNumber = lineNumber;
-        teamName = "TAB-SB-TM-" + lineNumber;
+        teamName = "TAB-Sidebar-" + lineNumber;
         playerName = getPlayerName(lineNumber);
         scoreRefresher = new ScoreRefresher(this, numberFormat);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardScore(parent.getName(), lineNumber), scoreRefresher);
