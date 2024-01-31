@@ -89,6 +89,7 @@ public class Configs {
         }
         groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
         users = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
+        TAB.getInstance().getConfigHelper().hint().checkForRedundantElseReplacement(config.getConfigurationSection("placeholder-output-replacements"));
     }
 
     /**

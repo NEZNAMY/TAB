@@ -73,6 +73,26 @@ public class HintPrinter {
     }
 
     /**
+     * Prints a hint when placeholder replacement is configured to show the placeholder itself
+     * in "else" value, which is already the default behavior.
+     *
+     * @param   replacementMap
+     *          Placeholder output replacement map from config
+     */
+    public void checkForRedundantElseReplacement(@NotNull Map<Object, Object> replacementMap) {
+        for (Map.Entry<Object, Object> entry : replacementMap.entrySet()) {
+            String placeholder = String.valueOf(entry.getKey());
+            if (!(entry.getValue() instanceof Map)) continue;
+            for (Map.Entry<?, ?> pattern : ((Map<?, ?>) entry.getValue()).entrySet()) {
+                if (pattern.getKey().equals("else") && pattern.getValue().equals(placeholder)) {
+                    hint(String.format("Placeholder %s has configured \"else -> %s\" replacement pattern, but this is already the default behavior " +
+                            "and therefore this pattern can be removed.", placeholder, placeholder));
+                }
+            }
+        }
+    }
+
+    /**
      * Logs the message with "Hint" prefix.
      *
      * @param   message
