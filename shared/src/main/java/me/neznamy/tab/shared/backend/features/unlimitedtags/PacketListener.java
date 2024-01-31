@@ -84,15 +84,19 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
         if (pl != null) {
             //player moved
             if (nameTagX.isPlayerDisabled(pl) || !pl.isLoaded()) return;
+            BackendArmorStandManager asm = nameTagX.getArmorStandManager(pl);
             TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_PLAYER_MOVE,
-                    () -> nameTagX.getArmorStandManager(pl).teleport(receiver));
+                    () -> asm.teleport(receiver));
         } else {
             //a vehicle carrying something moved
             for (Integer entity : nameTagX.getVehicleManager().getVehicles().getOrDefault(entityId, Collections.emptyList())) {
                 TabPlayer passenger = entityIdMap.get(entity);
-                if (passenger != null && nameTagX.getArmorStandManager(passenger) != null) {
-                    TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER,
-                            () -> nameTagX.getArmorStandManager(passenger).teleport(receiver));
+                if (passenger != null) {
+                    BackendArmorStandManager asm = nameTagX.getArmorStandManager(passenger);
+                    if (asm != null) {
+                        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER,
+                                () -> asm.teleport(receiver));
+                    }
                 }
             }
         }
