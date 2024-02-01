@@ -191,10 +191,10 @@ public class Loader_1_20_4 {
             try {
                 // 1.20.5+
                 Constructor<ClientboundSetScorePacket> constructor = ClientboundSetScorePacket.class.getConstructor(
-                        String.class, String.class, int.class, Component.class, Optional.class
+                        String.class, String.class, int.class, Optional.class, Optional.class
                 );
                 FabricMultiVersion.setScore = (objective, scoreHolder, score, displayName, numberFormat) ->
-                        constructor.newInstance(scoreHolder, objective, score, displayName,
+                        constructor.newInstance(scoreHolder, objective, score, Optional.ofNullable(displayName),
                                 Optional.ofNullable(numberFormat == null ? null : new FixedFormat(numberFormat)));
             } catch (NoSuchMethodException e) {
                 // 1.20.3 / 1.20.4
