@@ -35,15 +35,19 @@ public class ScorePacketData {
                 "Packet207SetScoreboardScore" // 1.5 - 1.6.4
         );
         if (BukkitReflection.is1_20_3Plus()) {
-            if (BukkitReflection.is1_20_5Plus()) {
-                Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, PacketScoreboard.Component, Optional.class);
-                setScore = (objective, holder, score, displayName, numberFormat) ->
-                        newSetScore.newInstance(holder, objective, score, displayName, Optional.ofNullable(numberFormat));
-            } else {
+            QuintFunction<String, String, Integer, Object, Object, Object> setScore0;
+            try {
+                // 1.20.5+
+                Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, Optional.class, Optional.class);
+                setScore0 = (objective, holder, score, displayName, numberFormat) ->
+                        newSetScore.newInstance(holder, objective, score, Optional.ofNullable(displayName), Optional.ofNullable(numberFormat));
+            } catch (ReflectiveOperationException e) {
+                // 1.20.3 - 1.20.4
                 Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, PacketScoreboard.Component, PacketScoreboard.NumberFormat);
-                setScore = (objective, holder, score, displayName, numberFormat) ->
+                setScore0 = (objective, holder, score, displayName, numberFormat) ->
                         newSetScore.newInstance(holder, objective, score, displayName, numberFormat);
             }
+            setScore = setScore0;
             Constructor<?> newResetScore = BukkitReflection.getClass("network.protocol.game.ClientboundResetScorePacket").getConstructor(String.class, String.class);
             removeScore = (objective, holder) -> newResetScore.newInstance(holder, objective);
         } else if (BukkitReflection.getMinorVersion() >= 13) {

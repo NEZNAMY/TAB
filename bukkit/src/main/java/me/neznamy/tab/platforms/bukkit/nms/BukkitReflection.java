@@ -37,10 +37,6 @@ public class BukkitReflection {
     @Getter
     private static final boolean is1_20_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundResetScorePacket");
 
-    /** Flag determining whether the server version is at least 1.20.5 or not */
-    @Getter
-    private static final boolean is1_20_5Plus = false; // Hopefully something will be added
-
     private static ServerVersion detectServerVersion() {
         FunctionWithException<String, Class<?>> classFunction = name -> Class.forName("net.minecraft." + name);
         String[] array = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
