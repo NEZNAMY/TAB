@@ -63,7 +63,16 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         }
     }
 
-    public abstract boolean isLogin(@NotNull Object packet);
+    /**
+     * Returns {@code true} if packet is Login packet, {@code false} if not.
+     *
+     * @param   packet
+     *          Packet to check
+     * @return  {@code true} if packet is Login packet, {@code false} if not
+     */
+    public boolean isLogin(@NotNull Object packet) {
+        return false; // Default implementation
+    }
 
     @RequiredArgsConstructor
     public class TabChannelDuplexHandler extends ChannelDuplexHandler {

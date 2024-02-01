@@ -72,9 +72,4 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     protected Channel getChannel(@NotNull TabPlayer player) {
         return getChannel.apply(player);
     }
-
-    @Override
-    public boolean isLogin(@NotNull Object packet) {
-        return false;
-    }
 }

@@ -24,9 +24,4 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     protected Channel getChannel(@NotNull TabPlayer player) {
         return FabricMultiVersion.getChannel.apply(((FabricTabPlayer)player).getPlayer());
     }
-
-    @Override
-    public boolean isLogin(@NotNull Object packet) {
-        return false;
-    }
 }
