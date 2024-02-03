@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public enum ProtocolVersion {
 
-    UNKNOWN ("Unknown"),
+    UNKNOWN,
     V1_20_4 (765),
     V1_20_3 (765),
     V1_20_2 (764),
@@ -103,15 +103,12 @@ public enum ProtocolVersion {
     }
 
     /**
-     * Constructs new instance with given friendly name
-     *
-     * @param   friendlyName
-     *          friendly name to display
+     * Constructs new instance.
      */
-    ProtocolVersion(@NotNull String friendlyName) {
+    ProtocolVersion() {
         networkId = 999;
-        minorVersion = 20;
-        this.friendlyName = friendlyName;
+        minorVersion = 99;
+        friendlyName = "Unknown";
     }
 
     /**

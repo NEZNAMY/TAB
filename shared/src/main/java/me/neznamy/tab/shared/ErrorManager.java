@@ -116,13 +116,13 @@ public class ErrorManager {
             try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))) {
                 if (message != null) {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
-                        buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + EnumChatFormat.decolor(message) + System.getProperty("line.separator"));
+                        buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + EnumChatFormat.decolor(message) + System.lineSeparator());
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
                         TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(message));
                 }
                 for (String line : error) {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
-                        buf.write(dateFormat.format(new Date()) + line + System.getProperty("line.separator"));
+                        buf.write(dateFormat.format(new Date()) + line + System.lineSeparator());
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
                         TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(line));
                 }
