@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,7 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     protected void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                             @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                             @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         // Do nothing
     }
 
@@ -42,7 +42,7 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     protected void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                      @Nullable IChatBaseComponent numberFormat) {
+                                      @Nullable TabComponent numberFormat) {
         // Do nothing
     }
 
@@ -53,7 +53,7 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     protected void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                    @Nullable IChatBaseComponent numberFormat) {
+                                    @Nullable TabComponent numberFormat) {
         // Do nothing
     }
 

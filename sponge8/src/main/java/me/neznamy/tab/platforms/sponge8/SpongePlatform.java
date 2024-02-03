@@ -6,7 +6,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -74,13 +74,13 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
-    public void logInfo(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull TabComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(
                 AdventureHook.toAdventureComponent(message, serverVersion)));
     }
 
     @Override
-    public void logWarn(@NotNull IChatBaseComponent message) {
+    public void logWarn(@NotNull TabComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(
                 AdventureHook.toAdventureComponent(message, serverVersion))); // Sponge console does not support colors
     }

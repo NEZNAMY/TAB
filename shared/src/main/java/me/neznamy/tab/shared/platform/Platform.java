@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -99,7 +99,7 @@ public interface Platform {
      * @param   message
      *          Message to send
      */
-    void logInfo(@NotNull IChatBaseComponent message);
+    void logInfo(@NotNull TabComponent message);
 
     /**
      * Sends a red console message with TAB's prefix using logger with warn type if available,
@@ -108,7 +108,7 @@ public interface Platform {
      * @param   message
      *          Message to send
      */
-    void logWarn(@NotNull IChatBaseComponent message);
+    void logWarn(@NotNull TabComponent message);
 
     /**
      * Returns information about server version, which is displayed in debug command

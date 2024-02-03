@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -58,7 +58,7 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
      * @return  New number format based on current placeholder results
      */
     @Nullable
-    public IChatBaseComponent getNumberFormat(@NotNull TabPlayer player) {
-        return IChatBaseComponent.emptyToNullOptimizedComponent(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());
+    public TabComponent getNumberFormat(@NotNull TabPlayer player) {
+        return TabComponent.optimized(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());
     }
 }

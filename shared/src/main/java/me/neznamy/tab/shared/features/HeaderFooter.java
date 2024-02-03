@@ -3,8 +3,9 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
@@ -99,7 +100,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
-            p.getTabList().setPlayerListHeaderFooter(new IChatBaseComponent(""), new IChatBaseComponent(""));
+            p.getTabList().setPlayerListHeaderFooter(new SimpleComponent(""), new SimpleComponent(""));
         } else {
             sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get());
         }
@@ -137,7 +138,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     private void sendHeaderFooter(TabPlayer player, String header, String footer) {
         if (disableChecker.isDisabledPlayer(player)) return;
-        player.getTabList().setPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(header), IChatBaseComponent.optimizedComponent(footer));
+        player.getTabList().setPlayerListHeaderFooter(TabComponent.optimized(header), TabComponent.optimized(footer));
     }
 
     @Override

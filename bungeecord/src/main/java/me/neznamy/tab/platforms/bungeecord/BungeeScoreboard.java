@@ -5,7 +5,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -49,7 +49,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                   @Nullable IChatBaseComponent numberFormat) {
+                                   @Nullable TabComponent numberFormat) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 either(title),
@@ -73,7 +73,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                 @Nullable IChatBaseComponent numberFormat) {
+                                 @Nullable TabComponent numberFormat) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 either(title),
@@ -127,7 +127,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         player.sendPacket(new ScoreboardScore(
                 scoreHolder,
                 (byte) ScoreAction.CHANGE,
@@ -150,7 +150,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     private Either<String, BaseComponent> either(@NotNull String text) {
         if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
-            return Either.right(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion()));
+            return Either.right(player.getPlatform().toComponent(TabComponent.optimized(text), player.getVersion()));
         } else {
             return Either.left(text);
         }

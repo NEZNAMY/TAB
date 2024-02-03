@@ -6,9 +6,7 @@ import me.neznamy.tab.platforms.bungeecord.hook.BungeePremiumVanishHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.*;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
@@ -29,7 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BungeeCord implementation of Platform
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 public class BungeePlatform extends ProxyPlatform {
 
     /** Component cache for better performance */
-    private final ComponentCache<IChatBaseComponent, BaseComponent> cache = new ComponentCache<>(1000, this::toComponent0);
+    private final ComponentCache<TabComponent, BaseComponent> cache = new ComponentCache<>(1000, this::toComponent0);
 
     @NotNull
     private final BungeeTAB plugin;
@@ -62,7 +61,7 @@ public class BungeePlatform extends ProxyPlatform {
         try {
             ProxyConfig config = ProxyServer.getInstance().getConfig();
             if ((boolean) config.getClass().getMethod("isDisableTabListRewrite").invoke(config)) {
-                logWarn(new IChatBaseComponent("Waterfall's \"disable_tab_list_rewrite: true\" option may cause " +
+                logWarn(new SimpleComponent("Waterfall's \"disable_tab_list_rewrite: true\" option may cause " +
                         "the plugin to not work correctly. Disable it to avoid issues."));
             }
         } catch (Exception e) {
@@ -84,13 +83,13 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
-    public void logInfo(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull TabComponent message) {
         plugin.getLogger().info(message.toLegacyText());
     }
 
     @Override
-    public void logWarn(@NotNull IChatBaseComponent message) {
-        plugin.getLogger().warning(EnumChatFormat.RED.getFormat() + message.toLegacyText());
+    public void logWarn(@NotNull TabComponent message) {
+        plugin.getLogger().warning(EnumChatFormat.RED + message.toLegacyText());
     }
 
     @Override
@@ -142,7 +141,7 @@ public class BungeePlatform extends ProxyPlatform {
      *          Game version to convert component for
      * @return  Converted component
      */
-    public BaseComponent toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
+    public BaseComponent toComponent(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
         return cache.get(component, version);
     }
 
@@ -155,9 +154,11 @@ public class BungeePlatform extends ProxyPlatform {
      *          Game version to convert component for
      * @return  Converted component
      */
-    private BaseComponent toComponent0(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
-        TextComponent textComponent = new TextComponent(component.getText());
-        ChatModifier modifier = component.getModifier();
+    private BaseComponent toComponent0(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
+        if (component instanceof SimpleComponent) return new TextComponent(component.toLegacyText());
+        StructuredComponent iComponent = (StructuredComponent) component;
+        TextComponent textComponent = new TextComponent(iComponent.getText());
+        ChatModifier modifier = iComponent.getModifier();
         if (modifier.getColor() != null) textComponent.setColor(ChatColor.of(
                 modifier.getColor().toString(version.supportsRGB())));
 
@@ -176,8 +177,14 @@ public class BungeePlatform extends ProxyPlatform {
             ));
         }
 
-        if (!component.getExtra().isEmpty()) textComponent.setExtra(
-                component.getExtra().stream().map(c -> toComponent0(c, version)).collect(Collectors.toList()));
+        if (!iComponent.getExtra().isEmpty()) {
+            List<BaseComponent> list = new ArrayList<>();
+            for (StructuredComponent extra : iComponent.getExtra()) {
+                list.add(toComponent0(extra, version));
+            }
+            textComponent.setExtra(list);
+        }
+
         return textComponent;
     }
 }

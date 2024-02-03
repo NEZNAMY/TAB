@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.platform;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +55,7 @@ public interface TabList {
      * @param   displayName
      *          New display name
      */
-    void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName);
+    void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName);
 
     /**
      * Updates latency of specified entry.
@@ -93,7 +93,7 @@ public interface TabList {
      * @param   footer
      *          Footer to use
      */
-    void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer);
+    void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer);
 
     /**
      * Checks if all entries have display names as configured and if not,
@@ -174,7 +174,7 @@ public interface TabList {
          * Display name displayed in TabList. Using {@code null} results in no display name
          * and scoreboard team prefix/suffix being visible in TabList instead.
          */
-        @Nullable private IChatBaseComponent displayName;
+        @Nullable private TabComponent displayName;
 
         /**
          * Constructs new instance with given parameter.
@@ -195,7 +195,7 @@ public interface TabList {
          *          Entry display name
          * @return  Entry with given parameters
          */
-        public static Entry displayName(@NotNull UUID id, @Nullable IChatBaseComponent displayName) {
+        public static Entry displayName(@NotNull UUID id, @Nullable TabComponent displayName) {
             return new Entry(id, "", null, 0, 0, displayName);
         }
 

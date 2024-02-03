@@ -6,7 +6,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,7 +57,7 @@ public abstract class TabListBase implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
         if (HeaderFooter.getInstance() != null) HeaderFooter.getInstance().set(player, header, footer);
     }
 

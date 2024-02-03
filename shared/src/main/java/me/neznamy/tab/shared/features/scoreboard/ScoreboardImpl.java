@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.scoreboard.Line;
@@ -145,7 +145,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 p.getProperty(titleProperty).updateAndGet(),
                 Scoreboard.HealthDisplay.INTEGER,
-                new IChatBaseComponent("")
+                new SimpleComponent("")
         );
         p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
@@ -190,7 +190,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 refreshed.getProperty(titleProperty).updateAndGet(),
                 Scoreboard.HealthDisplay.INTEGER,
-                new IChatBaseComponent("")
+                new SimpleComponent("")
         );
     }
 

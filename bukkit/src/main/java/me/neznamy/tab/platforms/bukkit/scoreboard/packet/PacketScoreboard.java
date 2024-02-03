@@ -7,7 +7,7 @@ import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -57,7 +57,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static PacketSender packetSender;
 
     private static Method ChatSerializer_DESERIALIZE;
-    private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
+    private static final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
     static {
@@ -135,7 +135,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                   @Nullable IChatBaseComponent numberFormat) {
+                                   @Nullable TabComponent numberFormat) {
         packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.REGISTER, objectiveName, title, display, numberFormat));
     }
 
@@ -146,13 +146,13 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                 @Nullable IChatBaseComponent numberFormat) {
+                                 @Nullable TabComponent numberFormat) {
         packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UPDATE, objectiveName, title, display, numberFormat));
     }
 
     @SneakyThrows
     private Object newObjectivePacket(int action, @NotNull String objectiveName, @NotNull String title, int display,
-                                      @Nullable IChatBaseComponent numberFormat) {
+                                      @Nullable TabComponent numberFormat) {
         Object packet = newObjectivePacket.newInstance(newObjective(objectiveName, title, display, numberFormat), action);
         if (BukkitReflection.getMinorVersion() >= 8 && BukkitReflection.getMinorVersion() < 13) {
             Objective_RENDER_TYPE.set(packet, healthDisplays[display]);
@@ -183,7 +183,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         packetSender.sendPacket(player.getPlayer(), scorePacketData.setScore(objective, scoreHolder, score, toComponent(displayName), toFixedFormat(numberFormat)));
     }
 
@@ -239,7 +239,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
      */
     @SneakyThrows
     public Object newObjective(@NotNull String objectiveName, @NotNull String title, int renderType,
-                               @Nullable IChatBaseComponent numberFormat) {
+                               @Nullable TabComponent numberFormat) {
         if (BukkitReflection.is1_20_3Plus()) {
             // 1.20.3+
             return newScoreboardObjective.newInstance(
@@ -270,18 +270,18 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Nullable
     private Object toComponent(@NotNull String text) {
-        return toComponent(IChatBaseComponent.optimizedComponent(text));
+        return toComponent(TabComponent.optimized(text));
     }
 
     @Nullable
-    private Object toComponent(@Nullable IChatBaseComponent component) {
+    private Object toComponent(@Nullable TabComponent component) {
         if (component == null || BukkitReflection.getMinorVersion() < 8) return null;
         return componentCache.get(component, player.getVersion());
     }
 
     @Nullable
     @SneakyThrows
-    private Object toFixedFormat(@Nullable IChatBaseComponent numberFormat) {
+    private Object toFixedFormat(@Nullable TabComponent numberFormat) {
         if (numberFormat == null || newFixedFormat == null) return null;
         return newFixedFormat.newInstance(toComponent(numberFormat));
     }

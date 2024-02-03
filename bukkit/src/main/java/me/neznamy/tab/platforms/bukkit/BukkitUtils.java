@@ -58,7 +58,7 @@ public class BukkitUtils {
     public static void compatibilityError(@NotNull Exception exception, @NotNull String failedCheck,
                                           @Nullable String fallback, @NotNull String... missingFeatures) {
         StringBuilder sb = new StringBuilder();
-        sb.append(EnumChatFormat.RED.getFormat());
+        sb.append(EnumChatFormat.RED);
         sb.append("[TAB] Failed to initialize minecraft fields for ");
         sb.append(failedCheck);
         sb.append(" due to a compatibility error. ");
@@ -81,7 +81,7 @@ public class BukkitUtils {
      */
     public static void sendCompatibilityMessage() {
         if (!compatibilityIssue) return;
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] Please update the plugin to " +
+        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED + "[TAB] Please update the plugin to " +
                 "a version with native support for your server version for optimal experience. This plugin version " +
                 "was made for " + ProtocolVersion.V1_5.getFriendlyName() + " - " + ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName() + ".");
     }

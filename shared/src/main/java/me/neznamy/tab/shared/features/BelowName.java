@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -161,7 +161,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                 OBJECTIVE_NAME,
                 player.getProperty(TEXT_PROPERTY).updateAndGet(),
                 Scoreboard.HealthDisplay.INTEGER,
-                IChatBaseComponent.emptyToNullOptimizedComponent(player.getProperty(DEFAULT_FORMAT_PROPERTY).updateAndGet())
+                TabComponent.optimized(player.getProperty(DEFAULT_FORMAT_PROPERTY).updateAndGet())
         );
         player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
     }
@@ -185,7 +185,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                 scoreHolder.getNickname(),
                 value,
                 null, // Unused by this objective slot
-                IChatBaseComponent.emptyToNullOptimizedComponent(fancyDisplay)
+                TabComponent.optimized(fancyDisplay)
         );
     }
 
@@ -203,7 +203,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                     OBJECTIVE_NAME,
                     refreshed.getProperty(feature.TEXT_PROPERTY).updateAndGet(),
                     Scoreboard.HealthDisplay.INTEGER,
-                    IChatBaseComponent.emptyToNullOptimizedComponent(refreshed.getProperty(feature.DEFAULT_FORMAT_PROPERTY).updateAndGet())
+                    TabComponent.optimized(refreshed.getProperty(feature.DEFAULT_FORMAT_PROPERTY).updateAndGet())
             );
         }
     }

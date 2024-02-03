@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +38,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
             p.getTabList().removeEntry(id);
             p.getTabList().addEntry(createEntry(p));
         } else {
-            p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).updateAndGet()));
+            p.getTabList().updateDisplayName(id, TabComponent.optimized(p.getProperty(propertyName).updateAndGet()));
         }
     }
 
@@ -51,7 +51,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
                 manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).updateAndGet()),
                 ping,
                 0,
-                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).updateAndGet())
+                TabComponent.optimized(viewer.getProperty(propertyName).updateAndGet())
         );
     }
 

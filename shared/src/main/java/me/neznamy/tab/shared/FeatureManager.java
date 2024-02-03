@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.*;
@@ -119,12 +119,12 @@ public class FeatureManager {
      *          UUID of the player
      * @return  New display name or {@code null} if it should not be changed
      */
-    public IChatBaseComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
-        IChatBaseComponent newDisplayName = null;
+    public TabComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
+        TabComponent newDisplayName = null;
         for (TabFeature f : values) {
             if (!(f instanceof DisplayNameListener)) continue;
             long time = System.nanoTime();
-            IChatBaseComponent value = ((DisplayNameListener) f).onDisplayNameChange(packetReceiver, id);
+            TabComponent value = ((DisplayNameListener) f).onDisplayNameChange(packetReceiver, id);
             if (value != null) newDisplayName = value;
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime() - time);
         }

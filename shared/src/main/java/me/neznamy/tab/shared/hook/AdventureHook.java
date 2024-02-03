@@ -2,7 +2,9 @@ package me.neznamy.tab.shared.hook;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.StructuredComponent;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -11,9 +13,10 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Class for Adventure component conversion.
@@ -21,7 +24,7 @@ import java.util.stream.Collectors;
 public class AdventureHook {
 
     /** Component cache for adventure components */
-    private static final ComponentCache<IChatBaseComponent, Component> cache =
+    private static final ComponentCache<TabComponent, Component> cache =
             new ComponentCache<>(1000, AdventureHook::toAdventureComponent0);
 
     /**
@@ -34,7 +37,7 @@ public class AdventureHook {
      * @return  Adventure component from this component.
      */
     @NotNull
-    public static Component toAdventureComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
+    public static Component toAdventureComponent(@NotNull TabComponent component, @NotNull ProtocolVersion clientVersion) {
         return cache.get(component, clientVersion);
     }
 
@@ -48,8 +51,10 @@ public class AdventureHook {
      * @return  Adventure component from this component.
      */
     @NotNull
-    private static Component toAdventureComponent0(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
-        ChatModifier modifier = component.getModifier();
+    private static Component toAdventureComponent0(@NotNull TabComponent component, @NotNull ProtocolVersion clientVersion) {
+        if (component instanceof SimpleComponent) return Component.text(component.toLegacyText());
+        StructuredComponent iComponent = (StructuredComponent) component;
+        ChatModifier modifier = iComponent.getModifier();
         TextColor color = null;
         if (modifier.getColor() != null) {
             if (clientVersion.supportsRGB()) {
@@ -65,7 +70,7 @@ public class AdventureHook {
         if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
         if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
 
-        Component adventureComponent = Component.text(component.getText(), color, decorations);
+        Component adventureComponent = Component.text(iComponent.getText(), color, decorations);
 
         if (modifier.getClickEvent() != null) {
             adventureComponent = adventureComponent.clickEvent(ClickEvent.clickEvent(
@@ -77,9 +82,12 @@ public class AdventureHook {
         if (modifier.getFont() != null) {
             adventureComponent = adventureComponent.font(Key.key(modifier.getFont()));
         }
-        if (!component.getExtra().isEmpty()) {
-            adventureComponent = adventureComponent.children(component.getExtra().stream().map(
-                    c -> toAdventureComponent0(c, clientVersion)).collect(Collectors.toList()));
+        if (!iComponent.getExtra().isEmpty()) {
+            List<Component> list = new ArrayList<>();
+            for (StructuredComponent extra : iComponent.getExtra()) {
+                list.add(toAdventureComponent0(extra, clientVersion));
+            }
+            adventureComponent = adventureComponent.children(list);
         }
         return adventureComponent;
     }

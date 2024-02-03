@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
@@ -106,7 +106,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         checkPlayerScoreboard();
         if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
             scoreboard.getObjective(objective).getScore(scoreHolder).setScore(score);
@@ -127,7 +127,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                   @Nullable IChatBaseComponent numberFormat) {
+                                   @Nullable TabComponent numberFormat) {
         checkPlayerScoreboard();
         newObjective(objectiveName, "dummy", title, display);
     }
@@ -140,7 +140,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                 @Nullable IChatBaseComponent numberFormat) {
+                                 @Nullable TabComponent numberFormat) {
         checkPlayerScoreboard();
         Objective obj = scoreboard.getObjective(objectiveName);
         setDisplayName(obj, title);
@@ -268,7 +268,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      */
     @NotNull
     private String transform(@NotNull String text, int maxLengthModern, int maxLengthLegacy) {
-        String transformed = player.getPlatform().toBukkitFormat(IChatBaseComponent.optimizedComponent(text), player.getVersion().supportsRGB());
+        String transformed = player.getPlatform().toBukkitFormat(TabComponent.optimized(text), player.getVersion().supportsRGB());
         if (player.getPlatform().getServerVersion().supportsRGB() && maxLengthModern < TITLE_LIMIT_MODERN) { // Scoreboard title is not stripping colors
             while (ChatColor.stripColor(transformed).length() > maxLengthModern)
                 transformed = transformed.substring(0, transformed.length()-1);

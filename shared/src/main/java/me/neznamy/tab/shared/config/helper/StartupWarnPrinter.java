@@ -4,7 +4,7 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.features.layout.GroupPattern;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
@@ -78,18 +78,18 @@ public class StartupWarnPrinter {
      */
     public int fixAnimationInterval(@NotNull String name, int interval) {
         if (interval == 0) {
-            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.", name));
+            startupWarn(String.format("Animation \"%s\" has refresh interval of 0 milliseconds! Did you forget to configure it? Using 1000.", name));
             return 1000;
         }
         if (interval < 0) {
-            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s. Refresh cannot be negative! &bUsing 1000.", name, interval));
+            startupWarn(String.format("Animation \"%s\" has refresh interval of %s. Refresh cannot be negative! Using 1000.", name, interval));
             return 1000;
         }
         if (interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0) {
             int min = TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
             int newInterval = Math.round((float) interval / min) * min; // rounding
             if (newInterval == 0) newInterval = min;
-            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s, which is not divisible by %s! &bUsing %s.",
+            startupWarn(String.format("Animation \"%s\" has refresh interval of %s, which is not divisible by %s! Using %s.",
                     name, interval, min, newInterval));
             return newInterval;
         }
@@ -108,7 +108,7 @@ public class StartupWarnPrinter {
      */
     public List<String> fixAnimationFrames(@NotNull String name, @Nullable List<String> list) {
         if (list == null) {
-            startupWarn("Animation \"&e" + name + "&c\" does not have any texts defined!");
+            startupWarn("Animation \"" + name + "\" does not have any texts defined!");
             return Collections.singletonList("<Animation does not have any texts>");
         }
         return list;
@@ -164,11 +164,11 @@ public class StartupWarnPrinter {
      *          Configured direction
      */
     public void invalidLayoutDirection(@NotNull String direction) {
-        startupWarn("\"&e" + direction + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutManagerImpl.Direction.values()) + ". &bUsing COLUMNS");
+        startupWarn("\"" + direction + "\" is not a valid type of layout direction. Valid options are: " + Arrays.deepToString(LayoutManagerImpl.Direction.values()) + ". Using COLUMNS");
     }
 
     public void invalidSortingTypeElement(@NotNull String element, @NotNull Set<String> validTypes) {
-        startupWarn("\"&e" + element + "&c\" is not a valid sorting type element. Valid options are: &e" + validTypes + ".");
+        startupWarn("\"" + element + "\" is not a valid sorting type element. Valid options are: " + validTypes + ".");
     }
 
     public void invalidSortingPlaceholder(@NotNull String placeholder, @NotNull SortingType type) {
@@ -386,7 +386,7 @@ public class StartupWarnPrinter {
     private void startupWarn(@NotNull String... messages) {
         warnCount++;
         for (String message : messages) {
-            TAB.getInstance().getPlatform().logWarn(IChatBaseComponent.fromColoredText(message));
+            TAB.getInstance().getPlatform().logWarn(new SimpleComponent(message));
         }
     }
 
@@ -395,7 +395,7 @@ public class StartupWarnPrinter {
      */
     public void printWarnCount() {
         if (warnCount == 0) return;
-        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Found a total of " + warnCount + " issues."));
+        TAB.getInstance().getPlatform().logWarn(new SimpleComponent("Found a total of " + warnCount + " issues."));
         // Reset after printing to prevent count going up on each reload
         warnCount = 0;
     }

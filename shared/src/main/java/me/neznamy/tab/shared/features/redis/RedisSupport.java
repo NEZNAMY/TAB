@@ -7,7 +7,7 @@ import lombok.Getter;
 import me.neznamy.tab.api.event.EventHandler;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.features.redis.feature.*;
 import me.neznamy.tab.shared.features.redis.message.*;
@@ -257,12 +257,12 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     }
 
     @Override
-    public IChatBaseComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
+    public TabComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
         if (redisPlayerList == null) return null;
         if (!redisPlayerList.getPlayerList().isAntiOverrideTabList()) return null;
         RedisPlayer packetPlayer = redisPlayers.get(id);
         if (packetPlayer != null) {
-            return IChatBaseComponent.optimizedComponent(redisPlayerList.getFormat(packetPlayer));
+            return TabComponent.optimized(redisPlayerList.getFormat(packetPlayer));
         }
         return null;
     }

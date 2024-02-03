@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +42,7 @@ public class SpongeTabList implements TabList {
     }
 
     @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> {
             Text component = displayName == null ? null : Text.of(displayName.toLegacyText());
             e.setDisplayName(component);
@@ -78,7 +78,7 @@ public class SpongeTabList implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
         player.getPlayer().getTabList().setHeaderAndFooter(
                 Text.of(header.toLegacyText()),
                 Text.of(footer.toLegacyText())

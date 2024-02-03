@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.chat.rgb;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.chat.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.chat.rgb.format.HtmlFormat;
 import me.neznamy.tab.shared.chat.rgb.format.KyoriFormat;
@@ -110,7 +110,7 @@ public class RGBUtils {
      * @return  translated text
      */
     public @NotNull String convertRGBtoLegacy(@NotNull String text) {
-        return IChatBaseComponent.fromColoredText(text).toLegacyText();
+        return TabComponent.fromColoredText(text).toLegacyText();
     }
 
     /**

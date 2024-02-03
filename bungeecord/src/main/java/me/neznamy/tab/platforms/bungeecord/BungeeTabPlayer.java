@@ -7,7 +7,7 @@ import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList17;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList18;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -69,7 +69,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public void sendMessage(@NotNull IChatBaseComponent message) {
+    public void sendMessage(@NotNull TabComponent message) {
         getPlayer().sendMessage(getPlatform().toComponent(message, getVersion()));
     }
 

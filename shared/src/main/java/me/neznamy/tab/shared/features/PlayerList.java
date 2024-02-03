@@ -6,7 +6,8 @@ import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.layout.LayoutView;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
@@ -116,7 +117,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             UUID tablistId = getTablistUUID(player, viewer);
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
-                    tablistId.getMostSignificantBits() == 0 ? new IChatBaseComponent(player.getName()) : null);
+                    tablistId.getMostSignificantBits() == 0 ? new SimpleComponent(player.getName()) : null);
         }
         if (redis != null) redis.updateTabFormat(player, player.getProperty(TabConstants.Property.TABPREFIX).get() +
                 player.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + player.getProperty(TabConstants.Property.TABSUFFIX).get());
@@ -131,14 +132,14 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
      *          Viewer seeing the format
      * @return  Format of specified player for viewer
      */
-    public @Nullable IChatBaseComponent getTabFormat(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
+    public @Nullable TabComponent getTabFormat(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
         Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
         Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
         if (prefix == null || name == null || suffix == null) {
             return null;
         }
-        return IChatBaseComponent.optimizedComponent(prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer));
+        return TabComponent.optimized(prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer));
     }
 
     @Override
@@ -247,7 +248,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     }
 
     @Override
-    public IChatBaseComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
+    public TabComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
         if (disabling || !antiOverrideTabList) return null;
         TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
         if (packetPlayer != null && !disableChecker.isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, packetReceiver)) {

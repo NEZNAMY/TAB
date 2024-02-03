@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,5 +22,5 @@ public interface DisplayNameListener {
      * @return  New display name to write to the packet, {@code null} for keeping it
      */
     @Nullable
-    IChatBaseComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id);
+    TabComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id);
 }

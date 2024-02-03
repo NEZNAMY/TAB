@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.header;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public class BukkitHeaderFooter extends HeaderFooter {
 
     @Override
     @SuppressWarnings("deprecation") // Marked as deprecated by Paper to make us use their methods instead
-    public void set(@NotNull BukkitTabPlayer player, @NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer) {
         player.getPlayer().setPlayerListHeaderFooter(
                 player.getPlatform().toBukkitFormat(header, player.getVersion().supportsRGB()),
                 player.getPlatform().toBukkitFormat(footer, player.getVersion().supportsRGB())

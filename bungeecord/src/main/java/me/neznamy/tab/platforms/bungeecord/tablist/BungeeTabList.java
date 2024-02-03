@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
@@ -45,7 +45,7 @@ public abstract class BungeeTabList implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
         player.sendPacket(new PlayerListHeaderFooter(
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion())
@@ -117,7 +117,7 @@ public abstract class BungeeTabList implements TabList {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, item.getUuid());
+                    TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, item.getUuid());
                     if (newDisplayName != null) item.setDisplayName(player.getPlatform().toComponent(newDisplayName, player.getVersion()));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
@@ -131,7 +131,7 @@ public abstract class BungeeTabList implements TabList {
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, item.getUuid());
+                    TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, item.getUuid());
                     if (newDisplayName != null) item.setDisplayName(player.getPlatform().toComponent(newDisplayName, player.getVersion()));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {

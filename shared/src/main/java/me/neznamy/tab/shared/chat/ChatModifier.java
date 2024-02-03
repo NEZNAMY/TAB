@@ -19,13 +19,13 @@ public class ChatModifier {
     @Nullable private String font;
 
     public ChatModifier(@NotNull ChatModifier modifier) {
-        if (modifier.color != null) color = new TextColor(modifier.color);
+        color = modifier.color;
         bold = modifier.bold;
         italic = modifier.italic;
         underlined = modifier.underlined;
         strikethrough = modifier.strikethrough;
         obfuscated = modifier.obfuscated;
-        if (modifier.clickEvent != null) clickEvent = new ClickEvent(modifier.clickEvent.getAction(), modifier.clickEvent.getValue());
+        clickEvent = modifier.clickEvent;
         font = modifier.font;
     }
 
@@ -58,11 +58,11 @@ public class ChatModifier {
     @NotNull
     public String getMagicCodes() {
         StringBuilder builder = new StringBuilder();
-        if (bold) builder.append(EnumChatFormat.BOLD.getFormat());
-        if (italic) builder.append(EnumChatFormat.ITALIC.getFormat());
-        if (underlined) builder.append(EnumChatFormat.UNDERLINE.getFormat());
-        if (strikethrough) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
-        if (obfuscated) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
+        if (bold) builder.append(EnumChatFormat.BOLD);
+        if (italic) builder.append(EnumChatFormat.ITALIC);
+        if (underlined) builder.append(EnumChatFormat.UNDERLINE);
+        if (strikethrough) builder.append(EnumChatFormat.STRIKETHROUGH);
+        if (obfuscated) builder.append(EnumChatFormat.OBFUSCATED);
         return builder.toString();
     }
 }

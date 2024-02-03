@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.Limitations;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +51,7 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));
         addEntry(new Entry(entry, userNames.get(entry), null, 0, 0, displayName));
@@ -80,7 +80,7 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
         // Not available on 1.7
     }
 
@@ -95,7 +95,7 @@ public class BungeeTabList17 extends BungeeTabList {
         PlayerListItem.Item item = new PlayerListItem.Item();
         item.setUsername(username);
         item.setPing(latency);
-        item.setDisplayName(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()));
+        item.setDisplayName(player.getPlatform().toComponent(TabComponent.optimized(displayName), player.getVersion()));
         return item;
     }
 }

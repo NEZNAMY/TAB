@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,7 +76,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                   @Nullable IChatBaseComponent numberFormat) {
+                                   @Nullable TabComponent numberFormat) {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(Text.of(title))
@@ -93,7 +93,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                 @Nullable IChatBaseComponent numberFormat) {
+                                 @Nullable TabComponent numberFormat) {
         sb.getObjective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(Text.of(title));
             obj.setDisplayMode(healthDisplays[display]);
@@ -142,7 +142,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         sb.getObjective(objective).ifPresent(o -> o.getOrCreateScore(Text.of(scoreHolder)).setScore(score));
     }
 

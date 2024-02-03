@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.platform.impl;
 
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetDisplayObjective;
@@ -35,7 +35,7 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                   @Nullable IChatBaseComponent numberFormat) {
+                                   @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.REGISTER, title, display,
                 numberFormat == null ? null : numberFormat.toString(player.getVersion())));
     }
@@ -47,7 +47,7 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                 @Nullable IChatBaseComponent numberFormat) {
+                                 @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.UPDATE, title, display,
                 numberFormat == null ? null : numberFormat.toString(player.getVersion())));
     }
@@ -75,7 +75,7 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetScore(
                 objective, ScoreAction.CHANGE, scoreHolder, score,
                 displayName == null ? null : displayName.toString(player.getVersion()),

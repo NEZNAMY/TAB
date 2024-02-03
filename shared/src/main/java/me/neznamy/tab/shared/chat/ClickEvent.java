@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public class ClickEvent {
 
-    @NotNull private Action action;
-    @NotNull private String value;
+    @NotNull private final Action action;
+    @NotNull private final String value;
 
     public enum Action {
 

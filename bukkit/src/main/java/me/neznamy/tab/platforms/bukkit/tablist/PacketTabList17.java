@@ -5,7 +5,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.Limitations;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.TriFunctionWithException;
 import org.jetbrains.annotations.NotNull;
@@ -82,7 +82,7 @@ public class PacketTabList17 extends TabListBase {
 
     @Override
     @SneakyThrows
-    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), false, 0));
         addEntry(new Entry(entry, userNames.get(entry), null, 0, 0, displayName));

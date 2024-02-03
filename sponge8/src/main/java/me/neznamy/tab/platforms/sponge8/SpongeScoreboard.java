@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.kyori.adventure.text.Component;
@@ -78,7 +78,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                   @Nullable IChatBaseComponent numberFormat) {
+                                   @Nullable TabComponent numberFormat) {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(adventure(title))
@@ -95,7 +95,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                 @Nullable IChatBaseComponent numberFormat) {
+                                 @Nullable TabComponent numberFormat) {
         sb.objective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(adventure(title));
             obj.setDisplayMode(healthDisplays[display]);
@@ -146,7 +146,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         sb.objective(objective).ifPresent(o -> o.findOrCreateScore(adventure(scoreHolder)).setScore(score));
     }
 
@@ -164,6 +164,6 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      */
     @NotNull
     private Component adventure(@NotNull String text) {
-        return AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion());
+        return AdventureHook.toAdventureComponent(TabComponent.optimized(text), player.getVersion());
     }
 }

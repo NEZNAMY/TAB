@@ -8,7 +8,7 @@ import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.commands.CommandSourceStack;
@@ -93,7 +93,7 @@ public class Loader_1_20_4 {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
             FabricMultiVersion.newEntityMetadata = (entityId, data) ->  new ClientboundSetEntityDataPacket(entityId, (List<SynchedEntityData.DataValue<?>>) data.build());
             FabricMultiVersion.createDataWatcher = (viewer, flags, displayName, nameVisible) -> {
-                Optional<Component> name = Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion()));
+                Optional<Component> name = Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(TabComponent.optimized(displayName), viewer.getVersion()));
                 return () -> Arrays.asList(
                         new SynchedEntityData.DataValue<>(0, EntityDataSerializers.BYTE, flags),
                         new SynchedEntityData.DataValue<>(2, EntityDataSerializers.OPTIONAL_COMPONENT, name),
@@ -130,7 +130,7 @@ public class Loader_1_20_4 {
                     Component displayName = nmsData.displayName();
                     int latency = nmsData.latency();
                     if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                        IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, nmsData.profileId());
+                        TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, nmsData.profileId());
                         if (newDisplayName != null) displayName = ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
                     }
                     if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {

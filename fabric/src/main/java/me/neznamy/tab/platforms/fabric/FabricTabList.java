@@ -5,7 +5,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -32,7 +32,7 @@ public class FabricTabList implements TabList {
 
     @Override
     @SneakyThrows
-    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME,
                 new Builder(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()))
         ));
@@ -67,7 +67,7 @@ public class FabricTabList implements TabList {
 
     @Override
     @SneakyThrows
-    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
         player.sendPacket(FabricMultiVersion.newHeaderFooter.apply(
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion())

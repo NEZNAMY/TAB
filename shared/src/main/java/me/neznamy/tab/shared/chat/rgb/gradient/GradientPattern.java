@@ -37,7 +37,7 @@ public interface GradientPattern {
         int length = deColorized.length();
         if (length == 1) {
             sb.append("#");
-            sb.append(new TextColor(start.getRed(), start.getGreen(), start.getBlue()).getHexCode());
+            sb.append(start.getHexCode());
             if (start.isLegacyColorForced()) sb.append("|").append(start.getLegacyColor().getCharacter());
             sb.append(magicCodes);
             sb.append(deColorized);

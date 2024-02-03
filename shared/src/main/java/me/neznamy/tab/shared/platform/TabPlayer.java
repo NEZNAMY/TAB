@@ -2,7 +2,8 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.FloodgateHook;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.features.types.Refreshable;
@@ -193,9 +194,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public void sendMessage(@NotNull String message, boolean translateColors) {
         if (message.isEmpty()) return;
         if (translateColors) {
-            sendMessage(IChatBaseComponent.fromColoredText(message));
+            sendMessage(TabComponent.fromColoredText(message));
         } else {
-            sendMessage(new IChatBaseComponent(message));
+            sendMessage(new SimpleComponent(message));
         }
     }
 
@@ -329,7 +330,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @param   message
      *          message to send
      */
-    public abstract void sendMessage(@NotNull IChatBaseComponent message);
+    public abstract void sendMessage(@NotNull TabComponent message);
 
     /**
      * Performs platform-specific API call to check for permission and returns the result

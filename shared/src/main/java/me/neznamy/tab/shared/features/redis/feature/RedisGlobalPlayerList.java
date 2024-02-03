@@ -5,7 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -102,7 +102,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     private @NotNull TabList.Entry getEntry(@NotNull RedisPlayer player) {
         return new TabList.Entry(player.getUniqueId(), player.getNickname(), skins.get(player), 0, 0,
                 redisSupport.getRedisPlayerList() == null ? null :
-                        IChatBaseComponent.optimizedComponent(redisSupport.getRedisPlayerList().getFormat(player)));
+                        TabComponent.optimized(redisSupport.getRedisPlayerList().getFormat(player)));
     }
 
     @Override

@@ -9,7 +9,7 @@ import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.Connection;
@@ -101,7 +101,7 @@ public class Loader_1_14_4 {
         };
         FabricMultiVersion.createDataWatcher = (viewer, flags, displayName, nameVisible) -> {
             Optional<Component> name = Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(
-                    IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion()));
+                    TabComponent.optimized(displayName), viewer.getVersion()));
             SynchedEntityData data = new SynchedEntityData(null);
             data.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
             data.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT), name);
@@ -130,7 +130,7 @@ public class Loader_1_14_4 {
                 Field displayNameField = ReflectionUtils.getFields(PlayerUpdate.class, Component.class).get(0);
                 Field latencyField = ReflectionUtils.getFields(PlayerUpdate.class, int.class).get(0);
                 if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name())) {
-                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
+                    TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
                     if (newDisplayName != null) displayNameField.set(nmsData, ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion()));
                 }
                 if (action.name().equals(TabList.Action.UPDATE_LATENCY.name())) {

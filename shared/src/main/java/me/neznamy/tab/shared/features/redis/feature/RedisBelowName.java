@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -40,7 +40,7 @@ public class RedisBelowName extends RedisFeature {
                     redis.getNickname(),
                     values.get(redis),
                     null, // Unused by this objective slot
-                    IChatBaseComponent.emptyToNullOptimizedComponent(fancyValues.get(redis))
+                    TabComponent.optimized(fancyValues.get(redis))
             );
         }
     }
@@ -53,7 +53,7 @@ public class RedisBelowName extends RedisFeature {
                     player.getNickname(),
                     values.get(player),
                     null, // Unused by this objective slot
-                    IChatBaseComponent.emptyToNullOptimizedComponent(fancyValues.get(player))
+                    TabComponent.optimized(fancyValues.get(player))
             );
         }
     }

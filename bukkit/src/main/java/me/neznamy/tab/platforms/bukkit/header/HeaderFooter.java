@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.header;
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,5 +53,5 @@ public abstract class HeaderFooter {
      * @param   footer
      *          Footer to use.
      */
-    public abstract void set(@NotNull BukkitTabPlayer player, @NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer);
+    public abstract void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer);
 }

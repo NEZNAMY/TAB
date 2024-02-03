@@ -8,7 +8,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -40,7 +40,7 @@ public class PacketTabList18 extends TabListBase {
     protected static Object[] gameModes;
 
     protected static Method ChatSerializer_DESERIALIZE;
-    private static final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
+    private static final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
     protected static PacketSender packetSender;
@@ -120,7 +120,7 @@ public class PacketTabList18 extends TabListBase {
     }
 
     @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
         packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, Entry.displayName(entry, displayName)));
     }
 
@@ -165,7 +165,7 @@ public class PacketTabList18 extends TabListBase {
      *          Component to convert
      * @return  Converted component
      */
-    public Object toComponent(@NotNull IChatBaseComponent component) {
+    public Object toComponent(@NotNull TabComponent component) {
         return componentCache.get(component, player.getVersion());
     }
 
@@ -189,7 +189,7 @@ public class PacketTabList18 extends TabListBase {
             UUID id = profile.getId();
             if (action.equals(Action.UPDATE_DISPLAY_NAME.name()) || action.equals(Action.ADD_PLAYER.name())) {
                 Object displayName = PlayerInfoData_DisplayName.get(nmsData);
-                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, id);
+                TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, id);
                 if (newDisplayName != null) displayName = toComponent(newDisplayName);
                 PlayerInfoData_DisplayName.set(nmsData, displayName);
             }

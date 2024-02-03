@@ -7,7 +7,7 @@ import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -118,7 +118,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                             player.getNickname(),
                             redisBelowName.getValues().get(player),
                             null, // Unused by this objective slot
-                            IChatBaseComponent.emptyToNullOptimizedComponent(redisBelowName.getFancyValues().get(player))
+                            TabComponent.optimized(redisBelowName.getFancyValues().get(player))
                     );
                 }
             }
@@ -129,7 +129,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                             player.getNickname(),
                             redisYellowNumber.getValues().get(player),
                             null, // Unused by this objective slot
-                            IChatBaseComponent.emptyToNullOptimizedComponent(redisYellowNumber.getFancyValues().get(player))
+                            TabComponent.optimized(redisYellowNumber.getFancyValues().get(player))
                     );
                 }
             }

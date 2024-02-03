@@ -185,4 +185,9 @@ public enum EnumChatFormat {
         }
         return result.toString();
     }
+
+    @Override
+    public String toString() {
+        return format;
+    }
 }

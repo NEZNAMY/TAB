@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -97,7 +98,7 @@ public abstract class SubCommand {
         if (sender != null) {
             sender.sendMessage(message, true);
         } else {
-            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText(message));
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(message));
         }
     }
 
@@ -114,7 +115,7 @@ public abstract class SubCommand {
         if (sender != null) {
             sender.sendMessage(message, false);
         } else {
-            TAB.getInstance().getPlatform().logInfo(new IChatBaseComponent(message));
+            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(message));
         }
     }
 

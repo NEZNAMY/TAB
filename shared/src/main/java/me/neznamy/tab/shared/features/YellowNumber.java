@@ -2,7 +2,8 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -156,7 +157,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
 
     private void register(@NotNull TabPlayer player) {
         if (player.isBedrockPlayer()) return;
-        player.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType, new IChatBaseComponent(""));
+        player.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType, new SimpleComponent(""));
         player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
     }
 
@@ -179,7 +180,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
                 scoreHolder.getNickname(),
                 value,
                 null, // Unused by this objective slot
-                IChatBaseComponent.emptyToNullOptimizedComponent(fancyValue)
+                TabComponent.optimized(fancyValue)
         );
     }
 }

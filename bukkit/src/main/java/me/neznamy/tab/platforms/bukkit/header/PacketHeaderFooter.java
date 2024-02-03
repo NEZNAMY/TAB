@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.BiFunctionWithException;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -22,7 +22,7 @@ public class PacketHeaderFooter extends HeaderFooter {
 
     private Method ChatSerializer_DESERIALIZE;
     private final PacketSender packetSender = new PacketSender();
-    private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
+    private final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
     private final BiFunctionWithException<Object, Object, Object> createPacket;
 
@@ -57,7 +57,7 @@ public class PacketHeaderFooter extends HeaderFooter {
 
     @SneakyThrows
     @Override
-    public void set(@NotNull BukkitTabPlayer player, @NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer) {
         packetSender.sendPacket(player.getPlayer(), createPacket.apply(
                 componentCache.get(header, player.getVersion()),
                 componentCache.get(footer, player.getVersion())

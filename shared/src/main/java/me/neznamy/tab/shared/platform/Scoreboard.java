@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public final void setScore(@NotNull String objective, @NotNull String scoreHolder, int score,
-                         @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                               @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
             error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objective);
@@ -56,7 +56,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public final void registerObjective(@NotNull String objectiveName, @NotNull String title, int display,
-                                  @Nullable IChatBaseComponent numberFormat) {
+                                  @Nullable TabComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.add(objectiveName)) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
@@ -75,7 +75,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     public final void updateObjective(@NotNull String objectiveName, @NotNull String title, int display,
-                                @Nullable IChatBaseComponent numberFormat) {
+                                @Nullable TabComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objectiveName)) {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
@@ -271,17 +271,17 @@ public abstract class Scoreboard<T extends TabPlayer> {
     protected abstract void setDisplaySlot0(int slot, @NotNull String objective);
 
     protected abstract void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                                   @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat);
+                                   @Nullable TabComponent displayName, @Nullable TabComponent numberFormat);
 
     protected abstract void removeScore0(@NotNull String objective, @NotNull String scoreHolder);
 
     protected abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title,
-                                            int display, @Nullable IChatBaseComponent numberFormat);
+                                            int display, @Nullable TabComponent numberFormat);
 
     protected abstract void unregisterObjective0(@NotNull String objectiveName);
 
     protected abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title,
-                                          int display, @Nullable IChatBaseComponent numberFormat);
+                                          int display, @Nullable TabComponent numberFormat);
 
     protected abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                                           @NotNull NameVisibility visibility, @NotNull CollisionRule collision,

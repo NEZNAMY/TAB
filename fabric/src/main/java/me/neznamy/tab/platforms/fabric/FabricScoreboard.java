@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -54,7 +54,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                   @Nullable IChatBaseComponent numberFormat) {
+                                   @Nullable TabComponent numberFormat) {
         Objective obj = FabricMultiVersion.newObjective.apply(
                 objectiveName,
                 toComponent(title),
@@ -72,7 +72,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
-                                 @Nullable IChatBaseComponent numberFormat) {
+                                 @Nullable TabComponent numberFormat) {
         Objective obj = objectives.get(objectiveName);
         obj.setDisplayName(toComponent(title));
         obj.setRenderType(RenderType.values()[display]);
@@ -118,7 +118,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @Override
     @SneakyThrows
     public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
-                          @Nullable IChatBaseComponent displayName, @Nullable IChatBaseComponent numberFormat) {
+                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         player.sendPacket(FabricMultiVersion.setScore.apply(
                 objective,
                 scoreHolder,
@@ -201,11 +201,11 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @NotNull
     private Component toComponent(@NotNull String string) {
-        return toComponent(IChatBaseComponent.optimizedComponent(string));
+        return toComponent(TabComponent.optimized(string));
     }
 
     @NotNull
-    private Component toComponent(@NotNull IChatBaseComponent component) {
+    private Component toComponent(@NotNull TabComponent component) {
         return player.getPlatform().toComponent(component, player.getVersion());
     }
 }

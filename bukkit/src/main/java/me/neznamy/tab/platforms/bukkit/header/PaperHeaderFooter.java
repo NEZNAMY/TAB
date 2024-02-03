@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.header;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
@@ -23,7 +23,7 @@ public class PaperHeaderFooter extends HeaderFooter {
             ReflectionUtils.methodExists(Player.class, "sendPlayerListHeaderAndFooter", Component.class, Component.class);
 
     @Override
-    public void set(@NotNull BukkitTabPlayer player, @NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer) {
         player.getPlayer().sendPlayerListHeaderAndFooter(
                 AdventureHook.toAdventureComponent(header, player.getVersion()),
                 AdventureHook.toAdventureComponent(footer, player.getVersion())

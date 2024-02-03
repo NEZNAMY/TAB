@@ -5,7 +5,7 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -118,7 +118,7 @@ public class PacketTabList1193 extends PacketTabList18 {
             int latency = 0;
             if (actions.contains(Action.UPDATE_DISPLAY_NAME.name())) {
                 displayName = PlayerInfoData_DisplayName.get(nmsData);
-                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, id);
+                TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, id);
                 if (newDisplayName != null) displayName = toComponent(newDisplayName);
             }
             if (actions.contains(Action.UPDATE_LATENCY.name())) {

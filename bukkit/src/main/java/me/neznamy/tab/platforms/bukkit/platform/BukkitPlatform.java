@@ -15,7 +15,9 @@ import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.StructuredComponent;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
@@ -110,7 +112,7 @@ public class BukkitPlatform implements BackendPlatform {
             HeaderFooter.findInstance();
         }
         BukkitUtils.sendCompatibilityMessage();
-        Bukkit.getConsoleSender().sendMessage("[TAB] " + EnumChatFormat.GRAY.getFormat() + "Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
+        Bukkit.getConsoleSender().sendMessage("[TAB] " + EnumChatFormat.GRAY + "Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
     }
 
     @Override
@@ -223,13 +225,13 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
-    public void logInfo(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull TabComponent message) {
         Bukkit.getConsoleSender().sendMessage("[TAB] " + toBukkitFormat(message, true));
     }
 
     @Override
-    public void logWarn(@NotNull IChatBaseComponent message) {
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] [WARN] " + toBukkitFormat(message, true));
+    public void logWarn(@NotNull TabComponent message) {
+        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED + "[TAB] [WARN] " + toBukkitFormat(message, true));
     }
 
     @Override
@@ -251,7 +253,7 @@ public class BukkitPlatform implements BackendPlatform {
             command.setExecutor(cmd);
             command.setTabCompleter(cmd);
         } else {
-            logWarn(new IChatBaseComponent("Failed to register command, is it defined in plugin.yml?"));
+            logWarn(new SimpleComponent("Failed to register command, is it defined in plugin.yml?"));
         }
     }
 
@@ -346,22 +348,24 @@ public class BukkitPlatform implements BackendPlatform {
      * @return  Converted string using bukkit color format
      */
     @NotNull
-    public String toBukkitFormat(@NotNull IChatBaseComponent component, boolean rgbClient) {
+    public String toBukkitFormat(@NotNull TabComponent component, boolean rgbClient) {
+        if (component instanceof SimpleComponent) return component.toLegacyText();
+        StructuredComponent iComponent = (StructuredComponent) component;
         StringBuilder sb = new StringBuilder();
-        if (component.getModifier().getColor() != null) {
+        if (iComponent.getModifier().getColor() != null) {
             if (serverVersion.supportsRGB() && rgbClient) {
-                String hexCode = component.getModifier().getColor().getHexCode();
+                String hexCode = iComponent.getModifier().getColor().getHexCode();
                 char c = EnumChatFormat.COLOR_CHAR;
                 sb.append(c).append("x").append(c).append(hexCode.charAt(0)).append(c).append(hexCode.charAt(1))
                         .append(c).append(hexCode.charAt(2)).append(c).append(hexCode.charAt(3))
                         .append(c).append(hexCode.charAt(4)).append(c).append(hexCode.charAt(5));
             } else {
-                sb.append(component.getModifier().getColor().getLegacyColor().getFormat());
+                sb.append(iComponent.getModifier().getColor().getLegacyColor());
             }
         }
-        sb.append(component.getModifier().getMagicCodes());
-        if (component.getText() != null) sb.append(component.getText());
-        for (IChatBaseComponent extra : component.getExtra()) {
+        sb.append(iComponent.getModifier().getMagicCodes());
+        sb.append(iComponent.getText());
+        for (StructuredComponent extra : iComponent.getExtra()) {
             sb.append(toBukkitFormat(extra, rgbClient));
         }
         return sb.toString();

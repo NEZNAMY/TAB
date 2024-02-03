@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
@@ -66,6 +66,6 @@ public class PaperScoreboard extends BukkitScoreboard {
      */
     @NotNull
     private Component toAdventure(@NotNull String text) {
-        return AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion());
+        return AdventureHook.toAdventureComponent(TabComponent.optimized(text), player.getVersion());
     }
 }

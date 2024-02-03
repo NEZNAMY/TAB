@@ -10,6 +10,26 @@ import java.util.Locale;
  */
 public class TextColor {
 
+    /** Instances from legacy colors to avoid new class initialization each time */
+    private static final TextColor[] legacyColors = {
+            new TextColor(EnumChatFormat.BLACK),
+            new TextColor(EnumChatFormat.DARK_BLUE),
+            new TextColor(EnumChatFormat.DARK_GREEN),
+            new TextColor(EnumChatFormat.DARK_AQUA),
+            new TextColor(EnumChatFormat.DARK_RED),
+            new TextColor(EnumChatFormat.DARK_PURPLE),
+            new TextColor(EnumChatFormat.GOLD),
+            new TextColor(EnumChatFormat.GRAY),
+            new TextColor(EnumChatFormat.DARK_GRAY),
+            new TextColor(EnumChatFormat.BLUE),
+            new TextColor(EnumChatFormat.GREEN),
+            new TextColor(EnumChatFormat.AQUA),
+            new TextColor(EnumChatFormat.RED),
+            new TextColor(EnumChatFormat.LIGHT_PURPLE),
+            new TextColor(EnumChatFormat.YELLOW),
+            new TextColor(EnumChatFormat.WHITE)
+    };
+
     /**
      * RGB values as a single number of 3 8-bit numbers (0-255).
      * It is only initialized if colors are actually used to avoid
@@ -28,21 +48,6 @@ public class TextColor {
      * automatically assigned as closest color.
      * This value is used in gradients when converting text for legacy players. */
     @Getter private boolean legacyColorForced;
-
-    /**
-     * Constructs new instance as a clone of the provided color.
-     *
-     * @param   color
-     *          color to create a clone of
-     * @throws  IllegalArgumentException
-     *          if color is {@code null}
-     */
-    public TextColor(@NotNull TextColor color) {
-        rgb = color.rgb;
-        legacyColor = color.legacyColor;
-        hexCode = color.hexCode;
-        legacyColorForced = color.legacyColorForced;
-    }
 
     /**
      * Constructs new instance from provided 6-digit hex code string
@@ -77,10 +82,8 @@ public class TextColor {
      *
      * @param   legacyColor
      *          legacy color to construct the instance from
-     * @throws  IllegalArgumentException
-     *          if {@code legacyColor} is {@code null}
      */
-    public TextColor(@NotNull EnumChatFormat legacyColor) {
+    private TextColor(@NotNull EnumChatFormat legacyColor) {
         rgb = legacyColor.getRgb();
         hexCode = String.format("%06X", legacyColor.getRgb());
     }
@@ -94,8 +97,6 @@ public class TextColor {
      *          green value
      * @param   blue
      *          blue value
-     * @throws  IllegalArgumentException
-     *          if {@code red}, {@code green} or {@code blue} is out of range ({@code 0-255})
      */
     public TextColor(int red, int green, int blue) {
         rgb = (red << 16) + (green << 8) + blue;
@@ -194,12 +195,23 @@ public class TextColor {
      * @return  the color serialized for use in chat component
      */
     public @NotNull String toString(boolean rgbSupport) {
-        if (!rgbSupport) return getLegacyColor().toString().toLowerCase();
+        if (!rgbSupport) return getLegacyColor().name().toLowerCase();
         EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(getRgb());
         if (legacyEquivalent != null) {
             //not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
-            return legacyEquivalent.toString().toLowerCase(Locale.US);
+            return legacyEquivalent.name().toLowerCase(Locale.US);
         }
         return "#" + getHexCode();
+    }
+
+    /**
+     * Returns color from given legacy color
+     *
+     * @param   format
+     *          Legacy color
+     * @return  Instance from legacy color
+     */
+    public static TextColor legacy(@NotNull EnumChatFormat format) {
+        return legacyColors[format.ordinal()];
     }
 }

@@ -5,7 +5,7 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -42,7 +42,7 @@ public class VelocityTabList implements TabList {
      * entry and adding it again to avoid this bug.
      */
     @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> {
             if (player.getVersion().getMinorVersion() >= 8) {
                 Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
@@ -95,7 +95,7 @@ public class VelocityTabList implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
         player.getPlayer().sendPlayerListHeaderAndFooter(
                 AdventureHook.toAdventureComponent(header, player.getVersion()),
                 AdventureHook.toAdventureComponent(footer, player.getVersion())

@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.features.globalplayerlist;
 import java.util.*;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -133,7 +133,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     public @NotNull TabList.Entry getAddInfoData(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
-        IChatBaseComponent format = null;
+        TabComponent format = null;
         if (playerlist != null && !playerlist.getDisableChecker().isDisabledPlayer(p)) {
             format = playerlist.getTabFormat(p, viewer);
         }

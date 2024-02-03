@@ -1,15 +1,13 @@
 package me.neznamy.tab.shared.command;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.cpu.CpuReport;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -72,17 +70,14 @@ public class CpuCommand extends SubCommand {
     }
 
     public void sendToConsole(@NotNull Map<String, Map<String, Float>> features) {
-        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&8&l" + LINE_CHAR + " &6Features:"));
+        TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.color("&8&l" + LINE_CHAR + " &6Features:")));
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
-            double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
-            String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
-            List<String> messages = new ArrayList<>();
+            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.color(
+                    String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(),
+                            colorize(decimal3.format(entry.getValue().values().stream().mapToDouble(Float::floatValue).sum()), 5, 1)))));
             for (Entry<String, Float> type : entry.getValue().entrySet()) {
-                messages.add(String.format("&8&l%s     &7%s - %s%%", LINE_CHAR, type.getKey(), colorize(decimal3.format(type.getValue()), 5, 1)));
-            }
-            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText(core));
-            for (String message : messages) {
-                TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText(message));
+                TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.color(
+                        String.format("&8&l%s     &7%s - %s%%", LINE_CHAR, type.getKey(), colorize(decimal3.format(type.getValue()), 5, 1)))));
             }
         }
     }
@@ -92,7 +87,7 @@ public class CpuCommand extends SubCommand {
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
             String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
-            sender.sendMessage(new IChatBaseComponent(EnumChatFormat.color(core)));
+            sender.sendMessage(new SimpleComponent(EnumChatFormat.color(core)));
         }
     }
 
