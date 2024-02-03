@@ -15,6 +15,7 @@ import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
+import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 import java.nio.file.Path;
 
@@ -22,6 +23,7 @@ import java.nio.file.Path;
  * Main class for Sponge 8.
  */
 @Getter
+@Plugin(TabConstants.PLUGIN_ID)
 public class Sponge8TAB {
 
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;
