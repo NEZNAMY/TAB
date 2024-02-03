@@ -23,7 +23,7 @@ import java.nio.file.Path;
  * Main class for Sponge 8.
  */
 @Getter
-@Plugin("tab")
+@Plugin(TabConstants.PLUGIN_ID)
 public class Sponge8TAB {
 
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;
