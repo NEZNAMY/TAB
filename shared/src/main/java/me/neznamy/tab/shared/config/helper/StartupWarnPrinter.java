@@ -51,12 +51,10 @@ public class StartupWarnPrinter {
             if (!entry.getKey().equals("default-refresh-interval") && interval == defaultRefresh) {
                 TAB.getInstance().getConfigHelper().hint().redundantRefreshInterval(entry.getKey());
             }
-            if (interval < 0) {
+            if (interval == -1) continue;
+            if (interval <= 0) {
                 startupWarn("Invalid refresh interval configured for " + entry.getKey() +
-                        " (" + interval + "). Value cannot be negative.");
-            } else if (interval == 0) {
-                startupWarn("Invalid refresh interval configured for " + entry.getKey() +
-                        " (0). Value cannot be zero.");
+                        " (" + interval + "). Value cannot be zero or negative (except -1).");
             } else if (interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0) {
                 startupWarn("Invalid refresh interval configured for " + entry.getKey() +
                         " (" + interval + "). Value must be divisible by " + TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL + ".");
