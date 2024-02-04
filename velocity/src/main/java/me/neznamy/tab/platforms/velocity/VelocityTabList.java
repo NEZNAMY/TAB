@@ -92,6 +92,11 @@ public class VelocityTabList implements TabList {
         removeEntry(entry.getUniqueId());
 
         player.getPlayer().getTabList().addEntry(e);
+
+        if (player.getVersion().getMinorVersion() == 8) {
+            // Compensation for 1.8.0 client sided bug
+            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
+        }
     }
 
     @Override

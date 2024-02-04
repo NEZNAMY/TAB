@@ -76,6 +76,11 @@ public class SpongeTabList implements TabList {
                 .build();
         player.getPlayer().tabList().addEntry(tabListEntry);
         setExpectedDisplayName(entry.getUniqueId(), displayName);
+
+        if (player.getVersion().getMinorVersion() == 8) {
+            // Compensation for 1.8.0 client sided bug
+            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
+        }
     }
 
     @Override

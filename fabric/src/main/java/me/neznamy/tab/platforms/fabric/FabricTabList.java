@@ -63,6 +63,11 @@ public class FabricTabList implements TabList {
                 .setLatency(entry.getLatency())
                 .setDisplayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))
         ));
+
+        if (player.getVersion().getMinorVersion() == 8) {
+            // Compensation for 1.8.0 client sided bug
+            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
+        }
     }
 
     @Override

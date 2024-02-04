@@ -56,6 +56,11 @@ public class BungeeTabList18 extends BungeeTabList {
     public void addEntry(@NotNull Entry entry) {
         addUuid(entry.getUniqueId());
         sendPacket(PlayerListItem.Action.ADD_PLAYER, entryToItem(entry));
+
+        if (player.getVersion().getMinorVersion() == 8) {
+            // Compensation for 1.8.0 client sided bug
+            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
+        }
     }
 
     private void sendPacket(@NotNull PlayerListItem.Action action, @NotNull Item item) {

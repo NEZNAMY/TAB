@@ -137,6 +137,11 @@ public class PacketTabList18 extends TabListBase {
     @Override
     public void addEntry(@NotNull Entry entry) {
         packetSender.sendPacket(player.getPlayer(), createPacket(Action.ADD_PLAYER, entry));
+
+        if (player.getVersion().getMinorVersion() == 8) {
+            // Compensation for 1.8.0 client sided bug
+            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
+        }
     }
 
     @SneakyThrows

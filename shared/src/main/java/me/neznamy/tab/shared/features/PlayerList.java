@@ -239,8 +239,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             }
         };
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-        if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION) ||
-                connectedPlayer.getVersion().getMinorVersion() == 8) {
+        if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) {
             TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
         } else {
             r.run();
