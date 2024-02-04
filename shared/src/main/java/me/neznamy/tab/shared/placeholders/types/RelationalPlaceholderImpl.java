@@ -64,7 +64,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 
     public boolean hasValueChanged(@NonNull TabPlayer viewer, @NonNull TabPlayer target, @Nullable Object value) {
         if (value == null) return false; //bridge placeholders, they are updated using updateValue method
-        String newValue = getReplacements().findReplacement(String.valueOf(value));
+        String newValue = replacements.findReplacement(String.valueOf(value));
         if (!lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).containsKey(target) ||
                 !lastValues.get(viewer).get(target).equals(newValue)) {
             lastValues.get(viewer).put(target, newValue);
@@ -80,7 +80,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier);
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             Object value = request(viewer, target);
-            String s = getReplacements().findReplacement(String.valueOf(value));
+            String s = replacements.findReplacement(String.valueOf(value));
             lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
             if (!target.isLoaded()) return; // Updated on join
             for (Refreshable f : usage) {

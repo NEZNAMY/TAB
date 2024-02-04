@@ -61,7 +61,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
     public boolean hasValueChanged(@NotNull TabPlayer p, @Nullable Object value) {
         if (value == null) return false; //bridge placeholders, they are updated using updateValue method
-        String newValue = setPlaceholders(getReplacements().findReplacement(String.valueOf(value)), p);
+        String newValue = replacements.findReplacement(setPlaceholders(String.valueOf(value), p));
 
         //make invalid placeholders return identifier instead of nothing
         if (identifier.equals(newValue) && !lastValues.containsKey(p)) {
@@ -85,7 +85,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     public String getLastValue(@Nullable TabPlayer p) {
         if (p == null) return identifier;
         if (!lastValues.containsKey(p)) {
-            lastValues.put(p, getReplacements().findReplacement(identifier));
+            lastValues.put(p, replacements.findReplacement(identifier));
             update(p);
         }
         return lastValues.get(p);
