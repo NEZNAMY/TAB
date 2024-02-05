@@ -212,9 +212,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line, Refresh
             String[] prefixOther = split(text, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13);
             prefixValue = prefixOther[0];
             String other = prefixOther[1];
-            if (!playerNameStart.isEmpty()) {
-                other = playerNameStart + EnumChatFormat.getLastColors(prefixValue) + other;
-            }
+            other = playerNameStart + EnumChatFormat.getLastColors(prefixValue) + other;
             String[] nameSuffix = split(other, maxNameLength);
             nameValue = nameSuffix[0];
             suffixValue = nameSuffix[1];
