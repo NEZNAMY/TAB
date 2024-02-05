@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.platform.impl;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class AdventureBossBar implements BossBar {
     private final TabPlayer player;
 
     /** BossBars currently visible to the player */
-    private final Map<UUID, net.kyori.adventure.bossbar.BossBar> bossBars = new LinkedHashMap<>();
+    private final Map<UUID, net.kyori.adventure.bossbar.BossBar> bossBars = new HashMap<>();
 
     @Override
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {

@@ -172,13 +172,12 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      *          Player to unregister
      */
     public void removePlayer(@NonNull TabPlayer p) {
-        if (!players.contains(p)) return; //not registered
+        if (!players.remove(p)) return; //not registered
         p.getScoreboard().unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line line : lines) {
             if (((ScoreboardLine)line).isShownTo(p))
                 p.getScoreboard().unregisterTeam(((ScoreboardLine)line).getTeamName());
         }
-        players.remove(p);
         manager.getActiveScoreboards().remove(p);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, "");
     }

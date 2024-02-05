@@ -33,7 +33,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     private final Set<me.neznamy.tab.api.TabPlayer> hiddenNameTag = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Set<me.neznamy.tab.api.TabPlayer> teamHandlingPaused = Collections.newSetFromMap(new WeakHashMap<>());
-    protected final WeakHashMap<me.neznamy.tab.api.TabPlayer, List<me.neznamy.tab.api.TabPlayer>> hiddenNameTagFor = new WeakHashMap<>();
+    protected final WeakHashMap<me.neznamy.tab.api.TabPlayer, Set<me.neznamy.tab.api.TabPlayer>> hiddenNameTagFor = new WeakHashMap<>();
     protected final Set<me.neznamy.tab.api.TabPlayer> playersWithInvisibleNameTagView = Collections.newSetFromMap(new WeakHashMap<>());
     @Getter private final DisableChecker disableChecker;
     private RedisSupport redis;
@@ -57,7 +57,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
-            hiddenNameTagFor.put(all, new ArrayList<>());
+            hiddenNameTagFor.put(all, new HashSet<>());
             if (disableChecker.isDisableConditionMet(all)) {
                 disableChecker.addDisabledPlayer(all);
                 continue;
@@ -102,7 +102,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         updateProperties(connectedPlayer);
-        hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
+        hiddenNameTagFor.put(connectedPlayer, new HashSet<>());
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == connectedPlayer) continue; //avoiding double registration
             if (connectedPlayer.isVanished() && !TAB.getInstance().getPlatform().canSee(all, connectedPlayer)) {
@@ -134,7 +134,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == disconnectedPlayer) continue;
-            hiddenNameTagFor.getOrDefault(all, Collections.emptyList()).remove(disconnectedPlayer); //clearing memory from API method
+            hiddenNameTagFor.getOrDefault(all, Collections.emptySet()).remove(disconnectedPlayer); //clearing memory from API method
         }
     }
 
@@ -158,29 +158,25 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        if (hiddenNameTag.contains(player)) return;
-        hiddenNameTag.add(player);
+        if (!hiddenNameTag.add(player)) return;
         updateTeamData((TabPlayer) player);
     }
     
     @Override
     public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
-        if (hiddenNameTagFor.get(player).contains(viewer)) return;
-        hiddenNameTagFor.get(player).add(viewer);
+        if (!hiddenNameTagFor.get(player).add(viewer)) return;
         updateTeamData((TabPlayer) player, (TabPlayer) viewer);
     }
 
     @Override
     public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        if (!hiddenNameTag.contains(player)) return;
-        hiddenNameTag.remove(player);
+        if (!hiddenNameTag.remove(player)) return;
         updateTeamData((TabPlayer) player);
     }
     
     @Override
     public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
-        if (!hiddenNameTagFor.get(player).contains(viewer)) return;
-        hiddenNameTagFor.get(player).remove(viewer);
+        if (!hiddenNameTagFor.get(player).remove(viewer)) return;
         updateTeamData((TabPlayer) player, (TabPlayer) viewer);
     }
 
@@ -203,8 +199,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void resumeTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        if (!teamHandlingPaused.contains(player)) return;
-        teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
+        if (!teamHandlingPaused.remove(player)) return; //removing before, so registerTeam method runs
         if (!disableChecker.isDisabledPlayer((TabPlayer) player)) registerTeam((TabPlayer) player);
     }
 
