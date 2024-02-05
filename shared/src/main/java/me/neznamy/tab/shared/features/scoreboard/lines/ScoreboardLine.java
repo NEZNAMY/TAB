@@ -121,9 +121,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line, Refresh
      * @return  forced name start
      */
     protected String getPlayerName(int lineNumber) {
-        String id = String.valueOf(lineNumber);
-        if (id.length() == 1) id = "0" + id;
-        return EnumChatFormat.COLOR_STRING + id.charAt(0) + EnumChatFormat.COLOR_STRING + id.charAt(1) + EnumChatFormat.COLOR_STRING + "r";
+        return EnumChatFormat.COLOR_STRING + "0123456789abcdefklmnor".charAt(lineNumber-1) + EnumChatFormat.COLOR_STRING + "r";
     }
     
     /**
