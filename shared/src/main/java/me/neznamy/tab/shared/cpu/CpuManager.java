@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.cpu;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -18,10 +19,10 @@ public class CpuManager {
     private final int UPDATE_RATE_SECONDS = 10;
 
     /** Active time in current time period saved as nanoseconds from features */
-    private volatile Map<String, Map<String, Long>> featureUsageCurrent = new ConcurrentHashMap<>();
+    private volatile Map<String, Map<String, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
 
     /** Active time in current time period saved as nanoseconds from placeholders */
-    private volatile Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<>();
+    private volatile Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
 
     /** Last CPU report */
     @Nullable @Getter private CpuReport lastReport;
@@ -94,7 +95,8 @@ public class CpuManager {
      * @param nanoseconds time to add
      */
     public void addTime(@NotNull String feature, @NotNull String type, long nanoseconds) {
-        featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).merge(type, nanoseconds, Long::sum);
+        featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>())
+                .computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
     }
 
     /**
@@ -104,7 +106,7 @@ public class CpuManager {
      * @param nanoseconds time to add
      */
     public void addPlaceholderTime(@NotNull String placeholder, long nanoseconds) {
-        placeholderUsageCurrent.merge(placeholder, nanoseconds, Long::sum);
+        placeholderUsageCurrent.computeIfAbsent(placeholder, l -> new AtomicLong()).addAndGet(nanoseconds);
     }
 
     public void runMeasuredTask(@NotNull String feature, @NotNull String type, @NotNull Runnable task) {
