@@ -131,11 +131,7 @@ public class CpuManager {
     }
 
     public void runMeasuredTask(@NotNull String feature, @NotNull String type, @NotNull Runnable task) {
-        submit(() -> {
-            long time = System.nanoTime();
-            task.run();
-            addTime(feature, type, System.nanoTime() - time);
-        });
+        submit(() -> runAndMeasure(task, feature, type));
     }
 
     public void runTask(@NotNull Runnable task) {
@@ -144,7 +140,7 @@ public class CpuManager {
 
     public void startRepeatingMeasuredTask(int intervalMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
         if (processingThread.isShutdown()) return;
-        processingThread.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        processingThread.scheduleAtFixedRate(() -> runAndMeasure(task, feature, type), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     public void startRepeatingTask(int intervalMilliseconds, @NotNull Runnable task) {
@@ -154,7 +150,13 @@ public class CpuManager {
 
     public void runTaskLater(int delayMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
         if (processingThread.isShutdown()) return;
-        processingThread.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
+        processingThread.schedule(() -> runAndMeasure(task, feature, type), delayMilliseconds, TimeUnit.MILLISECONDS);
+    }
+
+    private void runAndMeasure(@NotNull Runnable task, @NotNull String feature, @NotNull String type) {
+        long time = System.nanoTime();
+        run(task);
+        addTime(feature, type, System.nanoTime() - time);
     }
 
     private void run(@NotNull Runnable task) {
