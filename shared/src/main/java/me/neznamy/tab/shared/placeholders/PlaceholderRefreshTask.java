@@ -47,26 +47,29 @@ public class PlaceholderRefreshTask implements Runnable {
             }
             if (placeholder instanceof PlayerPlaceholderImpl) {
                 PlayerPlaceholderImpl playerPlaceholder = (PlayerPlaceholderImpl) placeholder;
-                playerPlaceholderResults.put(playerPlaceholder, new HashMap<>());
+                Map<TabPlayer, Object> playerResults = new HashMap<>();
                 for (TabPlayer player : players) {
                     long startTime = System.nanoTime();
                     Object result = playerPlaceholder.request(player);
                     nanoTime += System.nanoTime()-startTime;
-                    playerPlaceholderResults.get(playerPlaceholder).put(player, result);
+                    playerResults.put(player, result);
                 }
+                playerPlaceholderResults.put(playerPlaceholder, playerResults);
             }
             if (placeholder instanceof RelationalPlaceholderImpl) {
                 RelationalPlaceholderImpl relationalPlaceholder = (RelationalPlaceholderImpl) placeholder;
-                relationalPlaceholderResults.put(relationalPlaceholder, new HashMap<>());
+                Map<TabPlayer, Map<TabPlayer, Object>> viewerMap = new HashMap<>();
                 for (TabPlayer viewer : players) {
-                    relationalPlaceholderResults.get(relationalPlaceholder).put(viewer, new HashMap<>());
+                    Map<TabPlayer, Object> targetMap = new HashMap<>();
                     for (TabPlayer target : players) {
                         long startTime = System.nanoTime();
                         Object result = relationalPlaceholder.request(viewer, target);
                         nanoTime += System.nanoTime()-startTime;
-                        relationalPlaceholderResults.get(relationalPlaceholder).get(viewer).put(target, result);
+                        targetMap.put(target, result);
                     }
+                    viewerMap.put(viewer, targetMap);
                 }
+                relationalPlaceholderResults.put(relationalPlaceholder, viewerMap);
             }
             TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), nanoTime);
         }
