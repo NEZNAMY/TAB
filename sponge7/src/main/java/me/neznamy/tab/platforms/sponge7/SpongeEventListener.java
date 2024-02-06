@@ -16,7 +16,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 /**
  * Event listener for Sponge 7 to forward events to enabled features.
  */
-public class SpongeEventListener extends EventListener<Player> {
+public class SpongeEventListener implements EventListener<Player> {
 
     /**
      * Listens to player quit event.

@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * The core for BungeeCord forwarding events into all enabled features
  */
-public class BungeeEventListener extends EventListener<ProxiedPlayer> implements Listener {
+public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listener {
 
     /**
      * Listens to player disconnecting from the server.

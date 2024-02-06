@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * The core for bukkit forwarding events into all enabled features
  */
-public class BukkitEventListener extends EventListener<Player> implements Listener {
+public class BukkitEventListener implements EventListener<Player>, Listener {
 
     /**
      * Listens to player quit event.

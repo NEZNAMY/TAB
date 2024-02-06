@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * The core for Velocity forwarding events into all enabled features
  */
 @SuppressWarnings("UnstableApiUsage")
-public class VelocityEventListener extends EventListener<Player> {
+public class VelocityEventListener implements EventListener<Player> {
 
     /**
      * Listens to player disconnecting from the server.

@@ -13,7 +13,7 @@ import java.util.UUID;
  * @param   <T>
  *          Platform's player class
  */
-public abstract class EventListener<T> {
+public interface EventListener<T> {
 
     /**
      * Processes player join by forwarding it to all features.
@@ -21,7 +21,7 @@ public abstract class EventListener<T> {
      * @param   player
      *          Player who joined
      */
-    public void join(@NotNull T player) {
+    default void join(@NotNull T player) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onJoin(createPlayer(player)));
@@ -33,7 +33,7 @@ public abstract class EventListener<T> {
      * @param   player
      *          UUID of player who left
      */
-    public void quit(@NotNull UUID player) {
+    default void quit(@NotNull UUID player) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(player)));
@@ -47,7 +47,7 @@ public abstract class EventListener<T> {
      * @param   world
      *          New world
      */
-    public void worldChange(@NotNull UUID player, @NotNull String world) {
+    default void worldChange(@NotNull UUID player, @NotNull String world) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onWorldChange(player, world));
@@ -61,7 +61,7 @@ public abstract class EventListener<T> {
      * @param   message
      *          The message
      */
-    public void pluginMessage(@NotNull UUID player, byte[] message) {
+    default void pluginMessage(@NotNull UUID player, byte[] message) {
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () ->
                     ((ProxyPlatform)TAB.getInstance().getPlatform()).onPluginMessage(player, message));
@@ -77,7 +77,7 @@ public abstract class EventListener<T> {
      * @param   newPlayer
      *          New player object
      */
-    public void replacePlayer(UUID player, T newPlayer) {
+    default void replacePlayer(UUID player, T newPlayer) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TabPlayer p = TAB.getInstance().getPlayer(player);
         if (p == null) return;
@@ -94,7 +94,7 @@ public abstract class EventListener<T> {
      *          Executed command including /
      * @return  {@code true} if event should be cancelled, {@code false} if not.
      */
-    public boolean command(@NotNull UUID player, @NotNull String command) {
+    default boolean command(@NotNull UUID player, @NotNull String command) {
         if (TAB.getInstance().isPluginDisabled()) return false;
         return TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(player), command);
     }
@@ -106,5 +106,6 @@ public abstract class EventListener<T> {
      *          Platform's player object
      * @return  New TabPlayer from given player object
      */
-    public abstract TabPlayer createPlayer(T player);
+    @NotNull
+    TabPlayer createPlayer(@NotNull T player);
 }

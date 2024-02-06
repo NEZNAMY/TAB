@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Event listener for Fabric.
  */
-public class FabricEventListener extends EventListener<ServerPlayer> {
+public class FabricEventListener implements EventListener<ServerPlayer> {
 
     /**
      * Registers all event listeners.
