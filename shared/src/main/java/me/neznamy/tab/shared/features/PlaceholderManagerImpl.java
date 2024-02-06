@@ -112,6 +112,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @NotNull
     private Map<TabPlayer, Set<Refreshable>> updateRelationalPlaceholders(
             @NotNull Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> results) {
+        if (results.isEmpty()) return Collections.emptyMap();
         Collection<TabPlayer> onlinePlayers = Arrays.asList(TAB.getInstance().getOnlinePlayers());
         Map<TabPlayer, Set<Refreshable>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
         for (Entry<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> entry : results.entrySet()) {
@@ -134,6 +135,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     private void updatePlayerPlaceholders(@NotNull Map<PlayerPlaceholderImpl, Map<TabPlayer, Object>> results,
                                           @NotNull Map<TabPlayer, Set<Refreshable>> update) {
+        if (results.isEmpty()) return;
         Collection<TabPlayer> onlinePlayers = Arrays.asList(TAB.getInstance().getOnlinePlayers());
         for (Entry<PlayerPlaceholderImpl, Map<TabPlayer, Object>> entry : results.entrySet()) {
             PlayerPlaceholderImpl placeholder = entry.getKey();
@@ -156,6 +158,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     private void updateServerPlaceholders(@NotNull Map<ServerPlaceholderImpl, Object> results,
                                           @NotNull Map<TabPlayer, Set<Refreshable>> update) {
+        if (results.isEmpty()) return;
         for (Entry<ServerPlaceholderImpl, Object> entry : results.entrySet()) {
             ServerPlaceholderImpl placeholder = entry.getKey();
             if (placeholder.hasValueChanged(entry.getValue())) {
