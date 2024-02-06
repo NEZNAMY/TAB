@@ -105,7 +105,7 @@ public class FeatureManager {
             if (!(f instanceof GameModeListener)) continue;
             long time = System.nanoTime();
             ((GameModeListener) f).onGameModeChange(player);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.GAMEMODE_CHANGE, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.GAMEMODE_CHANGE, System.nanoTime() - time);
         }
     }
 
@@ -126,7 +126,7 @@ public class FeatureManager {
             long time = System.nanoTime();
             TabComponent value = ((DisplayNameListener) f).onDisplayNameChange(packetReceiver, id);
             if (value != null) newDisplayName = value;
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime() - time);
         }
         return newDisplayName;
     }
@@ -144,7 +144,7 @@ public class FeatureManager {
             if (!(f instanceof QuitListener)) continue;
             long time = System.nanoTime();
             ((QuitListener)f).onQuit(disconnectedPlayer);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
         }
         TAB.getInstance().removePlayer(disconnectedPlayer);
         TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
@@ -164,7 +164,7 @@ public class FeatureManager {
             if (!(f instanceof JoinListener)) continue;
             long time = System.nanoTime();
             ((JoinListener)f).onJoin(connectedPlayer);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
             TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed player join in " + (System.nanoTime()-time)/1000000 + "ms");
 
         }
@@ -193,7 +193,7 @@ public class FeatureManager {
             if (!(f instanceof WorldSwitchListener)) continue;
             long time = System.nanoTime();
             ((WorldSwitchListener) f).onWorldChange(changed, from, to);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
@@ -216,7 +216,7 @@ public class FeatureManager {
             if (!(f instanceof ServerSwitchListener)) continue;
             long time = System.nanoTime();
             ((ServerSwitchListener) f).onServerChange(changed, from, to);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
     }
@@ -238,7 +238,7 @@ public class FeatureManager {
             if (!(f instanceof CommandListener)) continue;
             long time = System.nanoTime();
             if (((CommandListener)f).onCommand(sender, command)) cancel = true;
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.COMMAND_PREPROCESS, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.COMMAND_PREPROCESS, System.nanoTime()-time);
         }
         return cancel;
     }
@@ -257,7 +257,7 @@ public class FeatureManager {
             if (!(f instanceof PacketSendListener)) continue;
             long time = System.nanoTime();
             ((PacketSendListener)f).onPacketSend(receiver, packet);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);
         }
     }
 
@@ -276,7 +276,7 @@ public class FeatureManager {
             if (!(f instanceof DisplayObjectiveListener)) continue;
             long time = System.nanoTime();
             ((DisplayObjectiveListener)f).onDisplayObjective(packetReceiver, slot, objective);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }
 
@@ -295,7 +295,7 @@ public class FeatureManager {
             if (!(f instanceof ObjectiveListener)) continue;
             long time = System.nanoTime();
             ((ObjectiveListener)f).onObjective(packetReceiver, action, objective);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }
 
@@ -310,7 +310,7 @@ public class FeatureManager {
             if (!(f instanceof VanishListener)) continue;
             long time = System.nanoTime();
             ((VanishListener)f).onVanishStatusChange(player);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.VANISH_CHANGE, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.VANISH_CHANGE, System.nanoTime()-time);
         }
     }
 
@@ -329,7 +329,7 @@ public class FeatureManager {
             if (!(f instanceof EntryAddListener)) continue;
             long time = System.nanoTime();
             ((EntryAddListener)f).onEntryAdd(packetReceiver, id, name);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, System.nanoTime() - time);
         }
     }
 
@@ -351,7 +351,7 @@ public class FeatureManager {
             if (!(f instanceof LatencyListener)) continue;
             long time = System.nanoTime();
             newLatency = ((LatencyListener)f).onLatencyChange(packetReceiver, id, newLatency);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PING_CHANGE, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PING_CHANGE, System.nanoTime() - time);
         }
         return newLatency;
     }
@@ -368,7 +368,7 @@ public class FeatureManager {
             if (!(f instanceof LoginPacketListener)) continue;
             long time = System.nanoTime();
             ((LoginPacketListener)f).onLoginPacket(packetReceiver);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_LOGIN, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PACKET_LOGIN, System.nanoTime() - time);
         }
     }
 
@@ -383,7 +383,7 @@ public class FeatureManager {
             if (!(f instanceof TabListClearListener)) continue;
             long time = System.nanoTime();
             ((TabListClearListener)f).onTabListClear(packetReceiver);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.TABLIST_CLEAR, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.TABLIST_CLEAR, System.nanoTime() - time);
         }
     }
 

@@ -7,7 +7,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.types.TabFeature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,30 +93,8 @@ public class CpuManager {
      * @param type        sub-feature to add time to
      * @param nanoseconds time to add
      */
-    public void addTime(@NotNull TabFeature feature, @NotNull String type, long nanoseconds) {
-        addTime(feature.getFeatureName(), type, nanoseconds);
-    }
-
-    /**
-     * Adds cpu time to specified feature and usage type
-     *
-     * @param feature     feature to add time to
-     * @param type        sub-feature to add time to
-     * @param nanoseconds time to add
-     */
     public void addTime(@NotNull String feature, @NotNull String type, long nanoseconds) {
         featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).merge(type, nanoseconds, Long::sum);
-    }
-
-    /**
-     * Adds used time to specified key into specified map
-     *
-     * @param map  map to add usage to
-     * @param key  usage key
-     * @param time nanoseconds to add
-     */
-    private void addTime(@NotNull Map<String, Long> map, @NotNull String key, long time) {
-        map.merge(key, time, Long::sum);
     }
 
     /**
@@ -127,7 +104,7 @@ public class CpuManager {
      * @param nanoseconds time to add
      */
     public void addPlaceholderTime(@NotNull String placeholder, long nanoseconds) {
-        addTime(placeholderUsageCurrent, placeholder, nanoseconds);
+        placeholderUsageCurrent.merge(placeholder, nanoseconds, Long::sum);
     }
 
     public void runMeasuredTask(@NotNull String feature, @NotNull String type, @NotNull Runnable task) {
