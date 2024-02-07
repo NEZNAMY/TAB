@@ -33,7 +33,11 @@ public class CpuCommand extends SubCommand {
     public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         CpuReport report = TAB.getInstance().getCPUManager().getLastReport();
         if (report == null) {
-            sendMessage(sender, "&cPlease wait at least 10 seconds since plugin load to use this command.");
+            if (TAB.getInstance().getCPUManager().enableTracking()) {
+                sendMessage(sender, "&aCPU usage tracking has been enabled. Run the command again in 10 seconds to see the first results.");
+            } else {
+                sendMessage(sender, "&cPlease wait at least 10 seconds since running the command for the first time.");
+            }
             return;
         }
         Map<String, Map<String, Float>> features = report.getFeatureUsage();

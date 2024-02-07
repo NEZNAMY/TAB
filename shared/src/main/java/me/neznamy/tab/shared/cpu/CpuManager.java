@@ -42,15 +42,24 @@ public class CpuManager {
     /** Enabled flag used to queue incoming tasks if plugin is not enabled yet */
     private volatile boolean enabled;
 
+    /** Boolean tracking whether CPU usage should be tracked or not */
+    private boolean trackUsage;
+
     /**
-     * Constructs new instance and starts repeating task that resets values in configured interval
+     * Enables CPU usage tracking and returns {@code true} if it was not enabled previously.
+     * If it was, does nothing and returns {@code false}.
+     *
+     * @return  {@code true} if this call enabled it, {@code false} if it was already enabled before
      */
-    public CpuManager() {
+    public boolean enableTracking() {
+        if (trackUsage) return false;
+        trackUsage = true;
         startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), () -> {
             lastReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
         });
+        return true;
     }
 
     /**
@@ -95,6 +104,7 @@ public class CpuManager {
      * @param nanoseconds time to add
      */
     public void addTime(@NotNull String feature, @NotNull String type, long nanoseconds) {
+        if (!trackUsage) return;
         featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>())
                 .computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
     }
@@ -106,6 +116,7 @@ public class CpuManager {
      * @param nanoseconds time to add
      */
     public void addPlaceholderTime(@NotNull String placeholder, long nanoseconds) {
+        if (!trackUsage) return;
         placeholderUsageCurrent.computeIfAbsent(placeholder, l -> new AtomicLong()).addAndGet(nanoseconds);
     }
 
@@ -133,6 +144,10 @@ public class CpuManager {
     }
 
     public void runAndMeasure(@NotNull Runnable task, @NotNull String feature, @NotNull String type) {
+        if (!trackUsage) {
+            run(task);
+            return;
+        }
         long time = System.nanoTime();
         run(task);
         addTime(feature, type, System.nanoTime() - time);
