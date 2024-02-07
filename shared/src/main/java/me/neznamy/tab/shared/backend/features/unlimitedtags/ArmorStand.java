@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -139,7 +140,9 @@ public class ArmorStand {
         if (displayName.isEmpty()) return true;
         String rawText = displayName.contains(" ") ? displayName.replace(" ", "") : displayName;
         if (!rawText.startsWith(EnumChatFormat.COLOR_STRING) && !rawText.startsWith("&") && !rawText.startsWith("#")) return false;
-        return TabComponent.fromColoredText(rawText).toRawText().isEmpty();
+        TabComponent component = TabComponent.fromColoredText(rawText);
+        if (component instanceof StructuredComponent) return ((StructuredComponent) component).toRawText().isEmpty();
+        return component.toLegacyText().isEmpty();
     }
 
     /**

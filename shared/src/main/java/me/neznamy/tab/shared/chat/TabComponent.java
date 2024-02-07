@@ -69,7 +69,7 @@ public abstract class TabComponent {
      * @return  organized component from colored text
      */
     @NotNull
-    public static StructuredComponent fromColoredText(@NotNull String originalText) {
+    public static TabComponent fromColoredText(@NotNull String originalText) {
         String remainingText = originalText;
         List<StructuredComponent> components = new ArrayList<>();
         while (!remainingText.isEmpty()) {
@@ -92,7 +92,11 @@ public abstract class TabComponent {
                 break;
             }
         }
-        return new StructuredComponent("", components);
+        if (components.isEmpty()) {
+            return new SimpleComponent("");
+        } else {
+            return new StructuredComponent("", components);
+        }
     }
 
     @NotNull
