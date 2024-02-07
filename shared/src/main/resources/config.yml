@@ -187,6 +187,7 @@ placeholders:
   time-format: "[HH:mm:ss / h:mm a]"
   time-offset: 0
   register-tab-expansion: true
+  refresh-in-another-thread: true
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements
 placeholder-output-replacements:

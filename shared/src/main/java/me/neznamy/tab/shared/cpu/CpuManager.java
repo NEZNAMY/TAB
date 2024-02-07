@@ -132,7 +132,7 @@ public class CpuManager {
         processingThread.schedule(() -> runAndMeasure(task, feature, type), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    private void runAndMeasure(@NotNull Runnable task, @NotNull String feature, @NotNull String type) {
+    public void runAndMeasure(@NotNull Runnable task, @NotNull String feature, @NotNull String type) {
         long time = System.nanoTime();
         run(task);
         addTime(feature, type, System.nanoTime() - time);

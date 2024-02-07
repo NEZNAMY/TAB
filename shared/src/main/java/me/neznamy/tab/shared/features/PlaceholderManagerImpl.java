@@ -15,6 +15,8 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
+import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshTask;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -39,6 +41,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Getter private final String refreshDisplayName = "Other";
 
     private final boolean registerExpansion = config().getBoolean("placeholders.register-tab-expansion", true);
+    private final boolean refreshInAnotherThread = config().getBoolean("placeholders.refresh-in-another-thread", true);
     private final Map<String, Integer> refreshIntervals = config().getConfigurationSection("placeholderapi-refresh-intervals");
     private final int defaultRefresh;
 
@@ -53,15 +56,22 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @NotNull @Getter private final TabExpansion tabExpansion = registerExpansion ?
             TAB.getInstance().getPlatform().createTabExpansion() : new EmptyTabExpansion();
 
+    private final CpuManager cpu;
+
     /**
      * Constructs new instance and loads refresh intervals from config.
+     *
+     * @param   cpu
+     *          CPU manager for submitting tasks
      */
-    public PlaceholderManagerImpl() {
+    public PlaceholderManagerImpl(@NotNull CpuManager cpu) {
+        this.cpu = cpu;
         TAB.getInstance().getConfigHelper().startup().fixRefreshIntervals(refreshIntervals);
         defaultRefresh = refreshIntervals.getOrDefault("default-refresh-interval", 500);
     }
 
     private void refresh() {
+        long time = System.nanoTime();
         loopTime += TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
         List<Placeholder> placeholders = new ArrayList<>();
         for (Placeholder placeholder : usedPlaceholders) {
@@ -70,15 +80,23 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         }
         if (placeholders.isEmpty()) return;
         PlaceholderRefreshTask task = new PlaceholderRefreshTask(placeholders);
-        TAB.getInstance().getCPUManager().getPlaceholderThread().submit(() -> {
-            // Run in placeholder refreshing thread
-            long time = System.nanoTime();
-            task.run();
-            TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.PLACEHOLDER_REQUEST, System.nanoTime() - time);
+        cpu.addTime(featureName, CpuUsageCategory.PLACEHOLDER_REFRESH_INIT, System.nanoTime() - time);
+        if (refreshInAnotherThread) {
+            cpu.getPlaceholderThread().submit(() -> {
+                // Run in placeholder refreshing thread
+                long time2 = System.nanoTime();
+                task.run();
+                cpu.addTime(featureName, CpuUsageCategory.PLACEHOLDER_REQUEST, System.nanoTime() - time2);
 
-            // Back to main thread
-            TAB.getInstance().getCPUManager().runTask(() -> processRefreshResults(task));
-        });
+                // Back to main thread
+                cpu.runTask(() -> processRefreshResults(task));
+            });
+        } else {
+            long time2 = System.nanoTime();
+            task.run();
+            cpu.addTime(featureName, CpuUsageCategory.PLACEHOLDER_REQUEST, System.nanoTime() - time2);
+            processRefreshResults(task);
+        }
     }
 
     private void processRefreshResults(@NotNull PlaceholderRefreshTask task) {
@@ -87,7 +105,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         updateServerPlaceholders(task.getServerPlaceholderResults(), update);
         updatePlayerPlaceholders(task.getPlayerPlaceholderResults(), update);
         Map<TabPlayer, Set<Refreshable>> forceUpdate = updateRelationalPlaceholders(task.getRelationalPlaceholderResults());
-        TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.PLACEHOLDER_SAVE, System.nanoTime() - time);
+        cpu.addTime(featureName, CpuUsageCategory.PLACEHOLDER_SAVE, System.nanoTime() - time);
 
         refreshFeatures(forceUpdate, update);
     }
@@ -97,14 +115,14 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             for (Refreshable r : entry.getValue()) {
                 long startTime = System.nanoTime();
                 r.refresh(entry.getKey(), false);
-                TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+                cpu.addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
             }
         }
         for (Entry<TabPlayer, Set<Refreshable>> entry : forceUpdate.entrySet()) {
             for (Refreshable r : entry.getValue()) {
                 long startTime = System.nanoTime();
                 r.refresh(entry.getKey(), true);
-                TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+                cpu.addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
             }
         }
     }
@@ -216,8 +234,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     @Override
     public void load() {
-        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL,
-                featureName, TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESH_INIT, this::refresh);
+        cpu.startRepeatingTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this::refresh);
         for (Placeholder pl : usedPlaceholders) {
             if (pl instanceof ServerPlaceholderImpl) {
                 ((ServerPlaceholderImpl)pl).update();

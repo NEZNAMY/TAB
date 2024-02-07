@@ -167,7 +167,7 @@ public class TAB extends TabAPI {
             cpu = new CpuManager();
             configuration = new Configs();
             featureManager = new FeatureManager();
-            placeholderManager = new PlaceholderManagerImpl();
+            placeholderManager = new PlaceholderManagerImpl(cpu);
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, placeholderManager);
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, platform.detectPermissionPlugin());
             platform.registerPlaceholders();
