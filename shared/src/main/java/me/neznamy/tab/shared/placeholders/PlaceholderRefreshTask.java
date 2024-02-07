@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,7 +32,8 @@ public class PlaceholderRefreshTask implements Runnable {
     private final Map<PlayerPlaceholderImpl, Map<TabPlayer, Object>> playerPlaceholderResults = new HashMap<>();
 
     /** Map of relational placeholder results */
-    private final Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> relationalPlaceholderResults = new HashMap<>();
+    @Nullable
+    private Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> relationalPlaceholderResults;
 
     @Override
     public void run() {
@@ -69,6 +71,7 @@ public class PlaceholderRefreshTask implements Runnable {
                     }
                     viewerMap.put(viewer, targetMap);
                 }
+                if (relationalPlaceholderResults == null) relationalPlaceholderResults = new HashMap<>();
                 relationalPlaceholderResults.put(relationalPlaceholder, viewerMap);
             }
             TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), nanoTime);

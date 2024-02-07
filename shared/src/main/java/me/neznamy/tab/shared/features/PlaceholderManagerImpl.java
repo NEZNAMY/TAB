@@ -28,6 +28,7 @@ import me.neznamy.tab.shared.placeholders.types.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Messy class for placeholder management
@@ -129,8 +130,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     @NotNull
     private Map<TabPlayer, Set<Refreshable>> updateRelationalPlaceholders(
-            @NotNull Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> results) {
-        if (results.isEmpty()) return Collections.emptyMap();
+            @Nullable Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> results) {
+        if (results == null) return Collections.emptyMap();
         Collection<TabPlayer> onlinePlayers = Arrays.asList(TAB.getInstance().getOnlinePlayers());
         Map<TabPlayer, Set<Refreshable>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
         for (Entry<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> entry : results.entrySet()) {
