@@ -27,7 +27,7 @@ public class StructuredComponent extends TabComponent {
     @Getter
     @Setter
     @NotNull
-    private String text;
+    private String text = "";
 
     /** Chat modifier containing color, magic codes, hover and click event */
     @Getter
