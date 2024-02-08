@@ -186,7 +186,7 @@ placeholders:
   date-format: "dd.MM.yyyy"
   time-format: "[HH:mm:ss / h:mm a]"
   time-offset: 0
-  register-tab-expansion: true
+  register-tab-expansion: false
   refresh-in-another-thread: true
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements
