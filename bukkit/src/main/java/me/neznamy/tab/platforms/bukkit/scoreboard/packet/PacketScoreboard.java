@@ -164,12 +164,14 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
                               @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+        //TODO save teams into map to prevent creating new instance each time
         packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(name, prefix, toComponent(prefix), suffix,
                 toComponent(suffix), visibility, collision, players, options, color));
     }
 
     @Override
     public void unregisterTeam0(@NotNull String name) {
+        //TODO save teams into map to prevent creating new instance each time
         packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(name));
     }
 
@@ -177,6 +179,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
                             @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
                             int options, @NotNull EnumChatFormat color) {
+        //TODO save teams into map to prevent creating new instance each time
         packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(name, prefix, toComponent(prefix), suffix,
                 toComponent(suffix), visibility, collision, options, color));
     }
