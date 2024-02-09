@@ -54,7 +54,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
             for (BossBar line : getRegisteredBossBars().values()) {
-                if (!line.getPlayers().contains(p)) continue;
+                if (!line.containsPlayer(p)) continue;
                 Location eyeLocation = ((BukkitTabPlayer)p).getPlayer().getEyeLocation();
                 Location loc = eyeLocation.add(eyeLocation.getDirection().normalize().multiply(WITHER_DISTANCE));
                 if (loc.getY() < 1) loc.setY(1);

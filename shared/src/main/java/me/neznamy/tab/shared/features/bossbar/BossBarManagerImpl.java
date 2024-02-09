@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Class for handling BossBar feature
  */
 public class BossBarManagerImpl extends TabFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
-        UnLoadable, Refreshable, LoginPacketListener {
+        UnLoadable, Refreshable, LoginPacketListener, QuitListener {
 
     //default BossBars
     private final List<String> defaultBars = new ArrayList<>();
@@ -156,7 +156,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     private void showBossBars(@NonNull TabPlayer p, @NonNull List<String> bars) {
         for (String defaultBar : bars) {
             BossBarLine bar = (BossBarLine) registeredBossBars.get(defaultBar);
-            if (bar.isConditionMet(p) && !bar.getPlayers().contains(p)) {
+            if (bar.isConditionMet(p) && !bar.containsPlayer(p)) {
                 bar.addPlayer(p);
             }
         }
@@ -280,6 +280,13 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
                     ((BossBarLine)bar).sendToPlayerRaw(player);
                 }
             }
+        }
+    }
+
+    @Override
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
+        for (BossBar line : lineValues) {
+            ((BossBarLine)line).removePlayerRaw(disconnectedPlayer);
         }
     }
 }

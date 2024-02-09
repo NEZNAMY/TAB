@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -47,7 +46,7 @@ public class BossBarLine implements BossBar {
     @Getter private final boolean announcementBar;
 
     //set of players seeing this BossBar
-    private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<TabPlayer> players = new HashSet<>();
 
     //refreshers
     private final TextRefresher textRefresher;
@@ -253,9 +252,14 @@ public class BossBarLine implements BossBar {
         player.getBossBar().remove(uniqueId);
     }
 
+    public void removePlayerRaw(@NotNull TabPlayer player) {
+        players.remove(player);
+    }
+
     @Override
-    public @NotNull List<me.neznamy.tab.api.TabPlayer> getPlayers() {
-        return players.stream().filter(TabPlayer::isOnline).collect(Collectors.toList());
+    @NotNull
+    public List<me.neznamy.tab.api.TabPlayer> getPlayers() {
+        return new ArrayList<>(players);
     }
 
     @Override
