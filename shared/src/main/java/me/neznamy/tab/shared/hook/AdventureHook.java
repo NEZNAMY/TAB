@@ -63,14 +63,19 @@ public class AdventureHook {
                 color = TextColor.color(modifier.getColor().getLegacyColor().getRgb());
             }
         }
-        Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
-        if (modifier.isBold()) decorations.add(TextDecoration.BOLD);
-        if (modifier.isItalic()) decorations.add(TextDecoration.ITALIC);
-        if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
-        if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
-        if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
 
-        Component adventureComponent = Component.text(iComponent.getText(), color, decorations);
+        Component adventureComponent;
+        if (modifier.hasMagicCodes()) {
+            Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
+            if (modifier.isBold()) decorations.add(TextDecoration.BOLD);
+            if (modifier.isItalic()) decorations.add(TextDecoration.ITALIC);
+            if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
+            if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
+            if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
+            adventureComponent = Component.text(iComponent.getText(), color, decorations);
+        } else {
+            adventureComponent = Component.text(iComponent.getText(), color);
+        }
 
         if (modifier.getClickEvent() != null) {
             adventureComponent = adventureComponent.clickEvent(ClickEvent.clickEvent(

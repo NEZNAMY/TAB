@@ -65,4 +65,13 @@ public class ChatModifier {
         if (obfuscated) builder.append(EnumChatFormat.OBFUSCATED);
         return builder.toString();
     }
+
+    /**
+     * Returns {@code true} if this modifier has any magic codes, {@code false} if not.
+     *
+     * @return  {@code true} if this modifier has any magic codes, {@code false} if not
+     */
+    public boolean hasMagicCodes() {
+        return bold || italic || underlined || strikethrough || obfuscated;
+    }
 }
