@@ -1,12 +1,11 @@
 package me.neznamy.tab.shared.features.injection;
 
-import lombok.Getter;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.features.types.UnLoadable;
-import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
  * NickCompatibility - Detect name changes from other plugins
  */
 public abstract class PipelineInjector extends TabFeature implements JoinListener, Loadable, UnLoadable {
-
-    @Getter private final String featureName = "Pipeline injection";
 
     /** Team anti-override flag */
     protected boolean antiOverrideTeams;
@@ -66,5 +63,11 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         inject(connectedPlayer);
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Pipeline injection";
     }
 }

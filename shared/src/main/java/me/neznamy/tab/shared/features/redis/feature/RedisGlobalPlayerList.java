@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
+import me.neznamy.tab.shared.features.GlobalPlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabPlayer;

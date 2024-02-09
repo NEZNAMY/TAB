@@ -1,14 +1,12 @@
-package me.neznamy.tab.shared.features.globalplayerlist;
+package me.neznamy.tab.shared.features;
 
 import java.util.*;
 
-import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * Feature handler for global PlayerList feature.
  */
 public class GlobalPlayerList extends TabFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
-        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener {
+        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, Refreshable {
 
     // config options
     private final List<String> spyServers = config().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));
@@ -26,7 +24,6 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     private final boolean isolateUnlistedServers = config().getBoolean("global-playerlist.isolate-unlisted-servers", false);
 
     private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
-    @Getter private final String featureName = "Global PlayerList";
 
     /**
      * Constructs new instance and registers new placeholders.
@@ -45,7 +42,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
 
     @Override
     public void load() {
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_LATENCY, new LatencyRefresher());
+        addUsedPlaceholder(TabConstants.Placeholder.PING);
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             List<TabList.Entry> entries = new ArrayList<>();
             for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
@@ -129,7 +126,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
-        TAB.getInstance().getCPUManager().runTaskLater(200, featureName, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
+        TAB.getInstance().getCPUManager().runTaskLater(200, getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 // Remove for everyone and add back if visible, easy solution to display-others-as-spectators option
                 // Also do not remove/add players from the same server, let backend handle it
@@ -218,5 +215,25 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
      */
     public boolean isSpyServer(@NotNull String server) {
         return spyServers.stream().anyMatch(server::equalsIgnoreCase);
+    }
+
+    @Override
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
+        //player ping changed, must manually update latency for players on other servers
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (!refreshed.getServer().equals(all.getServer())) all.getTabList().updateLatency(refreshed.getTablistId(), refreshed.getPing());
+        }
+    }
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating latency";
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Global PlayerList";
     }
 }

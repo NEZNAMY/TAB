@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features;
 
-import lombok.Getter;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
@@ -21,8 +20,6 @@ import java.util.List;
 public class HeaderFooter extends TabFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, Refreshable {
 
-    @Getter private final String featureName = "Header/Footer";
-    @Getter private final String refreshDisplayName = "Updating header/footer";
     private final List<Object> worldGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-world").keySet());
     private final List<Object> serverGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-server").keySet());
     private final DisableChecker disableChecker;
@@ -32,7 +29,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
      */
     public HeaderFooter() {
         Condition disableCondition = Condition.getCondition(config().getString("header-footer.disable-condition"));
-        disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
         TAB.getInstance().getConfigHelper().hint().checkHeaderFooterForRedundancy(config().getConfigurationSection("header-footer"));
     }
@@ -88,6 +85,12 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
             p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER));
         }
         sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).updateAndGet(), p.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+    }
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating header/footer";
     }
 
     /**
@@ -164,5 +167,11 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
         sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
                 player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Header/Footer";
     }
 }

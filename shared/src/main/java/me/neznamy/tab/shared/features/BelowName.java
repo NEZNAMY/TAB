@@ -25,8 +25,6 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
 
-    @Getter private final String refreshDisplayName = "Updating BelowName number";
-    @Getter private final String featureName = "BelowName";
     @Getter private final String NUMBER_PROPERTY = Property.randomName();
     private final String TEXT_PROPERTY = Property.randomName();
     private final String DEFAULT_FORMAT_PROPERTY = Property.randomName();
@@ -46,7 +44,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
      */
     public BelowName() {
         Condition disableCondition = Condition.getCondition(config().getString("belowname-objective.disable-condition"));
-        disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
         TAB.getInstance().getConfigHelper().startup().checkBelowNameText(rawText);
@@ -148,6 +146,12 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating BelowName number";
+    }
+
+    @Override
     public void onLoginPacket(@NotNull TabPlayer player) {
         if (disableChecker.isDisabledPlayer(player) || !player.isLoaded()) return;
         register(player);
@@ -189,11 +193,15 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         );
     }
 
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "BelowName";
+    }
+
     @RequiredArgsConstructor
     private static class TextRefresher extends TabFeature implements Refreshable {
 
-        @Getter private final String refreshDisplayName = "Updating BelowName text";
-        @Getter private final String featureName = "BelowName";
         private final BelowName feature;
 
         @Override
@@ -205,6 +213,18 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                     Scoreboard.HealthDisplay.INTEGER,
                     TabComponent.optimized(refreshed.getProperty(feature.DEFAULT_FORMAT_PROPERTY).updateAndGet())
             );
+        }
+
+        @Override
+        @NotNull
+        public String getRefreshDisplayName() {
+            return "Updating BelowName text";
+        }
+
+        @Override
+        @NotNull
+        public String getFeatureName() {
+            return feature.getFeatureName();
         }
     }
 }

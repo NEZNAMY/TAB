@@ -121,10 +121,12 @@ public class BossBarLine implements BossBar {
      *          string to parse
      * @return  parsed color
      */
-    public @NotNull BarColor parseColor(@NonNull String color) {
+    @NotNull
+    public BarColor parseColor(@NonNull String color) {
         try {
             return BarColor.valueOf(color);
         } catch (IllegalArgumentException e) {
+            // TODO send warn
             return BarColor.PURPLE;
         }
     }
@@ -136,10 +138,12 @@ public class BossBarLine implements BossBar {
      *          string to parse
      * @return  parsed style
      */
-    public @NotNull BarStyle parseStyle(@NonNull String style) {
+    @NotNull
+    public BarStyle parseStyle(@NonNull String style) {
         try {
             return BarStyle.valueOf(style);
         } catch (IllegalArgumentException e) {
+            // TODO send warn
             return BarStyle.PROGRESS;
         }
     }
@@ -154,7 +158,7 @@ public class BossBarLine implements BossBar {
      *          string to parse
      * @return  parsed progress
      */
-    public float parseProgress(@NonNull TabPlayer player, @NonNull String progress) {
+    public float parseProgress(@NotNull TabPlayer player, @NotNull String progress) {
         try {
             float value = Float.parseFloat(progress);
             if (value < 0) value = 0;
@@ -227,7 +231,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void addPlayer(me.neznamy.tab.api.@NonNull TabPlayer p) {
+    public void addPlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
         if (players.contains(player)) return;
         players.add(player);
@@ -283,55 +287,87 @@ public class BossBarLine implements BossBar {
         return players.contains((TabPlayer) player);
     }
 
-    @Getter
     private class TextRefresher extends TabFeature implements Refreshable {
-
-        private final String featureName = "BossBar";
-        private final String refreshDisplayName = "Updating text";
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, refreshed.getProperty(propertyTitle).updateAndGet());
         }
+
+        @Override
+        @NotNull
+        public String getRefreshDisplayName() {
+            return "Updating text";
+        }
+
+        @Override
+        @NotNull
+        public String getFeatureName() {
+            return "BossBar";
+        }
     }
 
-    @Getter
     private class ProgressRefresher extends TabFeature implements Refreshable {
-
-        private final String featureName = "BossBar";
-        private final String refreshDisplayName = "Updating progress";
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseProgress(refreshed, refreshed.getProperty(propertyProgress).updateAndGet())/100);
         }
+
+        @Override
+        @NotNull
+        public String getRefreshDisplayName() {
+            return "Updating progress";
+        }
+
+        @Override
+        @NotNull
+        public String getFeatureName() {
+            return "BossBar";
+        }
     }
 
-    @Getter
     private class ColorRefresher extends TabFeature implements Refreshable {
-
-        private final String featureName = "BossBar";
-        private final String refreshDisplayName = "Updating color";
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseColor(refreshed.getProperty(propertyColor).updateAndGet()));
         }
+
+        @Override
+        @NotNull
+        public String getRefreshDisplayName() {
+            return "Updating color";
+        }
+
+        @Override
+        @NotNull
+        public String getFeatureName() {
+            return "BossBar";
+        }
     }
 
-    @Getter
     private class StyleRefresher extends TabFeature implements Refreshable {
-
-        private final String featureName = "BossBar";
-        private final String refreshDisplayName = "Updating style";
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseStyle(refreshed.getProperty(propertyStyle).updateAndGet()));
+        }
+
+        @Override
+        @NotNull
+        public String getRefreshDisplayName() {
+            return "Updating style";
+        }
+
+        @Override
+        @NotNull
+        public String getFeatureName() {
+            return "BossBar";
         }
     }
 }

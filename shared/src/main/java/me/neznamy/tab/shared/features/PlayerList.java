@@ -28,9 +28,6 @@ import java.util.UUID;
 public class PlayerList extends TabFeature implements TabListFormatManager, JoinListener, DisplayNameListener, Loadable,
         UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, VanishListener {
 
-    protected final String featureName = "Tablist name formatting";
-    private final String refreshDisplayName = "Updating TabList format";
-
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = config().getBoolean("tablist-name-formatting.anti-override", true);
 
@@ -50,10 +47,10 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
      */
     public PlayerList() {
         Condition disableCondition = Condition.getCondition(config().getString("tablist-name-formatting.disable-condition"));
-        disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
         if (antiOverrideTabList) {
-            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, featureName, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, () -> {
+            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, () -> {
                 for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                     p.getTabList().checkDisplayNames();
                 }
@@ -177,7 +174,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         if (updateProperties(p) && !disableChecker.isDisabledPlayer(p)) updatePlayer(p, true);
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
-        TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
+        TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!disableChecker.isDisabledPlayer(all) && p.getVersion().getMinorVersion() >= 8)
                     p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
@@ -224,6 +221,12 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     }
 
     @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating TabList format";
+    }
+
+    @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         updateProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
@@ -240,7 +243,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         };
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
         if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) {
-            TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+            TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
         } else {
             r.run();
         }
@@ -320,5 +323,11 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     public @NotNull String getOriginalSuffix(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).getOriginalRawValue();
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Tablist name formatting";
     }
 }

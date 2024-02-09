@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.nametags;
 import java.util.Objects;
 import java.util.WeakHashMap;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -22,8 +21,6 @@ import org.jetbrains.annotations.Nullable;
 @RequiredArgsConstructor
 public class CollisionManager extends TabFeature implements JoinListener, Loadable, Refreshable {
 
-    @Getter private final String featureName = "NameTags";
-    @Getter private final String refreshDisplayName = "Updating collision";
     private final NameTag nameTags;
     private final String collisionRule = config().getString("scoreboard-teams.enable-collision", "true");
     private final Condition refreshCondition = Condition.getCondition(collisionRule);
@@ -53,6 +50,12 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (nameTags.getDisableChecker().isDisabledPlayer(p)) return;
         nameTags.updateTeamData(p);
+    }
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating collision";
     }
 
     /**
@@ -95,5 +98,11 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     @Nullable
     public Boolean getCollisionRule(@NotNull TabPlayer player) {
         return forcedCollision.get(player);
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return nameTags.getFeatureName();
     }
 }

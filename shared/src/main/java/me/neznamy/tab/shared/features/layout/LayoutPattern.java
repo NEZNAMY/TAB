@@ -17,9 +17,6 @@ import java.util.*;
 @Getter
 public class LayoutPattern extends TabFeature implements Refreshable, Layout {
 
-    @Getter private final String featureName = "Layout";
-    @Getter private final String refreshDisplayName = "Updating player groups";
-
     @NotNull private final LayoutManagerImpl manager;
     @NotNull private final String name;
     @Nullable private final Condition condition;
@@ -77,6 +74,12 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
     }
 
     @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating player groups";
+    }
+
+    @Override
     public void addFixedSlot(int slot, @NonNull String text) {
         addFixedSlot(slot, text, manager.getDefaultSkin(slot), manager.getEmptySlotPing());
     }
@@ -100,5 +103,11 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
     @Override
     public void addGroup(@Nullable String condition, int[] slots) {
         addGroup(UUID.randomUUID().toString(), Condition.getCondition(condition), slots);
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return manager.getFeatureName();
     }
 }

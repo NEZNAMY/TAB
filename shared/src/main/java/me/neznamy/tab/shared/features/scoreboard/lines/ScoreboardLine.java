@@ -27,9 +27,6 @@ import java.util.WeakHashMap;
 @Getter
 public abstract class ScoreboardLine extends TabFeature implements Line, Refreshable {
 
-    private final String featureName = "Scoreboard";
-    private final String refreshDisplayName = "Updating Scoreboard lines";
-
     //ID of this line
     protected final int lineNumber;
 
@@ -263,5 +260,17 @@ public abstract class ScoreboardLine extends TabFeature implements Line, Refresh
                 0,
                 EnumChatFormat.RESET
         );
+    }
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating Scoreboard lines";
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return parent.getFeatureName();
     }
 }

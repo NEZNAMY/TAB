@@ -23,8 +23,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, LoginPacketListener,
         VanishListener {
 
-    @Getter private final String featureName = "NameTags";
-    @Getter private final String refreshDisplayName = "Updating prefix/suffix";
     protected final boolean invisibleNameTags = config().getBoolean("scoreboard-teams.invisible-nametags", false);
     private final boolean canSeeFriendlyInvisibles = config().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
     @Getter private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
@@ -43,7 +41,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     public NameTag() {
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
-        disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         if (!config().getBoolean("scoreboard-teams.anti-override", true))
@@ -97,6 +95,12 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             refresh = prefix || suffix;
         }
         if (refresh) updateTeamData(refreshed);
+    }
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating prefix/suffix";
     }
 
     @Override
@@ -368,5 +372,11 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             }
             vanishedPlayers.remove(player);
         }
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "NameTags";
     }
 }

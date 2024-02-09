@@ -24,7 +24,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     @Getter private final Map<String, Object> staticLines = config().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
     @Getter private final boolean armorStandsAlwaysVisible = TAB.getInstance().getConfiguration().getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
 
-    @Getter protected final String featureName = "Unlimited NameTags";
     private final Set<me.neznamy.tab.api.TabPlayer> playersDisabledWithAPI = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Map<TabPlayer, ArmorStandManager> armorStandManagerMap = new WeakHashMap<>();
     private final Set<TabPlayer> playersPreviewingNameTag = Collections.newSetFromMap(new WeakHashMap<>());
@@ -35,7 +34,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
         this.armorStandFunction = armorStandFunction;
         Collections.reverse(dynamicLines);
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.unlimited-nametag-mode.disable-condition"));
-        unlimitedDisableChecker = new DisableChecker(featureName, disableCondition, this::onUnlimitedDisableConditionChange);
+        unlimitedDisableChecker = new DisableChecker(getExtraFeatureName(), disableCondition, this::onUnlimitedDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS + "-Condition", unlimitedDisableChecker);
     }
 
@@ -289,5 +288,10 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     public void toggleNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer player, boolean sendToggleMessage) {
         super.toggleNameTagVisibilityView(player, sendToggleMessage);
         updateNameTagVisibilityView((TabPlayer) player);
+    }
+
+    @NotNull
+    public String getExtraFeatureName() {
+        return "Unlimited NameTags";
     }
 }

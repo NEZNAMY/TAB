@@ -23,8 +23,6 @@ import java.util.Map;
 public class YellowNumber extends TabFeature implements JoinListener, Loadable, UnLoadable,
         Refreshable, LoginPacketListener {
 
-    @Getter private final String featureName = "Playerlist Objective";
-    @Getter private final String refreshDisplayName = "Updating value";
     @Getter private final String PROPERTY_VALUE = Property.randomName();
     @Getter private final String PROPERTY_VALUE_FANCY = Property.randomName();
 
@@ -50,7 +48,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
      */
     public YellowNumber() {
         Condition disableCondition = Condition.getCondition(config().getString("playerlist-objective.disable-condition"));
-        disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
     }
 
@@ -147,6 +145,12 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating value";
+    }
+
+    @Override
     public void onLoginPacket(@NotNull TabPlayer p) {
         if (disableChecker.isDisabledPlayer(p) || !p.isLoaded()) return;
         register(p);
@@ -182,5 +186,11 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
                 null, // Unused by this objective slot
                 TabComponent.optimized(fancyValue)
         );
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Playerlist Objective";
     }
 }

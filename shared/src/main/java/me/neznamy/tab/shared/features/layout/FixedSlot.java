@@ -17,9 +17,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FixedSlot extends TabFeature implements Refreshable {
 
-    @Getter private final String featureName = "Layout";
-    @Getter private final String refreshDisplayName = "Updating fixed slots";
-
     private final LayoutManagerImpl manager;
     @Getter private final int slot;
     private final LayoutPattern pattern;
@@ -40,6 +37,12 @@ public class FixedSlot extends TabFeature implements Refreshable {
         } else {
             p.getTabList().updateDisplayName(id, TabComponent.optimized(p.getProperty(propertyName).updateAndGet()));
         }
+    }
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating fixed slots";
     }
 
     public @NotNull TabList.Entry createEntry(@NotNull TabPlayer viewer) {
@@ -91,5 +94,11 @@ public class FixedSlot extends TabFeature implements Refreshable {
         );
         if (!text.isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), slot), f);
         return f;
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return manager.getFeatureName();
     }
 }

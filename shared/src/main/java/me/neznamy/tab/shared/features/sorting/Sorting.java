@@ -35,9 +35,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Sorting extends TabFeature implements SortingManager, JoinListener, Loadable, Refreshable {
 
-    @Getter private final String featureName = "Team name refreshing";
-    @Getter private final String refreshDisplayName = "Updating team name";
-
     private NameTag nameTags;
     private LayoutManagerImpl layout;
     private RedisSupport redis;
@@ -85,7 +82,13 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
             if (layout != null) layout.updateTeamName(p, fullTeamNames.get(p));
         }
     }
-    
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating team name";
+    }
+
     @Override
     public void load() {
         // All of these features are instantiated after this one, so they must be detected later
@@ -264,5 +267,11 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     @Override
     public @NotNull String getOriginalTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
         return shortTeamNames.get((TabPlayer) player);
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Sorting";
     }
 }

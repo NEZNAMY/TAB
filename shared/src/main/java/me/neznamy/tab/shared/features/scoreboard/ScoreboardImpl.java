@@ -24,8 +24,6 @@ import java.util.*;
 @Getter
 public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.scoreboard.Scoreboard, Refreshable {
 
-    private final String featureName = "Scoreboard";
-    private final String refreshDisplayName = "Updating Scoreboard title";
     private final String titleProperty = Property.randomName();
 
     //scoreboard manager
@@ -194,6 +192,12 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
     }
 
     @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating Scoreboard title";
+    }
+
+    @Override
     public void setTitle(@NonNull String title) {
         this.title = title;
         for (TabPlayer p : players) {
@@ -260,5 +264,11 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      */
     public void removePlayerFromSet(@NonNull TabPlayer player) {
         players.remove(player);
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return manager.getFeatureName();
     }
 }

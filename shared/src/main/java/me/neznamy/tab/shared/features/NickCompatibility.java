@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features;
 import java.util.Collections;
 import java.util.UUID;
 
-import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -18,6 +17,7 @@ import me.neznamy.tab.shared.features.types.EntryAddListener;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -26,8 +26,6 @@ import org.jetbrains.annotations.Nullable;
  * is considered nicked and all name-bound features will use this new nickname.
  */
 public class NickCompatibility extends TabFeature implements EntryAddListener {
-
-    @Getter private final String featureName = "Nick compatibility";
 
     @Nullable private final NameTag nameTags = TAB.getInstance().getNameTagManager();
     @Nullable private final BelowName belowname = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
@@ -63,7 +61,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     }
 
     private void processNameChange(TabPlayer player) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
+        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     String prefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
@@ -94,7 +92,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     }
 
     private void processNameChange(RedisPlayer player) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
+        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (redisTeams != null) {
                 String teamName = redisTeams.getTeamNames().get(player);
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
@@ -134,5 +132,11 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             }
         });
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Nick compatibility";
     }
 }

@@ -181,7 +181,6 @@ public class TabConstants {
         //BungeeCord only
         public static final String REDIS_BUNGEE = "RedisBungee";
         public static final String GLOBAL_PLAYER_LIST = "GlobalPlayerList";
-        public static final String GLOBAL_PLAYER_LIST_LATENCY = "GlobalPlayerList-Latency";
 
         //additional info displayed in cpu command
         public static final String PACKET_DESERIALIZING = "Packet deserializing";

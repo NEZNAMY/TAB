@@ -16,8 +16,6 @@ import org.jetbrains.annotations.NotNull;
 public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable,
         ServerSwitchListener, WorldSwitchListener, VanishListener {
 
-    private final String featureName = "Spectator fix";
-
     /**
      * Sends GameMode update of all players to either their real GameMode if
      * {@code realGameMode} is {@code true} or fake value if it's {@code false}.
@@ -54,7 +52,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
 
     @Override
     public void onJoin(@NotNull TabPlayer p) {
-        TAB.getInstance().getCPUManager().runTaskLater(100, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN,
+        TAB.getInstance().getCPUManager().runTaskLater(100, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN,
                 () -> updatePlayer(p, false, true));
     }
 
@@ -75,7 +73,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         // 200ms delay for global playerlist, taking extra time
-        TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
+        TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 updatePlayer(all, false, true);
             }
@@ -99,5 +97,11 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
             if (viewer == player || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
             viewer.getTabList().updateGameMode(player.getTablistId(), 0);
         }
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Spectator fix";
     }
 }

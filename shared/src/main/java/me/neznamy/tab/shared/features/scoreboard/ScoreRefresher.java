@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -18,8 +17,6 @@ import org.jetbrains.annotations.Nullable;
 public class ScoreRefresher extends TabFeature implements Refreshable {
 
     private final String NUMBER_FORMAT_PROPERTY = Property.randomName();
-    @Getter private final String featureName = "Scoreboard";
-    @Getter private final String refreshDisplayName = "Updating scores";
 
     /** Line this score belongs to */
     private final ScoreboardLine line;
@@ -38,6 +35,12 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
                 null,
                 getNumberFormat(refreshed)
         );
+    }
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Updating NumberFormat";
     }
 
     /**
@@ -60,5 +63,11 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
     @Nullable
     public TabComponent getNumberFormat(@NotNull TabPlayer player) {
         return TabComponent.optimized(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return line.getFeatureName();
     }
 }

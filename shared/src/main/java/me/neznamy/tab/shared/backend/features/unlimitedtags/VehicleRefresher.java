@@ -24,9 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class VehicleRefresher extends TabFeature implements JoinListener, QuitListener, Loadable, Refreshable {
 
-    @Getter private final String featureName = "NameTags";
-    @Getter private final String refreshDisplayName = "Refreshing vehicles";
-
     /** Map of players currently in a vehicle */
     private final HashMap<TabPlayer, Object> playersInVehicle = new HashMap<>();
 
@@ -46,7 +43,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     @Override
     public void load() {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
-                featureName, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
+                getFeatureName(), TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
                     for (TabPlayer inVehicle : playersInVehicleArray) {
                         feature.getArmorStandManager(inVehicle).teleport();
                     }
@@ -117,6 +114,12 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
         }
     }
 
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Refreshing vehicles";
+    }
+
     private void addToVehicle(@NotNull TabPlayer player, @NotNull Object vehicle) {
         playersInVehicle.put(player, vehicle);
         playersInVehicleArray = playersInVehicle.keySet().toArray(new TabPlayer[0]);
@@ -135,5 +138,11 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
 
     private void updateVehicle(Object vehicle) {
         feature.runInEntityScheduler(vehicle, () -> vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle)));
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return feature.getExtraFeatureName();
     }
 }

@@ -28,9 +28,6 @@ public class GroupManager extends TabFeature implements Refreshable {
     /** List of group permissions to iterate through if {@link #groupsByPermissions} is {@code true} */
     private final List<String> primaryGroupFindingList = config().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
-    private final String featureName = "Permission group refreshing";
-    private final String refreshDisplayName = "Processing group change";
-
     /**
      * Constructs new instance with given permission plugin and registers group placeholder.
      *
@@ -98,5 +95,17 @@ public class GroupManager extends TabFeature implements Refreshable {
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         refreshed.setGroup(TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP).getLastValue(refreshed));
+    }
+
+    @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Processing group change";
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Permission group refreshing";
     }
 }

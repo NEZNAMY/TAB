@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.JoinListener;
@@ -25,8 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @RequiredArgsConstructor
 public class PacketListener extends TabFeature implements JoinListener, QuitListener, Loadable {
-
-    @Getter private final String featureName = "Unlimited NameTags";
 
     /** Reference to the main feature */
     protected final BackendNameTagX nameTagX;
@@ -63,7 +60,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
     public void onEntitySpawn(@NotNull BackendTabPlayer receiver, int entityId) {
         TabPlayer spawnedPlayer = entityIdMap.get(entityId);
         if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
-            TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN,
+            TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN,
                     () -> nameTagX.getArmorStandManager(spawnedPlayer).spawn(receiver));
         }
     }
@@ -85,7 +82,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
             //player moved
             if (nameTagX.isPlayerDisabled(pl) || !pl.isLoaded()) return;
             BackendArmorStandManager asm = nameTagX.getArmorStandManager(pl);
-            TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_PLAYER_MOVE,
+            TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_PLAYER_MOVE,
                     () -> asm.teleport(receiver));
         } else {
             //a vehicle carrying something moved
@@ -94,7 +91,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
                 if (passenger != null) {
                     BackendArmorStandManager asm = nameTagX.getArmorStandManager(passenger);
                     if (asm != null) {
-                        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER,
+                        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER,
                                 () -> asm.teleport(receiver));
                     }
                 }
@@ -116,9 +113,15 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
             TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
             if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {
                 BackendArmorStandManager asm = nameTagX.getArmorStandManager(deSpawnedPlayer);
-                TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
+                TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
                         () -> asm.destroy(receiver));
             }
         }
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return nameTagX.getExtraFeatureName();
     }
 }

@@ -31,8 +31,6 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener, LoginPacketListener,
         VanishListener, TabListClearListener {
 
-    @NotNull private final String featureName = "RedisSupport";
-
     /** Redis players on other proxies by their UUID */
     @NotNull protected final Map<UUID, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
 
@@ -129,7 +127,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      *          json message to process
      */
     public void processMessage(@NotNull String msg) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
+        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
             ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
             String proxy = in.readUTF();
             if (proxy.equals(this.proxy.toString())) return; // Message coming from current proxy
@@ -309,5 +307,11 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         sendMessage(new UpdateVanishStatus(player.getTablistId(), player.isVanished()));
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "RedisSupport";
     }
 }

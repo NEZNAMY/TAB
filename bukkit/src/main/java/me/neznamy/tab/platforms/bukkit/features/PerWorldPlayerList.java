@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.UnLoadable;
@@ -28,8 +27,6 @@ import org.jetbrains.annotations.NotNull;
  */
 @SuppressWarnings("deprecation")
 public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
-
-    @Getter private final String featureName = "Per world PlayerList";
 
     /** Config options */
     private final boolean allowBypass = config().getBoolean("per-world-playerlist.allow-bypass-permission", false);
@@ -73,7 +70,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     public void onJoin(PlayerJoinEvent e) {
         long time = System.nanoTime();
         checkPlayer(e.getPlayer());
-        TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+        TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
     }
 
     /**
@@ -86,7 +83,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     public void onWorldChange(PlayerChangedWorldEvent e) {
         long time = System.nanoTime();
         checkPlayer(e.getPlayer());
-        TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
+        TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
     }
 
     /**
@@ -127,5 +124,11 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
             }
         }
         return viewerWorldGroup.equals(targetWorldGroup);
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Per world PlayerList";
     }
 }

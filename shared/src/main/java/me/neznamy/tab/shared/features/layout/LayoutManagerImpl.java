@@ -45,8 +45,6 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
     private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     private PlayerList playerList;
-    private final String featureName = "Layout";
-    private final String refreshDisplayName = "Switching layouts";
     private final WeakHashMap<TabPlayer, LayoutView> views = new WeakHashMap<>();
     private final WeakHashMap<me.neznamy.tab.api.TabPlayer, LayoutPattern> forcedLayouts = new WeakHashMap<>();
 
@@ -150,6 +148,12 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     }
 
     @Override
+    @NotNull
+    public String getRefreshDisplayName() {
+        return "Switching layouts";
+    }
+
+    @Override
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
@@ -202,6 +206,12 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     public void onTabListClear(@NotNull TabPlayer player) {
         LayoutView view = views.get(player);
         if (view != null) view.send();
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Layout";
     }
 
     @RequiredArgsConstructor

@@ -9,7 +9,7 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.*;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
+import me.neznamy.tab.shared.features.GlobalPlayerList;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;

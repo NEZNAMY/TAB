@@ -36,7 +36,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
      * Starts task checking for player visibility to hide armor stands of invisible players.
      */
     private void startVisibilityRefreshTask() {
-        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, featureName, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, getExtraFeatureName(), TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (isPlayerDisabled(p)) continue;
@@ -193,7 +193,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     public void sneak(UUID playerUUID, boolean sneaking) {
         TabPlayer p = TAB.getInstance().getPlayer(playerUUID);
         if (p == null || isPlayerDisabled(p)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> {
+        TAB.getInstance().getCPUManager().runMeasuredTask(getExtraFeatureName(), TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> {
             BackendArmorStandManager asm = getArmorStandManager(p);
             if (asm != null) {
                 asm.sneak(sneaking);
@@ -206,7 +206,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     public void respawn(UUID playerUUID) {
         TabPlayer respawned = TAB.getInstance().getPlayer(playerUUID);
         if (respawned == null || isPlayerDisabled(respawned)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
+        TAB.getInstance().getCPUManager().runMeasuredTask(getExtraFeatureName(), TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
                 () -> getArmorStandManager(respawned).teleport());
     }
 
