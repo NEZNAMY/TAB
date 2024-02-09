@@ -27,7 +27,8 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     @Getter private final Function<TabPlayer, ChannelDuplexHandler> channelFunction = TabChannelDuplexHandler::new;
 
-    protected abstract @Nullable Channel getChannel(@NotNull TabPlayer player);
+    @Nullable
+    protected abstract Channel getChannel(@NotNull TabPlayer player);
 
     /**
      * Injects custom channel duplex handler to prevent other plugins from overriding this one
@@ -74,6 +75,9 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         return false; // Default implementation
     }
 
+    /**
+     * TAB's custom channel duplex handler.
+     */
     @RequiredArgsConstructor
     public class TabChannelDuplexHandler extends ChannelDuplexHandler {
 

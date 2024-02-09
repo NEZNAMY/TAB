@@ -13,14 +13,18 @@ import org.json.simple.parser.ParseException;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
+/**
+ * Skin source using player names.
+ */
 public class PlayerSkin extends SkinSource {
 
-    protected PlayerSkin(ConfigurationFile file) {
+    protected PlayerSkin(@NotNull ConfigurationFile file) {
         super(file, "players");
     }
 
     @Override
-    public @NotNull List<String> download(@NotNull String input) {
+    @NotNull
+    public List<String> download(@NotNull String input) {
         try {
             JSONObject json = getResponse("https://api.ashcon.app/mojang/v2/user/" + input);
             JSONObject textures = (JSONObject) json.get("textures");

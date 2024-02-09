@@ -18,14 +18,18 @@ import org.json.simple.parser.ParseException;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
+/**
+ * Skin source using raw texture.
+ */
 public class Texture extends SkinSource {
 
-    protected Texture(ConfigurationFile file) {
+    protected Texture(@NotNull ConfigurationFile file) {
         super(file, "textures");
     }
 
     @Override
-    public @NotNull List<String> download(@NotNull String texture) {
+    @NotNull
+    public List<String> download(@NotNull String texture) {
         try {
             InputStreamReader reader = getInputStreamReader(texture);
             JSONObject json = (JSONObject) new JSONParser().parse(reader);

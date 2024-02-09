@@ -13,14 +13,18 @@ import org.json.simple.parser.ParseException;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
+/**
+ * Skin source using mineskin.org for skins.
+ */
 public class MineSkin extends SkinSource {
 
-    protected MineSkin(ConfigurationFile file) {
+    protected MineSkin(@NotNull ConfigurationFile file) {
         super(file, "mineskin");
     }
 
     @Override
-    public @NotNull List<String> download(@NotNull String input) {
+    @NotNull
+    public List<String> download(@NotNull String input) {
         try {
             String type;
             try {

@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Feature handler for global PlayerList feature
+ * Feature handler for global PlayerList feature.
  */
 public class GlobalPlayerList extends TabFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
         Loadable, UnLoadable, ServerSwitchListener, TabListClearListener {
@@ -28,6 +28,9 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
     @Getter private final String featureName = "Global PlayerList";
 
+    /**
+     * Constructs new instance and registers new placeholders.
+     */
     public GlobalPlayerList() {
         for (Map.Entry<String, List<String>> entry : sharedServers.entrySet()) {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
@@ -53,6 +56,15 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         }
     }
 
+    /**
+     * Returns {@code true} if viewer should see the target player, {@code false} if not.
+     *
+     * @param   viewer
+     *          Player viewing the tablist
+     * @param   displayed
+     *          Player who is being displayed
+     * @return  {@code true} if viewer should see the target, {@code false} if not
+     */
     public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
         if (displayed == viewer) return true;
         if (!TAB.getInstance().getPlatform().canSee(viewer, displayed)) return false;
@@ -60,7 +72,16 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
     }
 
-    @NotNull public String getServerGroup(@NotNull String playerServer) {
+    /**
+     * Returns server group of specified server. If not part of any group,
+     * returns either default or unique name if isolate unlisted servers is enabled.
+     *
+     * @param   playerServer
+     *          Server to get group of
+     * @return  Name of server group for this server
+     */
+    @NotNull
+    public String getServerGroup(@NotNull String playerServer) {
         for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
             for (String serverDefinition : group.getValue()) {
                 if (serverDefinition.endsWith("*")) {
@@ -132,7 +153,17 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         }
     }
 
-    public @NotNull TabList.Entry getAddInfoData(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
+    /**
+     * Creates new entry of given target player for viewer.
+     *
+     * @param   p
+     *          Displayed player
+     * @param   viewer
+     *          Player viewing the tablist
+     * @return  Entry of target for viewer
+     */
+    @NotNull
+    public TabList.Entry getAddInfoData(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         TabComponent format = null;
         if (playerlist != null && !playerlist.getDisableChecker().isDisabledPlayer(p)) {
             format = playerlist.getTabFormat(p, viewer);
@@ -177,6 +208,14 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         }
     }
 
+    /**
+     * Returns {@code true} if specified server is spy-server,
+     * {@code false} if not.
+     *
+     * @param   server
+     *          Server name to check
+     * @return  {@code true} if is spy-server, {@code false} if not
+     */
     public boolean isSpyServer(@NotNull String server) {
         return spyServers.stream().anyMatch(server::equalsIgnoreCase);
     }

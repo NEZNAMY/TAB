@@ -22,13 +22,27 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
 
     @Getter private final String featureName = "Pipeline injection";
 
-    //anti-override rules
+    /** Team anti-override flag */
     protected boolean antiOverrideTeams;
+
+    /** Whether ByteBuf deserialization should be enabled or not */
     protected boolean byteBufDeserialization;
 
-    public abstract void inject(TabPlayer player);
+    /**
+     * Injects handler into player's channel.
+     *
+     * @param   player
+     *          Player to inject
+     */
+    public abstract void inject(@NotNull TabPlayer player);
 
-    public abstract void uninject(TabPlayer player);
+    /**
+     * Un-injects handler from player's channel.
+     *
+     * @param   player
+     *          Player to remove handler from
+     */
+    public abstract void uninject(@NotNull TabPlayer player);
 
     @Override
     public void load() {

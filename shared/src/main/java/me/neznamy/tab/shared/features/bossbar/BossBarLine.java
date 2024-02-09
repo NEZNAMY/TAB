@@ -77,6 +77,8 @@ public class BossBarLine implements BossBar {
      *          BossBar title
      * @param   progress
      *          BossBar progress
+     * @param   announcementOnly
+     *          Whether this bossbar is for announcements only
      */
     public BossBarLine(@NonNull BossBarManagerImpl manager, @NonNull String name, @Nullable String displayCondition,
                        @NonNull String color, @NonNull String style, @NonNull String title, @NonNull String progress, boolean announcementOnly) {
@@ -146,6 +148,8 @@ public class BossBarLine implements BossBar {
      * Parses string into progress and returns it. If parsing failed, 100 is returned instead and
      * error message is printed into error log
      *
+     * @param   player
+     *          Player to parse the value for
      * @param   progress
      *          string to parse
      * @return  parsed progress
@@ -234,7 +238,13 @@ public class BossBarLine implements BossBar {
         sendToPlayerRaw(player);
     }
 
-    public void sendToPlayerRaw(TabPlayer player) {
+    /**
+     * Resends bossbar to the player.
+     *
+     * @param   player
+     *          Player to resend bossbar to
+     */
+    public void sendToPlayerRaw(@NotNull TabPlayer player) {
         player.getBossBar().create(
                 uniqueId,
                 player.getProperty(propertyTitle).updateAndGet(),
@@ -245,13 +255,19 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void removePlayer(me.neznamy.tab.api.@NonNull TabPlayer p) {
+    public void removePlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
         if (!players.contains(player)) return;
         players.remove(player);
         player.getBossBar().remove(uniqueId);
     }
 
+    /**
+     * Removes player from set of players.
+     *
+     * @param   player
+     *          Player to remove
+     */
     public void removePlayerRaw(@NotNull TabPlayer player) {
         players.remove(player);
     }
