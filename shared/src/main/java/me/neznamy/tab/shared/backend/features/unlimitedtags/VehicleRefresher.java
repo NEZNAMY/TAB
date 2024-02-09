@@ -30,6 +30,9 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     /** Map of players currently in a vehicle */
     private final HashMap<TabPlayer, Object> playersInVehicle = new HashMap<>();
 
+    /** Array of players in vehicles to iterate over */
+    private TabPlayer[] playersInVehicleArray = new TabPlayer[0];
+
     /** Map of vehicles carrying players */
     @Getter
     private final Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
@@ -44,7 +47,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     public void load() {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
                 featureName, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
-                    for (TabPlayer inVehicle : playersInVehicle.keySet()) {
+                    for (TabPlayer inVehicle : playersInVehicleArray) {
                         feature.getArmorStandManager(inVehicle).teleport();
                     }
                     for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
@@ -63,7 +66,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
             Object vehicle = feature.getVehicle(p);
             if (vehicle != null) {
                 updateVehicle(vehicle);
-                playersInVehicle.put(p, vehicle);
+                addToVehicle(p, vehicle);
                 if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
                     playersOnBoats.add(p);
                 }
@@ -80,6 +83,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(feature.getEntityId(playersInVehicle.remove(disconnectedPlayer)));
+        playersInVehicleArray = playersInVehicle.keySet().toArray(new TabPlayer[0]);
         for (List<Integer> entities : vehicles.values()) {
             entities.remove((Integer)feature.getEntityId(disconnectedPlayer));
         }
@@ -91,9 +95,9 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
         Object vehicle = feature.getVehicle(p);
         if (playersInVehicle.containsKey(p) && vehicle == null) {
             //vehicle exit
-            vehicles.remove(feature.getEntityId(playersInVehicle.get(p)));
+            vehicles.remove(feature.getEntityId(playersInVehicle.remove(p)));
             feature.getArmorStandManager(p).teleport();
-            playersInVehicle.remove(p);
+            playersInVehicleArray = playersInVehicle.keySet().toArray(new TabPlayer[0]);
             if (feature.isDisableOnBoats() && playersOnBoats.contains(p)) {
                 playersOnBoats.remove(p);
                 feature.updateTeamData(p);
@@ -104,13 +108,18 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
             //vehicle enter
             updateVehicle(vehicle);
             feature.getArmorStandManager(p).respawn(); //making teleport instant instead of showing teleport animation
-            playersInVehicle.put(p, vehicle);
+            addToVehicle(p, vehicle);
             if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
                 playersOnBoats.add(p);
                 feature.updateTeamData(p);
             }
             feature.getArmorStandManager(p).updateVisibility(true);
         }
+    }
+
+    private void addToVehicle(@NotNull TabPlayer player, @NotNull Object vehicle) {
+        playersInVehicle.put(player, vehicle);
+        playersInVehicleArray = playersInVehicle.keySet().toArray(new TabPlayer[0]);
     }
 
     /**
