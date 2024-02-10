@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
@@ -30,7 +31,12 @@ public class MySQL {
 
     public void openConnection() throws SQLException {
         if (isConnected()) return;
-        con = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s?useSSL=%b", host, port, database, useSSL), username, password);
+        Properties properties = new Properties();
+        properties.setProperty("user", username);
+        properties.setProperty("password", password);
+        properties.setProperty("useSSL", String.valueOf(useSSL));
+        properties.setProperty("characterEncoding", "UTF-8");
+        con = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s", host, port, database), properties);
         TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.GREEN + "Successfully connected to MySQL"));
     }
     

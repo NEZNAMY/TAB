@@ -139,6 +139,15 @@ public class ErrorManager {
         }
     }
 
+    @NotNull
+    private Throwable getRootCause(@NotNull Throwable throwable) {
+        Throwable rootCause = throwable;
+        while (rootCause.getCause() != null) {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause;
+    }
+
     /**
      * Prints error message thrown by placeholder and stack trace into placeholder-errors.log file
      *
@@ -320,13 +329,25 @@ public class ErrorManager {
     }
 
     /**
+     * Prints error message if a MySQL connection fails.
+     *
+     * @param   t
+     *          Thrown error
+     */
+    public void mysqlConnectionFailed(@NotNull Throwable t) {
+        Throwable root = getRootCause(t);
+        printError("Failed to connect to MySQL: " + root.getClass().getName() + ": " + root.getMessage(), Collections.emptyList(), true, errorLog);
+    }
+
+    /**
      * Prints error message if a MySQL query fails.
      *
      * @param   t
      *          Thrown error
      */
     public void mysqlQueryFailed(@NotNull Throwable t) {
-        printError("Failed to execute MySQL query", t, false, errorLog);
+        Throwable root = getRootCause(t);
+        printError("Failed to execute MySQL query due to error: " + root.getClass().getName() + ": " + root.getMessage(), Collections.emptyList(), false, errorLog);
     }
 
     /**

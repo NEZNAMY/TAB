@@ -90,7 +90,7 @@ public class Configs {
                 users = new MySQLUserConfiguration(mysql);
                 return;
             } catch (SQLException | ClassNotFoundException e) {
-                TAB.getInstance().getErrorManager().criticalError("Failed to connect to MySQL", e);
+                TAB.getInstance().getErrorManager().mysqlConnectionFailed(e);
             }
         }
         groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
