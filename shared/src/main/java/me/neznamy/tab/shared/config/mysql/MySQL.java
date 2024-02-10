@@ -14,21 +14,23 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.SimpleComponent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class MySQL {
 
     private Connection con;
-    @NonNull private final String host;
+    @NotNull private final String host;
     private final int port;
-    @NonNull private final String database;
-    @NonNull private final String username;
-    @NonNull private final String password;
+    @NotNull private final String database;
+    @NotNull private final String username;
+    @NotNull private final String password;
+    private final boolean useSSL;
 
     public void openConnection() throws SQLException {
         if (isConnected()) return;
-        con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
+        con = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s?useSSL=%b", host, port, database, useSSL), username, password);
         TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.GREEN + "Successfully connected to MySQL"));
     }
     

@@ -236,6 +236,7 @@ mysql:
   database: tab
   username: user
   password: password
+  useSSL: true
 
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #
