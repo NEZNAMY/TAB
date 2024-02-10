@@ -60,7 +60,7 @@ public abstract class TabPlaceholder implements Placeholder {
         this.identifier = identifier;
         this.refresh = refresh;
         Map<String, Map<Object, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements");
-        replacements = new PlaceholderReplacementPattern(identifier, map.getOrDefault(identifier, Collections.emptyMap()));
+        replacements = PlaceholderReplacementPattern.create(identifier, map.getOrDefault(identifier, Collections.emptyMap()));
         for (String nested : getNestedPlaceholders("")) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
         }
