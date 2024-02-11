@@ -177,6 +177,11 @@ public class StartupWarnPrinter {
         startupWarn("Condition \"" + conditionName + "\" is missing \"conditions\" section.");
     }
 
+    public void conditionMissingType(@NotNull String conditionName) {
+        startupWarn(String.format("Condition \"%s\" has multiple conditions defined, but is missing \"type\" attribute. Using AND.",
+                conditionName));
+    }
+
     public void invalidConditionPattern(@NotNull String conditionName, @NotNull String line) {
         startupWarn("Line \"" + line + "\" in condition " + conditionName + " is not a valid condition pattern.");
     }

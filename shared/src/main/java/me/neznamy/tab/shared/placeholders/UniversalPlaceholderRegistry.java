@@ -114,15 +114,20 @@ public class UniversalPlaceholderRegistry {
         Condition.clearConditions();
         Map<String, Map<Object, Object>> conditions = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("conditions");
         for (Entry<String, Map<Object, Object>> condition : conditions.entrySet()) {
+            String name = condition.getKey();
             List<String> list = (List<String>) condition.getValue().get("conditions");
-            String type = String.valueOf(condition.getValue().get("type"));
+            Object type = condition.getValue().get("type");
             String yes = condition.getValue().getOrDefault(true, true).toString();
             String no = condition.getValue().getOrDefault(false, false).toString();
             if (list == null) {
-                TAB.getInstance().getConfigHelper().startup().conditionHasNoConditions(condition.getKey());
+                TAB.getInstance().getConfigHelper().startup().conditionHasNoConditions(name);
                 continue;
+            } else {
+                if (list.size() >= 2 && type == null) {
+                    TAB.getInstance().getConfigHelper().startup().conditionMissingType(name);
+                }
             }
-            Condition c = new Condition(!"OR".equals(type), condition.getKey(), list, yes, no);
+            Condition c = new Condition(!"OR".equals(type), name, list, yes, no);
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), p -> c.getText((TabPlayer)p));
         }
         Condition.finishSetups();
