@@ -15,6 +15,7 @@ import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -35,7 +36,7 @@ public class SpongeTabList implements TabList {
     private final SpongeTabPlayer player;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabPlayer, Component> expectedDisplayNames = new WeakHashMap<>();
+    private final Map<TabPlayer, Component> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
     public void removeEntry(@NotNull UUID entry) {

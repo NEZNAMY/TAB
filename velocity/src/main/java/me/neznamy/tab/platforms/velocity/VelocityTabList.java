@@ -26,7 +26,7 @@ public class VelocityTabList implements TabList {
     @NotNull private final VelocityTabPlayer player;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabPlayer, Component> expectedDisplayNames = new WeakHashMap<>();
+    private final Map<TabPlayer, Component> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
