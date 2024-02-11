@@ -34,6 +34,7 @@ public class ScoreboardLoader {
             instance = BukkitScoreboard::new;
             BukkitUtils.compatibilityError(PacketScoreboard.getException(), "Scoreboards", "Bukkit API",
                     "Compatibility with other plugins being reduced",
+                    "Features receiving new artificial character limits",
                     "1.20.3+ visuals not working due to lack of API"); // hopefully only temporarily
         } else {
             BukkitUtils.compatibilityError(PacketScoreboard.getException(), "Scoreboards", null,
