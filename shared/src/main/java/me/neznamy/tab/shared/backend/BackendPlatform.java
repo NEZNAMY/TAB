@@ -34,9 +34,9 @@ public interface BackendPlatform extends Platform {
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500,
                 p -> ((BackendTabPlayer)p).getDisplayName());
         manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000,
-                () -> registry.formatTPS(getTPS()));
+                () -> registry.getDecimal2().format(Math.min(20, getTPS())));
         manager.registerServerPlaceholder(TabConstants.Placeholder.MSPT, 1000,
-                () -> registry.format(getMSPT()));
+                () -> registry.getDecimal2().format(getMSPT()));
         registry.registerPlaceholders(manager);
     }
 
