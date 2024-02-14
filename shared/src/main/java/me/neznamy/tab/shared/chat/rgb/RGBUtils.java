@@ -112,21 +112,4 @@ public class RGBUtils {
     public @NotNull String convertRGBtoLegacy(@NotNull String text) {
         return TabComponent.fromColoredText(text).toLegacyText();
     }
-
-    /**
-     * Returns true if entered string is a valid 6-digit combination of
-     * hexadecimal numbers, false if not
-     *
-     * @param   string
-     *          string to check
-     * @return  {@code true} if valid, {@code false} if not
-     */
-    public boolean isHexCode(@NotNull String string) {
-        if (string.length() != 6) return false;
-        for (int i=0; i<6; i++) {
-            char c = string.charAt(i);
-            if (c < 48 || (c > 57 && c < 65) || (c > 70 && c < 97) || c > 102) return false;
-        }
-        return true;
-    }
 }

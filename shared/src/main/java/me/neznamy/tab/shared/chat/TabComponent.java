@@ -155,7 +155,7 @@ public abstract class TabComponent {
                 }
             } else if (c == '#' && text.length() > i+6) {
                 String hex = text.substring(i+1, i+7);
-                if (RGBUtils.getInstance().isHexCode(hex)) {
+                if (isHexCode(hex)) {
                     TextColor color;
                     EnumChatFormat code = text.length() - i >= 9 ? EnumChatFormat.getByChar(text.charAt(i+8)) : null;
                     if (code != null && text.charAt(i+7) == '|') {
@@ -183,5 +183,20 @@ public abstract class TabComponent {
         component.setText(builder.toString());
         components.add(component);
         return components;
+    }
+
+    /**
+     * Returns true if entered string is a valid 6-digit combination of
+     * hexadecimal numbers, false if not
+     *
+     * @param   string
+     *          string to check
+     * @return  {@code true} if valid, {@code false} if not
+     */
+    private static boolean isHexCode(@NotNull String string) {
+        for (char c : string.toCharArray()) {
+            if ("0123456789AaBbCcDdEeFf".indexOf(c) == -1) return false;
+        }
+        return true;
     }
 }
