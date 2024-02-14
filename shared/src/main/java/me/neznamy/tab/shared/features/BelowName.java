@@ -96,7 +96,9 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         Property fancy = connectedPlayer.getProperty(FANCY_FORMAT_PROPERTY);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             setScore(all, connectedPlayer, number, fancy.getFormat(all));
-            setScore(connectedPlayer, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(connectedPlayer));
+            if (all != connectedPlayer) {
+                setScore(connectedPlayer, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(connectedPlayer));
+            }
         }
         if (redis != null) redis.updateBelowName(connectedPlayer, number, fancy.get());
     }

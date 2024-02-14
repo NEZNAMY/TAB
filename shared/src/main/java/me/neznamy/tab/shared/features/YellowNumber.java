@@ -121,7 +121,9 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         valueFancy.update();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             setScore(all, connectedPlayer, value, valueFancy.getFormat(connectedPlayer));
-            setScore(connectedPlayer, all, getValueNumber(all), all.getProperty(PROPERTY_VALUE_FANCY).getFormat(connectedPlayer));
+            if (all != connectedPlayer) {
+                setScore(connectedPlayer, all, getValueNumber(all), all.getProperty(PROPERTY_VALUE_FANCY).getFormat(connectedPlayer));
+            }
         }
         if (redis != null) redis.updateYellowNumber(connectedPlayer, value, valueFancy.get());
     }
