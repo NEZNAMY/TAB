@@ -127,10 +127,19 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     public int getValue(@NotNull TabPlayer p) {
         String string = p.getProperty(NUMBER_PROPERTY).updateAndGet();
         try {
-            return (int) Math.round(Double.parseDouble(string));
+            return Integer.parseInt(string);
         } catch (NumberFormatException e) {
-            TAB.getInstance().getConfigHelper().runtime().invalidNumberForBelowName(p, rawNumber, string);
-            return 0;
+            // Not an integer (float or invalid)
+            try {
+                int value = (int) Math.round(Double.parseDouble(string));
+                // Float
+                TAB.getInstance().getConfigHelper().runtime().floatInBelowName(p, rawNumber, string);
+                return value;
+            } catch (NumberFormatException e2) {
+                // Not a float (invalid)
+                TAB.getInstance().getConfigHelper().runtime().invalidNumberForBelowName(p, rawNumber, string);
+                return 0;
+            }
         }
     }
 
