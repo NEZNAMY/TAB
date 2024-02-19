@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
+import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.TabComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
@@ -23,12 +23,12 @@ public class BungeeTabList1193 extends BungeeTabList {
      * @param   player
      *          Player this tablist will belong to
      */
-    public BungeeTabList1193(@NotNull BungeeTabPlayer player) {
+    public BungeeTabList1193(@NonNull BungeeTabPlayer player) {
         super(player);
     }
 
     @Override
-    public void removeEntry(@NotNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         removeUuid(entry);
         PlayerListItemRemove remove = new PlayerListItemRemove();
         remove.setUuids(new UUID[]{entry});
@@ -36,33 +36,33 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         Item item = item(entry);
         if (displayName != null) item.setDisplayName(player.getPlatform().toComponent(displayName, player.getVersion()));
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME), item);
     }
 
     @Override
-    public void updateLatency(@NotNull UUID entry, int latency) {
+    public void updateLatency(@NonNull UUID entry, int latency) {
         Item item = item(entry);
         item.setPing(latency);
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY), item);
     }
 
     @Override
-    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {
         Item item = item(entry);
         item.setGamemode(gameMode);
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE), item);
     }
 
     @Override
-    public void addEntry(@NotNull Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         addUuid(entry.getUniqueId());
         sendPacket(EnumSet.allOf(PlayerListItemUpdate.Action.class), entryToItem(entry));
     }
 
-    private void sendPacket(@NotNull EnumSet<PlayerListItemUpdate.Action> actions, @NotNull Item item) {
+    private void sendPacket(@NonNull EnumSet<PlayerListItemUpdate.Action> actions, @NonNull Item item) {
         PlayerListItemUpdate packet = new PlayerListItemUpdate();
         packet.setActions(actions);
         packet.setItems(new Item[]{item});

@@ -2,9 +2,9 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -24,7 +24,7 @@ public interface TabList {
      * @param   entries
      *          Entries to remove
      */
-    default void removeEntries(@NotNull Collection<UUID> entries) {
+    default void removeEntries(@NonNull Collection<UUID> entries) {
         entries.forEach(this::removeEntry);
     }
 
@@ -34,7 +34,7 @@ public interface TabList {
      * @param   entries
      *          Entries to add
      */
-    default void addEntries(@NotNull Collection<Entry> entries) {
+    default void addEntries(@NonNull Collection<Entry> entries) {
         entries.forEach(this::addEntry);
     }
 
@@ -44,7 +44,7 @@ public interface TabList {
      * @param   entry
      *          Entry to remove
      */
-    void removeEntry(@NotNull UUID entry);
+    void removeEntry(@NonNull UUID entry);
 
     /**
      * Updates display name of an entry. Using {@code null} makes it undefined and
@@ -55,7 +55,7 @@ public interface TabList {
      * @param   displayName
      *          New display name
      */
-    void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName);
+    void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName);
 
     /**
      * Updates latency of specified entry.
@@ -65,7 +65,7 @@ public interface TabList {
      * @param   latency
      *          New latency
      */
-    void updateLatency(@NotNull UUID entry, int latency);
+    void updateLatency(@NonNull UUID entry, int latency);
 
     /**
      * Updates game mode of specified entry.
@@ -75,7 +75,7 @@ public interface TabList {
      * @param   gameMode
      *          New game mode
      */
-    void updateGameMode(@NotNull UUID entry, int gameMode);
+    void updateGameMode(@NonNull UUID entry, int gameMode);
 
     /**
      * Adds specified entry into the TabList.
@@ -83,7 +83,7 @@ public interface TabList {
      * @param   entry
      *          Entry to add
      */
-    void addEntry(@NotNull Entry entry);
+    void addEntry(@NonNull Entry entry);
 
     /**
      * Sets header and footer to specified values.
@@ -93,7 +93,7 @@ public interface TabList {
      * @param   footer
      *          Footer to use
      */
-    void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer);
+    void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer);
 
     /**
      * Checks if all entries have display names as configured and if not,
@@ -110,7 +110,7 @@ public interface TabList {
      * @param   packet
      *          Packet to process
      */
-    default void onPacketSend(@NotNull Object packet) {
+    default void onPacketSend(@NonNull Object packet) {
         // Empty by default, overridden by Bukkit, BungeeCord and Fabric
     }
 
@@ -122,7 +122,7 @@ public interface TabList {
      * @param   viewer
      *          Viewer of the TabList with wrong entry.
      */
-    default void displayNameWrong(String player, TabPlayer viewer) {
+    default void displayNameWrong(@NonNull String player, @NonNull TabPlayer viewer) {
         TAB.getInstance().debug("TabList entry of player " + player + " has a different display name " +
                 "for viewer " + viewer.getName() + " than expected, fixing.");
     }
@@ -156,10 +156,10 @@ public interface TabList {
     class Entry {
 
         /** Player UUID */
-        @NotNull private UUID uniqueId;
+        @NonNull private UUID uniqueId;
 
         /** Real name of affected player */
-        @NotNull private String name = "";
+        @NonNull private String name = "";
 
         /** Player's skin, null for empty skin */
         @Nullable private Skin skin;
@@ -182,7 +182,7 @@ public interface TabList {
          * @param   uniqueId
          *          Entry ID
          */
-        public Entry(@NotNull UUID uniqueId) {
+        public Entry(@NonNull UUID uniqueId) {
             this.uniqueId = uniqueId;
         }
 
@@ -195,7 +195,7 @@ public interface TabList {
          *          Entry display name
          * @return  Entry with given parameters
          */
-        public static Entry displayName(@NotNull UUID id, @Nullable TabComponent displayName) {
+        public static Entry displayName(@NonNull UUID id, @Nullable TabComponent displayName) {
             return new Entry(id, "", null, 0, 0, displayName);
         }
 
@@ -208,7 +208,7 @@ public interface TabList {
          *          Entry latency
          * @return  Entry with given parameters
          */
-        public static Entry latency(@NotNull UUID id, int latency) {
+        public static Entry latency(@NonNull UUID id, int latency) {
             return new Entry(id, "", null, latency, 0, null);
         }
 
@@ -221,7 +221,7 @@ public interface TabList {
          *          Entry game mode
          * @return  Entry with given parameters
          */
-        public static Entry gameMode(@NotNull UUID id, int gameMode) {
+        public static Entry gameMode(@NonNull UUID id, int gameMode) {
             return new Entry(id, "", null, 0, gameMode, null);
         }
     }
@@ -233,7 +233,7 @@ public interface TabList {
     class Skin {
 
         /** Skin value */
-        @NotNull private final String value;
+        @NonNull private final String value;
 
         /** Skin signature */
         @Nullable private final String signature;

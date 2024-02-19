@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.sponge7;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
@@ -31,19 +31,19 @@ public class SpongeTabList implements TabList {
     };
 
     /** Player this TabList belongs to */
-    @NotNull
+    @NonNull
     private final SpongeTabPlayer player;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
     private final Map<TabPlayer, Text> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
-    public void removeEntry(@NotNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
     @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> {
             Text component = displayName == null ? null : Text.of(displayName.toLegacyText());
             e.setDisplayName(component);
@@ -52,17 +52,17 @@ public class SpongeTabList implements TabList {
     }
 
     @Override
-    public void updateLatency(@NotNull UUID entry, int latency) {
+    public void updateLatency(@NonNull UUID entry, int latency) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setLatency(latency));
     }
 
     @Override
-    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setGameMode(gameModes[gameMode]));
     }
 
     @Override
-    public void addEntry(@NotNull Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         Text displayName = entry.getDisplayName() == null ? null : Text.of(entry.getDisplayName().toLegacyText());
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile.getPropertyMap().put(TEXTURES_PROPERTY, ProfileProperty.of(
@@ -84,7 +84,7 @@ public class SpongeTabList implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
         player.getPlayer().getTabList().setHeaderAndFooter(
                 Text.of(header.toLegacyText()),
                 Text.of(footer.toLegacyText())
@@ -104,7 +104,7 @@ public class SpongeTabList implements TabList {
         }
     }
 
-    private void setExpectedDisplayName(@NotNull UUID entry, @Nullable Text displayName) {
+    private void setExpectedDisplayName(@NonNull UUID entry, @Nullable Text displayName) {
         TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(entry);
         if (player != null) expectedDisplayNames.put(player, displayName);
     }

@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.player.ChatSession;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -10,7 +11,6 @@ import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -23,13 +23,14 @@ import java.util.*;
 public class VelocityTabList implements TabList {
 
     /** Player this TabList belongs to */
-    @NotNull private final VelocityTabPlayer player;
+    @NonNull
+    private final VelocityTabPlayer player;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
     private final Map<TabPlayer, Component> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
-    public void removeEntry(@NotNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
@@ -42,7 +43,7 @@ public class VelocityTabList implements TabList {
      * entry and adding it again to avoid this bug.
      */
     @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> {
             if (player.getVersion().getMinorVersion() >= 8) {
                 Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
@@ -57,17 +58,17 @@ public class VelocityTabList implements TabList {
     }
 
     @Override
-    public void updateLatency(@NotNull UUID entry, int latency) {
+    public void updateLatency(@NonNull UUID entry, int latency) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setLatency(latency));
     }
 
     @Override
-    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setGameMode(gameMode));
     }
 
     @Override
-    public void addEntry(@NotNull Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         Component displayName = entry.getDisplayName() == null ? null : AdventureHook.toAdventureComponent(entry.getDisplayName(), player.getVersion());
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
@@ -100,7 +101,7 @@ public class VelocityTabList implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
         player.getPlayer().sendPlayerListHeaderAndFooter(
                 AdventureHook.toAdventureComponent(header, player.getVersion()),
                 AdventureHook.toAdventureComponent(footer, player.getVersion())
@@ -120,7 +121,7 @@ public class VelocityTabList implements TabList {
         }
     }
 
-    private void setExpectedDisplayName(@NotNull UUID entry, @Nullable Component displayName) {
+    private void setExpectedDisplayName(@NonNull UUID entry, @Nullable Component displayName) {
         TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(entry);
         if (player != null) expectedDisplayNames.put(player, displayName);
     }

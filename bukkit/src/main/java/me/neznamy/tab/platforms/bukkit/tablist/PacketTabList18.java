@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
@@ -12,7 +13,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -51,7 +51,7 @@ public class PacketTabList18 extends TabListBase {
      * @param   player
      *          Player this tablist will belong to.
      */
-    public PacketTabList18(@NotNull BukkitTabPlayer player) {
+    public PacketTabList18(@NonNull BukkitTabPlayer player) {
         super(player);
     }
 
@@ -115,27 +115,27 @@ public class PacketTabList18 extends TabListBase {
     }
 
     @Override
-    public void removeEntry(@NotNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         packetSender.sendPacket(player.getPlayer(), createPacket(Action.REMOVE_PLAYER, new Entry(entry)));
     }
 
     @Override
-    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, Entry.displayName(entry, displayName)));
     }
 
     @Override
-    public void updateLatency(@NotNull UUID entry, int latency) {
+    public void updateLatency(@NonNull UUID entry, int latency) {
         packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_LATENCY, Entry.latency(entry, latency)));
     }
 
     @Override
-    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {
         packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_GAME_MODE, Entry.gameMode(entry, gameMode)));
     }
 
     @Override
-    public void addEntry(@NotNull Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         packetSender.sendPacket(player.getPlayer(), createPacket(Action.ADD_PLAYER, entry));
 
         if (player.getVersion().getMinorVersion() == 8) {
@@ -145,8 +145,8 @@ public class PacketTabList18 extends TabListBase {
     }
 
     @SneakyThrows
-    @NotNull
-    public Object createPacket(@NotNull Action action, @NotNull Entry entry) {
+    @NonNull
+    public Object createPacket(@NonNull Action action, @NonNull Entry entry) {
         List<Object> players = new ArrayList<>();
         Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Collections.emptyList());
         List<Object> parameters = new ArrayList<>();
@@ -170,12 +170,12 @@ public class PacketTabList18 extends TabListBase {
      *          Component to convert
      * @return  Converted component
      */
-    public Object toComponent(@NotNull TabComponent component) {
+    public Object toComponent(@NonNull TabComponent component) {
         return componentCache.get(component, player.getVersion());
     }
 
-    @NotNull
-    public GameProfile createProfile(@NotNull UUID id, @Nullable String name, @Nullable Skin skin) {
+    @NonNull
+    public GameProfile createProfile(@NonNull UUID id, @Nullable String name, @Nullable Skin skin) {
         GameProfile profile = new GameProfile(id, name == null ? "" : name);
         if (skin != null) {
             profile.getProperties().put(TabList.TEXTURES_PROPERTY,
@@ -186,7 +186,7 @@ public class PacketTabList18 extends TabListBase {
 
     @Override
     @SneakyThrows
-    public void onPacketSend(@NotNull Object packet) {
+    public void onPacketSend(@NonNull Object packet) {
         if (!(PlayerInfoClass.isInstance(packet))) return;
         String action = ACTION.get(packet).toString();
         for (Object nmsData : (List<?>) PLAYERS.get(packet)) {

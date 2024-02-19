@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.tablist;
 
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
@@ -8,7 +9,6 @@ import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.TriFunctionWithException;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -26,10 +26,10 @@ public class PacketTabList17 extends TabListBase {
     private static PacketSender packetSender;
 
     /** Because entries are identified by names and not uuids on 1.7- */
-    @NotNull
+    @NonNull
     private final Map<UUID, String> userNames = new HashMap<>();
 
-    @NotNull
+    @NonNull
     private final Map<UUID, String> displayNames = new HashMap<>();
 
     /**
@@ -38,7 +38,7 @@ public class PacketTabList17 extends TabListBase {
      * @param   player
      *          Player this tablist will belong to.
      */
-    public PacketTabList17(@NotNull BukkitTabPlayer player) {
+    public PacketTabList17(@NonNull BukkitTabPlayer player) {
         super(player);
     }
 
@@ -73,7 +73,7 @@ public class PacketTabList17 extends TabListBase {
 
     @Override
     @SneakyThrows
-    public void removeEntry(@NotNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), false, 0));
         userNames.remove(entry);
@@ -82,7 +82,7 @@ public class PacketTabList17 extends TabListBase {
 
     @Override
     @SneakyThrows
-    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), false, 0));
         addEntry(new Entry(entry, userNames.get(entry), null, 0, 0, displayName));
@@ -90,19 +90,19 @@ public class PacketTabList17 extends TabListBase {
 
     @Override
     @SneakyThrows
-    public void updateLatency(@NotNull UUID entry, int latency) {
+    public void updateLatency(@NonNull UUID entry, int latency) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), true, latency));
     }
 
     @Override
-    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {
         // Added in 1.8
     }
 
     @Override
     @SneakyThrows
-    public void addEntry(@NotNull Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         String name = entry.getDisplayName() == null ? entry.getName() : entry.getDisplayName().toLegacyText();
         if (name.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7) name = name.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(name, true, entry.getLatency()));

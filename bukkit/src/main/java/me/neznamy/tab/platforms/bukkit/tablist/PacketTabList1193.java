@@ -1,13 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.tablist;
 
 import com.mojang.authlib.GameProfile;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -33,7 +33,7 @@ public class PacketTabList1193 extends PacketTabList18 {
      * @param   player
      *          Player this tablist will belong to.
      */
-    public PacketTabList1193(@NotNull BukkitTabPlayer player) {
+    public PacketTabList1193(@NonNull BukkitTabPlayer player) {
         super(player);
     }
 
@@ -75,14 +75,14 @@ public class PacketTabList1193 extends PacketTabList18 {
 
     @Override
     @SneakyThrows
-    public void removeEntry(@NotNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         packetSender.sendPacket(player.getPlayer(), newRemovePacket.newInstance(Collections.singletonList(entry)));
     }
 
     @SneakyThrows
-    @NotNull
+    @NonNull
     @Override
-    public Object createPacket(@NotNull Action action, @NotNull Entry entry) {
+    public Object createPacket(@NonNull Action action, @NonNull Entry entry) {
         List<Object> players = new ArrayList<>();
         EnumSet<?> actions;
         if (action == Action.ADD_PLAYER) {
@@ -106,7 +106,7 @@ public class PacketTabList1193 extends PacketTabList18 {
 
     @Override
     @SneakyThrows
-    public void onPacketSend(@NotNull Object packet) {
+    public void onPacketSend(@NonNull Object packet) {
         if (!(PlayerInfoClass.isInstance(packet))) return;
         List<String> actions = ((EnumSet<?>)ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
         List<Object> updatedList = new ArrayList<>();

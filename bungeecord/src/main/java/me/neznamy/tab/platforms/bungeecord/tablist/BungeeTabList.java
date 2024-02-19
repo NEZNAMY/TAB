@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -13,7 +14,6 @@ import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import net.md_5.bungee.tab.ServerUnique;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public abstract class BungeeTabList implements TabList {
 
     /** Player this TabList belongs to */
-    @NotNull
+    @NonNull
     protected final BungeeTabPlayer player;
 
     /** Pointer to UUIDs in player's TabList */
@@ -39,13 +39,13 @@ public abstract class BungeeTabList implements TabList {
      */
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    protected BungeeTabList(@NotNull BungeeTabPlayer player) {
+    protected BungeeTabList(@NonNull BungeeTabPlayer player) {
         this.player = player;
         uuids = (Collection<UUID>) ReflectionUtils.getField(ServerUnique.class, "uuids").get(((UserConnection)player.getPlayer()).getTabListHandler());
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
         player.sendPacket(new PlayerListHeaderFooter(
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion())
@@ -59,8 +59,8 @@ public abstract class BungeeTabList implements TabList {
      *          UUID to use
      * @return  New {@link Item} with given UUID.
      */
-    @NotNull
-    public Item item(@NotNull UUID id) {
+    @NonNull
+    public Item item(@NonNull UUID id) {
         Item item = new Item();
         item.setUuid(id);
         return item;
@@ -73,7 +73,7 @@ public abstract class BungeeTabList implements TabList {
      *          Entry to convert
      * @return  Converted {@link Item}
      */
-    @NotNull
+    @NonNull
     public Item entryToItem(Entry entry) {
         Item item = item(entry.getUniqueId());
         if (entry.getDisplayName() != null) {
@@ -97,7 +97,7 @@ public abstract class BungeeTabList implements TabList {
      * @param   id
      *          UUID to add
      */
-    public void addUuid(@NotNull UUID id) {
+    public void addUuid(@NonNull UUID id) {
         uuids.add(id);
     }
 
@@ -107,12 +107,12 @@ public abstract class BungeeTabList implements TabList {
      * @param   id
      *          UUID to remove
      */
-    public void removeUuid(@NotNull UUID id) {
+    public void removeUuid(@NonNull UUID id) {
         uuids.remove(id);
     }
 
     @Override
-    public void onPacketSend(@NotNull Object packet) {
+    public void onPacketSend(@NonNull Object packet) {
         if (packet instanceof PlayerListItem) {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {

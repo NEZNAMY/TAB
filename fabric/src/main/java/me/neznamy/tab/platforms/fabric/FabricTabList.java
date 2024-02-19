@@ -3,13 +3,13 @@ package me.neznamy.tab.platforms.fabric;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -21,18 +21,18 @@ import java.util.UUID;
 public class FabricTabList implements TabList {
 
     /** Player this tablist belongs to */
-    @NotNull
+    @NonNull
     private final FabricTabPlayer player;
 
     @Override
     @SneakyThrows
-    public void removeEntry(@NotNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME, new Builder(entry)));
     }
 
     @Override
     @SneakyThrows
-    public void updateDisplayName(@NotNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME,
                 new Builder(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()))
         ));
@@ -40,21 +40,21 @@ public class FabricTabList implements TabList {
 
     @Override
     @SneakyThrows
-    public void updateLatency(@NotNull UUID entry, int latency) {
+    public void updateLatency(@NonNull UUID entry, int latency) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_LATENCY,
                 new Builder(entry).setLatency(latency)));
     }
 
     @Override
     @SneakyThrows
-    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_GAME_MODE,
                 new Builder(entry).setGameMode(gameMode)));
     }
 
     @Override
     @SneakyThrows
-    public void addEntry(@NotNull Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.ADD_PLAYER,
                 new Builder(entry.getUniqueId())
                 .setName(entry.getName())
@@ -72,7 +72,7 @@ public class FabricTabList implements TabList {
 
     @Override
     @SneakyThrows
-    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
         player.sendPacket(FabricMultiVersion.newHeaderFooter.apply(
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion())
@@ -81,7 +81,7 @@ public class FabricTabList implements TabList {
 
     @Override
     @SneakyThrows
-    public void onPacketSend(@NotNull Object packet) {
+    public void onPacketSend(@NonNull Object packet) {
         if (FabricMultiVersion.isPlayerInfo.apply((Packet<?>) packet)) {
             FabricMultiVersion.onPlayerInfo.accept(player, packet);
         }
@@ -94,8 +94,8 @@ public class FabricTabList implements TabList {
     @Getter
     public static class Builder {
 
-        @NotNull private final UUID id;
-        @NotNull private String name = ""; // Avoid nullability issues as things are changing over versions
+        @NonNull private final UUID id;
+        @NonNull private String name = ""; // Avoid nullability issues as things are changing over versions
         @Nullable private Skin skin;
         private int latency;
         private int gameMode;
@@ -108,8 +108,8 @@ public class FabricTabList implements TabList {
          *          Name to use
          * @return  this
          */
-        @NotNull
-        public Builder setName(@NotNull String name) {
+        @NonNull
+        public Builder setName(@NonNull String name) {
             this.name = name;
             return this;
         }
@@ -121,7 +121,7 @@ public class FabricTabList implements TabList {
          *          Skin to use
          * @return  this
          */
-        @NotNull
+        @NonNull
         public Builder setSkin(@Nullable Skin skin) {
             this.skin = skin;
             return this;
@@ -134,7 +134,7 @@ public class FabricTabList implements TabList {
          *          Latency to use
          * @return  this
          */
-        @NotNull
+        @NonNull
         public Builder setLatency(int latency) {
             this.latency = latency;
             return this;
@@ -147,7 +147,7 @@ public class FabricTabList implements TabList {
          *          gamemode to use
          * @return  this
          */
-        @NotNull
+        @NonNull
         public Builder setGameMode(int gameMode) {
             this.gameMode = gameMode;
             return this;
@@ -160,7 +160,7 @@ public class FabricTabList implements TabList {
          *          Display name to use
          * @return  this
          */
-        @NotNull
+        @NonNull
         public Builder setDisplayName(@Nullable Component displayName) {
             this.displayName = displayName;
             return this;
@@ -171,7 +171,7 @@ public class FabricTabList implements TabList {
          *
          * @return  Profile of this entry
          */
-        @NotNull
+        @NonNull
         public GameProfile createProfile() {
             GameProfile profile = new GameProfile(id, name);
             if (skin != null) {

@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.tablist;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
@@ -8,7 +9,6 @@ import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -27,7 +27,7 @@ public abstract class TabListBase implements TabList {
     protected static SkinData skinData;
 
     /** Player this TabList belongs to */
-    @NotNull
+    @NonNull
     protected final BukkitTabPlayer player;
 
     /**
@@ -57,7 +57,7 @@ public abstract class TabListBase implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NotNull TabComponent header, @NotNull TabComponent footer) {
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
         if (HeaderFooter.getInstance() != null) HeaderFooter.getInstance().set(player, header, footer);
     }
 
