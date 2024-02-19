@@ -121,10 +121,15 @@ public abstract class ConfigurationFile {
      * @return  map value from case-insensitive key
      */
     private Object getIgnoreCase(@NonNull Map<Object, Object> map, @NonNull String key) {
-        for (Entry<Object, Object> entry : map.entrySet()) {
-            if (entry.getKey().toString().equalsIgnoreCase(key)) return entry.getValue();
+        try {
+            for (Entry<Object, Object> entry : map.entrySet()) {
+                if (entry.getKey().toString().equalsIgnoreCase(key)) return entry.getValue();
+            }
+            return map.get(key);
+        } catch (ConcurrentModificationException e) {
+            // Map modified by another thread during iteration (such as running /tab group or /tab player)
+            return getIgnoreCase(map, key);
         }
-        return map.get(key);
     }
 
     /**
