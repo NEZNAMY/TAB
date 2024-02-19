@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.chat;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -9,6 +10,7 @@ import org.json.simple.JSONObject;
 /**
  * Simple component with only text using legacy colors and nothing else.
  */
+@Getter
 @RequiredArgsConstructor
 public class SimpleComponent extends TabComponent {
 
