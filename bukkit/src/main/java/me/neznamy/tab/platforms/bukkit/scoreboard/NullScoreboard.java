@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard;
 
+import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -20,59 +20,59 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
      * @param   player
      *          Player this scoreboard will belong to
      */
-    public NullScoreboard(@NotNull BukkitTabPlayer player) {
+    public NullScoreboard(@NonNull BukkitTabPlayer player) {
         super(player);
     }
 
     @Override
-    protected void setDisplaySlot0(int slot, @NotNull String objective) {
+    protected void setDisplaySlot0(int slot, @NonNull String objective) {
         // Do nothing
     }
 
     @Override
-    protected void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+    protected void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                              @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         // Do nothing
     }
 
     @Override
-    protected void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+    protected void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
         // Do nothing
     }
 
     @Override
-    protected void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    protected void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                       @Nullable TabComponent numberFormat) {
         // Do nothing
     }
 
     @Override
-    protected void unregisterObjective0(@NotNull String objectiveName) {
+    protected void unregisterObjective0(@NonNull String objectiveName) {
         // Do nothing
     }
 
     @Override
-    protected void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    protected void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                     @Nullable TabComponent numberFormat) {
         // Do nothing
     }
 
     @Override
-    protected void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                                 @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                                 @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+    protected void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                                 @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                                 @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         // Do nothing
     }
 
     @Override
-    protected void unregisterTeam0(@NotNull String name) {
+    protected void unregisterTeam0(@NonNull String name) {
         // Do nothing
     }
 
     @Override
-    protected void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                               @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                               int options, @NotNull EnumChatFormat color) {
+    protected void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                               @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                               int options, @NonNull EnumChatFormat color) {
         // Do nothing
     }
 }

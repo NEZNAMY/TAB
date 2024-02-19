@@ -1,12 +1,12 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.scoreboard.CollisionRules;
 import org.spongepowered.api.scoreboard.Team;
@@ -55,7 +55,6 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     };
 
     /** Scoreboard of the player */
-    @NotNull
     private final org.spongepowered.api.scoreboard.Scoreboard sb = org.spongepowered.api.scoreboard.Scoreboard.builder().build();
 
     /**
@@ -64,7 +63,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      * @param   player
      *          Player this scoreboard will belong to
      */
-    public SpongeScoreboard(@NotNull SpongeTabPlayer player) {
+    public SpongeScoreboard(@NonNull SpongeTabPlayer player) {
         super(player);
 
         // Make sure each player is in a different scoreboard for per-player view
@@ -72,12 +71,12 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot0(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NonNull String objective) {
         sb.objective(objective).ifPresent(o -> sb.updateDisplaySlot(o, displaySlots[slot]));
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
@@ -89,12 +88,12 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void unregisterObjective0(@NotNull String objectiveName) {
+    public void unregisterObjective0(@NonNull String objectiveName) {
         sb.objective(objectiveName).ifPresent(sb::removeObjective);
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                  @Nullable TabComponent numberFormat) {
         sb.objective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(adventure(title));
@@ -103,9 +102,9 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      }
 
     @Override
-    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                              @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                              @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                              @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         Team team = Team.builder()
                 .name(name)
                 .displayName(adventure(name))
@@ -124,14 +123,14 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void unregisterTeam0(@NotNull String name) {
+    public void unregisterTeam0(@NonNull String name) {
         sb.team(name).ifPresent(Team::unregister);
     }
 
     @Override
-    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                            int options, @NotNull EnumChatFormat color) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                            @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                            int options, @NonNull EnumChatFormat color) {
         sb.team(name).ifPresent(team -> {
             team.setDisplayName(adventure(name));
             team.setPrefix(adventure(prefix));
@@ -145,13 +144,13 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+    public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         sb.objective(objective).ifPresent(o -> o.findOrCreateScore(adventure(scoreHolder)).setScore(score));
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+    public void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
         sb.objective(objective).ifPresent(o -> o.removeScore(adventure(scoreHolder)));
     }
 
@@ -162,8 +161,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      *          Text to convert
      * @return  Converted text
      */
-    @NotNull
-    private Component adventure(@NotNull String text) {
+    @NonNull
+    private Component adventure(@NonNull String text) {
         return AdventureHook.toAdventureComponent(TabComponent.optimized(text), player.getVersion());
     }
 }

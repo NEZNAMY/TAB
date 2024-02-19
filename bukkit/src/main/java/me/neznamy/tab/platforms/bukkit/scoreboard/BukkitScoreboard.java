@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
@@ -17,7 +18,6 @@ import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Team;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -88,7 +88,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      * @param   player
      *          Player this scoreboard will belong to
      */
-    public BukkitScoreboard(@NotNull BukkitTabPlayer player) {
+    public BukkitScoreboard(@NonNull BukkitTabPlayer player) {
         super(player);
 
         // Put player into a different scoreboard for per-player view
@@ -99,13 +99,13 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot0(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NonNull String objective) {
         checkPlayerScoreboard();
         scoreboard.getObjective(objective).setDisplaySlot(slots[slot]);
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+    public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         checkPlayerScoreboard();
         if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
@@ -116,7 +116,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+    public void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
         checkPlayerScoreboard();
         if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
             scoreboard.resetScores(scoreHolder);
@@ -126,20 +126,20 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
         checkPlayerScoreboard();
         newObjective(objectiveName, "dummy", title, display);
     }
 
     @Override
-    public void unregisterObjective0(@NotNull String objectiveName) {
+    public void unregisterObjective0(@NonNull String objectiveName) {
         checkPlayerScoreboard();
         scoreboard.getObjective(objectiveName).unregister();
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                  @Nullable TabComponent numberFormat) {
         checkPlayerScoreboard();
         Objective obj = scoreboard.getObjective(objectiveName);
@@ -148,9 +148,9 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                              @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                              @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                              @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         checkPlayerScoreboard();
         Team team = scoreboard.registerNewTeam(name);
         setPrefix(team, prefix);
@@ -171,15 +171,15 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void unregisterTeam0(@NotNull String name) {
+    public void unregisterTeam0(@NonNull String name) {
         checkPlayerScoreboard();
         scoreboard.getTeam(name).unregister();
     }
 
     @Override
-    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                            int options, @NotNull EnumChatFormat color) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                            @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                            int options, @NonNull EnumChatFormat color) {
         checkPlayerScoreboard();
         Team team = scoreboard.getTeam(name);
         setPrefix(team, prefix);
@@ -227,7 +227,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      * @param   displayName
      *          New display name
      */
-    public void setDisplayName(@NotNull Objective objective, @NotNull String displayName) {
+    public void setDisplayName(@NonNull Objective objective, @NonNull String displayName) {
         objective.setDisplayName(transform(displayName, TITLE_LIMIT_MODERN, Limitations.SCOREBOARD_TITLE_PRE_1_13));
     }
 
@@ -239,7 +239,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      * @param   prefix
      *          Prefix to change to
      */
-    public void setPrefix(@NotNull Team team, @NotNull String prefix) {
+    public void setPrefix(@NonNull Team team, @NonNull String prefix) {
         team.setPrefix(transform(prefix, PREFIX_SUFFIX_LIMIT_MODERN, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
@@ -251,7 +251,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      * @param   suffix
      *          Suffix to change to
      */
-    public void setSuffix(@NotNull Team team, @NotNull String suffix) {
+    public void setSuffix(@NonNull Team team, @NonNull String suffix) {
         team.setSuffix(transform(suffix, PREFIX_SUFFIX_LIMIT_MODERN, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
@@ -266,8 +266,8 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      *          Maximum text length defined by bukkit API on 1.12-
      * @return  Converted text
      */
-    @NotNull
-    private String transform(@NotNull String text, int maxLengthModern, int maxLengthLegacy) {
+    @NonNull
+    private String transform(@NonNull String text, int maxLengthModern, int maxLengthLegacy) {
         String transformed = player.getPlatform().toBukkitFormat(TabComponent.optimized(text), player.getVersion().supportsRGB());
         if (player.getPlatform().getServerVersion().supportsRGB() && maxLengthModern < TITLE_LIMIT_MODERN) { // Scoreboard title is not stripping colors
             while (ChatColor.stripColor(transformed).length() > maxLengthModern)
@@ -305,7 +305,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      *          Task to run
      */
     @SneakyThrows
-    private void runSync(@NotNull Runnable task) {
+    private void runSync(@NonNull Runnable task) {
         if (Bukkit.isPrimaryThread()) {
             // Server thread (plugin reload)
             task.run();

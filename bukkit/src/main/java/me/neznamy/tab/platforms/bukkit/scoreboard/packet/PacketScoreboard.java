@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard.packet;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
@@ -11,7 +12,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -124,34 +124,34 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
      * @param   player
      *          Player this scoreboard will belong to
      */
-    public PacketScoreboard(@NotNull BukkitTabPlayer player) {
+    public PacketScoreboard(@NonNull BukkitTabPlayer player) {
         super(player);
     }
 
     @Override
-    public void setDisplaySlot0(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NonNull String objective) {
         packetSender.sendPacket(player.getPlayer(), displayPacketData.setDisplaySlot(slot, newObjective(objective, "", 0, null)));
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
         packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.REGISTER, objectiveName, title, display, numberFormat));
     }
 
     @Override
-    public void unregisterObjective0(@NotNull String objectiveName) {
+    public void unregisterObjective0(@NonNull String objectiveName) {
         packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UNREGISTER, objectiveName, "", 0, null));
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                  @Nullable TabComponent numberFormat) {
         packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UPDATE, objectiveName, title, display, numberFormat));
     }
 
     @SneakyThrows
-    private Object newObjectivePacket(int action, @NotNull String objectiveName, @NotNull String title, int display,
+    private Object newObjectivePacket(int action, @NonNull String objectiveName, @NonNull String title, int display,
                                       @Nullable TabComponent numberFormat) {
         Object packet = newObjectivePacket.newInstance(newObjective(objectiveName, title, display, numberFormat), action);
         if (BukkitReflection.getMinorVersion() >= 8 && BukkitReflection.getMinorVersion() < 13) {
@@ -161,68 +161,68 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                              @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                              @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                              @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         //TODO save teams into map to prevent creating new instance each time
         packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(name, prefix, toComponent(prefix), suffix,
                 toComponent(suffix), visibility, collision, players, options, color));
     }
 
     @Override
-    public void unregisterTeam0(@NotNull String name) {
+    public void unregisterTeam0(@NonNull String name) {
         //TODO save teams into map to prevent creating new instance each time
         packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(name));
     }
 
     @Override
-    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                            int options, @NotNull EnumChatFormat color) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                            @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                            int options, @NonNull EnumChatFormat color) {
         //TODO save teams into map to prevent creating new instance each time
         packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(name, prefix, toComponent(prefix), suffix,
                 toComponent(suffix), visibility, collision, options, color));
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+    public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         packetSender.sendPacket(player.getPlayer(), scorePacketData.setScore(objective, scoreHolder, score, toComponent(displayName), toFixedFormat(numberFormat)));
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+    public void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
         packetSender.sendPacket(player.getPlayer(), scorePacketData.removeScore(objective, scoreHolder));
     }
 
     @Override
-    public boolean isTeamPacket(@NotNull Object packet) {
+    public boolean isTeamPacket(@NonNull Object packet) {
         return teamPacketData.getTeamPacketClass().isInstance(packet);
     }
 
     @Override
-    public void onTeamPacket(@NotNull Object team) {
+    public void onTeamPacket(@NonNull Object team) {
         teamPacketData.onTeamPacket(team);
     }
 
     @Override
-    public boolean isDisplayObjective(@NotNull Object packet) {
+    public boolean isDisplayObjective(@NonNull Object packet) {
         return displayPacketData.isDisplayObjective(packet);
     }
 
     @Override
-    public void onDisplayObjective(@NotNull Object packet) {
+    public void onDisplayObjective(@NonNull Object packet) {
         displayPacketData.onDisplayObjective(player, packet);
     }
 
     @Override
-    public boolean isObjective(@NotNull Object packet) {
+    public boolean isObjective(@NonNull Object packet) {
         return ObjectivePacketClass.isInstance(packet);
     }
 
     @Override
     @SneakyThrows
-    public void onObjective(@NotNull Object packet) {
+    public void onObjective(@NonNull Object packet) {
         TAB.getInstance().getFeatureManager().onObjective(player,
                 Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
     }
@@ -241,7 +241,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
      * @return  Created objective
      */
     @SneakyThrows
-    public Object newObjective(@NotNull String objectiveName, @NotNull String title, int renderType,
+    public Object newObjective(@NonNull String objectiveName, @NonNull String title, int renderType,
                                @Nullable TabComponent numberFormat) {
         if (BukkitReflection.is1_20_3Plus()) {
             // 1.20.3+
@@ -272,7 +272,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Nullable
-    private Object toComponent(@NotNull String text) {
+    private Object toComponent(@NonNull String text) {
         return toComponent(TabComponent.optimized(text));
     }
 

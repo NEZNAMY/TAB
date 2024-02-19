@@ -1,12 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard.packet;
 
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.BiFunctionWithException;
 import me.neznamy.tab.shared.util.QuintFunction;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -102,7 +102,7 @@ public class ScorePacketData {
      * @return  Set score packet with given parameters
      */
     @SneakyThrows
-    public Object setScore(@NotNull String objective, @NotNull String scoreHolder, int score,
+    public Object setScore(@NonNull String objective, @NonNull String scoreHolder, int score,
                            @Nullable Object displayName, @Nullable Object numberFormat) {
         return setScore.apply(objective, scoreHolder, score, displayName, numberFormat);
     }
@@ -117,7 +117,7 @@ public class ScorePacketData {
      * @return  Reset score packet with given parameters.
      */
     @SneakyThrows
-    public Object removeScore(@NotNull String objective, @NotNull String scoreHolder) {
+    public Object removeScore(@NonNull String objective, @NonNull String scoreHolder) {
         return removeScore.apply(objective, scoreHolder);
     }
 }

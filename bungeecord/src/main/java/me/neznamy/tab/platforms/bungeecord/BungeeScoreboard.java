@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import com.google.common.collect.Lists;
+import lombok.NonNull;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -17,7 +18,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.Either;
 import net.md_5.bungee.protocol.NumberFormat;
 import net.md_5.bungee.protocol.packet.*;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -38,17 +38,17 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
      * @param   player
      *          Player this scoreboard will belong to
      */
-    public BungeeScoreboard(@NotNull BungeeTabPlayer player) {
+    public BungeeScoreboard(@NonNull BungeeTabPlayer player) {
         super(player);
     }
 
     @Override
-    public void setDisplaySlot0(int slot, @NotNull String objective) {
+    public void setDisplaySlot0(int slot, @NonNull String objective) {
         player.sendPacket(new ScoreboardDisplay(slot, objective));
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
@@ -61,7 +61,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void unregisterObjective0(@NotNull String objectiveName) {
+    public void unregisterObjective0(@NonNull String objectiveName) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 either(""), // Empty value instead of null to prevent NPE kick on 1.7
@@ -72,7 +72,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, int display,
+    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                  @Nullable TabComponent numberFormat) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
@@ -85,9 +85,9 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                              @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                              @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                              @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                              @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         player.sendPacket(new Team(
                 name,
                 (byte) TeamAction.CREATE,
@@ -103,14 +103,14 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void unregisterTeam0(@NotNull String name) {
+    public void unregisterTeam0(@NonNull String name) {
         player.sendPacket(new Team(name));
     }
 
     @Override
-    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                            int options, @NotNull EnumChatFormat color) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                            @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                            int options, @NonNull EnumChatFormat color) {
         player.sendPacket(new Team(
                 name,
                 (byte) TeamAction.UPDATE,
@@ -126,7 +126,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+    public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         player.sendPacket(new ScoreboardScore(
                 scoreHolder,
@@ -140,7 +140,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void removeScore0(@NotNull String objective, @NotNull String scoreHolder) {
+    public void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
         if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
             player.sendPacket(new ScoreboardScoreReset(scoreHolder, objective));
         } else {
@@ -148,7 +148,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         }
     }
 
-    private Either<String, BaseComponent> either(@NotNull String text) {
+    private Either<String, BaseComponent> either(@NonNull String text) {
         if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
             return Either.right(player.getPlatform().toComponent(TabComponent.optimized(text), player.getVersion()));
         } else {
@@ -157,12 +157,12 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public boolean isTeamPacket(@NotNull Object packet) {
+    public boolean isTeamPacket(@NonNull Object packet) {
         return packet instanceof Team;
     }
 
     @Override
-    public void onTeamPacket(@NotNull Object team) {
+    public void onTeamPacket(@NonNull Object team) {
         NameTag nameTag = TAB.getInstance().getNameTagManager();
         if (nameTag == null) return;
         Team packet = (Team) team;
@@ -197,23 +197,23 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public boolean isDisplayObjective(@NotNull Object packet) {
+    public boolean isDisplayObjective(@NonNull Object packet) {
         return packet instanceof ScoreboardDisplay;
     }
 
     @Override
-    public void onDisplayObjective(@NotNull Object packet) {
+    public void onDisplayObjective(@NonNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
                 ((ScoreboardDisplay)packet).getPosition(), ((ScoreboardDisplay) packet).getName());
     }
 
     @Override
-    public boolean isObjective(@NotNull Object packet) {
+    public boolean isObjective(@NonNull Object packet) {
         return packet instanceof ScoreboardObjective;
     }
 
     @Override
-    public void onObjective(@NotNull Object packet) {
+    public void onObjective(@NonNull Object packet) {
         TAB.getInstance().getFeatureManager().onObjective(player,
                 ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
     }

@@ -1,12 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard.packet;
 
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -61,7 +61,7 @@ public class DisplayPacketData {
      * @return  Packet for setting display slot
      */
     @SneakyThrows
-    public Object setDisplaySlot(int slot, @NotNull Object objective) {
+    public Object setDisplaySlot(int slot, @NonNull Object objective) {
         return newDisplayObjective.newInstance(displaySlots[slot], objective);
     }
 
@@ -72,7 +72,7 @@ public class DisplayPacketData {
      *          Packet to check
      * @return  {@code true} if is, {@code false} if not
      */
-    public boolean isDisplayObjective(@NotNull Object packet) {
+    public boolean isDisplayObjective(@NonNull Object packet) {
         return DisplayObjectiveClass.isInstance(packet);
     }
 
@@ -85,7 +85,7 @@ public class DisplayPacketData {
      *          Display objective packet received
      */
     @SneakyThrows
-    public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
+    public void onDisplayObjective(@NonNull TabPlayer player, @NonNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player, packetToSlot.apply(packet),
                 (String) DisplayObjective_OBJECTIVE_NAME.get(packet));
     }

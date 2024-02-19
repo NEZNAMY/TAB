@@ -1,13 +1,13 @@
 package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -31,12 +31,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
     /** Flag tracking time between Login packet send and its processing */
     private boolean frozen;
 
-    public final void setDisplaySlot(int slot, @NotNull String objective) {
+    public final void setDisplaySlot(int slot, @NonNull String objective) {
         if (frozen) return;
         setDisplaySlot0(slot, objective);
     }
 
-    public final void setScore(@NotNull String objective, @NotNull String scoreHolder, int score,
+    public final void setScore(@NonNull String objective, @NonNull String scoreHolder, int score,
                                @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
@@ -46,7 +46,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         setScore0(objective, scoreHolder, score, displayName, numberFormat);
     }
 
-    public final void removeScore(@NotNull String objective, @NotNull String scoreHolder) {
+    public final void removeScore(@NonNull String objective, @NonNull String scoreHolder) {
         if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
             error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objective);
@@ -55,7 +55,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         removeScore0(objective, scoreHolder);
     }
 
-    public final void registerObjective(@NotNull String objectiveName, @NotNull String title, int display,
+    public final void registerObjective(@NonNull String objectiveName, @NonNull String title, int display,
                                   @Nullable TabComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.add(objectiveName)) {
@@ -65,7 +65,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         registerObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
-    public final void unregisterObjective(@NotNull String objectiveName) {
+    public final void unregisterObjective(@NonNull String objectiveName) {
         if (frozen) return;
         if (!registeredObjectives.remove(objectiveName)) {
             error("Tried to unregister non-existing objective %s for player ", objectiveName);
@@ -74,7 +74,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterObjective0(objectiveName);
     }
 
-    public final void updateObjective(@NotNull String objectiveName, @NotNull String title, int display,
+    public final void updateObjective(@NonNull String objectiveName, @NonNull String title, int display,
                                 @Nullable TabComponent numberFormat) {
         if (frozen) return;
         if (!registeredObjectives.contains(objectiveName)) {
@@ -84,9 +84,9 @@ public abstract class Scoreboard<T extends TabPlayer> {
         updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
-    public final void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                                   @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                                   @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+    public final void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                                   @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                                   @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         if (frozen) return;
         if (!registeredTeams.add(name)) {
             error("Tried to register duplicated team %s to player ", name);
@@ -104,7 +104,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         );
     }
 
-    public final void unregisterTeam(@NotNull String name) {
+    public final void unregisterTeam(@NonNull String name) {
         if (frozen) return;
         if (!registeredTeams.remove(name)) {
             error("Tried to unregister non-existing team %s for player ", name);
@@ -113,9 +113,9 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterTeam0(name);
     }
 
-    public final void updateTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                                 @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                                 int options, @NotNull EnumChatFormat color) {
+    public final void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                                 @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                                 int options, @NonNull EnumChatFormat color) {
         if (frozen) return;
         if (!registeredTeams.contains(name)) {
             error("Tried to modify non-existing team %s for player ", name);
@@ -132,7 +132,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         );
     }
 
-    private void error(@NotNull String format, @NotNull Object... args) {
+    private void error(@NonNull String format, @NonNull Object... args) {
         TAB.getInstance().debug(String.format(format, args) + player.getName());
     }
 
@@ -187,7 +187,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      *          Minecraft packet to check
      * @return  {@code true} if is a team packet, {@code false} if not.
      */
-    public boolean isTeamPacket(@NotNull Object packet) {
+    public boolean isTeamPacket(@NonNull Object packet) {
         return false;
     }
 
@@ -197,7 +197,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      * @param   packet
      *          Packet to process
      */
-    public void onTeamPacket(@NotNull Object packet) {
+    public void onTeamPacket(@NonNull Object packet) {
         // Empty by default, overridden by Bukkit, BungeeCord and Fabric
     }
 
@@ -208,7 +208,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      *          Minecraft packet to check
      * @return  {@code true} if is a display objective packet, {@code false} if not.
      */
-    public boolean isDisplayObjective(@NotNull Object packet) {
+    public boolean isDisplayObjective(@NonNull Object packet) {
         return false;
     }
 
@@ -218,7 +218,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      * @param   packet
      *          Packet to process
      */
-    public void onDisplayObjective(@NotNull Object packet) {
+    public void onDisplayObjective(@NonNull Object packet) {
         // Empty by default, overridden by Bukkit, BungeeCord and Fabric
     }
 
@@ -229,7 +229,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      *          Minecraft packet to check
      * @return  {@code true} if is an objective packet, {@code false} if not.
      */
-    public boolean isObjective(@NotNull Object packet) {
+    public boolean isObjective(@NonNull Object packet) {
         return false;
     }
 
@@ -239,7 +239,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      * @param   packet
      *          Packet to process
      */
-    public void onObjective(@NotNull Object packet) {
+    public void onObjective(@NonNull Object packet) {
         // Empty by default, overridden by Bukkit, BungeeCord and Fabric
     }
 
@@ -251,7 +251,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      * @return  Player from given nickname
      */
     @Nullable
-    public static TabPlayer getPlayer(@NotNull String name) {
+    public static TabPlayer getPlayer(@NonNull String name) {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getNickname().equals(name))
                 return p; // Nicked name
@@ -259,7 +259,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         return TAB.getInstance().getPlayer(name); // Try original name
     }
 
-    public static void logTeamOverride(@NotNull String team, @NotNull String player, @NotNull String expectedTeam) {
+    public static void logTeamOverride(@NonNull String team, @NonNull String player, @NonNull String expectedTeam) {
         String message = "Blocked attempt to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
         //not logging the same message for every online player who received the packet
         if (!message.equals(lastTeamOverrideMessage)) {
@@ -268,30 +268,30 @@ public abstract class Scoreboard<T extends TabPlayer> {
         }
     }
 
-    protected abstract void setDisplaySlot0(int slot, @NotNull String objective);
+    protected abstract void setDisplaySlot0(int slot, @NonNull String objective);
 
-    protected abstract void setScore0(@NotNull String objective, @NotNull String scoreHolder, int score,
+    protected abstract void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                                    @Nullable TabComponent displayName, @Nullable TabComponent numberFormat);
 
-    protected abstract void removeScore0(@NotNull String objective, @NotNull String scoreHolder);
+    protected abstract void removeScore0(@NonNull String objective, @NonNull String scoreHolder);
 
-    protected abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title,
+    protected abstract void registerObjective0(@NonNull String objectiveName, @NonNull String title,
                                             int display, @Nullable TabComponent numberFormat);
 
-    protected abstract void unregisterObjective0(@NotNull String objectiveName);
+    protected abstract void unregisterObjective0(@NonNull String objectiveName);
 
-    protected abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title,
+    protected abstract void updateObjective0(@NonNull String objectiveName, @NonNull String title,
                                           int display, @Nullable TabComponent numberFormat);
 
-    protected abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                                          @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                                          @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color);
+    protected abstract void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                                          @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                                          @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color);
 
-    protected abstract void unregisterTeam0(@NotNull String name);
+    protected abstract void unregisterTeam0(@NonNull String name);
 
-    protected abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
-                                        @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
-                                        int options, @NotNull EnumChatFormat color);
+    protected abstract void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                                        @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                                        int options, @NonNull EnumChatFormat color);
 
     @AllArgsConstructor
     public enum CollisionRule {

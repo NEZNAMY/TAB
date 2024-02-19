@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard.packet;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.TAB;
@@ -11,7 +12,6 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.BiConsumerWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -126,7 +126,7 @@ public class TeamPacketData {
     }
 
     @SneakyThrows
-    private void loadVisibility(@NotNull Class<?> scoreboardTeam) {
+    private void loadVisibility(@NonNull Class<?> scoreboardTeam) {
         Class<?> enumNameTagVisibility = BukkitReflection.getClass(
                 "world.scores.Team$Visibility", // Mojang mapped
                 "world.scores.ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.17+
@@ -143,7 +143,7 @@ public class TeamPacketData {
     }
 
     @SneakyThrows
-    private void loadCollision(@NotNull Class<?> scoreboardTeam) {
+    private void loadCollision(@NonNull Class<?> scoreboardTeam) {
         Class<?> enumTeamPush = BukkitReflection.getClass("world.scores.Team$CollisionRule",
                 "world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
         Enum<?>[] collisionRules = (Enum<?>[]) enumTeamPush.getMethod("values").invoke(null);
@@ -177,10 +177,10 @@ public class TeamPacketData {
      * @return  Register team packet with specified parameters
      */
     @SneakyThrows
-    public Object registerTeam(@NotNull String name, @NotNull String prefix, @Nullable Object prefixComponent,
-                               @NotNull String suffix, @Nullable Object suffixComponent,
-                               @NotNull Scoreboard.NameVisibility visibility, @NotNull Scoreboard.CollisionRule collision,
-                               @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
+    public Object registerTeam(@NonNull String name, @NonNull String prefix, @Nullable Object prefixComponent,
+                               @NonNull String suffix, @Nullable Object suffixComponent,
+                               @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
+                               @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
         ((Collection<String>) ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(players);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
@@ -198,7 +198,7 @@ public class TeamPacketData {
      * @return  Packet for unregistering team
      */
     @SneakyThrows
-    public Object unregisterTeam(@NotNull String name) {
+    public Object unregisterTeam(@NonNull String name) {
         Object team = newScoreboardTeam.newInstance(emptyScoreboard, name);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_of.invoke(null, team);
@@ -231,10 +231,10 @@ public class TeamPacketData {
      * @return  Update team packet with specified parameters
      */
     @SneakyThrows
-    public Object updateTeam(@NotNull String name, @NotNull String prefix, @Nullable Object prefixComponent,
-                             @NotNull String suffix, @Nullable Object suffixComponent,
-                             @NotNull Scoreboard.NameVisibility visibility, @NotNull Scoreboard.CollisionRule collision,
-                             int options, @NotNull EnumChatFormat color) {
+    public Object updateTeam(@NonNull String name, @NonNull String prefix, @Nullable Object prefixComponent,
+                             @NonNull String suffix, @Nullable Object suffixComponent,
+                             @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
+                             int options, @NonNull EnumChatFormat color) {
         Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_ofBoolean.invoke(null, team, false);
@@ -267,10 +267,10 @@ public class TeamPacketData {
      * @return  Team with specified parameters
      */
     @SneakyThrows
-    private Object createTeam(@NotNull String teamName, @NotNull String prefix, @Nullable Object prefixComponent,
-                              @NotNull String suffix, @Nullable Object suffixComponent,
-                              @NotNull Scoreboard.NameVisibility visibility, @NotNull Scoreboard.CollisionRule collision,
-                              int options, @NotNull EnumChatFormat color) {
+    private Object createTeam(@NonNull String teamName, @NonNull String prefix, @Nullable Object prefixComponent,
+                              @NonNull String suffix, @Nullable Object suffixComponent,
+                              @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
+                              int options, @NonNull EnumChatFormat color) {
         Object team = newScoreboardTeam.newInstance(emptyScoreboard, teamName);
         ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
@@ -295,7 +295,7 @@ public class TeamPacketData {
      *          Team packet
      */
     @SneakyThrows
-    public void onTeamPacket(@NotNull Object team) {
+    public void onTeamPacket(@NonNull Object team) {
         if (TAB.getInstance().getNameTagManager() == null) return;
         int action = TeamPacket_ACTION.getInt(team);
         if (action == 1 || action == 2 || action == 4) return;

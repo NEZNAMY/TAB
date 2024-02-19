@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
@@ -9,7 +10,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Team;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Scoreboard handler using Paper API, which got added
@@ -33,7 +33,7 @@ public class PaperScoreboard extends BukkitScoreboard {
      * @param   player
      *          Player this scoreboard will belong to
      */
-    public PaperScoreboard(@NotNull BukkitTabPlayer player) {
+    public PaperScoreboard(@NonNull BukkitTabPlayer player) {
         super(player);
     }
 
@@ -43,17 +43,17 @@ public class PaperScoreboard extends BukkitScoreboard {
     }
 
     @Override
-    public void setDisplayName(@NotNull Objective objective, @NotNull String displayName) {
+    public void setDisplayName(@NonNull Objective objective, @NonNull String displayName) {
         objective.displayName(toAdventure(displayName));
     }
 
     @Override
-    public void setPrefix(@NotNull Team team, @NotNull String prefix) {
+    public void setPrefix(@NonNull Team team, @NonNull String prefix) {
         team.prefix(toAdventure(prefix));
     }
 
     @Override
-    public void setSuffix(@NotNull Team team, @NotNull String suffix) {
+    public void setSuffix(@NonNull Team team, @NonNull String suffix) {
         team.suffix(toAdventure(suffix));
     }
 
@@ -64,8 +64,8 @@ public class PaperScoreboard extends BukkitScoreboard {
      *          Text to convert
      * @return  Converted component
      */
-    @NotNull
-    private Component toAdventure(@NotNull String text) {
+    @NonNull
+    private Component toAdventure(@NonNull String text) {
         return AdventureHook.toAdventureComponent(TabComponent.optimized(text), player.getVersion());
     }
 }
