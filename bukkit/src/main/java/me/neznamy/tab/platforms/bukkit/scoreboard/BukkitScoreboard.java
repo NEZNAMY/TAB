@@ -14,10 +14,8 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.scoreboard.NameTagVisibility;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.RenderType;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -108,11 +106,15 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         checkPlayerScoreboard();
+        Score s;
         if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
-            scoreboard.getObjective(objective).getScore(scoreHolder).setScore(score);
+            s = scoreboard.getObjective(objective).getScore(scoreHolder);
         } else {
-            scoreboard.getObjective(objective).getScore(Bukkit.getOfflinePlayer(scoreHolder)).setScore(score);
+            s = scoreboard.getObjective(objective).getScore(Bukkit.getOfflinePlayer(scoreHolder));
         }
+        s.setScore(score);
+        setScoreDisplayName(s, displayName);
+        setScoreNumberFormat(s, numberFormat);
     }
 
     @Override
@@ -129,7 +131,8 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
         checkPlayerScoreboard();
-        newObjective(objectiveName, "dummy", title, display);
+        Objective obj = newObjective(objectiveName, "dummy", title, display);
+        setObjectiveNumberFormat(obj, numberFormat);
     }
 
     @Override
@@ -145,6 +148,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         Objective obj = scoreboard.getObjective(objectiveName);
         setDisplayName(obj, title);
         if (serverMinorVersion >= RENDER_TYPE_VERSION) obj.setRenderType(RenderType.values()[display]);
+        setObjectiveNumberFormat(obj, numberFormat);
     }
 
     @Override
@@ -205,17 +209,20 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      *          Objective title
      * @param   display
      *          Score display type
+     * @return  Created objective
      */
-    public void newObjective(String objectiveName, String criteria, String title, int display) {
+    public Objective newObjective(String objectiveName, String criteria, String title, int display) {
         if (serverMinorVersion >= RENDER_TYPE_VERSION) {
-            scoreboard.registerNewObjective(
+            return scoreboard.registerNewObjective(
                     objectiveName,
                     criteria,
                     transform(title, TITLE_LIMIT_MODERN, Limitations.SCOREBOARD_TITLE_PRE_1_13),
                     RenderType.values()[display]
             );
         } else {
-            setDisplayName(scoreboard.registerNewObjective(objectiveName, display == HealthDisplay.HEARTS ? "health" : "dummy"), title);
+            Objective obj = scoreboard.registerNewObjective(objectiveName, display == HealthDisplay.HEARTS ? "health" : "dummy");
+            setDisplayName(obj, title);
+            return obj;
         }
     }
 
@@ -280,6 +287,42 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
                 transformed = transformed.substring(0, maxLengthLegacy);
         }
         return transformed;
+    }
+
+    /**
+     * Sets display name of score to specified value.
+     *
+     * @param   s
+     *          Score to set display name of
+     * @param   displayName
+     *          Display name to use
+     */
+    public void setScoreDisplayName(@NotNull Score s, @Nullable TabComponent displayName) {
+        // Not available on Bukkit
+    }
+
+    /**
+     * Sets number format of score to specified value.
+     *
+     * @param   s
+     *          Score to set number format of
+     * @param   numberFormat
+     *          Number format to use
+     */
+    public void setScoreNumberFormat(@NotNull Score s, @Nullable TabComponent numberFormat) {
+        // Not available on Bukkit
+    }
+
+    /**
+     * Sets default number format of object to specified value.
+     *
+     * @param   o
+     *          Objective to set default number format of
+     * @param   numberFormat
+     *          Number format to use
+     */
+    public void setObjectiveNumberFormat(@NotNull Objective o, @Nullable TabComponent numberFormat) {
+        // Not available on Bukkit
     }
 
     /**
