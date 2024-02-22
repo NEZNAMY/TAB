@@ -8,11 +8,17 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Scoreboard class for sending scoreboard-related packets.
+ * @param   <T>
+ *          Platform's TabPlayer class
+ */
 @RequiredArgsConstructor
 public abstract class Scoreboard<T extends TabPlayer> {
 
@@ -31,11 +37,33 @@ public abstract class Scoreboard<T extends TabPlayer> {
     /** Flag tracking time between Login packet send and its processing */
     private boolean frozen;
 
+    /**
+     * Sets display slot of an objective.
+     *
+     * @param   slot
+     *          Objective slot: 0 = playerlist, 1 = sidebar, 2 = belowname
+     * @param   objective
+     *          Objective name
+     */
     public final void setDisplaySlot(int slot, @NonNull String objective) {
         if (frozen) return;
         setDisplaySlot0(slot, objective);
     }
 
+    /**
+     * Sets score of a holder to specified value.
+     *
+     * @param   objective
+     *          Objective to set score on
+     * @param   scoreHolder
+     *          Name of score holder
+     * @param   score
+     *          Numeric score value
+     * @param   displayName
+     *          Display name of score holder (1.20.3+)
+     * @param   numberFormat
+     *          Number format of score value (1.20.3+)
+     */
     public final void setScore(@NonNull String objective, @NonNull String scoreHolder, int score,
                                @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         if (frozen) return;
@@ -46,6 +74,14 @@ public abstract class Scoreboard<T extends TabPlayer> {
         setScore0(objective, scoreHolder, score, displayName, numberFormat);
     }
 
+    /**
+     * Removes score from specified objective.
+     *
+     * @param   objective
+     *          Objective to remove score from
+     * @param   scoreHolder
+     *          Name of score holder to remove score of
+     */
     public final void removeScore(@NonNull String objective, @NonNull String scoreHolder) {
         if (frozen) return;
         if (!registeredObjectives.contains(objective)) {
@@ -55,6 +91,18 @@ public abstract class Scoreboard<T extends TabPlayer> {
         removeScore0(objective, scoreHolder);
     }
 
+    /**
+     * Registers new scoreboard objective.
+     *
+     * @param   objectiveName
+     *          Objective name
+     * @param   title
+     *          Objective title
+     * @param   display
+     *          Display type: 0 = integer, 1 = hearts
+     * @param   numberFormat
+     *          Default number format for all scores in this objective (1.20.3+)
+     */
     public final void registerObjective(@NonNull String objectiveName, @NonNull String title, int display,
                                   @Nullable TabComponent numberFormat) {
         if (frozen) return;
@@ -65,6 +113,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
         registerObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
+    /**
+     * Unregisters scoreboard objective.
+     *
+     * @param   objectiveName
+     *          Objective name
+     */
     public final void unregisterObjective(@NonNull String objectiveName) {
         if (frozen) return;
         if (!registeredObjectives.remove(objectiveName)) {
@@ -74,6 +128,18 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterObjective0(objectiveName);
     }
 
+    /**
+     * Updates objective properties.
+     *
+     * @param   objectiveName
+     *          Objective name
+     * @param   title
+     *          New objective title
+     * @param   display
+     *          New objective display type: 0 = integer, 1 = hearts
+     * @param   numberFormat
+     *          New default number format for all scores
+     */
     public final void updateObjective(@NonNull String objectiveName, @NonNull String title, int display,
                                 @Nullable TabComponent numberFormat) {
         if (frozen) return;
@@ -84,6 +150,28 @@ public abstract class Scoreboard<T extends TabPlayer> {
         updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
     }
 
+    /**
+     * Registers new team into the scoreboard.
+     *
+     * @param   name
+     *          Team name
+     * @param   prefix
+     *          Team prefix
+     * @param   suffix
+     *          Team suffix
+     * @param   visibility
+     *          Team nametag visibility
+     * @param   collision
+     *          Team collision rule
+     * @param   players
+     *          Players to add to the team
+     * @param   options
+     *          Team options:
+     *              0x01 - Allow friendly fire
+     *              0x02 - Can see friendly invisibles
+     * @param   color
+     *          Team color (name color and prefix/suffix color start)
+     */
     public final void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
                                    @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                                    @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
@@ -104,6 +192,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
         );
     }
 
+    /**
+     * Unregisters team from the scoreboard.
+     *
+     * @param   name
+     *          Team name
+     */
     public final void unregisterTeam(@NonNull String name) {
         if (frozen) return;
         if (!registeredTeams.remove(name)) {
@@ -113,6 +207,26 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterTeam0(name);
     }
 
+    /**
+     * Updates team properties.
+     *
+     * @param   name
+     *          Team name
+     * @param   prefix
+     *          New team prefix
+     * @param   suffix
+     *          New team suffix
+     * @param   visibility
+     *          New team nametag visibility
+     * @param   collision
+     *          New team collision rule
+     * @param   options
+     *          New team options:
+     *              0x01 - Allow friendly fire
+     *              0x02 - Can see friendly invisibles
+     * @param   color
+     *          New team color (name color and prefix/suffix color start)
+     */
     public final void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
                                  @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                                  int options, @NonNull EnumChatFormat color) {
@@ -132,12 +246,20 @@ public abstract class Scoreboard<T extends TabPlayer> {
         );
     }
 
+    /**
+     * Prints a debug message if attempted to perform an invalid operation.
+     *
+     * @param   format
+     *          Message format
+     * @param   args
+     *          Format arguments
+     */
     private void error(@NonNull String format, @NonNull Object... args) {
         TAB.getInstance().debug(String.format(format, args) + player.getName());
     }
 
     /**
-     * Marks for freeze.
+     * Marks for freeze. While frozen, no packets will be sent.
      */
     public void freeze() {
         frozen = true;
@@ -259,6 +381,17 @@ public abstract class Scoreboard<T extends TabPlayer> {
         return TAB.getInstance().getPlayer(name); // Try original name
     }
 
+    /**
+     * Logs a message into anti-override log when blocking attempt to add
+     * a player into a team.
+     *
+     * @param   team
+     *          Team name from another source
+     * @param   player
+     *          Player who was about to be added into the team
+     * @param   expectedTeam
+     *          Expected name of the team
+     */
     public static void logTeamOverride(@NonNull String team, @NonNull String player, @NonNull String expectedTeam) {
         String message = "Blocked attempt to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
         //not logging the same message for every online player who received the packet
@@ -293,15 +426,28 @@ public abstract class Scoreboard<T extends TabPlayer> {
                                         @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                                         int options, @NonNull EnumChatFormat color);
 
+    /**
+     * Team collision rule enum.
+     */
     @AllArgsConstructor
     public enum CollisionRule {
 
+        /** Always pushes all players */
         ALWAYS("always"),
+
+        /** Never pushes anyone */
         NEVER("never"),
+
+        /** Only pushes players from other teams */
         PUSH_OTHER_TEAMS("pushOtherTeams"),
+
+        /** Only pushes players from own team */
         PUSH_OWN_TEAM("pushOwnTeam");
 
+        /** Map of code name to enum constant */
         private static final Map<String, CollisionRule> BY_NAME = Arrays.stream(values()).collect(Collectors.toMap(collisionRule -> collisionRule.string, collisionRule -> collisionRule));
+
+        /** Code name of this constant */
         private final String string;
 
         @Override
@@ -309,20 +455,42 @@ public abstract class Scoreboard<T extends TabPlayer> {
             return string;
         }
 
-        public static CollisionRule getByName(String name) {
+        /**
+         * Returns enum constant from code name. If invalid, {@link #ALWAYS}
+         * is returned.
+         *
+         * @param   name
+         *          Code name of the collision rule
+         * @return  Enum constant from given code name
+         */
+        @NotNull
+        public static CollisionRule getByName(@NotNull String name) {
             return BY_NAME.getOrDefault(name, ALWAYS);
         }
     }
 
+    /**
+     * Nametag visibility enum.
+     */
     @AllArgsConstructor
     public enum NameVisibility {
 
+        /** Name can be seen by everyone */
         ALWAYS("always"),
+
+        /** Name cannot be seen by anyone */
         NEVER("never"),
+
+        /** Name is hidden from other teams */
         HIDE_FOR_OTHER_TEAMS("hideForOtherTeams"),
+
+        /** Name is hidden from own team */
         HIDE_FOR_OWN_TEAM("hideForOwnTeam");
 
+        /** Map of code name to enum constant */
         private static final Map<String, NameVisibility> BY_NAME = Arrays.stream(values()).collect(Collectors.toMap(visibility -> visibility.string, visibility -> visibility));
+
+        /** Code name of this constant */
         private final String string;
 
         @Override
@@ -330,44 +498,92 @@ public abstract class Scoreboard<T extends TabPlayer> {
             return string;
         }
 
+        /**
+         * Returns enum constant from code name. If invalid, {@link #ALWAYS}
+         * is returned.
+         *
+         * @param   name
+         *          Code name of the collision rule
+         * @return  Enum constant from given code name
+         */
         public static NameVisibility getByName(String name) {
             return BY_NAME.getOrDefault(name, ALWAYS);
         }
     }
 
+    /**
+     * Class containing scoreboard objective action constants.
+     */
     public static class ObjectiveAction {
 
+        /** Register objective action */
         public static final int REGISTER = 0;
+
+        /** Unregister objective action */
         public static final int UNREGISTER = 1;
+
+        /** Update objective action */
         public static final int UPDATE = 2;
     }
 
+    /**
+     * Class containing scoreboard objective health display constants.
+     */
     public static class HealthDisplay {
 
+        /** INTEGER display type */
         public static final int INTEGER = 0;
+
+        /** HEARTS display type (1.8+) */
         public static final int HEARTS = 1;
     }
 
+    /**
+     * Class containing scoreboard display slot constants.
+     */
     public static class DisplaySlot {
 
+        /** Playerlist slot in tablist aligned to the right */
         public static final int PLAYER_LIST = 0;
+
+        /** Sidebar slot on the right */
         public static final int SIDEBAR = 1;
+
+        /** Belowname slot below player nametags */
         public static final int BELOW_NAME = 2;
     }
 
+    /**
+     * Class containing scoreboard score action constants.
+     */
     public static class ScoreAction {
 
+        /** Sets score (adds if not present) */
         public static final int CHANGE = 0;
+
+        /** Removes score */
         public static final int REMOVE = 1;
     }
 
+    /**
+     * Class containing scoreboard team action constants.
+     */
     @SuppressWarnings("unused")
     public static class TeamAction {
 
+        /** Creates team */
         public static final int CREATE = 0;
+
+        /** Removes team */
         public static final int REMOVE = 1;
+
+        /** Updates team properties */
         public static final int UPDATE = 2;
+
+        /** Adds player into the team */
         public static final int ADD_PLAYER = 3;
+
+        /** Removes player from the team */
         public static final int REMOVE_PLAYER = 4;
     }
 }
