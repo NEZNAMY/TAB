@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -17,7 +18,8 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, Refreshable {
 
     // config options
-    private final List<String> spyServers = config().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));
+    private final List<String> spyServers = config().getStringList("global-playerlist.spy-servers",
+            Collections.singletonList("spyserver1")).stream().map(String::toLowerCase).collect(Collectors.toList());
     private final Map<String, List<String>> sharedServers = config().getConfigurationSection("global-playerlist.server-groups");
     private final boolean othersAsSpectators = config().getBoolean("global-playerlist.display-others-as-spectators", false);
     private final boolean vanishedAsSpectators = config().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
@@ -214,7 +216,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
      * @return  {@code true} if is spy-server, {@code false} if not
      */
     public boolean isSpyServer(@NotNull String server) {
-        return spyServers.stream().anyMatch(server::equalsIgnoreCase);
+        return spyServers.contains(server.toLowerCase());
     }
 
     @Override
