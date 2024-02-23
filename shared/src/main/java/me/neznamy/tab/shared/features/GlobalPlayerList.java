@@ -222,8 +222,10 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         //player ping changed, must manually update latency for players on other servers
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!refreshed.getServer().equals(all.getServer())) all.getTabList().updateLatency(refreshed.getTablistId(), refreshed.getPing());
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (!refreshed.getServer().equals(viewer.getServer()) && shouldSee(viewer, refreshed)) {
+                viewer.getTabList().updateLatency(refreshed.getTablistId(), refreshed.getPing());
+            }
         }
     }
 
