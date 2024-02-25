@@ -80,6 +80,11 @@ public class FabricTabList implements TabList {
     }
 
     @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return true; // TODO?
+    }
+
+    @Override
     @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
         if (FabricMultiVersion.isPlayerInfo.apply((Packet<?>) packet)) {

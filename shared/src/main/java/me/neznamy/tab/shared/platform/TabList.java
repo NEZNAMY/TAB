@@ -96,6 +96,15 @@ public interface TabList {
     void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer);
 
     /**
+     * Returns {@code true} if tablist contains specified entry, {@code false} if not.
+     *
+     * @param   entry
+     *          UUID of entry to check
+     * @return  {@code true} if tablist contains specified entry, {@code false} if not
+     */
+    boolean containsEntry(@NonNull UUID entry);
+
+    /**
      * Checks if all entries have display names as configured and if not,
      * they are forced. Only works on platforms with a full TabList API.
      * Not needed for platforms which support pipeline injection.

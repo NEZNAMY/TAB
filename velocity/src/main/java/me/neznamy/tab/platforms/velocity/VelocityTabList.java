@@ -109,6 +109,11 @@ public class VelocityTabList implements TabList {
     }
 
     @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return player.getPlayer().getTabList().containsEntry(entry);
+    }
+
+    @Override
     public void checkDisplayNames() {
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             player.getPlayer().getTabList().getEntry(target.getUniqueId()).ifPresent(entry -> {

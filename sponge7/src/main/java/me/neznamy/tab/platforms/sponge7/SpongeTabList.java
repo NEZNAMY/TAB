@@ -92,6 +92,11 @@ public class SpongeTabList implements TabList {
     }
 
     @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return player.getPlayer().getTabList().getEntry(entry).isPresent();
+    }
+
+    @Override
     public void checkDisplayNames() {
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             player.getPlayer().getTabList().getEntry(target.getUniqueId()).ifPresent(entry -> {

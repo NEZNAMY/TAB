@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -59,6 +60,11 @@ public abstract class TabListBase implements TabList {
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
         if (HeaderFooter.getInstance() != null) HeaderFooter.getInstance().set(player, header, footer);
+    }
+
+    @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return true; // TODO?
     }
 
     /**

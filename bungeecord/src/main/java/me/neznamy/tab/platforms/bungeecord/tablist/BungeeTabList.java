@@ -143,4 +143,9 @@ public abstract class BungeeTabList implements TabList {
             }
         }
     }
+
+    @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return uuids.contains(entry);
+    }
 }
