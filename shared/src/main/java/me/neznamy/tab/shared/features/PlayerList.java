@@ -31,7 +31,6 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = config().getBoolean("tablist-name-formatting.anti-override", true);
 
-    private GlobalPlayerList globalPlayerList;
     private final LayoutManagerImpl layoutManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
     private RedisSupport redis;
     protected final DisableChecker disableChecker;
@@ -113,7 +112,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         TabPlayer player = (TabPlayer) p;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            if (!canSee(viewer, player)) continue;
+            if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             UUID tablistId = getTablistUUID(player, viewer);
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
                     tablistId.getMostSignificantBits() == 0 ? new SimpleComponent(player.getName()) : null);
@@ -144,7 +143,6 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     @Override
     public void load() {
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-        globalPlayerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
@@ -157,7 +155,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (disableChecker.isDisabledPlayer(target)) continue;
-                if (!canSee(viewer, target)) continue;
+                if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
                 viewer.getTabList().updateDisplayName(getTablistUUID(target, viewer), getTabFormat(target, viewer));
             }
         }
@@ -170,7 +168,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (disableChecker.isDisabledPlayer(target)) continue;
-                if (!canSee(viewer, target)) continue;
+                if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
                 viewer.getTabList().updateDisplayName(getTablistUUID(target, target), null);
             }
         }
@@ -183,10 +181,10 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!disableChecker.isDisabledPlayer(all) && p.getVersion().getMinorVersion() >= 8
-                        && canSee(p, all))
+                        && p.getTabList().containsEntry(all.getTablistId()))
                     p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
                 if (all != p && !disableChecker.isDisabledPlayer(p) && all.getVersion().getMinorVersion() >= 8
-                        && canSee(all, p))
+                        && all.getTabList().containsEntry(p.getTablistId()))
                     all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
             }
         });
@@ -246,7 +244,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; //already sent 4 lines above
-                if (!canSee(connectedPlayer, all)) continue;
+                if (!connectedPlayer.getTabList().containsEntry(all.getTablistId())) continue;
                 connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
             }
         };
@@ -273,7 +271,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         if (player.isVanished() || disableChecker.isDisabledPlayer(player)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            if (!canSee(viewer, player)) continue;
+            if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
         }
     }
@@ -339,10 +337,5 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     @NotNull
     public String getFeatureName() {
         return "Tablist name formatting";
-    }
-
-    private boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        if (globalPlayerList == null) return viewer.getServer().equals(target.getServer());
-        return globalPlayerList.shouldSee(viewer, target);
     }
 }
