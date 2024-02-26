@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.fabric.features;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
 import me.neznamy.tab.platforms.fabric.FabricTAB;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
@@ -126,6 +127,7 @@ public class FabricNameTagX extends BackendNameTagX {
 
     @Override
     @NotNull
+    @SneakyThrows
     public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
         return FabricMultiVersion.createDataWatcher.apply(viewer, flags, displayName, nameVisible);
     }

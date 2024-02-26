@@ -13,7 +13,9 @@ import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -129,5 +131,28 @@ public class FabricEntityView implements EntityView {
     @Override
     public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
         return FabricMultiVersion.getBundledPackets.apply((Packet<?>) bundlePacket);
+    }
+
+    @Override
+    @NotNull
+    @SneakyThrows
+    public Location getMoveDiff(@NotNull Object movePacket) {
+        List<Field> fields = ReflectionUtils.getFields(ClientboundMoveEntityPacket.class, short.class);
+        return new Location(
+                (short) fields.get(0).get(movePacket),
+                (short) fields.get(1).get(movePacket),
+                (short) fields.get(2).get(movePacket)
+        );
+    }
+
+    @Override
+    public void moveEntity(int entityId, @NotNull Location moveDiff) {
+        player.sendPacket(new ClientboundMoveEntityPacket.Pos(
+                entityId,
+                (short) moveDiff.getX(),
+                (short) moveDiff.getY(),
+                (short) moveDiff.getZ(),
+                false
+        ));
     }
 }

@@ -86,4 +86,15 @@ public class DummyEntityView implements EntityView {
     public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
         return Collections.emptyList();
     }
+
+    @Override
+    @NotNull
+    public Location getMoveDiff(@NotNull Object movePacket) {
+        return new Location(0,0, 0);
+    }
+
+    @Override
+    public void moveEntity(int entityId, @NotNull Location moveDiff) {
+        // Do nothing
+    }
 }

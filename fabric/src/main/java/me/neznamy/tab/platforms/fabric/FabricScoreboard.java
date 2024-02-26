@@ -52,6 +52,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     }
 
     @Override
+    @SneakyThrows
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
         Objective obj = FabricMultiVersion.newObjective.apply(

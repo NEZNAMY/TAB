@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.QuitListener;
@@ -49,6 +50,36 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
     }
 
     /**
+     * Processes raw packet send.
+     *
+     * @param   receiver
+     *          Player who received the packet
+     * @param   packet
+     *          Received packet
+     */
+    public void onPacketSend(@NotNull BackendTabPlayer receiver, @NotNull Object packet) {
+        if (receiver.getEntityView().isBundlePacket(packet)) {
+            for (Object wrappedPacket : receiver.getEntityView().getPackets(packet)) {
+                checkPacket(receiver, wrappedPacket);
+            }
+        } else {
+            checkPacket(receiver, packet);
+        }
+    }
+
+    private void checkPacket(@NotNull BackendTabPlayer player, @NotNull Object packet) {
+        if (player.getEntityView().isMovePacket(packet) && !player.getEntityView().isLookPacket(packet)) { //ignoring head rotation only packets
+            onEntityMove(player, player.getEntityView().getMoveEntityId(packet), player.getEntityView().getMoveDiff(packet));
+        } else if (player.getEntityView().isTeleportPacket(packet)) {
+            onEntityTeleport(player, player.getEntityView().getTeleportEntityId(packet));
+        } else if (player.getEntityView().isNamedEntitySpawnPacket(packet)) {
+            onEntitySpawn(player, player.getEntityView().getSpawnedPlayer(packet));
+        } else if (player.getEntityView().isDestroyPacket(packet)) {
+            onEntityDestroy(player, player.getEntityView().getDestroyedEntities(packet));
+        }
+    }
+
+    /**
      * Processes named entity spawn packet and spawns armor stands if
      * entity ID belongs to an online player.
      *
@@ -75,17 +106,53 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
      *          packet receiver
      * @param   entityId
      *          entity that moved
+     * @param   positionDiff
+     *          Position difference
      */
-    public void onEntityMove(@NotNull BackendTabPlayer receiver, int entityId) {
+    public void onEntityMove(@NotNull BackendTabPlayer receiver, int entityId, Location positionDiff) {
         TabPlayer pl = entityIdMap.get(entityId);
         if (pl != null) {
-            //player moved
+            // player moved
+            if (nameTagX.isPlayerDisabled(pl) || !pl.isLoaded()) return;
+            BackendArmorStandManager asm = nameTagX.getArmorStandManager(pl);
+            TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_PLAYER_MOVE,
+                    () -> asm.move(receiver, positionDiff));
+        } else {
+            // a non-player entity moved
+            for (Integer entity : nameTagX.getVehicleManager().getVehicles().getOrDefault(entityId, Collections.emptyList())) {
+                TabPlayer passenger = entityIdMap.get(entity);
+                if (passenger != null) {
+                    BackendArmorStandManager asm = nameTagX.getArmorStandManager(passenger);
+                    if (asm != null) {
+                        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER,
+                                () -> asm.move(receiver, positionDiff));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Processes entity teleport packet. If entity ID belongs to a player,
+     * armor stands of that player are teleported to player who received the packet.
+     * If it belongs to a vehicle carrying a player, that player's armor stands are
+     * teleported as well.
+     *
+     * @param   receiver
+     *          packet receiver
+     * @param   entityId
+     *          entity that moved
+     */
+    public void onEntityTeleport(@NotNull BackendTabPlayer receiver, int entityId) {
+        TabPlayer pl = entityIdMap.get(entityId);
+        if (pl != null) {
+            // player teleported
             if (nameTagX.isPlayerDisabled(pl) || !pl.isLoaded()) return;
             BackendArmorStandManager asm = nameTagX.getArmorStandManager(pl);
             TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.PACKET_PLAYER_MOVE,
                     () -> asm.teleport(receiver));
         } else {
-            //a vehicle carrying something moved
+            // a non-player entity teleported
             for (Integer entity : nameTagX.getVehicleManager().getVehicles().getOrDefault(entityId, Collections.emptyList())) {
                 TabPlayer passenger = entityIdMap.get(entity);
                 if (passenger != null) {

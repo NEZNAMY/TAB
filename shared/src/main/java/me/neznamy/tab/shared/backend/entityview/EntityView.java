@@ -154,4 +154,24 @@ public interface EntityView {
      * @return  Bundled packets
      */
     Iterable<Object> getPackets(@NotNull Object bundlePacket);
+
+    /**
+     * Returns relative position difference from move packet.
+     *
+     * @param   movePacket
+     *          Packet to get difference from
+     * @return  Relative position difference
+     */
+    @NotNull
+    Location getMoveDiff(@NotNull Object movePacket);
+
+    /**
+     * Moves entity by given position difference.
+     *
+     * @param   entityId
+     *          Entity to move
+     * @param   moveDiff
+     *          Relative position difference
+     */
+    void moveEntity(int entityId, @NotNull Location moveDiff);
 }

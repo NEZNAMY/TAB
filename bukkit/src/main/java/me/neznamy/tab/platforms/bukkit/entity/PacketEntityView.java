@@ -54,7 +54,11 @@ public class PacketEntityView implements EntityView {
     /** Other entity packets */
     private static Class<?> PacketPlayOutEntity;
     private static Field PacketPlayOutEntity_ENTITYID;
+    private static Field PacketPlayOutEntity_X;
+    private static Field PacketPlayOutEntity_Y;
+    private static Field PacketPlayOutEntity_Z;
     private static Class<?> PacketPlayOutEntityLook;
+    private static QuadFunction<Integer, Long, Long, Long, Object> newMovePacket;
     private static Class<?> PacketPlayOutNamedEntitySpawn;
     private static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 
@@ -189,9 +193,36 @@ public class PacketEntityView implements EntityView {
         PacketPlayOutEntityLook = BukkitReflection.getClass("network.protocol.game.ClientboundMoveEntityPacket$Rot",
                 "network.protocol.game.PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntity$PacketPlayOutEntityLook",
                 "PacketPlayOutEntityLook", "Packet32EntityLook");
+        Class<?> packetPlayOutRelEntityMove = BukkitReflection.getClass("network.protocol.game.ClientboundMoveEntityPacket$Pos",
+                "network.protocol.game.PacketPlayOutEntity$PacketPlayOutRelEntityMove", "PacketPlayOutEntity$PacketPlayOutRelEntityMove",
+                "PacketPlayOutRelEntityMove", "Packet31RelEntityMove");
 
-        // Field
+
+        // Fields
         PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
+
+        if (BukkitReflection.getMinorVersion() >= 14) {
+            List<Field> fields = ReflectionUtils.getFields(PacketPlayOutEntity, short.class);
+            PacketPlayOutEntity_X = fields.get(0);
+            PacketPlayOutEntity_Y = fields.get(1);
+            PacketPlayOutEntity_Z = fields.get(2);
+            Constructor<?> constructor = packetPlayOutRelEntityMove.getConstructor(int.class, short.class, short.class, short.class, boolean.class);
+            newMovePacket = (entityId, x, y, z) -> constructor.newInstance(entityId, x.shortValue(), y.shortValue(), z.shortValue(), false);
+        } else if (BukkitReflection.getMinorVersion() >= 9) {
+            List<Field> fields = ReflectionUtils.getFields(PacketPlayOutEntity, int.class);
+            PacketPlayOutEntity_X = fields.get(1);
+            PacketPlayOutEntity_Y = fields.get(2);
+            PacketPlayOutEntity_Z = fields.get(3);
+            Constructor<?> constructor = packetPlayOutRelEntityMove.getConstructor(int.class, long.class, long.class, long.class, boolean.class);
+            newMovePacket = (entityId, x, y, z) -> constructor.newInstance(entityId, x, y, z, false);
+        } else {
+            List<Field> fields = ReflectionUtils.getFields(PacketPlayOutEntity, byte.class);
+            PacketPlayOutEntity_X = fields.get(0);
+            PacketPlayOutEntity_Y = fields.get(1);
+            PacketPlayOutEntity_Z = fields.get(2);
+            Constructor<?> constructor = packetPlayOutRelEntityMove.getConstructor(int.class, byte.class, byte.class, byte.class, boolean.class);
+            newMovePacket = (entityId, x, y, z) -> constructor.newInstance(entityId, x.byteValue(), y.byteValue(), z.byteValue(), false);
+        }
     }
 
     /**
@@ -379,5 +410,23 @@ public class PacketEntityView implements EntityView {
     @SneakyThrows
     public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
         return (Iterable<Object>) ClientboundBundlePacket_packets.get(bundlePacket);
+    }
+
+    @Override
+    @SneakyThrows
+    @NotNull
+    public Location getMoveDiff(@NotNull Object movePacket) {
+        return new Location(
+                ((Number)PacketPlayOutEntity_X.get(movePacket)).intValue(),
+                ((Number)PacketPlayOutEntity_Y.get(movePacket)).intValue(),
+                ((Number)PacketPlayOutEntity_Z.get(movePacket)).intValue()
+        );
+    }
+
+    @Override
+    @SneakyThrows
+    public void moveEntity(int entityId, @NotNull Location moveDiff) {
+        packetSender.sendPacket(player.getPlayer(), newMovePacket.apply(
+                entityId, (long) moveDiff.getX(), (long) moveDiff.getY(), (long) moveDiff.getZ()));
     }
 }

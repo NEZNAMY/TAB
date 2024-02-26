@@ -109,6 +109,14 @@ public class ArmorStand {
         }
     }
 
+    public void move(BackendTabPlayer viewer, Location diff) {
+        if (!asm.isNearby(viewer) && viewer != owner) {
+            asm.spawn(viewer);
+        } else {
+            viewer.getEntityView().moveEntity(entityId, diff);
+        }
+    }
+
     public void spawn(BackendTabPlayer viewer) {
         visible = calculateVisibility();
         viewer.getEntityView().spawnEntity(entityId, uuid, manager.getArmorStandType(),

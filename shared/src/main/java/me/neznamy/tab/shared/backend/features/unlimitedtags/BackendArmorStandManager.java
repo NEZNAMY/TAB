@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
@@ -63,6 +64,18 @@ public class BackendArmorStandManager implements ArmorStandManager {
      */
     public void teleport(@NotNull BackendTabPlayer viewer) {
         for (ArmorStand a : armorStandArray) a.teleport(viewer);
+    }
+
+    /**
+     * Moves armor stands to match player move packet.
+     *
+     * @param   viewer
+     *          player to move armor stands for
+     * @param   diff
+     *          Move diff
+     */
+    public void move(@NotNull BackendTabPlayer viewer, @NotNull Location diff) {
+        for (ArmorStand a : armorStandArray) a.move(viewer, diff);
     }
 
     /**

@@ -29,6 +29,8 @@ public interface QuadFunction<T, U, V, W, R> {
      * @param   w
      *          Fourth argument
      * @return  Function result
+     * @throws  Exception
+     *          If thrown by function
      */
-    R apply(T t, U u, V v, W w);
+    R apply(T t, U u, V v, W w) throws Exception;
 }
