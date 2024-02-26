@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.chat;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.util.ComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +43,10 @@ public enum EnumChatFormat {
 
     /** The color symbol in form of a string */
     public static final String COLOR_STRING = String.valueOf(COLOR_CHAR);
+
+    /** Cache for last colors to prevent massive memory allocations on request */
+    private static final ComponentCache<String, EnumChatFormat> lastColorCache =
+            new ComponentCache<>(1000, (string, version) -> lastColorsOf0(string));
 
     /** Character representing the color or magic code */
     private final char character;
@@ -101,6 +106,18 @@ public enum EnumChatFormat {
      * @return  last used color code in given string or WHITE if nothing is found
      */
     public static @NotNull EnumChatFormat lastColorsOf(@NotNull String string) {
+        return lastColorCache.get(string, null);
+    }
+
+    /**
+     * Returns enum value of last colors used in given string.
+     * If it's null, empty or does not contain color codes, WHITE is returned.
+     *
+     * @param   string
+     *          string to check last colors of
+     * @return  last used color code in given string or WHITE if nothing is found
+     */
+    private static @NotNull EnumChatFormat lastColorsOf0(@NotNull String string) {
         if (string.isEmpty()) return WHITE;
         String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
         String last = getLastColors(legacyText);
