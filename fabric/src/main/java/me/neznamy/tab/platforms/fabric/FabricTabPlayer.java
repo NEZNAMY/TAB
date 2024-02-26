@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.BossBar;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -90,7 +89,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean isOnline() {
-        return PlayerLookup.all(getPlatform().getServer()).contains(getPlayer());
+        return true;
     }
 
     @Override
