@@ -187,4 +187,9 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     public boolean isDead(@NotNull TabPlayer player) {
         return ((BukkitTabPlayer)player).getPlayer().isDead();
     }
+
+    @Override
+    public boolean isFlying(@NotNull TabPlayer player) {
+        return ((BukkitTabPlayer)player).getPlayer().isFlying();
+    }
 }

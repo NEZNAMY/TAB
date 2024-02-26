@@ -141,4 +141,9 @@ public class FabricNameTagX extends BackendNameTagX {
     public boolean isDead(@NotNull TabPlayer player) {
         return !((FabricTabPlayer)player).getPlayer().isAlive();
     }
+
+    @Override
+    public boolean isFlying(@NotNull TabPlayer player) {
+        return ((FabricTabPlayer)player).getPlayer().getAbilities().flying;
+    }
 }

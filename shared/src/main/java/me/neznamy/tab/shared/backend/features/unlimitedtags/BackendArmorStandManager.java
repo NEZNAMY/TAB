@@ -18,6 +18,8 @@ public class BackendArmorStandManager implements ArmorStandManager {
 
     private final BackendNameTagX nameTagX;
 
+    private final TabPlayer owner;
+
     @Getter private boolean sneaking;
 
     /** Armor stands in an array for speed while iterating */
@@ -39,6 +41,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      */
     public BackendArmorStandManager(@NotNull NameTagX nameTagX, @NotNull TabPlayer owner) {
         this.nameTagX = (BackendNameTagX) nameTagX;
+        this.owner = owner;
         sneaking = this.nameTagX.isSneaking(owner);
         owner.setProperty(nameTagX, TabConstants.Property.NAMETAG, owner.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue()
@@ -104,6 +107,11 @@ public class BackendArmorStandManager implements ArmorStandManager {
      */
     public void sneak(boolean sneaking) {
         this.sneaking = sneaking;
+        if (nameTagX.isFlying(owner)) {
+            // Do not teleport if flying to keep in sync with vanilla position bug
+            updateMetadata();
+            return;
+        }
         for (BackendTabPlayer viewer : nearbyPlayers) {
             if (viewer.getVersion().getMinorVersion() == 14 && !nameTagX.isArmorStandsAlwaysVisible()) {
                 //1.14.x client sided bug, de-spawning completely
