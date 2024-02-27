@@ -12,11 +12,9 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class for Adventure component conversion.
@@ -52,30 +50,15 @@ public class AdventureHook {
      */
     @NotNull
     private static Component toAdventureComponent0(@NotNull TabComponent component, @NotNull ProtocolVersion clientVersion) {
-        if (component instanceof SimpleComponent) return Component.text(component.toLegacyText());
+        if (component instanceof SimpleComponent) return Component.text(((SimpleComponent) component).getText());
         StructuredComponent iComponent = (StructuredComponent) component;
         ChatModifier modifier = iComponent.getModifier();
-        TextColor color = null;
-        if (modifier.getColor() != null) {
-            if (clientVersion.supportsRGB()) {
-                color = TextColor.color(modifier.getColor().getRgb());
-            } else {
-                color = TextColor.color(modifier.getColor().getLegacyColor().getRgb());
-            }
-        }
 
-        Component adventureComponent;
-        if (modifier.hasMagicCodes()) {
-            Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
-            if (modifier.isBold()) decorations.add(TextDecoration.BOLD);
-            if (modifier.isItalic()) decorations.add(TextDecoration.ITALIC);
-            if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
-            if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
-            if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
-            adventureComponent = Component.text(iComponent.getText(), color, decorations);
-        } else {
-            adventureComponent = Component.text(iComponent.getText(), color);
-        }
+        Component adventureComponent = Component.text(
+                iComponent.getText(),
+                convertColor(modifier.getColor(), clientVersion.supportsRGB()),
+                getDecorations(modifier)
+        );
 
         if (modifier.getClickEvent() != null) {
             adventureComponent = adventureComponent.clickEvent(ClickEvent.clickEvent(
@@ -95,5 +78,42 @@ public class AdventureHook {
             adventureComponent = adventureComponent.children(list);
         }
         return adventureComponent;
+    }
+
+    /**
+     * Converts TAB color into adventure color.
+     *
+     * @param   color
+     *          Color to convert
+     * @param   rgbSupport
+     *          Whether RGB is supported or not
+     * @return  Converted color
+     */
+    @Nullable
+    private static TextColor convertColor(@Nullable me.neznamy.tab.shared.chat.TextColor color, boolean rgbSupport) {
+        if (color == null) return null;
+        if (rgbSupport) {
+            return TextColor.color(color.getRgb());
+        } else {
+            return TextColor.color(color.getLegacyColor().getRgb());
+        }
+    }
+
+    /**
+     * Gets decorations from modifier.
+     *
+     * @param   modifier
+     *          Modifier to get decorations from
+     * @return  Decorations from modifier
+     */
+    private static Set<TextDecoration> getDecorations(@NotNull ChatModifier modifier) {
+        if (!modifier.hasMagicCodes()) return Collections.emptySet();
+        Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
+        if (modifier.isBold()) decorations.add(TextDecoration.BOLD);
+        if (modifier.isItalic()) decorations.add(TextDecoration.ITALIC);
+        if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
+        if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
+        if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
+        return decorations;
     }
 }
