@@ -113,7 +113,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
                 .displayName(adventure(name))
                 .prefix(adventure(prefix))
                 .suffix(adventure(suffix))
-                .color(NamedTextColor.namedColor(color.getRgb()))
+                .color(NamedTextColor.NAMES.valueOr(color.name(), NamedTextColor.WHITE))
                 .allowFriendlyFire((options & 0x01) != 0)
                 .canSeeFriendlyInvisibles((options & 0x02) != 0)
                 .collisionRule(collisionRules[collision.ordinal()])
@@ -138,7 +138,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
             team.setDisplayName(adventure(name));
             team.setPrefix(adventure(prefix));
             team.setSuffix(adventure(suffix));
-            team.setColor(NamedTextColor.namedColor(color.getRgb()));
+            team.setColor(NamedTextColor.NAMES.valueOr(color.name(), NamedTextColor.WHITE));
             team.setAllowFriendlyFire((options & 0x01) != 0);
             team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
             team.setCollisionRule(collisionRules[collision.ordinal()]);
