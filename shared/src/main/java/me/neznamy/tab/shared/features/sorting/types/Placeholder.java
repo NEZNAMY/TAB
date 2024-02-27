@@ -61,10 +61,10 @@ public class Placeholder extends SortingType {
     @Override
     public String getChars(@NotNull TabPlayer p) {
         String output = EnumChatFormat.color(setPlaceholders(p));
-        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\"");
+        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder.getIdentifier() + " returned \"&e" + output + "&r\"");
         int position;
         if (!sortingMap.containsKey(output.toLowerCase(Locale.US))) {
-            TAB.getInstance().getConfigHelper().runtime().valueNotInPredefinedValues(sortingPlaceholder, sortingMap.keySet(), output, p);
+            TAB.getInstance().getConfigHelper().runtime().valueNotInPredefinedValues(sortingPlaceholder.getIdentifier(), sortingMap.keySet(), output, p);
             position = sortingMap.size()+1;
             sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&c (not in list)&r. ");
         } else {
