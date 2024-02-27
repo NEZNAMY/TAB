@@ -33,7 +33,8 @@ public class Permissions extends SortingType {
         for (String permission : sortedGroups.keySet()) {
             String placeholder = "%permission:" + permission + "%";
             placeholders.add(placeholder);
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(placeholder, 1000,
+            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(placeholder,
+                    TAB.getInstance().getConfiguration().getPermissionRefreshInterval(),
                     p -> ((TabPlayer)p).hasPermission(permission));
         }
         sorting.addUsedPlaceholders(placeholders);

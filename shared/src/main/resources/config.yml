@@ -225,6 +225,12 @@ primary-group-finding-list:
   - Helper
   - default
 
+# Refresh interval (in milliseconds) of:
+# - Permission checks in conditions / sorting
+# - Group retrieving from permission plugin for sorting / per-group properties
+# - Prefix/suffix placeholders taking data from permission plugin
+permission-refresh-interval: 1000
+
 # Unlocks extra console messages
 debug: false
 

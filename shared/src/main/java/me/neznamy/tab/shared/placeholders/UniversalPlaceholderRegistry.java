@@ -118,8 +118,11 @@ public class UniversalPlaceholderRegistry {
         });
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, 100, p -> ((TabPlayer)p).getGamemode());
         if (LuckPermsHook.getInstance().isInstalled()) {
-            manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, 1000, p -> LuckPermsHook.getInstance().getPrefix((TabPlayer) p));
-            manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, 1000, p -> LuckPermsHook.getInstance().getSuffix((TabPlayer) p));
+            int refresh = TAB.getInstance().getConfiguration().getPermissionRefreshInterval();
+            manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, refresh,
+                    p -> LuckPermsHook.getInstance().getPrefix((TabPlayer) p));
+            manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, refresh,
+                    p -> LuckPermsHook.getInstance().getSuffix((TabPlayer) p));
         }
         for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
             Animation a = new Animation(

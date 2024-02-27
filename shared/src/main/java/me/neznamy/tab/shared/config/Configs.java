@@ -23,33 +23,35 @@ import java.util.List;
 /**
  * Core of loading configuration files
  */
+@Getter
 public class Configs {
 
     //config.yml file
-    @Getter private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config.yml"),
+    private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config.yml"),
             new File(TAB.getInstance().getDataFolder(), "config.yml"));
 
-    @Getter private final boolean bukkitPermissions = TAB.getInstance().getPlatform().isProxy() && config.getBoolean("use-bukkit-permissions-manager", false);
-    @Getter private final boolean debugMode = config.getBoolean("debug", false);
-    @Getter private final boolean onlineUuidInTabList = config.getBoolean("use-online-uuid-in-tablist", true);
-    @Getter private final boolean pipelineInjection = getSecretOption("pipeline-injection", true);
-    @Getter private final String serverName = getSecretOption("server-name", "N/A");
+    private final boolean bukkitPermissions = TAB.getInstance().getPlatform().isProxy() && config.getBoolean("use-bukkit-permissions-manager", false);
+    private final boolean debugMode = config.getBoolean("debug", false);
+    private final boolean onlineUuidInTabList = config.getBoolean("use-online-uuid-in-tablist", true);
+    private final boolean pipelineInjection = getSecretOption("pipeline-injection", true);
+    private final String serverName = getSecretOption("server-name", "N/A");
+    private final int permissionRefreshInterval = config.getInt("permission-refresh-interval", 1000);
 
     //animations.yml file
-    @Getter private final ConfigurationFile animationFile = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("animations.yml"),
+    private final ConfigurationFile animationFile = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("animations.yml"),
             new File(TAB.getInstance().getDataFolder(), "animations.yml"));
 
     //messages.yml file
-    @Getter private final MessageFile messages = new MessageFile();
+    private final MessageFile messages = new MessageFile();
 
     //playerdata.yml, used for bossbar & scoreboard toggle saving
     private ConfigurationFile playerdata;
 
-    @Getter private PropertyConfiguration groups;
+    private PropertyConfiguration groups;
 
-    @Getter private PropertyConfiguration users;
+    private PropertyConfiguration users;
 
-    @Getter private MySQL mysql;
+    private MySQL mysql;
 
     /**
      * Constructs new instance and loads configuration files.

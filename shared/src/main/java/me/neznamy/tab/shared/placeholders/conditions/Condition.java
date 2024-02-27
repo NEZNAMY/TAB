@@ -96,7 +96,8 @@ public class Condition {
         PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
         for (String subCondition : conditions) {
             if (subCondition.startsWith("permission:")) {
-                if (refresh > 1000 || refresh == -1) refresh = 1000; //permission refreshing will be done every second
+                int permissionRefresh = TAB.getInstance().getConfiguration().getPermissionRefreshInterval();
+                if (refresh > permissionRefresh || refresh == -1) refresh = permissionRefresh;
             } else {
                 placeholdersInConditions.addAll(pm.detectPlaceholders(subCondition));
             }

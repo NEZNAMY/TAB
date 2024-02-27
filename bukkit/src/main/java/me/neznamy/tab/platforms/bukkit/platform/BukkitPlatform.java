@@ -138,8 +138,9 @@ public class BukkitPlatform implements BackendPlatform {
             RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
             if (rspChat != null) {
                 Chat chat = rspChat.getProvider();
-                manager.registerPlayerPlaceholder("%vault-prefix%", 1000, p -> chat.getPlayerPrefix((Player) p.getPlayer()));
-                manager.registerPlayerPlaceholder("%vault-suffix%", 1000, p -> chat.getPlayerSuffix((Player) p.getPlayer()));
+                int refresh = TAB.getInstance().getConfiguration().getPermissionRefreshInterval();
+                manager.registerPlayerPlaceholder("%vault-prefix%", refresh, p -> chat.getPlayerPrefix((Player) p.getPlayer()));
+                manager.registerPlayerPlaceholder("%vault-suffix%", refresh, p -> chat.getPlayerSuffix((Player) p.getPlayer()));
             }
         }
         // Override for the PAPI placeholder to prevent console errors on unsupported server versions when ping field changes

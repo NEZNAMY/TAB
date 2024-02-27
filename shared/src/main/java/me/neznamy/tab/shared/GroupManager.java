@@ -39,8 +39,8 @@ public class GroupManager extends TabFeature implements Refreshable {
     public GroupManager(@NotNull String permissionPlugin, @NotNull Function<TabPlayer, String> groupFunction) {
         this.permissionPlugin = permissionPlugin;
         this.groupFunction = groupFunction;
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, 1000,
-                p -> detectPermissionGroup((TabPlayer) p));
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.GROUP,
+                TAB.getInstance().getConfiguration().getPermissionRefreshInterval(), p -> detectPermissionGroup((TabPlayer) p));
         addUsedPlaceholder(TabConstants.Placeholder.GROUP);
     }
 
