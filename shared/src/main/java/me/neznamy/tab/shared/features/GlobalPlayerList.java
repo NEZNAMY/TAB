@@ -24,7 +24,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     private final boolean othersAsSpectators = config().getBoolean("global-playerlist.display-others-as-spectators", false);
     private final boolean vanishedAsSpectators = config().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = config().getBoolean("global-playerlist.isolate-unlisted-servers", false);
-
+    private final Map<String, String> serverToGroup = new HashMap<>();
     private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 
     /**
@@ -81,18 +81,23 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
      */
     @NotNull
     public String getServerGroup(@NotNull String playerServer) {
-        for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
-            for (String serverDefinition : group.getValue()) {
-                if (serverDefinition.endsWith("*")) {
-                    if (playerServer.toLowerCase().startsWith(serverDefinition.substring(0, serverDefinition.length()-1).toLowerCase())) return group.getKey();
-                } else if (serverDefinition.startsWith("*")) {
-                    if (playerServer.toLowerCase().endsWith(serverDefinition.substring(1).toLowerCase())) return group.getKey();
-                }  else {
-                    if (playerServer.equalsIgnoreCase(serverDefinition)) return group.getKey();
+        return serverToGroup.computeIfAbsent(playerServer, server -> {
+            for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
+                for (String serverDefinition : group.getValue()) {
+                    if (serverDefinition.endsWith("*")) {
+                        if (server.toLowerCase().startsWith(serverDefinition.substring(0, serverDefinition.length()-1).toLowerCase()))
+                            return group.getKey();
+                    } else if (serverDefinition.startsWith("*")) {
+                        if (server.toLowerCase().endsWith(serverDefinition.substring(1).toLowerCase()))
+                            return group.getKey();
+                    }  else {
+                        if (server.equalsIgnoreCase(serverDefinition))
+                            return group.getKey();
+                    }
                 }
             }
-        }
-        return isolateUnlistedServers ? "isolated:" + playerServer : "DEFAULT";
+            return isolateUnlistedServers ? "isolated:" + server : "DEFAULT";
+        });
     }
 
     @Override
