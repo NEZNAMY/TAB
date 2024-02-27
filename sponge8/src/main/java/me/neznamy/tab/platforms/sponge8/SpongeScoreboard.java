@@ -1,14 +1,17 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.scoreboard.CollisionRules;
+import org.spongepowered.api.scoreboard.Score;
 import org.spongepowered.api.scoreboard.Team;
 import org.spongepowered.api.scoreboard.Visibilities;
 import org.spongepowered.api.scoreboard.Visibility;
@@ -146,12 +149,24 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     @Override
     public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
-        sb.objective(objective).ifPresent(o -> o.findOrCreateScore(adventure(scoreHolder)).setScore(score));
+        sb.objective(objective).ifPresent(o -> findOrCreateScore(o, scoreHolder).setScore(score));
     }
 
     @Override
     public void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
-        sb.objective(objective).ifPresent(o -> o.removeScore(adventure(scoreHolder)));
+        sb.objective(objective).ifPresent(o -> o.removeScore(findOrCreateScore(o, scoreHolder)));
+    }
+
+    @NotNull
+    @SneakyThrows
+    private Score findOrCreateScore(@NotNull Objective objective, @NonNull String holder) {
+        try {
+            // Sponge 8 - 10
+            return objective.findOrCreateScore(adventure(holder));
+        } catch (NoSuchMethodError e) {
+            // Sponge 11+
+            return (Score) objective.getClass().getMethod("findOrCreateScore", String.class).invoke(objective, holder);
+        }
     }
 
     /**
@@ -161,7 +176,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      *          Text to convert
      * @return  Converted text
      */
-    @NonNull
+    @NotNull
     private Component adventure(@NonNull String text) {
         return AdventureHook.toAdventureComponent(TabComponent.optimized(text), player.getVersion());
     }
