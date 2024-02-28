@@ -68,6 +68,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      */
     @Getter private boolean loaded;
 
+    /** Flag tracking whether the player is online or not */
+    @Getter private boolean online = true;
+
     /**
      * Constructs new instance with given parameters
      *
@@ -258,6 +261,13 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
             return setProperty(feature, property, value[0], value[1], true);
         }
         return setProperty(feature, property, ifNotSet, "None", true);
+    }
+
+    /**
+     * Marks player as offline (online flag to {@code false}).
+     */
+    public void markOffline() {
+        online = false;
     }
 
     /**

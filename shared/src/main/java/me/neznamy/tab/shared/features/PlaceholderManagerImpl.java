@@ -129,16 +129,15 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private Map<TabPlayer, Set<Refreshable>> updateRelationalPlaceholders(
             @Nullable Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> results) {
         if (results == null) return Collections.emptyMap();
-        Collection<TabPlayer> onlinePlayers = Arrays.asList(TAB.getInstance().getOnlinePlayers());
         Map<TabPlayer, Set<Refreshable>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
         for (Entry<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> entry : results.entrySet()) {
             RelationalPlaceholderImpl placeholder = entry.getKey();
             for (Entry<TabPlayer, Map<TabPlayer, Object>> viewerResult : entry.getValue().entrySet()) {
                 TabPlayer viewer = viewerResult.getKey();
-                if (!onlinePlayers.contains(viewer)) continue; // Player disconnected in the meantime while refreshing in another thread
+                if (!viewer.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                 for (Entry<TabPlayer, Object> targetResult : viewerResult.getValue().entrySet()) {
                     TabPlayer target = targetResult.getKey();
-                    if (!onlinePlayers.contains(target)) continue; // Player disconnected in the meantime while refreshing in another thread
+                    if (!target.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                     if (placeholder.hasValueChanged(viewer, target, targetResult.getValue())) {
                         placeholder.updateParents(target);
                         update.computeIfAbsent(target, x -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
@@ -152,12 +151,11 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private void updatePlayerPlaceholders(@NotNull Map<PlayerPlaceholderImpl, Map<TabPlayer, Object>> results,
                                           @NotNull Map<TabPlayer, Set<Refreshable>> update) {
         if (results.isEmpty()) return;
-        Collection<TabPlayer> onlinePlayers = Arrays.asList(TAB.getInstance().getOnlinePlayers());
         for (Entry<PlayerPlaceholderImpl, Map<TabPlayer, Object>> entry : results.entrySet()) {
             PlayerPlaceholderImpl placeholder = entry.getKey();
             for (Entry<TabPlayer, Object> playerResult : entry.getValue().entrySet()) {
                 TabPlayer player = playerResult.getKey();
-                if (!onlinePlayers.contains(player)) continue; // Player disconnected in the meantime while refreshing in another thread
+                if (!player.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                 if (placeholder.hasValueChanged(player, playerResult.getValue())) {
                     placeholder.updateParents(player);
                     update.computeIfAbsent(player, k -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));

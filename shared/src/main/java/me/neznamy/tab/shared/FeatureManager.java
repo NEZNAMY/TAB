@@ -139,6 +139,7 @@ public class FeatureManager {
      */
     public void onQuit(@Nullable TabPlayer disconnectedPlayer) {
         if (disconnectedPlayer == null) return;
+        disconnectedPlayer.markOffline();
         long millis = System.currentTimeMillis();
         for (TabFeature f : values) {
             if (!(f instanceof QuitListener)) continue;
