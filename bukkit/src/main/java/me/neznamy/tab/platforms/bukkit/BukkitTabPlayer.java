@@ -98,11 +98,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean isOnline() {
-        return getPlayer().isOnline();
-    }
-
-    @Override
     public BukkitPlatform getPlatform() {
         return (BukkitPlatform) platform;
     }

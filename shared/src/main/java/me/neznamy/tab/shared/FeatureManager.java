@@ -157,7 +157,6 @@ public class FeatureManager {
      *          Player who joined
      */
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        if (!connectedPlayer.isOnline()) return;
         long millis = System.currentTimeMillis();
         TAB.getInstance().addPlayer(connectedPlayer);
         for (TabFeature f : values) {

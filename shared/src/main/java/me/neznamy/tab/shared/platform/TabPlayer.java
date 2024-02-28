@@ -342,13 +342,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public abstract boolean hasPermission(@NotNull String permission);
 
     /**
-     * Calls platform-specific method and returns the result
-     *
-     * @return  {@code true} if player is online, {@code false} if not
-     */
-    public abstract boolean isOnline();
-
-    /**
      * Returns platform representing this server type
      *
      * @return  Server platform

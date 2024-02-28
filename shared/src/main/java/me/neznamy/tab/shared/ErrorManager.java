@@ -314,8 +314,8 @@ public class ErrorManager {
      */
     public void armorStandNull(@NotNull TabPlayer player, @NotNull String action) {
         TAB.getInstance().getErrorManager().printError("ArmorStandManager of player " + player.getName() +
-                " is null when trying to process " + action + ", which is unexpected. Online = " + player.isOnline() +
-                ", loaded = " + player.isLoaded(), Collections.emptyList(), false, errorLog);
+                " is null when trying to process " + action + ", which is unexpected. Loaded = " + player.isLoaded(),
+                Collections.emptyList(), false, errorLog);
     }
 
     /**

@@ -90,11 +90,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public boolean isOnline() {
-        return getPlayer().isConnected();
-    }
-
-    @Override
     public BungeePlatform getPlatform() {
         return (BungeePlatform) platform;
     }

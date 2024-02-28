@@ -76,11 +76,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     public Player getPlayer() {
         return (Player) player;
     }
-    
-    @Override
-    public boolean isOnline() {
-        return getPlayer().isActive();
-    }
 
     @Override
     public VelocityPlatform getPlatform() {

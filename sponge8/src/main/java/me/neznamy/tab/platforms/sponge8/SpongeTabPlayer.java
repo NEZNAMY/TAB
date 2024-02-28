@@ -96,11 +96,6 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean isOnline() {
-        return getPlayer().isOnline();
-    }
-
-    @Override
     public SpongePlatform getPlatform() {
         return (SpongePlatform) platform;
     }

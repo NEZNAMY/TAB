@@ -88,11 +88,6 @@ public class FabricTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean isOnline() {
-        return true;
-    }
-
-    @Override
     public FabricPlatform getPlatform() {
         return (FabricPlatform) platform;
     }
