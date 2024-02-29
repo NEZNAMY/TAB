@@ -19,7 +19,7 @@ import java.util.Collection;
 public class BukkitUtils {
 
     /** Whether compatibility exceptions should be printed or not, enabling when adding support for new versions */
-    private static final boolean PRINT_EXCEPTIONS = false;
+    public static final boolean PRINT_EXCEPTIONS = false;
 
     private static boolean compatibilityIssue;
 
