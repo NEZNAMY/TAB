@@ -45,10 +45,6 @@ public class PacketTabList1193 extends PacketTabList18 {
      *          If something goes wrong
      */
     public static void loadNew() throws ReflectiveOperationException {
-        Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
-                "network.chat.IChatBaseComponent$ChatSerializer");
-        ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
-        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent");
         Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType", "world.level.EnumGamemode");
         ActionClass = (Class<Enum>) BukkitReflection.getClass(
                 "network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action", // Mojang
@@ -63,7 +59,7 @@ public class PacketTabList1193 extends PacketTabList18 {
         newPlayerInfo = PlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
         ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, EnumSet.class);
 
-        loadSharedContent(playerInfoDataClass, EnumGamemodeClass, IChatBaseComponent);
+        loadSharedContent(playerInfoDataClass, EnumGamemodeClass);
 
         PlayerInfoData_Listed = ReflectionUtils.getOnlyField(playerInfoDataClass, boolean.class);
         PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);

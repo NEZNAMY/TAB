@@ -6,18 +6,17 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
+import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -39,11 +38,8 @@ public class PacketTabList18 extends TabListBase {
 
     protected static Object[] gameModes;
 
-    protected static Method ChatSerializer_DESERIALIZE;
-    private static final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000,
-            (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
-
     protected static PacketSender packetSender;
+    protected static ComponentConverter componentConverter;
 
     /**
      * Constructs new instance with given player.
@@ -63,10 +59,6 @@ public class PacketTabList18 extends TabListBase {
      *          If something goes wrong
      */
     public static void load() throws ReflectiveOperationException {
-        Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
-                "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
-        ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
-        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType",
                 "world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode");
         ActionClass = (Class<Enum>) BukkitReflection.getClass(
@@ -89,16 +81,16 @@ public class PacketTabList18 extends TabListBase {
         newPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, classType);
         ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
 
-        loadSharedContent(playerInfoDataClass, EnumGamemodeClass, IChatBaseComponent);
+        loadSharedContent(playerInfoDataClass, EnumGamemodeClass);
     }
 
-    protected static void loadSharedContent(Class<?> infoData, Class<Enum> gameMode,
-                                            Class<?> component) throws ReflectiveOperationException {
+    protected static void loadSharedContent(Class<?> infoData, Class<Enum> gameMode) throws ReflectiveOperationException {
+        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         newPlayerInfoData = infoData.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         PlayerInfoData_Profile = ReflectionUtils.getOnlyField(infoData, GameProfile.class);
         PlayerInfoData_Latency = ReflectionUtils.getOnlyField(infoData, int.class);
-        PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(infoData, component);
+        PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(infoData, IChatBaseComponent);
         gameModes = new Object[] {
                 Enum.valueOf(gameMode, "SURVIVAL"),
                 Enum.valueOf(gameMode, "CREATIVE"),
@@ -106,6 +98,7 @@ public class PacketTabList18 extends TabListBase {
                 Enum.valueOf(gameMode, "SPECTATOR")
         };
         packetSender = new PacketSender();
+        componentConverter = new ComponentConverter();
         try {
             skinData = new SkinData();
         } catch (Exception e) {
@@ -171,7 +164,7 @@ public class PacketTabList18 extends TabListBase {
      * @return  Converted component
      */
     public Object toComponent(@NonNull TabComponent component) {
-        return componentCache.get(component, player.getVersion());
+        return componentConverter.convert(component, player.getVersion());
     }
 
     @NonNull

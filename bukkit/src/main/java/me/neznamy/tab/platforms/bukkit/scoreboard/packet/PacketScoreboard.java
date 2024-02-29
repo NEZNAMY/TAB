@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,10 +55,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Getter private static TeamPacketData teamPacketData;
     @Getter private static DisplayPacketData displayPacketData;
     private static PacketSender packetSender;
-
-    private static Method ChatSerializer_DESERIALIZE;
-    private static final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000,
-            (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
+    private static ComponentConverter componentConverter;
 
     static {
         try {
@@ -86,9 +83,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
             if (minorVersion >= 7) {
                 Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
-                Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
-                        "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
-                ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
+                componentConverter = new ComponentConverter();
             }
             if (minorVersion >= 8) {
                 Class<?> EnumScoreboardHealthDisplay = BukkitReflection.getClass(
@@ -279,7 +274,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Nullable
     private Object toComponent(@Nullable TabComponent component) {
         if (component == null || BukkitReflection.getMinorVersion() < 8) return null;
-        return componentCache.get(component, player.getVersion());
+        return componentConverter.convert(component, player.getVersion());
     }
 
     @Nullable

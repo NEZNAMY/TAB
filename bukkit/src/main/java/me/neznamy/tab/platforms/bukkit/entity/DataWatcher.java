@@ -1,12 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.entity;
 
 import lombok.*;
+import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,9 +41,7 @@ public class DataWatcher implements EntityData {
 
     private static final int armorStandFlagsPosition = EntityData.getArmorStandFlagsPosition(BukkitReflection.getMinorVersion());
 
-    private static Method ChatSerializer_DESERIALIZE;
-    private static final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000,
-            (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
+    private static ComponentConverter componentConverter;
 
     /** Watched data */
     private final Map<Integer, Item> dataValues = new HashMap<>();
@@ -58,9 +56,7 @@ public class DataWatcher implements EntityData {
         int minorVersion = BukkitReflection.getMinorVersion();
         DataWatcher = BukkitReflection.getClass("network.syncher.SynchedEntityData", "network.syncher.DataWatcher", "DataWatcher");
         if (minorVersion >= 7) {
-            Class<?> ChatSerializer = BukkitReflection.getClass("network.chat.Component$Serializer",
-                    "network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer");
-            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
+            componentConverter = new ComponentConverter();
             newDataWatcher = DataWatcher.getConstructor(BukkitReflection.getClass("world.entity.Entity", "Entity"));
         } else {
             newDataWatcher = DataWatcher.getConstructor();
@@ -148,7 +144,7 @@ public class DataWatcher implements EntityData {
     public void setCustomName(@NotNull String customName, @NotNull ProtocolVersion clientVersion) {
         if (BukkitReflection.getMinorVersion() >= 13) {
             setValue(2, DataWatcherSerializer_OPTIONAL_COMPONENT,
-                    Optional.of(componentCache.get(TabComponent.optimized(customName), clientVersion)));
+                    Optional.of(componentConverter.convert(TabComponent.optimized(customName), clientVersion)));
         } else if (BukkitReflection.getMinorVersion() >= 8) {
             setValue(2, DataWatcherSerializer_STRING, customName);
         } else {
