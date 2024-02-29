@@ -1,9 +1,11 @@
 package me.neznamy.tab.shared.platform;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.hook.FloodgateHook;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.features.types.Refreshable;
@@ -184,6 +186,19 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @Override
     public boolean hasTemporaryGroup() {
         return temporaryGroup != null;
+    }
+
+    @Override
+    public void setExpectedProfileName(@NonNull String profileName) {
+        nickname = profileName;
+        NickCompatibility nick = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY);
+        nick.processNameChange(this);
+    }
+
+    @Override
+    @NotNull
+    public String getExpectedProfileName() {
+        return nickname;
     }
 
     /**

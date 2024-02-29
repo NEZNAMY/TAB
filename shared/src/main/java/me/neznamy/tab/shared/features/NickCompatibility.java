@@ -60,7 +60,13 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
         }
     }
 
-    private void processNameChange(TabPlayer player) {
+    /**
+     * Processes name change in all features.
+     *
+     * @param   player
+     *          Player to update in all features
+     */
+    public void processNameChange(@NotNull TabPlayer player) {
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
