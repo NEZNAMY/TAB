@@ -215,7 +215,7 @@ public class PacketEntityView implements EntityView {
             PacketPlayOutEntity_Z = fields.get(3);
             Constructor<?> constructor = packetPlayOutRelEntityMove.getConstructor(int.class, long.class, long.class, long.class, boolean.class);
             newMovePacket = (entityId, x, y, z) -> constructor.newInstance(entityId, x, y, z, false);
-        } else {
+        } else if (BukkitReflection.getMinorVersion() == 8) {
             List<Field> fields = ReflectionUtils.getFields(PacketPlayOutEntity, byte.class);
             PacketPlayOutEntity_X = fields.get(0);
             PacketPlayOutEntity_Y = fields.get(1);
