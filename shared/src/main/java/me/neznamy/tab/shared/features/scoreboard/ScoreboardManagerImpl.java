@@ -25,7 +25,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
     //config options
-    @Getter private final String toggleCommand = config().getString("scoreboard.toggle-command", "/sb");
+    @Getter private final String command = config().getString("scoreboard.toggle-command", "/sb");
     @Getter private final boolean usingNumbers = config().getBoolean("scoreboard.use-numbers", false);
     private final boolean rememberToggleChoice = config().getBoolean("scoreboard.remember-toggle-choice", false);
     private final boolean hiddenByDefault = config().getBoolean("scoreboard.hidden-by-default", false);
@@ -168,8 +168,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public boolean onCommand(@NotNull TabPlayer sender, @NotNull String message) {
-        if (message.equals(toggleCommand) || message.startsWith(toggleCommand+" ")) {
-            TAB.getInstance().getCommand().execute(sender, message.replace(toggleCommand, "scoreboard").split(" "));
+        if (message.equals(command)) {
+            TAB.getInstance().getCommand().execute(sender, new String[] {"scoreboard"});
             return true;
         }
         return false;

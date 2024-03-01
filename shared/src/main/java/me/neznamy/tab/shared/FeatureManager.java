@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -46,6 +44,9 @@ public class FeatureManager {
 
     /** Flag tracking presence of a feature listening to command preprocess for faster check with better performance */
     private boolean hasCommandListener;
+
+    /** Commands features listen to */
+    private final List<String> listeningCommands = new ArrayList<>();
 
     /**
      * Calls load() on all features.
@@ -236,6 +237,7 @@ public class FeatureManager {
      */
     public boolean onCommand(@Nullable TabPlayer sender, @NotNull String command) {
         if (!hasCommandListener || sender == null) return false;
+        if (!listeningCommands.contains(command)) return false;
         boolean cancel = false;
         for (TabFeature f : values) {
             if (!(f instanceof CommandListener)) continue;
@@ -415,6 +417,7 @@ public class FeatureManager {
         }
         if (featureHandler instanceof CommandListener) {
             hasCommandListener = true;
+            listeningCommands.add(((CommandListener) featureHandler).getCommand());
         }
     }
 

@@ -30,7 +30,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     protected BossBar[] lineValues;
 
     //config options
-    @Getter private final String toggleCommand = config().getString("bossbar.toggle-command", "/bossbar");
+    @Getter private final String command = config().getString("bossbar.toggle-command", "/bossbar");
     private final boolean hiddenByDefault = config().getBoolean("bossbar.hidden-by-default", false);
     private final boolean rememberToggleChoice = config().getBoolean("bossbar.remember-toggle-choice", false);
     private final String toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
@@ -129,7 +129,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public boolean onCommand(@NotNull TabPlayer sender, @NotNull String message) {
-        if (message.equalsIgnoreCase(toggleCommand)) {
+        if (message.equals(command)) {
             TAB.getInstance().getCommand().execute(sender, new String[] {"bossbar"});
             return true;
         }

@@ -19,4 +19,12 @@ public interface CommandListener {
      * @return  Whether the command should be cancelled or not
      */
     boolean onCommand(@NotNull TabPlayer sender, @NotNull String message);
+
+    /**
+     * Returns the (fake) command the feature is listening to.
+     *
+     * @return  Command the feature is listening to
+     */
+    @NotNull
+    String getCommand();
 }
