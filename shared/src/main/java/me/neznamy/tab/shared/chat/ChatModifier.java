@@ -15,7 +15,6 @@ public class ChatModifier {
     private boolean underlined;
     private boolean strikethrough;
     private boolean obfuscated;
-    @Nullable private ClickEvent clickEvent;
     @Nullable private String font;
 
     public ChatModifier(@NotNull ChatModifier modifier) {
@@ -25,7 +24,6 @@ public class ChatModifier {
         underlined = modifier.underlined;
         strikethrough = modifier.strikethrough;
         obfuscated = modifier.obfuscated;
-        clickEvent = modifier.clickEvent;
         font = modifier.font;
     }
 
@@ -39,12 +37,6 @@ public class ChatModifier {
         if (underlined) json.put("underlined", true);
         if (strikethrough) json.put("strikethrough", true);
         if (obfuscated) json.put("obfuscated", true);
-        if (clickEvent != null) {
-            JSONObject click = new JSONObject();
-            click.put("action", clickEvent.getAction().name().toLowerCase());
-            click.put("value", clickEvent.getValue());
-            json.put("clickEvent", click);
-        }
         if (font != null) json.put("font", font);
         return json;
     }

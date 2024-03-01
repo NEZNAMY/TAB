@@ -18,7 +18,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bstats.bungeecord.Metrics;
@@ -169,13 +168,6 @@ public class BungeePlatform extends ProxyPlatform {
         if (modifier.isUnderlined()) textComponent.setUnderlined(true);
 
         textComponent.setFont(modifier.getFont());
-
-        if (modifier.getClickEvent() != null) {
-            textComponent.setClickEvent(new ClickEvent(
-                    ClickEvent.Action.valueOf(modifier.getClickEvent().getAction().name()),
-                    modifier.getClickEvent().getValue()
-            ));
-        }
 
         if (!iComponent.getExtra().isEmpty()) {
             List<BaseComponent> list = new ArrayList<>();

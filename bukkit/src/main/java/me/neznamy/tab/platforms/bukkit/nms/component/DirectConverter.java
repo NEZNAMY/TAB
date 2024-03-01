@@ -23,13 +23,9 @@ public class DirectConverter {
 
     private final Class<?> ChatModifier = BukkitReflection.getClass("network.chat.ChatModifier", "ChatModifier");
     private final Class<Enum> EnumChatFormat = (Class<Enum>) BukkitReflection.getClass("EnumChatFormat");
-    private final Class<?> ChatClickable = BukkitReflection.getClass("network.chat.ChatClickable", "ChatClickable");
-    private final Class<Enum> EnumClickAction = (Class<Enum>) BukkitReflection.getClass("network.chat.ChatClickable$EnumClickAction", "ChatClickable$EnumClickAction", "EnumClickAction");
 
-    private final Constructor<?> newChatClickable = ChatClickable.getConstructor(EnumClickAction, String.class);
     private final Constructor<?> newChatModifier;
 
-    private final Method ChatModifier_setClickEvent = ReflectionUtils.getOnlyMethod(ChatModifier, ChatModifier, ChatClickable);
     private final Method ChatBaseComponent_addSibling;
 
     private final Field Component_modifier;
@@ -67,11 +63,12 @@ public class DirectConverter {
         if (BukkitReflection.getMinorVersion() >= 16) {
             Class<?> chatHexColor = BukkitReflection.getClass("network.chat.ChatHexColor", "ChatHexColor");
             Class<?> MinecraftKey = BukkitReflection.getClass("resources.MinecraftKey", "MinecraftKey");
+            Class<?> chatClickable = BukkitReflection.getClass("network.chat.ChatClickable", "ChatClickable");
             Class<?> chatHoverable = BukkitReflection.getClass("network.chat.ChatHoverable", "ChatHoverable");
             newMinecraftKey = MinecraftKey.getConstructor(String.class);
             ChatHexColor_fromRGB = ReflectionUtils.getOnlyMethod(chatHexColor, chatHexColor, int.class);
             newChatModifier = ReflectionUtils.setAccessible(ChatModifier.getDeclaredConstructor(chatHexColor, Boolean.class, Boolean.class, Boolean.class,
-                    Boolean.class, Boolean.class, ChatClickable, chatHoverable, String.class, MinecraftKey));
+                    Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, MinecraftKey));
         } else {
             newChatModifier = ChatModifier.getConstructor();
             ChatModifier_setColor = ReflectionUtils.getOnlyMethod(ChatModifier, ChatModifier, EnumChatFormat);
@@ -121,7 +118,7 @@ public class DirectConverter {
                 modifier.isUnderlined(),
                 modifier.isStrikethrough(),
                 modifier.isObfuscated(),
-                modifier.getClickEvent() == null ? null : newChatClickable.newInstance(Enum.valueOf(EnumClickAction, modifier.getClickEvent().getAction().name()), modifier.getClickEvent().getValue()),
+                null,
                 null,
                 null,
                 modifier.getFont() == null ? null : newMinecraftKey.newInstance(modifier.getFont())
@@ -139,10 +136,6 @@ public class DirectConverter {
         if (modifier.isStrikethrough()) magicCodes.get(2).set(nmsModifier, true);
         if (modifier.isUnderlined()) magicCodes.get(3).set(nmsModifier, true);
         if (modifier.isObfuscated()) magicCodes.get(4).set(nmsModifier, true);
-        ClickEvent event = modifier.getClickEvent();
-        if (event != null) {
-            ChatModifier_setClickEvent.invoke(nmsModifier, newChatClickable.newInstance(Enum.valueOf(EnumClickAction, event.getAction().name()), event.getValue()));
-        }
         return nmsModifier;
     }
 }

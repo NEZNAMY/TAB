@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
@@ -59,13 +58,6 @@ public class AdventureHook {
                 convertColor(modifier.getColor(), clientVersion.supportsRGB()),
                 getDecorations(modifier)
         );
-
-        if (modifier.getClickEvent() != null) {
-            adventureComponent = adventureComponent.clickEvent(ClickEvent.clickEvent(
-                    ClickEvent.Action.valueOf(modifier.getClickEvent().getAction().name()),
-                    modifier.getClickEvent().getValue()
-            ));
-        }
 
         if (modifier.getFont() != null) {
             adventureComponent = adventureComponent.font(Key.key(modifier.getFont()));
