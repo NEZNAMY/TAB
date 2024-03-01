@@ -140,6 +140,7 @@ public class FabricPlatform implements BackendPlatform {
      *          Game version to convert component for
      * @return  Converted component
      */
+    @SneakyThrows
     public Component toComponent(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
         return FabricMultiVersion.deserialize.apply(component.toString(version));
     }

@@ -85,7 +85,9 @@ public class Loader_1_14_4 {
                 new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, scoreHolder, score);
         FabricMultiVersion.removeScore = (objective, holder) ->
                 new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, holder, 0);
-        FabricMultiVersion.deserialize = string -> Component.Serializer.fromJson(string);
+        FabricMultiVersion.deserialize = string ->
+                // Return type changed in 1.16, cannot use directly
+                (Component) Component.Serializer.class.getMethod("method_10877", String.class).invoke(null, string);
         FabricMultiVersion.getChannel = player -> {
             Connection c = (Connection) ReflectionUtils.getFields(ServerGamePacketListenerImpl.class, Connection.class).get(0).get(player.connection);
             return (Channel) ReflectionUtils.getFields(Connection.class, Channel.class).get(0).get(c);

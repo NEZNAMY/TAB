@@ -38,7 +38,7 @@ public class FabricMultiVersion {
     public static Function<ServerPlayer, Level> getLevel;
     public static Function<ServerPlayer, Integer> getPing;
     public static Function<MinecraftServer, Float> getMSPT;
-    public static Function<String, Component> deserialize;
+    public static FunctionWithException<String, Component> deserialize;
     public static Function<Packet<?>, Boolean> isBundlePacket = packet -> false;
     public static Function<Packet<?>, Iterable<Object>> getBundledPackets = packet -> Collections.emptyList();
     public static FunctionWithException<ServerPlayer, Channel> getChannel;

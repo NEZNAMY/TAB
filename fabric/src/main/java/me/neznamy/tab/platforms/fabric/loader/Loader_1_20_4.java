@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.FixedFormat;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Method loader compiled using Minecraft 1.20.4.
@@ -58,7 +60,6 @@ public class Loader_1_20_4 {
             FabricMultiVersion.isSneaking = Entity::isCrouching;
         }
         if (serverVersion.getMinorVersion() >= 16) {
-            FabricMultiVersion.deserialize = Component.Serializer::fromJson; // Return type has changed
             FabricMultiVersion.getLevelName = level -> {
                 String path = level.dimension().location().getPath();
                 return ((ServerLevelData)level.getLevelData()).getLevelName() + switch (path) {
@@ -173,6 +174,9 @@ public class Loader_1_20_4 {
             FabricMultiVersion.getMSPT = server -> (float) server.getAverageTickTimeNanos() / 1000000;
             FabricMultiVersion.removeScore = (objective, holder) -> new ClientboundResetScorePacket(holder, objective);
             Register1_20_3.register();
+        }
+        if (serverVersion.getNetworkId() >= 766) { // TODO 1.20.5 constant
+            FabricMultiVersion.deserialize = component -> Component.Serializer.fromJson(component, HolderLookup.Provider.create(Stream.empty()));
         }
     }
 
