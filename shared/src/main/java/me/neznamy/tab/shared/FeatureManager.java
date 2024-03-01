@@ -44,6 +44,9 @@ public class FeatureManager {
     /** Flag tracking presence of a feature listening to latency change for faster check with better performance */
     private boolean hasLatencyChangeListener;
 
+    /** Flag tracking presence of a feature listening to command preprocess for faster check with better performance */
+    private boolean hasCommandListener;
+
     /**
      * Calls load() on all features.
      * This function is called on plugin startup.
@@ -232,7 +235,7 @@ public class FeatureManager {
      * @return  {@code true} if event should be cancelled, {@code false} if not.
      */
     public boolean onCommand(@Nullable TabPlayer sender, @NotNull String command) {
-        if (sender == null) return false;
+        if (!hasCommandListener || sender == null) return false;
         boolean cancel = false;
         for (TabFeature f : values) {
             if (!(f instanceof CommandListener)) continue;
@@ -409,6 +412,9 @@ public class FeatureManager {
         }
         if (featureHandler instanceof LatencyListener) {
             hasLatencyChangeListener = true;
+        }
+        if (featureHandler instanceof CommandListener) {
+            hasCommandListener = true;
         }
     }
 
