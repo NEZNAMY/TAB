@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import com.velocitypowered.api.proxy.player.ChatSession;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
@@ -18,7 +17,6 @@ import java.util.*;
 /**
  * TabList implementation for Velocity using its API.
  */
-@SuppressWarnings("deprecation")
 @RequiredArgsConstructor
 public class VelocityTabList implements TabList {
 
@@ -34,27 +32,11 @@ public class VelocityTabList implements TabList {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
-    /**
-     * <a href="https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133">VelocityTabListLegacy</a>
-     * You are supposed to be overriding
-     * {@link com.velocitypowered.api.proxy.player.TabList#buildEntry(GameProfile, Component, int, int, ChatSession, boolean)},
-     * not the outdated {@link com.velocitypowered.api.proxy.player.TabList#buildEntry(GameProfile, Component, int, int)},
-     * because {@link TabListEntry.Builder#build()} calls that method. Manually removing the
-     * entry and adding it again to avoid this bug.
-     */
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> {
-            if (player.getVersion().getMinorVersion() >= 8) {
-                Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
-                e.setDisplayName(component);
-                setExpectedDisplayName(entry, component);
-            } else {
-                String username = e.getProfile().getName();
-                removeEntry(entry);
-                addEntry(new Entry(entry, username, null, 0, 0, displayName));
-            }
-        });
+        Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
+        setExpectedDisplayName(entry, component);
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(component));
     }
 
     @Override
