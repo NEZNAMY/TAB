@@ -154,8 +154,8 @@ public class TeamPacketData {
     /**
      * Creates team register packet with specified parameters.
      *
-     * @param   name
-     *          Team name
+     * @param   team
+     *          Team to register
      * @param   prefix
      *          Team prefix for 1.12-
      * @param   prefixComponent
@@ -177,11 +177,11 @@ public class TeamPacketData {
      * @return  Register team packet with specified parameters
      */
     @SneakyThrows
-    public Object registerTeam(@NonNull String name, @NonNull String prefix, @Nullable Object prefixComponent,
+    public Object registerTeam(@NonNull Object team, @NonNull String prefix, @Nullable Object prefixComponent,
                                @NonNull String suffix, @Nullable Object suffixComponent,
                                @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
                                @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
-        Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
+        updateTeamData(team, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
         ((Collection<String>) ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(players);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_ofBoolean.invoke(null, team, true);
@@ -191,15 +191,14 @@ public class TeamPacketData {
     }
 
     /**
-     * Creates unregister team packet with given team name.
+     * Creates unregister team packet with given team.
      *
-     * @param   name
-     *          Team name to unregister
+     * @param   team
+     *          Team to unregister
      * @return  Packet for unregistering team
      */
     @SneakyThrows
-    public Object unregisterTeam(@NonNull String name) {
-        Object team = newScoreboardTeam.newInstance(emptyScoreboard, name);
+    public Object unregisterTeam(@NonNull Object team) {
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_of.invoke(null, team);
         } else {
@@ -210,8 +209,8 @@ public class TeamPacketData {
     /**
      * Creates team update packet with specified parameters.
      *
-     * @param   name
-     *          Team name
+     * @param   team
+     *          Team to update
      * @param   prefix
      *          Team prefix for 1.12-
      * @param   prefixComponent
@@ -231,11 +230,11 @@ public class TeamPacketData {
      * @return  Update team packet with specified parameters
      */
     @SneakyThrows
-    public Object updateTeam(@NonNull String name, @NonNull String prefix, @Nullable Object prefixComponent,
+    public Object updateTeam(@NonNull Object team, @NonNull String prefix, @Nullable Object prefixComponent,
                              @NonNull String suffix, @Nullable Object suffixComponent,
                              @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
                              int options, @NonNull EnumChatFormat color) {
-        Object team = createTeam(name, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
+        updateTeamData(team, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_ofBoolean.invoke(null, team, false);
         } else {
@@ -244,10 +243,10 @@ public class TeamPacketData {
     }
 
     /**
-     * Creates player team with specified parameters.
+     * Updates team properties.
      *
-     * @param   teamName
-     *          Team name
+     * @param   team
+     *          Team to update
      * @param   prefix
      *          Team prefix for 1.12-
      * @param   prefixComponent
@@ -267,11 +266,10 @@ public class TeamPacketData {
      * @return  Team with specified parameters
      */
     @SneakyThrows
-    private Object createTeam(@NonNull String teamName, @NonNull String prefix, @Nullable Object prefixComponent,
-                              @NonNull String suffix, @Nullable Object suffixComponent,
-                              @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
-                              int options, @NonNull EnumChatFormat color) {
-        Object team = newScoreboardTeam.newInstance(emptyScoreboard, teamName);
+    private Object updateTeamData(@NonNull Object team, @NonNull String prefix, @Nullable Object prefixComponent,
+                                  @NonNull String suffix, @Nullable Object suffixComponent,
+                                  @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
+                                  int options, @NonNull EnumChatFormat color) {
         ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
         if (BukkitReflection.getMinorVersion() >= MODERN_TEAM_DATA_VERSION) {
@@ -285,6 +283,18 @@ public class TeamPacketData {
         setVisibility.accept(team, visibility);
         setCollision.accept(team, collision);
         return team;
+    }
+
+    /**
+     * Creates a team with given name.
+     *
+     * @param   name
+     *          Team name
+     * @return  Team with specified name
+     */
+    @SneakyThrows
+    public Object createTeam(@NonNull String name) {
+        return newScoreboardTeam.newInstance(emptyScoreboard, name);
     }
 
     /**

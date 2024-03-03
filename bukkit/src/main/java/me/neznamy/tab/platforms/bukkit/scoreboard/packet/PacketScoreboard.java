@@ -18,7 +18,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Scoreboard implementation which uses packets
@@ -56,6 +58,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Getter private static DisplayPacketData displayPacketData;
     private static PacketSender packetSender;
     private static ComponentConverter componentConverter;
+
+    private final Map<String, Object> teams = new HashMap<>();
 
     static {
         try {
@@ -159,23 +163,22 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
                               @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                               @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
-        //TODO save teams into map to prevent creating new instance each time
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(name, prefix, toComponent(prefix), suffix,
+        Object team = teamPacketData.createTeam(name);
+        teams.put(name, team);
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(team, prefix, toComponent(prefix), suffix,
                 toComponent(suffix), visibility, collision, players, options, color));
     }
 
     @Override
     public void unregisterTeam0(@NonNull String name) {
-        //TODO save teams into map to prevent creating new instance each time
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(name));
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(teams.remove(name)));
     }
 
     @Override
     public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
                             @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                             int options, @NonNull EnumChatFormat color) {
-        //TODO save teams into map to prevent creating new instance each time
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(name, prefix, toComponent(prefix), suffix,
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(teams.get(name), prefix, toComponent(prefix), suffix,
                 toComponent(suffix), visibility, collision, options, color));
     }
 
