@@ -6,7 +6,6 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
@@ -86,6 +85,10 @@ public class PacketTabList1193 extends PacketTabList18 {
         } else {
             actions = EnumSet.of(Enum.valueOf(ActionClass, action.name()));
         }
+        Object displayName = entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName());
+        if (action == Action.ADD_PLAYER || action == Action.UPDATE_DISPLAY_NAME) {
+            setExpectedDisplayName(entry.getUniqueId(), displayName);
+        }
         Object packet = newPlayerInfo.newInstance(actions, Collections.emptyList());
         players.add(newPlayerInfoData.newInstance(
                 entry.getUniqueId(),
@@ -93,7 +96,7 @@ public class PacketTabList1193 extends PacketTabList18 {
                 true,
                 entry.getLatency(),
                 gameModes[entry.getGameMode()],
-                entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName()),
+                displayName,
                 null
         ));
         PLAYERS.set(packet, players);
@@ -107,18 +110,15 @@ public class PacketTabList1193 extends PacketTabList18 {
         List<String> actions = ((EnumSet<?>)ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
         List<Object> updatedList = new ArrayList<>();
         for (Object nmsData : (List<?>) PLAYERS.get(packet)) {
+            UUID id = (UUID) PlayerInfoData_UUID.get(nmsData);
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
-            UUID id;
-            id = (UUID) PlayerInfoData_UUID.get(nmsData);
-            Object displayName = null;
-            int latency = 0;
-            if (actions.contains(Action.UPDATE_DISPLAY_NAME.name())) {
-                displayName = PlayerInfoData_DisplayName.get(nmsData);
-                TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, id);
-                if (newDisplayName != null) displayName = toComponent(newDisplayName);
+            Object displayName = PlayerInfoData_DisplayName.get(nmsData);
+            int latency = PlayerInfoData_Latency.getInt(nmsData);
+            if (actions.contains(Action.UPDATE_DISPLAY_NAME.name()) && antiOverride) {
+                displayName = getExpectedDisplayName(id);
             }
             if (actions.contains(Action.UPDATE_LATENCY.name())) {
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, PlayerInfoData_Latency.getInt(nmsData));
+                latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, latency);
             }
             if (actions.contains(Action.ADD_PLAYER.name())) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());

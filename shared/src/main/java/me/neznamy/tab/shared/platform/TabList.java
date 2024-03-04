@@ -137,6 +137,16 @@ public interface TabList {
     }
 
     /**
+     * Sets anti-override for tablist names flag.
+     *
+     * @param   value
+     *          Anti-override value
+     */
+    default void setAntiOverride(boolean value) {
+        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
+    }
+
+    /**
      * TabList action.
      */
     enum Action {

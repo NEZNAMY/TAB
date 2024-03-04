@@ -39,6 +39,7 @@ public class BungeeTabList1193 extends BungeeTabList {
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         Item item = item(entry);
         if (displayName != null) item.setDisplayName(player.getPlatform().toComponent(displayName, player.getVersion()));
+        setExpectedDisplayName(entry, item.getDisplayName());
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME), item);
     }
 

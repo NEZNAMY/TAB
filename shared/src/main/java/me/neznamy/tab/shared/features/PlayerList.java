@@ -25,7 +25,7 @@ import java.util.UUID;
  * Feature handler for TabList display names
  */
 @Getter
-public class PlayerList extends TabFeature implements TabListFormatManager, JoinListener, DisplayNameListener, Loadable,
+public class PlayerList extends TabFeature implements TabListFormatManager, JoinListener, Loadable,
         UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, VanishListener {
 
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
@@ -144,6 +144,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     public void load() {
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            all.getTabList().setAntiOverride(antiOverrideTabList);
             updateProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
                 disableChecker.addDisabledPlayer(all);
@@ -234,6 +235,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        connectedPlayer.getTabList().setAntiOverride(antiOverrideTabList);
         updateProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             disableChecker.addDisabledPlayer(connectedPlayer);
@@ -254,16 +256,6 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         } else {
             r.run();
         }
-    }
-
-    @Override
-    public TabComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
-        if (disabling || !antiOverrideTabList) return null;
-        TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
-        if (packetPlayer != null && !disableChecker.isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, packetReceiver)) {
-            return getTabFormat(packetPlayer, packetReceiver);
-        }
-        return null;
     }
 
     @Override

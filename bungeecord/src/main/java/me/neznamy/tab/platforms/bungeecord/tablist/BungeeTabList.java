@@ -1,22 +1,30 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import net.md_5.bungee.tab.ServerUnique;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Abstract TabList class for BungeeCord containing
@@ -30,6 +38,18 @@ public abstract class BungeeTabList implements TabList {
 
     /** Pointer to UUIDs in player's TabList */
     private final Collection<UUID> uuids;
+
+    @Setter
+    @Getter
+    protected boolean antiOverride;
+
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<TabPlayer, BaseComponent> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+
+    private final RedisSupport redisSupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<RedisPlayer, BaseComponent> expectedRedisDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Constructs new instance with given parameters.
@@ -79,6 +99,7 @@ public abstract class BungeeTabList implements TabList {
         if (entry.getDisplayName() != null) {
             item.setDisplayName(player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()));
         }
+        setExpectedDisplayName(entry.getUniqueId(), item.getDisplayName());
         item.setGamemode(entry.getGameMode());
         item.setListed(true);
         item.setPing(entry.getLatency());
@@ -117,8 +138,10 @@ public abstract class BungeeTabList implements TabList {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, item.getUuid());
-                    if (newDisplayName != null) item.setDisplayName(player.getPlatform().toComponent(newDisplayName, player.getVersion()));
+                    if (antiOverride) {
+                        BaseComponent expectedDisplayName = getExpectedDisplayName(item.getUuid());
+                        if (expectedDisplayName != null) item.setDisplayName(expectedDisplayName);
+                    }
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
@@ -131,8 +154,10 @@ public abstract class BungeeTabList implements TabList {
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, item.getUuid());
-                    if (newDisplayName != null) item.setDisplayName(player.getPlatform().toComponent(newDisplayName, player.getVersion()));
+                    if (antiOverride) {
+                        BaseComponent expectedDisplayName = getExpectedDisplayName(item.getUuid());
+                        if (expectedDisplayName != null) item.setDisplayName(expectedDisplayName);
+                    }
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
@@ -147,5 +172,31 @@ public abstract class BungeeTabList implements TabList {
     @Override
     public boolean containsEntry(@NonNull UUID entry) {
         return uuids.contains(entry);
+    }
+
+    @Nullable
+    public BaseComponent getExpectedDisplayName(@NotNull UUID id) {
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (player != null && expectedDisplayNames.containsKey(player)) {
+            return expectedDisplayNames.get(player);
+        }
+        if (redisSupport != null) {
+            RedisPlayer redisPlayer = redisSupport.getRedisPlayers().get(id);
+            if (redisPlayer != null && expectedRedisDisplayNames.containsKey(redisPlayer)) {
+                return expectedRedisDisplayNames.get(redisPlayer);
+            }
+        }
+        return null;
+    }
+
+    public void setExpectedDisplayName(@NotNull UUID id, @Nullable BaseComponent displayName) {
+        if (!antiOverride) return;
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (player != null) expectedDisplayNames.put(player, displayName);
+
+        if (redisSupport != null) {
+            RedisPlayer redisPlayer = redisSupport.getRedisPlayers().get(id);
+            if (redisPlayer != null) expectedRedisDisplayNames.put(redisPlayer, displayName);
+        }
     }
 }

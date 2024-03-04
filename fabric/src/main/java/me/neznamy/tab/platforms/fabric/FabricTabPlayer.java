@@ -26,7 +26,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
 
     @NotNull
-    private final TabList tabList = new FabricTabList(this);
+    private final FabricTabList tabList = new FabricTabList(this);
 
     @NotNull
     private final BossBar bossBar = new FabricBossBar(this);

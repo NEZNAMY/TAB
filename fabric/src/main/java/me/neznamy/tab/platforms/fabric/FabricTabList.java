@@ -2,17 +2,20 @@ package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.*;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 /**
  * TabList implementation for Fabric using packets.
@@ -24,6 +27,13 @@ public class FabricTabList implements TabList {
     @NonNull
     private final FabricTabPlayer player;
 
+    @Setter
+    @Getter
+    protected boolean antiOverride;
+
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<TabPlayer, Component> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+
     @Override
     @SneakyThrows
     public void removeEntry(@NonNull UUID entry) {
@@ -33,8 +43,10 @@ public class FabricTabList implements TabList {
     @Override
     @SneakyThrows
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
+        Component component = displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion());
+        setExpectedDisplayName(entry, component);
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME,
-                new Builder(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()))
+                new Builder(entry).setDisplayName(component)
         ));
     }
 
@@ -55,13 +67,15 @@ public class FabricTabList implements TabList {
     @Override
     @SneakyThrows
     public void addEntry(@NonNull Entry entry) {
+        Component displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
+        setExpectedDisplayName(entry.getUniqueId(), displayName);
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.ADD_PLAYER,
                 new Builder(entry.getUniqueId())
                 .setName(entry.getName())
                 .setSkin(entry.getSkin())
                 .setGameMode(entry.getGameMode())
                 .setLatency(entry.getLatency())
-                .setDisplayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))
+                .setDisplayName(displayName)
         ));
 
         if (player.getVersion().getMinorVersion() == 8) {
@@ -90,6 +104,21 @@ public class FabricTabList implements TabList {
         if (FabricMultiVersion.isPlayerInfo.apply((Packet<?>) packet)) {
             FabricMultiVersion.onPlayerInfo.accept(player, packet);
         }
+    }
+
+    @Nullable
+    public Component getExpectedDisplayName(@NotNull UUID id) {
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (player != null && expectedDisplayNames.containsKey(player)) {
+            return expectedDisplayNames.get(player);
+        }
+        return null;
+    }
+
+    public void setExpectedDisplayName(@NotNull UUID id, @Nullable Component displayName) {
+        if (!antiOverride) return;
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (player != null) expectedDisplayNames.put(player, displayName);
     }
 
     /**

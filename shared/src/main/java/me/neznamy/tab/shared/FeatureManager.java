@@ -3,7 +3,6 @@ package me.neznamy.tab.shared;
 import java.util.*;
 
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.*;
@@ -111,28 +110,6 @@ public class FeatureManager {
             ((GameModeListener) f).onGameModeChange(player);
             TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.GAMEMODE_CHANGE, System.nanoTime() - time);
         }
-    }
-
-    /**
-     * Forwards display name change to all features and returns new display name to use.
-     * Will return null if display name should not change.
-     *
-     * @param   packetReceiver
-     *          Player who received the packet
-     * @param   id
-     *          UUID of the player
-     * @return  New display name or {@code null} if it should not be changed
-     */
-    public TabComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
-        TabComponent newDisplayName = null;
-        for (TabFeature f : values) {
-            if (!(f instanceof DisplayNameListener)) continue;
-            long time = System.nanoTime();
-            TabComponent value = ((DisplayNameListener) f).onDisplayNameChange(packetReceiver, id);
-            if (value != null) newDisplayName = value;
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime() - time);
-        }
-        return newDisplayName;
     }
 
     /**

@@ -130,9 +130,9 @@ public class Loader_1_20_4 {
                     GameProfile profile = nmsData.profile();
                     Component displayName = nmsData.displayName();
                     int latency = nmsData.latency();
-                    if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                        TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, nmsData.profileId());
-                        if (newDisplayName != null) displayName = ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
+                    if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME) && ((FabricTabPlayer)receiver).getTabList().isAntiOverride()) {
+                        Component expectedDisplayName = ((FabricTabPlayer)receiver).getTabList().getExpectedDisplayName(nmsData.profileId());
+                        if (expectedDisplayName != null) displayName = expectedDisplayName;
                     }
                     if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
                         latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, nmsData.profileId(), latency);

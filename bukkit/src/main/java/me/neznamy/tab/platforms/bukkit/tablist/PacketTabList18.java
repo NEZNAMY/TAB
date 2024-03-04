@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
@@ -12,7 +13,9 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -22,6 +25,7 @@ import java.util.*;
 /**
  * TabList handler for 1.8 - 1.19.2 servers using packets.
  */
+@Setter
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PacketTabList18 extends TabListBase {
 
@@ -40,6 +44,11 @@ public class PacketTabList18 extends TabListBase {
 
     protected static PacketSender packetSender;
     protected static ComponentConverter componentConverter;
+
+    protected boolean antiOverride;
+
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<TabPlayer, Object> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Constructs new instance with given player.
@@ -149,7 +158,11 @@ public class PacketTabList18 extends TabListBase {
         parameters.add(createProfile(entry.getUniqueId(), entry.getName(), entry.getSkin()));
         parameters.add(entry.getLatency());
         parameters.add(gameModes[entry.getGameMode()]);
-        parameters.add(entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName()));
+        Object displayName = entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName());
+        if (action == Action.ADD_PLAYER || action == Action.UPDATE_DISPLAY_NAME) {
+            setExpectedDisplayName(entry.getUniqueId(), displayName);
+        }
+        parameters.add(displayName);
         if (BukkitReflection.getMinorVersion() >= 19) parameters.add(null);
         players.add(newPlayerInfoData.newInstance(parameters.toArray()));
         PLAYERS.set(packet, players);
@@ -186,10 +199,12 @@ public class PacketTabList18 extends TabListBase {
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
             UUID id = profile.getId();
             if (action.equals(Action.UPDATE_DISPLAY_NAME.name()) || action.equals(Action.ADD_PLAYER.name())) {
-                Object displayName = PlayerInfoData_DisplayName.get(nmsData);
-                TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(player, id);
-                if (newDisplayName != null) displayName = toComponent(newDisplayName);
-                PlayerInfoData_DisplayName.set(nmsData, displayName);
+                if (antiOverride) {
+                    Object expectedName = getExpectedDisplayName(id);
+                    if (expectedName != null) {
+                        PlayerInfoData_DisplayName.set(nmsData, expectedName);
+                    }
+                }
             }
             if (action.equals(Action.UPDATE_LATENCY.name()) || action.equals(Action.ADD_PLAYER.name())) {
                 int latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, PlayerInfoData_Latency.getInt(nmsData));
@@ -199,5 +214,20 @@ public class PacketTabList18 extends TabListBase {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
             }
         }
+    }
+
+    @Nullable
+    protected Object getExpectedDisplayName(@NotNull UUID id) {
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (player != null && expectedDisplayNames.containsKey(player)) {
+            return expectedDisplayNames.get(player);
+        }
+        return null;
+    }
+
+    protected void setExpectedDisplayName(@NotNull UUID id, @Nullable Object displayName) {
+        if (!antiOverride) return;
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (player != null) expectedDisplayNames.put(player, displayName);
     }
 }

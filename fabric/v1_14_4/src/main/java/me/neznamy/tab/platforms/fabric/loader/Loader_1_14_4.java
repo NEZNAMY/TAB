@@ -131,11 +131,13 @@ public class Loader_1_14_4 {
                 GameProfile profile = nmsData.getProfile();
                 Field displayNameField = ReflectionUtils.getFields(PlayerUpdate.class, Component.class).get(0);
                 Field latencyField = ReflectionUtils.getFields(PlayerUpdate.class, int.class).get(0);
-                if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name())) {
-                    TabComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
-                    if (newDisplayName != null) displayNameField.set(nmsData, ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion()));
+                if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
+                    if (((FabricTabPlayer)receiver).getTabList().isAntiOverride()) {
+                        Object expectedName = ((FabricTabPlayer)receiver).getTabList().getExpectedDisplayName(profile.getId());
+                        if (expectedName != null) displayNameField.set(nmsData, expectedName);
+                    }
                 }
-                if (action.name().equals(TabList.Action.UPDATE_LATENCY.name())) {
+                if (action.name().equals(TabList.Action.UPDATE_LATENCY.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
                     latencyField.set(nmsData, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latencyField.getInt(nmsData)));
                 }
                 if (action.name().equals(TabList.Action.ADD_PLAYER.name())) {
