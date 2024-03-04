@@ -2,13 +2,13 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -16,20 +16,28 @@ import java.util.function.Function;
 
 /**
  * Base TabList class for all implementations.
+ *
+ * @param   <Comp>
+ *          Component class
  */
-@RequiredArgsConstructor
-public abstract class TabListBase implements TabList {
+public abstract class TabListBase<Comp> extends TabList<BukkitTabPlayer, Comp> {
 
     /** Instance function */
     @Getter
-    private static Function<BukkitTabPlayer, TabListBase> instance;
+    private static Function<BukkitTabPlayer, TabListBase<?>> instance;
 
     @Nullable
     protected static SkinData skinData;
 
-    /** Player this TabList belongs to */
-    @NonNull
-    protected final BukkitTabPlayer player;
+    /**
+     * Constructs new instance.
+     *
+     * @param   player
+     *          Player this tablist will belong to
+     */
+    protected TabListBase(@NotNull BukkitTabPlayer player) {
+        super(player);
+    }
 
     /**
      * Finds the best available instance for current server software.

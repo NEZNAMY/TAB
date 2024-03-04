@@ -245,8 +245,6 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             refresh(connectedPlayer, true);
             if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (all == connectedPlayer) continue; //already sent 4 lines above
-                if (!connectedPlayer.getTabList().containsEntry(all.getTablistId())) continue;
                 connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
             }
         };

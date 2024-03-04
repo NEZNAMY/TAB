@@ -1,22 +1,44 @@
 package me.neznamy.tab.shared.platform;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Interface for managing tablist entries.
+ *
+ * @param   <Player>
+ *          Platform's player class
+ * @param   <Comp>
+ *          Platform's component class
  */
-public interface TabList {
+@RequiredArgsConstructor
+public abstract class TabList<Player extends TabPlayer, Comp> {
 
     /** Name of the textures property in game profile */
-    String TEXTURES_PROPERTY = "textures";
+    public static final String TEXTURES_PROPERTY = "textures";
+
+    /** Player this tablist belongs to */
+    protected final Player player;
+
+    /** Tablist display name anti-override flag */
+    @Setter
+    protected boolean antiOverride;
+
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<TabPlayer, Comp> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+
+    private final RedisSupport redisSupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<RedisPlayer, Comp> expectedRedisDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Removes entries from the TabList.
@@ -24,7 +46,7 @@ public interface TabList {
      * @param   entries
      *          Entries to remove
      */
-    default void removeEntries(@NonNull Collection<UUID> entries) {
+    public void removeEntries(@NonNull Collection<UUID> entries) {
         entries.forEach(this::removeEntry);
     }
 
@@ -34,7 +56,7 @@ public interface TabList {
      * @param   entries
      *          Entries to add
      */
-    default void addEntries(@NonNull Collection<Entry> entries) {
+    public void addEntries(@NonNull Collection<Entry> entries) {
         entries.forEach(this::addEntry);
     }
 
@@ -44,7 +66,7 @@ public interface TabList {
      * @param   entry
      *          Entry to remove
      */
-    void removeEntry(@NonNull UUID entry);
+    public abstract void removeEntry(@NonNull UUID entry);
 
     /**
      * Updates display name of an entry. Using {@code null} makes it undefined and
@@ -55,7 +77,22 @@ public interface TabList {
      * @param   displayName
      *          New display name
      */
-    void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName);
+    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
+        Comp component = displayName == null ? null : toComponent(displayName);
+        setExpectedDisplayName(entry, component);
+        updateDisplayName0(entry, component);
+    }
+
+    /**
+     * Updates display name of an entry. Using {@code null} makes it undefined and
+     * scoreboard team prefix/suffix will be visible instead.
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   displayName
+     *          New display name
+     */
+    public abstract void updateDisplayName0(@NonNull UUID entry, @Nullable Comp displayName);
 
     /**
      * Updates latency of specified entry.
@@ -65,7 +102,7 @@ public interface TabList {
      * @param   latency
      *          New latency
      */
-    void updateLatency(@NonNull UUID entry, int latency);
+    public abstract void updateLatency(@NonNull UUID entry, int latency);
 
     /**
      * Updates game mode of specified entry.
@@ -75,7 +112,7 @@ public interface TabList {
      * @param   gameMode
      *          New game mode
      */
-    void updateGameMode(@NonNull UUID entry, int gameMode);
+    public abstract void updateGameMode(@NonNull UUID entry, int gameMode);
 
     /**
      * Adds specified entry into the TabList.
@@ -83,7 +120,34 @@ public interface TabList {
      * @param   entry
      *          Entry to add
      */
-    void addEntry(@NonNull Entry entry);
+    public void addEntry(@NonNull Entry entry) {
+        Comp component = entry.displayName == null ? null : toComponent(entry.displayName);
+        setExpectedDisplayName(entry.getUniqueId(), component);
+        addEntry0(entry.uniqueId, entry.name, entry.skin, entry.latency, entry.gameMode, component);
+
+        if (player.getVersion().getMinorVersion() == 8) {
+            // Compensation for 1.8.0 client sided bug
+            updateDisplayName0(entry.getUniqueId(), component);
+        }
+    }
+
+    /**
+     * Adds specified entry to tablist
+     *
+     * @param   id
+     *          Entry UUID
+     * @param   name
+     *          Entry name
+     * @param   skin
+     *          Entry skin
+     * @param   latency
+     *          Entry latency
+     * @param   gameMode
+     *          Entry game mode
+     * @param   displayName
+     *          Entry display name
+     */
+    public abstract void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable Comp displayName);
 
     /**
      * Sets header and footer to specified values.
@@ -93,7 +157,7 @@ public interface TabList {
      * @param   footer
      *          Footer to use
      */
-    void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer);
+    public abstract void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer);
 
     /**
      * Returns {@code true} if tablist contains specified entry, {@code false} if not.
@@ -102,14 +166,14 @@ public interface TabList {
      *          UUID of entry to check
      * @return  {@code true} if tablist contains specified entry, {@code false} if not
      */
-    boolean containsEntry(@NonNull UUID entry);
+    public abstract boolean containsEntry(@NonNull UUID entry);
 
     /**
      * Checks if all entries have display names as configured and if not,
      * they are forced. Only works on platforms with a full TabList API.
      * Not needed for platforms which support pipeline injection.
      */
-    default void checkDisplayNames() {
+    public void checkDisplayNames() {
         // Empty by default, overridden by Sponge7, Sponge8 and Velocity
     }
 
@@ -119,7 +183,7 @@ public interface TabList {
      * @param   packet
      *          Packet to process
      */
-    default void onPacketSend(@NonNull Object packet) {
+    public void onPacketSend(@NonNull Object packet) {
         // Empty by default, overridden by Bukkit, BungeeCord and Fabric
     }
 
@@ -131,25 +195,66 @@ public interface TabList {
      * @param   viewer
      *          Viewer of the TabList with wrong entry.
      */
-    default void displayNameWrong(@NonNull String player, @NonNull TabPlayer viewer) {
+    protected void displayNameWrong(@NonNull String player, @NonNull TabPlayer viewer) {
         TAB.getInstance().debug("TabList entry of player " + player + " has a different display name " +
                 "for viewer " + viewer.getName() + " than expected, fixing.");
     }
 
-    /**
-     * Sets anti-override for tablist names flag.
-     *
-     * @param   value
-     *          Anti-override value
-     */
-    default void setAntiOverride(boolean value) {
-        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
+    private void setExpectedDisplayName(@NonNull UUID entry, @Nullable Comp displayName) {
+        if (!antiOverride) return;
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(entry);
+        if (player != null) expectedDisplayNames.put(player, displayName);
+
+        if (redisSupport != null) {
+            RedisPlayer redisPlayer = redisSupport.getRedisPlayers().get(entry);
+            if (redisPlayer != null) expectedRedisDisplayNames.put(redisPlayer, displayName);
+        }
     }
+
+    /**
+     * Returns expected display name for specified UUID. If nothing is found,
+     * {@code null} is returned.
+     *
+     * @param   id
+     *          UUID of tablist entry
+     * @return  Expected display name or {@code null}
+     */
+    @Nullable
+    public Comp getExpectedDisplayName(@NotNull UUID id) {
+        if (!antiOverride) return null;
+
+        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (player != null && expectedDisplayNames.containsKey(player)) {
+            return expectedDisplayNames.get(player);
+        }
+
+        if (redisSupport != null) {
+            RedisPlayer redisPlayer = redisSupport.getRedisPlayers().get(id);
+            if (redisPlayer != null && expectedRedisDisplayNames.containsKey(redisPlayer)) {
+                return expectedRedisDisplayNames.get(redisPlayer);
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    protected Comp getExpectedDisplayName(@NonNull TabPlayer player) {
+        return expectedDisplayNames.get(player);
+    }
+
+    /**
+     * Converts TAB component into platform's component.
+     *
+     * @param   component
+     *          Component to convert
+     * @return  Converted component
+     */
+    public abstract Comp toComponent(@NonNull TabComponent component);
 
     /**
      * TabList action.
      */
-    enum Action {
+    public enum Action {
 
         /** Adds player into the TabList */
         ADD_PLAYER,
@@ -172,7 +277,7 @@ public interface TabList {
      */
     @Data
     @AllArgsConstructor
-    class Entry {
+    public static class Entry {
 
         /** Player UUID */
         @NonNull private UUID uniqueId;
@@ -249,7 +354,7 @@ public interface TabList {
      * Class representing a minecraft skin as a value - signature pair.
      */
     @Data @AllArgsConstructor
-    class Skin {
+    public static class Skin {
 
         /** Skin value */
         @NonNull private final String value;

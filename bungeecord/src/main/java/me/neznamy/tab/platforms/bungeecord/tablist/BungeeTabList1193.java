@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import me.neznamy.tab.shared.chat.TabComponent;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
@@ -18,7 +18,7 @@ import java.util.UUID;
 public class BungeeTabList1193 extends BungeeTabList {
 
     /**
-     * Constructs new instance with given parameters.
+     * Constructs new instance with given parameter.
      *
      * @param   player
      *          Player this tablist will belong to
@@ -36,10 +36,9 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable BaseComponent displayName) {
         Item item = item(entry);
-        if (displayName != null) item.setDisplayName(player.getPlatform().toComponent(displayName, player.getVersion()));
-        setExpectedDisplayName(entry, item.getDisplayName());
+        item.setDisplayName(displayName);
         sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME), item);
     }
 
@@ -58,9 +57,9 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
-        addUuid(entry.getUniqueId());
-        sendPacket(EnumSet.allOf(PlayerListItemUpdate.Action.class), entryToItem(entry));
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable BaseComponent displayName) {
+        addUuid(id);
+        sendPacket(EnumSet.allOf(PlayerListItemUpdate.Action.class), entryToItem(id, name, skin, latency, gameMode, displayName));
     }
 
     private void sendPacket(@NonNull EnumSet<PlayerListItemUpdate.Action> actions, @NonNull Item item) {

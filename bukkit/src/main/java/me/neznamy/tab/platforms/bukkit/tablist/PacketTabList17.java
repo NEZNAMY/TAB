@@ -20,7 +20,7 @@ import java.util.UUID;
 /**
  * TabList handler for 1.7- servers using packets.
  */
-public class PacketTabList17 extends TabListBase {
+public class PacketTabList17 extends TabListBase<String> {
 
     private static TriFunctionWithException<String, Boolean, Integer, Object> newPacket;
     private static PacketSender packetSender;
@@ -82,10 +82,10 @@ public class PacketTabList17 extends TabListBase {
 
     @Override
     @SneakyThrows
-    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable String displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), false, 0));
-        addEntry(new Entry(entry, userNames.get(entry), null, 0, 0, displayName));
+        addEntry0(entry, userNames.get(entry), null, 0, 0, displayName);
     }
 
     @Override
@@ -102,11 +102,17 @@ public class PacketTabList17 extends TabListBase {
 
     @Override
     @SneakyThrows
-    public void addEntry(@NonNull Entry entry) {
-        String name = entry.getDisplayName() == null ? entry.getName() : entry.getDisplayName().toLegacyText();
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable String displayName) {
+        String display = displayName == null ? name : displayName;
+        packetSender.sendPacket(player.getPlayer(), newPacket.apply(display, true, latency));
+        userNames.put(id, name);
+        displayNames.put(id, display);
+    }
+
+    @Override
+    public String toComponent(@NonNull TabComponent component) {
+        String name = component.toLegacyText();
         if (name.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7) name = name.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
-        packetSender.sendPacket(player.getPlayer(), newPacket.apply(name, true, entry.getLatency()));
-        userNames.put(entry.getUniqueId(), entry.getName());
-        displayNames.put(entry.getUniqueId(), name);
+        return name;
     }
 }

@@ -132,10 +132,8 @@ public class Loader_1_14_4 {
                 Field displayNameField = ReflectionUtils.getFields(PlayerUpdate.class, Component.class).get(0);
                 Field latencyField = ReflectionUtils.getFields(PlayerUpdate.class, int.class).get(0);
                 if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
-                    if (((FabricTabPlayer)receiver).getTabList().isAntiOverride()) {
-                        Object expectedName = ((FabricTabPlayer)receiver).getTabList().getExpectedDisplayName(profile.getId());
-                        if (expectedName != null) displayNameField.set(nmsData, expectedName);
-                    }
+                    Object expectedName = ((FabricTabPlayer)receiver).getTabList().getExpectedDisplayName(profile.getId());
+                    if (expectedName != null) displayNameField.set(nmsData, expectedName);
                 }
                 if (action.name().equals(TabList.Action.UPDATE_LATENCY.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
                     latencyField.set(nmsData, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latencyField.getInt(nmsData)));

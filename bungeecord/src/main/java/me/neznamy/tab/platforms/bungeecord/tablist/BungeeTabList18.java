@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import me.neznamy.tab.shared.chat.TabComponent;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class BungeeTabList18 extends BungeeTabList {
 
     /**
-     * Constructs new instance with given parameters.
+     * Constructs new instance with given parameter.
      *
      * @param   player
      *          Player this tablist will belong to
@@ -32,10 +32,9 @@ public class BungeeTabList18 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable BaseComponent displayName) {
         Item item = item(entry);
-        if (displayName != null) item.setDisplayName(player.getPlatform().toComponent(displayName, player.getVersion()));
-        setExpectedDisplayName(entry, item.getDisplayName());
+        item.setDisplayName(displayName);
         sendPacket(PlayerListItem.Action.UPDATE_DISPLAY_NAME, item);
     }
 
@@ -54,14 +53,9 @@ public class BungeeTabList18 extends BungeeTabList {
     }
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
-        addUuid(entry.getUniqueId());
-        sendPacket(PlayerListItem.Action.ADD_PLAYER, entryToItem(entry));
-
-        if (player.getVersion().getMinorVersion() == 8) {
-            // Compensation for 1.8.0 client sided bug
-            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
-        }
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable BaseComponent displayName) {
+        addUuid(id);
+        sendPacket(PlayerListItem.Action.ADD_PLAYER, entryToItem(id, name, skin, latency, gameMode, displayName));
     }
 
     private void sendPacket(@NonNull PlayerListItem.Action action, @NonNull Item item) {

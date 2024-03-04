@@ -1,13 +1,13 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
@@ -15,28 +15,27 @@ import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 /**
  * TabList implementation for Sponge 8 and up
  */
-@RequiredArgsConstructor
-public class SpongeTabList implements TabList {
+public class SpongeTabList extends TabList<SpongeTabPlayer, Component> {
 
     /** Gamemode array for fast access */
     private static final GameMode[] gameModes = {
             GameModes.SURVIVAL.get(), GameModes.CREATIVE.get(), GameModes.ADVENTURE.get(), GameModes.SPECTATOR.get()
     };
 
-    /** Player this TabList belongs to */
-    @NonNull
-    private final SpongeTabPlayer player;
-
-    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabPlayer, Component> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+    /**
+     * Constructs new instance.
+     *
+     * @param   player
+     *          Player this tablist will belong to
+     */
+    public SpongeTabList(@NotNull SpongeTabPlayer player) {
+        super(player);
+    }
 
     @Override
     public void removeEntry(@NonNull UUID entry) {
@@ -44,12 +43,8 @@ public class SpongeTabList implements TabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        player.getPlayer().tabList().entry(entry).ifPresent(e -> {
-            Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
-            e.setDisplayName(component);
-            setExpectedDisplayName(entry, component);
-        });
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable Component displayName) {
+        player.getPlayer().tabList().entry(entry).ifPresent(e -> e.setDisplayName(displayName));
     }
 
     @Override
@@ -63,33 +58,23 @@ public class SpongeTabList implements TabList {
     }
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
-        Component displayName = entry.getDisplayName() == null ? null : AdventureHook.toAdventureComponent(entry.getDisplayName(), player.getVersion());
-        GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
-        if (entry.getSkin() != null) profile = profile.withProperty(ProfileProperty.of(
-                TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable Component displayName) {
+        GameProfile profile = GameProfile.of(id, name);
+        if (skin != null) profile = profile.withProperty(ProfileProperty.of(
+                TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
         TabListEntry tabListEntry = TabListEntry.builder()
                 .list(player.getPlayer().tabList())
                 .profile(profile)
-                .latency(entry.getLatency())
-                .gameMode(gameModes[entry.getGameMode()])
+                .latency(latency)
+                .gameMode(gameModes[gameMode])
                 .displayName(displayName)
                 .build();
         player.getPlayer().tabList().addEntry(tabListEntry);
-        setExpectedDisplayName(entry.getUniqueId(), displayName);
-
-        if (player.getVersion().getMinorVersion() == 8) {
-            // Compensation for 1.8.0 client sided bug
-            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
-        }
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.getPlayer().tabList().setHeaderAndFooter(
-                AdventureHook.toAdventureComponent(header, player.getVersion()),
-                AdventureHook.toAdventureComponent(footer, player.getVersion())
-        );
+        player.getPlayer().tabList().setHeaderAndFooter(toComponent(header), toComponent(footer));
     }
 
     @Override
@@ -101,7 +86,7 @@ public class SpongeTabList implements TabList {
     public void checkDisplayNames() {
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             player.getPlayer().tabList().entry(target.getUniqueId()).ifPresent(entry -> {
-                Component expectedComponent = expectedDisplayNames.get(target);
+                Component expectedComponent = getExpectedDisplayName(target);
                 if (expectedComponent != null && entry.displayName().orElse(null) != expectedComponent) {
                     displayNameWrong(target.getName(), player);
                     entry.setDisplayName(expectedComponent);
@@ -110,8 +95,8 @@ public class SpongeTabList implements TabList {
         }
     }
 
-    private void setExpectedDisplayName(@NonNull UUID entry, @Nullable Component displayName) {
-        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(entry);
-        if (player != null) expectedDisplayNames.put(player, displayName);
+    @Override
+    public Component toComponent(@NonNull TabComponent component) {
+        return AdventureHook.toAdventureComponent(component, player.getVersion());
     }
 }

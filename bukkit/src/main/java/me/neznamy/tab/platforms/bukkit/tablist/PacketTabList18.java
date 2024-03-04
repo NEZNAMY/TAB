@@ -13,9 +13,7 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -27,7 +25,7 @@ import java.util.*;
  */
 @Setter
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class PacketTabList18 extends TabListBase {
+public class PacketTabList18 extends TabListBase<Object> {
 
     protected static Class<?> PlayerInfoClass;
     protected static Constructor<?> newPlayerInfo;
@@ -44,11 +42,6 @@ public class PacketTabList18 extends TabListBase {
 
     protected static PacketSender packetSender;
     protected static ComponentConverter componentConverter;
-
-    protected boolean antiOverride;
-
-    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabPlayer, Object> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Constructs new instance with given player.
@@ -118,50 +111,66 @@ public class PacketTabList18 extends TabListBase {
 
     @Override
     public void removeEntry(@NonNull UUID entry) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.REMOVE_PLAYER, new Entry(entry)));
+        packetSender.sendPacket(player.getPlayer(),
+                createPacket(Action.REMOVE_PLAYER, entry, "", null, 0, 0, null));
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_DISPLAY_NAME, Entry.displayName(entry, displayName)));
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable Object displayName) {
+        packetSender.sendPacket(player.getPlayer(),
+                createPacket(Action.UPDATE_DISPLAY_NAME, entry, "", null, 0, 0, displayName));
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_LATENCY, Entry.latency(entry, latency)));
+        packetSender.sendPacket(player.getPlayer(),
+                createPacket(Action.UPDATE_LATENCY, entry, "", null, latency, 0, null));
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.UPDATE_GAME_MODE, Entry.gameMode(entry, gameMode)));
+        packetSender.sendPacket(player.getPlayer(),
+                createPacket(Action.UPDATE_GAME_MODE, entry, "", null, 0, gameMode, null));
     }
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
-        packetSender.sendPacket(player.getPlayer(), createPacket(Action.ADD_PLAYER, entry));
-
-        if (player.getVersion().getMinorVersion() == 8) {
-            // Compensation for 1.8.0 client sided bug
-            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
-        }
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable Object displayName) {
+        packetSender.sendPacket(player.getPlayer(),
+                createPacket(Action.ADD_PLAYER, id, name, skin, latency, gameMode, displayName));
     }
 
+    /**
+     * Creates packet from given parameters.
+     *
+     * @param   action
+     *          Packet action
+     * @param   id
+     *          Entry UUID
+     * @param   name
+     *          Entry name
+     * @param   skin
+     *          Entry skin
+     * @param   latency
+     *          Entry latency
+     * @param   gameMode
+     *          Entry game mode
+     * @param   displayName
+     *          Entry display name
+     * @return  Packet from given parameters
+     */
     @SneakyThrows
     @NonNull
-    public Object createPacket(@NonNull Action action, @NonNull Entry entry) {
+    public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
+                               int latency, int gameMode, @Nullable Object displayName) {
         List<Object> players = new ArrayList<>();
         Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Collections.emptyList());
         List<Object> parameters = new ArrayList<>();
         if (newPlayerInfoData.getParameterTypes()[0] == PlayerInfoClass) {
             parameters.add(packet);
         }
-        parameters.add(createProfile(entry.getUniqueId(), entry.getName(), entry.getSkin()));
-        parameters.add(entry.getLatency());
-        parameters.add(gameModes[entry.getGameMode()]);
-        Object displayName = entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName());
-        if (action == Action.ADD_PLAYER || action == Action.UPDATE_DISPLAY_NAME) {
-            setExpectedDisplayName(entry.getUniqueId(), displayName);
-        }
+        parameters.add(createProfile(id, name, skin));
+        parameters.add(latency);
+        parameters.add(gameModes[gameMode]);
         parameters.add(displayName);
         if (BukkitReflection.getMinorVersion() >= 19) parameters.add(null);
         players.add(newPlayerInfoData.newInstance(parameters.toArray()));
@@ -169,20 +178,25 @@ public class PacketTabList18 extends TabListBase {
         return packet;
     }
 
-    /**
-     * Converts TAB component into NMS component.
-     *
-     * @param   component
-     *          Component to convert
-     * @return  Converted component
-     */
+    @Override
     public Object toComponent(@NonNull TabComponent component) {
         return componentConverter.convert(component, player.getVersion());
     }
 
+    /**
+     * Creates GameProfile from given parameters.
+     *
+     * @param   id
+     *          Profile ID
+     * @param   name
+     *          Profile name
+     * @param   skin
+     *          Player skin
+     * @return  GameProfile from given parameters
+     */
     @NonNull
-    public GameProfile createProfile(@NonNull UUID id, @Nullable String name, @Nullable Skin skin) {
-        GameProfile profile = new GameProfile(id, name == null ? "" : name);
+    public GameProfile createProfile(@NonNull UUID id, @NonNull String name, @Nullable Skin skin) {
+        GameProfile profile = new GameProfile(id, name);
         if (skin != null) {
             profile.getProperties().put(TabList.TEXTURES_PROPERTY,
                     new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
@@ -199,12 +213,8 @@ public class PacketTabList18 extends TabListBase {
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
             UUID id = profile.getId();
             if (action.equals(Action.UPDATE_DISPLAY_NAME.name()) || action.equals(Action.ADD_PLAYER.name())) {
-                if (antiOverride) {
-                    Object expectedName = getExpectedDisplayName(id);
-                    if (expectedName != null) {
-                        PlayerInfoData_DisplayName.set(nmsData, expectedName);
-                    }
-                }
+                Object expectedName = getExpectedDisplayName(id);
+                if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName);
             }
             if (action.equals(Action.UPDATE_LATENCY.name()) || action.equals(Action.ADD_PLAYER.name())) {
                 int latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, PlayerInfoData_Latency.getInt(nmsData));
@@ -214,20 +224,5 @@ public class PacketTabList18 extends TabListBase {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
             }
         }
-    }
-
-    @Nullable
-    protected Object getExpectedDisplayName(@NotNull UUID id) {
-        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
-        if (player != null && expectedDisplayNames.containsKey(player)) {
-            return expectedDisplayNames.get(player);
-        }
-        return null;
-    }
-
-    protected void setExpectedDisplayName(@NotNull UUID id, @Nullable Object displayName) {
-        if (!antiOverride) return;
-        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
-        if (player != null) expectedDisplayNames.put(player, displayName);
     }
 }

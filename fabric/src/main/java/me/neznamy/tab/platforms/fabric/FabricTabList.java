@@ -3,94 +3,69 @@ package me.neznamy.tab.platforms.fabric;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.*;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 /**
  * TabList implementation for Fabric using packets.
  */
-@RequiredArgsConstructor
-public class FabricTabList implements TabList {
+public class FabricTabList extends TabList<FabricTabPlayer, Component> {
 
-    /** Player this tablist belongs to */
-    @NonNull
-    private final FabricTabPlayer player;
-
-    @Setter
-    @Getter
-    protected boolean antiOverride;
-
-    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabPlayer, Component> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
-
-    @Override
-    @SneakyThrows
-    public void removeEntry(@NonNull UUID entry) {
-        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME, new Builder(entry)));
+    /**
+     * Constructs new instance.
+     *
+     * @param   player
+     *          Player this tablist will belong to
+     */
+    public FabricTabList(@NotNull FabricTabPlayer player) {
+        super(player);
     }
 
     @Override
     @SneakyThrows
-    public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        Component component = displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion());
-        setExpectedDisplayName(entry, component);
+    public void removeEntry(@NonNull UUID entry) {
+        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.REMOVE_PLAYER,
+                new Builder(entry, "", null, 0, 0, null)));
+    }
+
+    @Override
+    @SneakyThrows
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable Component displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME,
-                new Builder(entry).setDisplayName(component)
-        ));
+                new Builder(entry, "", null, 0, 0, displayName)));
     }
 
     @Override
     @SneakyThrows
     public void updateLatency(@NonNull UUID entry, int latency) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_LATENCY,
-                new Builder(entry).setLatency(latency)));
+                new Builder(entry, "", null, latency, 0, null)));
     }
 
     @Override
     @SneakyThrows
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_GAME_MODE,
-                new Builder(entry).setGameMode(gameMode)));
+                new Builder(entry, "", null, 0, gameMode, null)));
     }
 
     @Override
     @SneakyThrows
-    public void addEntry(@NonNull Entry entry) {
-        Component displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
-        setExpectedDisplayName(entry.getUniqueId(), displayName);
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable Component displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.ADD_PLAYER,
-                new Builder(entry.getUniqueId())
-                .setName(entry.getName())
-                .setSkin(entry.getSkin())
-                .setGameMode(entry.getGameMode())
-                .setLatency(entry.getLatency())
-                .setDisplayName(displayName)
-        ));
-
-        if (player.getVersion().getMinorVersion() == 8) {
-            // Compensation for 1.8.0 client sided bug
-            updateDisplayName(entry.getUniqueId(), entry.getDisplayName());
-        }
+                new Builder(id, name, skin, latency, gameMode, displayName)));
     }
 
     @Override
     @SneakyThrows
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.sendPacket(FabricMultiVersion.newHeaderFooter.apply(
-                player.getPlatform().toComponent(header, player.getVersion()),
-                player.getPlatform().toComponent(footer, player.getVersion())
-        ));
+        player.sendPacket(FabricMultiVersion.newHeaderFooter.apply(toComponent(header), toComponent(footer)));
     }
 
     @Override
@@ -106,99 +81,24 @@ public class FabricTabList implements TabList {
         }
     }
 
-    @Nullable
-    public Component getExpectedDisplayName(@NotNull UUID id) {
-        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
-        if (player != null && expectedDisplayNames.containsKey(player)) {
-            return expectedDisplayNames.get(player);
-        }
-        return null;
-    }
-
-    public void setExpectedDisplayName(@NotNull UUID id, @Nullable Component displayName) {
-        if (!antiOverride) return;
-        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
-        if (player != null) expectedDisplayNames.put(player, displayName);
+    @Override
+    public Component toComponent(@NonNull TabComponent component) {
+        return player.getPlatform().toComponent(component, player.getVersion());
     }
 
     /**
      * TabList entry builder.
      */
-    @RequiredArgsConstructor
+    @AllArgsConstructor
     @Getter
     public static class Builder {
 
         @NonNull private final UUID id;
-        @NonNull private String name = ""; // Avoid nullability issues as things are changing over versions
+        @NonNull private String name;
         @Nullable private Skin skin;
         private int latency;
         private int gameMode;
         @Nullable private Component displayName;
-
-        /**
-         * Sets entry name.
-         *
-         * @param   name
-         *          Name to use
-         * @return  this
-         */
-        @NonNull
-        public Builder setName(@NonNull String name) {
-            this.name = name;
-            return this;
-        }
-
-        /**
-         * Sets entry skin.
-         *
-         * @param   skin
-         *          Skin to use
-         * @return  this
-         */
-        @NonNull
-        public Builder setSkin(@Nullable Skin skin) {
-            this.skin = skin;
-            return this;
-        }
-
-        /**
-         * Sets entry latency.
-         *
-         * @param   latency
-         *          Latency to use
-         * @return  this
-         */
-        @NonNull
-        public Builder setLatency(int latency) {
-            this.latency = latency;
-            return this;
-        }
-
-        /**
-         * Sets entry gamemode.
-         *
-         * @param   gameMode
-         *          gamemode to use
-         * @return  this
-         */
-        @NonNull
-        public Builder setGameMode(int gameMode) {
-            this.gameMode = gameMode;
-            return this;
-        }
-
-        /**
-         * Sets entry display name.
-         *
-         * @param   displayName
-         *          Display name to use
-         * @return  this
-         */
-        @NonNull
-        public Builder setDisplayName(@Nullable Component displayName) {
-            this.displayName = displayName;
-            return this;
-        }
 
         /**
          * Creates profile of this entry.
