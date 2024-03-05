@@ -8,14 +8,23 @@ import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * TabList handler for 1.19.3+ players using the new tab list packets.
  * Because BungeeCord does not have a TabList API, we need to use packets.
  */
 public class BungeeTabList1193 extends BungeeTabList {
+
+    /** Map of actions to prevent creating new EnumSet on each packet send */
+    private static final Map<Action, EnumSet<PlayerListItemUpdate.Action>> actions = new EnumMap<>(Action.class);
+
+    static {
+        actions.put(Action.ADD_PLAYER, EnumSet.allOf(PlayerListItemUpdate.Action.class));
+        actions.put(Action.UPDATE_GAME_MODE, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE));
+        actions.put(Action.UPDATE_DISPLAY_NAME, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME));
+        actions.put(Action.UPDATE_LATENCY, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY));
+    }
 
     /**
      * Constructs new instance with given parameter.
@@ -39,32 +48,32 @@ public class BungeeTabList1193 extends BungeeTabList {
     public void updateDisplayName0(@NonNull UUID entry, @Nullable BaseComponent displayName) {
         Item item = item(entry);
         item.setDisplayName(displayName);
-        sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME), item);
+        sendPacket(Action.UPDATE_DISPLAY_NAME, item);
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
         Item item = item(entry);
         item.setPing(latency);
-        sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY), item);
+        sendPacket(Action.UPDATE_LATENCY, item);
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
         Item item = item(entry);
         item.setGamemode(gameMode);
-        sendPacket(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE), item);
+        sendPacket(Action.UPDATE_GAME_MODE, item);
     }
 
     @Override
     public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable BaseComponent displayName) {
         addUuid(id);
-        sendPacket(EnumSet.allOf(PlayerListItemUpdate.Action.class), entryToItem(id, name, skin, latency, gameMode, displayName));
+        sendPacket(Action.ADD_PLAYER, entryToItem(id, name, skin, latency, gameMode, displayName));
     }
 
-    private void sendPacket(@NonNull EnumSet<PlayerListItemUpdate.Action> actions, @NonNull Item item) {
+    private void sendPacket(@NonNull Action action, @NonNull Item item) {
         PlayerListItemUpdate packet = new PlayerListItemUpdate();
-        packet.setActions(actions);
+        packet.setActions(actions.get(action));
         packet.setItems(new Item[]{item});
         player.sendPacket(packet);
     }

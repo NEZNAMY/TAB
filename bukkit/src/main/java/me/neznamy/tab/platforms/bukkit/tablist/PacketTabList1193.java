@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PacketTabList1193 extends PacketTabList18 {
 
+    /** Map of actions to prevent creating new EnumSet on each packet send */
+    private static final Map<Action, EnumSet<?>> actions = new EnumMap<>(Action.class);
+
     private static Constructor<?> newRemovePacket;
 
     private static Field PlayerInfoData_UUID;
@@ -67,6 +70,11 @@ public class PacketTabList1193 extends PacketTabList18 {
         PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
         PlayerInfoData_UUID = ReflectionUtils.getOnlyField(playerInfoDataClass, UUID.class);
         newRemovePacket = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoRemovePacket").getConstructor(List.class);
+
+        actions.put(Action.ADD_PLAYER, EnumSet.allOf(ActionClass));
+        actions.put(Action.UPDATE_GAME_MODE, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_GAME_MODE.name())));
+        actions.put(Action.UPDATE_DISPLAY_NAME, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_DISPLAY_NAME.name())));
+        actions.put(Action.UPDATE_LATENCY, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_LATENCY.name())));
     }
 
     @Override
@@ -80,15 +88,8 @@ public class PacketTabList1193 extends PacketTabList18 {
     @Override
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                                int latency, int gameMode, @Nullable Object displayName) {
-        List<Object> players = new ArrayList<>();
-        EnumSet<?> actions;
-        if (action == Action.ADD_PLAYER) {
-            actions = EnumSet.allOf(ActionClass);
-        } else {
-            actions = EnumSet.of(Enum.valueOf(ActionClass, action.name()));
-        }
-        Object packet = newPlayerInfo.newInstance(actions, Collections.emptyList());
-        players.add(newPlayerInfoData.newInstance(
+        Object packet = newPlayerInfo.newInstance(actions.get(action), Collections.emptyList());
+        PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(
                 id,
                 createProfile(id, name, skin),
                 true,
@@ -96,8 +97,7 @@ public class PacketTabList1193 extends PacketTabList18 {
                 gameModes[gameMode],
                 displayName,
                 null
-        ));
-        PLAYERS.set(packet, players);
+        )));
         return packet;
     }
 

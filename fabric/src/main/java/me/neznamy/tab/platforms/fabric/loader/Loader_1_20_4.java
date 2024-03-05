@@ -102,14 +102,12 @@ public class Loader_1_20_4 {
                         new SynchedEntityData.DataValue<>(EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion()), EntityDataSerializers.BYTE, EntityData.MARKER_FLAG)
                 );
             };
+            Map<TabList.Action, EnumSet<ClientboundPlayerInfoUpdatePacket.Action>> actionMap = Register1_19_3.createActionMap();
             FabricMultiVersion.buildTabListPacket = (action, entry) -> {
                 if (action == TabList.Action.REMOVE_PLAYER) {
                     return new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry.getId()));
                 }
-                EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = action == TabList.Action.ADD_PLAYER ?
-                        EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class) :
-                        Register1_19_3.convertAction(action);
-                ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
+                ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actionMap.get(action), Collections.emptyList());
                 ReflectionUtils.getFields(ClientboundPlayerInfoUpdatePacket.class, List.class).get(0).set(packet,
                         Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
                                 entry.getId(),
@@ -216,6 +214,15 @@ public class Loader_1_20_4 {
 
         public static EnumSet<ClientboundPlayerInfoUpdatePacket.Action> convertAction(TabList.Action action) {
             return EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.valueOf(action.name()));
+        }
+
+        public static Map<TabList.Action, EnumSet<ClientboundPlayerInfoUpdatePacket.Action>> createActionMap() {
+            Map<TabList.Action, EnumSet<ClientboundPlayerInfoUpdatePacket.Action>> actions = new EnumMap<>(TabList.Action.class);
+            actions.put(TabList.Action.ADD_PLAYER, EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class));
+            actions.put(TabList.Action.UPDATE_GAME_MODE, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE));
+            actions.put(TabList.Action.UPDATE_DISPLAY_NAME, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME));
+            actions.put(TabList.Action.UPDATE_LATENCY, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY));
+            return actions;
         }
     }
 }
