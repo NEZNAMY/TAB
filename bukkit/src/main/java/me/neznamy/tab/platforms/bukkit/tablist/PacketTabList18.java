@@ -162,7 +162,6 @@ public class PacketTabList18 extends TabListBase<Object> {
     @NonNull
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                                int latency, int gameMode, @Nullable Object displayName) {
-        List<Object> players = new ArrayList<>();
         Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Collections.emptyList());
         List<Object> parameters = new ArrayList<>();
         if (newPlayerInfoData.getParameterTypes()[0] == PlayerInfoClass) {
@@ -173,8 +172,7 @@ public class PacketTabList18 extends TabListBase<Object> {
         parameters.add(gameModes[gameMode]);
         parameters.add(displayName);
         if (BukkitReflection.getMinorVersion() >= 19) parameters.add(null);
-        players.add(newPlayerInfoData.newInstance(parameters.toArray()));
-        PLAYERS.set(packet, players);
+        PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(parameters.toArray())));
         return packet;
     }
 
