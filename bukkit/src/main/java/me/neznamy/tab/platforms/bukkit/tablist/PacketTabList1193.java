@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * TabList handler for 1.19.3+ servers using packets.
@@ -21,7 +20,11 @@ import java.util.stream.Collectors;
 public class PacketTabList1193 extends PacketTabList18 {
 
     /** Map of actions to prevent creating new EnumSet on each packet send */
-    private static final Map<Action, EnumSet<?>> actions = new EnumMap<>(Action.class);
+    private static final Map<Action, EnumSet<?>> actionToEnumSet = new EnumMap<>(Action.class);
+
+    private static Enum actionAddPlayer;
+    private static Enum actionUpdateDisplayName;
+    private static Enum actionUpdateLatency;
 
     private static Constructor<?> newRemovePacket;
 
@@ -71,10 +74,15 @@ public class PacketTabList1193 extends PacketTabList18 {
         PlayerInfoData_UUID = ReflectionUtils.getOnlyField(playerInfoDataClass, UUID.class);
         newRemovePacket = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoRemovePacket").getConstructor(List.class);
 
-        actions.put(Action.ADD_PLAYER, EnumSet.allOf(ActionClass));
-        actions.put(Action.UPDATE_GAME_MODE, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_GAME_MODE.name())));
-        actions.put(Action.UPDATE_DISPLAY_NAME, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_DISPLAY_NAME.name())));
-        actions.put(Action.UPDATE_LATENCY, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_LATENCY.name())));
+        actionAddPlayer = Enum.valueOf(ActionClass, Action.ADD_PLAYER.name());
+        actionUpdateDisplayName = Enum.valueOf(ActionClass, Action.UPDATE_DISPLAY_NAME.name());
+        actionUpdateLatency = Enum.valueOf(ActionClass, Action.UPDATE_LATENCY.name());
+        Enum actionUpdateGameMode = Enum.valueOf(ActionClass, Action.UPDATE_GAME_MODE.name());
+
+        actionToEnumSet.put(Action.ADD_PLAYER, EnumSet.allOf(ActionClass));
+        actionToEnumSet.put(Action.UPDATE_GAME_MODE, EnumSet.of(actionUpdateGameMode));
+        actionToEnumSet.put(Action.UPDATE_DISPLAY_NAME, EnumSet.of(actionUpdateDisplayName));
+        actionToEnumSet.put(Action.UPDATE_LATENCY, EnumSet.of(actionUpdateLatency));
     }
 
     @Override
@@ -88,7 +96,7 @@ public class PacketTabList1193 extends PacketTabList18 {
     @Override
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                                int latency, int gameMode, @Nullable Object displayName) {
-        Object packet = newPlayerInfo.newInstance(actions.get(action), Collections.emptyList());
+        Object packet = newPlayerInfo.newInstance(actionToEnumSet.get(action), Collections.emptyList());
         PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(
                 id,
                 createProfile(id, name, skin),
@@ -105,33 +113,42 @@ public class PacketTabList1193 extends PacketTabList18 {
     @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
         if (!(PlayerInfoClass.isInstance(packet))) return;
-        List<String> actions = ((EnumSet<?>)ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
+        EnumSet<?> actions = (EnumSet<?>) ACTION.get(packet);
         List<Object> updatedList = new ArrayList<>();
+        boolean rewritePacket = false;
         for (Object nmsData : (List<?>) PLAYERS.get(packet)) {
+            boolean rewriteEntry = false;
             UUID id = (UUID) PlayerInfoData_UUID.get(nmsData);
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
             Object displayName = PlayerInfoData_DisplayName.get(nmsData);
             int latency = PlayerInfoData_Latency.getInt(nmsData);
-            if (actions.contains(Action.UPDATE_DISPLAY_NAME.name())) {
+            if (actions.contains(actionUpdateDisplayName)) {
                 Object expectedName = getExpectedDisplayName(id);
-                if (expectedName != null) displayName = expectedName;
+                if (expectedName != null && expectedName != displayName) {
+                    displayName = expectedName;
+                    rewriteEntry = rewritePacket = true;
+                }
             }
-            if (actions.contains(Action.UPDATE_LATENCY.name())) {
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, latency);
+            if (actions.contains(actionUpdateLatency)) {
+                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, latency);
+                if (newLatency != latency) {
+                    latency = newLatency;
+                    rewriteEntry = rewritePacket = true;
+                }
             }
-            if (actions.contains(Action.ADD_PLAYER.name())) {
+            if (actions.contains(actionAddPlayer)) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
             }
             // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
-            updatedList.add(newPlayerInfoData.newInstance(
+            updatedList.add(rewriteEntry ? newPlayerInfoData.newInstance(
                     id,
                     profile,
                     PlayerInfoData_Listed.getBoolean(nmsData),
                     latency,
                     PlayerInfoData_GameMode.get(nmsData),
                     displayName,
-                    PlayerInfoData_RemoteChatSession.get(nmsData)));
+                    PlayerInfoData_RemoteChatSession.get(nmsData)) : nmsData);
         }
-        PLAYERS.set(packet, updatedList);
+        if (rewritePacket) PLAYERS.set(packet, updatedList);
     }
 }
