@@ -36,7 +36,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     private final Scoreboard<BukkitTabPlayer> scoreboard = ScoreboardLoader.getInstance().apply(this);
 
     @NotNull
-    private final TabListBase tabList = TabListBase.getInstance().apply(this);
+    private final TabListBase<?> tabList = TabListBase.getInstance().apply(this);
 
     @NotNull
     private final BossBar bossBar = BossBarLoader.findInstance(this);
@@ -104,7 +104,10 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean isVanished() {
-        return getPlayer().getMetadata("vanished").stream().anyMatch(MetadataValue::asBoolean);
+        for (MetadataValue v : getPlayer().getMetadata("vanished")) {
+            if (v.asBoolean()) return true;
+        }
+        return false;
     }
 
     @Override

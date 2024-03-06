@@ -130,10 +130,12 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         if (!disableChecker.isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
+            String teamName = sorting.getShortTeamName(disconnectedPlayer);
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
-                if (!TAB.getInstance().getPlatform().canSee(viewer, disconnectedPlayer)) continue;
-                viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(disconnectedPlayer));
+                if (viewer.getScoreboard().containsTeam(teamName)) {
+                    viewer.getScoreboard().unregisterTeam(teamName);
+                }
             }
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -233,7 +235,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
+        if (!viewer.getScoreboard().containsTeam(sorting.getShortTeamName(p))) return;
         boolean visible = getTeamVisibility(p, viewer);
         String prefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         viewer.getScoreboard().updateTeam(
@@ -250,8 +252,9 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) continue;
-            viewer.getScoreboard().unregisterTeam(teamName);
+            if (viewer.getScoreboard().containsTeam(teamName)) {
+                viewer.getScoreboard().unregisterTeam(teamName);
+            }
         }
     }
 

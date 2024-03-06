@@ -366,6 +366,18 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     /**
+     * Returns {@code true} if this scoreboard contains team with specified name,
+     * {@code false} if not.
+     *
+     * @param   teamName
+     *          Name of team to check
+     * @return  {@code true} if scoreboard contains the team, {@code false} if not
+     */
+    public boolean containsTeam(@NonNull String teamName) {
+        return registeredTeams.contains(teamName);
+    }
+
+    /**
      * Returns player by given nickname.
      *
      * @param   name
