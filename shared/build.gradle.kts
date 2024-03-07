@@ -20,6 +20,7 @@ dependencies {
     compileOnlyApi("org.geysermc.floodgate:api:2.2.0-SNAPSHOT")
     compileOnlyApi("net.kyori:adventure-api:4.13.0")
     compileOnlyApi("net.kyori:adventure-text-serializer-legacy:4.13.0")
+    compileOnlyApi("net.kyori:adventure-text-serializer-gson:4.13.0")
     compileOnlyApi("net.kyori:adventure-text-minimessage:4.13.0")
 }
 

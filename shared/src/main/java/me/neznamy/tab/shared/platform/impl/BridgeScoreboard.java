@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.platform.impl;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetDisplayObjective;
@@ -37,7 +38,7 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.REGISTER, title, display,
-                numberFormat == null ? null : numberFormat.toString(player.getVersion())));
+                numberFormat == null ? null : AdventureHook.serialize(AdventureHook.toAdventureComponent(numberFormat, player.getVersion()))));
     }
 
     @Override
@@ -49,7 +50,7 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                  @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.UPDATE, title, display,
-                numberFormat == null ? null : numberFormat.toString(player.getVersion())));
+                numberFormat == null ? null : AdventureHook.serialize(AdventureHook.toAdventureComponent(numberFormat, player.getVersion()))));
     }
 
     @Override
@@ -78,8 +79,8 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetScore(
                 objective, ScoreAction.CHANGE, scoreHolder, score,
-                displayName == null ? null : displayName.toString(player.getVersion()),
-                numberFormat == null ? null : numberFormat.toString(player.getVersion())
+                displayName == null ? null : AdventureHook.serialize(AdventureHook.toAdventureComponent(displayName, player.getVersion())),
+                numberFormat == null ? null : AdventureHook.serialize(AdventureHook.toAdventureComponent(numberFormat, player.getVersion()))
         ));
     }
 

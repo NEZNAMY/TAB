@@ -10,6 +10,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,8 +22,12 @@ import java.util.*;
 public class AdventureHook {
 
     /** Component cache for adventure components */
-    private static final ComponentCache<TabComponent, Component> cache =
-            new ComponentCache<>(1000, AdventureHook::toAdventureComponent0);
+    private static final ComponentCache<TabComponent, Component> cache = new ComponentCache<>(1000,
+            AdventureHook::toAdventureComponent0);
+
+    /** Component to string cache for better performance */
+    private static final ComponentCache<Component, String> componentToString = new ComponentCache<>(1000,
+            (component, version) -> GsonComponentSerializer.gson().serialize(component));
 
     /**
      * Converts component to adventure component
@@ -36,6 +41,18 @@ public class AdventureHook {
     @NotNull
     public static Component toAdventureComponent(@NotNull TabComponent component, @NotNull ProtocolVersion clientVersion) {
         return cache.get(component, clientVersion);
+    }
+
+    /**
+     * Serializes component using Adventure API.
+     *
+     * @param   component
+     *          Component to serialize
+     * @return  Serialized component to json
+     */
+    @NotNull
+    public static String serialize(@NotNull Component component) {
+        return componentToString.get(component, null);
     }
 
     /**
