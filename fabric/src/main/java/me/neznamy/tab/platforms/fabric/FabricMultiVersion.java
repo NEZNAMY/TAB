@@ -2,13 +2,16 @@ package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
+import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.*;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
@@ -19,6 +22,7 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -38,7 +42,6 @@ public class FabricMultiVersion {
     public static Function<ServerPlayer, Level> getLevel;
     public static Function<ServerPlayer, Integer> getPing;
     public static Function<MinecraftServer, Float> getMSPT;
-    public static FunctionWithException<String, Component> deserialize;
     public static Function<Packet<?>, Boolean> isBundlePacket = packet -> false;
     public static Function<Packet<?>, Iterable<Object>> getBundledPackets = packet -> Collections.emptyList();
     public static FunctionWithException<ServerPlayer, Channel> getChannel;
@@ -63,4 +66,9 @@ public class FabricMultiVersion {
     public static BiFunction<String, String, Packet<?>> removeScore;
     public static FunctionWithException<ClientboundSetDisplayObjectivePacket, Integer> getDisplaySlot;
     public static Function<Packet<?>, Boolean> isTeamPacket;
+
+    public static FunctionWithException<String, Component> newTextComponent;
+    public static BiFunctionWithException<ChatModifier, ProtocolVersion, Style> convertModifier;
+    public static BiConsumerWithException<Component, Component> addSibling;
+    public static Field Component_style;
 }

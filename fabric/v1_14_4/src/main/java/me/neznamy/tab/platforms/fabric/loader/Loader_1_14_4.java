@@ -12,8 +12,12 @@ import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket.PlayerUpdate;
@@ -85,9 +89,6 @@ public class Loader_1_14_4 {
                 new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, scoreHolder, score);
         FabricMultiVersion.removeScore = (objective, holder) ->
                 new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, holder, 0);
-        FabricMultiVersion.deserialize = string ->
-                // Return type changed in 1.16, cannot use directly
-                (Component) Component.Serializer.class.getMethod("method_10877", String.class).invoke(null, string);
         FabricMultiVersion.getChannel = player -> {
             Connection c = (Connection) ReflectionUtils.getFields(ServerGamePacketListenerImpl.class, Connection.class).get(0).get(player.connection);
             return (Channel) ReflectionUtils.getFields(Connection.class, Channel.class).get(0).get(c);
@@ -160,6 +161,23 @@ public class Loader_1_14_4 {
             };
         } else {
             FabricMultiVersion.destroyEntities = (player, entities) -> player.sendPacket(new ClientboundRemoveEntitiesPacket(entities));
+        }
+        FabricMultiVersion.newTextComponent = text -> new TextComponent(text);
+        FabricMultiVersion.convertModifier = (modifier, version) -> {
+            Style style = new Style();
+            if (modifier.getColor() != null) {
+                style.setColor(ChatFormatting.valueOf(modifier.getColor().getLegacyColor().name()));
+            }
+            if (modifier.isBold()) style.setBold(true);
+            if (modifier.isItalic()) style.setItalic(true);
+            if (modifier.isStrikethrough()) style.setStrikethrough(true);
+            if (modifier.isUnderlined()) style.setUnderlined(true);
+            if (modifier.isObfuscated()) style.setObfuscated(true);
+            return style;
+        };
+        FabricMultiVersion.addSibling = (parent, child) -> parent.append(child);
+        if (serverVersion.getMinorVersion() < 19) {
+            FabricMultiVersion.Component_style = ReflectionUtils.getOnlyField(BaseComponent.class, Style.class);
         }
     }
 

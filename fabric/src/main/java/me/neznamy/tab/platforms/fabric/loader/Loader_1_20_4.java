@@ -12,14 +12,14 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.numbers.FixedFormat;
 import net.minecraft.network.chat.numbers.NumberFormat;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.world.entity.Entity;
@@ -35,7 +35,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Method loader compiled using Minecraft 1.20.4.
@@ -55,6 +54,7 @@ public class Loader_1_20_4 {
      * @param   serverVersion
      *          Exact server version
      */
+    @SneakyThrows
     public Loader_1_20_4(@NotNull ProtocolVersion serverVersion) {
         if (serverVersion.getMinorVersion() >= 15) {
             FabricMultiVersion.isSneaking = Entity::isCrouching;
@@ -71,6 +71,32 @@ public class Loader_1_20_4 {
             // sendMessage on 1.16 - 1.18.2 using UUID sender
             FabricMultiVersion.sendMessage = (player, message) ->
                     player.getClass().getMethod("method_9203", Component.class, UUID.class).invoke(player, message, new UUID(0, 0));
+
+            Constructor<Style> newStyle = ReflectionUtils.setAccessible(Style.class.getDeclaredConstructor(TextColor.class, Boolean.class, Boolean.class, Boolean.class,
+                    Boolean.class, Boolean.class, ClickEvent.class, HoverEvent.class, String.class, ResourceLocation.class));
+            FabricMultiVersion.convertModifier = (modifier, version) -> {
+                TextColor color = null;
+                if (modifier.getColor() != null) {
+                    if (version.supportsRGB()) {
+                        color = TextColor.fromRgb(modifier.getColor().getRgb());
+                    } else {
+                        color = TextColor.fromRgb(modifier.getColor().getLegacyColor().getRgb());
+                    }
+                }
+                return newStyle.newInstance(
+                        color,
+                        modifier.isBold(),
+                        modifier.isItalic(),
+                        modifier.isUnderlined(),
+                        modifier.isStrikethrough(),
+                        modifier.isObfuscated(),
+                        null,
+                        null,
+                        null,
+                        modifier.getFont() == null ? null : new ResourceLocation(modifier.getFont())
+                );
+            };
+            FabricMultiVersion.addSibling = (parent, child) -> parent.getSiblings().add(child);
         }
         if (serverVersion.getMinorVersion() >= 17) {
             FabricMultiVersion.registerTeam = team -> ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);
@@ -90,6 +116,8 @@ public class Loader_1_20_4 {
             FabricMultiVersion.spawnEntity = (level, entityId, id, entityType, location) ->
                     new ClientboundAddEntityPacket(entityId, id, location.getX(), location.getY(), location.getZ(),
                             0, 0, (EntityType<?>) entityType, 0, Vec3.ZERO, 0);
+            FabricMultiVersion.newTextComponent = Component::literal;
+            FabricMultiVersion.Component_style = ReflectionUtils.getOnlyField(MutableComponent.class, Style.class);
         }
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
             FabricMultiVersion.newEntityMetadata = (entityId, data) ->  new ClientboundSetEntityDataPacket(entityId, (List<SynchedEntityData.DataValue<?>>) data.build());
@@ -172,9 +200,6 @@ public class Loader_1_20_4 {
             FabricMultiVersion.getMSPT = server -> (float) server.getAverageTickTimeNanos() / 1000000;
             FabricMultiVersion.removeScore = (objective, holder) -> new ClientboundResetScorePacket(holder, objective);
             Register1_20_3.register();
-        }
-        if (serverVersion.getNetworkId() >= 766) { // TODO 1.20.5 constant
-            FabricMultiVersion.deserialize = component -> Component.Serializer.fromJson(component, HolderLookup.Provider.create(Stream.empty()));
         }
     }
 

@@ -9,6 +9,8 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -142,7 +144,16 @@ public class FabricPlatform implements BackendPlatform {
      */
     @SneakyThrows
     public Component toComponent(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
-        return FabricMultiVersion.deserialize.apply(component.toString(version));
+        if (component instanceof SimpleComponent) return FabricMultiVersion.newTextComponent.apply(((SimpleComponent) component).getText());
+
+        StructuredComponent component1 = (StructuredComponent) component;
+        Component nmsComponent = FabricMultiVersion.newTextComponent.apply(component1.getText());
+
+        FabricMultiVersion.Component_style.set(nmsComponent, FabricMultiVersion.convertModifier.apply(component1.getModifier(), version));
+        for (StructuredComponent extra : component1.getExtra()) {
+            FabricMultiVersion.addSibling.accept(nmsComponent, toComponent(extra, version));
+        }
+        return nmsComponent;
     }
 
     @Override
