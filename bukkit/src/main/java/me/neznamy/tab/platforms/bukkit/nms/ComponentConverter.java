@@ -1,9 +1,13 @@
-package me.neznamy.tab.platforms.bukkit.nms.component;
+package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.SneakyThrows;
-import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.chat.*;
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.StructuredComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.util.BiFunctionWithException;
+import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -14,20 +18,21 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * Component converter using direct component conversion.
+ * Class for converting TAB component into NMS components (1.7+).
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
-public class DirectConverter {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class ComponentConverter {
+
+    /** Component cache for better performance */
+    private final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000, this::convert0);
 
     private final FunctionWithException<String, Object> newTextComponent;
+    private final BiFunctionWithException<ChatModifier, ProtocolVersion, Object> convertModifier;
 
     private final Class<?> ChatModifier = BukkitReflection.getClass("network.chat.ChatModifier", "ChatModifier");
     private final Class<Enum> EnumChatFormat = (Class<Enum>) BukkitReflection.getClass("EnumChatFormat");
-
     private final Constructor<?> newChatModifier;
-
     private final Method ChatBaseComponent_addSibling;
-
     private final Field Component_modifier;
     private final List<Field> magicCodes = ReflectionUtils.getFields(ChatModifier, Boolean.class);
 
@@ -44,7 +49,7 @@ public class DirectConverter {
      * @throws  ReflectiveOperationException
      *          If something failed
      */
-    public DirectConverter() throws ReflectiveOperationException {
+    public ComponentConverter() throws ReflectiveOperationException {
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.IChatBaseComponent", "IChatBaseComponent");
         if (BukkitReflection.getMinorVersion() >= 19) {
             Method IChatBaseComponent_b = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"b", "literal"}, String.class);
@@ -69,10 +74,25 @@ public class DirectConverter {
             ChatHexColor_fromRGB = ReflectionUtils.getOnlyMethod(chatHexColor, chatHexColor, int.class);
             newChatModifier = ReflectionUtils.setAccessible(ChatModifier.getDeclaredConstructor(chatHexColor, Boolean.class, Boolean.class, Boolean.class,
                     Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, MinecraftKey));
+            convertModifier = this::createModifierModern;
         } else {
             newChatModifier = ChatModifier.getConstructor();
             ChatModifier_setColor = ReflectionUtils.getOnlyMethod(ChatModifier, ChatModifier, EnumChatFormat);
+            convertModifier = (modifier, protocolVersion) -> createModifierLegacy(modifier);
         }
+    }
+
+    /**
+     * Converts TAB component to NMS component.
+     *
+     * @param   component
+     *          Component to convert
+     * @param   version
+     *          Client version to convert component for
+     * @return  Converted component
+     */
+    public Object convert(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
+        return componentCache.get(component, version);
     }
 
     /**
@@ -85,16 +105,12 @@ public class DirectConverter {
      * @return  Converted component
      */
     @SneakyThrows
-    public Object convert(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
+    private Object convert0(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
         if (component instanceof SimpleComponent) return newTextComponent.apply(((SimpleComponent) component).getText());
 
         StructuredComponent component1 = (StructuredComponent) component;
         Object nmsComponent = newTextComponent.apply(component1.getText());
-        if (BukkitReflection.getMinorVersion() >= 16) {
-            Component_modifier.set(nmsComponent, createModifierModern(component1.getModifier(), version));
-        } else {
-            Component_modifier.set(nmsComponent, createModifierLegacy(component1.getModifier()));
-        }
+        Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier(), version));
         for (StructuredComponent extra : component1.getExtra()) {
             ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra, version));
         }
@@ -102,7 +118,7 @@ public class DirectConverter {
     }
 
     @SneakyThrows
-    private Object createModifierModern(@NotNull ChatModifier modifier, @NotNull ProtocolVersion clientVersion) {
+    private Object createModifierModern(@NotNull me.neznamy.tab.shared.chat.ChatModifier modifier, @NotNull ProtocolVersion clientVersion) {
         Object color = null;
         if (modifier.getColor() != null) {
             if (clientVersion.supportsRGB()) {

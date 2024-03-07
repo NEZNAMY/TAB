@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.entity;
 
 import lombok.*;
-import me.neznamy.tab.platforms.bukkit.nms.component.ComponentConverter;
+import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;

@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.header;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.component.ComponentConverter;
+import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.BiFunctionWithException;
