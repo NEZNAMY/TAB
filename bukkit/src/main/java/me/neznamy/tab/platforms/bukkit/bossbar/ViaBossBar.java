@@ -36,7 +36,7 @@ public class ViaBossBar implements BossBar {
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         if (viaBossBars.containsKey(id)) return;
         com.viaversion.viaversion.api.legacy.bossbar.BossBar bar = Via.getAPI().legacyAPI().createLegacyBossBar(
-                TabComponent.optimized(title).toString(player.getVersion()),
+                TabComponent.optimized(title).toLegacyText(),
                 progress,
                 BossColor.valueOf(color.name()),
                 styles[style.ordinal()]
@@ -47,7 +47,7 @@ public class ViaBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
-        viaBossBars.get(id).setTitle(TabComponent.optimized(title).toString(player.getVersion()));
+        viaBossBars.get(id).setTitle(TabComponent.optimized(title).toLegacyText());
     }
 
     @Override
