@@ -3,11 +3,8 @@ package me.neznamy.tab.shared.chat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.util.ComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.simple.JSONObject;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,30 +13,22 @@ import java.util.stream.Collectors;
 /**
  * A component with structure (style, color, extra).
  */
-@SuppressWarnings("unchecked")
 @NoArgsConstructor
+@Getter
 public class StructuredComponent extends TabComponent {
 
-    private static final ComponentCache<StructuredComponent, String> serializeCache = new ComponentCache<>(1000,
-            (component, clientVersion) -> component.toString());
-
     /** Text of the component */
-    @Getter
     @Setter
     @NotNull
     private String text = "";
 
     /** Chat modifier containing color, magic codes, hover and click event */
-    @Getter
     @NotNull
     private ChatModifier modifier = new ChatModifier();
 
     /** Extra components used in "extra" field */
     @Nullable
     private List<StructuredComponent> extra;
-
-    @Nullable
-    private ProtocolVersion targetVersion;
 
     /**
      * Constructs a new component which is a clone of provided component
@@ -51,7 +40,6 @@ public class StructuredComponent extends TabComponent {
         text = component.text;
         modifier = new ChatModifier(component.modifier);
         extra = component.extra == null ? null : component.extra.stream().map(StructuredComponent::new).collect(Collectors.toList());
-        targetVersion = component.targetVersion;
     }
 
     /**
@@ -76,32 +64,6 @@ public class StructuredComponent extends TabComponent {
     public @NotNull List<StructuredComponent> getExtra() {
         if (extra == null) return Collections.emptyList();
         return extra;
-    }
-
-    /**
-     * Converts the component to a string representing the serialized component.
-     * This method is only used internally by json library since it's missing
-     * protocol version field used by the method.
-     *
-     * @return  serialized component in string form
-     */
-    @Override
-    public @NotNull String toString() {
-        JSONObject json = new JSONObject();
-        json.put("text", text);
-        json.putAll(modifier.serialize(targetVersion == null || targetVersion.supportsRGB()));
-        if (extra != null) json.put("extra", extra);
-        return json.toString();
-    }
-
-    @Override
-    @NotNull
-    public String toString(@NotNull ProtocolVersion clientVersion) {
-        targetVersion = clientVersion;
-        for (StructuredComponent child : getExtra()) {
-            child.targetVersion = clientVersion;
-        }
-        return serializeCache.get(this, clientVersion);
     }
 
     @Override

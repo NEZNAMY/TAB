@@ -3,8 +3,6 @@ package me.neznamy.tab.shared.chat;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
-
 /**
  * A class representing a component color, which can be either RGB or legacy code.
  */
@@ -184,24 +182,6 @@ public class TextColor {
     public @NotNull String getHexCode() {
         if (hexCode == null) hexCode = String.format("%06X", rgb);
         return hexCode;
-    }
-
-    /**
-     * Converts the color into a valid color value used in color field in chat component.
-     * That is either 6-digit hex code prefixed with '#', or lowercase legacy color.
-     *
-     * @param   rgbSupport
-     *          Whether client accepts RGB or not
-     * @return  the color serialized for use in chat component
-     */
-    public @NotNull String toString(boolean rgbSupport) {
-        if (!rgbSupport) return getLegacyColor().name().toLowerCase();
-        EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(getRgb());
-        if (legacyEquivalent != null) {
-            //not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
-            return legacyEquivalent.name().toLowerCase(Locale.US);
-        }
-        return "#" + getHexCode();
     }
 
     /**

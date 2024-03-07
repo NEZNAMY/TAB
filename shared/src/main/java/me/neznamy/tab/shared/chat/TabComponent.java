@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.chat;
 
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.ComponentCache;
 import org.jetbrains.annotations.NotNull;
@@ -28,17 +27,6 @@ public abstract class TabComponent {
                 fromColoredText(text) : //contains RGB colors or font
                 new SimpleComponent(text); //no RGB
     });
-
-    /**
-     * Serializes this component with colors based on client version.
-     * If client version is below 1.16, HEX colors will be converted to legacy colors.
-     *
-     * @param   clientVersion
-     *          client version to adapt component for
-     * @return  serialized string
-     */
-    @NotNull
-    public abstract String toString(@NotNull ProtocolVersion clientVersion);
 
     /**
      * Converts this component into a simple text with legacy colors (the closest match if color is set to RGB)

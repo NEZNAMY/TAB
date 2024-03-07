@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.simple.JSONObject;
 
 @Data @NoArgsConstructor
 public class ChatModifier {
@@ -25,20 +24,6 @@ public class ChatModifier {
         strikethrough = modifier.strikethrough;
         obfuscated = modifier.obfuscated;
         font = modifier.font;
-    }
-
-    @SuppressWarnings("unchecked")
-    @NotNull
-    public JSONObject serialize(boolean rgbSupport) {
-        JSONObject json = new JSONObject();
-        if (color != null) json.put("color", color.toString(rgbSupport));
-        if (bold) json.put("bold", true);
-        if (italic) json.put("italic", true);
-        if (underlined) json.put("underlined", true);
-        if (strikethrough) json.put("strikethrough", true);
-        if (obfuscated) json.put("obfuscated", true);
-        if (font != null) json.put("font", font);
-        return json;
     }
 
     /**
