@@ -84,7 +84,6 @@ public class StructuredComponent extends TabComponent {
      * protocol version field used by the method.
      *
      * @return  serialized component in string form
-     * @see     #toString(ProtocolVersion)
      */
     @Override
     public @NotNull String toString() {
