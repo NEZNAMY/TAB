@@ -15,8 +15,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -29,8 +27,6 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("deprecation")
 @Getter
 public class BukkitTabPlayer extends BackendTabPlayer {
-
-    private static final boolean spigot = ReflectionUtils.classExists("net.md_5.bungee.chat.ComponentSerializer");
 
     @NotNull
     private final Scoreboard<BukkitTabPlayer> scoreboard = ScoreboardLoader.getInstance().apply(this);
@@ -68,11 +64,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        if (spigot) {
-            getPlayer().spigot().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
-        } else {
-            getPlayer().sendMessage(getPlatform().toBukkitFormat(message, getVersion().supportsRGB()));
-        }
+        getPlayer().sendMessage(getPlatform().toBukkitFormat(message, getVersion().supportsRGB()));
     }
 
     @Override
