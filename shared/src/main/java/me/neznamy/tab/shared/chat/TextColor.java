@@ -83,7 +83,9 @@ public class TextColor {
      */
     private TextColor(@NotNull EnumChatFormat legacyColor) {
         rgb = legacyColor.getRgb();
+        this.legacyColor = legacyColor;
         hexCode = String.format("%06X", legacyColor.getRgb());
+        legacyColorForced = true;
     }
 
     /**
