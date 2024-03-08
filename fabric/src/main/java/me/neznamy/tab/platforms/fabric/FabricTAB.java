@@ -7,8 +7,6 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.SharedConstants;
 
-import java.util.Arrays;
-
 /**
  * Main class for Fabric.
  */
@@ -18,12 +16,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
     public static final String minecraftVersion = getServerVersion();
 
     @Override
-    @SneakyThrows
     public void onInitializeServer() {
-        for (String module : Arrays.asList("1_14_4", "1_20_4")) {
-            Class.forName("me.neznamy.tab.platforms.fabric.loader.Loader_" + module)
-                    .getConstructor(ProtocolVersion.class).newInstance(ProtocolVersion.fromFriendlyName(minecraftVersion));
-        }
         if (ProtocolVersion.fromFriendlyName(minecraftVersion).getMinorVersion() >= 19) {
             net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
         } else {

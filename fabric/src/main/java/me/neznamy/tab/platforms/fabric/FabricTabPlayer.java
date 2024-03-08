@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -44,7 +43,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
      */
     public FabricTabPlayer(@NotNull FabricPlatform platform, @NotNull ServerPlayer player) {
         super(platform, player, player.getUUID(), player.getGameProfile().getName(),
-                FabricMultiVersion.getLevelName.apply(FabricMultiVersion.getLevel.apply(player)), platform.getServerVersion().getNetworkId());
+                FabricMultiVersion.getLevelName(FabricMultiVersion.getLevel(player)), platform.getServerVersion().getNetworkId());
     }
 
     @Override
@@ -54,13 +53,12 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getPing() {
-        return FabricMultiVersion.getPing.apply(getPlayer());
+        return FabricMultiVersion.getPing(getPlayer());
     }
 
     @Override
-    @SneakyThrows
     public void sendMessage(@NotNull TabComponent message) {
-        FabricMultiVersion.sendMessage.accept(getPlayer(), getPlatform().toComponent(message, getVersion()));
+        FabricMultiVersion.sendMessage(getPlayer(), getPlatform().toComponent(message, getVersion()));
     }
 
     @Override
@@ -78,7 +76,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     public TabList.Skin getSkin() {
         Collection<Property> properties = getPlayer().getGameProfile().getProperties().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
-        return FabricMultiVersion.propertyToSkin.apply(properties.iterator().next());
+        return FabricMultiVersion.propertyToSkin(properties.iterator().next());
     }
 
     @Override

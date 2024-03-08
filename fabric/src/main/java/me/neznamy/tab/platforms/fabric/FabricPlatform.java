@@ -144,14 +144,14 @@ public class FabricPlatform implements BackendPlatform {
      */
     @SneakyThrows
     public Component toComponent(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
-        if (component instanceof SimpleComponent) return FabricMultiVersion.newTextComponent.apply(((SimpleComponent) component).getText());
+        if (component instanceof SimpleComponent) return FabricMultiVersion.newTextComponent(((SimpleComponent) component).getText());
 
         StructuredComponent component1 = (StructuredComponent) component;
-        Component nmsComponent = FabricMultiVersion.newTextComponent.apply(component1.getText());
+        Component nmsComponent = FabricMultiVersion.newTextComponent(component1.getText());
 
-        FabricMultiVersion.Component_style.set(nmsComponent, FabricMultiVersion.convertModifier.apply(component1.getModifier(), version));
+        FabricMultiVersion.Component_style.set(nmsComponent, FabricMultiVersion.convertModifier(component1.getModifier(), version));
         for (StructuredComponent extra : component1.getExtra()) {
-            FabricMultiVersion.addSibling.accept(nmsComponent, toComponent(extra, version));
+            FabricMultiVersion.addSibling(nmsComponent, toComponent(extra, version));
         }
         return nmsComponent;
     }
@@ -163,7 +163,7 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public double getMSPT() {
-        return FabricMultiVersion.getMSPT.apply(server);
+        return FabricMultiVersion.getMSPT(server);
     }
 
     /**

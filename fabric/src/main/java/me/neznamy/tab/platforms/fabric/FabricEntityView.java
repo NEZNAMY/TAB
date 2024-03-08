@@ -41,22 +41,21 @@ public class FabricEntityView implements EntityView {
         this.player = player;
 
         // Make level not null, because some mods hacking deep into the server code cause NPE
-        dummyEntity = new ArmorStand(FabricMultiVersion.getLevel.apply(player.getPlayer()), 0, 0, 0);
+        dummyEntity = new ArmorStand(FabricMultiVersion.getLevel(player.getPlayer()), 0, 0, 0);
     }
 
     @Override
-    @SneakyThrows
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location,
                             @NotNull EntityData data) {
-        FabricMultiVersion.sendPackets.accept(player.getPlayer(), Arrays.asList(
-                FabricMultiVersion.spawnEntity.apply(FabricMultiVersion.getLevel.apply(player.getPlayer()), entityId, id, entityType, location),
-                FabricMultiVersion.newEntityMetadata.apply(entityId, data)
+        FabricMultiVersion.sendPackets(player.getPlayer(), Arrays.asList(
+                FabricMultiVersion.spawnEntity(FabricMultiVersion.getLevel(player.getPlayer()), entityId, id, entityType, location),
+                FabricMultiVersion.newEntityMetadata(entityId, data)
         ));
     }
 
     @Override
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        player.sendPacket(FabricMultiVersion.newEntityMetadata.apply(entityId, data));
+        player.sendPacket(FabricMultiVersion.newEntityMetadata(entityId, data));
     }
 
     @Override
@@ -67,9 +66,8 @@ public class FabricEntityView implements EntityView {
     }
 
     @Override
-    @SneakyThrows
     public void destroyEntities(int... entities) {
-        FabricMultiVersion.destroyEntities.accept(player, entities);
+        FabricMultiVersion.destroyEntities(player.getPlayer(), entities);
     }
 
     @Override
@@ -84,7 +82,7 @@ public class FabricEntityView implements EntityView {
 
     @Override
     public boolean isNamedEntitySpawnPacket(@NotNull Object packet) {
-        return FabricMultiVersion.isSpawnPlayerPacket.apply((Packet<?>) packet);
+        return FabricMultiVersion.isSpawnPlayerPacket((Packet<?>) packet);
     }
 
     @Override
@@ -118,19 +116,18 @@ public class FabricEntityView implements EntityView {
     }
 
     @Override
-    @SneakyThrows
     public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
-        return FabricMultiVersion.getDestroyedEntities.apply(destroyPacket);
+        return FabricMultiVersion.getDestroyedEntities((Packet<?>) destroyPacket);
     }
 
     @Override
     public boolean isBundlePacket(@NotNull Object packet) {
-        return FabricMultiVersion.isBundlePacket.apply((Packet<?>) packet);
+        return FabricMultiVersion.isBundlePacket((Packet<?>) packet);
     }
 
     @Override
     public Iterable<Object> getPackets(@NotNull Object bundlePacket) {
-        return FabricMultiVersion.getBundledPackets.apply((Packet<?>) bundlePacket);
+        return FabricMultiVersion.getBundledPackets((Packet<?>) bundlePacket);
     }
 
     @Override

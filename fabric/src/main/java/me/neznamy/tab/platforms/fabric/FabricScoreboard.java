@@ -48,14 +48,13 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void setDisplaySlot0(int slot, @NonNull String objective) {
-        player.sendPacket(FabricMultiVersion.setDisplaySlot.apply(slot, objectives.get(objective)));
+        player.sendPacket(FabricMultiVersion.setDisplaySlot(slot, objectives.get(objective)));
     }
 
     @Override
-    @SneakyThrows
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
-        Objective obj = FabricMultiVersion.newObjective.apply(
+        Objective obj = FabricMultiVersion.newObjective(
                 objectiveName,
                 toComponent(title),
                 RenderType.values()[display],
@@ -92,12 +91,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setPlayerPrefix(toComponent(prefix));
         team.setPlayerSuffix(toComponent(suffix));
         team.getPlayers().addAll(players);
-        player.sendPacket(FabricMultiVersion.registerTeam.apply(team));
+        player.sendPacket(FabricMultiVersion.registerTeam(team));
     }
 
     @Override
     public void unregisterTeam0(@NonNull String name) {
-        player.sendPacket(FabricMultiVersion.unregisterTeam.apply(new PlayerTeam(dummyScoreboard, name)));
+        player.sendPacket(FabricMultiVersion.unregisterTeam(new PlayerTeam(dummyScoreboard, name)));
     }
 
     @Override
@@ -112,14 +111,13 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(toComponent(prefix));
         team.setPlayerSuffix(toComponent(suffix));
-        player.sendPacket(FabricMultiVersion.updateTeam.apply(team));
+        player.sendPacket(FabricMultiVersion.updateTeam(team));
     }
 
     @Override
-    @SneakyThrows
     public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
-        player.sendPacket(FabricMultiVersion.setScore.apply(
+        player.sendPacket(FabricMultiVersion.setScore(
                 objective,
                 scoreHolder,
                 score,
@@ -130,12 +128,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
-        player.sendPacket(FabricMultiVersion.removeScore.apply(objective, scoreHolder));
+        player.sendPacket(FabricMultiVersion.removeScore(objective, scoreHolder));
     }
 
     @Override
     public boolean isTeamPacket(@NonNull Object packet) {
-        return FabricMultiVersion.isTeamPacket.apply((Packet<?>) packet);
+        return FabricMultiVersion.isTeamPacket((Packet<?>) packet);
     }
 
     @Override
@@ -181,7 +179,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @Override
     @SneakyThrows
     public void onDisplayObjective(@NonNull Object packet) {
-        int slot = FabricMultiVersion.getDisplaySlot.apply((ClientboundSetDisplayObjectivePacket) packet);
+        int slot = FabricMultiVersion.getDisplaySlot((ClientboundSetDisplayObjectivePacket) packet);
         String objective = (String) ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet);
         TAB.getInstance().getFeatureManager().onDisplayObjective(player, slot, objective);
     }

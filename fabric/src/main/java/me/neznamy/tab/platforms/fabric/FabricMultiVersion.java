@@ -2,18 +2,22 @@ package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
+import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.fabric.loader.Loader;
+import me.neznamy.tab.platforms.fabric.loader.Loader_1_20_4;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.util.*;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,54 +25,235 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Class managing cross-version code in shared module.
  */
 public class FabricMultiVersion {
 
-    public static Function<Level, String> getLevelName;
-    public static Function<Property, TabList.Skin> propertyToSkin;
-    public static BiFunction<Integer, EntityData, Packet<ClientGamePacketListener>> newEntityMetadata;
-    public static Function<Packet<?>, Boolean> isSpawnPlayerPacket;
-    public static Function<ServerPlayer, Boolean> isSneaking;
-    public static Function<ServerPlayer, Level> getLevel;
-    public static Function<ServerPlayer, Integer> getPing;
-    public static Function<MinecraftServer, Float> getMSPT;
-    public static Function<Packet<?>, Boolean> isBundlePacket = packet -> false;
-    public static Function<Packet<?>, Iterable<Object>> getBundledPackets = packet -> Collections.emptyList();
-    public static FunctionWithException<ServerPlayer, Channel> getChannel;
-    public static BiConsumerWithException<ServerPlayer, Component> sendMessage;
-    public static BiConsumer<CommandSourceStack, Component> sendMessage2;
-    public static QuintFunction<Level, Integer, UUID, Object, Location, Packet<ClientGamePacketListener>> spawnEntity;
-    public static QuadFunction<TabPlayer, Byte, String, Boolean, EntityData> createDataWatcher;
-    public static BiFunctionWithException<TabList.Action, FabricTabList.Builder, Packet<?>> buildTabListPacket;
-    public static BiFunctionWithException<Component, Component, Packet<?>> newHeaderFooter;
-    public static BiConsumerWithException<TabPlayer, Object> onPlayerInfo;
-    public static Function<Packet<?>, Boolean> isPlayerInfo;
-    public static BiConsumerWithException<ServerPlayer, Iterable<Packet<ClientGamePacketListener>>> sendPackets;
-    public static FunctionWithException<Object, int[]> getDestroyedEntities;
-    public static BiConsumerWithException<FabricTabPlayer, int[]> destroyEntities;
+    public static final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion);
+    public static final Loader loaderNew = new Loader_1_20_4();
+    public static final Loader loaderOld = createOldLoader();
+    public static final Field Component_style = getComponentStyleField();
 
-    public static Function<PlayerTeam, Packet<?>> registerTeam;
-    public static Function<PlayerTeam, Packet<?>> unregisterTeam;
-    public static Function<PlayerTeam, Packet<?>> updateTeam;
-    public static BiFunction<Integer, Objective, Packet<?>> setDisplaySlot;
-    public static QuadFunction<String, Component, RenderType, Component, Objective> newObjective;
-    public static QuintFunction<String, String, Integer, Component, Component, Packet<?>> setScore;
-    public static BiFunction<String, String, Packet<?>> removeScore;
-    public static FunctionWithException<ClientboundSetDisplayObjectivePacket, Integer> getDisplaySlot;
-    public static Function<Packet<?>, Boolean> isTeamPacket;
+    @SneakyThrows
+    private static Loader createOldLoader() {
+        return (Loader) Class.forName("me.neznamy.tab.platforms.fabric.loader.Loader_1_14_4")
+                .getConstructor(ProtocolVersion.class).newInstance(serverVersion);
+    }
 
-    public static FunctionWithException<String, Component> newTextComponent;
-    public static BiFunctionWithException<ChatModifier, ProtocolVersion, Style> convertModifier;
-    public static BiConsumerWithException<Component, Component> addSibling;
-    public static Field Component_style;
+    public static boolean isSneaking(@NotNull ServerPlayer player) {
+        if (serverVersion.getMinorVersion() >= 15) return loaderNew.isSneaking(player);
+        return loaderOld.isSneaking(player);
+    }
+
+    @NotNull
+    public static String getLevelName(@NotNull Level level) {
+        if (serverVersion.getMinorVersion() >= 16) return loaderNew.getLevelName(level);
+        return loaderOld.getLevelName(level);
+    }
+
+    public static void addSibling(@NotNull Component parent, @NotNull Component child) {
+        if (serverVersion.getMinorVersion() >= 16) loaderNew.addSibling(parent, child);
+        else loaderOld.addSibling(parent, child);
+    }
+
+    @NotNull
+    public static Packet<?> newHeaderFooter(@NotNull Component header, @NotNull Component footer) {
+        if (serverVersion.getMinorVersion() >= 17) return loaderNew.newHeaderFooter(header, footer);
+        return loaderOld.newHeaderFooter(header, footer);
+    }
+
+    public static boolean isTeamPacket(@NotNull Packet<?> packet) {
+        if (serverVersion.getMinorVersion() >= 17) return loaderNew.isTeamPacket(packet);
+        return loaderOld.isTeamPacket(packet);
+    }
+
+    @NotNull
+    public static Packet<?> registerTeam(@NotNull PlayerTeam team) {
+        if (serverVersion.getMinorVersion() >= 17) return loaderNew.registerTeam(team);
+        return loaderOld.registerTeam(team);
+    }
+
+    @NotNull
+    public static Packet<?> unregisterTeam(@NotNull PlayerTeam team) {
+        if (serverVersion.getMinorVersion() >= 17) return loaderNew.unregisterTeam(team);
+        return loaderOld.unregisterTeam(team);
+    }
+
+    @NotNull
+    public static Packet<?> updateTeam(@NotNull PlayerTeam team) {
+        if (serverVersion.getMinorVersion() >= 17) return loaderNew.updateTeam(team);
+        return loaderOld.updateTeam(team);
+    }
+
+    @SneakyThrows
+    public static int[] getDestroyedEntities(Packet<?> destroyPacket) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_17_1.getNetworkId()) return loaderNew.getDestroyedEntities(destroyPacket);
+        if (serverVersion.getMinorVersion() >= 17) return new int[]{ReflectionUtils.getOnlyField(destroyPacket.getClass()).getInt(destroyPacket)};
+        return loaderOld.getDestroyedEntities(destroyPacket);
+    }
+
+    @SneakyThrows
+    public static void destroyEntities(@NotNull ServerPlayer player, int[] entities) {
+        if (serverVersion == ProtocolVersion.V1_17) {
+            for (int entity : entities) {
+                // While the actual packet name is different, fabric-mapped name is the same
+                player.connection.send(ClientboundRemoveEntitiesPacket.class.getConstructor(int.class).newInstance(entity));
+            }
+        } else {
+            player.connection.send(new ClientboundRemoveEntitiesPacket(entities));
+        }
+    }
+
+    @NotNull
+    public static Component newTextComponent(@NotNull String text) {
+        if (serverVersion.getMinorVersion() >= 19) return loaderNew.newTextComponent(text);
+        return loaderOld.newTextComponent(text);
+    }
+
+    @NotNull
+    public static Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version) {
+        if (serverVersion.getMinorVersion() >= 19) return loaderNew.convertModifier(modifier, version);
+        return loaderOld.convertModifier(modifier, version);
+    }
+
+    public static void sendMessage(@NotNull CommandSourceStack source, @NotNull Component message) {
+        if (serverVersion.getMinorVersion() >= 19) loaderNew.sendMessage(source, message);
+        else loaderOld.sendMessage(source, message);
+    }
+
+    @NotNull
+    public static Packet<ClientGamePacketListener> spawnEntity(Level level, int id, UUID uuid, Object type, Location location) {
+        if (serverVersion.getMinorVersion() >= 19) return loaderNew.spawnEntity(level, id, uuid, type, location);
+        return loaderOld.spawnEntity(level, id, uuid, type, location);
+    }
+
+    @NotNull
+    public static Field getComponentStyleField() {
+        if (serverVersion.getMinorVersion() >= 19) return loaderNew.getComponentStyleField();
+        return loaderOld.getComponentStyleField();
+    }
+
+    @SneakyThrows
+    public static void sendMessage(@NotNull ServerPlayer player, @NotNull Component message) {
+        if (serverVersion.getMinorVersion() >= 19) loaderNew.sendMessage(player, message);
+        else if (serverVersion.getMinorVersion() >= 16)
+                player.getClass().getMethod("method_9203", Component.class, UUID.class).invoke(player, message, new UUID(0, 0));
+        else loaderOld.sendMessage(player, message);
+    }
+
+    @NotNull
+    public static Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.newEntityMetadata(entityId, data);
+        return loaderOld.newEntityMetadata(entityId, data);
+    }
+
+    @NotNull
+    public static EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
+        int position = EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion());
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.createDataWatcher(viewer, flags, displayName, nameVisible, position);
+        return loaderOld.createDataWatcher(viewer, flags, displayName, nameVisible, position);
+    }
+
+    public static boolean isPlayerInfo(@NotNull Packet<?> packet) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.isPlayerInfo(packet);
+        return loaderOld.isPlayerInfo(packet);
+    }
+
+    public static void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) loaderNew.onPlayerInfo(receiver, packet);
+        else loaderOld.onPlayerInfo(receiver, packet);
+    }
+
+    @NotNull
+    public static Packet<?> buildTabListPacket(@NotNull TabList.Action action, @NotNull FabricTabList.Builder builder) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.buildTabListPacket(action, builder);
+        return loaderOld.buildTabListPacket(action, builder);
+    }
+
+    public static boolean isBundlePacket(@NotNull Packet<?> packet) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) return loaderNew.isBundlePacket(packet);
+        return loaderOld.isBundlePacket(packet);
+    }
+
+    @NotNull
+    public static Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) return loaderNew.getBundledPackets(bundlePacket);
+        return loaderOld.getBundledPackets(bundlePacket);
+    }
+
+    public static void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) loaderNew.sendPackets(player, packets);
+        else loaderOld.sendPackets(player, packets);
+    }
+
+    @NotNull
+    public static Level getLevel(@NotNull ServerPlayer player) {
+        if (serverVersion.getMinorVersion() >= 20) return loaderNew.getLevel(player);
+        return loaderOld.getLevel(player);
+    }
+
+    @NotNull
+    public static TabList.Skin propertyToSkin(@NotNull Property property) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.propertyToSkin(property);
+        return loaderOld.propertyToSkin(property);
+    }
+
+    public static boolean isSpawnPlayerPacket(@NotNull Packet<?> packet) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.isSpawnPlayerPacket(packet);
+        return loaderOld.isSpawnPlayerPacket(packet);
+    }
+
+    public static int getPing(@NotNull ServerPlayer player) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getPing(player);
+        return loaderOld.getPing(player);
+    }
+
+    public static int getDisplaySlot(@NotNull ClientboundSetDisplayObjectivePacket packet) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getDisplaySlot(packet);
+        return loaderOld.getDisplaySlot(packet);
+    }
+
+    @NotNull
+    public static Packet<?> setDisplaySlot(int slot, @NotNull Objective objective) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.setDisplaySlot(slot, objective);
+        return loaderOld.setDisplaySlot(slot, objective);
+    }
+
+    @NotNull
+    public static Channel getChannel(@NotNull ServerPlayer player) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getChannel(player);
+        return loaderOld.getChannel(player);
+    }
+
+    public static float getMSPT(@NotNull MinecraftServer server) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.getMSPT(server);
+        return loaderOld.getMSPT(server);
+    }
+
+    @NotNull
+    public static Packet<?> removeScore(@NotNull String objective, @NotNull String holder) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.removeScore(objective, holder);
+        return loaderOld.removeScore(objective, holder);
+    }
+
+    @NotNull
+    public static Objective newObjective(@NotNull String name, @NotNull Component displayName,
+                                         @NotNull RenderType renderType, @Nullable Component numberFormat) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.newObjective(name, displayName, renderType, numberFormat);
+        return loaderOld.newObjective(name, displayName, renderType, numberFormat);
+    }
+
+    @NotNull
+    public static Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score,
+                                     @Nullable Component displayName, @Nullable Component numberFormat) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.setScore(objective, holder, score, displayName, numberFormat);
+        return loaderOld.setScore(objective, holder, score, displayName, numberFormat);
+    }
 }

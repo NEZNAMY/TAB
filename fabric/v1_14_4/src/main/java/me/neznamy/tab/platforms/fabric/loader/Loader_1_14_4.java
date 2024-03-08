@@ -1,18 +1,23 @@
 package me.neznamy.tab.platforms.fabric.loader;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
+import me.neznamy.tab.shared.backend.Location;
+import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
@@ -24,161 +29,203 @@ import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket.PlayerUpd
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Method loader compiled using Minecraft 1.14.4.
  */
 @SuppressWarnings({
         "unchecked", // Java generic types
-        "Convert2MethodRef", // Would throw if method does not exist
         "unused", // Actually used, just via reflection
         "rawtypes" // raw enums
 })
-public class Loader_1_14_4 {
+@RequiredArgsConstructor
+public class Loader_1_14_4 implements Loader {
 
+    private final ProtocolVersion serverVersion;
     private ArmorStand dummyEntity;
-    private final Scoreboard dummyScoreboard = new Scoreboard();
     private Class<Enum> tablistActionClass;
 
-    /**
-     * Constructs new instance and registers all method implementations as per 1.14.4.
-     *
-     * @param   serverVersion
-     *          Exact server version
-     */
     @SneakyThrows
-    public Loader_1_14_4(@NotNull ProtocolVersion serverVersion) {
-        if (serverVersion.getNetworkId() < ProtocolVersion.V1_19_3.getNetworkId()) {
+    private ClientboundPlayerInfoPacket createInfoPacket(@NotNull ProtocolVersion serverVersion, @NotNull TabList.Action action) {
+        if (tablistActionClass == null) {
             if (serverVersion.getMinorVersion() >= 17) {
                 tablistActionClass = (Class<Enum>) Class.forName("net.minecraft.class_2703$class_5893");
             } else {
                 tablistActionClass = (Class<Enum>) Class.forName("net.minecraft.class_2703$class_2704");
             }
         }
-        FabricMultiVersion.getLevelName = level -> level.getLevelData().getLevelName() + level.dimension.getType().getFileSuffix();
-        FabricMultiVersion.propertyToSkin = property -> new TabList.Skin(property.getValue(), property.getSignature());
-        FabricMultiVersion.newEntityMetadata = (entityId, data) -> new ClientboundSetEntityDataPacket(entityId, (SynchedEntityData) data.build(), true);
-        FabricMultiVersion.isSpawnPlayerPacket = packet -> packet instanceof ClientboundAddPlayerPacket;
-        FabricMultiVersion.isSneaking = player -> player.isSneaking();
-        FabricMultiVersion.registerTeam = team -> new ClientboundSetPlayerTeamPacket(team, 0);
-        FabricMultiVersion.unregisterTeam = team -> new ClientboundSetPlayerTeamPacket(team, 1);
-        FabricMultiVersion.updateTeam = team -> new ClientboundSetPlayerTeamPacket(team, 2);
-        FabricMultiVersion.getLevel = player -> player.level;
-        FabricMultiVersion.getPing = player -> player.latency;
-        FabricMultiVersion.getDisplaySlot = packet -> ReflectionUtils.getFields(packet.getClass(), int.class).get(0).getInt(packet);
-        FabricMultiVersion.setDisplaySlot = (slot, objective) -> new ClientboundSetDisplayObjectivePacket(slot, objective);
-        FabricMultiVersion.getMSPT = server -> server.getAverageTickTime();
-        FabricMultiVersion.newObjective = (name, displayName, renderType, numberFormat) ->
-                new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType);
-        FabricMultiVersion.setScore = (objective, scoreHolder, score, displayName, numberFormat) ->
-                new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, scoreHolder, score);
-        FabricMultiVersion.removeScore = (objective, holder) ->
-                new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, holder, 0);
-        FabricMultiVersion.getChannel = player -> {
-            Connection c = (Connection) ReflectionUtils.getFields(ServerGamePacketListenerImpl.class, Connection.class).get(0).get(player.connection);
-            return (Channel) ReflectionUtils.getFields(Connection.class, Channel.class).get(0).get(c);
-        };
-        FabricMultiVersion.sendMessage = (player, message) -> player.sendMessage(message);
-        FabricMultiVersion.sendMessage2 = (sender, message) -> sender.sendSuccess(message, false);
-        FabricMultiVersion.spawnEntity = (level, entityId, id, entityType, location) -> {
-            if (dummyEntity == null) dummyEntity = new ArmorStand(level, 0, 0, 0);
-            dummyEntity.setId(entityId);
-            dummyEntity.setUUID(id);
-            dummyEntity.setPos(location.getX(), location.getY(), location.getZ());
-            return new ClientboundAddMobPacket(dummyEntity);
-        };
-        FabricMultiVersion.createDataWatcher = (viewer, flags, displayName, nameVisible) -> {
-            Optional<Component> name = Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(
-                    TabComponent.optimized(displayName), viewer.getVersion()));
-            SynchedEntityData data = new SynchedEntityData(null);
-            data.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
-            data.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT), name);
-            data.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
-            data.define(new EntityDataAccessor<>(EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion()), EntityDataSerializers.BYTE), EntityData.MARKER_FLAG);
-            return () -> data;
-        };
-        FabricMultiVersion.buildTabListPacket = (action, entry) -> {
-            ClientboundPlayerInfoPacket packet = createInfoPacket(serverVersion, action);
-            ReflectionUtils.getFields(ClientboundPlayerInfoPacket.class, List.class).get(0).set(packet, Collections.singletonList(createUpdate(serverVersion, entry)));
-            return packet;
-        };
-        FabricMultiVersion.newHeaderFooter = (header, footer) -> {
-            ClientboundTabListPacket packet = ClientboundTabListPacket.class.getConstructor().newInstance();
-            List<Field> fields = ReflectionUtils.getFields(ClientboundTabListPacket.class, Component.class);
-            fields.get(0).set(packet, header);
-            fields.get(1).set(packet, footer);
-            return packet;
-        };
-        FabricMultiVersion.isTeamPacket = packet -> packet instanceof ClientboundSetPlayerTeamPacket;
-        FabricMultiVersion.onPlayerInfo = (receiver, packet) -> {
-            Enum action = (Enum) ReflectionUtils.getFields(packet.getClass(), tablistActionClass).get(0).get(packet);
-            List<PlayerUpdate> players = (List<PlayerUpdate>) ReflectionUtils.getFields(packet.getClass(), List.class).get(0).get(packet);
-            for (PlayerUpdate nmsData : players) {
-                GameProfile profile = nmsData.getProfile();
-                Field displayNameField = ReflectionUtils.getFields(PlayerUpdate.class, Component.class).get(0);
-                Field latencyField = ReflectionUtils.getFields(PlayerUpdate.class, int.class).get(0);
-                if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
-                    Object expectedName = ((FabricTabPlayer)receiver).getTabList().getExpectedDisplayName(profile.getId());
-                    if (expectedName != null) displayNameField.set(nmsData, expectedName);
-                }
-                if (action.name().equals(TabList.Action.UPDATE_LATENCY.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
-                    latencyField.set(nmsData, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latencyField.getInt(nmsData)));
-                }
-                if (action.name().equals(TabList.Action.ADD_PLAYER.name())) {
-                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
-                }
-            }
-        };
-        FabricMultiVersion.isPlayerInfo = packet -> packet instanceof ClientboundPlayerInfoPacket;
-        FabricMultiVersion.sendPackets = (player, packets) -> {
-            for (Packet<?> packet : packets) {
-                player.connection.send(packet);
-            }
-        };
-        FabricMultiVersion.getDestroyedEntities = packet -> (int[]) ReflectionUtils.getOnlyField(packet.getClass()).get(packet);
-        if (serverVersion == ProtocolVersion.V1_17) {
-            FabricMultiVersion.destroyEntities = (player, entities) -> {
-                for (int entity : entities) {
-                    // While the actual packet name is different, fabric-mapped name is the same
-                    //noinspection JavaReflectionMemberAccess
-                    player.sendPacket(ClientboundRemoveEntitiesPacket.class.getConstructor(int.class).newInstance(entity));
-                }
-            };
-        } else {
-            FabricMultiVersion.destroyEntities = (player, entities) -> player.sendPacket(new ClientboundRemoveEntitiesPacket(entities));
+        Class<?> classType = serverVersion.getMinorVersion() >= 17 ? Collection.class : Iterable.class;
+        return ClientboundPlayerInfoPacket.class.getConstructor(tablistActionClass, classType)
+                .newInstance(Enum.valueOf(tablistActionClass, action.name()), Collections.emptyList());
+    }
+
+    @Override
+    @NotNull
+    public String getLevelName(@NotNull Level level) {
+        return level.getLevelData().getLevelName() + level.dimension.getType().getFileSuffix();
+    }
+
+    @Override
+    @NotNull
+    public TabList.Skin propertyToSkin(@NotNull Property property) {
+        return new TabList.Skin(property.getValue(), property.getSignature());
+    }
+
+    @Override
+    @NotNull
+    public Component newTextComponent(@NotNull String text) {
+        return new TextComponent(text);
+    }
+
+    @Override
+    @NotNull
+    public Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version) {
+        Style style = new Style();
+        if (modifier.getColor() != null) {
+            style.setColor(ChatFormatting.valueOf(modifier.getColor().getLegacyColor().name()));
         }
-        FabricMultiVersion.newTextComponent = text -> new TextComponent(text);
-        FabricMultiVersion.convertModifier = (modifier, version) -> {
-            Style style = new Style();
-            if (modifier.getColor() != null) {
-                style.setColor(ChatFormatting.valueOf(modifier.getColor().getLegacyColor().name()));
+        if (modifier.isBold()) style.setBold(true);
+        if (modifier.isItalic()) style.setItalic(true);
+        if (modifier.isStrikethrough()) style.setStrikethrough(true);
+        if (modifier.isUnderlined()) style.setUnderlined(true);
+        if (modifier.isObfuscated()) style.setObfuscated(true);
+        return style;
+    }
+
+    @Override
+    public void addSibling(@NotNull Component parent, @NotNull Component child) {
+        parent.append(child);
+    }
+
+    @Override
+    @NotNull
+    public Packet<?> registerTeam(@NotNull PlayerTeam team) {
+        return new ClientboundSetPlayerTeamPacket(team, 0);
+    }
+
+    @Override
+    @NotNull
+    public Packet<?> unregisterTeam(@NotNull PlayerTeam team) {
+        return new ClientboundSetPlayerTeamPacket(team, 1);
+    }
+
+    @Override
+    @NotNull
+    public Packet<?> updateTeam(@NotNull PlayerTeam team) {
+        return new ClientboundSetPlayerTeamPacket(team, 2);
+    }
+
+    @Override
+    public boolean isSneaking(@NotNull ServerPlayer player) {
+        return player.isSneaking();
+    }
+
+    @Override
+    public void sendMessage(@NotNull ServerPlayer player, @NotNull Component message) {
+        player.sendMessage(message);
+    }
+
+    @Override
+    public void sendMessage(@NotNull CommandSourceStack source, @NotNull Component message) {
+        source.sendSuccess(message, false);
+    }
+
+    @Override
+    @NotNull
+    @SneakyThrows
+    public Packet<?> newHeaderFooter(@NotNull Component header, @NotNull Component footer) {
+        ClientboundTabListPacket packet = ClientboundTabListPacket.class.getConstructor().newInstance();
+        List<Field> fields = ReflectionUtils.getFields(ClientboundTabListPacket.class, Component.class);
+        fields.get(0).set(packet, header);
+        fields.get(1).set(packet, footer);
+        return packet;
+    }
+
+    @Override
+    public boolean isTeamPacket(@NotNull Packet<?> packet) {
+        return packet instanceof ClientboundSetPlayerTeamPacket;
+    }
+
+    @Override
+    @NotNull
+    public Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location) {
+        if (dummyEntity == null) dummyEntity = new ArmorStand(level, 0, 0, 0);
+        dummyEntity.setId(id);
+        dummyEntity.setUUID(uuid);
+        dummyEntity.setPos(location.getX(), location.getY(), location.getZ());
+        return new ClientboundAddMobPacket(dummyEntity);
+    }
+
+    @Override
+    @NotNull
+    public Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data) {
+        return new ClientboundSetEntityDataPacket(entityId, (SynchedEntityData) data.build(), true);
+    }
+
+    @Override
+    @NotNull
+    public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible, int markerPosition) {
+        Optional<Component> name = Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(
+                TabComponent.optimized(displayName), viewer.getVersion()));
+        SynchedEntityData data = new SynchedEntityData(null);
+        data.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
+        data.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT), name);
+        data.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
+        data.define(new EntityDataAccessor<>(markerPosition, EntityDataSerializers.BYTE), EntityData.MARKER_FLAG);
+        return () -> data;
+    }
+
+    @Override
+    public boolean isPlayerInfo(@NotNull Packet<?> packet) {
+        return packet instanceof ClientboundPlayerInfoPacket;
+    }
+
+    @Override
+    @SneakyThrows
+    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
+        Enum action = (Enum) ReflectionUtils.getFields(packet.getClass(), tablistActionClass).get(0).get(packet);
+        List<PlayerUpdate> players = (List<PlayerUpdate>) ReflectionUtils.getFields(packet.getClass(), List.class).get(0).get(packet);
+        for (PlayerUpdate nmsData : players) {
+            GameProfile profile = nmsData.getProfile();
+            Field displayNameField = ReflectionUtils.getFields(PlayerUpdate.class, Component.class).get(0);
+            Field latencyField = ReflectionUtils.getFields(PlayerUpdate.class, int.class).get(0);
+            if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
+                Object expectedName = ((FabricTabPlayer)receiver).getTabList().getExpectedDisplayName(profile.getId());
+                if (expectedName != null) displayNameField.set(nmsData, expectedName);
             }
-            if (modifier.isBold()) style.setBold(true);
-            if (modifier.isItalic()) style.setItalic(true);
-            if (modifier.isStrikethrough()) style.setStrikethrough(true);
-            if (modifier.isUnderlined()) style.setUnderlined(true);
-            if (modifier.isObfuscated()) style.setObfuscated(true);
-            return style;
-        };
-        FabricMultiVersion.addSibling = (parent, child) -> parent.append(child);
-        if (serverVersion.getMinorVersion() < 19) {
-            FabricMultiVersion.Component_style = ReflectionUtils.getOnlyField(BaseComponent.class, Style.class);
+            if (action.name().equals(TabList.Action.UPDATE_LATENCY.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
+                latencyField.set(nmsData, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latencyField.getInt(nmsData)));
+            }
+            if (action.name().equals(TabList.Action.ADD_PLAYER.name())) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
+            }
         }
+    }
+
+    @Override
+    @NotNull
+    @SneakyThrows
+    public Packet<?> buildTabListPacket(TabList.@NotNull Action action, @NotNull FabricTabList.Builder entry) {
+        ClientboundPlayerInfoPacket packet = createInfoPacket(serverVersion, action);
+        ReflectionUtils.getFields(ClientboundPlayerInfoPacket.class, List.class).get(0).set(packet, Collections.singletonList(createUpdate(serverVersion, entry)));
+        return packet;
     }
 
     @SneakyThrows
@@ -200,10 +247,93 @@ public class Loader_1_14_4 {
         }
     }
 
+    @Override
+    public boolean isBundlePacket(@NotNull Packet<?> packet) {
+        return false;
+    }
+
+    @Override
+    @NotNull
+    public Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets) {
+        for (Packet<?> packet : packets) {
+            player.connection.send(packet);
+        }
+    }
+
+    @Override
+    @NotNull
+    public Level getLevel(@NotNull ServerPlayer player) {
+        return player.level;
+    }
+
+    @Override
+    public boolean isSpawnPlayerPacket(@NotNull Packet<?> packet) {
+        return packet instanceof ClientboundAddPlayerPacket;
+    }
+
+    @Override
+    public int getPing(@NotNull ServerPlayer player) {
+        return player.latency;
+    }
+
+    @Override
     @SneakyThrows
-    private ClientboundPlayerInfoPacket createInfoPacket(@NotNull ProtocolVersion serverVersion, @NotNull TabList.Action action) {
-        Class<?> classType = serverVersion.getMinorVersion() >= 17 ? Collection.class : Iterable.class;
-        return ClientboundPlayerInfoPacket.class.getConstructor(tablistActionClass, classType)
-                .newInstance(Enum.valueOf(tablistActionClass, action.name()), Collections.emptyList());
+    public int getDisplaySlot(@NotNull ClientboundSetDisplayObjectivePacket packet) {
+        return ReflectionUtils.getFields(packet.getClass(), int.class).get(0).getInt(packet);
+    }
+
+    @Override
+    @NotNull
+    public Packet<?> setDisplaySlot(int slot, @NotNull Objective objective) {
+        return new ClientboundSetDisplayObjectivePacket(slot, objective);
+    }
+
+    @Override
+    @NotNull
+    @SneakyThrows
+    public Channel getChannel(@NotNull ServerPlayer player) {
+        Connection c = (Connection) ReflectionUtils.getFields(ServerGamePacketListenerImpl.class, Connection.class).get(0).get(player.connection);
+        return (Channel) ReflectionUtils.getFields(Connection.class, Channel.class).get(0).get(c);
+    }
+
+    @Override
+    public float getMSPT(@NotNull MinecraftServer server) {
+        return server.getAverageTickTime();
+    }
+
+    @Override
+    @NotNull
+    public Packet<?> removeScore(@NotNull String objective, @NotNull String holder) {
+        return new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, holder, 0);
+    }
+
+    @Override
+    @NotNull
+    public Field getComponentStyleField() {
+        return ReflectionUtils.getOnlyField(BaseComponent.class, Style.class);
+    }
+
+    @Override
+    @SneakyThrows
+    public int[] getDestroyedEntities(Packet<?> destroyPacket) {
+        return (int[]) ReflectionUtils.getOnlyField(destroyPacket.getClass()).get(destroyPacket);
+    }
+
+    @Override
+    @NotNull
+    public Objective newObjective(@NotNull String name, @NotNull Component displayName,
+                                  @NotNull RenderType renderType, @Nullable Component numberFormat) {
+        return new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType);
+    }
+
+    @Override
+    @NotNull
+    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat) {
+        return new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, holder, score);
     }
 }

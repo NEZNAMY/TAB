@@ -62,7 +62,7 @@ public class FabricTabCommand {
             boolean hasReloadPermission = platform.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
             boolean hasAdminPermission = platform.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
-                FabricMultiVersion.sendMessage2.accept(source, platform.toComponent(
+                FabricMultiVersion.sendMessage(source, platform.toComponent(
                         TabComponent.optimized(message), platform.getServerVersion()));
             }
         } else {

@@ -28,44 +28,38 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    @SneakyThrows
     public void removeEntry(@NonNull UUID entry) {
-        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.REMOVE_PLAYER,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.REMOVE_PLAYER,
                 new Builder(entry, "", null, 0, 0, null)));
     }
 
     @Override
-    @SneakyThrows
     public void updateDisplayName0(@NonNull UUID entry, @Nullable Component displayName) {
-        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_DISPLAY_NAME,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_DISPLAY_NAME,
                 new Builder(entry, "", null, 0, 0, displayName)));
     }
 
     @Override
-    @SneakyThrows
     public void updateLatency(@NonNull UUID entry, int latency) {
-        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_LATENCY,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_LATENCY,
                 new Builder(entry, "", null, latency, 0, null)));
     }
 
     @Override
-    @SneakyThrows
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
-        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.UPDATE_GAME_MODE,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_GAME_MODE,
                 new Builder(entry, "", null, 0, gameMode, null)));
     }
 
     @Override
-    @SneakyThrows
     public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable Component displayName) {
-        player.sendPacket(FabricMultiVersion.buildTabListPacket.apply(Action.ADD_PLAYER,
+        player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.ADD_PLAYER,
                 new Builder(id, name, skin, latency, gameMode, displayName)));
     }
 
     @Override
-    @SneakyThrows
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.sendPacket(FabricMultiVersion.newHeaderFooter.apply(toComponent(header), toComponent(footer)));
+        player.sendPacket(FabricMultiVersion.newHeaderFooter(toComponent(header), toComponent(footer)));
     }
 
     @Override
@@ -74,10 +68,9 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
-        if (FabricMultiVersion.isPlayerInfo.apply((Packet<?>) packet)) {
-            FabricMultiVersion.onPlayerInfo.accept(player, packet);
+        if (FabricMultiVersion.isPlayerInfo((Packet<?>) packet)) {
+            FabricMultiVersion.onPlayerInfo(player, packet);
         }
     }
 

@@ -27,10 +27,10 @@ public class FabricEventListener implements EventListener<ServerPlayer> {
                     (oldPlayer, newPlayer, alive) -> {
                         replacePlayer(newPlayer.getUUID(), newPlayer);
                         // respawning from death & taking end portal in the end do not call world change event
-                        worldChange(newPlayer.getUUID(), FabricMultiVersion.getLevelName.apply(FabricMultiVersion.getLevel.apply(newPlayer)));
+                        worldChange(newPlayer.getUUID(), FabricMultiVersion.getLevelName(FabricMultiVersion.getLevel(newPlayer)));
                     });
             ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(
-                    (player, origin, destination) -> worldChange(player.getUUID(), FabricMultiVersion.getLevelName.apply(destination)));
+                    (player, origin, destination) -> worldChange(player.getUUID(), FabricMultiVersion.getLevelName(destination)));
         } // TODO else
     }
 
