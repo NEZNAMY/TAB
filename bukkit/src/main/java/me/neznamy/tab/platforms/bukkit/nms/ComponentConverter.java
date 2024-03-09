@@ -118,7 +118,7 @@ public class ComponentConverter {
     }
 
     @SneakyThrows
-    private Object createModifierModern(@NotNull me.neznamy.tab.shared.chat.ChatModifier modifier, @NotNull ProtocolVersion clientVersion) {
+    private Object createModifierModern(@NotNull ChatModifier modifier, @NotNull ProtocolVersion clientVersion) {
         Object color = null;
         if (modifier.getColor() != null) {
             if (clientVersion.supportsRGB()) {
