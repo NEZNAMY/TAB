@@ -6,7 +6,6 @@ import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.util.BiFunctionWithException;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -16,6 +15,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * Class for converting TAB component into NMS components (1.7+).
@@ -27,7 +27,7 @@ public class ComponentConverter {
     private final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000, this::convert0);
 
     private final FunctionWithException<String, Object> newTextComponent;
-    private final BiFunctionWithException<ChatModifier, ProtocolVersion, Object> convertModifier;
+    private final BiFunction<ChatModifier, ProtocolVersion, Object> convertModifier;
 
     private final Class<?> ChatModifier = BukkitReflection.getClass("network.chat.ChatModifier", "ChatModifier");
     private final Class<Enum> EnumChatFormat = (Class<Enum>) BukkitReflection.getClass("EnumChatFormat");
