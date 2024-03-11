@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * Component cache to save resources when converting the same
@@ -22,7 +23,7 @@ import java.util.Map;
 public class ComponentCache<K, V> {
 
     private final int cacheSize;
-    private final BiFunctionWithException<K, ProtocolVersion, V> function;
+    private final BiFunction<K, ProtocolVersion, V> function;
     private final Map<K, V> cacheModern = new HashMap<>();
     private final Map<K, V> cacheLegacy = new HashMap<>();
 
@@ -39,10 +40,7 @@ public class ComponentCache<K, V> {
     @SneakyThrows
     public @NotNull V get(@NotNull K key, @Nullable ProtocolVersion clientVersion) {
         Map<K, V> cache = clientVersion == null || clientVersion.supportsRGB() ? cacheModern : cacheLegacy;
-        if (cache.containsKey(key)) return cache.get(key);
-        V value = function.apply(key, clientVersion);
         if (cache.size() > cacheSize) cache.clear();
-        cache.put(key, value);
-        return value;
+        return cache.computeIfAbsent(key, k -> function.apply(k, clientVersion));
     }
 }
