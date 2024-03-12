@@ -6,8 +6,8 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 /**
@@ -24,8 +24,8 @@ public class ComponentCache<K, V> {
 
     private final int cacheSize;
     private final BiFunction<K, ProtocolVersion, V> function;
-    private final Map<K, V> cacheModern = new HashMap<>();
-    private final Map<K, V> cacheLegacy = new HashMap<>();
+    private final Map<K, V> cacheModern = new ConcurrentHashMap<>();
+    private final Map<K, V> cacheLegacy = new ConcurrentHashMap<>();
 
     /**
      * Gets value from cache. If not present, it is created using given function, inserted
