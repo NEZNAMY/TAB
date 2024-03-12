@@ -112,7 +112,7 @@ public class ComponentConverter {
         Object nmsComponent = newTextComponent.apply(component1.getText());
         Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier(), version));
         for (StructuredComponent extra : component1.getExtra()) {
-            ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra, version));
+            ChatBaseComponent_addSibling.invoke(nmsComponent, convert0(extra, version));
         }
         return nmsComponent;
     }
