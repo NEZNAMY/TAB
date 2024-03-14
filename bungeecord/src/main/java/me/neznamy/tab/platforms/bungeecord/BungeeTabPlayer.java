@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.Getter;
+import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList17;
@@ -34,13 +35,13 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Player's tab list based on version */
     @NotNull
-    private final TabList tabList1_7 = new BungeeTabList17(this);
+    private final BungeeTabList tabList1_7 = new BungeeTabList17(this);
 
     @NotNull
-    private final TabList tabList1_8 = new BungeeTabList18(this);
+    private final BungeeTabList tabList1_8 = new BungeeTabList18(this);
 
     @NotNull
-    private final TabList tabList1_19_3 = new BungeeTabList1193(this);
+    private final BungeeTabList tabList1_19_3 = new BungeeTabList1193(this);
 
     /** Player's boss bar view */
     @NotNull
@@ -132,7 +133,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     @NotNull
-    public TabList getTabList() {
+    public BungeeTabList getTabList() {
         int version = getPlayer().getPendingConnection().getVersion();
         if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return tabList1_19_3;
         if (version >= ProtocolVersion.V1_8.getNetworkId()) return tabList1_8;

@@ -29,7 +29,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /** Player's tab list */
     @NotNull
-    private final TabList tabList = new VelocityTabList(this);
+    private final VelocityTabList tabList = new VelocityTabList(this);
 
     /** Player's boss bar view */
     @NotNull

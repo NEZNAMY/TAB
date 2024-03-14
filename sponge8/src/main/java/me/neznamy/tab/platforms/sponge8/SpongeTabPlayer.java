@@ -33,7 +33,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
 
     @NotNull
-    private final TabList tabList = new SpongeTabList(this);
+    private final SpongeTabList tabList = new SpongeTabList(this);
 
     @NotNull
     private final BossBar bossBar = new AdventureBossBar(this);

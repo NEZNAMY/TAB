@@ -347,7 +347,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  TabList interface for calling tablist-related methods
      */
-    public abstract @NotNull TabList getTabList();
+    public abstract @NotNull TabList<?, ?> getTabList();
 
     /**
      * Sends specified component as a chat message
