@@ -17,10 +17,10 @@ import java.util.function.Function;
 /**
  * Base TabList class for all implementations.
  *
- * @param   <Comp>
+ * @param   <C>
  *          Component class
  */
-public abstract class TabListBase<Comp> extends TabList<BukkitTabPlayer, Comp> {
+public abstract class TabListBase<C> extends TabList<BukkitTabPlayer, C> {
 
     /** Instance function */
     @Getter

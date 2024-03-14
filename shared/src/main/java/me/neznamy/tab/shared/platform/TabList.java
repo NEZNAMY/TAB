@@ -14,31 +14,31 @@ import java.util.*;
 /**
  * Interface for managing tablist entries.
  *
- * @param   <Player>
+ * @param   <P>
  *          Platform's player class
- * @param   <Comp>
+ * @param   <C>
  *          Platform's component class
  */
 @RequiredArgsConstructor
-public abstract class TabList<Player extends TabPlayer, Comp> {
+public abstract class TabList<P extends TabPlayer, C> {
 
     /** Name of the textures property in game profile */
     public static final String TEXTURES_PROPERTY = "textures";
 
     /** Player this tablist belongs to */
-    protected final Player player;
+    protected final P player;
 
     /** Tablist display name anti-override flag */
     @Setter
     protected boolean antiOverride;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabPlayer, Comp> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<TabPlayer, C> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     private final RedisSupport redisSupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<RedisPlayer, Comp> expectedRedisDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<RedisPlayer, C> expectedRedisDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Removes entries from the TabList.
@@ -78,7 +78,7 @@ public abstract class TabList<Player extends TabPlayer, Comp> {
      *          New display name
      */
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        Comp component = displayName == null ? null : toComponent(displayName);
+        C component = displayName == null ? null : toComponent(displayName);
         setExpectedDisplayName(entry, component);
         updateDisplayName0(entry, component);
     }
@@ -92,7 +92,7 @@ public abstract class TabList<Player extends TabPlayer, Comp> {
      * @param   displayName
      *          New display name
      */
-    public abstract void updateDisplayName0(@NonNull UUID entry, @Nullable Comp displayName);
+    public abstract void updateDisplayName0(@NonNull UUID entry, @Nullable C displayName);
 
     /**
      * Updates latency of specified entry.
@@ -121,7 +121,7 @@ public abstract class TabList<Player extends TabPlayer, Comp> {
      *          Entry to add
      */
     public void addEntry(@NonNull Entry entry) {
-        Comp component = entry.displayName == null ? null : toComponent(entry.displayName);
+        C component = entry.displayName == null ? null : toComponent(entry.displayName);
         setExpectedDisplayName(entry.getUniqueId(), component);
         addEntry0(entry.uniqueId, entry.name, entry.skin, entry.latency, entry.gameMode, component);
 
@@ -147,7 +147,7 @@ public abstract class TabList<Player extends TabPlayer, Comp> {
      * @param   displayName
      *          Entry display name
      */
-    public abstract void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable Comp displayName);
+    public abstract void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable C displayName);
 
     /**
      * Sets header and footer to specified values.
@@ -200,7 +200,7 @@ public abstract class TabList<Player extends TabPlayer, Comp> {
                 "for viewer " + viewer.getName() + " than expected, fixing.");
     }
 
-    private void setExpectedDisplayName(@NonNull UUID entry, @Nullable Comp displayName) {
+    private void setExpectedDisplayName(@NonNull UUID entry, @Nullable C displayName) {
         if (!antiOverride) return;
         TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(entry);
         if (player != null) expectedDisplayNames.put(player, displayName);
@@ -220,7 +220,7 @@ public abstract class TabList<Player extends TabPlayer, Comp> {
      * @return  Expected display name or {@code null}
      */
     @Nullable
-    public Comp getExpectedDisplayName(@NotNull UUID id) {
+    public C getExpectedDisplayName(@NotNull UUID id) {
         if (!antiOverride) return null;
 
         TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
@@ -238,7 +238,7 @@ public abstract class TabList<Player extends TabPlayer, Comp> {
     }
 
     @Nullable
-    protected Comp getExpectedDisplayName(@NonNull TabPlayer player) {
+    protected C getExpectedDisplayName(@NonNull TabPlayer player) {
         return expectedDisplayNames.get(player);
     }
 
@@ -249,7 +249,7 @@ public abstract class TabList<Player extends TabPlayer, Comp> {
      *          Component to convert
      * @return  Converted component
      */
-    public abstract Comp toComponent(@NonNull TabComponent component);
+    public abstract C toComponent(@NonNull TabComponent component);
 
     /**
      * TabList action.
