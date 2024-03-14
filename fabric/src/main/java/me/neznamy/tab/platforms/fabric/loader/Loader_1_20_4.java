@@ -14,9 +14,7 @@ import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.Connection;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.numbers.FixedFormat;
 import net.minecraft.network.chat.numbers.NumberFormat;
@@ -27,7 +25,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -41,8 +38,6 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -91,11 +86,7 @@ public class Loader_1_20_4 implements Loader {
             }
         }
 
-        //TODO only once
-        Constructor<Style> newStyle = ReflectionUtils.setAccessible(Style.class.getDeclaredConstructor(TextColor.class, Boolean.class, Boolean.class, Boolean.class,
-                Boolean.class, Boolean.class, ClickEvent.class, HoverEvent.class, String.class, ResourceLocation.class));
-
-        return newStyle.newInstance(
+        return new Style(
                 color,
                 modifier.isBold(),
                 modifier.isItalic(),
@@ -210,7 +201,7 @@ public class Loader_1_20_4 implements Loader {
             }
             updatedList.add(new ClientboundPlayerInfoUpdatePacket.Entry(nmsData.profileId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
         }
-        ReflectionUtils.getFields(ClientboundPlayerInfoUpdatePacket.class, List.class).get(0).set(packet, updatedList);
+        packet.entries = updatedList;
     }
 
     @Override
@@ -221,16 +212,15 @@ public class Loader_1_20_4 implements Loader {
             return new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry.getId()));
         }
         ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(Register1_19_3.actionMap.get(action), Collections.emptyList());
-        ReflectionUtils.getFields(ClientboundPlayerInfoUpdatePacket.class, List.class).get(0).set(packet,
-                Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
-                        entry.getId(),
-                        entry.createProfile(),
-                        true,
-                        entry.getLatency(),
-                        GameType.byId(entry.getGameMode()),
-                        entry.getDisplayName(),
-                        null
-                )));
+        packet.entries = Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
+                entry.getId(),
+                entry.createProfile(),
+                true,
+                entry.getLatency(),
+                GameType.byId(entry.getGameMode()),
+                entry.getDisplayName(),
+                null
+        ));
         return packet;
     }
 
@@ -286,8 +276,7 @@ public class Loader_1_20_4 implements Loader {
     @NotNull
     @SneakyThrows
     public Channel getChannel(@NotNull ServerPlayer player) {
-        Connection c = (Connection) ReflectionUtils.getFields(ServerCommonPacketListenerImpl.class, Connection.class).get(0).get(player.connection);
-        return (Channel) ReflectionUtils.getFields(Connection.class, Channel.class).get(0).get(c);
+        return player.connection.connection.channel;
     }
 
     @Override
@@ -299,12 +288,6 @@ public class Loader_1_20_4 implements Loader {
     @NotNull
     public Packet<?> removeScore(@NotNull String objective, @NotNull String holder) {
         return new ClientboundResetScorePacket(holder, objective);
-    }
-
-    @Override
-    @NotNull
-    public Field getComponentStyleField() {
-        return ReflectionUtils.getOnlyField(MutableComponent.class, Style.class);
     }
 
     @Override
@@ -323,6 +306,11 @@ public class Loader_1_20_4 implements Loader {
     @NotNull
     public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat) {
         return Register1_20_3.setScore(objective, holder, score, displayName, numberFormat);
+    }
+
+    @Override
+    public void setStyle(@NotNull Component component, @NotNull Style style) {
+        ((MutableComponent)component).setStyle(style);
     }
 
     /**

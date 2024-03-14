@@ -109,9 +109,6 @@ public interface Loader {
     @NotNull
     Packet<?> removeScore(@NotNull String objective, @NotNull String holder);
 
-    @NotNull
-    Field getComponentStyleField();
-
     int[] getDestroyedEntities(Packet<?> destroyPacket);
 
     @NotNull
@@ -119,4 +116,6 @@ public interface Loader {
 
     @NotNull
     Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat);
+
+    void setStyle(@NotNull Component component, @NotNull Style style);
 }

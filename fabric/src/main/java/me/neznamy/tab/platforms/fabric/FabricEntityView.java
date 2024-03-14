@@ -13,9 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -98,14 +96,13 @@ public class FabricEntityView implements EntityView {
     @Override
     @SneakyThrows
     public int getTeleportEntityId(@NotNull Object teleportPacket) {
-        // Reflection because on 1.16.5 there is no getter and per-version code would only add unnecessary code
-        return ReflectionUtils.getFields(ClientboundTeleportEntityPacket.class, int.class).get(0).getInt(teleportPacket);
+        return ((ClientboundTeleportEntityPacket)teleportPacket).id;
     }
 
     @Override
     @SneakyThrows
     public int getMoveEntityId(@NotNull Object movePacket) {
-        return (int) ReflectionUtils.getFields(ClientboundMoveEntityPacket.class, int.class).get(0).get(movePacket);
+        return ((ClientboundMoveEntityPacket)movePacket).entityId;
     }
 
     @Override
@@ -134,12 +131,8 @@ public class FabricEntityView implements EntityView {
     @NotNull
     @SneakyThrows
     public Location getMoveDiff(@NotNull Object movePacket) {
-        List<Field> fields = ReflectionUtils.getFields(ClientboundMoveEntityPacket.class, short.class);
-        return new Location(
-                (short) fields.get(0).get(movePacket),
-                (short) fields.get(1).get(movePacket),
-                (short) fields.get(2).get(movePacket)
-        );
+        ClientboundMoveEntityPacket packet = (ClientboundMoveEntityPacket) movePacket;
+        return new Location(packet.xa, packet.ya, packet.za);
     }
 
     @Override

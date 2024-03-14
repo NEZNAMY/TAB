@@ -19,7 +19,6 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
@@ -313,12 +312,6 @@ public class Loader_1_14_4 implements Loader {
     }
 
     @Override
-    @NotNull
-    public Field getComponentStyleField() {
-        return ReflectionUtils.getOnlyField(BaseComponent.class, Style.class);
-    }
-
-    @Override
     @SneakyThrows
     public int[] getDestroyedEntities(Packet<?> destroyPacket) {
         return (int[]) ReflectionUtils.getOnlyField(destroyPacket.getClass()).get(destroyPacket);
@@ -335,5 +328,10 @@ public class Loader_1_14_4 implements Loader {
     @NotNull
     public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat) {
         return new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, holder, score);
+    }
+
+    @Override
+    public void setStyle(@NotNull Component component, @NotNull Style style) {
+        component.setStyle(style);
     }
 }

@@ -28,7 +28,6 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 /**
@@ -39,7 +38,6 @@ public class FabricMultiVersion {
     public static final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion);
     public static final Loader loaderNew = new Loader_1_20_4();
     public static final Loader loaderOld = createOldLoader();
-    public static final Field Component_style = getComponentStyleField();
 
     @SneakyThrows
     private static Loader createOldLoader() {
@@ -134,10 +132,9 @@ public class FabricMultiVersion {
         return loaderOld.spawnEntity(level, id, uuid, type, location);
     }
 
-    @NotNull
-    public static Field getComponentStyleField() {
-        if (serverVersion.getMinorVersion() >= 19) return loaderNew.getComponentStyleField();
-        return loaderOld.getComponentStyleField();
+    public static void setStyle(@NotNull Component component, @NotNull Style style) {
+        if (serverVersion.getMinorVersion() >= 19) loaderNew.setStyle(component, style);
+        else loaderOld.setStyle(component, style);
     }
 
     @SneakyThrows

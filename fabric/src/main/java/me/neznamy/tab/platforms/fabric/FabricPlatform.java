@@ -149,7 +149,7 @@ public class FabricPlatform implements BackendPlatform {
         StructuredComponent component1 = (StructuredComponent) component;
         Component nmsComponent = FabricMultiVersion.newTextComponent(component1.getText());
 
-        FabricMultiVersion.Component_style.set(nmsComponent, FabricMultiVersion.convertModifier(component1.getModifier(), version));
+        FabricMultiVersion.setStyle(nmsComponent, FabricMultiVersion.convertModifier(component1.getModifier(), version));
         for (StructuredComponent extra : component1.getExtra()) {
             FabricMultiVersion.addSibling(nmsComponent, toComponent(extra, version));
         }

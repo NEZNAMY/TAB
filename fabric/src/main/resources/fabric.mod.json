@@ -23,5 +23,6 @@
   },
   "recommends": {
     "fabric-permissions-api-v0": "*"
-  }
+  },
+  "accessWidener": "tab.accesswidener"
 }

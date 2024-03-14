@@ -179,9 +179,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @Override
     @SneakyThrows
     public void onDisplayObjective(@NonNull Object packet) {
-        int slot = FabricMultiVersion.getDisplaySlot((ClientboundSetDisplayObjectivePacket) packet);
-        String objective = (String) ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet);
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player, slot, objective);
+        ClientboundSetDisplayObjectivePacket obj = (ClientboundSetDisplayObjectivePacket) packet;
+        TAB.getInstance().getFeatureManager().onDisplayObjective(player, FabricMultiVersion.getDisplaySlot(obj), obj.objectiveName);
     }
 
     @Override
@@ -192,9 +191,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     @Override
     @SneakyThrows
     public void onObjective(@NonNull Object packet) {
-        int action = ReflectionUtils.getFields(packet.getClass(), int.class).get(0).getInt(packet);
-        String objective = (String) ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet);
-        TAB.getInstance().getFeatureManager().onObjective(player, action, objective);
+        ClientboundSetObjectivePacket obj = (ClientboundSetObjectivePacket) packet;
+        TAB.getInstance().getFeatureManager().onObjective(player, obj.method, obj.objectiveName);
     }
 
     @NonNull
