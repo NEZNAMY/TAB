@@ -263,10 +263,9 @@ public class TeamPacketData {
      *          Team flags
      * @param   color
      *          Team color for 1.13+
-     * @return  Team with specified parameters
      */
     @SneakyThrows
-    private Object updateTeamData(@NonNull Object team, @NonNull String prefix, @Nullable Object prefixComponent,
+    private void updateTeamData(@NonNull Object team, @NonNull String prefix, @Nullable Object prefixComponent,
                                   @NonNull String suffix, @Nullable Object suffixComponent,
                                   @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
                                   int options, @NonNull EnumChatFormat color) {
@@ -282,7 +281,6 @@ public class TeamPacketData {
         }
         setVisibility.accept(team, visibility);
         setCollision.accept(team, collision);
-        return team;
     }
 
     /**
