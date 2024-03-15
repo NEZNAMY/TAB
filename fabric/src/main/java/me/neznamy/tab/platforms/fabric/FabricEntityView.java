@@ -1,11 +1,9 @@
 package me.neznamy.tab.platforms.fabric;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
@@ -104,10 +102,8 @@ public class FabricEntityView implements EntityView {
     }
 
     @Override
-    @SneakyThrows
     public int getSpawnedPlayer(@NotNull Object playerSpawnPacket) {
-        // On 1.16.5- getter is client-only and on 1.20.2+ it is a different class
-        return ReflectionUtils.getFields(playerSpawnPacket.getClass(), int.class).get(0).getInt(playerSpawnPacket);
+        return FabricMultiVersion.getSpawnedPlayerId((Packet<?>) playerSpawnPacket);
     }
 
     @Override

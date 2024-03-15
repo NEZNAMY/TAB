@@ -276,6 +276,12 @@ public class Loader_1_14_4 implements Loader {
     }
 
     @Override
+    @SneakyThrows
+    public int getSpawnedPlayerId(@NotNull Packet<?> packet) {
+        return ReflectionUtils.getFields(ClientboundAddPlayerPacket.class, int.class).get(0).getInt(packet);
+    }
+
+    @Override
     public int getPing(@NotNull ServerPlayer player) {
         return player.latency;
     }

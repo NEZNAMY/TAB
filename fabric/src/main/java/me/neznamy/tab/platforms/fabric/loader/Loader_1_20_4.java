@@ -254,6 +254,11 @@ public class Loader_1_20_4 implements Loader {
     }
 
     @Override
+    public int getSpawnedPlayerId(@NotNull Packet<?> packet) {
+        return ((ClientboundAddEntityPacket)packet).getId();
+    }
+
+    @Override
     public int getPing(@NotNull ServerPlayer player) {
         return player.connection.latency();
     }

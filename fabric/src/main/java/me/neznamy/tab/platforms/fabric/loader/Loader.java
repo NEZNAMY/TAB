@@ -95,6 +95,8 @@ public interface Loader {
 
     boolean isSpawnPlayerPacket(@NotNull Packet<?> packet);
 
+    int getSpawnedPlayerId(@NotNull Packet<?> packet);
+
     int getPing(@NotNull ServerPlayer player);
 
     int getDisplaySlot(@NotNull ClientboundSetDisplayObjectivePacket packet);

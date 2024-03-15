@@ -218,6 +218,11 @@ public class FabricMultiVersion {
         return loaderOld.isSpawnPlayerPacket(packet);
     }
 
+    public static int getSpawnedPlayerId(@NotNull Packet<?> packet) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getSpawnedPlayerId(packet);
+        return loaderOld.getSpawnedPlayerId(packet);
+    }
+
     public static int getPing(@NotNull ServerPlayer player) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getPing(player);
         return loaderOld.getPing(player);
