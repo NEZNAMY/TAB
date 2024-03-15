@@ -309,6 +309,16 @@ public class Loader_1_20_4 implements Loader {
         ((MutableComponent)component).setStyle(style);
     }
 
+    @Override
+    public void logInfo(@NotNull TabComponent message) {
+        MinecraftServer.LOGGER.info("[TAB] " + message.toLegacyText());
+    }
+
+    @Override
+    public void logWarn(@NotNull TabComponent message) {
+        MinecraftServer.LOGGER.warn("[TAB] " + message.toLegacyText());
+    }
+
     /**
      * Why is this needed? Because otherwise it throws error about a class
      * not existing despite the code never running.

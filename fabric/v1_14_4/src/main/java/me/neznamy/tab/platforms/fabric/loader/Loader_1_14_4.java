@@ -334,4 +334,18 @@ public class Loader_1_14_4 implements Loader {
     public void setStyle(@NotNull Component component, @NotNull Style style) {
         component.setStyle(style);
     }
+
+    @Override
+    @SneakyThrows
+    public void logInfo(@NotNull TabComponent message) {
+        Object logger = ReflectionUtils.getFields(MinecraftServer.class, Class.forName("org.apache.logging.log4j.Logger")).get(0).get(null);
+        logger.getClass().getMethod("info", String.class).invoke(logger, "[TAB] " + message.toLegacyText());
+    }
+
+    @Override
+    @SneakyThrows
+    public void logWarn(@NotNull TabComponent message) {
+        Object logger = ReflectionUtils.getFields(MinecraftServer.class, Class.forName("org.apache.logging.log4j.Logger")).get(0).get(null);
+        logger.getClass().getMethod("warn", String.class).invoke(logger, "[TAB] " + message.toLegacyText());
+    }
 }

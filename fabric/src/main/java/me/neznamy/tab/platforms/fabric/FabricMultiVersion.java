@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -107,6 +108,16 @@ public class FabricMultiVersion {
         } else {
             player.connection.send(new ClientboundRemoveEntitiesPacket(entities));
         }
+    }
+
+    public static void logInfo(@NotNull TabComponent message) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_18_2.getNetworkId()) loaderNew.logInfo(message);
+        else loaderOld.logInfo(message);
+    }
+
+    public static void logWarn(@NotNull TabComponent message) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_18_2.getNetworkId()) loaderNew.logWarn(message);
+        else loaderOld.logWarn(message);
     }
 
     @NotNull

@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.fabric;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.platforms.fabric.features.FabricNameTagX;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -17,7 +16,6 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
@@ -82,28 +80,13 @@ public class FabricPlatform implements BackendPlatform {
     }
 
     @Override
-    @SneakyThrows
     public void logInfo(@NotNull TabComponent message) {
-        Object logger = getLogger();
-        logger.getClass().getMethod("info", String.class).invoke(logger, "[TAB] " + message.toLegacyText());
+        FabricMultiVersion.logInfo(message);
     }
 
     @Override
-    @SneakyThrows
     public void logWarn(@NotNull TabComponent message) {
-        Object logger = getLogger();
-        logger.getClass().getMethod("warn", String.class).invoke(logger, "[TAB] " + message.toLegacyText());
-    }
-
-    @SneakyThrows
-    private Object getLogger() {
-        Class<?> loggerClass;
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_18_2.getNetworkId()) {
-            loggerClass = Class.forName("org.slf4j.Logger");
-        } else {
-            loggerClass = Class.forName("org.apache.logging.log4j.Logger");
-        }
-        return ReflectionUtils.getFields(MinecraftServer.class, loggerClass).get(0).get(null);
+        FabricMultiVersion.logWarn(message);
     }
 
     @Override

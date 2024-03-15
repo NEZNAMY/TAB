@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.commands.CommandSourceStack;
@@ -118,4 +119,8 @@ public interface Loader {
     Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat);
 
     void setStyle(@NotNull Component component, @NotNull Style style);
+
+    void logInfo(@NotNull TabComponent message);
+
+    void logWarn(@NotNull TabComponent message);
 }
