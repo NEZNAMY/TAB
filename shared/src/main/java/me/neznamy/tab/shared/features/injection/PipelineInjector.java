@@ -19,12 +19,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class PipelineInjector extends TabFeature implements JoinListener, Loadable, UnLoadable {
 
-    /** Team anti-override flag */
-    protected boolean antiOverrideTeams;
-
-    /** Whether ByteBuf deserialization should be enabled or not */
-    protected boolean byteBufDeserialization;
-
     /**
      * Injects handler into player's channel.
      *
@@ -43,11 +37,6 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
 
     @Override
     public void load() {
-        antiOverrideTeams = config().getBoolean("scoreboard-teams.enabled", true) &&
-                config().getBoolean("scoreboard-teams.anti-override", true);
-        boolean respectOtherScoreboardPlugins = config().getBoolean("scoreboard.enabled", false) &&
-                config().getBoolean("scoreboard.respect-other-plugins", true);
-        byteBufDeserialization = antiOverrideTeams || respectOtherScoreboardPlugins;
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             inject(p);
         }

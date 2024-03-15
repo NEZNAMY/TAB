@@ -89,15 +89,11 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
             try {
                 if (player.getVersion().getMinorVersion() >= 8)
                     player.getTabList().onPacketSend(packet);
-                if (player.getScoreboard().isDisplayObjective(packet))
-                    player.getScoreboard().onDisplayObjective(packet);
-                if (player.getScoreboard().isObjective(packet))
-                    player.getScoreboard().onObjective(packet);
-                if (antiOverrideTeams && player.getScoreboard().isTeamPacket(packet)) {
-                    long time = System.nanoTime();
-                    player.getScoreboard().onTeamPacket(packet);
-                    TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
-                }
+
+                long time = System.nanoTime();
+                player.getScoreboard().onPacketSend(packet);
+                TAB.getInstance().getCPUManager().addTime("Scoreboard management", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+
                 if (isLogin(packet)) {
                     player.getScoreboard().freeze();
                     super.write(context, packet, channelPromise);

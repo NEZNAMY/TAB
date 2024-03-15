@@ -157,64 +157,47 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public boolean isTeamPacket(@NonNull Object packet) {
-        return packet instanceof Team;
-    }
-
-    @Override
-    public void onTeamPacket(@NonNull Object team) {
-        NameTag nameTag = TAB.getInstance().getNameTagManager();
-        if (nameTag == null) return;
-        Team packet = (Team) team;
-        if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
-        Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-        Collection<String> col = Lists.newArrayList(packet.getPlayers());
-        for (String entry : packet.getPlayers()) {
-            TabPlayer player = getPlayer(entry);
-            if (player != null) {
-                String expectedTeam = sorting.getShortTeamName(player);
-                if (expectedTeam == null || nameTag.getDisableChecker().isDisabledPlayer(player) ||
-                        nameTag.hasTeamHandlingPaused(player)) continue;
-                if (!packet.getName().equals(expectedTeam)) {
-                    logTeamOverride(packet.getName(), player.getName(), expectedTeam);
-                    col.remove(player.getNickname());
-                }
-            }
+    public void onPacketSend(@NonNull Object packet) {
+        if (packet instanceof ScoreboardDisplay) {
+            ScoreboardDisplay display = (ScoreboardDisplay) packet;
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getPosition(), display.getName());
         }
-        RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-        if (redis != null) {
-            RedisTeams teams = redis.getRedisTeams();
-            if (teams != null) {
-                for (RedisPlayer p : redis.getRedisPlayers().values()) {
-                    if (col.contains(p.getNickname()) && !packet.getName().equals(teams.getTeamNames().get(p))) {
-                        logTeamOverride(packet.getName(), p.getNickname(), teams.getTeamNames().get(p));
-                        col.remove(p.getNickname());
+        if (packet instanceof ScoreboardObjective) {
+            ScoreboardObjective objective = (ScoreboardObjective) packet;
+            TAB.getInstance().getFeatureManager().onObjective(player, objective.getAction(), objective.getName());
+        }
+        if (isAntiOverrideTeams() && packet instanceof Team) {
+            Team team = (Team) packet;
+            if (team.getMode() == 1 || team.getMode() == 2 || team.getMode() == 4) return;
+            NameTag nameTag = TAB.getInstance().getNameTagManager();
+            if (nameTag == null) return;
+            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            Collection<String> col = Lists.newArrayList(team.getPlayers());
+            for (String entry : team.getPlayers()) {
+                TabPlayer player = getPlayer(entry);
+                if (player != null) {
+                    String expectedTeam = sorting.getShortTeamName(player);
+                    if (expectedTeam == null || nameTag.getDisableChecker().isDisabledPlayer(player) ||
+                            nameTag.hasTeamHandlingPaused(player)) continue;
+                    if (!team.getName().equals(expectedTeam)) {
+                        logTeamOverride(team.getName(), player.getName(), expectedTeam);
+                        col.remove(player.getNickname());
                     }
                 }
             }
+            RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+            if (redis != null) {
+                RedisTeams teams = redis.getRedisTeams();
+                if (teams != null) {
+                    for (RedisPlayer p : redis.getRedisPlayers().values()) {
+                        if (col.contains(p.getNickname()) && !team.getName().equals(teams.getTeamNames().get(p))) {
+                            logTeamOverride(team.getName(), p.getNickname(), teams.getTeamNames().get(p));
+                            col.remove(p.getNickname());
+                        }
+                    }
+                }
+            }
+            team.setPlayers(col.toArray(new String[0]));
         }
-        packet.setPlayers(col.toArray(new String[0]));
-    }
-
-    @Override
-    public boolean isDisplayObjective(@NonNull Object packet) {
-        return packet instanceof ScoreboardDisplay;
-    }
-
-    @Override
-    public void onDisplayObjective(@NonNull Object packet) {
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                ((ScoreboardDisplay)packet).getPosition(), ((ScoreboardDisplay) packet).getName());
-    }
-
-    @Override
-    public boolean isObjective(@NonNull Object packet) {
-        return packet instanceof ScoreboardObjective;
-    }
-
-    @Override
-    public void onObjective(@NonNull Object packet) {
-        TAB.getInstance().getFeatureManager().onObjective(player,
-                ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
     }
 }

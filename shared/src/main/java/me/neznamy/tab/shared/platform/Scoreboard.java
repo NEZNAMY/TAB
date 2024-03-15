@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared.platform;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -36,6 +34,11 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     /** Flag tracking time between Login packet send and its processing */
     private boolean frozen;
+
+    /** Flag tracking anti-override value for teams */
+    @Getter
+    @Setter
+    private boolean antiOverrideTeams;
 
     /**
      * Sets display slot of an objective.
@@ -303,66 +306,13 @@ public abstract class Scoreboard<T extends TabPlayer> {
     }
 
     /**
-     * Returns {@code true} if packet is a team packet, {@code false} if not.
+     * Processes packet send.
      *
      * @param   packet
-     *          Minecraft packet to check
-     * @return  {@code true} if is a team packet, {@code false} if not.
+     *          Packet sent by the server
      */
-    public boolean isTeamPacket(@NonNull Object packet) {
-        return false;
-    }
-
-    /**
-     * Removes all real players from team if packet does not come from TAB and reports this to override log.
-     *
-     * @param   packet
-     *          Packet to process
-     */
-    public void onTeamPacket(@NonNull Object packet) {
-        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
-    }
-
-    /**
-     * Returns {@code true} if packet is a display objective packet, {@code false} if not.
-     *
-     * @param   packet
-     *          Minecraft packet to check
-     * @return  {@code true} if is a display objective packet, {@code false} if not.
-     */
-    public boolean isDisplayObjective(@NonNull Object packet) {
-        return false;
-    }
-
-    /**
-     * Processes display objective packet.
-     *
-     * @param   packet
-     *          Packet to process
-     */
-    public void onDisplayObjective(@NonNull Object packet) {
-        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
-    }
-
-    /**
-     * Returns {@code true} if packet is an objective packet, {@code false} if not.
-     *
-     * @param   packet
-     *          Minecraft packet to check
-     * @return  {@code true} if is an objective packet, {@code false} if not.
-     */
-    public boolean isObjective(@NonNull Object packet) {
-        return false;
-    }
-
-    /**
-     * Processes objective packet.
-     *
-     * @param   packet
-     *          Packet to process
-     */
-    public void onObjective(@NonNull Object packet) {
-        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
+    public void onPacketSend(@NonNull Object packet) {
+        // Implemented by platforms with pipeline injection
     }
 
     /**

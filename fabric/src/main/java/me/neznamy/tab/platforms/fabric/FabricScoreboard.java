@@ -131,68 +131,47 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         player.sendPacket(FabricMultiVersion.removeScore(objective, scoreHolder));
     }
 
-    @Override
-    public boolean isTeamPacket(@NonNull Object packet) {
-        return FabricMultiVersion.isTeamPacket((Packet<?>) packet);
-    }
-
-    @Override
-    @SneakyThrows
     @SuppressWarnings("unchecked")
-    public void onTeamPacket(@NonNull Object packet) {
-        if (TAB.getInstance().getNameTagManager() == null) return;
-        int action = ReflectionUtils.getInstanceFields(packet.getClass(), int.class).get(0).getInt(packet);
-        if (action == 1 || action == 2 || action == 4) return;
-        Field playersField = ReflectionUtils.getFields(packet.getClass(), Collection.class).get(0);
-        Collection<String> players = (Collection<String>) playersField.get(packet);
-        String teamName = String.valueOf(ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet));
-        if (players == null) return;
-        //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
-        Collection<String> newList = new ArrayList<>();
-        for (String entry : players) {
-            TabPlayer p = getPlayer(entry);
-            if (p == null) {
-                newList.add(entry);
-                continue;
-            }
-            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-            String expectedTeam = sorting.getShortTeamName(p);
-            if (expectedTeam == null) {
-                newList.add(entry);
-                continue;
-            }
-            if (!TAB.getInstance().getNameTagManager().getDisableChecker().isDisabledPlayer(p) &&
-                    !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
-                logTeamOverride(teamName, p.getName(), expectedTeam);
-            } else {
-                newList.add(entry);
-            }
+    @Override
+    @SneakyThrows
+    public void onPacketSend(@NonNull Object packet) {
+        if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player, FabricMultiVersion.getDisplaySlot(display), display.objectiveName);
         }
-        playersField.set(packet, newList);
-    }
-
-    @Override
-    public boolean isDisplayObjective(@NonNull Object packet) {
-        return packet instanceof ClientboundSetDisplayObjectivePacket;
-    }
-
-    @Override
-    @SneakyThrows
-    public void onDisplayObjective(@NonNull Object packet) {
-        ClientboundSetDisplayObjectivePacket obj = (ClientboundSetDisplayObjectivePacket) packet;
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player, FabricMultiVersion.getDisplaySlot(obj), obj.objectiveName);
-    }
-
-    @Override
-    public boolean isObjective(@NonNull Object packet) {
-        return packet instanceof ClientboundSetObjectivePacket;
-    }
-
-    @Override
-    @SneakyThrows
-    public void onObjective(@NonNull Object packet) {
-        ClientboundSetObjectivePacket obj = (ClientboundSetObjectivePacket) packet;
-        TAB.getInstance().getFeatureManager().onObjective(player, obj.method, obj.objectiveName);
+        if (packet instanceof ClientboundSetObjectivePacket objective) {
+            TAB.getInstance().getFeatureManager().onObjective(player, objective.method, objective.objectiveName);
+        }
+        if (isAntiOverrideTeams() && FabricMultiVersion.isTeamPacket((Packet<?>) packet)) {
+            if (TAB.getInstance().getNameTagManager() == null) return;
+            int action = ReflectionUtils.getInstanceFields(packet.getClass(), int.class).get(0).getInt(packet);
+            if (action == 1 || action == 2 || action == 4) return;
+            Field playersField = ReflectionUtils.getFields(packet.getClass(), Collection.class).get(0);
+            Collection<String> players = (Collection<String>) playersField.get(packet);
+            String teamName = String.valueOf(ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet));
+            if (players == null) return;
+            //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
+            Collection<String> newList = new ArrayList<>();
+            for (String entry : players) {
+                TabPlayer p = getPlayer(entry);
+                if (p == null) {
+                    newList.add(entry);
+                    continue;
+                }
+                Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+                String expectedTeam = sorting.getShortTeamName(p);
+                if (expectedTeam == null) {
+                    newList.add(entry);
+                    continue;
+                }
+                if (!TAB.getInstance().getNameTagManager().getDisableChecker().isDisabledPlayer(p) &&
+                        !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
+                    logTeamOverride(teamName, p.getName(), expectedTeam);
+                } else {
+                    newList.add(entry);
+                }
+            }
+            playersField.set(packet, newList);
+        }
     }
 
     @NonNull

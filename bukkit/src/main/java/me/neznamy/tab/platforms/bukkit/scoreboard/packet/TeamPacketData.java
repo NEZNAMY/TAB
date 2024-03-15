@@ -296,19 +296,20 @@ public class TeamPacketData {
     }
 
     /**
-     * Removes all real players from team if sent by other plugins and
-     * anti-override is fully active on a player.
+     * Checks if packet is team packet and removes all real players from team
+     * if sent by other plugins and anti-override is fully active on a player.
      *
-     * @param   team
-     *          Team packet
+     * @param   packet
+     *          Received packet
      */
     @SneakyThrows
-    public void onTeamPacket(@NonNull Object team) {
+    public void onPacketSend(@NonNull Object packet) {
+        if (!TeamPacketClass.isInstance(packet)) return;
         if (TAB.getInstance().getNameTagManager() == null) return;
-        int action = TeamPacket_ACTION.getInt(team);
+        int action = TeamPacket_ACTION.getInt(packet);
         if (action == 1 || action == 2 || action == 4) return;
-        Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(team);
-        String teamName = (String) TeamPacket_NAME.get(team);
+        Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
+        String teamName = (String) TeamPacket_NAME.get(packet);
         if (players == null) return;
         //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
         Collection<String> newList = new ArrayList<>();
@@ -331,6 +332,6 @@ public class TeamPacketData {
                 newList.add(entry);
             }
         }
-        TeamPacket_PLAYERS.set(team, newList);
+        TeamPacket_PLAYERS.set(packet, newList);
     }
 }

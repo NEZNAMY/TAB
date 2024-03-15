@@ -194,35 +194,14 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public boolean isTeamPacket(@NonNull Object packet) {
-        return teamPacketData.getTeamPacketClass().isInstance(packet);
-    }
-
-    @Override
-    public void onTeamPacket(@NonNull Object team) {
-        teamPacketData.onTeamPacket(team);
-    }
-
-    @Override
-    public boolean isDisplayObjective(@NonNull Object packet) {
-        return displayPacketData.isDisplayObjective(packet);
-    }
-
-    @Override
-    public void onDisplayObjective(@NonNull Object packet) {
-        displayPacketData.onDisplayObjective(player, packet);
-    }
-
-    @Override
-    public boolean isObjective(@NonNull Object packet) {
-        return ObjectivePacketClass.isInstance(packet);
-    }
-
-    @Override
     @SneakyThrows
-    public void onObjective(@NonNull Object packet) {
-        TAB.getInstance().getFeatureManager().onObjective(player,
-                Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
+    public void onPacketSend(@NonNull Object packet) {
+        displayPacketData.onPacketSend(player, packet);
+        if (ObjectivePacketClass.isInstance(packet))  {
+            TAB.getInstance().getFeatureManager().onObjective(player,
+                    Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
+        }
+        if (isAntiOverrideTeams()) teamPacketData.onPacketSend(packet);
     }
 
     /**

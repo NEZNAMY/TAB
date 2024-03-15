@@ -63,6 +63,21 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     @NotNull
     private final Supplier<DefinedPacket>[] extraPacketSuppliers = new Supplier[]{Team::new, ScoreboardDisplay::new, ScoreboardObjective::new};
 
+    /** Whether ByteBuf deserialization should be enabled or not */
+    protected boolean byteBufDeserialization;
+
+    /**
+     * Constructs new instance of the feature
+     */
+    public BungeePipelineInjector() {
+        super("inbound-boss");
+        boolean antiOverrideTeams = config().getBoolean("scoreboard-teams.enabled", true) &&
+                config().getBoolean("scoreboard-teams.anti-override", true);
+        boolean respectOtherScoreboardPlugins = config().getBoolean("scoreboard.enabled", false) &&
+                config().getBoolean("scoreboard.respect-other-plugins", true);
+        byteBufDeserialization = antiOverrideTeams || respectOtherScoreboardPlugins;
+    }
+
     @Override
     @NotNull
     public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
@@ -80,13 +95,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     @Override
     public boolean isLogin(@NotNull Object packet) {
         return packet instanceof Login;
-    }
-
-    /**
-     * Constructs new instance of the feature
-     */
-    public BungeePipelineInjector() {
-        super("inbound-boss");
     }
 
     /**

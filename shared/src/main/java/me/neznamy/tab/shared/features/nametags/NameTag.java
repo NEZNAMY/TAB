@@ -25,6 +25,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     protected final boolean invisibleNameTags = config().getBoolean("scoreboard-teams.invisible-nametags", false);
     private final boolean canSeeFriendlyInvisibles = config().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
+    private final boolean antiOverride = config().getBoolean("scoreboard-teams.anti-override", true);
     @Getter private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     @Getter private final CollisionManager collisionManager = new CollisionManager(this);
     @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
@@ -44,8 +45,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
-        if (!config().getBoolean("scoreboard-teams.anti-override", true))
-            TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
+        if (!antiOverride) TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
     }
 
     @Override
@@ -54,6 +54,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            all.getScoreboard().setAntiOverrideTeams(antiOverride);
             updateProperties(all);
             hiddenNameTagFor.put(all, new HashSet<>());
             if (disableChecker.isDisableConditionMet(all)) {
@@ -105,6 +106,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        connectedPlayer.getScoreboard().setAntiOverrideTeams(antiOverride);
         updateProperties(connectedPlayer);
         hiddenNameTagFor.put(connectedPlayer, new HashSet<>());
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
