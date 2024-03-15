@@ -75,7 +75,6 @@ public class Loader_1_20_4 implements Loader {
 
     @Override
     @NotNull
-    @SneakyThrows
     public Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version) {
         TextColor color = null;
         if (modifier.getColor() != null) {
@@ -180,7 +179,6 @@ public class Loader_1_20_4 implements Loader {
     }
 
     @Override
-    @SneakyThrows
     public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet0) {
         ClientboundPlayerInfoUpdatePacket packet = (ClientboundPlayerInfoUpdatePacket) packet0;
         EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = packet.actions();
@@ -206,7 +204,6 @@ public class Loader_1_20_4 implements Loader {
 
     @Override
     @NotNull
-    @SneakyThrows
     public Packet<?> buildTabListPacket(@NotNull TabList.Action action, @NotNull FabricTabList.Builder entry) {
         if (action == TabList.Action.REMOVE_PLAYER) {
             return new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry.getId()));
@@ -274,7 +271,6 @@ public class Loader_1_20_4 implements Loader {
 
     @Override
     @NotNull
-    @SneakyThrows
     public Channel getChannel(@NotNull ServerPlayer player) {
         return player.connection.connection.channel;
     }

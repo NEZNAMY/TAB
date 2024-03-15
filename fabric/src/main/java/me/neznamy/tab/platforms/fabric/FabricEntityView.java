@@ -94,13 +94,11 @@ public class FabricEntityView implements EntityView {
     }
 
     @Override
-    @SneakyThrows
     public int getTeleportEntityId(@NotNull Object teleportPacket) {
         return ((ClientboundTeleportEntityPacket)teleportPacket).id;
     }
 
     @Override
-    @SneakyThrows
     public int getMoveEntityId(@NotNull Object movePacket) {
         return ((ClientboundMoveEntityPacket)movePacket).entityId;
     }
@@ -129,7 +127,6 @@ public class FabricEntityView implements EntityView {
 
     @Override
     @NotNull
-    @SneakyThrows
     public Location getMoveDiff(@NotNull Object movePacket) {
         ClientboundMoveEntityPacket packet = (ClientboundMoveEntityPacket) movePacket;
         return new Location(packet.xa, packet.ya, packet.za);
