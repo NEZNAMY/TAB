@@ -63,6 +63,12 @@ public class FabricMultiVersion {
     }
 
     @NotNull
+    public static Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version) {
+        if (serverVersion.getMinorVersion() >= 16) return loaderNew.convertModifier(modifier, version);
+        return loaderOld.convertModifier(modifier, version);
+    }
+
+    @NotNull
     public static Packet<?> newHeaderFooter(@NotNull Component header, @NotNull Component footer) {
         if (serverVersion.getMinorVersion() >= 17) return loaderNew.newHeaderFooter(header, footer);
         return loaderOld.newHeaderFooter(header, footer);
@@ -126,12 +132,6 @@ public class FabricMultiVersion {
         return loaderOld.newTextComponent(text);
     }
 
-    @NotNull
-    public static Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version) {
-        if (serverVersion.getMinorVersion() >= 19) return loaderNew.convertModifier(modifier, version);
-        return loaderOld.convertModifier(modifier, version);
-    }
-
     public static void sendMessage(@NotNull CommandSourceStack source, @NotNull Component message) {
         if (serverVersion.getMinorVersion() >= 19) loaderNew.sendMessage(source, message);
         else loaderOld.sendMessage(source, message);
@@ -143,8 +143,10 @@ public class FabricMultiVersion {
         return loaderOld.spawnEntity(level, id, uuid, type, location);
     }
 
+    @SneakyThrows
     public static void setStyle(@NotNull Component component, @NotNull Style style) {
         if (serverVersion.getMinorVersion() >= 19) loaderNew.setStyle(component, style);
+        else if (serverVersion.getMinorVersion() >= 16) component.getClass().getMethod("method_10862", Style.class).invoke(component, style);
         else loaderOld.setStyle(component, style);
     }
 
