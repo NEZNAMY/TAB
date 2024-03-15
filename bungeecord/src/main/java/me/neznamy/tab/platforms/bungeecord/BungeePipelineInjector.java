@@ -11,8 +11,8 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
@@ -23,7 +23,6 @@ import net.md_5.bungee.protocol.packet.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,9 +37,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     /** Inaccessible bungee internals */
     @Nullable
-    private static Field wrapperField;
-
-    @Nullable
     private static Object directionData;
 
     @Nullable
@@ -48,7 +44,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     static {
         try {
-            (wrapperField = InitialHandler.class.getDeclaredField("ch")).setAccessible(true);
             directionData = ReflectionUtils.setAccessible(Protocol.class.getDeclaredField("TO_CLIENT")).get(Protocol.GAME);
             getId = ReflectionUtils.setAccessible(Protocol.DirectionData.class.getDeclaredMethod("getId", Class.class, int.class));
         } catch (ReflectiveOperationException exception) {
@@ -85,11 +80,9 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    @Nullable
-    @SneakyThrows
+    @NotNull
     protected Channel getChannel(@NotNull TabPlayer player) {
-        if (wrapperField == null) return null;
-        return ((ChannelWrapper) wrapperField.get(((BungeeTabPlayer) player).getPlayer().getPendingConnection())).getHandle();
+        return ((UserConnection) ((BungeeTabPlayer) player).getPlayer()).getCh().getHandle();
     }
 
     @Override
@@ -132,12 +125,11 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          */
         @NotNull
         private Object deserialize(@NotNull ByteBuf buf) {
-            if (wrapperField == null) return buf;
             int marker = buf.readerIndex();
             try {
                 int packetId = buf.readByte();
                 for (int i=0; i<extraPacketClasses.length; i++) {
-                    ChannelWrapper ch = (ChannelWrapper) wrapperField.get(((BungeeTabPlayer) player).getPlayer().getPendingConnection());
+                    ChannelWrapper ch = ((UserConnection) ((BungeeTabPlayer) player).getPlayer()).getCh();
                     if (!ch.getEncodeProtocol().TO_CLIENT.hasPacket(extraPacketClasses[i], ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion())) {
                         continue;
                     }
