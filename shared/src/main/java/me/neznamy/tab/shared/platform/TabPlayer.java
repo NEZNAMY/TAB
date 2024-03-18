@@ -279,6 +279,16 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     }
 
     /**
+     * Makes sure the player is loaded. If not, throws {@link IllegalStateException}.
+     *
+     * @throws  IllegalStateException
+     *          If player is not loaded yet
+     */
+    public void ensureLoaded() {
+        if (!loaded) throw new IllegalStateException("This player is not loaded yet. Try again later");
+    }
+
+    /**
      * Marks player as offline (online flag to {@code false}).
      */
     public void markOffline() {

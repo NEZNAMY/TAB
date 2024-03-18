@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
-import me.neznamy.tab.shared.util.Preconditions;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
@@ -163,68 +162,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             registerTeam(p);
         }
     }
-
-    @Override
-    public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        if (!hiddenNameTag.add(player)) return;
-        updateTeamData((TabPlayer) player);
-    }
-    
-    @Override
-    public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
-        if (!hiddenNameTagFor.get(player).add(viewer)) return;
-        updateTeamData((TabPlayer) player, (TabPlayer) viewer);
-    }
-
-    @Override
-    public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        if (!hiddenNameTag.remove(player)) return;
-        updateTeamData((TabPlayer) player);
-    }
-    
-    @Override
-    public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
-        if (!hiddenNameTagFor.get(player).remove(viewer)) return;
-        updateTeamData((TabPlayer) player, (TabPlayer) viewer);
-    }
-
-    @Override
-    public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        return hiddenNameTag.contains(player);
-    }
-
-    @Override
-    public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
-        return hiddenNameTagFor.containsKey(player) && hiddenNameTagFor.get(player).contains(viewer);
-    }
-
-    @Override
-    public void pauseTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        if (teamHandlingPaused.contains(player)) return;
-        if (!disableChecker.isDisabledPlayer((TabPlayer) player)) unregisterTeam((TabPlayer) player, sorting.getShortTeamName((TabPlayer) player));
-        teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
-    }
-
-    @Override
-    public void resumeTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        if (!teamHandlingPaused.remove(player)) return; //removing before, so registerTeam method runs
-        if (!disableChecker.isDisabledPlayer((TabPlayer) player)) registerTeam((TabPlayer) player);
-    }
-
-    @Override
-    public boolean hasTeamHandlingPaused(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        return teamHandlingPaused.contains(player);
-    }
-
-    @Override
-    public void setCollisionRule(@NonNull me.neznamy.tab.api.TabPlayer player, Boolean collision) {
-        collisionManager.setCollisionRule((TabPlayer) player, collision);
-    }
-
-    @Override
-    public Boolean getCollisionRule(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        return collisionManager.getCollisionRule((TabPlayer) player);
-    }
     
     public void updateTeamData(@NonNull TabPlayer p) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
@@ -294,65 +231,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     @Override
-    public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String prefix) {
-        Preconditions.checkLoaded(player);
-        ((TabPlayer)player).getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
-        updateTeamData((TabPlayer) player);
-    }
-
-    @Override
-    public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String suffix) {
-        Preconditions.checkLoaded(player);
-        ((TabPlayer)player).getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
-        updateTeamData((TabPlayer) player);
-    }
-
-    @Override
-    public String getCustomPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        Preconditions.checkLoaded(player);
-        return ((TabPlayer)player).getProperty(TabConstants.Property.TAGPREFIX).getTemporaryValue();
-    }
-
-    @Override
-    public String getCustomSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        Preconditions.checkLoaded(player);
-        return ((TabPlayer)player).getProperty(TabConstants.Property.TAGSUFFIX).getTemporaryValue();
-    }
-
-    @Override
-    public @NonNull String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        Preconditions.checkLoaded(player);
-        return ((TabPlayer)player).getProperty(TabConstants.Property.TAGPREFIX).getOriginalRawValue();
-    }
-
-    @Override
-    public @NonNull String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        Preconditions.checkLoaded(player);
-        return ((TabPlayer)player).getProperty(TabConstants.Property.TAGSUFFIX).getOriginalRawValue();
-    }
-
-    @Override
-    public void toggleNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer p, boolean sendToggleMessage) {
-        TabPlayer player = (TabPlayer) p;
-        if (playersWithInvisibleNameTagView.contains(player)) {
-            playersWithInvisibleNameTagView.remove(player);
-            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsShown(), true);
-        } else {
-            playersWithInvisibleNameTagView.add(player);
-            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden(), true);
-        }
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(player, !playersWithInvisibleNameTagView.contains(player));
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            updateTeamData(all, player);
-        }
-    }
-
-    @Override
-    public boolean hasHiddenNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        return playersWithInvisibleNameTagView.contains(player);
-    }
-
-    @Override
     public void onLoginPacket(TabPlayer player) {
         if (!player.isLoaded()) return;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -383,5 +261,154 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @NotNull
     public String getFeatureName() {
         return "NameTags";
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+
+    @Override
+    public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (!hiddenNameTag.add(player)) return;
+        updateTeamData(p);
+    }
+
+    @Override
+    public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (!hiddenNameTagFor.get(player).add(viewer)) return;
+        updateTeamData(p, (TabPlayer) viewer);
+    }
+
+    @Override
+    public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (!hiddenNameTag.remove(player)) return;
+        updateTeamData(p);
+    }
+
+    @Override
+    public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (!hiddenNameTagFor.get(player).remove(viewer)) return;
+        updateTeamData(p, (TabPlayer) viewer);
+    }
+
+    @Override
+    public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return hiddenNameTag.contains(player);
+    }
+
+    @Override
+    public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+        return hiddenNameTagFor.containsKey(player) && hiddenNameTagFor.get(player).contains(viewer);
+    }
+
+    @Override
+    public void pauseTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (teamHandlingPaused.contains(player)) return;
+        if (!disableChecker.isDisabledPlayer(p)) unregisterTeam(p, sorting.getShortTeamName(p));
+        teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
+    }
+
+    @Override
+    public void resumeTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (!teamHandlingPaused.remove(player)) return; //removing before, so registerTeam method runs
+        if (!disableChecker.isDisabledPlayer(p)) registerTeam(p);
+    }
+
+    @Override
+    public boolean hasTeamHandlingPaused(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return teamHandlingPaused.contains(player);
+    }
+
+    @Override
+    public void setCollisionRule(@NonNull me.neznamy.tab.api.TabPlayer player, Boolean collision) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        collisionManager.setCollisionRule(p, collision);
+    }
+
+    @Override
+    public Boolean getCollisionRule(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return collisionManager.getCollisionRule(p);
+    }
+
+    @Override
+    public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String prefix) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        p.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
+        updateTeamData(p);
+    }
+
+    @Override
+    public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String suffix) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        p.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
+        updateTeamData(p);
+    }
+
+    @Override
+    public String getCustomPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return p.getProperty(TabConstants.Property.TAGPREFIX).getTemporaryValue();
+    }
+
+    @Override
+    public String getCustomSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return p.getProperty(TabConstants.Property.TAGSUFFIX).getTemporaryValue();
+    }
+
+    @Override
+    @NonNull
+    public String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return p.getProperty(TabConstants.Property.TAGPREFIX).getOriginalRawValue();
+    }
+
+    @Override
+    @NonNull
+    public String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return p.getProperty(TabConstants.Property.TAGSUFFIX).getOriginalRawValue();
+    }
+
+    @Override
+    public void toggleNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer p, boolean sendToggleMessage) {
+        TabPlayer player = (TabPlayer) p;
+        if (playersWithInvisibleNameTagView.contains(player)) {
+            playersWithInvisibleNameTagView.remove(player);
+            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsShown(), true);
+        } else {
+            playersWithInvisibleNameTagView.add(player);
+            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden(), true);
+        }
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(player, !playersWithInvisibleNameTagView.contains(player));
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            updateTeamData(all, player);
+        }
+    }
+
+    @Override
+    public boolean hasHiddenNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return playersWithInvisibleNameTagView.contains(player);
     }
 }

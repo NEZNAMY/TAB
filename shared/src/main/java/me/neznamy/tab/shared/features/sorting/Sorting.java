@@ -244,7 +244,18 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     }
 
     @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Sorting";
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+
+    @Override
     public void forceTeamName(@NonNull me.neznamy.tab.api.TabPlayer player, String name) {
+        ((TabPlayer)player).ensureLoaded();
         if (Objects.equals(forcedTeamName.get(player), name)) return;
         if (name != null && name.length() > Limitations.TEAM_NAME_LENGTH) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
         if (name != null) setTeamNameNote((TabPlayer) player, "Set using API");
@@ -266,12 +277,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
 
     @Override
     public @NotNull String getOriginalTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ((TabPlayer)player).ensureLoaded();
         return shortTeamNames.get((TabPlayer) player);
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Sorting";
     }
 }

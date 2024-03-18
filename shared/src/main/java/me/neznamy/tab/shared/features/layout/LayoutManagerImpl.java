@@ -186,20 +186,9 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     }
 
     @Override
-    public Layout createNewLayout(String name) {
-        return new LayoutPattern(this, name, Collections.emptyMap());
-    }
-
-    @Override
-    public void sendLayout(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Layout layout) {
-        forcedLayouts.put(player, (LayoutPattern) layout);
-        refresh((TabPlayer) player, false);
-    }
-
-    @Override
-    public void resetLayout(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        forcedLayouts.remove(player);
-        refresh((TabPlayer) player, false);
+    @NotNull
+    public String getFeatureName() {
+        return "Layout";
     }
 
     @Override
@@ -208,10 +197,27 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
         if (view != null) view.send();
     }
 
+    // ------------------
+    // API Implementation
+    // ------------------
+
     @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Layout";
+    public Layout createNewLayout(String name) {
+        return new LayoutPattern(this, name, Collections.emptyMap());
+    }
+
+    @Override
+    public void sendLayout(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Layout layout) {
+        ((TabPlayer)player).ensureLoaded();
+        forcedLayouts.put(player, (LayoutPattern) layout);
+        refresh((TabPlayer) player, false);
+    }
+
+    @Override
+    public void resetLayout(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ((TabPlayer)player).ensureLoaded();
+        forcedLayouts.remove(player);
+        refresh((TabPlayer) player, false);
     }
 
     @RequiredArgsConstructor

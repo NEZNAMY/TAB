@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.util.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -267,65 +266,69 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     }
 
     @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Tablist name formatting";
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+    
+    @Override
     public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String prefix) {
-        Preconditions.checkLoaded(player);
+        ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(prefix);
         updatePlayer(player, true);
     }
 
     @Override
     public void setName(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String customName) {
-        Preconditions.checkLoaded(player);
+        ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customName);
         updatePlayer(player, true);
     }
 
     @Override
     public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String suffix) {
-        Preconditions.checkLoaded(player);
+        ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(suffix);
         updatePlayer(player, true);
     }
 
     @Override
-    public String getCustomPrefix(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        Preconditions.checkLoaded(player);
+    public String getCustomPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).getTemporaryValue();
     }
 
     @Override
-    public String getCustomName(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        Preconditions.checkLoaded(player);
+    public String getCustomName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).getTemporaryValue();
     }
 
     @Override
-    public String getCustomSuffix(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        Preconditions.checkLoaded(player);
+    public String getCustomSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).getTemporaryValue();
     }
 
     @Override
-    public @NotNull String getOriginalPrefix(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        Preconditions.checkLoaded(player);
+    public @NotNull String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).getOriginalRawValue();
     }
 
     @Override
-    public @NotNull String getOriginalName(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        Preconditions.checkLoaded(player);
+    public @NotNull String getOriginalName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).getOriginalRawValue();
     }
 
     @Override
-    public @NotNull String getOriginalSuffix(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        Preconditions.checkLoaded(player);
+    public @NotNull String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).getOriginalRawValue();
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Tablist name formatting";
     }
 }
