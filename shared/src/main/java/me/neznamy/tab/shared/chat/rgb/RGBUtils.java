@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.chat.rgb.format.UnnamedFormat1;
 import me.neznamy.tab.shared.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.shared.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.shared.chat.rgb.gradient.GradientPattern;
-import me.neznamy.tab.shared.chat.rgb.gradient.KyoriGradient;
 import me.neznamy.tab.shared.chat.rgb.gradient.NexEngineGradient;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
@@ -61,7 +60,6 @@ public class RGBUtils {
                 new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>[^<]*<\\$#[0-9a-fA-F]{6}>"),
                         Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>[^<]*<\\$#[0-9a-fA-F]{6}>"),
                         "<$", 10, 3, 10, 7),
-                new KyoriGradient(),
                 new NexEngineGradient()
         };
     }
