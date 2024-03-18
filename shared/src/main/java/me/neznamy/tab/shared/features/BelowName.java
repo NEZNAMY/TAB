@@ -20,7 +20,7 @@ import java.util.Map;
  * Feature handler for BelowName feature
  */
 public class BelowName extends TabFeature implements JoinListener, Loadable, UnLoadable,
-        Refreshable, LoginPacketListener {
+        Refreshable, LoginPacketListener, WorldSwitchListener, ServerSwitchListener {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -68,7 +68,9 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
-                setScore(viewer, entry.getKey(), entry.getValue(), entry.getKey().getProperty(FANCY_FORMAT_PROPERTY).getFormat(viewer));
+                TabPlayer target = entry.getKey();
+                if (!sameServerAndWorld(viewer, target)) continue;
+                setScore(viewer, target, entry.getValue(), target.getProperty(FANCY_FORMAT_PROPERTY).getFormat(viewer));
             }
         }
     }
@@ -95,6 +97,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         int number = getValue(connectedPlayer);
         Property fancy = connectedPlayer.getProperty(FANCY_FORMAT_PROPERTY);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (!sameServerAndWorld(connectedPlayer, all)) continue;
             setScore(all, connectedPlayer, number, fancy.getFormat(all));
             if (all != connectedPlayer) {
                 setScore(connectedPlayer, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(connectedPlayer));
@@ -151,6 +154,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         Property fancy = refreshed.getProperty(FANCY_FORMAT_PROPERTY);
         fancy.update();
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (!sameServerAndWorld(viewer, refreshed)) continue;
             setScore(viewer, refreshed, number, fancy.getFormat(viewer));
         }
         if (redis != null) redis.updateBelowName(refreshed, number, fancy.get());
@@ -167,6 +171,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         if (disableChecker.isDisabledPlayer(player) || !player.isLoaded()) return;
         register(player);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (!sameServerAndWorld(all, player)) continue;
             if (all.isLoaded()) setScore(player, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(player));
         }
     }
@@ -208,6 +213,38 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     @NotNull
     public String getFeatureName() {
         return "BelowName";
+    }
+
+    /**
+     * Returns {@code true} if the two players are in the same server and world,
+     * {@code false} if not.
+     *
+     * @param   player1
+     *          First player
+     * @param   player2
+     *          Second player
+     * @return  {@code true} if players are in the same server and world, {@code false} otherwise
+     */
+    private boolean sameServerAndWorld(@NotNull TabPlayer player1, @NotNull TabPlayer player2) {
+        return player1.getServer().equals(player2.getServer()) && player1.getWorld().equals(player2.getWorld());
+    }
+
+    @Override
+    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+        updatePlayer(changed);
+    }
+
+    @Override
+    public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+        updatePlayer(changed);
+    }
+
+    private void updatePlayer(@NotNull TabPlayer player) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (!sameServerAndWorld(all, player)) continue;
+            setScore(player, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(player));
+            if (all != player) setScore(all, player, getValue(player), player.getProperty(FANCY_FORMAT_PROPERTY).getFormat(all));
+        }
     }
 
     @RequiredArgsConstructor
