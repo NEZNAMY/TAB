@@ -131,21 +131,6 @@ public enum EnumChatFormat {
     }
 
     /**
-     * Returns enum value with exact red, green and blue values or null if no match was found
-     *
-     * @param   rgb
-     *          RGB code
-     * @return  enum value or null if no such combination exists
-     */
-    @Nullable
-    public static EnumChatFormat fromRGBExact(int rgb) {
-        for (EnumChatFormat format : VALUES) {
-            if (format.rgb == rgb) return format;
-        }
-        return null;
-    }
-
-    /**
      * Color translation method taken from bukkit, which converts '&amp;' symbol into
      * the actual color character if followed by a valid color character.
      *
