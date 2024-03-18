@@ -211,7 +211,7 @@ public class Loader_1_20_4 implements Loader {
         ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(Register1_19_3.actionMap.get(action), Collections.emptyList());
         packet.entries = Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
                 entry.getId(),
-                entry.createProfile(),
+                action == TabList.Action.ADD_PLAYER ? entry.createProfile() : null,
                 true,
                 entry.getLatency(),
                 GameType.byId(entry.getGameMode()),

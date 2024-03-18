@@ -99,7 +99,7 @@ public class PacketTabList1193 extends PacketTabList18 {
         Object packet = newPlayerInfo.newInstance(actionToEnumSet.get(action), Collections.emptyList());
         PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(
                 id,
-                createProfile(id, name, skin),
+                action == Action.ADD_PLAYER ? createProfile(id, name, skin) : null,
                 true,
                 latency,
                 gameModes[gameMode],
