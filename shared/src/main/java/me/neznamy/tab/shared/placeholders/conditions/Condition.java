@@ -38,7 +38,10 @@ public class Condition {
         put("-|", line -> new StringCondition(line.split("-\\|"), String::endsWith)::isMet);
         put("!=", line -> new StringCondition(line.split("!="), (left, right) -> !left.equals(right))::isMet);
         put("=", line -> new StringCondition(line.split("="), String::equals)::isMet);
-        put("permission:", line -> p -> p.hasPermission(line.split(":")[1]));
+        put("permission:", line -> {
+            String node = line.split(":")[1];
+            return p -> p.hasPermission(node);
+        });
     }};
 
     /** Name of this condition defined in configuration */
