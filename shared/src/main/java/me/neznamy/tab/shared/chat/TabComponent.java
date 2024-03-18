@@ -107,12 +107,14 @@ public abstract class TabComponent {
                 }
                 EnumChatFormat format = EnumChatFormat.getByChar(c);
                 if (format != null) {
-                    component.setText(builder.toString());
-                    components.add(component);
-                    component = new StructuredComponent(component);
-                    component.setText("");
-                    component.getModifier().setFont(font);
-                    builder = new StringBuilder();
+                    if (builder.length() > 0) {
+                        component.setText(builder.toString());
+                        components.add(component);
+                        component = new StructuredComponent(component);
+                        component.setText("");
+                        component.getModifier().setFont(font);
+                        builder = new StringBuilder();
+                    }
                     switch (format) {
                         case BOLD:
                             component.getModifier().setBold(true);
