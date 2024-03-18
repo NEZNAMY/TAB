@@ -71,7 +71,7 @@ public class ParseCommand extends SubCommand {
             TAB.getInstance().getPlatform().logInfo(colored);
         }
         sendRawMessage(sender, EnumChatFormat.color("&3Raw colors: &e\"&r") + EnumChatFormat.decolor(replaced) + EnumChatFormat.color("&e\""));
-        sendRawMessage(sender, EnumChatFormat.color("&3Output length: &e" + replaced.length() + " &3characters"));
+        sendMessage(sender, "&3Output length: &e" + replaced.length() + " &3characters");
     }
 
     @Override

@@ -12,11 +12,9 @@ public class BungeeTAB extends Plugin {
 
     @Override
     public void onEnable() {
-        String requiredClass = "net.md_5.bungee.protocol.packet.ScoreboardScoreReset";
-        if (!ReflectionUtils.classExists(requiredClass)) {
-            getLogger().warning(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1774 " +
-                    "(released on November 25th, 2023) and up (or an equivalent fork) to work. Compatibility check " +
-                    "failed, because required class " + requiredClass + " was not found."));
+        if (!ReflectionUtils.classExists("net.md_5.bungee.protocol.packet.ScoreboardScoreReset")) {
+            getLogger().warning(EnumChatFormat.RED + "The plugin requires BungeeCord build #1774 " +
+                    "(released on November 25th, 2023) and up (or an equivalent fork) to work.");
             return;
         }
         TAB.create(new BungeePlatform(this));
