@@ -67,7 +67,7 @@ public abstract class SimpleCondition {
         for (String identifier : placeholders) {
             result = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(result, p);
         }
-        return result == null ? "null" : EnumChatFormat.color(result);
+        return EnumChatFormat.color(result);
     }
     
     /**

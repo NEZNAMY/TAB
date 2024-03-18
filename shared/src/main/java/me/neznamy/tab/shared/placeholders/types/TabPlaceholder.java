@@ -80,6 +80,7 @@ public abstract class TabPlaceholder implements Placeholder {
      *          player to set placeholder for
      * @return  string with this placeholder replaced
      */
+    @NotNull
     public String set(@NonNull String string, @Nullable TabPlayer player) {
         return replace(string, identifier, setPlaceholders(getLastValue(player), player));
     }
@@ -109,6 +110,7 @@ public abstract class TabPlaceholder implements Placeholder {
      *          Replacement text
      * @return  Replaced text
      */
+    @NotNull
     private String replace(@NonNull String string, @NonNull String original, @NonNull String replacement) {
         if (!string.contains(original)) return string;
         if (string.equals(original)) return replacement;
