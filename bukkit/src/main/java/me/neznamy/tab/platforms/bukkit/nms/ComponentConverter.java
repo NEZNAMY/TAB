@@ -1,12 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -23,11 +21,11 @@ import java.util.function.BiFunction;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ComponentConverter {
 
-    /** Component cache for better performance */
-    private final ComponentCache<TabComponent, Object> componentCache = new ComponentCache<>(1000, this::convert0);
+    /** Instance of the class */
+    public static ComponentConverter INSTANCE;
 
     private final FunctionWithException<String, Object> newTextComponent;
-    private final BiFunction<ChatModifier, ProtocolVersion, Object> convertModifier;
+    private final BiFunction<ChatModifier, Boolean, Object> convertModifier;
 
     private final Class<?> ChatModifier = BukkitReflection.getClass("network.chat.ChatModifier", "ChatModifier");
     private final Class<Enum> EnumChatFormat = (Class<Enum>) BukkitReflection.getClass("EnumChatFormat");
@@ -49,7 +47,7 @@ public class ComponentConverter {
      * @throws  ReflectiveOperationException
      *          If something failed
      */
-    public ComponentConverter() throws ReflectiveOperationException {
+    private ComponentConverter() throws ReflectiveOperationException {
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.IChatBaseComponent", "IChatBaseComponent");
         if (BukkitReflection.getMinorVersion() >= 19) {
             Method IChatBaseComponent_b = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"b", "literal"}, String.class);
@@ -87,41 +85,28 @@ public class ComponentConverter {
      *
      * @param   component
      *          Component to convert
-     * @param   version
-     *          Client version to convert component for
-     * @return  Converted component
-     */
-    public Object convert(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
-        return componentCache.get(component, version);
-    }
-
-    /**
-     * Converts TAB component to NMS component.
-     *
-     * @param   component
-     *          Component to convert
-     * @param   version
-     *          Client version
+     * @param   modern
+     *          Whether client supports RGB or not
      * @return  Converted component
      */
     @SneakyThrows
-    private Object convert0(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
+    public Object convert(@NotNull TabComponent component, boolean modern) {
         if (component instanceof SimpleComponent) return newTextComponent.apply(((SimpleComponent) component).getText());
 
         StructuredComponent component1 = (StructuredComponent) component;
         Object nmsComponent = newTextComponent.apply(component1.getText());
-        Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier(), version));
+        Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier(), modern));
         for (StructuredComponent extra : component1.getExtra()) {
-            ChatBaseComponent_addSibling.invoke(nmsComponent, convert0(extra, version));
+            ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra, modern));
         }
         return nmsComponent;
     }
 
     @SneakyThrows
-    private Object createModifierModern(@NotNull ChatModifier modifier, @NotNull ProtocolVersion clientVersion) {
+    private Object createModifierModern(@NotNull ChatModifier modifier, boolean modern) {
         Object color = null;
         if (modifier.getColor() != null) {
-            if (clientVersion.supportsRGB()) {
+            if (modern) {
                 color = ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb());
             } else {
                 color = ChatHexColor_fromRGB.invoke(null, modifier.getColor().getLegacyColor().getRgb());
@@ -153,5 +138,22 @@ public class ComponentConverter {
         if (modifier.isUnderlined()) magicCodes.get(3).set(nmsModifier, true);
         if (modifier.isObfuscated()) magicCodes.get(4).set(nmsModifier, true);
         return nmsModifier;
+    }
+
+    /**
+     * Attempts to load component converter.
+     */
+    public static void tryLoad() {
+        try {
+            INSTANCE = new ComponentConverter();
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * Makes sure the component converter is available and throws an exception if not.
+     */
+    public static void ensureAvailable() {
+        if (INSTANCE == null) throw new IllegalStateException("Component converter is not available");
     }
 }

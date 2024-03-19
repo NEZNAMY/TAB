@@ -5,7 +5,6 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
@@ -50,29 +49,30 @@ public class PaperScoreboard extends BukkitScoreboard {
 
     @Override
     public Objective newObjective(String objectiveName, String criteria, String title, int display) {
-        return scoreboard.registerNewObjective(objectiveName, criteria, toAdventure(title), RenderType.values()[display]);
+        return scoreboard.registerNewObjective(objectiveName, criteria,
+                (Component) TabComponent.optimized(title).convert(player.getVersion()), RenderType.values()[display]);
     }
 
     @Override
     public void setDisplayName(@NonNull Objective objective, @NonNull String displayName) {
-        objective.displayName(toAdventure(displayName));
+        objective.displayName(TabComponent.optimized(displayName).convert(player.getVersion()));
     }
 
     @Override
     public void setPrefix(@NonNull Team team, @NonNull String prefix) {
-        team.prefix(toAdventure(prefix));
+        team.prefix(TabComponent.optimized(prefix).convert(player.getVersion()));
     }
 
     @Override
     public void setSuffix(@NonNull Team team, @NonNull String suffix) {
-        team.suffix(toAdventure(suffix));
+        team.suffix(TabComponent.optimized(suffix).convert(player.getVersion()));
     }
 
     @Override
     @SneakyThrows
     public void setScoreDisplayName(@NotNull Score s, @Nullable TabComponent displayName) {
         if (numberFormatAPI) {
-            Component component = displayName == null ? null : AdventureHook.toAdventureComponent(displayName, player.getVersion());
+            Component component = displayName == null ? null : displayName.convert(player.getVersion());
             Method m = s.getClass().getMethod("customName", Component.class);
             m.setAccessible(true); // Why is this needed? The method is public!
             m.invoke(s, component);
@@ -106,18 +106,6 @@ public class PaperScoreboard extends BukkitScoreboard {
     private Object numberFormat(@Nullable TabComponent numberFormat) {
         if (numberFormat == null) return null;
         return Class.forName("io.papermc.paper.scoreboard.numbers.NumberFormat").getMethod("fixed", ComponentLike.class)
-                .invoke(null, AdventureHook.toAdventureComponent(numberFormat, player.getVersion()));
-    }
-
-    /**
-     * Converts raw text into adventure component
-     *
-     * @param   text
-     *          Text to convert
-     * @return  Converted component
-     */
-    @NonNull
-    private Component toAdventure(@NonNull String text) {
-        return AdventureHook.toAdventureComponent(TabComponent.optimized(text), player.getVersion());
+                .invoke(null, numberFormat.convert(player.getVersion()));
     }
 }

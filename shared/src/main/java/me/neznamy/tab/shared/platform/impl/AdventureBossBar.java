@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.audience.Audience;
@@ -36,7 +35,7 @@ public class AdventureBossBar implements BossBar {
             return;
         }
         net.kyori.adventure.bossbar.BossBar bar = net.kyori.adventure.bossbar.BossBar.bossBar(
-                AdventureHook.toAdventureComponent(TabComponent.optimized(title), player.getVersion()),
+                TabComponent.optimized(title).convert(player.getVersion()),
                 progress,
                 Color.valueOf(color.name()),
                 Overlay.valueOf(style.name())
@@ -47,7 +46,7 @@ public class AdventureBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
-        bossBars.get(id).name(AdventureHook.toAdventureComponent(TabComponent.optimized(title), player.getVersion()));
+        bossBars.get(id).name(TabComponent.optimized(title).convert(player.getVersion()));
     }
 
     @Override

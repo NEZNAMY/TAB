@@ -38,7 +38,7 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                    @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.REGISTER, title, display,
-                numberFormat == null ? null : AdventureHook.serialize(AdventureHook.toAdventureComponent(numberFormat, player.getVersion()))));
+                numberFormat == null ? null : AdventureHook.serialize(numberFormat.convert(player.getVersion()))));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
                                  @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.UPDATE, title, display,
-                numberFormat == null ? null : AdventureHook.serialize(AdventureHook.toAdventureComponent(numberFormat, player.getVersion()))));
+                numberFormat == null ? null : AdventureHook.serialize(numberFormat.convert(player.getVersion()))));
     }
 
     @Override
@@ -79,8 +79,8 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer> {
                           @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         player.sendPluginMessage(new SetScore(
                 objective, ScoreAction.CHANGE, scoreHolder, score,
-                displayName == null ? null : AdventureHook.serialize(AdventureHook.toAdventureComponent(displayName, player.getVersion())),
-                numberFormat == null ? null : AdventureHook.serialize(AdventureHook.toAdventureComponent(numberFormat, player.getVersion()))
+                displayName == null ? null : AdventureHook.serialize(displayName.convert(player.getVersion())),
+                numberFormat == null ? null : AdventureHook.serialize(numberFormat.convert(player.getVersion()))
         ));
     }
 

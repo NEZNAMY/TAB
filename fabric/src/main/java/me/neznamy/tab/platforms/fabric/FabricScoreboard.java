@@ -58,7 +58,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                 objectiveName,
                 toComponent(title),
                 RenderType.values()[display],
-                numberFormat == null ? null : toComponent(numberFormat)
+                numberFormat == null ? null : numberFormat.convert(player.getVersion())
         );
         objectives.put(objectiveName, obj);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
@@ -121,8 +121,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                 objective,
                 scoreHolder,
                 score,
-                displayName == null ? null : toComponent(displayName),
-                numberFormat == null ? null : toComponent(numberFormat)
+                displayName == null ? null : displayName.convert(player.getVersion()),
+                numberFormat == null ? null : numberFormat.convert(player.getVersion())
         ));
     }
 
@@ -176,11 +176,6 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @NonNull
     private Component toComponent(@NonNull String string) {
-        return toComponent(TabComponent.optimized(string));
-    }
-
-    @NonNull
-    private Component toComponent(@NonNull TabComponent component) {
-        return player.getPlatform().toComponent(component, player.getVersion());
+        return TabComponent.optimized(string).convert(player.getVersion());
     }
 }

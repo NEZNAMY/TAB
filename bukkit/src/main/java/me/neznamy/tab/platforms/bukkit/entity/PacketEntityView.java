@@ -98,7 +98,7 @@ public class PacketEntityView implements EntityView {
             }
             packetSender = new PacketSender();
             available = true;
-        } catch (ReflectiveOperationException e) {
+        } catch (Exception e) {
             List<String> missingFeatures = new ArrayList<>();
             if (BukkitReflection.getMinorVersion() >= 8) {
                 missingFeatures.add("Unlimited nametag mode not working and being replaced with regular nametags");

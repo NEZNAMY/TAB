@@ -6,7 +6,6 @@ import io.netty.channel.Channel;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
@@ -75,10 +74,10 @@ public class Loader_1_20_4 implements Loader {
 
     @Override
     @NotNull
-    public Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version) {
+    public Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
         TextColor color = null;
         if (modifier.getColor() != null) {
-            if (version.supportsRGB()) {
+            if (modern) {
                 color = TextColor.fromRgb(modifier.getColor().getRgb());
             } else {
                 color = TextColor.fromRgb(modifier.getColor().getLegacyColor().getRgb());
@@ -164,7 +163,7 @@ public class Loader_1_20_4 implements Loader {
     @Override
     @NotNull
     public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible, int markerPosition) {
-        Optional<Component> name = Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(TabComponent.optimized(displayName), viewer.getVersion()));
+        Optional<Component> name = Optional.of(TabComponent.optimized(displayName).convert(viewer.getVersion()));
         return () -> Arrays.asList(
                 new SynchedEntityData.DataValue<>(0, EntityDataSerializers.BYTE, flags),
                 new SynchedEntityData.DataValue<>(2, EntityDataSerializers.OPTIONAL_COMPONENT, name),

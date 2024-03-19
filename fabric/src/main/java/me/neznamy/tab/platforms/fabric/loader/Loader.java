@@ -43,7 +43,7 @@ public interface Loader {
     Component newTextComponent(@NotNull String text);
 
     @NotNull
-    Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version);
+    Style convertModifier(@NotNull ChatModifier modifier, boolean modern);
 
     void addSibling(@NotNull Component parent, @NotNull Component child);
 

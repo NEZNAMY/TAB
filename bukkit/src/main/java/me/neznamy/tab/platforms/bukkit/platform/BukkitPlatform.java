@@ -8,6 +8,7 @@ import me.neznamy.tab.platforms.bukkit.entity.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
@@ -101,6 +102,7 @@ public class BukkitPlatform implements BackendPlatform {
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
         }
+        ComponentConverter.tryLoad();
         PacketEntityView.tryLoad();
         PingRetriever.tryLoad();
         TabListBase.findInstance();
@@ -273,6 +275,11 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder();
+    }
+
+    @Override
+    public Object convertComponent(@NotNull TabComponent component, boolean modern) {
+        return ComponentConverter.INSTANCE.convert(component, modern);
     }
 
     @Override

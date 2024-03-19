@@ -88,7 +88,7 @@ public class BungeeTabList17 extends BungeeTabList {
         String displayNameString = component.toLegacyText();
         if (displayNameString.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7)
             displayNameString = displayNameString.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
-        return player.getPlatform().toComponent(TabComponent.optimized(displayNameString), player.getVersion());
+        return TabComponent.optimized(displayNameString).convert(player.getVersion());
     }
 
     private void update(@NonNull PlayerListItem.Action action, @NonNull PlayerListItem.Item item) {

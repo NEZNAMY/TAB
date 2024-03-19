@@ -147,6 +147,17 @@ public interface Platform {
     boolean isProxy();
 
     /**
+     * Converts TAB component into platform's component.
+     *
+     * @param   component
+     *          Component to convert
+     * @param   modern
+     *          Whether clients supports RGB or not
+     * @return  Converted component
+     */
+    Object convertComponent(@NotNull TabComponent component, boolean modern);
+
+    /**
      * Returns {@code true} if the viewer can see the target, {@code false} otherwise.
      * This includes all vanish, permission & plugin API checks.
      *

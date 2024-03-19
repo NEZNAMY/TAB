@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
 import me.neznamy.tab.platforms.bungeecord.hook.BungeePremiumVanishHook;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.*;
@@ -12,7 +11,6 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyConfig;
@@ -34,9 +32,6 @@ import java.util.Locale;
  * BungeeCord implementation of Platform
  */
 public class BungeePlatform extends ProxyPlatform {
-
-    /** Component cache for better performance */
-    private final ComponentCache<TabComponent, BaseComponent> cache = new ComponentCache<>(1000, this::toComponent0);
 
     @NotNull
     private final BungeeTAB plugin;
@@ -131,36 +126,14 @@ public class BungeePlatform extends ProxyPlatform {
         ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
     }
 
-    /**
-     * Converts internal component class to platform's component class. If the component is
-     * present in the cache, it is taken from it.
-     *
-     * @param   component
-     *          Component to convert
-     * @param   version
-     *          Game version to convert component for
-     * @return  Converted component
-     */
-    public BaseComponent toComponent(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
-        return cache.get(component, version);
-    }
-
-    /**
-     * Converts internal component class to platform's component class
-     *
-     * @param   component
-     *          Component to convert
-     * @param   version
-     *          Game version to convert component for
-     * @return  Converted component
-     */
-    private BaseComponent toComponent0(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
+    @Override
+    public BaseComponent convertComponent(@NotNull TabComponent component, boolean modern) {
         if (component instanceof SimpleComponent) return new TextComponent(component.toLegacyText());
         StructuredComponent iComponent = (StructuredComponent) component;
         TextComponent textComponent = new TextComponent(iComponent.getText());
         ChatModifier modifier = iComponent.getModifier();
         if (modifier.getColor() != null) {
-            if (version.supportsRGB()) {
+            if (modern) {
                 textComponent.setColor(ChatColor.of("#" + modifier.getColor().getHexCode()));
             } else {
                 textComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name().toLowerCase(Locale.US)));
@@ -178,7 +151,7 @@ public class BungeePlatform extends ProxyPlatform {
         if (!iComponent.getExtra().isEmpty()) {
             List<BaseComponent> list = new ArrayList<>();
             for (StructuredComponent extra : iComponent.getExtra()) {
-                list.add(toComponent0(extra, version));
+                list.add(convertComponent(extra, modern));
             }
             textComponent.setExtra(list);
         }

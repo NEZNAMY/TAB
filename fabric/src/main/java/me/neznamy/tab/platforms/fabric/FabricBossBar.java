@@ -31,7 +31,7 @@ public class FabricBossBar implements BossBar {
     @Override
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         ServerBossEvent bar = new ServerBossEvent(
-                player.getPlatform().toComponent(TabComponent.optimized(title), player.getVersion()),
+                TabComponent.optimized(title).convert(player.getVersion()),
                 BossBarColor.valueOf(color.name()),
                 BossBarOverlay.valueOf(style.name())
         );
@@ -42,7 +42,7 @@ public class FabricBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
-        bars.get(id).setName(player.getPlatform().toComponent(TabComponent.optimized(title), player.getVersion()));
+        bars.get(id).setName(TabComponent.optimized(title).convert(player.getVersion()));
     }
 
     @Override

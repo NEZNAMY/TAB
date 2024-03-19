@@ -55,8 +55,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 either(title),
                 ScoreboardObjective.HealthDisplay.values()[display],
                 (byte) ObjectiveAction.REGISTER,
-                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED,
-                        player.getPlatform().toComponent(numberFormat, player.getVersion()))
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat.convert(player.getVersion()))
         ));
     }
 
@@ -79,8 +78,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 either(title),
                 ScoreboardObjective.HealthDisplay.values()[display],
                 (byte) ObjectiveAction.UPDATE,
-                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED,
-                        player.getPlatform().toComponent(numberFormat, player.getVersion()))
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat.convert(player.getVersion()))
         ));
     }
 
@@ -133,9 +131,8 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
                 (byte) ScoreAction.CHANGE,
                 objective,
                 score,
-                displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()),
-                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED,
-                        player.getPlatform().toComponent(numberFormat, player.getVersion()))
+                displayName == null ? null : displayName.convert(player.getVersion()),
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat.convert(player.getVersion()))
         ));
     }
 
@@ -150,7 +147,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     private Either<String, BaseComponent> either(@NonNull String text) {
         if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
-            return Either.right(player.getPlatform().toComponent(TabComponent.optimized(text), player.getVersion()));
+            return Either.right(TabComponent.optimized(text).convert(player.getVersion()));
         } else {
             return Either.left(text);
         }

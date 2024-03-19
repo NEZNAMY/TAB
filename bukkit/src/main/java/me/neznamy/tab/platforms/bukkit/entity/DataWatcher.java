@@ -41,8 +41,6 @@ public class DataWatcher implements EntityData {
 
     private static final int armorStandFlagsPosition = EntityData.getArmorStandFlagsPosition(BukkitReflection.getMinorVersion());
 
-    private static ComponentConverter componentConverter;
-
     /** Watched data */
     private final Map<Integer, Item> dataValues = new HashMap<>();
 
@@ -56,7 +54,7 @@ public class DataWatcher implements EntityData {
         int minorVersion = BukkitReflection.getMinorVersion();
         DataWatcher = BukkitReflection.getClass("network.syncher.SynchedEntityData", "network.syncher.DataWatcher", "DataWatcher");
         if (minorVersion >= 7) {
-            componentConverter = new ComponentConverter();
+            ComponentConverter.ensureAvailable();
             newDataWatcher = DataWatcher.getConstructor(BukkitReflection.getClass("world.entity.Entity", "Entity"));
         } else {
             newDataWatcher = DataWatcher.getConstructor();
@@ -143,8 +141,7 @@ public class DataWatcher implements EntityData {
      */
     public void setCustomName(@NotNull String customName, @NotNull ProtocolVersion clientVersion) {
         if (BukkitReflection.getMinorVersion() >= 13) {
-            setValue(2, DataWatcherSerializer_OPTIONAL_COMPONENT,
-                    Optional.of(componentConverter.convert(TabComponent.optimized(customName), clientVersion)));
+            setValue(2, DataWatcherSerializer_OPTIONAL_COMPONENT, Optional.of(TabComponent.optimized(customName).convert(clientVersion)));
         } else if (BukkitReflection.getMinorVersion() >= 8) {
             setValue(2, DataWatcherSerializer_STRING, customName);
         } else {

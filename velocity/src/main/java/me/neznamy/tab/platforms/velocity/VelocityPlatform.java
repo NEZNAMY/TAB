@@ -13,9 +13,11 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.kyori.adventure.text.Component;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -102,6 +104,11 @@ public class VelocityPlatform extends ProxyPlatform {
     @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder().toFile();
+    }
+
+    @Override
+    public Component convertComponent(@NotNull TabComponent component, boolean modern) {
+        return AdventureHook.toAdventureComponent(component, modern);
     }
 
     @Override

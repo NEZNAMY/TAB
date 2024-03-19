@@ -76,7 +76,7 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
 
     @Override
     public Component toComponent(@NonNull TabComponent component) {
-        return player.getPlatform().toComponent(component, player.getVersion());
+        return component.convert(player.getVersion());
     }
 
     /**

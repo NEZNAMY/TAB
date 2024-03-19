@@ -20,7 +20,6 @@ import java.lang.reflect.Field;
 public class PacketHeaderFooter extends HeaderFooter {
 
     private final PacketSender packetSender = new PacketSender();
-    private final ComponentConverter componentConverter = new ComponentConverter();
     private final BiFunctionWithException<Object, Object, Object> createPacket;
 
     /**
@@ -33,6 +32,7 @@ public class PacketHeaderFooter extends HeaderFooter {
         Class<?> Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         Class<?> HeaderFooterClass = BukkitReflection.getClass("network.protocol.game.ClientboundTabListPacket",
                 "network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
+        ComponentConverter.ensureAvailable();
         if (BukkitReflection.getMinorVersion() >= 17) {
             Constructor<?> newHeaderFooter = HeaderFooterClass.getConstructor(Component, Component);
             createPacket = newHeaderFooter::newInstance;
@@ -53,8 +53,8 @@ public class PacketHeaderFooter extends HeaderFooter {
     @Override
     public void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer) {
         packetSender.sendPacket(player.getPlayer(), createPacket.apply(
-                componentConverter.convert(header, player.getVersion()),
-                componentConverter.convert(footer, player.getVersion())
+                header.convert(player.getVersion()),
+                footer.convert(player.getVersion())
         ));
     }
 }

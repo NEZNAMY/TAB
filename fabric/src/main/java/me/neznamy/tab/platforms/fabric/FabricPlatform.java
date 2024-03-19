@@ -116,24 +116,16 @@ public class FabricPlatform implements BackendPlatform {
         return FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile();
     }
 
-    /**
-     * Converts internal component class to platform's component class
-     *
-     * @param   component
-     *          Component to convert
-     * @param   version
-     *          Game version to convert component for
-     * @return  Converted component
-     */
-    public Component toComponent(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
+    @Override
+    public Component convertComponent(@NotNull TabComponent component, boolean modern) {
         if (component instanceof SimpleComponent) return FabricMultiVersion.newTextComponent(((SimpleComponent) component).getText());
 
         StructuredComponent component1 = (StructuredComponent) component;
         Component nmsComponent = FabricMultiVersion.newTextComponent(component1.getText());
 
-        FabricMultiVersion.setStyle(nmsComponent, FabricMultiVersion.convertModifier(component1.getModifier(), version));
+        FabricMultiVersion.setStyle(nmsComponent, FabricMultiVersion.convertModifier(component1.getModifier(), modern));
         for (StructuredComponent extra : component1.getExtra()) {
-            FabricMultiVersion.addSibling(nmsComponent, toComponent(extra, version));
+            FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra, modern));
         }
         return nmsComponent;
     }

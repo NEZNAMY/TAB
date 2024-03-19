@@ -95,7 +95,7 @@ public class Loader_1_14_4 implements Loader {
 
     @Override
     @NotNull
-    public Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version) {
+    public Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
         Style style = new Style();
         if (modifier.getColor() != null) {
             style.setColor(ChatFormatting.valueOf(modifier.getColor().getLegacyColor().name()));
@@ -181,8 +181,7 @@ public class Loader_1_14_4 implements Loader {
     @Override
     @NotNull
     public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible, int markerPosition) {
-        Optional<Component> name = Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(
-                TabComponent.optimized(displayName), viewer.getVersion()));
+        Optional<Component> name = Optional.of(TabComponent.optimized(displayName).convert(viewer.getVersion()));
         SynchedEntityData data = new SynchedEntityData(null);
         data.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
         data.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT), name);

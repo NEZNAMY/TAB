@@ -154,6 +154,6 @@ public abstract class BungeeTabList extends TabList<BungeeTabPlayer, BaseCompone
 
     @Override
     public BaseComponent toComponent(@NonNull TabComponent component) {
-        return player.getPlatform().toComponent(component, player.getVersion());
+        return component.convert(player.getVersion());
     }
 }

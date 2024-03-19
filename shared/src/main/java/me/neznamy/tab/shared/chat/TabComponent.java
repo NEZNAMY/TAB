@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.chat;
 
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.ComponentCache;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +29,32 @@ public abstract class TabComponent {
                 fromColoredText(text) : //contains RGB colors or font
                 new SimpleComponent(text); //no RGB
     });
+
+    @Nullable
+    protected Object convertedModern;
+
+    @Nullable
+    protected Object convertedLegacy;
+
+    /**
+     * Converts this component to platform's component.
+     *
+     * @param   clientVersion
+     *          Client version
+     * @return  Converted component
+     * @param   <T>
+     *          Platform's component class
+     */
+    @NotNull
+    public <T> T convert(@NotNull ProtocolVersion clientVersion) {
+        if (clientVersion.supportsRGB()) {
+            if (convertedModern == null) convertedModern = TAB.getInstance().getPlatform().convertComponent(this, true);
+            return (T) convertedModern;
+        } else {
+            if (convertedLegacy == null) convertedLegacy = TAB.getInstance().getPlatform().convertComponent(this, false);
+            return (T) convertedLegacy;
+        }
+    }
 
     /**
      * Converts this component into a simple text with legacy colors (the closest match if color is set to RGB)

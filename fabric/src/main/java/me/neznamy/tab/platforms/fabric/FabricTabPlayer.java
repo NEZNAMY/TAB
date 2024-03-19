@@ -58,7 +58,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        FabricMultiVersion.sendMessage(getPlayer(), getPlatform().toComponent(message, getVersion()));
+        FabricMultiVersion.sendMessage(getPlayer(), message.convert(getVersion()));
     }
 
     @Override

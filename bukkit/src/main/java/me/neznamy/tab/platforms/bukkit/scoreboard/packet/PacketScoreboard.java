@@ -57,7 +57,6 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Getter private static TeamPacketData teamPacketData;
     @Getter private static DisplayPacketData displayPacketData;
     private static PacketSender packetSender;
-    private static ComponentConverter componentConverter;
 
     private final Map<String, Object> teams = new HashMap<>();
 
@@ -87,7 +86,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
             newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
             if (minorVersion >= 7) {
                 Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
-                componentConverter = new ComponentConverter();
+                ComponentConverter.ensureAvailable();
             }
             if (minorVersion >= 8) {
                 Class<?> EnumScoreboardHealthDisplay = BukkitReflection.getClass(
@@ -256,7 +255,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     @Nullable
     private Object toComponent(@Nullable TabComponent component) {
         if (component == null || BukkitReflection.getMinorVersion() < 8) return null;
-        return componentConverter.convert(component, player.getVersion());
+        return component.convert(player.getVersion());
     }
 
     @Nullable

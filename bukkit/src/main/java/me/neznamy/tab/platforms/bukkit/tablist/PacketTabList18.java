@@ -41,7 +41,6 @@ public class PacketTabList18 extends TabListBase<Object> {
     protected static Object[] gameModes;
 
     protected static PacketSender packetSender;
-    protected static ComponentConverter componentConverter;
 
     /**
      * Constructs new instance with given player.
@@ -100,7 +99,7 @@ public class PacketTabList18 extends TabListBase<Object> {
                 Enum.valueOf(gameMode, "SPECTATOR")
         };
         packetSender = new PacketSender();
-        componentConverter = new ComponentConverter();
+        ComponentConverter.ensureAvailable();
         try {
             skinData = new SkinData();
         } catch (Exception e) {
@@ -178,7 +177,7 @@ public class PacketTabList18 extends TabListBase<Object> {
 
     @Override
     public Object toComponent(@NonNull TabComponent component) {
-        return componentConverter.convert(component, player.getVersion());
+        return component.convert(player.getVersion());
     }
 
     /**

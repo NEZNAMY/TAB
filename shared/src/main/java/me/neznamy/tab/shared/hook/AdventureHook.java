@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.hook;
 
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.SimpleComponent;
@@ -21,10 +20,6 @@ import java.util.*;
  */
 public class AdventureHook {
 
-    /** Component cache for adventure components */
-    private static final ComponentCache<TabComponent, Component> cache = new ComponentCache<>(1000,
-            AdventureHook::toAdventureComponent0);
-
     /** Component to string cache for better performance */
     private static final ComponentCache<Component, String> componentToString = new ComponentCache<>(1000,
             (component, version) -> GsonComponentSerializer.gson().serialize(component));
@@ -34,13 +29,33 @@ public class AdventureHook {
      *
      * @param   component
      *          Component to convert
-     * @param   clientVersion
-     *          Version to create component for
+     * @param   modern
+     *          Whether client supports RGB or not
      * @return  Adventure component from this component.
      */
     @NotNull
-    public static Component toAdventureComponent(@NotNull TabComponent component, @NotNull ProtocolVersion clientVersion) {
-        return cache.get(component, clientVersion);
+    public static Component toAdventureComponent(@NotNull TabComponent component, boolean modern) {
+        if (component instanceof SimpleComponent) return Component.text(((SimpleComponent) component).getText());
+        StructuredComponent iComponent = (StructuredComponent) component;
+        ChatModifier modifier = iComponent.getModifier();
+
+        Component adventureComponent = Component.text(
+                iComponent.getText(),
+                convertColor(modifier.getColor(), modern),
+                getDecorations(modifier)
+        );
+
+        if (modifier.getFont() != null) {
+            adventureComponent = adventureComponent.font(Key.key(modifier.getFont()));
+        }
+        if (!iComponent.getExtra().isEmpty()) {
+            List<Component> list = new ArrayList<>();
+            for (StructuredComponent extra : iComponent.getExtra()) {
+                list.add(toAdventureComponent(extra, modern));
+            }
+            adventureComponent = adventureComponent.children(list);
+        }
+        return adventureComponent;
     }
 
     /**
@@ -53,40 +68,6 @@ public class AdventureHook {
     @NotNull
     public static String serialize(@NotNull Component component) {
         return componentToString.get(component, null);
-    }
-
-    /**
-     * Converts component to adventure component
-     *
-     * @param   component
-     *          Component to convert
-     * @param   clientVersion
-     *          Version to create component for
-     * @return  Adventure component from this component.
-     */
-    @NotNull
-    private static Component toAdventureComponent0(@NotNull TabComponent component, @NotNull ProtocolVersion clientVersion) {
-        if (component instanceof SimpleComponent) return Component.text(((SimpleComponent) component).getText());
-        StructuredComponent iComponent = (StructuredComponent) component;
-        ChatModifier modifier = iComponent.getModifier();
-
-        Component adventureComponent = Component.text(
-                iComponent.getText(),
-                convertColor(modifier.getColor(), clientVersion.supportsRGB()),
-                getDecorations(modifier)
-        );
-
-        if (modifier.getFont() != null) {
-            adventureComponent = adventureComponent.font(Key.key(modifier.getFont()));
-        }
-        if (!iComponent.getExtra().isEmpty()) {
-            List<Component> list = new ArrayList<>();
-            for (StructuredComponent extra : iComponent.getExtra()) {
-                list.add(toAdventureComponent0(extra, clientVersion));
-            }
-            adventureComponent = adventureComponent.children(list);
-        }
-        return adventureComponent;
     }
 
     /**

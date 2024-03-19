@@ -178,6 +178,6 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      */
     @NotNull
     private Component adventure(@NonNull String text) {
-        return AdventureHook.toAdventureComponent(TabComponent.optimized(text), player.getVersion());
+        return AdventureHook.toAdventureComponent(TabComponent.optimized(text), player.getVersion().supportsRGB());
     }
 }

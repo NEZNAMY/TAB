@@ -115,6 +115,11 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    public Text convertComponent(@NotNull TabComponent component, boolean modern) {
+        return Text.of(component.toLegacyText());
+    }
+
+    @Override
     public double getTPS() {
         return Sponge.getServer().getTicksPerSecond();
     }

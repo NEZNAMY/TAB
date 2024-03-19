@@ -63,9 +63,9 @@ public class FabricMultiVersion {
     }
 
     @NotNull
-    public static Style convertModifier(@NotNull ChatModifier modifier, @NotNull ProtocolVersion version) {
-        if (serverVersion.getMinorVersion() >= 16) return loaderNew.convertModifier(modifier, version);
-        return loaderOld.convertModifier(modifier, version);
+    public static Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
+        if (serverVersion.getMinorVersion() >= 16) return loaderNew.convertModifier(modifier, modern);
+        return loaderOld.convertModifier(modifier, modern);
     }
 
     @NotNull
