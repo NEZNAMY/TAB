@@ -26,10 +26,13 @@ public abstract class HeaderFooter {
 
     @Nullable
     private static HeaderFooter findInstance0() {
-        if (PaperHeaderFooter.isAvailable()) return new PaperHeaderFooter();
         try {
             return new PacketHeaderFooter();
         } catch (Exception e) {
+            if (PaperHeaderFooter.isAvailable()) {
+                BukkitUtils.compatibilityError(e, "sending Header/Footer", "Paper API");
+                return new PaperHeaderFooter();
+            }
             if (BukkitHeaderFooter.isAvailable()) {
                 BukkitUtils.compatibilityError(e, "sending Header/Footer", "Bukkit API",
                         "Header/Footer having drastically increased CPU usage",

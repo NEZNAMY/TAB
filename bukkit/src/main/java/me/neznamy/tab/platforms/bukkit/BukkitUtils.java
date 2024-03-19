@@ -67,7 +67,7 @@ public class BukkitUtils {
         } else {
             sb.append("No fallback solution was found. ");
         }
-        sb.append("This will result in: ");
+        if (missingFeatures.length > 0) sb.append("This will result in: ");
         for (int i=0; i<missingFeatures.length; i++) {
             sb.append("\n").append("#").append(i + 1).append(": ").append(missingFeatures[i]);
         }
