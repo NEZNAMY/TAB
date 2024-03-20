@@ -105,9 +105,7 @@ public class BukkitPlatform implements BackendPlatform {
         PacketEntityView.tryLoad();
         PingRetriever.tryLoad();
         TabListBase.findInstance();
-        if (BukkitReflection.getMinorVersion() >= 5) {
-            ScoreboardLoader.findInstance();
-        }
+        ScoreboardLoader.tryLoad();
         if (BukkitReflection.getMinorVersion() >= 8) {
             BukkitPipelineInjector.tryLoad();
         }
