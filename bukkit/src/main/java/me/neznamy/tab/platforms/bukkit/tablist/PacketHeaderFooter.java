@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.header;
+package me.neznamy.tab.platforms.bukkit.tablist;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
  * Header/footer sender that uses NMS to send packets. Available
  * on all versions since 1.8 when the feature was added into the game.
  */
-public class PacketHeaderFooter extends HeaderFooter {
+public class PacketHeaderFooter {
 
     private final PacketSender packetSender = new PacketSender();
     private final BiFunctionWithException<Object, Object, Object> createPacket;
@@ -49,8 +49,17 @@ public class PacketHeaderFooter extends HeaderFooter {
         }
     }
 
+    /**
+     * Sends header/footer to player.
+     *
+     * @param   player
+     *          Player to send header/footer to.
+     * @param   header
+     *          Header to use.
+     * @param   footer
+     *          Footer to use.
+     */
     @SneakyThrows
-    @Override
     public void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer) {
         packetSender.sendPacket(player.getPlayer(), createPacket.apply(
                 header.convert(player.getVersion()),

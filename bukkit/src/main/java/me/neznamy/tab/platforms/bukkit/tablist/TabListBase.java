@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
-import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -28,6 +27,9 @@ public abstract class TabListBase<C> extends TabList<BukkitTabPlayer, C> {
 
     @Nullable
     protected static SkinData skinData;
+
+    @Nullable
+    private static PacketHeaderFooter headerFooter;
 
     /**
      * Constructs new instance.
@@ -63,11 +65,20 @@ public abstract class TabListBase<C> extends TabList<BukkitTabPlayer, C> {
                     "Tablist formatting not supporting relational placeholders");
             instance = BukkitTabList::new;
         }
+
+        try {
+            if (BukkitReflection.getMinorVersion() >= 8) {
+                headerFooter = new PacketHeaderFooter();
+            }
+        } catch (Exception e) {
+            BukkitUtils.compatibilityError(e, "sending header/footer", null,
+                    "Header/footer will not work");
+        }
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        if (HeaderFooter.getInstance() != null) HeaderFooter.getInstance().set(player, header, footer);
+        if (headerFooter != null) headerFooter.set(player, header, footer);
     }
 
     @Override
