@@ -271,7 +271,9 @@ public abstract class TabList<P extends TabPlayer, C> {
      *          Component to convert
      * @return  Converted component
      */
-    public abstract C toComponent(@NonNull TabComponent component);
+    public C toComponent(@NonNull TabComponent component) {
+        return component.convert(player.getVersion());
+    }
 
     /**
      * TabList action.

@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.*;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -72,11 +71,6 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
         if (FabricMultiVersion.isPlayerInfo((Packet<?>) packet)) {
             FabricMultiVersion.onPlayerInfo(player, packet);
         }
-    }
-
-    @Override
-    public Component toComponent(@NonNull TabComponent component) {
-        return component.convert(player.getVersion());
     }
 
     /**

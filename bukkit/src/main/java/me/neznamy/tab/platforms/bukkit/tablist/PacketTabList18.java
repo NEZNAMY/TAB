@@ -11,7 +11,6 @@ import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.Nullable;
@@ -173,11 +172,6 @@ public class PacketTabList18 extends TabListBase<Object> {
         if (BukkitReflection.getMinorVersion() >= 19) parameters.add(null);
         PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(parameters.toArray())));
         return packet;
-    }
-
-    @Override
-    public Object toComponent(@NonNull TabComponent component) {
-        return component.convert(player.getVersion());
     }
 
     /**

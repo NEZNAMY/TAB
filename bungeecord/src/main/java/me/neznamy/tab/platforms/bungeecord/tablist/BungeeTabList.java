@@ -4,7 +4,6 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
@@ -150,10 +149,5 @@ public abstract class BungeeTabList extends TabList<BungeeTabPlayer, BaseCompone
     @Override
     public boolean containsEntry(@NonNull UUID entry) {
         return uuids.contains(entry);
-    }
-
-    @Override
-    public BaseComponent toComponent(@NonNull TabComponent component) {
-        return component.convert(player.getVersion());
     }
 }

@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -92,10 +91,5 @@ public class SpongeTabList extends TabList<SpongeTabPlayer, Text> {
                 }
             });
         }
-    }
-
-    @Override
-    public Text toComponent(@NonNull TabComponent component) {
-        return Text.of(component.toLegacyText());
     }
 }

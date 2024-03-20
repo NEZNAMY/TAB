@@ -4,7 +4,6 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.text.Component;
@@ -95,10 +94,5 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
                 }
             });
         }
-    }
-
-    @Override
-    public Component toComponent(@NonNull TabComponent component) {
-        return component.convert(player.getVersion());
     }
 }
