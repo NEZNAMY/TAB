@@ -43,8 +43,8 @@ public abstract class BungeeTabList extends TabList<BungeeTabPlayer, BaseCompone
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.sendPacket(new PlayerListHeaderFooter(toComponent(header), toComponent(footer)));
+    public void setPlayerListHeaderFooter0(@NonNull BaseComponent header, @NonNull BaseComponent footer) {
+        player.sendPacket(new PlayerListHeaderFooter(header, footer));
     }
 
     /**

@@ -58,8 +58,8 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.sendPacket(FabricMultiVersion.newHeaderFooter(toComponent(header), toComponent(footer)));
+    public void setPlayerListHeaderFooter0(@NonNull Component header, @NonNull Component footer) {
+        player.sendPacket(FabricMultiVersion.newHeaderFooter(header, footer));
     }
 
     @Override

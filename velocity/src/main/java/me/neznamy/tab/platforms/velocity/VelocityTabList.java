@@ -75,8 +75,8 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.getPlayer().sendPlayerListHeaderAndFooter(toComponent(header), toComponent(footer));
+    public void setPlayerListHeaderFooter0(@NonNull Component header, @NonNull Component footer) {
+        player.getPlayer().sendPlayerListHeaderAndFooter(header, footer);
     }
 
     @Override

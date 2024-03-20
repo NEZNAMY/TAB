@@ -5,7 +5,6 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.BiFunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -60,10 +59,7 @@ public class PacketHeaderFooter {
      *          Footer to use.
      */
     @SneakyThrows
-    public void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer) {
-        packetSender.sendPacket(player.getPlayer(), createPacket.apply(
-                header.convert(player.getVersion()),
-                footer.convert(player.getVersion())
-        ));
+    public void set(@NotNull BukkitTabPlayer player, @NotNull Object header, @NotNull Object footer) {
+        packetSender.sendPacket(player.getPlayer(), createPacket.apply(header, footer));
     }
 }

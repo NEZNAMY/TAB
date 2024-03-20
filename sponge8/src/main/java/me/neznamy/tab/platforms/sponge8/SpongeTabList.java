@@ -72,8 +72,8 @@ public class SpongeTabList extends TabList<SpongeTabPlayer, Component> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.getPlayer().tabList().setHeaderAndFooter(toComponent(header), toComponent(footer));
+    public void setPlayerListHeaderFooter0(@NonNull Component header, @NonNull Component footer) {
+        player.getPlayer().tabList().setHeaderAndFooter(header, footer);
     }
 
     @Override

@@ -40,6 +40,12 @@ public abstract class TabList<P extends TabPlayer, C> {
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
     private final Map<RedisPlayer, C> expectedRedisDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
+    /** Expected header sent by the plugin */
+    private C expectedHeader;
+
+    /** Expected footer sent by the plugin */
+    private C expectedFooter;
+
     /**
      * Removes entries from the TabList.
      *
@@ -157,7 +163,23 @@ public abstract class TabList<P extends TabPlayer, C> {
      * @param   footer
      *          Footer to use
      */
-    public abstract void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer);
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        C convertedHeader = header.convert(player.getVersion());
+        C convertedFooter = footer.convert(player.getVersion());
+        expectedHeader = convertedHeader;
+        expectedFooter = convertedFooter;
+        setPlayerListHeaderFooter0(convertedHeader, convertedFooter);
+    }
+
+    /**
+     * Sets header and footer to specified values.
+     *
+     * @param   header
+     *          Header to use
+     * @param   footer
+     *          Footer to use
+     */
+    public abstract void setPlayerListHeaderFooter0(@NonNull C header, @NonNull C footer);
 
     /**
      * Returns {@code true} if tablist contains specified entry, {@code false} if not.
