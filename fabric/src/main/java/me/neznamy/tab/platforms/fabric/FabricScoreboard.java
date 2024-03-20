@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Scoreboard implementation for Fabric using packets.
  */
-public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
+public class FabricScoreboard extends Scoreboard<FabricTabPlayer, Component> {
 
     private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
 
@@ -53,12 +53,12 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                   @Nullable TabComponent numberFormat) {
+                                   @Nullable Component numberFormat) {
         Objective obj = FabricMultiVersion.newObjective(
                 objectiveName,
                 toComponent(title),
                 RenderType.values()[display],
-                numberFormat == null ? null : numberFormat.convert(player.getVersion())
+                numberFormat
         );
         objectives.put(objectiveName, obj);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
@@ -71,7 +71,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                 @Nullable TabComponent numberFormat) {
+                                 @Nullable Component numberFormat) {
         Objective obj = objectives.get(objectiveName);
         obj.setDisplayName(toComponent(title));
         obj.setRenderType(RenderType.values()[display]);
@@ -116,14 +116,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
-        player.sendPacket(FabricMultiVersion.setScore(
-                objective,
-                scoreHolder,
-                score,
-                displayName == null ? null : displayName.convert(player.getVersion()),
-                numberFormat == null ? null : numberFormat.convert(player.getVersion())
-        ));
+                          @Nullable Component displayName, @Nullable Component numberFormat) {
+        player.sendPacket(FabricMultiVersion.setScore(objective, scoreHolder, score, displayName, numberFormat));
     }
 
     @Override

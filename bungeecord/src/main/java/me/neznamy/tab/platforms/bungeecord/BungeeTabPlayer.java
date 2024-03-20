@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -32,7 +31,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Player's scoreboard */
     @NotNull
-    private final Scoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
+    private final BungeeScoreboard scoreboard = new BungeeScoreboard(this);
 
     /** Player's tab list based on version */
     @NotNull

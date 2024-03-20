@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +11,7 @@ import java.util.Collection;
 /**
  * Dummy implementation if no scoreboard implementation is available.
  */
-public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
+public class NullScoreboard extends Scoreboard<BukkitTabPlayer, Object> {
 
     /**
      * Constructs new instance with given player.
@@ -31,7 +30,7 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     protected void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                             @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
+                             @Nullable Object displayName, @Nullable Object numberFormat) {
         // Do nothing
     }
 
@@ -42,7 +41,7 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     protected void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                      @Nullable TabComponent numberFormat) {
+                                      @Nullable Object numberFormat) {
         // Do nothing
     }
 
@@ -53,7 +52,7 @@ public class NullScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     protected void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                    @Nullable TabComponent numberFormat) {
+                                    @Nullable Object numberFormat) {
         // Do nothing
     }
 

@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -22,6 +23,7 @@ import java.util.function.BiFunction;
 public class ComponentConverter {
 
     /** Instance of the class */
+    @Nullable
     public static ComponentConverter INSTANCE;
 
     private final FunctionWithException<String, Object> newTextComponent;

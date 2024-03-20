@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.BossBar;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +28,7 @@ import java.util.List;
 public class SpongeTabPlayer extends BackendTabPlayer {
 
     @NotNull
-    private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
+    private final SpongeScoreboard scoreboard = new SpongeScoreboard(this);
 
     @NotNull
     private final SpongeTabList tabList = new SpongeTabList(this);

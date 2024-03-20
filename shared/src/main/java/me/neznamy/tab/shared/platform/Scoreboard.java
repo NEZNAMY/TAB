@@ -16,9 +16,11 @@ import java.util.stream.Collectors;
  * Scoreboard class for sending scoreboard-related packets.
  * @param   <T>
  *          Platform's TabPlayer class
+ * @param   <C>
+ *          Platform's component class
  */
 @RequiredArgsConstructor
-public abstract class Scoreboard<T extends TabPlayer> {
+public abstract class Scoreboard<T extends TabPlayer, C> {
 
     /** Static to prevent spam when packet is sent to each player */
     private static String lastTeamOverrideMessage;
@@ -74,7 +76,13 @@ public abstract class Scoreboard<T extends TabPlayer> {
             error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objective);
             return;
         }
-        setScore0(objective, scoreHolder, score, displayName, numberFormat);
+        setScore0(
+                objective,
+                scoreHolder,
+                score,
+                displayName == null ? null : displayName.convert(player.getVersion()),
+                numberFormat == null ? null : numberFormat.convert(player.getVersion())
+        );
     }
 
     /**
@@ -113,7 +121,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
         }
-        registerObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
+        registerObjective0(
+                objectiveName,
+                cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13),
+                display,
+                numberFormat == null ? null : numberFormat.convert(player.getVersion())
+        );
     }
 
     /**
@@ -150,7 +163,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
         }
-        updateObjective0(objectiveName, cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
+        updateObjective0(
+                objectiveName,
+                cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13),
+                display,
+                numberFormat == null ? null : numberFormat.convert(player.getVersion())
+        );
     }
 
     /**
@@ -366,17 +384,17 @@ public abstract class Scoreboard<T extends TabPlayer> {
     protected abstract void setDisplaySlot0(int slot, @NonNull String objective);
 
     protected abstract void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                                   @Nullable TabComponent displayName, @Nullable TabComponent numberFormat);
+                                   @Nullable C displayName, @Nullable C numberFormat);
 
     protected abstract void removeScore0(@NonNull String objective, @NonNull String scoreHolder);
 
     protected abstract void registerObjective0(@NonNull String objectiveName, @NonNull String title,
-                                            int display, @Nullable TabComponent numberFormat);
+                                            int display, @Nullable C numberFormat);
 
     protected abstract void unregisterObjective0(@NonNull String objectiveName);
 
     protected abstract void updateObjective0(@NonNull String objectiveName, @NonNull String title,
-                                          int display, @Nullable TabComponent numberFormat);
+                                          int display, @Nullable C numberFormat);
 
     protected abstract void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
                                           @NonNull NameVisibility visibility, @NonNull CollisionRule collision,

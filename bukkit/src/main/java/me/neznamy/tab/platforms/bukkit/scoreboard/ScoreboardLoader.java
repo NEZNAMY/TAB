@@ -17,7 +17,7 @@ public class ScoreboardLoader {
     /** Instance function */
     @Getter
     @NotNull
-    private static Function<BukkitTabPlayer, Scoreboard<BukkitTabPlayer>> instance = NullScoreboard::new;
+    private static Function<BukkitTabPlayer, Scoreboard<BukkitTabPlayer, ?>> instance = NullScoreboard::new;
 
     /**
      * Tries to load Scoreboard packets.

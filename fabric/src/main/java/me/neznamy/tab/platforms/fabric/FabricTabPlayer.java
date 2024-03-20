@@ -5,7 +5,6 @@ import lombok.Getter;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.BossBar;
 import net.minecraft.network.protocol.Packet;
@@ -22,7 +21,7 @@ import java.util.Collection;
 public class FabricTabPlayer extends BackendTabPlayer {
 
     @NotNull
-    private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
+    private final FabricScoreboard scoreboard = new FabricScoreboard(this);
 
     @NotNull
     private final FabricTabList tabList = new FabricTabList(this);

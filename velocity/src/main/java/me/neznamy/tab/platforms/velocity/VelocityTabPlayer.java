@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.impl.BridgeScoreboard;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +23,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /** Player's scoreboard */
     @NotNull
-    private final Scoreboard<ProxyTabPlayer> scoreboard = new BridgeScoreboard(this);
+    private final BridgeScoreboard scoreboard = new BridgeScoreboard(this);
 
     /** Player's tab list */
     @NotNull

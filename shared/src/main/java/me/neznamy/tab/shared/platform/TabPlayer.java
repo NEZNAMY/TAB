@@ -300,7 +300,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  scoreboard interface for calling scoreboard-related methods
      */
-    public abstract @NotNull Scoreboard<? extends TabPlayer> getScoreboard();
+    public abstract @NotNull Scoreboard<? extends TabPlayer, ?> getScoreboard();
 
     /**
      * Returns handler for calling bossbar-related methods

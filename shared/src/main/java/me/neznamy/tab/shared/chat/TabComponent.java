@@ -46,6 +46,7 @@ public abstract class TabComponent {
      *          Platform's component class
      */
     @NotNull
+    @SuppressWarnings("unchecked")
     public <T> T convert(@NotNull ProtocolVersion clientVersion) {
         if (clientVersion.supportsRGB()) {
             if (convertedModern == null) convertedModern = TAB.getInstance().getPlatform().convertComponent(this, true);

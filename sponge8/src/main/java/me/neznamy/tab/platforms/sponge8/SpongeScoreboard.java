@@ -26,7 +26,7 @@ import java.util.Collection;
 /**
  * Scoreboard implementation for Sponge 8 using its API.
  */
-public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
+public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer, Component> {
 
     /** Collision rule array for fast access */
     private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = {
@@ -80,7 +80,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                   @Nullable TabComponent numberFormat) {
+                                   @Nullable Component numberFormat) {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(adventure(title))
@@ -97,7 +97,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                 @Nullable TabComponent numberFormat) {
+                                 @Nullable Component numberFormat) {
         sb.objective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(adventure(title));
             obj.setDisplayMode(healthDisplays[display]);
@@ -148,7 +148,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
+                          @Nullable Component displayName, @Nullable Component numberFormat) {
         sb.objective(objective).ifPresent(o -> findOrCreateScore(o, scoreHolder).setScore(score));
     }
 

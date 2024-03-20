@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.scoreboard.CollisionRules;
@@ -21,7 +20,7 @@ import java.util.Collection;
 /**
  * Scoreboard implementation for Sponge 7 using its API.
  */
-public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
+public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer, Text> {
 
     /** Collision rule array for fast access */
     private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = {
@@ -75,7 +74,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                   @Nullable TabComponent numberFormat) {
+                                   @Nullable Text numberFormat) {
         sb.addObjective(Objective.builder()
                 .name(objectiveName)
                 .displayName(Text.of(title))
@@ -92,7 +91,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                 @Nullable TabComponent numberFormat) {
+                                 @Nullable Text numberFormat) {
         sb.getObjective(objectiveName).ifPresent(obj -> {
             obj.setDisplayName(Text.of(title));
             obj.setDisplayMode(healthDisplays[display]);
@@ -141,7 +140,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
+                          @Nullable Text displayName, @Nullable Text numberFormat) {
         sb.getObjective(objective).ifPresent(o -> o.getOrCreateScore(Text.of(scoreHolder)).setScore(score));
     }
 

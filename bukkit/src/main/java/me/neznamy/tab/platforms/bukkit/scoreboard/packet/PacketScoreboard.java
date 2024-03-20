@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -27,7 +28,7 @@ import java.util.Map;
  * to send scoreboards to use the full potential on all versions
  * and server software without any artificial limits.
  */
-public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
+public class PacketScoreboard extends Scoreboard<BukkitTabPlayer, Object> {
 
     @Getter
     private static boolean available;
@@ -133,7 +134,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                   @Nullable TabComponent numberFormat) {
+                                   @Nullable Object numberFormat) {
         packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.REGISTER, objectiveName, title, display, numberFormat));
     }
 
@@ -144,13 +145,13 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                 @Nullable TabComponent numberFormat) {
+                                 @Nullable Object numberFormat) {
         packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UPDATE, objectiveName, title, display, numberFormat));
     }
 
     @SneakyThrows
     private Object newObjectivePacket(int action, @NonNull String objectiveName, @NonNull String title, int display,
-                                      @Nullable TabComponent numberFormat) {
+                                      @Nullable Object numberFormat) {
         Object packet = newObjectivePacket.newInstance(newObjective(objectiveName, title, display, numberFormat), action);
         if (BukkitReflection.getMinorVersion() >= 8 && BukkitReflection.getMinorVersion() < 13) {
             Objective_RENDER_TYPE.set(packet, healthDisplays[display]);
@@ -183,8 +184,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
-        packetSender.sendPacket(player.getPlayer(), scorePacketData.setScore(objective, scoreHolder, score, toComponent(displayName), toFixedFormat(numberFormat)));
+                          @Nullable Object displayName, @Nullable Object numberFormat) {
+        packetSender.sendPacket(player.getPlayer(), scorePacketData.setScore(objective, scoreHolder, score, displayName, toFixedFormat(numberFormat)));
     }
 
     @Override
@@ -218,7 +219,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
      */
     @SneakyThrows
     public Object newObjective(@NonNull String objectiveName, @NonNull String title, int renderType,
-                               @Nullable TabComponent numberFormat) {
+                               @Nullable Object numberFormat) {
         if (BukkitReflection.is1_20_3Plus()) {
             // 1.20.3+
             return newScoreboardObjective.newInstance(
@@ -247,21 +248,15 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         return objective;
     }
 
-    @Nullable
+    @NotNull
     private Object toComponent(@NonNull String text) {
-        return toComponent(TabComponent.optimized(text));
-    }
-
-    @Nullable
-    private Object toComponent(@Nullable TabComponent component) {
-        if (component == null || BukkitReflection.getMinorVersion() < 8) return null;
-        return component.convert(player.getVersion());
+        return TabComponent.optimized(text).convert(player.getVersion());
     }
 
     @Nullable
     @SneakyThrows
-    private Object toFixedFormat(@Nullable TabComponent numberFormat) {
+    private Object toFixedFormat(@Nullable Object numberFormat) {
         if (numberFormat == null || newFixedFormat == null) return null;
-        return newFixedFormat.newInstance(toComponent(numberFormat));
+        return newFixedFormat.newInstance(numberFormat);
     }
 }

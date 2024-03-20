@@ -27,7 +27,7 @@ import java.util.Collection;
  * any Scoreboard API and the scoreboard class it has is just a
  * downstream tracker, we need to use packets.
  */
-public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
+public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer, BaseComponent> {
 
     /** Version with a minor team recode */
     private final int TEAM_REWORK_VERSION = 13;
@@ -49,13 +49,13 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                   @Nullable TabComponent numberFormat) {
+                                   @Nullable BaseComponent numberFormat) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 either(title),
                 ScoreboardObjective.HealthDisplay.values()[display],
                 (byte) ObjectiveAction.REGISTER,
-                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat.convert(player.getVersion()))
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat)
         ));
     }
 
@@ -72,13 +72,13 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                 @Nullable TabComponent numberFormat) {
+                                 @Nullable BaseComponent numberFormat) {
         player.sendPacket(new ScoreboardObjective(
                 objectiveName,
                 either(title),
                 ScoreboardObjective.HealthDisplay.values()[display],
                 (byte) ObjectiveAction.UPDATE,
-                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat.convert(player.getVersion()))
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat)
         ));
     }
 
@@ -125,14 +125,14 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                          @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
+                          @Nullable BaseComponent displayName, @Nullable BaseComponent numberFormat) {
         player.sendPacket(new ScoreboardScore(
                 scoreHolder,
                 (byte) ScoreAction.CHANGE,
                 objective,
                 score,
-                displayName == null ? null : displayName.convert(player.getVersion()),
-                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat.convert(player.getVersion()))
+                displayName,
+                numberFormat == null ? null : new NumberFormat(NumberFormat.Type.FIXED, numberFormat)
         ));
     }
 
