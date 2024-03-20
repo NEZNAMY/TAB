@@ -1,9 +1,5 @@
 accessWidener v1 named
 
-# Tablist packet entries (1.19.3+)
-accessible field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
-mutable field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
-
 # Entity packets
 accessible field net/minecraft/network/protocol/game/ClientboundTeleportEntityPacket id I
 accessible field net/minecraft/network/protocol/game/ClientboundMoveEntityPacket entityId I
@@ -16,12 +12,16 @@ accessible field net/minecraft/network/protocol/game/ClientboundSetObjectivePack
 accessible field net/minecraft/network/protocol/game/ClientboundSetObjectivePacket method I
 accessible field net/minecraft/network/protocol/game/ClientboundSetDisplayObjectivePacket objectiveName Ljava/lang/String;
 
-# Channel (1.20.2+)
-accessible field net/minecraft/server/network/ServerCommonPacketListenerImpl connection Lnet/minecraft/network/Connection;
-accessible field net/minecraft/network/Connection channel Lio/netty/channel/Channel;
-
 # Style constructor (1.16+)
 accessible method net/minecraft/network/chat/Style <init> (Lnet/minecraft/network/chat/TextColor;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lnet/minecraft/network/chat/ClickEvent;Lnet/minecraft/network/chat/HoverEvent;Ljava/lang/String;Lnet/minecraft/resources/ResourceLocation;)V
 
 # Logger (1.18.2+)
 accessible field net/minecraft/server/MinecraftServer LOGGER Lorg/slf4j/Logger;
+
+# Tablist packet entries (1.19.3+)
+accessible field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
+mutable field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
+
+# Channel (1.20.2+)
+accessible field net/minecraft/server/network/ServerCommonPacketListenerImpl connection Lnet/minecraft/network/Connection;
+accessible field net/minecraft/network/Connection channel Lio/netty/channel/Channel;
