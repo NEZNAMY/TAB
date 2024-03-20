@@ -33,6 +33,9 @@ public class PlaceholderReplacementPattern {
     /** Set of all used placeholders in replacement values */
     @Getter private final Set<String> nestedPlaceholders = new HashSet<>();
 
+    /** Flag tracking if this replacement map is empty */
+    private final boolean empty;
+
     /**
      * Constructs new instance from given replacement map from config
      *
@@ -42,6 +45,7 @@ public class PlaceholderReplacementPattern {
      *          replacement map from config
      */
     private PlaceholderReplacementPattern(@NotNull String identifier, @NotNull Map<Object, Object> map) {
+        empty = map.isEmpty();
         for (Entry<Object, Object> entry : map.entrySet()) {
             String key = String.valueOf(entry.getKey());
             String value = String.valueOf(entry.getValue()).replace(identifier, "%value%");
@@ -77,6 +81,7 @@ public class PlaceholderReplacementPattern {
      */
     @NotNull
     public String findReplacement(@NotNull String output) {
+        if (empty) return output;
         String replacement = findReplacement0(output);
         if (replacement.contains("%value%")) {
             replacement = replacement.replace("%value%", output);
