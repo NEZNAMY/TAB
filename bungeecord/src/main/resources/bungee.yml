@@ -1,7 +1,0 @@
-name: @name@
-main: me.neznamy.tab.platforms.bungeecord.BungeeTAB
-version: @version@
-author: @author@
-description: @description@
-depends: []
-softDepends: [RedisBungee, LuckPerms, PremiumVanish]
