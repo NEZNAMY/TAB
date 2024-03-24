@@ -280,4 +280,13 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         ((TabPlayer)player).ensureLoaded();
         return shortTeamNames.get((TabPlayer) player);
     }
+
+    @Override
+    public void addGroup(@NonNull String name,Integer sort) {
+        for (SortingType t : usedSortingTypes) {
+            if (t.getDisplayName().equals("GROUPS")){
+                ((Groups)t).addGroup(name, sort);
+            }
+        }
+    }
 }

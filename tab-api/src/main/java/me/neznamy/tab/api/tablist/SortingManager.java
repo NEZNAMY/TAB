@@ -43,4 +43,7 @@ public interface SortingManager {
      * @return  Player's team name based on configuration.
      */
     @NotNull String getOriginalTeamName(@NonNull TabPlayer player);
+
+
+    void addGroup(@NonNull String name,Integer sort);
 }

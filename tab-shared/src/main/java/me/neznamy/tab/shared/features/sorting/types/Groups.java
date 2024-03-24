@@ -29,6 +29,13 @@ public class Groups extends SortingType {
         sortedGroups = convertSortingElements(options.split(","));
     }
 
+    public void addGroup(String name,Integer sort){
+        sortedGroups.put(name,sort);
+        sortedGroups.forEach((a,b)->{
+            System.out.println(a+" "+b);
+        });
+    }
+
     @Override
     public String getChars(@NotNull TabPlayer p) {
         String group = p.getGroup().toLowerCase();
