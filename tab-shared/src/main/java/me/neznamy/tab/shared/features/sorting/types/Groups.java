@@ -31,9 +31,6 @@ public class Groups extends SortingType {
 
     public void addGroup(String name,Integer sort){
         sortedGroups.put(name,sort);
-        sortedGroups.forEach((a,b)->{
-            System.out.println(a+" "+b);
-        });
     }
 
     @Override
