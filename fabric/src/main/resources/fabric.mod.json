@@ -25,5 +25,5 @@
   "recommends": {
     "fabric-permissions-api-v0": "*"
   },
-  "accessWidener": "tab.accesswidener"
+  "accessWidener": "resources/tab.accesswidener"
 }

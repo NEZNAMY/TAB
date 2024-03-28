@@ -26,7 +26,7 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/tab.accesswidener"))
+    accessWidenerPath.set(file("src/main/resources/resources/tab.accesswidener"))
 }
 
 tasks {
