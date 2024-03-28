@@ -85,7 +85,7 @@ public class MessageFile extends YamlConfigurationFile {
     ));
 
     public MessageFile() throws IOException {
-        super(MessageFile.class.getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));
+        super(MessageFile.class.getClassLoader().getResourceAsStream("config/messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));
     }
 
     public @NotNull String getBossBarNotFound(@NotNull String name) {

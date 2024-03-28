@@ -27,7 +27,7 @@ import java.util.List;
 public class Configs {
 
     //config.yml file
-    private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config.yml"),
+    private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/config.yml"),
             new File(TAB.getInstance().getDataFolder(), "config.yml"));
 
     private final boolean bukkitPermissions = TAB.getInstance().getPlatform().isProxy() && config.getBoolean("use-bukkit-permissions-manager", false);
@@ -38,7 +38,7 @@ public class Configs {
     private final int permissionRefreshInterval = config.getInt("permission-refresh-interval", 1000);
 
     //animations.yml file
-    private final ConfigurationFile animationFile = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("animations.yml"),
+    private final ConfigurationFile animationFile = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/animations.yml"),
             new File(TAB.getInstance().getDataFolder(), "animations.yml"));
 
     //messages.yml file
@@ -95,8 +95,8 @@ public class Configs {
                 TAB.getInstance().getErrorManager().mysqlConnectionFailed(e);
             }
         }
-        groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
-        users = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
+        groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
+        users = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
         TAB.getInstance().getConfigHelper().hint().checkForRedundantElseReplacement(config.getConfigurationSection("placeholder-output-replacements"));
     }
 
