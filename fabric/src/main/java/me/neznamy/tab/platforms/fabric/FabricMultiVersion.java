@@ -12,13 +12,11 @@ import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -99,21 +97,8 @@ public class FabricMultiVersion {
 
     @SneakyThrows
     public static int[] getDestroyedEntities(Packet<?> destroyPacket) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_17_1.getNetworkId()) return loaderNew.getDestroyedEntities(destroyPacket);
-        if (serverVersion.getMinorVersion() >= 17) return new int[]{ReflectionUtils.getOnlyField(destroyPacket.getClass()).getInt(destroyPacket)};
+        if (serverVersion.getMinorVersion() >= 17) return loaderNew.getDestroyedEntities(destroyPacket);
         return loaderOld.getDestroyedEntities(destroyPacket);
-    }
-
-    @SneakyThrows
-    public static void destroyEntities(@NotNull ServerPlayer player, int[] entities) {
-        if (serverVersion == ProtocolVersion.V1_17) {
-            for (int entity : entities) {
-                // While the actual packet name is different, fabric-mapped name is the same
-                player.connection.send(ClientboundRemoveEntitiesPacket.class.getConstructor(int.class).newInstance(entity));
-            }
-        } else {
-            player.connection.send(new ClientboundRemoveEntitiesPacket(entities));
-        }
     }
 
     public static void logInfo(@NotNull TabComponent message) {

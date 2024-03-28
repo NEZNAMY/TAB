@@ -61,7 +61,7 @@ public class FabricEntityView implements EntityView {
 
     @Override
     public void destroyEntities(int... entities) {
-        FabricMultiVersion.destroyEntities(player.getPlayer(), entities);
+        player.sendPacket(new ClientboundRemoveEntitiesPacket(entities));
     }
 
     @Override
