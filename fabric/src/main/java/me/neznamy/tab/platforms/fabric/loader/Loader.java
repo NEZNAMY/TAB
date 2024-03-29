@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric.loader;
 import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
@@ -26,7 +25,6 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 public interface Loader {
