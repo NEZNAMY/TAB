@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * BungeeCord implementation of Platform
@@ -136,7 +135,7 @@ public class BungeePlatform extends ProxyPlatform {
             if (modern) {
                 textComponent.setColor(ChatColor.of("#" + modifier.getColor().getHexCode()));
             } else {
-                textComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name().toLowerCase(Locale.US)));
+                textComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name()));
             }
         }
 
