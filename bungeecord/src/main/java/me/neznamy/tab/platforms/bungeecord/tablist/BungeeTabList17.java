@@ -79,7 +79,7 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+    public void setPlayerListHeaderFooter0(@NonNull BaseComponent header, @NonNull BaseComponent footer) {
         // Not available on 1.7
     }
 
