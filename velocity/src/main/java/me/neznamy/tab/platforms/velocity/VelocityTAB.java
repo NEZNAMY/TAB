@@ -7,14 +7,18 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.player.TabList;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bstats.velocity.Metrics;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.UUID;
 
 /**
  * Main class for Velocity.
@@ -50,6 +54,11 @@ public class VelocityTAB {
      */
     @Subscribe
     public void onProxyInitialization(@Nullable ProxyInitializeEvent event) {
+        if (!ReflectionUtils.methodExists(TabList.class, "getEntry", UUID.class)) {
+            logger.warn(EnumChatFormat.RED + "The plugin requires Velocity build #229 " +
+                    "(released on February 20th, 2023) and up to work.");
+            return;
+        }
         TAB.create(new VelocityPlatform(this));
     }
     
@@ -62,6 +71,7 @@ public class VelocityTAB {
      */
     @Subscribe
     public void onProxyShutdown(@Nullable ProxyShutdownEvent event) {
+        if (TAB.getInstance() == null) return;
         // Fix race condition as Velocity calls DisconnectEvent for each player before this event
         TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().unload());
     }
