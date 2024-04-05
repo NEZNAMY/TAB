@@ -6,7 +6,7 @@ More information can be found at [Why TAB?](https://github.com/NEZNAMY/TAB/wiki/
 # Download
 ### Releases
 You can download full releases from [GitHub releases](https://github.com/NEZNAMY/TAB/releases), 
-[SpigotMC](https://www.spigotmc.org/resources/57806/) or [Modrinth](https://modrinth.com/plugin/tab-was-taken).
+[SpigotMC](https://www.spigotmc.org/resources/57806/), [Modrinth](https://modrinth.com/plugin/tab-was-taken) or [BuiltByBit](https://builtbybit.com/resources/20631).
 
 ### Dev builds
 Plugin's development is continuous and contains lots of small changes/fixes not worthy of being called a full
