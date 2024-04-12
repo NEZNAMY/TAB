@@ -130,8 +130,7 @@ public class TextColor {
      * @return  red value
      */
     public int getRed() {
-        if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
-        return (rgb >> 16) & 0xFF;
+        return (getRgb() >> 16) & 0xFF;
     }
 
     /**
@@ -140,8 +139,7 @@ public class TextColor {
      * @return  green value
      */
     public int getGreen() {
-        if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
-        return (rgb >> 8) & 0xFF;
+        return (getRgb() >> 8) & 0xFF;
     }
 
     /**
@@ -150,8 +148,7 @@ public class TextColor {
      * @return  blue value
      */
     public int getBlue() {
-        if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
-        return rgb & 0xFF;
+        return getRgb() & 0xFF;
     }
 
     /**
