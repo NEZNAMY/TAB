@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.platform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.NickCompatibility;
@@ -173,6 +174,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public void setGroup(@NotNull String permissionGroup) {
         if (this.permissionGroup.equals(permissionGroup)) return;
         this.permissionGroup = permissionGroup;
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, permissionGroup);
         forceRefresh();
     }
 
@@ -180,6 +182,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public void setTemporaryGroup(@Nullable String group) {
         if (Objects.equals(group, temporaryGroup)) return;
         temporaryGroup = group;
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, group);
         forceRefresh();
     }
 

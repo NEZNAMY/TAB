@@ -86,6 +86,9 @@ public class TAB extends TabAPI {
     /** Placeholder manager for fast access */
     private PlaceholderManagerImpl placeholderManager;
 
+    /** Group manager for getting groups of players */
+    private GroupManager groupManager;
+
     /** Plugin's configuration files and values storage */
     private Configs configuration;
 
@@ -169,7 +172,7 @@ public class TAB extends TabAPI {
             featureManager = new FeatureManager();
             placeholderManager = new PlaceholderManagerImpl(cpu);
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, placeholderManager);
-            featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, platform.detectPermissionPlugin());
+            groupManager = platform.detectPermissionPlugin();
             platform.registerPlaceholders();
             featureManager.loadFeaturesFromConfig();
             platform.loadPlayers();
@@ -245,15 +248,6 @@ public class TAB extends TabAPI {
         data.remove(player.getUniqueId());
         playersByTabListId.remove(player.getTablistId());
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
-    }
-
-    /**
-     * Returns TAB's group manager used to refresh player groups from other plugins
-     *
-     * @return  group manager instance
-     */
-    public @NotNull GroupManager getGroupManager() {
-        return featureManager.getFeature(TabConstants.Feature.GROUP_MANAGER);
     }
 
     /**

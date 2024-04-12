@@ -100,6 +100,7 @@ public class UniversalPlaceholderRegistry {
 
     @SuppressWarnings("unchecked")
     private void registerPlayerPlaceholders(@NotNull PlaceholderManager manager) {
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, -1, me.neznamy.tab.api.TabPlayer::getGroup);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.PING, 500, p -> ((TabPlayer)p).getPing());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, p -> ((TabPlayer)p).isVanished());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD_ONLINE, 1000, p -> {
