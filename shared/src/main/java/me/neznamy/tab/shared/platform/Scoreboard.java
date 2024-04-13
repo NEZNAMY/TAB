@@ -361,6 +361,8 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
      * Checks if team contains a player who should belong to a different team and if override attempt was detected,
      * sends a warning and removes player from the collection.
      *
+     * @param   action
+     *          Team packet action
      * @param   teamName
      *          Team name in the packet
      * @param   players
@@ -368,7 +370,7 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
      * @return  Modified collection of players
      */
     @NotNull
-    public Collection<String> onTeamPacket(@NonNull String teamName, @NonNull Collection<String> players) {
+    public Collection<String> onTeamPacket(int action, @NonNull String teamName, @NonNull Collection<String> players) {
         Collection<String> newList = new ArrayList<>();
         for (String entry : players) {
             String expectedTeam = expectedTeams.get(entry);
@@ -377,7 +379,14 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
                 continue;
             }
             if (!teamName.equals(expectedTeam)) {
-                logTeamOverride(teamName, entry, expectedTeam);
+                // on REMOVE_PLAYER don't warn, just remove the player (required to prevent FPS drop, #1193)
+                // will still throw error and freeze if removing after team handling was paused (API, disable condition),
+                // since expected team is null, but add action was blocked previously but remove will not be blocked anymore,
+                // but that is a very specific case that people are unlikely to even reproduce
+                // workaround would be complicated, just let it be for now
+                if (action == TeamAction.CREATE || action == TeamAction.ADD_PLAYER) {
+                    logTeamOverride(teamName, entry, expectedTeam);
+                }
             } else {
                 newList.add(entry);
             }

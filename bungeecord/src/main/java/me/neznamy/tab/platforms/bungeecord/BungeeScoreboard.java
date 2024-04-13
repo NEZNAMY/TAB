@@ -158,8 +158,8 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer, BaseComponent>
         }
         if (isAntiOverrideTeams() && packet instanceof Team) {
             Team team = (Team) packet;
-            if (team.getMode() == TeamAction.REMOVE || team.getMode() == TeamAction.UPDATE || team.getMode() == TeamAction.REMOVE_PLAYER) return;
-            team.setPlayers(onTeamPacket(team.getName(), Lists.newArrayList(team.getPlayers())).toArray(new String[0]));
+            if (team.getMode() == TeamAction.REMOVE || team.getMode() == TeamAction.UPDATE) return;
+            team.setPlayers(onTeamPacket(team.getMode(), team.getName(), Lists.newArrayList(team.getPlayers())).toArray(new String[0]));
         }
     }
 }

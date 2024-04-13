@@ -305,8 +305,8 @@ public class TeamPacketData {
     public void onPacketSend(@NonNull TabPlayer player, @NonNull Object packet) {
         if (!TeamPacketClass.isInstance(packet)) return;
         int action = TeamPacket_ACTION.getInt(packet);
-        if (action == TeamAction.REMOVE || action == TeamAction.UPDATE || action == TeamAction.REMOVE_PLAYER) return;
+        if (action == TeamAction.REMOVE || action == TeamAction.UPDATE) return;
         TeamPacket_PLAYERS.set(packet, player.getScoreboard().onTeamPacket(
-                (String) TeamPacket_NAME.get(packet), (Collection<String>) TeamPacket_PLAYERS.get(packet)));
+                action, (String) TeamPacket_NAME.get(packet), (Collection<String>) TeamPacket_PLAYERS.get(packet)));
     }
 }

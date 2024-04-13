@@ -133,11 +133,11 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer, Component> {
         }
         if (isAntiOverrideTeams() && FabricMultiVersion.isTeamPacket((Packet<?>) packet)) {
             int action = ReflectionUtils.getInstanceFields(packet.getClass(), int.class).get(0).getInt(packet);
-            if (action == TeamAction.REMOVE || action == TeamAction.UPDATE || action == TeamAction.REMOVE_PLAYER) return;
+            if (action == TeamAction.REMOVE || action == TeamAction.UPDATE) return;
             Field playersField = ReflectionUtils.getFields(packet.getClass(), Collection.class).get(0);
             Collection<String> players = (Collection<String>) playersField.get(packet);
             String teamName = String.valueOf(ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet));
-            playersField.set(packet, onTeamPacket(teamName, players));
+            playersField.set(packet, onTeamPacket(action, teamName, players));
         }
     }
 
