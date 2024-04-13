@@ -201,7 +201,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer, Object> {
             TAB.getInstance().getFeatureManager().onObjective(player,
                     Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
         }
-        if (isAntiOverrideTeams()) teamPacketData.onPacketSend(packet);
+        if (isAntiOverrideTeams()) teamPacketData.onPacketSend(player, packet);
     }
 
     /**

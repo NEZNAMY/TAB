@@ -34,6 +34,9 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
     /** Scoreboard objectives player has registered */
     private final Set<String> registeredObjectives = new HashSet<>();
 
+    /** Player-to-Team map of expected teams of players */
+    private final Map<String, String> expectedTeams = new HashMap<>();
+
     /** Flag tracking time between Login packet send and its processing */
     private boolean frozen;
 
@@ -201,6 +204,9 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
             error("Tried to register duplicated team %s to player ", name);
             return;
         }
+        for (String player : players) {
+            expectedTeams.put(player, name);
+        }
         registerTeam0(
                 name,
                 cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
@@ -216,16 +222,22 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
     /**
      * Unregisters team from the scoreboard.
      *
-     * @param   name
+     * @param   teamName
      *          Team name
      */
-    public final void unregisterTeam(@NonNull String name) {
+    public final void unregisterTeam(@NonNull String teamName) {
         if (frozen) return;
-        if (!registeredTeams.remove(name)) {
-            error("Tried to unregister non-existing team %s for player ", name);
+        if (!registeredTeams.remove(teamName)) {
+            error("Tried to unregister non-existing team %s for player ", teamName);
             return;
         }
-        unregisterTeam0(name);
+        for (Map.Entry<String, String> entry : expectedTeams.entrySet()) {
+            if (entry.getValue().equals(teamName)) {
+                expectedTeams.remove(entry.getKey());
+                break;
+            }
+        }
+        unregisterTeam0(teamName);
     }
 
     /**
@@ -346,19 +358,31 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
     }
 
     /**
-     * Returns player by given nickname.
+     * Checks if team contains a player who should belong to a different team and if override attempt was detected,
+     * sends a warning and removes player from the collection.
      *
-     * @param   name
-     *          Nickname of player
-     * @return  Player from given nickname
+     * @param   teamName
+     *          Team name in the packet
+     * @param   players
+     *          Players in the packet
+     * @return  Modified collection of players
      */
-    @Nullable
-    public static TabPlayer getPlayer(@NonNull String name) {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (p.getNickname().equals(name))
-                return p; // Nicked name
+    @NotNull
+    public Collection<String> onTeamPacket(@NonNull String teamName, @NonNull Collection<String> players) {
+        Collection<String> newList = new ArrayList<>();
+        for (String entry : players) {
+            String expectedTeam = expectedTeams.get(entry);
+            if (expectedTeam == null) {
+                newList.add(entry);
+                continue;
+            }
+            if (!teamName.equals(expectedTeam)) {
+                logTeamOverride(teamName, entry, expectedTeam);
+            } else {
+                newList.add(entry);
+            }
         }
-        return TAB.getInstance().getPlayer(name); // Try original name
+        return newList;
     }
 
     /**
