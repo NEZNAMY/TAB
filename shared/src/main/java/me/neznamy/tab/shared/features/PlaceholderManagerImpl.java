@@ -39,7 +39,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
     private final boolean registerExpansion = config().getBoolean("placeholders.register-tab-expansion", true);
-    private final boolean refreshInAnotherThread = config().getBoolean("placeholders.refresh-in-another-thread", true);
     private final Map<String, Integer> refreshIntervals = config().getConfigurationSection("placeholderapi-refresh-intervals");
     private final int defaultRefresh;
 
@@ -79,22 +78,15 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         if (placeholders.isEmpty()) return;
         PlaceholderRefreshTask task = new PlaceholderRefreshTask(placeholders);
         cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_REFRESH_INIT, System.nanoTime() - time);
-        if (refreshInAnotherThread) {
-            cpu.getPlaceholderThread().submit(() -> {
-                // Run in placeholder refreshing thread
-                long time2 = System.nanoTime();
-                task.run();
-                cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_REQUEST, System.nanoTime() - time2);
-
-                // Back to main thread
-                cpu.runTask(() -> processRefreshResults(task));
-            });
-        } else {
+        cpu.getPlaceholderThread().submit(() -> {
+            // Run in placeholder refreshing thread
             long time2 = System.nanoTime();
             task.run();
             cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_REQUEST, System.nanoTime() - time2);
-            processRefreshResults(task);
-        }
+
+            // Back to main thread
+            cpu.runTask(() -> processRefreshResults(task));
+        });
     }
 
     private void processRefreshResults(@NotNull PlaceholderRefreshTask task) {
