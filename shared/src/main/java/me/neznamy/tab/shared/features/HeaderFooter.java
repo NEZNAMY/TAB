@@ -29,7 +29,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
      */
     public HeaderFooter() {
         Condition disableCondition = Condition.getCondition(config().getString("header-footer.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.disabledHeaderFooter);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
         TAB.getInstance().getConfigHelper().hint().checkHeaderFooterForRedundancy(config().getConfigurationSection("header-footer"));
     }
@@ -44,7 +44,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     @Override
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (disableChecker.isDisabledPlayer(p)) continue;
+            if (p.disabledHeaderFooter.get()) continue;
             sendHeaderFooter(p, "","");
         }
     }
@@ -52,7 +52,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
-            disableChecker.addDisabledPlayer(connectedPlayer);
+            connectedPlayer.disabledHeaderFooter.set(true);
         }
         refresh(connectedPlayer, true);
     }
@@ -140,7 +140,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     private void sendHeaderFooter(TabPlayer player, String header, String footer) {
-        if (disableChecker.isDisabledPlayer(player)) return;
+        if (player.disabledHeaderFooter.get()) return;
         player.getTabList().setPlayerListHeaderFooter(TabComponent.optimized(header), TabComponent.optimized(footer));
     }
 

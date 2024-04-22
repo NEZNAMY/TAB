@@ -169,7 +169,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     @NotNull
     public TabList.Entry getAddInfoData(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         TabComponent format = null;
-        if (playerlist != null && !playerlist.getDisableChecker().isDisabledPlayer(p)) {
+        if (playerlist != null && !p.disabledPlayerList.get()) {
             format = playerlist.getTabFormat(p, viewer);
         }
         int gameMode = (othersAsSpectators && !p.getServer().equals(viewer.getServer())) ||

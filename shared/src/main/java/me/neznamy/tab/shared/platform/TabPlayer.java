@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Abstract class storing common variables and functions for player,
@@ -100,7 +101,25 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public BossBarManagerImpl.PlayerData bossbarData;
 
     /** Data for plugin's PlaceholderAPI expansion */
-    public PlayerExpansionValues expansionValues = new PlayerExpansionValues();
+    public final PlayerExpansionValues expansionValues = new PlayerExpansionValues();
+
+    /** Whether player has disabled nametags or not */
+    public final AtomicBoolean disabledNametags = new AtomicBoolean();
+
+    /** Whether player has disabled unlimited nametags or not */
+    public final AtomicBoolean disabledUnlimitedNametags = new AtomicBoolean();
+
+    /** Whether player has disabled belowname or not */
+    public final AtomicBoolean disabledBelowname = new AtomicBoolean();
+
+    /** Whether player has disabled header/footer or not */
+    public final AtomicBoolean disabledHeaderFooter = new AtomicBoolean();
+
+    /** Whether player has disabled tablist formatting or not */
+    public final AtomicBoolean disabledPlayerList = new AtomicBoolean();
+
+    /** Whether player has disabled playerlist objective or not */
+    public final AtomicBoolean disabledYellowNumber = new AtomicBoolean();
 
     /**
      * Constructs new instance with given parameters

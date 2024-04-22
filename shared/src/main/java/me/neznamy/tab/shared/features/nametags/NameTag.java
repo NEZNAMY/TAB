@@ -32,7 +32,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     public NameTag() {
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.disabledNametags);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         if (!antiOverride) TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
     }
@@ -49,7 +49,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             all.getScoreboard().setAntiOverrideTeams(antiOverride);
             updateProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
-                disableChecker.addDisabledPlayer(all);
+                all.disabledNametags.set(true);
                 continue;
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
@@ -59,7 +59,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
                 if (target.isVanished() && !TAB.getInstance().getPlatform().canSee(viewer, target)) {
                     target.teamData.vanishedFor.add(viewer.getUniqueId());
                 }
-                if (!disableChecker.isDisabledPlayer(target)) registerTeam(target, viewer);
+                if (!target.disabledNametags.get()) registerTeam(target, viewer);
             }
         }
     }
@@ -68,7 +68,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unload() {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (hasTeamHandlingPaused(target) || disableChecker.isDisabledPlayer(target)) continue;
+                if (hasTeamHandlingPaused(target) || target.disabledNametags.get()) continue;
                 viewer.getScoreboard().unregisterTeam(target.sortingData.getShortTeamName());
             }
         }
@@ -76,7 +76,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (disableChecker.isDisabledPlayer(refreshed)) return;
+        if (refreshed.disabledNametags.get()) return;
         boolean refresh;
         if (force) {
             updateProperties(refreshed);
@@ -108,13 +108,13 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             if (all.isVanished() && !TAB.getInstance().getPlatform().canSee(connectedPlayer, all)) {
                 all.teamData.vanishedFor.add(connectedPlayer.getUniqueId());
             }
-            if (!disableChecker.isDisabledPlayer(all)) {
+            if (!all.disabledNametags.get()) {
                 registerTeam(all, connectedPlayer);
             }
         }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(connectedPlayer, true);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
-            disableChecker.addDisabledPlayer(connectedPlayer);
+            connectedPlayer.disabledNametags.set(true);
             return;
         }
         registerTeam(connectedPlayer);
@@ -122,7 +122,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
-        if (!disableChecker.isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
+        if (!disconnectedPlayer.disabledNametags.get() && !hasTeamHandlingPaused(disconnectedPlayer)) {
             String teamName = disconnectedPlayer.sortingData.getShortTeamName();
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
@@ -135,12 +135,12 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        if (updateProperties(p) && !disableChecker.isDisabledPlayer(p)) updateTeamData(p);
+        if (updateProperties(p) && !p.disabledNametags.get()) updateTeamData(p);
     }
 
     @Override
     public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
-        if (updateProperties(changed) && !disableChecker.isDisabledPlayer(changed)) updateTeamData(changed);
+        if (updateProperties(changed) && !changed.disabledNametags.get()) updateTeamData(changed);
     }
 
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
@@ -222,7 +222,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void onLoginPacket(TabPlayer player) {
         if (!player.isLoaded()) return;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!disableChecker.isDisabledPlayer(all) && all.isLoaded()) registerTeam(all, player);
+            if (!all.disabledNametags.get() && all.isLoaded()) registerTeam(all, player);
         }
     }
 
@@ -306,7 +306,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.teamHandlingPaused) return;
-        if (!disableChecker.isDisabledPlayer(p)) unregisterTeam(p, p.sortingData.getShortTeamName());
+        if (!p.disabledNametags.get()) unregisterTeam(p, p.sortingData.getShortTeamName());
         p.teamData.teamHandlingPaused = true; //setting after, so unregisterTeam method runs
     }
 
@@ -316,7 +316,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         p.ensureLoaded();
         if (!p.teamData.teamHandlingPaused) return;
         p.teamData.teamHandlingPaused = false; //setting before, so registerTeam method runs
-        if (!disableChecker.isDisabledPlayer(p)) registerTeam(p);
+        if (!p.disabledNametags.get()) registerTeam(p);
     }
 
     @Override

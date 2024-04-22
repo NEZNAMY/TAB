@@ -32,12 +32,12 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
         this.armorStandFunction = armorStandFunction;
         Collections.reverse(dynamicLines);
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.unlimited-nametag-mode.disable-condition"));
-        unlimitedDisableChecker = new DisableChecker(getExtraFeatureName(), disableCondition, this::onUnlimitedDisableConditionChange);
+        unlimitedDisableChecker = new DisableChecker(getExtraFeatureName(), disableCondition, this::onUnlimitedDisableConditionChange, p -> p.disabledUnlimitedNametags);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS + "-Condition", unlimitedDisableChecker);
     }
 
     public boolean isPlayerDisabled(@NonNull TabPlayer p) {
-        return getDisableChecker().isDisabledPlayer(p) || unlimitedDisableChecker.isDisabledPlayer(p) || hasTeamHandlingPaused(p) || hasDisabledArmorStands(p);
+        return p.disabledNametags.get() || p.disabledUnlimitedNametags.get() || hasTeamHandlingPaused(p) || hasDisabledArmorStands(p);
     }
 
     @Override
@@ -68,7 +68,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     }
 
     public void addDisabledPlayer(@NotNull TabPlayer player) {
-        unlimitedDisableChecker.addDisabledPlayer(player);
+        player.disabledUnlimitedNametags.set(true);
     }
 
     @Override
@@ -105,7 +105,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     }
 
     public void onUnlimitedDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        if (!getDisableChecker().isDisabledPlayer(p)) updateTeamData(p);
+        if (!p.disabledNametags.get()) updateTeamData(p);
         p.unlimitedNametagData.armorStandManager.refresh(true);
     }
 
@@ -198,7 +198,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.teamHandlingPaused) return;
-        if (!getDisableChecker().isDisabledPlayer(p)) unregisterTeam(p, p.sortingData.getShortTeamName());
+        if (!p.disabledNametags.get()) unregisterTeam(p, p.sortingData.getShortTeamName());
         p.teamData.teamHandlingPaused = true; //setting after, so unregisterTeam method runs
         pauseArmorStands(p);
     }
@@ -209,7 +209,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
         p.ensureLoaded();
         if (!p.teamData.teamHandlingPaused) return;
         p.teamData.teamHandlingPaused = false; //setting before, so registerTeam method runs
-        if (!getDisableChecker().isDisabledPlayer(p)) registerTeam(p);
+        if (!p.disabledNametags.get()) registerTeam(p);
         resumeArmorStands(p);
     }
 

@@ -133,7 +133,7 @@ public class ArmorStand {
         if (manager.isArmorStandsAlwaysVisible()) return true;
         if (owner.isDisguised() || manager.isOnBoat(owner)) return false;
         return owner.getGamemode() != 3 && !manager.hasHiddenNameTag(owner) && !property.get().isEmpty() &&
-                !manager.getUnlimitedDisableChecker().isDisabledPlayer(owner);
+                !owner.disabledUnlimitedNametags.get();
     }
 
     /**

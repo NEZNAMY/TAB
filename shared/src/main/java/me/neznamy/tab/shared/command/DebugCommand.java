@@ -12,7 +12,6 @@ import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -83,20 +82,17 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, getTeamName(analyzed));
         sendMessage(sender, getTeamNameNote(analyzed));
         if (tab.getFeatureManager().isFeatureEnabled(TabConstants.Feature.PLAYER_LIST)) {
-            PlayerList playerlist = tab.getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
-            boolean disabledPlayerlist = playerlist.getDisableChecker().isDisabledPlayer(analyzed);
-            showProperty(sender, analyzed, TabConstants.Property.TABPREFIX, disabledPlayerlist);
-            showProperty(sender, analyzed, TabConstants.Property.TABSUFFIX, disabledPlayerlist);
-            showProperty(sender, analyzed, TabConstants.Property.CUSTOMTABNAME, disabledPlayerlist);
+            showProperty(sender, analyzed, TabConstants.Property.TABPREFIX, analyzed.disabledPlayerList.get());
+            showProperty(sender, analyzed, TabConstants.Property.TABSUFFIX, analyzed.disabledPlayerList.get());
+            showProperty(sender, analyzed, TabConstants.Property.CUSTOMTABNAME, analyzed.disabledPlayerList.get());
         } else {
             sendMessage(sender, "&atabprefix: &cDisabled");
             sendMessage(sender, "&atabsuffix: &cDisabled");
             sendMessage(sender, "&acustomtabname: &cDisabled");
         }
         if (tab.getNameTagManager() != null) {
-            boolean disabledNametags = tab.getNameTagManager().getDisableChecker().isDisabledPlayer(analyzed);
-            showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, disabledNametags);
-            showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, disabledNametags);
+            showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, analyzed.disabledNametags.get());
+            showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, analyzed.disabledNametags.get());
             NameTagX nameTagX = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
             if (nameTagX != null) {
                 boolean disabledUnlimited = nameTagX.isPlayerDisabled(analyzed);
@@ -162,8 +158,7 @@ public class DebugCommand extends SubCommand {
     private @NotNull String getTeamName(@NotNull TabPlayer analyzed) {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
-        if (TAB.getInstance().getNameTagManager() != null &&
-                TAB.getInstance().getNameTagManager().getDisableChecker().isDisabledPlayer(analyzed)) {
+        if (TAB.getInstance().getNameTagManager() != null && analyzed.disabledNametags.get()) {
             return "&eTeam name: &cSorting is disabled in player's world/server";
         }
         return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
@@ -179,8 +174,7 @@ public class DebugCommand extends SubCommand {
      */
     private @NotNull String getTeamNameNote(@NotNull TabPlayer analyzed) {
         if (analyzed.sortingData == null) return "";
-        if (TAB.getInstance().getNameTagManager() != null &&
-                TAB.getInstance().getNameTagManager().getDisableChecker().isDisabledPlayer(analyzed)) {
+        if (TAB.getInstance().getNameTagManager() != null && analyzed.disabledNametags.get()) {
             return "";
         }
         return "&eSorting note: &r" + analyzed.sortingData.teamNameNote;

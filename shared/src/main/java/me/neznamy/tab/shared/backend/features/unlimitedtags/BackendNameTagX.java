@@ -165,7 +165,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     @Override
     public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (receiver.getVersion().getMinorVersion() < 8) return;
-        if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
+        if (!receiver.isLoaded() || receiver.disabledNametags.get() || receiver.disabledUnlimitedNametags.get()) return;
         packetListener.onPacketSend((BackendTabPlayer) receiver, packet);
     }
 
