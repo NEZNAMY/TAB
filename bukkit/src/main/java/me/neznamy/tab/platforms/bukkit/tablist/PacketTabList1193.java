@@ -77,12 +77,12 @@ public class PacketTabList1193 extends PacketTabList18 {
         actionAddPlayer = Enum.valueOf(ActionClass, Action.ADD_PLAYER.name());
         actionUpdateDisplayName = Enum.valueOf(ActionClass, Action.UPDATE_DISPLAY_NAME.name());
         actionUpdateLatency = Enum.valueOf(ActionClass, Action.UPDATE_LATENCY.name());
-        Enum actionUpdateGameMode = Enum.valueOf(ActionClass, Action.UPDATE_GAME_MODE.name());
 
         actionToEnumSet.put(Action.ADD_PLAYER, EnumSet.allOf(ActionClass));
-        actionToEnumSet.put(Action.UPDATE_GAME_MODE, EnumSet.of(actionUpdateGameMode));
+        actionToEnumSet.put(Action.UPDATE_GAME_MODE, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_GAME_MODE.name())));
         actionToEnumSet.put(Action.UPDATE_DISPLAY_NAME, EnumSet.of(actionUpdateDisplayName));
         actionToEnumSet.put(Action.UPDATE_LATENCY, EnumSet.of(actionUpdateLatency));
+        actionToEnumSet.put(Action.UPDATE_LISTED, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_LISTED.name())));
     }
 
     @Override
@@ -91,16 +91,22 @@ public class PacketTabList1193 extends PacketTabList18 {
         packetSender.sendPacket(player.getPlayer(), newRemovePacket.newInstance(Collections.singletonList(entry)));
     }
 
+    @Override
+    public void updateListed(@NonNull UUID entry, boolean listed) {
+        packetSender.sendPacket(player.getPlayer(),
+                createPacket(Action.UPDATE_LISTED, entry, "", null, listed, 0, 0, null));
+    }
+
     @SneakyThrows
     @NonNull
     @Override
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                               int latency, int gameMode, @Nullable Object displayName) {
+                               boolean listed, int latency, int gameMode, @Nullable Object displayName) {
         Object packet = newPlayerInfo.newInstance(actionToEnumSet.get(action), Collections.emptyList());
         PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(
                 id,
                 action == Action.ADD_PLAYER ? createProfile(id, name, skin) : null,
-                true,
+                listed,
                 latency,
                 gameModes[gameMode],
                 displayName,

@@ -67,14 +67,6 @@ public abstract class TabList<P extends TabPlayer, C> {
     }
 
     /**
-     * Removes entry from the TabList.
-     *
-     * @param   entry
-     *          Entry to remove
-     */
-    public abstract void removeEntry(@NonNull UUID entry);
-
-    /**
      * Updates display name of an entry. Using {@code null} makes it undefined and
      * scoreboard team prefix/suffix will be visible instead.
      *
@@ -90,37 +82,6 @@ public abstract class TabList<P extends TabPlayer, C> {
     }
 
     /**
-     * Updates display name of an entry. Using {@code null} makes it undefined and
-     * scoreboard team prefix/suffix will be visible instead.
-     *
-     * @param   entry
-     *          Entry to update
-     * @param   displayName
-     *          New display name
-     */
-    public abstract void updateDisplayName0(@NonNull UUID entry, @Nullable C displayName);
-
-    /**
-     * Updates latency of specified entry.
-     *
-     * @param   entry
-     *          Entry to update
-     * @param   latency
-     *          New latency
-     */
-    public abstract void updateLatency(@NonNull UUID entry, int latency);
-
-    /**
-     * Updates game mode of specified entry.
-     *
-     * @param   entry
-     *          Entry to update
-     * @param   gameMode
-     *          New game mode
-     */
-    public abstract void updateGameMode(@NonNull UUID entry, int gameMode);
-
-    /**
      * Adds specified entry into the TabList.
      *
      * @param   entry
@@ -129,31 +90,13 @@ public abstract class TabList<P extends TabPlayer, C> {
     public void addEntry(@NonNull Entry entry) {
         C component = entry.displayName == null ? null : toComponent(entry.displayName);
         setExpectedDisplayName(entry.getUniqueId(), component);
-        addEntry0(entry.uniqueId, entry.name, entry.skin, entry.latency, entry.gameMode, component);
+        addEntry0(entry.uniqueId, entry.name, entry.skin, entry.listed, entry.latency, entry.gameMode, component);
 
         if (player.getVersion().getMinorVersion() == 8) {
             // Compensation for 1.8.0 client sided bug
             updateDisplayName0(entry.getUniqueId(), component);
         }
     }
-
-    /**
-     * Adds specified entry to tablist
-     *
-     * @param   id
-     *          Entry UUID
-     * @param   name
-     *          Entry name
-     * @param   skin
-     *          Entry skin
-     * @param   latency
-     *          Entry latency
-     * @param   gameMode
-     *          Entry game mode
-     * @param   displayName
-     *          Entry display name
-     */
-    public abstract void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable C displayName);
 
     /**
      * Sets header and footer to specified values.
@@ -170,25 +113,6 @@ public abstract class TabList<P extends TabPlayer, C> {
         expectedFooter = convertedFooter;
         setPlayerListHeaderFooter0(convertedHeader, convertedFooter);
     }
-
-    /**
-     * Sets header and footer to specified values.
-     *
-     * @param   header
-     *          Header to use
-     * @param   footer
-     *          Footer to use
-     */
-    public abstract void setPlayerListHeaderFooter0(@NonNull C header, @NonNull C footer);
-
-    /**
-     * Returns {@code true} if tablist contains specified entry, {@code false} if not.
-     *
-     * @param   entry
-     *          UUID of entry to check
-     * @return  {@code true} if tablist contains specified entry, {@code false} if not
-     */
-    public abstract boolean containsEntry(@NonNull UUID entry);
 
     /**
      * Checks if all entries have display names as configured and if not,
@@ -276,6 +200,94 @@ public abstract class TabList<P extends TabPlayer, C> {
     }
 
     /**
+     * Removes entry from the TabList.
+     *
+     * @param   entry
+     *          Entry to remove
+     */
+    public abstract void removeEntry(@NonNull UUID entry);
+
+    /**
+     * Updates display name of an entry. Using {@code null} makes it undefined and
+     * scoreboard team prefix/suffix will be visible instead.
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   displayName
+     *          New display name
+     */
+    public abstract void updateDisplayName0(@NonNull UUID entry, @Nullable C displayName);
+
+    /**
+     * Updates latency of specified entry.
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   latency
+     *          New latency
+     */
+    public abstract void updateLatency(@NonNull UUID entry, int latency);
+
+    /**
+     * Updates game mode of specified entry.
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   gameMode
+     *          New game mode
+     */
+    public abstract void updateGameMode(@NonNull UUID entry, int gameMode);
+
+    /**
+     * Updates listed flag of specified entry (1.19.3+).
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   listed
+     *          New listed flag
+     */
+    public abstract void updateListed(@NonNull UUID entry, boolean listed);
+
+    /**
+     * Adds specified entry to tablist
+     *
+     * @param   id
+     *          Entry UUID
+     * @param   name
+     *          Entry name
+     * @param   skin
+     *          Entry skin
+     * @param   listed
+     *          Whether entry should be listed or not
+     * @param   latency
+     *          Entry latency
+     * @param   gameMode
+     *          Entry game mode
+     * @param   displayName
+     *          Entry display name
+     */
+    public abstract void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable C displayName);
+
+    /**
+     * Sets header and footer to specified values.
+     *
+     * @param   header
+     *          Header to use
+     * @param   footer
+     *          Footer to use
+     */
+    public abstract void setPlayerListHeaderFooter0(@NonNull C header, @NonNull C footer);
+
+    /**
+     * Returns {@code true} if tablist contains specified entry, {@code false} if not.
+     *
+     * @param   entry
+     *          UUID of entry to check
+     * @return  {@code true} if tablist contains specified entry, {@code false} if not
+     */
+    public abstract boolean containsEntry(@NonNull UUID entry);
+
+    /**
      * TabList action.
      */
     public enum Action {
@@ -286,14 +298,17 @@ public abstract class TabList<P extends TabPlayer, C> {
         /** Removes player from the TabList */
         REMOVE_PLAYER,
 
-        /** Updates display name */
-        UPDATE_DISPLAY_NAME,
+        /** Updates game mode*/
+        UPDATE_GAME_MODE,
+
+        /** Updates listed flag */
+        UPDATE_LISTED,
 
         /** Updates latency */
         UPDATE_LATENCY,
 
-        /** Updates game mode*/
-        UPDATE_GAME_MODE
+        /** Updates display name */
+        UPDATE_DISPLAY_NAME
     }
 
     /**
@@ -311,6 +326,9 @@ public abstract class TabList<P extends TabPlayer, C> {
 
         /** Player's skin, null for empty skin */
         @Nullable private Skin skin;
+
+        /** Listed flag */
+        private boolean listed;
 
         /** Latency */
         private int latency;
@@ -344,7 +362,7 @@ public abstract class TabList<P extends TabPlayer, C> {
          * @return  Entry with given parameters
          */
         public static Entry displayName(@NonNull UUID id, @Nullable TabComponent displayName) {
-            return new Entry(id, "", null, 0, 0, displayName);
+            return new Entry(id, "", null, false, 0, 0, displayName);
         }
 
         /**
@@ -357,7 +375,7 @@ public abstract class TabList<P extends TabPlayer, C> {
          * @return  Entry with given parameters
          */
         public static Entry latency(@NonNull UUID id, int latency) {
-            return new Entry(id, "", null, latency, 0, null);
+            return new Entry(id, "", null, false, latency, 0, null);
         }
 
         /**
@@ -370,7 +388,7 @@ public abstract class TabList<P extends TabPlayer, C> {
          * @return  Entry with given parameters
          */
         public static Entry gameMode(@NonNull UUID id, int gameMode) {
-            return new Entry(id, "", null, 0, gameMode, null);
+            return new Entry(id, "", null, false, 0, gameMode, null);
         }
     }
 

@@ -178,6 +178,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
                 p.getTablistId(),
                 p.getNickname(),
                 p.getSkin(),
+                true,
                 p.getPing(),
                 gameMode,
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null

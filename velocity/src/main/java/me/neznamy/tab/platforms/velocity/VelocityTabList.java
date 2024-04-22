@@ -48,7 +48,12 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
     }
 
     @Override
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable Component displayName) {
+    public void updateListed(@NonNull UUID entry, boolean listed) {
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setListed(listed));
+    }
+
+    @Override
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Component displayName) {
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(new GameProfile(
@@ -57,6 +62,7 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
                         skin == null ? Collections.emptyList() : Collections.singletonList(
                                 new GameProfile.Property(TEXTURES_PROPERTY, skin.getValue(), Objects.requireNonNull(skin.getSignature())))
                 ))
+                .listed(listed)
                 .latency(latency)
                 .gameMode(gameMode)
                 .displayName(displayName)

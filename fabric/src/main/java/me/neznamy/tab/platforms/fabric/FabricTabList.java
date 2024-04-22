@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.fabric;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.*;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -29,31 +30,39 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
     @Override
     public void removeEntry(@NonNull UUID entry) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.REMOVE_PLAYER,
-                new Builder(entry, "", null, 0, 0, null)));
+                new Builder(entry, "", null, false, 0, 0, null)));
     }
 
     @Override
     public void updateDisplayName0(@NonNull UUID entry, @Nullable Component displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_DISPLAY_NAME,
-                new Builder(entry, "", null, 0, 0, displayName)));
+                new Builder(entry, "", null, false, 0, 0, displayName)));
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_LATENCY,
-                new Builder(entry, "", null, latency, 0, null)));
+                new Builder(entry, "", null, false, latency, 0, null)));
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_GAME_MODE,
-                new Builder(entry, "", null, 0, gameMode, null)));
+                new Builder(entry, "", null, false, 0, gameMode, null)));
     }
 
     @Override
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable Component displayName) {
+    public void updateListed(@NonNull UUID entry, boolean listed) {
+        if (player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
+            player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_LISTED,
+                    new Builder(entry, "", null, listed, 0, 0, null)));
+        }
+    }
+
+    @Override
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Component displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.ADD_PLAYER,
-                new Builder(id, name, skin, latency, gameMode, displayName)));
+                new Builder(id, name, skin, listed, latency, gameMode, displayName)));
     }
 
     @Override
@@ -83,6 +92,7 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
         @NonNull private final UUID id;
         @NonNull private String name;
         @Nullable private Skin skin;
+        private boolean listed;
         private int latency;
         private int gameMode;
         @Nullable private Component displayName;

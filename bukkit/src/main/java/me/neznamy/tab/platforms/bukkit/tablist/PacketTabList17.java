@@ -85,7 +85,7 @@ public class PacketTabList17 extends TabListBase<String> {
     public void updateDisplayName0(@NonNull UUID entry, @Nullable String displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), false, 0));
-        addEntry0(entry, userNames.get(entry), null, 0, 0, displayName);
+        addEntry0(entry, userNames.get(entry), null, false, 0, 0, displayName);
     }
 
     @Override
@@ -101,8 +101,13 @@ public class PacketTabList17 extends TabListBase<String> {
     }
 
     @Override
+    public void updateListed(@NonNull UUID entry, boolean listed) {
+        // Added in 1.19.3
+    }
+
+    @Override
     @SneakyThrows
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable String displayName) {
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable String displayName) {
         String display = displayName == null ? name : displayName;
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(display, true, latency));
         userNames.put(id, name);

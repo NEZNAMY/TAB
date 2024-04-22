@@ -52,6 +52,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
                 id,
                 manager.getDirection().getEntryName(viewer, slot),
                 manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).updateAndGet()),
+                true,
                 ping,
                 0,
                 TabComponent.optimized(viewer.getProperty(propertyName).updateAndGet())
