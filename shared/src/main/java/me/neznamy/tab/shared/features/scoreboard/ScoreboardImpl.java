@@ -150,7 +150,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
             ((ScoreboardLine)s).register(p);
         }
         players.add(p);
-        manager.getActiveScoreboards().put(p, this);
+        p.scoreboardData.activeScoreboard = this;
         recalculateScores(p);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, name);
     }
@@ -176,7 +176,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
             if (((ScoreboardLine)line).isShownTo(p))
                 p.getScoreboard().unregisterTeam(((ScoreboardLine)line).getTeamName());
         }
-        manager.getActiveScoreboards().remove(p);
+        p.scoreboardData.activeScoreboard = null;
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, "");
     }
 

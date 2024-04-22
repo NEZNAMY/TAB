@@ -47,7 +47,7 @@ public class ScoreboardToggleCommand extends SubCommand {
             return;
         }
         boolean silent = args.length == 2 && args[1].equals("-s");
-        if (scoreboard.getOtherPluginScoreboards().containsKey(target)) return; //not overriding other plugins
+        if (target.scoreboardData.otherPluginScoreboard != null) return; //not overriding other plugins
         scoreboard.toggleScoreboard(target, !silent);
     }
 

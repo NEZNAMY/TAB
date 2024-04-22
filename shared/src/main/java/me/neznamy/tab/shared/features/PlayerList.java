@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
-import me.neznamy.tab.shared.features.layout.LayoutView;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
@@ -73,9 +72,8 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
      */
     public UUID getTablistUUID(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         if (layoutManager != null) {
-            LayoutView layout = layoutManager.getViews().get(viewer);
-            if (layout != null) {
-                PlayerSlot slot = layout.getSlot(p);
+            if (viewer.layoutData.view != null) {
+                PlayerSlot slot = viewer.layoutData.view.getSlot(p);
                 if (slot != null) {
                     return slot.getUniqueId();
                 }

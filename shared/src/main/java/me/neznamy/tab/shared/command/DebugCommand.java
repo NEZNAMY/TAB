@@ -167,7 +167,7 @@ public class DebugCommand extends SubCommand {
             return "&eTeam name: &cSorting is disabled in player's world/server";
         }
         return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
-                ? sorting.getFullTeamName(analyzed) : sorting.getShortTeamName(analyzed));
+                ? analyzed.sortingData.fullTeamName : analyzed.sortingData.getShortTeamName());
     }
 
     /**
@@ -178,13 +178,12 @@ public class DebugCommand extends SubCommand {
      * @return  team name note of specified player
      */
     private @NotNull String getTeamNameNote(@NotNull TabPlayer analyzed) {
-        Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-        if (sorting == null) return "";
+        if (analyzed.sortingData == null) return "";
         if (TAB.getInstance().getNameTagManager() != null &&
                 TAB.getInstance().getNameTagManager().getDisableChecker().isDisabledPlayer(analyzed)) {
             return "";
         }
-        return "&eSorting note: &r" + sorting.getTeamNameNote(analyzed);
+        return "&eSorting note: &r" + analyzed.sortingData.teamNameNote;
     }
 
     /**

@@ -21,7 +21,7 @@ public class ProxyNameTagX extends NameTagX {
     @Override
     public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         super.onServerChange(p, from, to);
-        if (isPreviewingNameTag(p)) {
+        if (p.unlimitedNametagData.previewing) {
             ((ProxyTabPlayer)p).sendPluginMessage(new Preview(true));
         }
         for (String line : getDefinedLines()) {
@@ -55,12 +55,6 @@ public class ProxyNameTagX extends NameTagX {
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         super.onDisableConditionChange(p, disabledNow);
         ((ProxyTabPlayer)p).sendPluginMessage(new SetEnabled(!disabledNow && !getUnlimitedDisableChecker().isDisabledPlayer(p)));
-    }
-
-    @Override
-    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
-        super.onQuit(disconnectedPlayer);
-        armorStandManagerMap.remove(disconnectedPlayer); // WeakHashMap doesn't clear this due to value referencing the key
     }
 
     @Override

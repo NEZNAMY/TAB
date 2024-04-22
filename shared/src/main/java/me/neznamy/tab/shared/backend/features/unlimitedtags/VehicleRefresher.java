@@ -34,9 +34,6 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     @Getter
     private final Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
 
-    /** set of players currently on boats */
-    private final Set<TabPlayer> playersOnBoats = Collections.newSetFromMap(new WeakHashMap<>());
-
     /** Reference to the main feature */
     private final BackendNameTagX feature;
 
@@ -48,7 +45,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                         feature.getArmorStandManager(inVehicle).teleport();
                     }
                     for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                        if (feature.isPreviewingNameTag(p)) {
+                        if (p.unlimitedNametagData.previewing) {
                             feature.getArmorStandManager(p).teleport((BackendTabPlayer) p);
                         }
                     }
@@ -65,7 +62,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                 updateVehicle(vehicle);
                 addToVehicle(p, vehicle);
                 if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
-                    playersOnBoats.add(p);
+                    p.unlimitedNametagData.onBoat = true;
                 }
             }
         }
@@ -95,8 +92,8 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
             vehicles.remove(feature.getEntityId(playersInVehicle.remove(p)));
             feature.getArmorStandManager(p).teleport();
             playersInVehicleArray = playersInVehicle.keySet().toArray(new TabPlayer[0]);
-            if (feature.isDisableOnBoats() && playersOnBoats.contains(p)) {
-                playersOnBoats.remove(p);
+            if (feature.isDisableOnBoats() && p.unlimitedNametagData.onBoat) {
+                p.unlimitedNametagData.onBoat = false;
                 feature.updateTeamData(p);
             }
             feature.getArmorStandManager(p).updateVisibility(true);
@@ -107,7 +104,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
             feature.getArmorStandManager(p).respawn(); //making teleport instant instead of showing teleport animation
             addToVehicle(p, vehicle);
             if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
-                playersOnBoats.add(p);
+                p.unlimitedNametagData.onBoat = true;
                 feature.updateTeamData(p);
             }
             feature.getArmorStandManager(p).updateVisibility(true);
@@ -123,17 +120,6 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     private void addToVehicle(@NotNull TabPlayer player, @NotNull Object vehicle) {
         playersInVehicle.put(player, vehicle);
         playersInVehicleArray = playersInVehicle.keySet().toArray(new TabPlayer[0]);
-    }
-
-    /**
-     * Returns {@code true} if the player is in a boat, {@code false} if not
-     *
-     * @param   p
-     *          Player to check
-     * @return  {@code true} if in a boat, {@code false} if not
-     */
-    public boolean isOnBoat(@NotNull TabPlayer p) {
-        return playersOnBoats.contains(p);
     }
 
     private void updateVehicle(Object vehicle) {

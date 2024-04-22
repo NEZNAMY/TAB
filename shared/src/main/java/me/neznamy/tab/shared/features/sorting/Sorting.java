@@ -29,6 +29,7 @@ import me.neznamy.tab.shared.features.sorting.types.PlaceholderLowToHigh;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderZtoA;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Class for handling player sorting rules
@@ -47,12 +48,6 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     
     //active sorting types
     private final SortingType[] usedSortingTypes;
-
-    //team names and notes
-    private final WeakHashMap<TabPlayer, String> shortTeamNames = new WeakHashMap<>();
-    private final WeakHashMap<TabPlayer, String> fullTeamNames = new WeakHashMap<>();
-    private final WeakHashMap<TabPlayer, String> teamNameNotes = new WeakHashMap<>();
-    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, String> forcedTeamName = new WeakHashMap<>();
     
     /**
      * Constructs new instance and loads config options
@@ -70,16 +65,16 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        String previousShortName = shortTeamNames.get(p);
+        String previousShortName = p.sortingData.shortTeamName;
         constructTeamNames(p);
-        if (!shortTeamNames.get(p).equals(previousShortName)) {
-            if (nameTags != null && getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.getDisableChecker().isDisabledPlayer(p)) {
+        if (!p.sortingData.shortTeamName.equals(previousShortName)) {
+            if (nameTags != null && p.sortingData.forcedTeamName == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.getDisableChecker().isDisabledPlayer(p)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(previousShortName);
                 }
                 nameTags.registerTeam(p);
             }
-            if (layout != null) layout.updateTeamName(p, fullTeamNames.get(p));
+            if (layout != null) layout.updateTeamName(p, p.sortingData.fullTeamName);
         }
     }
 
@@ -96,12 +91,13 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         layout = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            constructTeamNames(all);
+            onJoin(all);
         }
     }
     
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        connectedPlayer.sortingData = new PlayerData();
         constructTeamNames(connectedPlayer);
     }
     
@@ -131,7 +127,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
      *          player to build team name for
      */
     public void constructTeamNames(@NotNull TabPlayer p) {
-        teamNameNotes.put(p, "");
+        p.sortingData.teamNameNote = "";
         StringBuilder shortName = new StringBuilder();
         for (SortingType type : usedSortingTypes) {
             shortName.append(type.getChars(p));
@@ -146,12 +142,12 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
             shortName.setLength(Limitations.TEAM_NAME_LENGTH-1);
         }
         String finalShortName = checkTeamName(p, shortName, 'A');
-        shortTeamNames.put(p, finalShortName);
-        fullTeamNames.put(p, fullName.append(finalShortName.charAt(finalShortName.length() - 1)).toString());
+        p.sortingData.shortTeamName = finalShortName;
+        p.sortingData.fullTeamName = fullName.append(finalShortName.charAt(finalShortName.length() - 1)).toString();
 
         // Do not randomly override note
-        if (forcedTeamName.get(p) != null) {
-            teamNameNotes.put(p, "Set using API");
+        if (p.sortingData.forcedTeamName != null) {
+            p.sortingData.teamNameNote = "Set using API";
         }
     }
 
@@ -170,13 +166,13 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         String potentialTeamName = currentName.toString() + (char)id;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == p) continue;
-            if (shortTeamNames.get(all) != null && shortTeamNames.get(all).equals(potentialTeamName)) {
+            if (potentialTeamName.equals(all.sortingData.shortTeamName)) {
                 return checkTeamName(p, currentName, id+1);
             }
         }
         if (redis != null && redis.getRedisTeams() != null) {
             for (RedisPlayer all : redis.getRedisPlayers().values()) {
-                if (redis.getRedisTeams().getTeamNames().get(all).equals(potentialTeamName)) {
+                if (all.getTeamName().equals(potentialTeamName)) {
                     return checkTeamName(p, currentName, id+1);
                 }
             }
@@ -193,56 +189,6 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         return Arrays.stream(usedSortingTypes).map(SortingType::getDisplayName).collect(Collectors.joining(" -> "));
     }
 
-    /**
-     * Returns short team name of specified player.
-     *
-     * @param   p
-     *          Player to get short team name of
-     * @return  short team name of specified player
-     */
-    @NotNull
-    public String getShortTeamName(@NotNull TabPlayer p) {
-        String forced = getForcedTeamName(p);
-        if (forced != null) return forced;
-        return shortTeamNames.get(p);
-    }
-
-    /**
-     * Returns full team name of specified player.
-     *
-     * @param   p
-     *          Player to get full team name of
-     * @return  full team name of specified player
-     */
-    @NotNull
-    public String getFullTeamName(@NotNull TabPlayer p) {
-        return fullTeamNames.get(p);
-    }
-
-    /**
-     * Returns team name note for player.
-     *
-     * @param   p
-     *          Player to get team name note of
-     * @return  team name note for player
-     */
-    @NotNull
-    public String getTeamNameNote(@NotNull TabPlayer p) {
-        return teamNameNotes.get(p);
-    }
-
-    /**
-     * Sets team note for player.
-     *
-     * @param   p
-     *          Player to set team name note of
-     * @param   note
-     *          Team name note
-     */
-    public void setTeamNameNote(@NotNull TabPlayer p, @NotNull String note) {
-        teamNameNotes.put(p, note);
-    }
-
     @Override
     @NotNull
     public String getFeatureName() {
@@ -255,29 +201,61 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
 
     @Override
     public void forceTeamName(@NonNull me.neznamy.tab.api.TabPlayer player, String name) {
-        ((TabPlayer)player).ensureLoaded();
-        if (Objects.equals(forcedTeamName.get(player), name)) return;
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (Objects.equals(p.sortingData.forcedTeamName, name)) return;
         if (name != null && name.length() > Limitations.TEAM_NAME_LENGTH) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
-        if (name != null) setTeamNameNote((TabPlayer) player, "Set using API");
+        if (name != null) p.sortingData.teamNameNote = "Set using API";
         NameTag nametag = TAB.getInstance().getNameTagManager();
-        if (nametag != null) nametag.unregisterTeam((TabPlayer) player, getShortTeamName((TabPlayer) player));
-        forcedTeamName.put(player, name);
-        if (nametag != null) nametag.registerTeam((TabPlayer) player);
-        if (layout != null) layout.updateTeamName((TabPlayer) player, fullTeamNames.get(player));
-        if (redis != null && nametag != null) redis.updateTeam((TabPlayer) player, getShortTeamName((TabPlayer) player),
-                ((TabPlayer) player).getProperty(TabConstants.Property.TAGPREFIX).get(),
-                ((TabPlayer) player).getProperty(TabConstants.Property.TAGSUFFIX).get(),
-                (nametag.getTeamVisibility((TabPlayer) player, (TabPlayer) player) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER));
+        if (nametag != null) nametag.unregisterTeam(p, p.sortingData.getShortTeamName());
+        p.sortingData.forcedTeamName = name;
+        if (nametag != null) nametag.registerTeam(p);
+        if (layout != null) layout.updateTeamName(p, p.sortingData.fullTeamName);
+        if (redis != null && nametag != null) redis.updateTeam(p, p.sortingData.getShortTeamName(),
+                (p).getProperty(TabConstants.Property.TAGPREFIX).get(),
+                (p).getProperty(TabConstants.Property.TAGSUFFIX).get(),
+                (nametag.getTeamVisibility(p, p) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER));
     }
 
     @Override
+    @Nullable
     public String getForcedTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        return forcedTeamName.get(player);
+        return ((TabPlayer)player).sortingData.forcedTeamName;
     }
 
     @Override
-    public @NotNull String getOriginalTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    @NotNull
+    public String getOriginalTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ((TabPlayer)player).ensureLoaded();
-        return shortTeamNames.get((TabPlayer) player);
+        return ((TabPlayer)player).sortingData.shortTeamName;
+    }
+
+    /**
+     * Class storing sorting data for players.
+     */
+    public static class PlayerData {
+
+        /** Short team name (16 chars), used for teams */
+        public String shortTeamName;
+
+        /** Full sorting string, used for sorting in Layout (and maybe for 1.18+ in the future) */
+        public String fullTeamName;
+
+        /** Note explaining player's current team name */
+        public String teamNameNote;
+
+        /** Forced team name using API */
+        @Nullable
+        public String forcedTeamName;
+
+        /**
+         * Returns short team name. If forced using API, that value is returned.
+         *
+         * @return  short team name to use
+         */
+        @NotNull
+        public String getShortTeamName() {
+            return forcedTeamName != null ? forcedTeamName : shortTeamName;
+        }
     }
 }

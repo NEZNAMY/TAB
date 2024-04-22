@@ -7,10 +7,17 @@ import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.NickCompatibility;
+import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.hook.FloodgateHook;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
+import me.neznamy.tab.shared.placeholders.expansion.PlayerExpansionValues;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,6 +80,27 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Flag tracking whether the player is online or not */
     @Getter private boolean online = true;
+
+    /** Data for sorting */
+    public Sorting.PlayerData sortingData;
+
+    /** Data for sidebar scoreboard feature */
+    public ScoreboardManagerImpl.PlayerData scoreboardData;
+
+    /** Data for scoreboard team */
+    public NameTag.PlayerData teamData;
+
+    /** Data for unlimited nametags */
+    public NameTagX.PlayerData unlimitedNametagData;
+
+    /** Data for Layout */
+    public LayoutManagerImpl.PlayerData layoutData;
+
+    /** Data for BossBar */
+    public BossBarManagerImpl.PlayerData bossbarData;
+
+    /** Data for plugin's PlaceholderAPI expansion */
+    public PlayerExpansionValues expansionValues = new PlayerExpansionValues();
 
     /**
      * Constructs new instance with given parameters

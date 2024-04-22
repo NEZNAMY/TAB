@@ -46,8 +46,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     //time when BossBar announce ends, used for placeholder
     private long announceEndTime;
 
-    private final Set<me.neznamy.tab.api.TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
-
     /**
      * Constructs new instance and loads configuration
      */
@@ -124,6 +122,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        connectedPlayer.bossbarData = new PlayerData();
         setBossBarVisible(connectedPlayer, hiddenByDefault == bossBarOffPlayers.contains(connectedPlayer.getName()), false);
     }
 
@@ -191,15 +190,15 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public boolean hasBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        return visiblePlayers.contains(player);
+        return ((TabPlayer)player).bossbarData.visible;
     }
 
     @Override
     public void setBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer p, boolean visible, boolean sendToggleMessage) {
         TabPlayer player = (TabPlayer) p;
-        if (visiblePlayers.contains(player) == visible) return;
+        if (player.bossbarData.visible == visible) return;
         if (visible) {
-            visiblePlayers.add(player);
+            player.bossbarData.visible = true;
             detectBossBarsAndSend(player);
             if (sendToggleMessage) player.sendMessage(toggleOnMessage, true);
             if (rememberToggleChoice) {
@@ -215,7 +214,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
                 }
             }
         } else {
-            visiblePlayers.remove(player);
+            player.bossbarData.visible = false;
             for (BossBar l : lineValues) {
                 l.removePlayer(player);
             }
@@ -297,5 +296,14 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     @NotNull
     public String getFeatureName() {
         return "BossBar";
+    }
+
+    /**
+     * Class storing bossbar data for players.
+     */
+    public static class PlayerData {
+
+        /** Whether player wishes to see boss bars or not */
+        public boolean visible;
     }
 }

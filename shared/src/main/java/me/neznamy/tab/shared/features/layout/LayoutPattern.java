@@ -70,7 +70,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        manager.getViews().values().forEach(LayoutView::tick);
+        manager.tickAllLayouts();
     }
 
     @Override
