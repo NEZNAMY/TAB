@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -11,6 +12,7 @@ import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.commands.CommandSourceStack;
@@ -143,8 +145,11 @@ public class Loader_1_20_5 implements Loader {
     }
 
     @Override
-    public boolean isTeamPacket(@NotNull Packet<?> packet) {
-        return packet instanceof ClientboundSetPlayerTeamPacket; // Fabric-mapped name changed
+    public void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard) {
+        if (packet instanceof ClientboundSetPlayerTeamPacket team) {
+            if (team.method == Scoreboard.TeamAction.REMOVE || team.method == Scoreboard.TeamAction.UPDATE) return;
+            team.players = scoreboard.onTeamPacket(team.method, team.getName(), team.players);
+        }
     }
 
     @Override

@@ -72,9 +72,9 @@ public class FabricMultiVersion {
         return loaderOld.newHeaderFooter(header, footer);
     }
 
-    public static boolean isTeamPacket(@NotNull Packet<?> packet) {
-        if (serverVersion.getMinorVersion() >= 17) return loaderNew.isTeamPacket(packet);
-        return loaderOld.isTeamPacket(packet);
+    public static void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard) {
+        if (serverVersion.getMinorVersion() >= 17) loaderNew.checkTeamPacket(packet, scoreboard);
+        else loaderOld.checkTeamPacket(packet, scoreboard);
     }
 
     @NotNull

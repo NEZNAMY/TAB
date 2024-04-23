@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.fabric.loader;
 
 import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
+import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
@@ -63,7 +64,7 @@ public interface Loader {
     @NotNull
     Packet<?> newHeaderFooter(@NotNull Component header, @NotNull Component footer);
 
-    boolean isTeamPacket(@NotNull Packet<?> packet);
+    void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard);
 
     @NotNull
     Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location);
