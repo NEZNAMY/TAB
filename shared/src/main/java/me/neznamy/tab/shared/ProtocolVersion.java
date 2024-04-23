@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public enum ProtocolVersion {
 
     UNKNOWN,
+    V1_20_5 (766),
     V1_20_4 (765),
     V1_20_3 (765),
     V1_20_2 (764),
