@@ -97,7 +97,6 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.sortingData = new PlayerData();
         constructTeamNames(connectedPlayer);
     }
     

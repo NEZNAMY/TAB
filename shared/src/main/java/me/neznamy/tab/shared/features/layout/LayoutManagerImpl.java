@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -101,7 +100,6 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public void onJoin(@NotNull TabPlayer p) {
-        p.layoutData = new PlayerData();
         p.layoutData.sortingString = p.sortingData.fullTeamName;
         sortedPlayers.put(p, p.sortingData.fullTeamName);
         LayoutPattern highest = getHighestLayout(p);

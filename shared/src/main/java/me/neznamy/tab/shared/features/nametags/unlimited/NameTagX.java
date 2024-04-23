@@ -46,7 +46,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
             TAB.getInstance().getConfigHelper().startup().invisibleAndUnlimitedNameTagsAreMutuallyExclusive();
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            all.unlimitedNametagData = new PlayerData();
             updateProperties(all);
             all.unlimitedNametagData.armorStandManager = armorStandFunction.apply(this, all);
             if (unlimitedDisableChecker.isDisableConditionMet(all)) {
@@ -59,7 +58,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.unlimitedNametagData = new PlayerData();
         if (unlimitedDisableChecker.isDisableConditionMet(connectedPlayer))
             addDisabledPlayer(connectedPlayer);
         super.onJoin(connectedPlayer);

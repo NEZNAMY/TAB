@@ -45,7 +45,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            all.teamData = new PlayerData();
             all.getScoreboard().setAntiOverrideTeams(antiOverride);
             updateProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
@@ -97,7 +96,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.teamData = new PlayerData();
         connectedPlayer.getScoreboard().setAntiOverrideTeams(antiOverride);
         updateProperties(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

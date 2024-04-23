@@ -83,22 +83,22 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @Getter private boolean online = true;
 
     /** Data for sorting */
-    public Sorting.PlayerData sortingData;
+    public final Sorting.PlayerData sortingData = new Sorting.PlayerData();
 
     /** Data for sidebar scoreboard feature */
-    public ScoreboardManagerImpl.PlayerData scoreboardData;
+    public final ScoreboardManagerImpl.PlayerData scoreboardData = new ScoreboardManagerImpl.PlayerData();
 
     /** Data for scoreboard team */
-    public NameTag.PlayerData teamData;
+    public final NameTag.PlayerData teamData = new NameTag.PlayerData();
 
     /** Data for unlimited nametags */
-    public NameTagX.PlayerData unlimitedNametagData;
+    public final NameTagX.PlayerData unlimitedNametagData = new NameTagX.PlayerData();
 
     /** Data for Layout */
-    public LayoutManagerImpl.PlayerData layoutData;
+    public final LayoutManagerImpl.PlayerData layoutData = new LayoutManagerImpl.PlayerData();
 
     /** Data for BossBar */
-    public BossBarManagerImpl.PlayerData bossbarData;
+    public final BossBarManagerImpl.PlayerData bossbarData = new BossBarManagerImpl.PlayerData();
 
     /** Data for plugin's PlaceholderAPI expansion */
     public final PlayerExpansionValues expansionValues = new PlayerExpansionValues();
