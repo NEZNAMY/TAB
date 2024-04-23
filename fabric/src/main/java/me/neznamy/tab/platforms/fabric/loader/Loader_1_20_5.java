@@ -40,14 +40,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * Method loader compiled using Minecraft 1.20.4.
+ * Method loader compiled using Minecraft 1.20.5.
  */
 @SuppressWarnings({
         "unchecked", // Java generic types
         "DataFlowIssue", // Profile is not null on add action
         "unused" // Actually used, just via reflection
 })
-public class Loader_1_20_4 implements Loader {
+public class Loader_1_20_5 implements Loader {
 
     @Override
     @NotNull

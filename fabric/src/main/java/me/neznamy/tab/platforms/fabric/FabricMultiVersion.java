@@ -4,7 +4,7 @@ import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.loader.Loader;
-import me.neznamy.tab.platforms.fabric.loader.Loader_1_20_4;
+import me.neznamy.tab.platforms.fabric.loader.Loader_1_20_5;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
@@ -35,7 +35,7 @@ import java.util.UUID;
 public class FabricMultiVersion {
 
     public static final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion);
-    public static final Loader loaderNew = new Loader_1_20_4();
+    public static final Loader loaderNew = new Loader_1_20_5();
     public static final Loader loaderOld = createOldLoader();
 
     @SneakyThrows
