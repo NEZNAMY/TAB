@@ -95,7 +95,6 @@ public class FabricMultiVersion {
         return loaderOld.updateTeam(team);
     }
 
-    @SneakyThrows
     public static int[] getDestroyedEntities(Packet<?> destroyPacket) {
         if (serverVersion.getMinorVersion() >= 17) return loaderNew.getDestroyedEntities(destroyPacket);
         return loaderOld.getDestroyedEntities(destroyPacket);
