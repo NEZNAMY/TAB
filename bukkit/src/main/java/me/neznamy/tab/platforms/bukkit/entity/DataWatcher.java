@@ -53,7 +53,7 @@ public class DataWatcher implements EntityData {
             loadSerializers();
         }
         if (BukkitReflection.is1_19_3Plus()) {
-            Class<?> dataWatcher$Item = BukkitReflection.getClass("network.syncher.SynchedEntityData$DataValue", "network.syncher.DataWatcher$c");
+            Class<?> dataWatcher$Item = BukkitReflection.getClass("network.syncher.SynchedEntityData$DataValue", "network.syncher.DataWatcher$c", "network.syncher.DataWatcher$b");
             Class<?> dataWatcherSerializer = BukkitReflection.getClass("network.syncher.EntityDataSerializer",
                     "network.syncher.DataWatcherSerializer", "DataWatcherSerializer");
             newDataWatcher$Item = dataWatcher$Item.getConstructor(int.class, dataWatcherSerializer, Object.class);
