@@ -155,14 +155,6 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, name);
     }
 
-    @Override
-    public void unregister() {
-        for (TabPlayer all : players.toArray(new TabPlayer[0])) {
-            removePlayer(all);
-        }
-        players.clear();
-    }
-
     /**
      * Unregisters player from this scoreboard.
      *
@@ -195,38 +187,6 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
     @NotNull
     public String getRefreshDisplayName() {
         return "Updating Scoreboard title";
-    }
-
-    @Override
-    public void setTitle(@NonNull String title) {
-        this.title = title;
-        for (TabPlayer p : players) {
-            p.setProperty(this, titleProperty, title);
-            refresh(p, false);
-        }
-    }
-
-    @Override
-    public void addLine(@NonNull String text) {
-        StableDynamicLine line = new StableDynamicLine(this, lines.size()+1, text);
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(name, lines.size()), line);
-        lines.add(line);
-        for (TabPlayer p : players) {
-            line.register(p);
-            recalculateScores(p);
-        }
-    }
-
-    @Override
-    public void removeLine(int index) {
-        if (index < 0 || index >= lines.size()) throw new IndexOutOfBoundsException("Index " + index + " is out of range (0 - " + (lines.size()-1) + ")");
-        ScoreboardLine line = (ScoreboardLine) lines.get(index);
-        lines.remove(line);
-        for (TabPlayer p : players) {
-            line.unregister(p);
-            recalculateScores(p);
-        }
-        TAB.getInstance().getFeatureManager().unregisterFeature(TabConstants.Feature.scoreboardLine(name, index));
     }
 
     /**
@@ -270,5 +230,53 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
     @NotNull
     public String getFeatureName() {
         return manager.getFeatureName();
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+
+    @Override
+    public void setTitle(@NonNull String title) {
+        ensureActive();
+        this.title = title;
+        for (TabPlayer p : players) {
+            p.setProperty(this, titleProperty, title);
+            refresh(p, false);
+        }
+    }
+
+    @Override
+    public void addLine(@NonNull String text) {
+        ensureActive();
+        StableDynamicLine line = new StableDynamicLine(this, lines.size()+1, text);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(name, lines.size()), line);
+        lines.add(line);
+        for (TabPlayer p : players) {
+            line.register(p);
+            recalculateScores(p);
+        }
+    }
+
+    @Override
+    public void removeLine(int index) {
+        ensureActive();
+        if (index < 0 || index >= lines.size()) throw new IndexOutOfBoundsException("Index " + index + " is out of range (0 - " + (lines.size()-1) + ")");
+        ScoreboardLine line = (ScoreboardLine) lines.get(index);
+        lines.remove(line);
+        for (TabPlayer p : players) {
+            line.unregister(p);
+            recalculateScores(p);
+        }
+        TAB.getInstance().getFeatureManager().unregisterFeature(TabConstants.Feature.scoreboardLine(name, index));
+    }
+
+    @Override
+    public void unregister() {
+        ensureActive();
+        for (TabPlayer all : players.toArray(new TabPlayer[0])) {
+            removePlayer(all);
+        }
+        players.clear();
     }
 }

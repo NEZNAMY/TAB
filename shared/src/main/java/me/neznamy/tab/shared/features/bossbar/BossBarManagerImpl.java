@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -82,7 +83,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void load() {
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.COUNTDOWN, 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.COUNTDOWN, 100,
+                () -> TimeUnit.MILLISECONDS.toSeconds(announceEndTime - System.currentTimeMillis()));
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
@@ -164,13 +166,48 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
         }
     }
 
+
+
     @Override
-    public @NotNull BossBar createBossBar(@NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+    public void onLoginPacket(TabPlayer player) {
+        // Since 1.20.2, Login packet clears BossBars as well
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+            for (BossBar bar : lineValues) {
+                if (bar.containsPlayer(player)) {
+                    ((BossBarLine)bar).sendToPlayerRaw(player);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
+        for (BossBar line : lineValues) {
+            ((BossBarLine)line).removePlayerRaw(disconnectedPlayer);
+        }
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "BossBar";
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+
+    @Override
+    @NotNull
+    public BossBar createBossBar(@NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+        ensureActive();
         return createBossBar(title, String.valueOf(progress), color.toString(), style.toString());
     }
 
     @Override
-    public @NotNull BossBar createBossBar(@NonNull String title, @NonNull String progress, @NonNull String color, @NonNull String style) {
+    @NotNull
+    public BossBar createBossBar(@NonNull String title, @NonNull String progress, @NonNull String color, @NonNull String style) {
+        ensureActive();
         UUID id = UUID.randomUUID();
         BossBar bar = new BossBarLine(this, id.toString(), null, color, style, title, progress, true);
         registeredBossBars.put(id.toString(), bar);
@@ -180,21 +217,25 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public BossBar getBossBar(@NonNull String name) {
+        ensureActive();
         return registeredBossBars.get(name);
     }
 
     @Override
     public void toggleBossBar(me.neznamy.tab.api.@NonNull TabPlayer player, boolean sendToggleMessage) {
+        ensureActive();
         setBossBarVisible(player, !hasBossBarVisible(player), sendToggleMessage);
     }
 
     @Override
     public boolean hasBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer player) {
+        ensureActive();
         return ((TabPlayer)player).bossbarData.visible;
     }
 
     @Override
     public void setBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer p, boolean visible, boolean sendToggleMessage) {
+        ensureActive();
         TabPlayer player = (TabPlayer) p;
         if (player.bossbarData.visible == visible) return;
         if (visible) {
@@ -243,59 +284,36 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void sendBossBarTemporarily(me.neznamy.tab.api.@NonNull TabPlayer player, @NonNull String bossBar, int duration) {
+        ensureActive();
         if (!hasBossBarVisible(player)) return;
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), "Adding temporary BossBar", () -> line.addPlayer(player));
-        TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
+        TAB.getInstance().getCPUManager().runTaskLater((int) TimeUnit.SECONDS.toMillis(duration),
                 getFeatureName(), "Removing temporary BossBar", () -> line.removePlayer(player));
     }
 
     @Override
     public void announceBossBar(@NonNull String bossBar, int duration) {
+        ensureActive();
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(
                 this::hasBossBarVisible).collect(Collectors.toList());
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), "Adding announced BossBar", () -> {
             announcedBossBars.add(line);
-            announceEndTime = System.currentTimeMillis() + duration* 1000L;
+            announceEndTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(duration);
             for (TabPlayer all : players) {
                 if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);
             }
         });
-        TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
+        TAB.getInstance().getCPUManager().runTaskLater((int) TimeUnit.SECONDS.toMillis(duration),
                 getFeatureName(), "Removing announced BossBar", () -> {
-            for (TabPlayer all : players) {
-                line.removePlayer(all);
-            }
-            announcedBossBars.remove(line);
-        });
-    }
-
-    @Override
-    public void onLoginPacket(TabPlayer player) {
-        // Since 1.20.2, Login packet clears BossBars as well
-        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-            for (BossBar bar : lineValues) {
-                if (bar.containsPlayer(player)) {
-                    ((BossBarLine)bar).sendToPlayerRaw(player);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
-        for (BossBar line : lineValues) {
-            ((BossBarLine)line).removePlayerRaw(disconnectedPlayer);
-        }
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "BossBar";
+                    for (TabPlayer all : players) {
+                        line.removePlayer(all);
+                    }
+                    announcedBossBars.remove(line);
+                });
     }
 
     /**

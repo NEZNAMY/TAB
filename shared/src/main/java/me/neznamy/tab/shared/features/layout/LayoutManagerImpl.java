@@ -209,11 +209,13 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public Layout createNewLayout(String name) {
+        ensureActive();
         return new LayoutPattern(this, name, Collections.emptyMap());
     }
 
     @Override
     public void sendLayout(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Layout layout) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         p.layoutData.forcedLayout = (LayoutPattern) layout;
@@ -222,6 +224,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public void resetLayout(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         p.layoutData.forcedLayout = null;

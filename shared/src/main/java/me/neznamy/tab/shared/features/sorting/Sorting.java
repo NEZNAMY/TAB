@@ -201,6 +201,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
 
     @Override
     public void forceTeamName(@NonNull me.neznamy.tab.api.TabPlayer player, String name) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (Objects.equals(p.sortingData.forcedTeamName, name)) return;
@@ -220,12 +221,14 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
     @Override
     @Nullable
     public String getForcedTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         return ((TabPlayer)player).sortingData.forcedTeamName;
     }
 
     @Override
     @NotNull
     public String getOriginalTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).sortingData.shortTeamName;
     }

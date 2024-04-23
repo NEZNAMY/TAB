@@ -181,6 +181,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, String prefix) {
+        ensureActive();
         super.setPrefix(player, prefix);
         rebuildNameTagLine((TabPlayer) player);
         ((TabPlayer) player).unlimitedNametagData.armorStandManager.refresh(true);
@@ -188,6 +189,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, String suffix) {
+        ensureActive();
         super.setSuffix(player, suffix);
         rebuildNameTagLine((TabPlayer) player);
         ((TabPlayer) player).unlimitedNametagData.armorStandManager.refresh(true);
@@ -195,6 +197,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void pauseTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.teamHandlingPaused) return;
@@ -205,6 +208,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void resumeTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (!p.teamData.teamHandlingPaused) return;
@@ -215,6 +219,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void toggleNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer player, boolean sendToggleMessage) {
+        ensureActive();
         super.toggleNameTagVisibilityView(player, sendToggleMessage);
         updateNameTagVisibilityView((TabPlayer) player);
     }
@@ -225,6 +230,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void disableArmorStands(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.unlimitedNametagData.disabledWithAPI) return;
@@ -235,6 +241,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void enableArmorStands(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (!p.unlimitedNametagData.disabledWithAPI) return;
@@ -245,11 +252,13 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public boolean hasDisabledArmorStands(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         return ((TabPlayer)player).unlimitedNametagData.disabledWithAPI;
     }
 
     @Override
     public void setName(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String customName) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         p.getProperty(TabConstants.Property.CUSTOMTAGNAME).setTemporaryValue(customName);
@@ -259,6 +268,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public void setLine(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull String line, @Nullable String value) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (!getDefinedLines().contains(line)) throw new IllegalArgumentException("\"" + line + "\" is not a defined line. Defined lines: " + getDefinedLines());
@@ -268,6 +278,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public String getCustomName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.getProperty(TabConstants.Property.CUSTOMTAGNAME).getTemporaryValue();
@@ -275,6 +286,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
 
     @Override
     public String getCustomLineValue(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull String line) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.getProperty(line).getTemporaryValue();
@@ -283,6 +295,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     @Override
     @NotNull
     public String getOriginalName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.getProperty(TabConstants.Property.CUSTOMTAGNAME).getOriginalRawValue();
@@ -291,6 +304,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     @Override
     @NotNull
     public String getOriginalLineValue(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull String line) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.getProperty(line).getOriginalRawValue();
@@ -299,6 +313,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     @Override
     @NotNull
     public List<String> getDefinedLines() {
+        ensureActive();
         List<String> lines = new ArrayList<>(dynamicLines);
         lines.addAll(staticLines.keySet());
         return lines;

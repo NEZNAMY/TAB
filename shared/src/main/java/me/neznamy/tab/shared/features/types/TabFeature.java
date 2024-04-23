@@ -9,6 +9,23 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class TabFeature {
 
+    /** Flag tracking whether this instance is active or not */
+    private boolean active = true;
+
+    /**
+     * Marks this instance as no longer active.
+     */
+    public void deactivate() {
+        active = false;
+    }
+
+    /**
+     * Throws {@link IllegalStateException} if this instance is no longer active.
+     */
+    public void ensureActive() {
+        if (!active) throw new IllegalStateException("This instance got discarded because plugin was reloaded. Obtain a new instance.");
+    }
+
     /**
      * Returns name of this feature displayed in /tab cpu
      *

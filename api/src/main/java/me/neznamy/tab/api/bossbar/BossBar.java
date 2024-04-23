@@ -205,7 +205,7 @@ public interface BossBar {
      *          Player to check
      * @return  {@code true} if player is allowed to see this Boss Bar, {@code false} if not.
      */
-    boolean containsPlayer(TabPlayer player);
+    boolean containsPlayer(@NonNull TabPlayer player);
 
     /**
      * Returns {@code true} if this boss bar is configured as announcement-only bar,

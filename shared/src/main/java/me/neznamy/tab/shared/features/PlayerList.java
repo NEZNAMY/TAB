@@ -275,6 +275,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     
     @Override
     public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String prefix) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(prefix);
         updatePlayer(player, true);
@@ -282,6 +283,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
 
     @Override
     public void setName(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String customName) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customName);
         updatePlayer(player, true);
@@ -289,6 +291,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
 
     @Override
     public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String suffix) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(suffix);
         updatePlayer(player, true);
@@ -296,36 +299,42 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
 
     @Override
     public String getCustomPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).getTemporaryValue();
     }
 
     @Override
     public String getCustomName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).getTemporaryValue();
     }
 
     @Override
     public String getCustomSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).getTemporaryValue();
     }
 
     @Override
     public @NotNull String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).getOriginalRawValue();
     }
 
     @Override
     public @NotNull String getOriginalName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).getOriginalRawValue();
     }
 
     @Override
     public @NotNull String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).getOriginalRawValue();
     }

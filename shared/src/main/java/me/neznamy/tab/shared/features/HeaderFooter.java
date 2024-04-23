@@ -156,6 +156,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     @Override
     public void setHeader(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String header) {
+        ensureActive();
         TabPlayer player = (TabPlayer) p;
         player.ensureLoaded();
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
@@ -165,6 +166,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     @Override
     public void setFooter(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String footer) {
+        ensureActive();
         TabPlayer player = (TabPlayer) p;
         player.ensureLoaded();
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
@@ -174,6 +176,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     @Override
     public void setHeaderAndFooter(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String header, @Nullable String footer) {
+        ensureActive();
         TabPlayer player = (TabPlayer) p;
         player.ensureLoaded();
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);

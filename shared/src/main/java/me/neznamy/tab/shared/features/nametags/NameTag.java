@@ -257,6 +257,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (!p.teamData.hiddenNameTag) {
@@ -267,6 +268,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (!p.teamData.hiddenNameTagFor.add((TabPlayer) viewer)) return;
@@ -275,6 +277,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.hiddenNameTag) {
@@ -285,6 +288,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (!p.teamData.hiddenNameTagFor.remove((TabPlayer) viewer)) return;
@@ -293,16 +297,19 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         return ((TabPlayer)player).teamData.hiddenNameTag;
     }
 
     @Override
     public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+        ensureActive();
         return ((TabPlayer)player).teamData.hiddenNameTagFor.contains((TabPlayer) viewer);
     }
 
     @Override
     public void pauseTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.teamHandlingPaused) return;
@@ -312,6 +319,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void resumeTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (!p.teamData.teamHandlingPaused) return;
@@ -321,11 +329,13 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public boolean hasTeamHandlingPaused(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         return ((TabPlayer)player).teamData.teamHandlingPaused;
     }
 
     @Override
     public void setCollisionRule(@NonNull me.neznamy.tab.api.TabPlayer player, Boolean collision) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (Objects.equals(p.teamData.forcedCollision, collision)) return;
@@ -335,6 +345,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public Boolean getCollisionRule(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.teamData.forcedCollision;
@@ -342,6 +353,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String prefix) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         p.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
@@ -350,6 +362,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String suffix) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         p.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
@@ -358,6 +371,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public String getCustomPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.getProperty(TabConstants.Property.TAGPREFIX).getTemporaryValue();
@@ -365,6 +379,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public String getCustomSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.getProperty(TabConstants.Property.TAGSUFFIX).getTemporaryValue();
@@ -373,6 +388,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     @NonNull
     public String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.getProperty(TabConstants.Property.TAGPREFIX).getOriginalRawValue();
@@ -381,6 +397,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     @NonNull
     public String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.getProperty(TabConstants.Property.TAGSUFFIX).getOriginalRawValue();
@@ -388,6 +405,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void toggleNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer p, boolean sendToggleMessage) {
+        ensureActive();
         TabPlayer player = (TabPlayer) p;
         if (player.teamData.invisibleNameTagView) {
             player.teamData.invisibleNameTagView = false;
@@ -404,6 +422,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public boolean hasHiddenNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
         return ((TabPlayer)player).teamData.invisibleNameTagView;
     }
 

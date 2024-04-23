@@ -80,6 +80,7 @@ public class LongLine extends ScoreboardLine {
 
     @Override
     public void setText(@NonNull String text) {
+        ensureActive();
         initializeText(text);
         for (TabPlayer p : parent.getPlayers()) {
             p.setProperty(this, textProperty, text);
