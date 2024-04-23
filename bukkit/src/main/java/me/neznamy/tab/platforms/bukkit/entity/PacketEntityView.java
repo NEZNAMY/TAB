@@ -116,7 +116,7 @@ public class PacketEntityView implements EntityView {
                 "network.protocol.game.PacketPlayOutEntityMetadata", "PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
         if (BukkitReflection.is1_19_3Plus()) {
             Constructor<?> constructor = entityMetadataClass.getConstructor(int.class, List.class);
-            newEntityMetadata = (entityId, data) -> constructor.newInstance(entityId, DataWatcher.DataWatcher_packDirty.invoke(data.build()));
+            newEntityMetadata = (entityId, data) -> constructor.newInstance(entityId, data.build());
         } else {
             Constructor<?> constructor = entityMetadataClass.getConstructor(int.class, DataWatcher.DataWatcher, boolean.class);
             newEntityMetadata = (entityId, data) -> constructor.newInstance(entityId, data.build(), true);

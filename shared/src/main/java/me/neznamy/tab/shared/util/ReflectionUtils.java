@@ -262,7 +262,7 @@ public class ReflectionUtils {
      */
     @NotNull
     public static Field getOnlyField(@NotNull Class<?> clazz) {
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = Arrays.stream(clazz.getDeclaredFields()).filter(f -> !Modifier.isStatic(f.getModifiers())).toArray(Field[]::new);
         if (fields.length != 1) {
             throw new IllegalStateException("Class " + clazz.getName() + " is expected to have 1 field, but has " +
                     fields.length + ": " + Arrays.stream(fields).map(Field::getName).collect(Collectors.toList()));
