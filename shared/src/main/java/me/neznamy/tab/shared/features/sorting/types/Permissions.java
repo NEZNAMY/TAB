@@ -46,9 +46,9 @@ public class Permissions extends SortingType {
         for (String permission : sortedGroups.keySet()) {
             if (p.hasPermission(permission)) {
                 position = sortedGroups.get(permission.toLowerCase());
-                sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> Highest sorting permission: &e" + permission + " &a(#" + position + " in list). &r");
+                p.sortingData.teamNameNote += "\n-> Highest sorting permission: &e" + permission + " &a(#" + position + " in list). &r";
                 if (p.hasPermission(TabConstants.Permission.TEST_PERMISSION)) {
-                    sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&cThis user appears to have all permissions. Are they OP? &r");
+                    p.sortingData.teamNameNote += "&cThis user appears to have all permissions. Are they OP? &r";
                 }
                 break;
             }
@@ -56,7 +56,7 @@ public class Permissions extends SortingType {
         if (position == 0) {
             TAB.getInstance().getConfigHelper().runtime().noPermissionFromSortingList(sortedGroups.keySet(), p);
             position = sortedGroups.size()+1;
-            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> &cPlayer does not have any of the defined permissions. &r");
+            p.sortingData.teamNameNote += "\n-> &cPlayer does not have any of the defined permissions. &r";
         }
         return String.valueOf((char) (position + 47));
     }

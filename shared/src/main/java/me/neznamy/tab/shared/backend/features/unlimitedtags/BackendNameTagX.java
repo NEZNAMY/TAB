@@ -45,9 +45,8 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
         });
     }
 
-    @Override
     public BackendArmorStandManager getArmorStandManager(@NotNull TabPlayer player) {
-        return (BackendArmorStandManager) armorStandManagerMap.get(player);
+        return (BackendArmorStandManager) player.unlimitedNametagData.armorStandManager;
     }
 
     @Override
@@ -80,7 +79,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
 
     @Override
     public boolean isOnBoat(@NotNull TabPlayer player) {
-        return vehicleManager != null && vehicleManager.isOnBoat(player);
+        return player.unlimitedNametagData.onBoat;
     }
 
     /**
@@ -107,8 +106,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             getArmorStandManager(all).unregisterPlayer((BackendTabPlayer) disconnectedPlayer);
         }
-        armorStandManagerMap.get(disconnectedPlayer).destroy();
-        armorStandManagerMap.remove(disconnectedPlayer); // WeakHashMap doesn't clear this due to value referencing the key
+        disconnectedPlayer.unlimitedNametagData.armorStandManager.destroy();
     }
 
     @Override
@@ -144,7 +142,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     public void onWorldChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         super.onWorldChange(p, from, to);
         BackendArmorStandManager asm = getArmorStandManager(p);
-        if (isPreviewingNameTag(p)) {
+        if (p.unlimitedNametagData.previewing) {
             asm.spawn((BackendTabPlayer) p);
         }
         //for some reason this is needed for some users
@@ -167,7 +165,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     @Override
     public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (receiver.getVersion().getMinorVersion() < 8) return;
-        if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
+        if (!receiver.isLoaded() || receiver.disabledNametags.get() || receiver.disabledUnlimitedNametags.get()) return;
         packetListener.onPacketSend((BackendTabPlayer) receiver, packet);
     }
 

@@ -61,15 +61,15 @@ public class Placeholder extends SortingType {
     @Override
     public String getChars(@NotNull TabPlayer p) {
         String output = EnumChatFormat.color(setPlaceholders(p));
-        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder.getIdentifier() + " returned \"&e" + output + "&r\"");
+        p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder.getIdentifier() + " returned \"&e" + output + "&r\"";
         int position;
         if (!sortingMap.containsKey(output.toLowerCase(Locale.US))) {
             TAB.getInstance().getConfigHelper().runtime().valueNotInPredefinedValues(sortingPlaceholder.getIdentifier(), sortingMap.keySet(), output, p);
             position = sortingMap.size()+1;
-            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&c (not in list)&r. ");
+            p.sortingData.teamNameNote += "&c (not in list)&r. ";
         } else {
             position = sortingMap.get(output.toLowerCase(Locale.US));
-            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&r &a(#" + position + " in list). &r");
+            p.sortingData.teamNameNote += "&r &a(#" + position + " in list). &r";
         }
         return String.valueOf((char) (position + 47));
     }

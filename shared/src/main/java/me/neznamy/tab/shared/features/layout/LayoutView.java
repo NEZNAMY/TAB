@@ -53,6 +53,7 @@ public class LayoutView {
                     manager.getUUID(slot),
                     manager.getDirection().getEntryName(viewer, slot),
                     manager.getSkinManager().getDefaultSkin(slot),
+                    true,
                     manager.getEmptySlotPing(),
                     0,
                     new SimpleComponent("")

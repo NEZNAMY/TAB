@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
-import me.neznamy.tab.shared.features.layout.LayoutView;
 import me.neznamy.tab.shared.features.layout.ParentGroup;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.types.*;
@@ -26,9 +25,8 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
     @Override
     public int onLatencyChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id, int latency) {
         if (layoutManager != null) {
-            LayoutView layout = layoutManager.getViews().get(packetReceiver);
-            if (layout != null) {
-                for (ParentGroup group : layout.getGroups()) {
+            if (packetReceiver.layoutData.view != null) {
+                for (ParentGroup group : packetReceiver.layoutData.view.getGroups()) {
                     PlayerSlot slot = group.getPlayerSlots().get((int) id.getLeastSignificantBits());
                     if (slot != null && slot.getPlayer() != null) return value;
                 }

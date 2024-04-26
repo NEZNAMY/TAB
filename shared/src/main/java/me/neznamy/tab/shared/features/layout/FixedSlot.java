@@ -29,7 +29,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        if (!manager.getViews().containsKey(p) || manager.getViews().get(p).getPattern() != pattern ||
+        if (p.layoutData.view == null || p.layoutData.view.getPattern() != pattern ||
                 p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         if (p.getProperty(skinProperty).update()) {
             p.getTabList().removeEntry(id);
@@ -52,6 +52,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
                 id,
                 manager.getDirection().getEntryName(viewer, slot),
                 manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).updateAndGet()),
+                true,
                 ping,
                 0,
                 TabComponent.optimized(viewer.getProperty(propertyName).updateAndGet())

@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -13,6 +14,7 @@ import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -158,8 +160,16 @@ public class Loader_1_14_4 implements Loader {
     }
 
     @Override
-    public boolean isTeamPacket(@NotNull Packet<?> packet) {
-        return packet instanceof ClientboundSetPlayerTeamPacket;
+    @SneakyThrows
+    public void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard) {
+        if (packet instanceof ClientboundSetPlayerTeamPacket) {
+            int action = ReflectionUtils.getInstanceFields(packet.getClass(), int.class).get(0).getInt(packet);
+            if (action == Scoreboard.TeamAction.REMOVE || action == Scoreboard.TeamAction.UPDATE) return;
+            Field playersField = ReflectionUtils.getFields(packet.getClass(), Collection.class).get(0);
+            Collection<String> players = (Collection<String>) playersField.get(packet);
+            String teamName = String.valueOf(ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet));
+            playersField.set(packet, scoreboard.onTeamPacket(action, teamName, players));
+        }
     }
 
     @Override

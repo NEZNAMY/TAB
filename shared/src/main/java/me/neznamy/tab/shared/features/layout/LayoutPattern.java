@@ -70,7 +70,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        manager.getViews().values().forEach(LayoutView::tick);
+        manager.tickAllLayouts();
     }
 
     @Override
@@ -80,34 +80,43 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
     }
 
     @Override
+    @NotNull
+    public String getFeatureName() {
+        return manager.getFeatureName();
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+
+    @Override
     public void addFixedSlot(int slot, @NonNull String text) {
+        ensureActive();
         addFixedSlot(slot, text, manager.getDefaultSkin(slot), manager.getEmptySlotPing());
     }
 
     @Override
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin) {
+        ensureActive();
         addFixedSlot(slot, text, skin, manager.getEmptySlotPing());
     }
 
     @Override
     public void addFixedSlot(int slot, @NonNull String text, int ping) {
+        ensureActive();
         addFixedSlot(slot, text, manager.getDefaultSkin(slot), ping);
     }
 
     @Override
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping) {
+        ensureActive();
         fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text,
                 "Layout-" + text + "-SLOT-" + slot, skin, "Layout-" + text + "-SLOT-" + slot+ "-skin", ping));
     }
 
     @Override
     public void addGroup(@Nullable String condition, int[] slots) {
+        ensureActive();
         addGroup(UUID.randomUUID().toString(), Condition.getCondition(condition), slots);
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return manager.getFeatureName();
     }
 }

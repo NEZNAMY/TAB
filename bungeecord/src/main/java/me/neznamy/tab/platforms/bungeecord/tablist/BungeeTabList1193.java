@@ -24,6 +24,7 @@ public class BungeeTabList1193 extends BungeeTabList {
         actions.put(Action.UPDATE_GAME_MODE, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE));
         actions.put(Action.UPDATE_DISPLAY_NAME, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME));
         actions.put(Action.UPDATE_LATENCY, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY));
+        actions.put(Action.UPDATE_LISTED, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LISTED));
     }
 
     /**
@@ -66,9 +67,16 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable BaseComponent displayName) {
+    public void updateListed(@NonNull UUID entry, boolean listed) {
+        Item item = item(entry);
+        item.setListed(listed);
+        sendPacket(Action.UPDATE_LISTED, item);
+    }
+
+    @Override
+    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable BaseComponent displayName) {
         addUuid(id);
-        sendPacket(Action.ADD_PLAYER, entryToItem(id, name, skin, latency, gameMode, displayName));
+        sendPacket(Action.ADD_PLAYER, entryToItem(id, name, skin, listed, latency, gameMode, displayName));
     }
 
     private void sendPacket(@NonNull Action action, @NonNull Item item) {

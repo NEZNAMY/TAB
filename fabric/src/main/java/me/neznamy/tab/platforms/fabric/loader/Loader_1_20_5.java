@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -11,6 +12,7 @@ import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.commands.CommandSourceStack;
@@ -143,8 +145,11 @@ public class Loader_1_20_5 implements Loader {
     }
 
     @Override
-    public boolean isTeamPacket(@NotNull Packet<?> packet) {
-        return packet instanceof ClientboundSetPlayerTeamPacket; // Fabric-mapped name changed
+    public void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard) {
+        if (packet instanceof ClientboundSetPlayerTeamPacket team) {
+            if (team.method == Scoreboard.TeamAction.REMOVE || team.method == Scoreboard.TeamAction.UPDATE) return;
+            team.players = scoreboard.onTeamPacket(team.method, team.getName(), team.players);
+        }
     }
 
     @Override
@@ -211,7 +216,7 @@ public class Loader_1_20_5 implements Loader {
         packet.entries = Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
                 entry.getId(),
                 action == TabList.Action.ADD_PLAYER ? entry.createProfile() : null,
-                true,
+                entry.isListed(),
                 entry.getLatency(),
                 GameType.byId(entry.getGameMode()),
                 entry.getDisplayName(),
@@ -366,6 +371,7 @@ public class Loader_1_20_5 implements Loader {
             actions.put(TabList.Action.UPDATE_GAME_MODE, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE));
             actions.put(TabList.Action.UPDATE_DISPLAY_NAME, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME));
             actions.put(TabList.Action.UPDATE_LATENCY, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY));
+            actions.put(TabList.Action.UPDATE_LISTED, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED));
             return actions;
         }
     }

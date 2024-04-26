@@ -7,10 +7,9 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * Class checking if disable-condition of each feature is met or not.
@@ -29,9 +28,8 @@ public class DisableChecker extends TabFeature implements Refreshable {
     @NotNull
     private final BiConsumer<TabPlayer, Boolean> action;
 
-    /** Players with the feature currently disabled */
     @NotNull
-    private final Set<TabPlayer> disabledPlayers = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Function<TabPlayer, AtomicBoolean> field;
 
     /**
      * Constructs new instance with given parameters.
@@ -42,11 +40,15 @@ public class DisableChecker extends TabFeature implements Refreshable {
      *          Configured condition for disabling the feature
      * @param   action
      *          Action to take on condition change
+     * @param   field
+     *          Function that returns field storing disable status
      */
-    public DisableChecker(@NotNull String featureName, @Nullable Condition disableCondition, @NotNull BiConsumer<TabPlayer, Boolean> action) {
+    public DisableChecker(@NotNull String featureName, @Nullable Condition disableCondition,
+                          @NotNull BiConsumer<TabPlayer, Boolean> action, @NotNull Function<TabPlayer, AtomicBoolean> field) {
         this.featureName = featureName;
         this.disableCondition = disableCondition;
         this.action = action;
+        this.field = field;
         if (disableCondition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(disableCondition.getName()));
     }
 
@@ -54,35 +56,10 @@ public class DisableChecker extends TabFeature implements Refreshable {
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (disableCondition == null) return;
         boolean disabledNow = disableCondition.isMet(refreshed);
-        if (disabledNow == disabledPlayers.contains(refreshed)) return; // Condition result did not change, only placeholders inside
-        if (disabledNow) {
-            disabledPlayers.add(refreshed);
-        } else {
-            disabledPlayers.remove(refreshed);
-        }
+        AtomicBoolean value = field.apply(refreshed);
+        if (disabledNow == value.get()) return; // Condition result did not change, only placeholders inside
+        value.set(disabledNow);
         action.accept(refreshed, disabledNow);
-    }
-
-    /**
-     * Returns {@code true} if the feature is disabled for specified player, {@code false} if not
-     *
-     * @param   p
-     *          Player to check
-     * @return  {@code true} if player is disabled,
-     *          {@code false} if not
-     */
-    public boolean isDisabledPlayer(@NotNull TabPlayer p) {
-        return disabledPlayers.contains(p);
-    }
-
-    /**
-     * Adds specified player into set of disabled players
-     *
-     * @param   p
-     *          Player to add
-     */
-    public void addDisabledPlayer(@NotNull TabPlayer p) {
-        disabledPlayers.add(p);
     }
 
     /**

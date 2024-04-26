@@ -44,7 +44,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
      */
     public BelowName() {
         Condition disableCondition = Condition.getCondition(config().getString("belowname-objective.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.disabledBelowname);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
         TAB.getInstance().getConfigHelper().startup().checkBelowNameText(rawText);
@@ -60,7 +60,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
             loaded.setProperty(textRefresher, TEXT_PROPERTY, rawText);
             loaded.setProperty(textRefresher, DEFAULT_FORMAT_PROPERTY, fancyDisplayDefault);
             if (disableChecker.isDisableConditionMet(loaded)) {
-                disableChecker.addDisabledPlayer(loaded);
+                loaded.disabledBelowname.set(true);
             } else {
                 register(loaded);
             }
@@ -78,7 +78,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     @Override
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (disableChecker.isDisabledPlayer(p)) continue;
+            if (p.disabledBelowname.get()) continue;
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
     }
@@ -90,7 +90,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         connectedPlayer.setProperty(textRefresher, TEXT_PROPERTY, rawText);
         connectedPlayer.setProperty(textRefresher, DEFAULT_FORMAT_PROPERTY, fancyDisplayDefault);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
-            disableChecker.addDisabledPlayer(connectedPlayer);
+            connectedPlayer.disabledBelowname.set(true);
         } else {
             register(connectedPlayer);
         }
@@ -168,7 +168,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
 
     @Override
     public void onLoginPacket(@NotNull TabPlayer player) {
-        if (disableChecker.isDisabledPlayer(player) || !player.isLoaded()) return;
+        if (player.disabledBelowname.get() || !player.isLoaded()) return;
         register(player);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!sameServerAndWorld(all, player)) continue;
@@ -199,7 +199,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
      *          NumberFormat display of the score
      */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyDisplay) {
-        if (disableChecker.isDisabledPlayer(viewer)) return;
+        if (viewer.disabledBelowname.get()) return;
         viewer.getScoreboard().setScore(
                 OBJECTIVE_NAME,
                 scoreHolder.getNickname(),
@@ -254,7 +254,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (feature.disableChecker.isDisabledPlayer(refreshed)) return;
+            if (refreshed.disabledBelowname.get()) return;
             refreshed.getScoreboard().updateObjective(
                     OBJECTIVE_NAME,
                     refreshed.getProperty(feature.TEXT_PROPERTY).updateAndGet(),

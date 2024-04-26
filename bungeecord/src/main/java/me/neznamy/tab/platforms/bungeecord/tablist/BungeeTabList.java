@@ -69,6 +69,8 @@ public abstract class BungeeTabList extends TabList<BungeeTabPlayer, BaseCompone
      *          Entry name
      * @param   skin
      *          Entry skin
+     * @param   listed
+     *          Whether entry should be listed or not
      * @param   latency
      *          Entry latency
      * @param   gameMode
@@ -78,12 +80,12 @@ public abstract class BungeeTabList extends TabList<BungeeTabPlayer, BaseCompone
      * @return  Converted item from parameters
      */
     @NonNull
-    public Item entryToItem(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, int latency, int gameMode, @Nullable BaseComponent displayName) {
+    public Item entryToItem(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable BaseComponent displayName) {
         Item item = item(id);
         item.setUsername(name);
         item.setDisplayName(displayName);
         item.setGamemode(gameMode);
-        item.setListed(true);
+        item.setListed(listed);
         item.setPing(latency);
         if (skin != null) {
             item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, skin.getValue(), skin.getSignature())});

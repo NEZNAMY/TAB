@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,12 +40,8 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
         }
     }};
     private final Map<String, LayoutPattern> layouts = loadLayouts();
-    private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
-    private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
-    private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(p -> p.layoutData.sortingString)));
     private PlayerList playerList;
-    private final WeakHashMap<TabPlayer, LayoutView> views = new WeakHashMap<>();
-    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, LayoutPattern> forcedLayouts = new WeakHashMap<>();
 
     private static boolean teamsEnabled;
 
@@ -105,15 +100,15 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public void onJoin(@NotNull TabPlayer p) {
-        teamNames.put(p, sorting.getFullTeamName(p));
-        sortedPlayers.put(p, sorting.getFullTeamName(p));
+        p.layoutData.sortingString = p.sortingData.fullTeamName;
+        sortedPlayers.put(p, p.sortingData.fullTeamName);
         LayoutPattern highest = getHighestLayout(p);
         if (highest != null) {
             LayoutView view = new LayoutView(this, highest, p);
             view.send();
-            views.put(p, view);
+            p.layoutData.view = view;
         }
-        views.values().forEach(LayoutView::tick);
+        tickAllLayouts();
 
         // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
         if (highest == null) return;
@@ -125,24 +120,25 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     @Override
     public void onQuit(@NotNull TabPlayer p) {
         sortedPlayers.remove(p);
-        teamNames.remove(p);
-        views.remove(p);
-        views.values().forEach(LayoutView::tick);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all == p) continue;
+            if (all.layoutData.view != null) all.layoutData.view.tick();
+        }
     }
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         LayoutPattern highest = getHighestLayout(p);
         String highestName = highest == null ? null : highest.getName();
-        LayoutView current = views.get(p);
+        LayoutView current = p.layoutData.view;
         String currentName = current == null ? null : current.getPattern().getName();
         if (!Objects.equals(highestName, currentName)) {
             if (current != null) current.destroy();
-            views.remove(p);
+            p.layoutData.view = null;
             if (highest != null) {
                 LayoutView view = new LayoutView(this, highest, p);
                 view.send();
-                views.put(p, view);
+                p.layoutData.view = view;
             }
         }
     }
@@ -163,11 +159,11 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer p) {
-        views.values().forEach(LayoutView::tick);
+        tickAllLayouts();
     }
 
     private @Nullable LayoutPattern getHighestLayout(@NotNull TabPlayer p) {
-        if (forcedLayouts.containsKey(p)) return forcedLayouts.get(p);
+        if (p.layoutData.forcedLayout != null) return p.layoutData.forcedLayout;
         for (LayoutPattern pattern : layouts.values()) {
             if (pattern.isConditionMet(p)) return pattern;
         }
@@ -180,9 +176,9 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     public void updateTeamName(@NotNull TabPlayer p, @NotNull String teamName) {
         sortedPlayers.remove(p);
-        teamNames.put(p, teamName);
+        p.layoutData.sortingString = teamName;
         sortedPlayers.put(p, teamName);
-        views.values().forEach(LayoutView::tick);
+        tickAllLayouts();
     }
 
     @Override
@@ -193,8 +189,16 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public void onTabListClear(@NotNull TabPlayer player) {
-        LayoutView view = views.get(player);
-        if (view != null) view.send();
+        if (player.layoutData.view != null) player.layoutData.view.send();
+    }
+
+    /**
+     * Ticks layouts for all players.
+     */
+    public void tickAllLayouts() {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all.layoutData.view != null) all.layoutData.view.tick();
+        }
     }
 
     // ------------------
@@ -203,21 +207,26 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public Layout createNewLayout(String name) {
+        ensureActive();
         return new LayoutPattern(this, name, Collections.emptyMap());
     }
 
     @Override
     public void sendLayout(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Layout layout) {
-        ((TabPlayer)player).ensureLoaded();
-        forcedLayouts.put(player, (LayoutPattern) layout);
-        refresh((TabPlayer) player, false);
+        ensureActive();
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        p.layoutData.forcedLayout = (LayoutPattern) layout;
+        refresh(p, false);
     }
 
     @Override
     public void resetLayout(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        ((TabPlayer)player).ensureLoaded();
-        forcedLayouts.remove(player);
-        refresh((TabPlayer) player, false);
+        ensureActive();
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        p.layoutData.forcedLayout = null;
+        refresh(p, false);
     }
 
     @RequiredArgsConstructor
@@ -243,5 +252,22 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
                 return "";
             }
         }
+    }
+
+    /**
+     * Class storing layout data for players.
+     */
+    public static class PlayerData {
+
+        /** Merged string to sort players by */
+        public String sortingString;
+
+        /** Layout the player can currently see */
+        @Nullable
+        public LayoutView view;
+
+        /** Layout forced via API */
+        @Nullable
+        public LayoutPattern forcedLayout;
     }
 }

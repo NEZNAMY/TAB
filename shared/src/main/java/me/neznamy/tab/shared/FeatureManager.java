@@ -75,6 +75,9 @@ public class FeatureManager {
             ((UnLoadable) f).unload();
             TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed unload in " + (System.currentTimeMillis()-time) + "ms");
         }
+        for (TabFeature f : values) {
+            f.deactivate();
+        }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().unregisterExpansion();
         if (TAB.getInstance().getPlatform() instanceof ProxyPlatform) {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {

@@ -20,10 +20,6 @@ import java.util.*;
 @Getter
 public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion {
 
-    /** Map holding all values for all players for easy and high-performance access */
-    @NotNull
-    private final WeakHashMap<TabPlayer, Map<String, String>> values = new WeakHashMap<>();
-
     /** List of all placeholders offered by the plugin for command suggestions */
     @NotNull
     private final List<String> placeholders = Collections.unmodifiableList(Arrays.asList(
@@ -102,12 +98,12 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
         if (player == null) return "<Player cannot be null>";
         TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
         if (p == null || !p.isLoaded()) return "<Player is not loaded>";
-        return values.get(p).get(identifier);
+        return p.expansionValues.values.get(identifier);
     }
 
     @Override
     public void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put(key, value);
+        player.expansionValues.values.put(key, value);
     }
 
     @Override

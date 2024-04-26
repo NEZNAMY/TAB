@@ -1,12 +1,10 @@
 package me.neznamy.tab.platforms.fabric;
 
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -18,7 +16,6 @@ import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,9 +118,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer, Component> {
         player.sendPacket(FabricMultiVersion.removeScore(objective, scoreHolder));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
         if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
             TAB.getInstance().getFeatureManager().onDisplayObjective(player, FabricMultiVersion.getDisplaySlot(display), display.objectiveName);
@@ -131,13 +126,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer, Component> {
         if (packet instanceof ClientboundSetObjectivePacket objective) {
             TAB.getInstance().getFeatureManager().onObjective(player, objective.method, objective.objectiveName);
         }
-        if (isAntiOverrideTeams() && FabricMultiVersion.isTeamPacket((Packet<?>) packet)) {
-            int action = ReflectionUtils.getInstanceFields(packet.getClass(), int.class).get(0).getInt(packet);
-            if (action == TeamAction.REMOVE || action == TeamAction.UPDATE) return;
-            Field playersField = ReflectionUtils.getFields(packet.getClass(), Collection.class).get(0);
-            Collection<String> players = (Collection<String>) playersField.get(packet);
-            String teamName = String.valueOf(ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet));
-            playersField.set(packet, onTeamPacket(action, teamName, players));
+        if (isAntiOverrideTeams()) {
+            FabricMultiVersion.checkTeamPacket((Packet<?>) packet, this);
         }
     }
 

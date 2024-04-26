@@ -39,6 +39,7 @@ public class PlayerSlot {
                     uniqueId,
                     layout.getManager().getDirection().getEntryName(p, slot),
                     player.getSkin(),
+                    true,
                     player.getPing(),
                     0,
                     playerList == null ? new SimpleComponent(player.getName()) : playerList.getTabFormat(player, p)
@@ -48,6 +49,7 @@ public class PlayerSlot {
                     uniqueId,
                     layout.getManager().getDirection().getEntryName(p, slot),
                     layout.getManager().getSkinManager().getDefaultSkin(slot),
+                    true,
                     layout.getManager().getEmptySlotPing(),
                     0,
                     new SimpleComponent(text)

@@ -175,6 +175,36 @@ public class BossBarLine implements BossBar {
         }
     }
 
+    /**
+     * Resends bossbar to the player.
+     *
+     * @param   player
+     *          Player to resend bossbar to
+     */
+    public void sendToPlayerRaw(@NotNull TabPlayer player) {
+        player.getBossBar().create(
+                uniqueId,
+                player.getProperty(propertyTitle).updateAndGet(),
+                parseProgress(player, player.getProperty(propertyProgress).updateAndGet())/100,
+                parseColor(player.getProperty(propertyColor).updateAndGet()),
+                parseStyle(player.getProperty(propertyStyle).updateAndGet())
+        );
+    }
+
+    /**
+     * Removes player from set of players.
+     *
+     * @param   player
+     *          Player to remove
+     */
+    public void removePlayerRaw(@NotNull TabPlayer player) {
+        players.remove(player);
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+
     @Override
     public void setTitle(@NonNull String title) {
         if (this.title.equals(title)) return;
@@ -242,38 +272,12 @@ public class BossBarLine implements BossBar {
         sendToPlayerRaw(player);
     }
 
-    /**
-     * Resends bossbar to the player.
-     *
-     * @param   player
-     *          Player to resend bossbar to
-     */
-    public void sendToPlayerRaw(@NotNull TabPlayer player) {
-        player.getBossBar().create(
-                uniqueId,
-                player.getProperty(propertyTitle).updateAndGet(),
-                parseProgress(player, player.getProperty(propertyProgress).updateAndGet())/100,
-                parseColor(player.getProperty(propertyColor).updateAndGet()),
-                parseStyle(player.getProperty(propertyStyle).updateAndGet())
-        );
-    }
-
     @Override
     public void removePlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
         if (!players.contains(player)) return;
         players.remove(player);
         player.getBossBar().remove(uniqueId);
-    }
-
-    /**
-     * Removes player from set of players.
-     *
-     * @param   player
-     *          Player to remove
-     */
-    public void removePlayerRaw(@NotNull TabPlayer player) {
-        players.remove(player);
     }
 
     @Override
@@ -283,7 +287,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public boolean containsPlayer(me.neznamy.tab.api.TabPlayer player) {
+    public boolean containsPlayer(@NonNull me.neznamy.tab.api.TabPlayer player) {
         return players.contains((TabPlayer) player);
     }
 
