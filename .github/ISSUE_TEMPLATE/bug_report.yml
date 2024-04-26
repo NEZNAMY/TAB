@@ -18,7 +18,7 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     attributes:
       label: Plugin list
       description: Full list of plugins (output of /plugins)
