@@ -76,6 +76,9 @@ public enum ProtocolVersion {
     V1_4_7  (51),
     V1_4_6  (51);
 
+    /** Array to iterate over to prevent new array creation each time */
+    private static final ProtocolVersion[] VALUES = values();
+
     /** Newest MC version this plugin jar knows */
     public static final ProtocolVersion LATEST_KNOWN_VERSION = V1_20_5;
 
@@ -146,7 +149,7 @@ public enum ProtocolVersion {
      * @return  version from given network id
      */
     public static @NotNull ProtocolVersion fromNetworkId(int networkId) {
-        for (ProtocolVersion v : values()) {
+        for (ProtocolVersion v : VALUES) {
             if (networkId == v.networkId) return v;
         }
         return UNKNOWN;
