@@ -48,6 +48,7 @@ public class VelocityEventListener implements EventListener<Player> {
             if (player == null) {
                 tab.getFeatureManager().onJoin(createPlayer(e.getPlayer()));
             } else {
+                player.getScoreboard().freeze(); // Prevent server switch listeners from sending packets before re-registering objectives in onLoginPacket
                 tab.getFeatureManager().onServerChange(
                         player.getUniqueId(),
                         e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null")
