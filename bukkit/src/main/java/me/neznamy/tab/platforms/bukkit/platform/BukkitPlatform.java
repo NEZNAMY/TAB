@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.platforms.bukkit.entity.PacketEntityView;
@@ -50,7 +49,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.lang.reflect.Field;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -69,13 +67,8 @@ public class BukkitPlatform implements BackendPlatform {
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
 
-    /** NMS server to get TPS from on spigot */
-    @Nullable
-    private Object server;
-
-    /** TPS field */
-    @Nullable
-    private Field spigotTps;
+    /** Spigot field for tracking TPS, the array is final and only being modified instead of re-instantiated */
+    private double[] recentTps;
 
     /** Detection for presence of Paper's TPS getter */
     private final boolean paperTps = ReflectionUtils.methodExists(Bukkit.class, "getTPS");
@@ -93,8 +86,8 @@ public class BukkitPlatform implements BackendPlatform {
         this.plugin = plugin;
         long time = System.currentTimeMillis();
         try {
-            server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
-            spigotTps = server.getClass().getField("recentTps");
+            Object server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
+            recentTps = ((double[]) server.getClass().getField("recentTps").get(server));
         } catch (ReflectiveOperationException ignored) {
             //not spigot
         }
@@ -298,12 +291,11 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
-    @SneakyThrows
     public double getTPS() {
-        if (paperTps) {
+        if (recentTps != null) {
+            return recentTps[0];
+        } else if (paperTps) {
             return Bukkit.getTPS()[0];
-        } else if (spigotTps != null) {
-            return ((double[]) spigotTps.get(server))[0];
         } else {
             return -1;
         }
