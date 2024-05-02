@@ -11,18 +11,18 @@ public class ChatModifier {
     @Nullable private TextColor color;
     private boolean bold;
     private boolean italic;
-    private boolean underlined;
-    private boolean strikethrough;
     private boolean obfuscated;
+    private boolean strikethrough;
+    private boolean underlined;
     @Nullable private String font;
 
     public ChatModifier(@NotNull ChatModifier modifier) {
         color = modifier.color;
         bold = modifier.bold;
         italic = modifier.italic;
-        underlined = modifier.underlined;
-        strikethrough = modifier.strikethrough;
         obfuscated = modifier.obfuscated;
+        strikethrough = modifier.strikethrough;
+        underlined = modifier.underlined;
         font = modifier.font;
     }
 
@@ -37,18 +37,24 @@ public class ChatModifier {
         StringBuilder builder = new StringBuilder();
         if (bold) builder.append(EnumChatFormat.BOLD);
         if (italic) builder.append(EnumChatFormat.ITALIC);
-        if (underlined) builder.append(EnumChatFormat.UNDERLINE);
-        if (strikethrough) builder.append(EnumChatFormat.STRIKETHROUGH);
         if (obfuscated) builder.append(EnumChatFormat.OBFUSCATED);
+        if (strikethrough) builder.append(EnumChatFormat.STRIKETHROUGH);
+        if (underlined) builder.append(EnumChatFormat.UNDERLINE);
         return builder.toString();
     }
 
     /**
-     * Returns {@code true} if this modifier has any magic codes, {@code false} if not.
+     * Returns bitmask of magic codes.
      *
-     * @return  {@code true} if this modifier has any magic codes, {@code false} if not
+     * @return  Bitmask of magic codes
      */
-    public boolean hasMagicCodes() {
-        return bold || italic || underlined || strikethrough || obfuscated;
+    public int getMagicCodeBitMask() {
+        int mask = 0;
+        if (bold)          mask += 1;
+        if (italic)        mask += 2;
+        if (obfuscated)    mask += 4;
+        if (strikethrough) mask += 8;
+        if (underlined)    mask += 16;
+        return mask;
     }
 }

@@ -24,6 +24,29 @@ public class AdventureHook {
     private static final ComponentCache<Component, String> componentToString = new ComponentCache<>(1000,
             (component, version) -> GsonComponentSerializer.gson().serialize(component));
 
+    /** Array of all 32 possible decoration combinations for fast access */
+    private static final EnumSet<TextDecoration>[] decorations = loadDecorations();
+
+    /**
+     * Loads decoration array.
+     *
+     * @return  Decoration array with all possible options
+     */
+    @SuppressWarnings("unchecked")
+    private static EnumSet<TextDecoration>[] loadDecorations() {
+        EnumSet<TextDecoration>[] decorations = new EnumSet[32];
+        for (int i=0; i<32; i++) {
+            EnumSet<TextDecoration> set = EnumSet.noneOf(TextDecoration.class);
+            if ((i & 1) > 0) set.add(TextDecoration.BOLD);
+            if ((i & 2) > 0) set.add(TextDecoration.ITALIC);
+            if ((i & 4) > 0) set.add(TextDecoration.OBFUSCATED);
+            if ((i & 8) > 0) set.add(TextDecoration.STRIKETHROUGH);
+            if ((i & 16) > 0) set.add(TextDecoration.UNDERLINED);
+            decorations[i] = set;
+        }
+        return decorations;
+    }
+
     /**
      * Converts component to adventure component
      *
@@ -42,7 +65,7 @@ public class AdventureHook {
         Component adventureComponent = Component.text(
                 iComponent.getText(),
                 convertColor(modifier.getColor(), modern),
-                getDecorations(modifier)
+                decorations[modifier.getMagicCodeBitMask()]
         );
 
         if (modifier.getFont() != null) {
@@ -87,23 +110,5 @@ public class AdventureHook {
         } else {
             return TextColor.color(color.getLegacyColor().getRgb());
         }
-    }
-
-    /**
-     * Gets decorations from modifier.
-     *
-     * @param   modifier
-     *          Modifier to get decorations from
-     * @return  Decorations from modifier
-     */
-    private static Set<TextDecoration> getDecorations(@NotNull ChatModifier modifier) {
-        if (!modifier.hasMagicCodes()) return Collections.emptySet();
-        Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
-        if (modifier.isBold()) decorations.add(TextDecoration.BOLD);
-        if (modifier.isItalic()) decorations.add(TextDecoration.ITALIC);
-        if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
-        if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
-        if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
-        return decorations;
     }
 }
