@@ -213,8 +213,8 @@ public abstract class TabComponent {
      * @return  {@code true} if valid, {@code false} if not
      */
     private static boolean isHexCode(@NotNull String string) {
-        for (char c : string.toCharArray()) {
-            if ("0123456789AaBbCcDdEeFf".indexOf(c) == -1) return false;
+        for (int i=0; i<string.length(); i++) {
+            if ("0123456789AaBbCcDdEeFf".indexOf(string.charAt(i)) == -1) return false;
         }
         return true;
     }
