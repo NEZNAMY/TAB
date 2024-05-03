@@ -228,20 +228,6 @@ public class ErrorManager {
     }
 
     /**
-     * Prints error message when attempting to send plugin message to player
-     * who is not connected to any server.
-     *
-     * @param   player
-     *          Player message was attempted to be sent to
-     * @param   message
-     *          Message that failed to deliver
-     */
-    public void noServerPluginMessage(@NotNull TabPlayer player, byte[] message) {
-        printError("Skipped plugin message send to " + player.getName() + ", because player is not " +
-                "connected to any server (message=" + new String(message) + ")", Collections.emptyList(), false, errorLog);
-    }
-
-    /**
      * Prints error message when RedidSupport received message with unknown action.
      *
      * @param   action
