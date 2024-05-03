@@ -39,7 +39,8 @@ public class RGBUtils {
      */
     public RGBUtils() {
         List<RGBFormatter> list = new ArrayList<>();
-        if (ReflectionUtils.classExists("net.kyori.adventure.text.minimessage.MiniMessage")) {
+        if (ReflectionUtils.classExists("net.kyori.adventure.text.minimessage.MiniMessage") &&
+                ReflectionUtils.classExists("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer")) {
             list.add(new MiniMessageFormat());
         }
         list.add(new BukkitFormat());
