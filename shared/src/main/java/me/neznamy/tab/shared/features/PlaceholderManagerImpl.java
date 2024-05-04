@@ -96,6 +96,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         updatePlayerPlaceholders(task.getPlayerPlaceholderResults(), update);
         Map<TabPlayer, Set<Refreshable>> forceUpdate = updateRelationalPlaceholders(task.getRelationalPlaceholderResults());
         cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_SAVE, System.nanoTime() - time);
+        cpu.addPlaceholderTimes(task.getUsedTime());
 
         refreshFeatures(forceUpdate, update);
     }

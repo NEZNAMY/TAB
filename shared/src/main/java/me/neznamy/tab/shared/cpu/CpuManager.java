@@ -43,7 +43,7 @@ public class CpuManager {
     private volatile boolean enabled;
 
     /** Boolean tracking whether CPU usage should be tracked or not */
-    private boolean trackUsage;
+    @Getter private boolean trackUsage;
 
     /**
      * Enables CPU usage tracking and returns {@code true} if it was not enabled previously.
@@ -118,6 +118,19 @@ public class CpuManager {
     public void addPlaceholderTime(@NotNull String placeholder, long nanoseconds) {
         if (!trackUsage) return;
         placeholderUsageCurrent.computeIfAbsent(placeholder, l -> new AtomicLong()).addAndGet(nanoseconds);
+    }
+
+    /**
+     * Adds placeholder time from given map.
+     *
+     * @param   times
+     *          How long each placeholder took
+     */
+    public void addPlaceholderTimes(@NotNull Map<String, Long> times) {
+        if (!trackUsage) return;
+        for (Map.Entry<String, Long> entry : times.entrySet()) {
+            placeholderUsageCurrent.computeIfAbsent(entry.getKey(), l -> new AtomicLong()).addAndGet(entry.getValue());
+        }
     }
 
     public void runMeasuredTask(@NotNull String feature, @NotNull String type, @NotNull Runnable task) {

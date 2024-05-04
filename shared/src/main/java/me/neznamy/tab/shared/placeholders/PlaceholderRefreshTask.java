@@ -35,6 +35,9 @@ public class PlaceholderRefreshTask implements Runnable {
     @Nullable
     private Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> relationalPlaceholderResults;
 
+    /** Time it took placeholders to retrieve value (in nanoseconds) */
+    private final Map<String, Long> usedTime = new HashMap<>();
+
     @Override
     public void run() {
         TabPlayer[] players = TAB.getInstance().getOnlinePlayers();
@@ -74,7 +77,7 @@ public class PlaceholderRefreshTask implements Runnable {
                 if (relationalPlaceholderResults == null) relationalPlaceholderResults = new HashMap<>();
                 relationalPlaceholderResults.put(relationalPlaceholder, viewerMap);
             }
-            TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), nanoTime);
+            usedTime.put(placeholder.getIdentifier(), nanoTime);
         }
     }
 }
