@@ -109,7 +109,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         TabPlayer player = (TabPlayer) p;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
+            //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             UUID tablistId = getTablistUUID(player, viewer);
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
                     tablistId.getMostSignificantBits() == 0 ? new SimpleComponent(player.getName()) : null);
@@ -153,7 +153,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.disabledPlayerList.get()) continue;
-                if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
+                //if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
                 viewer.getTabList().updateDisplayName(getTablistUUID(target, viewer), getTabFormat(target, viewer));
             }
         }
@@ -166,7 +166,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.disabledPlayerList.get()) continue;
-                if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
+                //if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
                 viewer.getTabList().updateDisplayName(getTablistUUID(target, target), null);
             }
         }
@@ -179,10 +179,12 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!all.disabledPlayerList.get() && p.getVersion().getMinorVersion() >= 8
-                        && p.getTabList().containsEntry(all.getTablistId()))
+                        //&& p.getTabList().containsEntry(all.getTablistId())
+                )
                     p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
                 if (all != p && !p.disabledPlayerList.get() && all.getVersion().getMinorVersion() >= 8
-                        && all.getTabList().containsEntry(p.getTablistId()))
+                        //&& all.getTabList().containsEntry(p.getTablistId())
+                )
                     all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
             }
         });
@@ -258,7 +260,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         if (player.isVanished() || player.disabledPlayerList.get()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
+            //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
         }
     }
