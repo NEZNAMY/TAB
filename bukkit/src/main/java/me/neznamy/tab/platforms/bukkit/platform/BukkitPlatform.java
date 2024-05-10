@@ -308,18 +308,6 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     /**
-     * Runs task in the main thread for given entity.
-     *
-     * @param   entity
-     *          Entity's main thread
-     * @param   task
-     *          Task to run
-     */
-    public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
-        Bukkit.getScheduler().runTask(plugin, task);
-    }
-
-    /**
      * Runs an entity task that may or may not need to use its main thread.
      *
      * @param   entity
