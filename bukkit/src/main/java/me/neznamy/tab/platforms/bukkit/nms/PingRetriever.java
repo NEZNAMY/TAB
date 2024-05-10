@@ -24,7 +24,7 @@ public class PingRetriever {
      */
     public static void tryLoad() {
         try {
-            if (BukkitReflection.getMinorVersion() >= 17) {
+            if (ReflectionUtils.methodExists(Player.class, "getPing")) {
                 getPing = Player::getPing;
             } else {
                 Method getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
