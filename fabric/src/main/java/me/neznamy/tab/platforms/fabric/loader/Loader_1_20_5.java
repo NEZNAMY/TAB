@@ -359,7 +359,7 @@ public class Loader_1_20_5 implements Loader {
 
     private static class Register1_19_3 {
 
-        public static final Map<TabList.Action, EnumSet<ClientboundPlayerInfoUpdatePacket.Action>> actionMap = createActionMap();
+        static final Map<TabList.Action, EnumSet<ClientboundPlayerInfoUpdatePacket.Action>> actionMap = createActionMap();
 
         public static EnumSet<ClientboundPlayerInfoUpdatePacket.Action> convertAction(TabList.Action action) {
             return EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.valueOf(action.name()));
