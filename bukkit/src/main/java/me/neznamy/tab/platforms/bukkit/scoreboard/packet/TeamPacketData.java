@@ -29,7 +29,6 @@ public class TeamPacketData {
     /** First version with static constructor-like methods */
     private final int STATIC_CONSTRUCTOR_VERSION = 17;
 
-    private Class<?> Component;
     private final Object emptyScoreboard;
     @Getter private final Class<?> TeamPacketClass;
     private Constructor<?> newTeamPacket;
@@ -85,12 +84,10 @@ public class TeamPacketData {
                 new String[]{"func_98300_b", "setCanSeeFriendlyInvisibles", "b", "m_83362_", "setSeeFriendlyInvisibles"}, // {Thermos, 1.5.1+, 1.5 & 1.18+, Mohist 1.18.2, 1.20.2+}
                 boolean.class
         );
-        if (minorVersion >= 7) {
-            Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
-        }
         if (minorVersion >= 8) loadVisibility(scoreboardTeam);
         if (minorVersion >= 9) loadCollision(scoreboardTeam);
         if (minorVersion >= MODERN_TEAM_DATA_VERSION) {
+            Class<?> Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
             ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumChatFormatClass);
             ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(
                     scoreboardTeam,
