@@ -28,100 +28,413 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * Interface for executing methods that have changed over the versions.
+ * Each implementation of this interface is compiled for a different version of Minecraft.
+ * Then, internal logic is used to decide which implementation to use for each method
+ * based on server version.
+ */
 public interface Loader {
 
+    /** Dummy scoreboard for objectives */
     Scoreboard dummyScoreboard = new Scoreboard();
 
+    /**
+     * Returns name of specified world.
+     *
+     * @param   level
+     *          World to get name of
+     * @return  Name of the world
+     */
     @NotNull
     String getLevelName(@NotNull Level level);
 
+    /**
+     * Converts minecraft property class into TAB skin class.
+     *
+     * @param   property
+     *          Property to convert
+     * @return  Converted skin
+     */
     @NotNull
     TabList.Skin propertyToSkin(@NotNull Property property);
 
+    /**
+     * Creates new text component using given text.
+     *
+     * @param   text
+     *          Component text
+     * @return  Text component with given text
+     */
     @NotNull
     Component newTextComponent(@NotNull String text);
 
+    /**
+     * Converts TAB's ChatModifier class to Minecraft Style class.
+     *
+     * @param   modifier
+     *          Modifier to convert
+     * @param   modern
+     *          Whether RGB should be supported or not
+     * @return  Converted style
+     */
     @NotNull
     Style convertModifier(@NotNull ChatModifier modifier, boolean modern);
 
+    /**
+     * Adds sibling to a component.
+     *
+     * @param   parent
+     *          Parent to add sibling to
+     * @param   child
+     *          Sibling to add
+     */
     void addSibling(@NotNull Component parent, @NotNull Component child);
 
+    /**
+     * Creates team register packet using given team.
+     *
+     * @param   team
+     *          Team to register
+     * @return  Team register packet using given team
+     */
     @NotNull
     Packet<?> registerTeam(@NotNull PlayerTeam team);
 
+    /**
+     * Creates team unregister packet using given team.
+     *
+     * @param   team
+     *          Team to unregister
+     * @return  Team unregister packet using given team
+     */
     @NotNull
     Packet<?> unregisterTeam(@NotNull PlayerTeam team);
 
+    /**
+     * Creates team update packet using given team.
+     *
+     * @param   team
+     *          Team to update
+     * @return  Team update packet using given team
+     */
     @NotNull
     Packet<?> updateTeam(@NotNull PlayerTeam team);
 
+    /**
+     * Returns {@code true} if player is sneaking, {@code false} if not.
+     *
+     * @param   player
+     *          Player to check sneak status of
+     * @return  {@code true} if player is sneaking, {@code false} if not
+     */
     boolean isSneaking(@NotNull ServerPlayer player);
 
+    /**
+     * Sends message to player.
+     *
+     * @param   player
+     *          Player to send message to
+     * @param   message
+     *          Message to send
+     */
     void sendMessage(@NotNull ServerPlayer player, @NotNull Component message);
 
+    /**
+     * Sends message to command source.
+     *
+     * @param   source
+     *          Command source to send message to
+     * @param   message
+     *          Message to send
+     */
     void sendMessage(@NotNull CommandSourceStack source, @NotNull Component message);
 
+    /**
+     * Creates new Header/Footer packet with given parameters.
+     *
+     * @param   header
+     *          Header to use
+     * @param   footer
+     *          Footer to use
+     * @return  Packet with given parameters
+     */
     @NotNull
     Packet<?> newHeaderFooter(@NotNull Component header, @NotNull Component footer);
 
+    /**
+     * Checks outgoing team packet in pipeline to potentially remove players from it.
+     *
+     * @param   packet
+     *          Packet to check
+     * @param   scoreboard
+     *          Scoreboard of player who received the packet
+     */
     void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard);
 
+    /**
+     * Creates spawn entity packet with given parameters.
+     *
+     * @param   level
+     *          World to fill for dummy entity
+     * @param   id
+     *          Entity ID
+     * @param   uuid
+     *          Entity UUID
+     * @param   type
+     *          Entity type
+     * @param   location
+     *          Spawn location
+     * @return  Spawn entity packet with given parameters
+     */
     @NotNull
     Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location);
 
+    /**
+     * Creates entity metadata packet with given metadata.
+     *
+     * @param   entityId
+     *          Entity ID to change metadata of
+     * @param   data
+     *          Metadata to change
+     * @return  Entity metadata packet with given parameters
+     */
     @NotNull
     Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data);
 
+    /**
+     * Creates entity data with given parameters.
+     *
+     * @param   viewer
+     *          Viewer of custom name
+     * @param   flags
+     *          Entity flags
+     * @param   displayName
+     *          Custom name
+     * @param   nameVisible
+     *          Custom name visibility
+     * @param   markerPosition
+     *          Armor stand marker flag position
+     * @return  Entity data with given parameters
+     */
     @NotNull
     EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible, int markerPosition);
 
+    /**
+     * Returns {@code true} if packet is player info packet, {@code false} if not.
+     *
+     * @param   packet
+     *          Packet to check
+     * @return  {@code true} if packet is player info packet, {@code false} if not
+     */
     boolean isPlayerInfo(@NotNull Packet<?> packet);
 
+    /**
+     * Processed player info packet for anti-override and similar.
+     *
+     * @param   receiver
+     *          Player who received the packet
+     * @param   packet
+     *          Received packet
+     */
     void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet);
 
+    /**
+     * Creates tablist entry packet using given parameters.
+     *
+     * @param   action
+     *          Tablist action
+     * @param   builder
+     *          Entry data
+     * @return  Tablist entry packet with given parameters
+     */
     @NotNull
     Packet<?> buildTabListPacket(@NotNull TabList.Action action, @NotNull FabricTabList.Builder builder);
 
+    /**
+     * Returns {@code true} if packet is bundle packet, {@code false} if not.
+     *
+     * @param   packet
+     *          Packet to check
+     * @return  {@code true} if packet is bundle packet, {@code false} if not
+     */
     boolean isBundlePacket(@NotNull Packet<?> packet);
 
+    /**
+     * Returns packets bundled in given bundle packet.
+     *
+     * @param   bundlePacket
+     *          Bundle packet
+     * @return  Bundled packets
+     */
     @NotNull
     Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket);
 
+    /**
+     * Sends packets to player as a bundle.
+     *
+     * @param   player
+     *          Player to send packets to
+     * @param   packets
+     *          Packets to send
+     */
     void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets);
 
+    /**
+     * Returns player's world
+     *
+     * @param   player
+     *          Player to get world of
+     * @return  Player's world
+     */
     @NotNull
     Level getLevel(@NotNull ServerPlayer player);
 
+    /**
+     * Returns {@code true} if packet is player spawn packet, {@code false} if not.
+     *
+     * @param   packet
+     *          Packet to check
+     * @return  {@code true} if packet is player spawn packet, {@code false} if not
+     */
     boolean isSpawnPlayerPacket(@NotNull Packet<?> packet);
 
+    /**
+     * Returns player ID of given player spawn packet.
+     *
+     * @param   packet
+     *          Player spawn packet
+     * @return  Player ID
+     */
     int getSpawnedPlayerId(@NotNull Packet<?> packet);
 
+    /**
+     * Returns player's ping.
+     *
+     * @param   player
+     *          Player to get ping of
+     * @return  Player's ping
+     */
     int getPing(@NotNull ServerPlayer player);
 
+    /**
+     * Returns display slot of given display objective packet.
+     *
+     * @param   packet
+     *          Display objective packet
+     * @return  Display slot of packet
+     */
     int getDisplaySlot(@NotNull ClientboundSetDisplayObjectivePacket packet);
 
+    /**
+     * Creates display objective packet with given parameters.
+     *
+     * @param   slot
+     *          Display slot
+     * @param   objective
+     *          Objective to display
+     * @return  Display objective packet with given parameters
+     */
     @NotNull
     Packet<?> setDisplaySlot(int slot, @NotNull Objective objective);
 
+    /**
+     * Returns player's network channel.
+     *
+     * @param   player
+     *          Player to get channel of
+     * @return  Player's channel
+     */
     @NotNull
     Channel getChannel(@NotNull ServerPlayer player);
 
+    /**
+     * Returns server's current milliseconds per tick.
+     *
+     * @param   server
+     *          Server to get MSPT value from
+     * @return  Server's milliseconds per tick
+     */
     float getMSPT(@NotNull MinecraftServer server);
 
+    /**
+     * Creates new remove score packet with given parameters.
+     *
+     * @param   objective
+     *          Objective to remove score from
+     * @param   holder
+     *          Score holder to remove
+     * @return  Remove score packet with given parameters
+     */
     @NotNull
     Packet<?> removeScore(@NotNull String objective, @NotNull String holder);
 
-    int[] getDestroyedEntities(Packet<?> destroyPacket);
+    /**
+     * Returns destroyed entities from destroy entity packet.
+     *
+     * @param   destroyPacket
+     *          Entity destroy packet
+     * @return  Destroyed entities
+     */
+    int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket);
 
+    /**
+     * Creates new objective with given parameters.
+     *
+     * @param   name
+     *          Objective name
+     * @param   displayName
+     *          Objective display name
+     * @param   renderType
+     *          Score render type
+     * @param   numberFormat
+     *          Score number format (1.20.3+)
+     * @return  New objective with given parameters
+     */
     @NotNull
     Objective newObjective(@NotNull String name, @NotNull Component displayName, @NotNull RenderType renderType, @Nullable Component numberFormat);
 
+    /**
+     * Creates a new set score packet with given parameters.
+     *
+     * @param   objective
+     *          Objective to set score in
+     * @param   holder
+     *          Score holder
+     * @param   score
+     *          Score value
+     * @param   displayName
+     *          Display name of score holder (1.20.3+)
+     * @param   numberFormat
+     *          Number format of score value (1.20.3+)
+     * @return  New set score packet with given parameters
+     */
     @NotNull
     Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat);
 
+    /**
+     * Sets style in a component to specified style.
+     *
+     * @param   component
+     *          Component to change style of
+     * @param   style
+     *          Style to use
+     */
     void setStyle(@NotNull Component component, @NotNull Style style);
 
+    /**
+     * Logs console message as info.
+     *
+     * @param   message
+     *          Message to log
+     */
     void logInfo(@NotNull TabComponent message);
 
+    /**
+     * Logs console message as warn.
+     *
+     * @param   message
+     *          Message to log
+     */
     void logWarn(@NotNull TabComponent message);
 }

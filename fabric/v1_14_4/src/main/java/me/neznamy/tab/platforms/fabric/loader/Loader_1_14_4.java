@@ -328,7 +328,7 @@ public class Loader_1_14_4 implements Loader {
 
     @Override
     @SneakyThrows
-    public int[] getDestroyedEntities(Packet<?> destroyPacket) {
+    public int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket) {
         return (int[]) ReflectionUtils.getOnlyField(destroyPacket.getClass()).get(destroyPacket);
     }
 

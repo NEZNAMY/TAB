@@ -296,7 +296,7 @@ public class Loader_1_20_5 implements Loader {
     }
 
     @Override
-    public int[] getDestroyedEntities(Packet<?> destroyPacket) {
+    public int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket) {
         return ((ClientboundRemoveEntitiesPacket) destroyPacket).getEntityIds().toIntArray();
     }
 
