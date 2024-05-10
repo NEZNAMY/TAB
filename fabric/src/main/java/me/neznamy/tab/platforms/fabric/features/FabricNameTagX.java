@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.fabric.features;
 
 import me.neznamy.tab.platforms.fabric.FabricMultiVersion;
-import me.neznamy.tab.platforms.fabric.FabricTAB;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -28,7 +28,7 @@ public class FabricNameTagX extends BackendNameTagX {
      * Constructs new instance and registers event listener.
      */
     public FabricNameTagX() {
-        if (FabricTAB.supportsEntityEvents()) {
+        if (ReflectionUtils.classExists("net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents")) {
             // Added in 1.16
             ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
                 if (enabled) respawn(oldPlayer.getUUID());
