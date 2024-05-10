@@ -40,12 +40,15 @@ public class FabricMultiVersion {
     /** Method loader using latest supported MC version */
     private static final Loader loaderNew = new Loader_1_20_5();
 
-    /** Method loader using the oldest supported MC version */
-    private static final Loader loaderOld = createOldLoader();
+    /** Method loader using 1.18.2 */
+    private static final Loader loader1_18_2 = createLoader("1_18_2");
+
+    /** Method loader using 1.14.4 */
+    private static final Loader loader1_14_4 = createLoader("1_14_4");
 
     @SneakyThrows
-    private static Loader createOldLoader() {
-        return (Loader) Class.forName("me.neznamy.tab.platforms.fabric.loader.Loader_1_14_4")
+    private static Loader createLoader(@NotNull String version) {
+        return (Loader) Class.forName("me.neznamy.tab.platforms.fabric.loader.Loader_" + version)
                 .getConstructor(ProtocolVersion.class).newInstance(serverVersion);
     }
 
@@ -58,7 +61,7 @@ public class FabricMultiVersion {
      */
     public static boolean isSneaking(@NotNull ServerPlayer player) {
         if (serverVersion.getMinorVersion() >= 15) return loaderNew.isSneaking(player);
-        return loaderOld.isSneaking(player);
+        return loader1_14_4.isSneaking(player);
     }
 
     /**
@@ -71,7 +74,7 @@ public class FabricMultiVersion {
     @NotNull
     public static String getLevelName(@NotNull Level level) {
         if (serverVersion.getMinorVersion() >= 16) return loaderNew.getLevelName(level);
-        return loaderOld.getLevelName(level);
+        return loader1_14_4.getLevelName(level);
     }
 
     /**
@@ -84,7 +87,7 @@ public class FabricMultiVersion {
      */
     public static void addSibling(@NotNull Component parent, @NotNull Component child) {
         if (serverVersion.getMinorVersion() >= 16) loaderNew.addSibling(parent, child);
-        else loaderOld.addSibling(parent, child);
+        else loader1_14_4.addSibling(parent, child);
     }
 
     /**
@@ -99,7 +102,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
         if (serverVersion.getMinorVersion() >= 16) return loaderNew.convertModifier(modifier, modern);
-        return loaderOld.convertModifier(modifier, modern);
+        return loader1_14_4.convertModifier(modifier, modern);
     }
 
     /**
@@ -114,7 +117,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> newHeaderFooter(@NotNull Component header, @NotNull Component footer) {
         if (serverVersion.getMinorVersion() >= 17) return loaderNew.newHeaderFooter(header, footer);
-        return loaderOld.newHeaderFooter(header, footer);
+        return loader1_14_4.newHeaderFooter(header, footer);
     }
 
     /**
@@ -127,7 +130,7 @@ public class FabricMultiVersion {
      */
     public static void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard) {
         if (serverVersion.getMinorVersion() >= 17) loaderNew.checkTeamPacket(packet, scoreboard);
-        else loaderOld.checkTeamPacket(packet, scoreboard);
+        else loader1_14_4.checkTeamPacket(packet, scoreboard);
     }
 
     /**
@@ -140,7 +143,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> registerTeam(@NotNull PlayerTeam team) {
         if (serverVersion.getMinorVersion() >= 17) return loaderNew.registerTeam(team);
-        return loaderOld.registerTeam(team);
+        return loader1_14_4.registerTeam(team);
     }
 
     /**
@@ -153,7 +156,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> unregisterTeam(@NotNull PlayerTeam team) {
         if (serverVersion.getMinorVersion() >= 17) return loaderNew.unregisterTeam(team);
-        return loaderOld.unregisterTeam(team);
+        return loader1_14_4.unregisterTeam(team);
     }
 
     /**
@@ -166,7 +169,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> updateTeam(@NotNull PlayerTeam team) {
         if (serverVersion.getMinorVersion() >= 17) return loaderNew.updateTeam(team);
-        return loaderOld.updateTeam(team);
+        return loader1_14_4.updateTeam(team);
     }
 
     /**
@@ -178,7 +181,7 @@ public class FabricMultiVersion {
      */
     public static int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket) {
         if (serverVersion.getMinorVersion() >= 17) return loaderNew.getDestroyedEntities(destroyPacket);
-        return loaderOld.getDestroyedEntities(destroyPacket);
+        return loader1_14_4.getDestroyedEntities(destroyPacket);
     }
 
     /**
@@ -189,7 +192,7 @@ public class FabricMultiVersion {
      */
     public static void logInfo(@NotNull TabComponent message) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_18_2.getNetworkId()) loaderNew.logInfo(message);
-        else loaderOld.logInfo(message);
+        else loader1_14_4.logInfo(message);
     }
 
     /**
@@ -200,7 +203,7 @@ public class FabricMultiVersion {
      */
     public static void logWarn(@NotNull TabComponent message) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_18_2.getNetworkId()) loaderNew.logWarn(message);
-        else loaderOld.logWarn(message);
+        else loader1_14_4.logWarn(message);
     }
 
     /**
@@ -213,7 +216,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Component newTextComponent(@NotNull String text) {
         if (serverVersion.getMinorVersion() >= 19) return loaderNew.newTextComponent(text);
-        return loaderOld.newTextComponent(text);
+        return loader1_14_4.newTextComponent(text);
     }
 
     /**
@@ -226,7 +229,7 @@ public class FabricMultiVersion {
      */
     public static void sendMessage(@NotNull CommandSourceStack source, @NotNull Component message) {
         if (serverVersion.getMinorVersion() >= 19) loaderNew.sendMessage(source, message);
-        else loaderOld.sendMessage(source, message);
+        else loader1_14_4.sendMessage(source, message);
     }
 
     /**
@@ -247,7 +250,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location) {
         if (serverVersion.getMinorVersion() >= 19) return loaderNew.spawnEntity(level, id, uuid, type, location);
-        return loaderOld.spawnEntity(level, id, uuid, type, location);
+        return loader1_14_4.spawnEntity(level, id, uuid, type, location);
     }
 
     /**
@@ -261,8 +264,8 @@ public class FabricMultiVersion {
     @SneakyThrows
     public static void setStyle(@NotNull Component component, @NotNull Style style) {
         if (serverVersion.getMinorVersion() >= 19) loaderNew.setStyle(component, style);
-        else if (serverVersion.getMinorVersion() >= 16) component.getClass().getMethod("method_10862", Style.class).invoke(component, style);
-        else loaderOld.setStyle(component, style);
+        else if (serverVersion.getMinorVersion() >= 16) loader1_18_2.setStyle(component, style);
+        else loader1_14_4.setStyle(component, style);
     }
 
     /**
@@ -276,9 +279,8 @@ public class FabricMultiVersion {
     @SneakyThrows
     public static void sendMessage(@NotNull ServerPlayer player, @NotNull Component message) {
         if (serverVersion.getMinorVersion() >= 19) loaderNew.sendMessage(player, message);
-        else if (serverVersion.getMinorVersion() >= 16)
-                player.getClass().getMethod("method_9203", Component.class, UUID.class).invoke(player, message, new UUID(0, 0));
-        else loaderOld.sendMessage(player, message);
+        else if (serverVersion.getMinorVersion() >= 16) loader1_18_2.sendMessage(player, message);
+        else loader1_14_4.sendMessage(player, message);
     }
 
     /**
@@ -293,7 +295,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.newEntityMetadata(entityId, data);
-        return loaderOld.newEntityMetadata(entityId, data);
+        return loader1_14_4.newEntityMetadata(entityId, data);
     }
 
     /**
@@ -313,7 +315,7 @@ public class FabricMultiVersion {
     public static EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
         int position = EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion());
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.createDataWatcher(viewer, flags, displayName, nameVisible, position);
-        return loaderOld.createDataWatcher(viewer, flags, displayName, nameVisible, position);
+        return loader1_14_4.createDataWatcher(viewer, flags, displayName, nameVisible, position);
     }
 
     /**
@@ -325,7 +327,7 @@ public class FabricMultiVersion {
      */
     public static boolean isPlayerInfo(@NotNull Packet<?> packet) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.isPlayerInfo(packet);
-        return loaderOld.isPlayerInfo(packet);
+        return loader1_14_4.isPlayerInfo(packet);
     }
 
     /**
@@ -338,7 +340,8 @@ public class FabricMultiVersion {
      */
     public static void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) loaderNew.onPlayerInfo(receiver, packet);
-        else loaderOld.onPlayerInfo(receiver, packet);
+        else if (serverVersion.getMinorVersion() >= 17) loader1_18_2.onPlayerInfo(receiver, packet);
+        else loader1_14_4.onPlayerInfo(receiver, packet);
     }
 
     /**
@@ -353,7 +356,8 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> buildTabListPacket(@NotNull TabList.Action action, @NotNull FabricTabList.Builder builder) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.buildTabListPacket(action, builder);
-        return loaderOld.buildTabListPacket(action, builder);
+        else if (serverVersion.getMinorVersion() >= 17) return loader1_18_2.buildTabListPacket(action, builder);
+        return loader1_14_4.buildTabListPacket(action, builder);
     }
 
     /**
@@ -365,7 +369,7 @@ public class FabricMultiVersion {
      */
     public static boolean isBundlePacket(@NotNull Packet<?> packet) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) return loaderNew.isBundlePacket(packet);
-        return loaderOld.isBundlePacket(packet);
+        return loader1_14_4.isBundlePacket(packet);
     }
 
     /**
@@ -378,7 +382,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) return loaderNew.getBundledPackets(bundlePacket);
-        return loaderOld.getBundledPackets(bundlePacket);
+        return loader1_14_4.getBundledPackets(bundlePacket);
     }
 
     /**
@@ -391,7 +395,7 @@ public class FabricMultiVersion {
      */
     public static void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) loaderNew.sendPackets(player, packets);
-        else loaderOld.sendPackets(player, packets);
+        else loader1_14_4.sendPackets(player, packets);
     }
 
     /**
@@ -404,7 +408,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Level getLevel(@NotNull ServerPlayer player) {
         if (serverVersion.getMinorVersion() >= 20) return loaderNew.getLevel(player);
-        return loaderOld.getLevel(player);
+        return loader1_14_4.getLevel(player);
     }
 
     /**
@@ -417,7 +421,7 @@ public class FabricMultiVersion {
     @NotNull
     public static TabList.Skin propertyToSkin(@NotNull Property property) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.propertyToSkin(property);
-        return loaderOld.propertyToSkin(property);
+        return loader1_14_4.propertyToSkin(property);
     }
 
     /**
@@ -429,7 +433,7 @@ public class FabricMultiVersion {
      */
     public static boolean isSpawnPlayerPacket(@NotNull Packet<?> packet) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.isSpawnPlayerPacket(packet);
-        return loaderOld.isSpawnPlayerPacket(packet);
+        return loader1_14_4.isSpawnPlayerPacket(packet);
     }
 
     /**
@@ -441,7 +445,7 @@ public class FabricMultiVersion {
      */
     public static int getSpawnedPlayerId(@NotNull Packet<?> packet) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getSpawnedPlayerId(packet);
-        return loaderOld.getSpawnedPlayerId(packet);
+        return loader1_14_4.getSpawnedPlayerId(packet);
     }
 
     /**
@@ -453,7 +457,7 @@ public class FabricMultiVersion {
      */
     public static int getPing(@NotNull ServerPlayer player) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getPing(player);
-        return loaderOld.getPing(player);
+        return loader1_14_4.getPing(player);
     }
 
     /**
@@ -465,7 +469,7 @@ public class FabricMultiVersion {
      */
     public static int getDisplaySlot(@NotNull ClientboundSetDisplayObjectivePacket packet) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getDisplaySlot(packet);
-        return loaderOld.getDisplaySlot(packet);
+        return loader1_14_4.getDisplaySlot(packet);
     }
 
     /**
@@ -480,7 +484,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> setDisplaySlot(int slot, @NotNull Objective objective) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.setDisplaySlot(slot, objective);
-        return loaderOld.setDisplaySlot(slot, objective);
+        return loader1_14_4.setDisplaySlot(slot, objective);
     }
 
     /**
@@ -493,7 +497,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Channel getChannel(@NotNull ServerPlayer player) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getChannel(player);
-        return loaderOld.getChannel(player);
+        return loader1_14_4.getChannel(player);
     }
 
     /**
@@ -505,7 +509,7 @@ public class FabricMultiVersion {
      */
     public static float getMSPT(@NotNull MinecraftServer server) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.getMSPT(server);
-        return loaderOld.getMSPT(server);
+        return loader1_14_4.getMSPT(server);
     }
 
     /**
@@ -520,7 +524,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> removeScore(@NotNull String objective, @NotNull String holder) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.removeScore(objective, holder);
-        return loaderOld.removeScore(objective, holder);
+        return loader1_14_4.removeScore(objective, holder);
     }
 
     /**
@@ -540,7 +544,7 @@ public class FabricMultiVersion {
     public static Objective newObjective(@NotNull String name, @NotNull Component displayName,
                                          @NotNull RenderType renderType, @Nullable Component numberFormat) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.newObjective(name, displayName, renderType, numberFormat);
-        return loaderOld.newObjective(name, displayName, renderType, numberFormat);
+        return loader1_14_4.newObjective(name, displayName, renderType, numberFormat);
     }
 
     /**
@@ -562,6 +566,6 @@ public class FabricMultiVersion {
     public static Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score,
                                      @Nullable Component displayName, @Nullable Component numberFormat) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.setScore(objective, holder, score, displayName, numberFormat);
-        return loaderOld.setScore(objective, holder, score, displayName, numberFormat);
+        return loader1_14_4.setScore(objective, holder, score, displayName, numberFormat);
     }
 }
