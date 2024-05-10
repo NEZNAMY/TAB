@@ -51,6 +51,8 @@ public class PacketTabList1193 extends PacketTabList18 {
      *          If something goes wrong
      */
     public static void loadNew() throws ReflectiveOperationException {
+        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
+        Class<?> RemoteChatSession$Data = BukkitReflection.getClass("network.chat.RemoteChatSession$Data", "network.chat.RemoteChatSession$a");
         Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType", "world.level.EnumGamemode");
         ActionClass = (Class<Enum>) BukkitReflection.getClass(
                 "network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action", // Mojang
@@ -67,9 +69,10 @@ public class PacketTabList1193 extends PacketTabList18 {
 
         loadSharedContent(playerInfoDataClass, EnumGamemodeClass);
 
+        newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class, EnumGamemodeClass, IChatBaseComponent, RemoteChatSession$Data);
+
         PlayerInfoData_Listed = ReflectionUtils.getOnlyField(playerInfoDataClass, boolean.class);
         PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
-        Class<?> RemoteChatSession$Data = BukkitReflection.getClass("network.chat.RemoteChatSession$Data", "network.chat.RemoteChatSession$a");
         PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
         PlayerInfoData_UUID = ReflectionUtils.getOnlyField(playerInfoDataClass, UUID.class);
         newRemovePacket = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoRemovePacket").getConstructor(List.class);

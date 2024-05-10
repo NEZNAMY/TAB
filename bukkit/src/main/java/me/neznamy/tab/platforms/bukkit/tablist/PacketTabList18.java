@@ -82,11 +82,12 @@ public class PacketTabList18 extends TabListBase<Object> {
         ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
 
         loadSharedContent(playerInfoDataClass, EnumGamemodeClass);
+
+        newPlayerInfoData = playerInfoDataClass.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
     }
 
     protected static void loadSharedContent(Class<?> infoData, Class<Enum> gameMode) throws ReflectiveOperationException {
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
-        newPlayerInfoData = infoData.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         PlayerInfoData_Profile = ReflectionUtils.getOnlyField(infoData, GameProfile.class);
         PlayerInfoData_Latency = ReflectionUtils.getOnlyField(infoData, int.class);
