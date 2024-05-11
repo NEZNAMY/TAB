@@ -25,10 +25,6 @@ public class BukkitReflection {
     @Getter
     private static final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
 
-    /** Flag determining whether the server version is at least 1.19.4 or not */
-    @Getter
-    private static final boolean is1_19_4Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundBundlePacket");
-
     /** Flag determining whether the server version is at least 1.20.2 or not */
     @Getter
     private static final boolean is1_20_2Plus = ReflectionUtils.classExists("net.minecraft.world.scores.DisplaySlot");
