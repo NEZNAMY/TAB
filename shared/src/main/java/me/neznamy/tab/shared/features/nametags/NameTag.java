@@ -433,7 +433,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         public boolean hiddenNameTag;
 
         /** Players who should not see this player's name tag */
-        public Set<TabPlayer> hiddenNameTagFor = Collections.newSetFromMap(new WeakHashMap<>());
+        public final Set<TabPlayer> hiddenNameTagFor = Collections.newSetFromMap(new WeakHashMap<>());
 
         /** Flag tracking whether team handling is paused or not */
         public boolean teamHandlingPaused;
@@ -442,7 +442,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         public boolean invisibleNameTagView;
 
         /** Players who this player is vanished for */
-        public Set<UUID> vanishedFor = new HashSet<>();
+        public final Set<UUID> vanishedFor = new HashSet<>();
         
         /** Currently used collision rule */
         public boolean collisionRule;
