@@ -279,18 +279,6 @@ public class ErrorManager {
     }
 
     /**
-     * Prints warn if player is not in plugin's scoreboard.
-     *
-     * @param   player
-     *          Player who was in the wrong scoreboard
-     */
-    public void playerInWrongScoreboard(@NotNull TabPlayer player) {
-        printError("Player " + player.getName() + " was in a different scoreboard " +
-                "than expected. This means another plugin changed player's scoreboard.",
-                Collections.emptyList(), false, errorLog);
-    }
-
-    /**
      * Prints error message if armor stand manager of player is unexpectedly {@code null}.
      *
      * @param   player
