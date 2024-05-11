@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -17,7 +16,6 @@ public class PlayerJoin implements OutgoingMessage {
     private boolean forwardGroup;
     private Map<String, Integer> placeholders;
     private Map<String, Map<Object, Object>> replacements;
-    private UnlimitedNametagSettings unlimitedNameTags;
 
     @Override
     @NotNull
@@ -40,31 +38,7 @@ public class PlayerJoin implements OutgoingMessage {
                 out.writeUTF(EnumChatFormat.color(String.valueOf(rule.getValue())));
             }
         }
-        out.writeBoolean(unlimitedNameTags != null);
-        if (unlimitedNameTags != null) {
-            out.writeBoolean(unlimitedNameTags.disableOnBoats);
-            out.writeBoolean(unlimitedNameTags.alwaysVisible);
-            out.writeBoolean(unlimitedNameTags.isDisabledForPlayer);
-            out.writeInt(unlimitedNameTags.dynamicLines.size());
-            for (String line : unlimitedNameTags.dynamicLines) {
-                out.writeUTF(line);
-            }
-            out.writeInt(unlimitedNameTags.staticLines.size());
-            for (Map.Entry<String, Object> entry : unlimitedNameTags.staticLines.entrySet()) {
-                out.writeUTF(entry.getKey());
-                out.writeDouble(Double.parseDouble(String.valueOf(entry.getValue())));
-            }
-        }
+        out.writeBoolean(false); // Deleted unlimited nametags
         return out;
-    }
-
-    @AllArgsConstructor
-    public static class UnlimitedNametagSettings {
-
-        private boolean disableOnBoats;
-        private boolean alwaysVisible;
-        private boolean isDisabledForPlayer;
-        private List<String> dynamicLines;
-        private Map<String, Object> staticLines;
     }
 }

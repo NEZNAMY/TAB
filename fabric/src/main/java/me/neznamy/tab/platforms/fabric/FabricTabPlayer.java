@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.BossBar;
@@ -28,9 +27,6 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @NotNull
     private final BossBar bossBar = new FabricBossBar(this);
-
-    @NotNull
-    private final EntityView entityView = new FabricEntityView(this);
 
     /**
      * Constructs new instance with given parameters.

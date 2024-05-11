@@ -1,21 +1,18 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
-import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handler for "/tab debug" subcommand
@@ -93,13 +90,6 @@ public class DebugCommand extends SubCommand {
         if (tab.getNameTagManager() != null) {
             showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, analyzed.disabledNametags.get());
             showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, analyzed.disabledNametags.get());
-            NameTagX nameTagX = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
-            if (nameTagX != null) {
-                boolean disabledUnlimited = nameTagX.isPlayerDisabled(analyzed);
-                for (String line : getExtraLines()) {
-                    showProperty(sender, analyzed, line, disabledUnlimited);
-                }
-            }
         } else {
             sendMessage(sender, "&atagprefix: &cDisabled");
             sendMessage(sender, "&atagsuffix: &cDisabled");
@@ -173,26 +163,10 @@ public class DebugCommand extends SubCommand {
      * @return  team name note of specified player
      */
     private @NotNull String getTeamNameNote(@NotNull TabPlayer analyzed) {
-        if (analyzed.sortingData == null) return "";
         if (TAB.getInstance().getNameTagManager() != null && analyzed.disabledNametags.get()) {
             return "";
         }
         return "&eSorting note: &r" + analyzed.sortingData.teamNameNote;
-    }
-
-    /**
-     * Returns list of extra properties if unlimited nametag mode is enabled
-     *
-     * @return  list of extra properties
-     */
-    public @NotNull List<String> getExtraLines() {
-        if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) return Collections.emptyList();
-        List<String> lines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines"));
-        Map<String, Number> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
-        lines.addAll(staticLines.keySet());
-        lines.remove(TabConstants.Property.NAMETAG);
-        lines.add(TabConstants.Property.CUSTOMTAGNAME);
-        return lines;
     }
 
     /**

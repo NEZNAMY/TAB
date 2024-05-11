@@ -45,18 +45,6 @@ public interface TabExpansion {
     }
 
     /**
-     * Sets nametag preview placeholder to specified value.
-     *
-     * @param   player
-     *          Player to set placeholder value for
-     * @param   previewing
-     *          Whether player is previewing nametag or not
-     */
-    default void setNameTagPreview(@NotNull TabPlayer player, boolean previewing) {
-        setValue(player, "nametag_preview", previewing ? "Enabled" : "Disabled");
-    }
-
-    /**
      * Sets nametag visibility toggle choice placeholder to specified value.
      *
      * @param   player

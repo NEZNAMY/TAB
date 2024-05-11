@@ -70,12 +70,6 @@ permissions:
   tab.nametag.toggle.other:
     description: Allows player to run /tab nametag toggle [other player]
     default: op
-  tab.nametag.preview:
-    description: Allows player to run /tab nametag preview
-    default: op
-  tab.nametag.preview.other:
-    description: Allows player to run /tab nametag preview [other player]
-    default: op
   tab.announce.scoreboard:
     description: Allows player to run /tab scoreboard announce
     default: op

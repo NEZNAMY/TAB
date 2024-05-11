@@ -3,13 +3,10 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.bossbar.BossBarLoader;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
-import me.neznamy.tab.platforms.bukkit.entity.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
-import me.neznamy.tab.shared.backend.entityview.DummyEntityView;
-import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -36,9 +33,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @NotNull
     private final BossBar bossBar = BossBarLoader.findInstance(this);
-
-    @NotNull
-    private final EntityView entityView = PacketEntityView.isAvailable() ? new PacketEntityView(this) : new DummyEntityView();
 
     /**
      * Constructs new instance with given bukkit player

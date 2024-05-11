@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
@@ -53,12 +52,6 @@ public class SpongePlatform implements BackendPlatform {
     @Nullable
     public PipelineInjector createPipelineInjector() {
         return null;
-    }
-
-    @Override
-    @NotNull
-    public NameTag getUnlimitedNameTags() {
-        return new NameTag();
     }
 
     @Override

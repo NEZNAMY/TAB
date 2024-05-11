@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -49,9 +48,6 @@ public abstract class PropertyCommand extends SubCommand {
         if (getAllProperties().contains(property)) {
             if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
                 saveEntity(sender, args[0], property, value, server, world);
-                if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) {
-                    sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
-                }
             } else {
                 sendMessage(sender, getMessages().getNoPermission());
             }

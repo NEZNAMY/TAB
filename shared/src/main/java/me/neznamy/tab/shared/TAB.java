@@ -271,8 +271,7 @@ public class TAB extends TabAPI {
 
     @Override
     public @Nullable NameTag getNameTagManager() {
-        if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
-        return featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+        return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
     }
 
     @Override

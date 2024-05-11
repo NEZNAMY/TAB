@@ -42,7 +42,6 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             "%tab_scoreboard_name%",
             "%tab_scoreboard_visible%",
             "%tab_bossbar_visible%",
-            "%tab_nametag_preview%",
             "%tab_nametag_visibility%",
             "%tab_replace_<placeholder>%",
             "%tab_placeholder_<placeholder>%"

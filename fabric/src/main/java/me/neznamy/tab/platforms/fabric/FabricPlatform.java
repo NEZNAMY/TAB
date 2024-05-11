@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import me.neznamy.tab.platforms.fabric.features.FabricNameTagX;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -12,7 +11,6 @@ import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
@@ -59,12 +57,6 @@ public class FabricPlatform implements BackendPlatform {
     @NotNull
     public PipelineInjector createPipelineInjector() {
         return new FabricPipelineInjector();
-    }
-
-    @Override
-    @NotNull
-    public NameTag getUnlimitedNameTags() {
-        return new FabricNameTagX();
     }
 
     @Override

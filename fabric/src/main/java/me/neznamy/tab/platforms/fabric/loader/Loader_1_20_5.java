@@ -8,8 +8,6 @@ import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -21,16 +19,12 @@ import net.minecraft.network.chat.numbers.FixedFormat;
 import net.minecraft.network.chat.numbers.NumberFormat;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ServerLevelData;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -45,7 +39,6 @@ import java.util.*;
  * Method loader compiled using Minecraft 1.20.5.
  */
 @SuppressWarnings({
-        "unchecked", // Java generic types
         "DataFlowIssue", // Profile is not null on add action
         "unused" // Actually used, just via reflection
 })
@@ -124,11 +117,6 @@ public class Loader_1_20_5 implements Loader {
     }
 
     @Override
-    public boolean isSneaking(@NotNull ServerPlayer player) {
-        return player.isCrouching();
-    }
-
-    @Override
     public void sendMessage(@NotNull ServerPlayer player, @NotNull Component message) {
         player.sendSystemMessage(message);
     }
@@ -150,31 +138,6 @@ public class Loader_1_20_5 implements Loader {
             if (team.method == Scoreboard.TeamAction.REMOVE || team.method == Scoreboard.TeamAction.UPDATE) return;
             team.players = scoreboard.onTeamPacket(team.method, team.getName(), team.players);
         }
-    }
-
-    @Override
-    @NotNull
-    public Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location) {
-        return new ClientboundAddEntityPacket(id, uuid, location.getX(), location.getY(), location.getZ(),
-                0, 0, (EntityType<?>) type, 0, Vec3.ZERO, 0);
-    }
-
-    @Override
-    @NotNull
-    public Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data) {
-        return new ClientboundSetEntityDataPacket(entityId, (List<SynchedEntityData.DataValue<?>>) data.build());
-    }
-
-    @Override
-    @NotNull
-    public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible, int markerPosition) {
-        Optional<Component> name = Optional.of(TabComponent.optimized(displayName).convert(viewer.getVersion()));
-        return () -> Arrays.asList(
-                new SynchedEntityData.DataValue<>(0, EntityDataSerializers.BYTE, flags),
-                new SynchedEntityData.DataValue<>(2, EntityDataSerializers.OPTIONAL_COMPONENT, name),
-                new SynchedEntityData.DataValue<>(3, EntityDataSerializers.BOOLEAN, nameVisible),
-                new SynchedEntityData.DataValue<>(markerPosition, EntityDataSerializers.BYTE, EntityData.MARKER_FLAG)
-        );
     }
 
     @Override
@@ -226,40 +189,9 @@ public class Loader_1_20_5 implements Loader {
     }
 
     @Override
-    public boolean isBundlePacket(@NotNull Packet<?> packet) {
-        return packet instanceof ClientboundBundlePacket;
-    }
-
-    @Override
-    @NotNull
-    public Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket) {
-        return (Iterable<Object>) (Object) ((ClientboundBundlePacket)bundlePacket).subPackets();
-    }
-
-    @Override
-    @SneakyThrows
-    public void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets) {
-        // Reflection because
-        // 1.20.4- uses Iterable<Packet<ClientGamePacketListener>
-        // 1.20.5+ uses Iterable<Packet<? super ClientGamePacketListener>
-        // this is the only way to merge them
-        player.connection.send(ClientboundBundlePacket.class.getConstructor(Iterable.class).newInstance(packets));
-    }
-
-    @Override
     @NotNull
     public Level getLevel(@NotNull ServerPlayer player) {
         return player.level();
-    }
-
-    @Override
-    public boolean isSpawnPlayerPacket(@NotNull Packet<?> packet) {
-        return packet instanceof ClientboundAddEntityPacket;
-    }
-
-    @Override
-    public int getSpawnedPlayerId(@NotNull Packet<?> packet) {
-        return ((ClientboundAddEntityPacket)packet).getId();
     }
 
     @Override
@@ -293,11 +225,6 @@ public class Loader_1_20_5 implements Loader {
     @NotNull
     public Packet<?> removeScore(@NotNull String objective, @NotNull String holder) {
         return new ClientboundResetScorePacket(holder, objective);
-    }
-
-    @Override
-    public int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket) {
-        return ((ClientboundRemoveEntitiesPacket) destroyPacket).getEntityIds().toIntArray();
     }
 
     @Override

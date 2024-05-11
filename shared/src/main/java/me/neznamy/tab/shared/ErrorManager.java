@@ -279,20 +279,6 @@ public class ErrorManager {
     }
 
     /**
-     * Prints error message if armor stand manager of player is unexpectedly {@code null}.
-     *
-     * @param   player
-     *          Player with null armor stand manager
-     * @param   action
-     *          Action during which armor stand manager was null
-     */
-    public void armorStandNull(@NotNull TabPlayer player, @NotNull String action) {
-        printError("ArmorStandManager of player " + player.getName() +
-                " is null when trying to process " + action + ", which is unexpected. Loaded = " + player.isLoaded(),
-                Collections.emptyList(), false, errorLog);
-    }
-
-    /**
      * Prints error message when a task throws an error.
      *
      * @param   t

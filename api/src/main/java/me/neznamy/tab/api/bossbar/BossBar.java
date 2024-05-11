@@ -10,11 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * An interface representing a BossBar line.
  * <p>
- * For clients 1.8 and lower it uses wither, which only allows 1 bar 
- * to be displayed at a time. Entity packets are not available on BungeeCord,
- * where nothing will be displayed for these players.
- * <p>
- * For 1.9+ it uses the new BossBar feature, allowing configurable styles
+ * It uses 1.9+ BossBar feature, allowing configurable styles
  * and colors, as well as display several bars at once. Limit of maximum 
  * displayed BossBars depends on client resolution and GUI scale, up to
  * 9 concurrent BossBars displayed at once.

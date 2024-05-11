@@ -5,8 +5,6 @@ import lombok.Setter;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.proxy.message.outgoing.OutgoingMessage;
 import me.neznamy.tab.shared.proxy.message.outgoing.PermissionRequest;
 import me.neznamy.tab.shared.proxy.message.outgoing.PlayerJoin;
@@ -31,9 +29,6 @@ public abstract class ProxyTabPlayer extends TabPlayer {
 
     /** Player's invisibility potion status from backend server */
     private boolean invisibilityPotion;
-
-    /** Player's boat vehicle status for unlimited NameTags */
-    private boolean onBoat;
 
     /** Timestamp when join plugin message was sent to track how long bridge took to respond */
     private long bridgeRequestTime;
@@ -76,25 +71,12 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      */
     public void sendJoinPluginMessage() {
         bridgeConnected = false; // Reset on server switch
-
-        PlayerJoin.UnlimitedNametagSettings settings = null;
-        NameTagX nametagx = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
-        if (nametagx != null) {
-            settings = new PlayerJoin.UnlimitedNametagSettings(
-                    nametagx.isDisableOnBoats(),
-                    nametagx.isArmorStandsAlwaysVisible(),
-                    disabledNametags.get() || disabledUnlimitedNametags.get(),
-                    nametagx.getDynamicLines(),
-                    nametagx.getStaticLines()
-            );
-        }
         sendPluginMessage(new PlayerJoin(
                 getVersion().getNetworkId(),
                 TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                     !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
                 ((ProxyPlatform) getPlatform()).getBridgePlaceholders(),
-                TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements"),
-                settings
+                TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements")
         ));
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         if (expansion instanceof ProxyTabExpansion) {

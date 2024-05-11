@@ -6,8 +6,6 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.loader.Loader;
 import me.neznamy.tab.platforms.fabric.loader.Loader_1_20_5;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -16,7 +14,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,8 +23,6 @@ import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
 
 /**
  * Class managing cross-version code in shared module.
@@ -50,18 +45,6 @@ public class FabricMultiVersion {
     private static Loader createLoader(@NotNull String version) {
         return (Loader) Class.forName("me.neznamy.tab.platforms.fabric.loader.Loader_" + version)
                 .getConstructor(ProtocolVersion.class).newInstance(serverVersion);
-    }
-
-    /**
-     * Returns {@code true} if player is sneaking, {@code false} if not.
-     *
-     * @param   player
-     *          Player to check sneak status of
-     * @return  {@code true} if player is sneaking, {@code false} if not
-     */
-    public static boolean isSneaking(@NotNull ServerPlayer player) {
-        if (serverVersion.getMinorVersion() >= 15) return loaderNew.isSneaking(player);
-        return loader1_14_4.isSneaking(player);
     }
 
     /**
@@ -173,18 +156,6 @@ public class FabricMultiVersion {
     }
 
     /**
-     * Returns destroyed entities from destroy entity packet.
-     *
-     * @param   destroyPacket
-     *          Entity destroy packet
-     * @return  Destroyed entities
-     */
-    public static int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket) {
-        if (serverVersion.getMinorVersion() >= 17) return loaderNew.getDestroyedEntities(destroyPacket);
-        return loader1_14_4.getDestroyedEntities(destroyPacket);
-    }
-
-    /**
      * Logs console message as info.
      *
      * @param   message
@@ -233,27 +204,6 @@ public class FabricMultiVersion {
     }
 
     /**
-     * Creates spawn entity packet with given parameters.
-     *
-     * @param   level
-     *          World to fill for dummy entity
-     * @param   id
-     *          Entity ID
-     * @param   uuid
-     *          Entity UUID
-     * @param   type
-     *          Entity type
-     * @param   location
-     *          Spawn location
-     * @return  Spawn entity packet with given parameters
-     */
-    @NotNull
-    public static Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location) {
-        if (serverVersion.getMinorVersion() >= 19) return loaderNew.spawnEntity(level, id, uuid, type, location);
-        return loader1_14_4.spawnEntity(level, id, uuid, type, location);
-    }
-
-    /**
      * Sets style in a component to specified style.
      *
      * @param   component
@@ -281,41 +231,6 @@ public class FabricMultiVersion {
         if (serverVersion.getMinorVersion() >= 19) loaderNew.sendMessage(player, message);
         else if (serverVersion.getMinorVersion() >= 16) loader1_18_2.sendMessage(player, message);
         else loader1_14_4.sendMessage(player, message);
-    }
-
-    /**
-     * Creates entity metadata packet with given metadata.
-     *
-     * @param   entityId
-     *          Entity ID to change metadata of
-     * @param   data
-     *          Metadata to change
-     * @return  Entity metadata packet with given parameters
-     */
-    @NotNull
-    public static Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.newEntityMetadata(entityId, data);
-        return loader1_14_4.newEntityMetadata(entityId, data);
-    }
-
-    /**
-     * Creates entity data with given parameters.
-     *
-     * @param   viewer
-     *          Viewer of custom name
-     * @param   flags
-     *          Entity flags
-     * @param   displayName
-     *          Custom name
-     * @param   nameVisible
-     *          Custom name visibility
-     * @return  Entity data with given parameters
-     */
-    @NotNull
-    public static EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
-        int position = EntityData.getArmorStandFlagsPosition(serverVersion.getMinorVersion());
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loaderNew.createDataWatcher(viewer, flags, displayName, nameVisible, position);
-        return loader1_14_4.createDataWatcher(viewer, flags, displayName, nameVisible, position);
     }
 
     /**
@@ -361,44 +276,6 @@ public class FabricMultiVersion {
     }
 
     /**
-     * Returns {@code true} if packet is bundle packet, {@code false} if not.
-     *
-     * @param   packet
-     *          Packet to check
-     * @return  {@code true} if packet is bundle packet, {@code false} if not
-     */
-    public static boolean isBundlePacket(@NotNull Packet<?> packet) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) return loaderNew.isBundlePacket(packet);
-        return loader1_14_4.isBundlePacket(packet);
-    }
-
-    /**
-     * Returns packets bundled in given bundle packet.
-     *
-     * @param   bundlePacket
-     *          Bundle packet
-     * @return  Bundled packets
-     */
-    @NotNull
-    public static Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) return loaderNew.getBundledPackets(bundlePacket);
-        return loader1_14_4.getBundledPackets(bundlePacket);
-    }
-
-    /**
-     * Sends packets to player as a bundle.
-     *
-     * @param   player
-     *          Player to send packets to
-     * @param   packets
-     *          Packets to send
-     */
-    public static void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_4.getNetworkId()) loaderNew.sendPackets(player, packets);
-        else loader1_14_4.sendPackets(player, packets);
-    }
-
-    /**
      * Returns player's world
      *
      * @param   player
@@ -422,30 +299,6 @@ public class FabricMultiVersion {
     public static TabList.Skin propertyToSkin(@NotNull Property property) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.propertyToSkin(property);
         return loader1_14_4.propertyToSkin(property);
-    }
-
-    /**
-     * Returns {@code true} if packet is player spawn packet, {@code false} if not.
-     *
-     * @param   packet
-     *          Packet to check
-     * @return  {@code true} if packet is player spawn packet, {@code false} if not
-     */
-    public static boolean isSpawnPlayerPacket(@NotNull Packet<?> packet) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.isSpawnPlayerPacket(packet);
-        return loader1_14_4.isSpawnPlayerPacket(packet);
-    }
-
-    /**
-     * Returns player ID of given player spawn packet.
-     *
-     * @param   packet
-     *          Player spawn packet
-     * @return  Player ID
-     */
-    public static int getSpawnedPlayerId(@NotNull Packet<?> packet) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) return loaderNew.getSpawnedPlayerId(packet);
-        return loader1_14_4.getSpawnedPlayerId(packet);
     }
 
     /**

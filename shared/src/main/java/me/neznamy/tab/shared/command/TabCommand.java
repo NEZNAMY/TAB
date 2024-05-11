@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import me.neznamy.tab.shared.command.bossbar.BossBarCommand;
 import me.neznamy.tab.shared.command.scoreboard.ScoreboardCommand;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -37,9 +35,6 @@ public class TabCommand extends SubCommand {
         registerSubCommand(new ReloadCommand());
         registerSubCommand(new SetCollisionCommand());
         registerSubCommand(new ScoreboardCommand());
-        List<String> properties = Lists.newArrayList(TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
-        properties.addAll(((DebugCommand) getSubcommands().get("debug")).getExtraLines());
-        SubCommand.setAllProperties(properties);
     }
 
     @Override

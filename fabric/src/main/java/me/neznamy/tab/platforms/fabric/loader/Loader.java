@@ -4,8 +4,6 @@ import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
-import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -14,7 +12,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,8 +22,6 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
 
 /**
  * Interface for executing methods that have changed over the versions.
@@ -122,15 +117,6 @@ public interface Loader {
     Packet<?> updateTeam(@NotNull PlayerTeam team);
 
     /**
-     * Returns {@code true} if player is sneaking, {@code false} if not.
-     *
-     * @param   player
-     *          Player to check sneak status of
-     * @return  {@code true} if player is sneaking, {@code false} if not
-     */
-    boolean isSneaking(@NotNull ServerPlayer player);
-
-    /**
      * Sends message to player.
      *
      * @param   player
@@ -173,54 +159,6 @@ public interface Loader {
     void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard);
 
     /**
-     * Creates spawn entity packet with given parameters.
-     *
-     * @param   level
-     *          World to fill for dummy entity
-     * @param   id
-     *          Entity ID
-     * @param   uuid
-     *          Entity UUID
-     * @param   type
-     *          Entity type
-     * @param   location
-     *          Spawn location
-     * @return  Spawn entity packet with given parameters
-     */
-    @NotNull
-    Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location);
-
-    /**
-     * Creates entity metadata packet with given metadata.
-     *
-     * @param   entityId
-     *          Entity ID to change metadata of
-     * @param   data
-     *          Metadata to change
-     * @return  Entity metadata packet with given parameters
-     */
-    @NotNull
-    Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data);
-
-    /**
-     * Creates entity data with given parameters.
-     *
-     * @param   viewer
-     *          Viewer of custom name
-     * @param   flags
-     *          Entity flags
-     * @param   displayName
-     *          Custom name
-     * @param   nameVisible
-     *          Custom name visibility
-     * @param   markerPosition
-     *          Armor stand marker flag position
-     * @return  Entity data with given parameters
-     */
-    @NotNull
-    EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible, int markerPosition);
-
-    /**
      * Returns {@code true} if packet is player info packet, {@code false} if not.
      *
      * @param   packet
@@ -252,35 +190,6 @@ public interface Loader {
     Packet<?> buildTabListPacket(@NotNull TabList.Action action, @NotNull FabricTabList.Builder builder);
 
     /**
-     * Returns {@code true} if packet is bundle packet, {@code false} if not.
-     *
-     * @param   packet
-     *          Packet to check
-     * @return  {@code true} if packet is bundle packet, {@code false} if not
-     */
-    boolean isBundlePacket(@NotNull Packet<?> packet);
-
-    /**
-     * Returns packets bundled in given bundle packet.
-     *
-     * @param   bundlePacket
-     *          Bundle packet
-     * @return  Bundled packets
-     */
-    @NotNull
-    Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket);
-
-    /**
-     * Sends packets to player as a bundle.
-     *
-     * @param   player
-     *          Player to send packets to
-     * @param   packets
-     *          Packets to send
-     */
-    void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets);
-
-    /**
      * Returns player's world
      *
      * @param   player
@@ -289,24 +198,6 @@ public interface Loader {
      */
     @NotNull
     Level getLevel(@NotNull ServerPlayer player);
-
-    /**
-     * Returns {@code true} if packet is player spawn packet, {@code false} if not.
-     *
-     * @param   packet
-     *          Packet to check
-     * @return  {@code true} if packet is player spawn packet, {@code false} if not
-     */
-    boolean isSpawnPlayerPacket(@NotNull Packet<?> packet);
-
-    /**
-     * Returns player ID of given player spawn packet.
-     *
-     * @param   packet
-     *          Player spawn packet
-     * @return  Player ID
-     */
-    int getSpawnedPlayerId(@NotNull Packet<?> packet);
 
     /**
      * Returns player's ping.
@@ -368,15 +259,6 @@ public interface Loader {
      */
     @NotNull
     Packet<?> removeScore(@NotNull String objective, @NotNull String holder);
-
-    /**
-     * Returns destroyed entities from destroy entity packet.
-     *
-     * @param   destroyPacket
-     *          Entity destroy packet
-     * @return  Destroyed entities
-     */
-    int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket);
 
     /**
      * Creates new objective with given parameters.

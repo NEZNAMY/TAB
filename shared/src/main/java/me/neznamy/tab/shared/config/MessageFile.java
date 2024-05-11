@@ -25,11 +25,8 @@ public class MessageFile extends YamlConfigurationFile {
     private final String collisionCommandUsage = getString("collision-command-usage", "Usage: /tab setcollision <player> <true/false>");
     private final String noPermission = getString("no-permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
     private final String commandOnlyFromGame = getString("command-only-from-game", "&cThis command must be ran from the game");
-    private final String unlimitedNametagModeNotEnabled = getString("unlimited-nametag-mode-not-enabled", "&c[TAB] Warning! To make this feature work, you need to enable unlimited-nametag-mode in the config!");
     private final String scoreboardFeatureNotEnabled = getString("scoreboard-feature-not-enabled", "&4This command requires the scoreboard feature to be enabled.");
     private final String scoreboardAnnounceCommandUsage = getString("scoreboard-announce-command-usage", "Usage: /tab scoreboard announce <scoreboard name> <length>");
-    private final String nametagPreviewOn = getString("nametag-preview-on", "&7Preview mode &aactivated&7.");
-    private final String nametagPreviewOff = getString("nametag-preview-of", "&7Preview mode &3deactivated&7.");
     private final String reloadSuccess = getString("reload-success", "&3[TAB] Successfully reloaded");
     private final String reloadFailBrokenFile = getString("reload-fail-file", "&3[TAB] &4Failed to reload, file %file% has broken syntax. Check console for more info.");
     private final String scoreboardOn = getString("scoreboard-toggle-on", "&2Scoreboard enabled");
@@ -44,10 +41,6 @@ public class MessageFile extends YamlConfigurationFile {
             ,"    &7Reloads plugin and config"
             ," &8>> &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>"
             ,"    &7Do &8/tab group/player &7to show properties"
-            ," &8>> &3&l/tab nametag preview"
-            ,"    &7Shows your nametag for yourself, for testing purposes"
-            ," &8>> &3&l/tab announce bar &3<name> &9<seconds>"
-            ,"    &7Temporarily displays bossbar to all players"
             ," &8>> &3&l/tab parse <player> <placeholder> "
             ,"    &7Test if a placeholder works"
             ," &8>> &3&l/tab debug [player]"
@@ -66,13 +59,11 @@ public class MessageFile extends YamlConfigurationFile {
     private final String mySQLDownloadSuccess = getString("mysql-download-success", "&aMySQL data downloaded successfully.");
     private final String mySQLUploadSuccess = getString("mysql-upload-success", "&aMySQL data uploaded successfully.");
     private final List<String> nameTagHelpMenu = getStringList("nametag-help-menu", Arrays.asList(
-            "/tab nametag preview [player] - toggles armor stand preview mode",
             "/tab nametag toggle [player] - toggles nametags on all players for command sender"
     ));
     private final String nameTagFeatureNotEnabled = getString("nametag-feature-not-enabled", "&cThis command requires nametag feature to be enabled.");
     private final String nameTagsHidden = getString("nametags-hidden", "&aNametags of all players were hidden to you");
     private final String nameTagsShown = getString("nametags-shown", "&aNametags of all players were shown to you");
-    private final String armorStandsDisabledCannotPreview = getString("armorstands-disabled-cannot-use-preview", "&cYour armor stands are disabled, therefore you cannot use preview feature");
     private final List<String> scoreboardHelpMenu = getStringList("scoreboard-help-menu", Arrays.asList(
             "/tab scoreboard [on/off/toggle] [player] [options]",
             "/tab scoreboard show <name> [player]",

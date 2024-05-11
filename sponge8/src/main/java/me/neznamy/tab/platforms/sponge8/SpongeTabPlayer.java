@@ -2,8 +2,6 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import me.neznamy.tab.shared.backend.entityview.DummyEntityView;
-import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.TabList;
@@ -35,9 +33,6 @@ public class SpongeTabPlayer extends BackendTabPlayer {
 
     @NotNull
     private final BossBar bossBar = new AdventureBossBar(this);
-
-    @NotNull
-    private final EntityView entityView = new DummyEntityView();
 
     /**
      * Constructs new instance with given parameters.

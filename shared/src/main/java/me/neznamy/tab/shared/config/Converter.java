@@ -105,26 +105,17 @@ public class Converter {
         newConfig.set("scoreboard-teams.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.nametag", Collections.singletonList("disabledworld")));
         if (TAB.getInstance().getPlatform().isProxy()) {
             newConfig.set("scoreboard-teams.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.nametag", Collections.singletonList("disabledserver")));
-        } else {
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.enabled", oldConfig.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false));
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", oldConfig.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true));
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.space-between-lines", oldConfig.getBoolean("unlimited-nametag-prefix-suffix-mode.space-between-lines", true));
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.unlimited-nametags", Collections.singletonList("disabledworld")));
         }
         String sortingType;
         String sortingPlaceholder;
         List<String> placeholderOrder = new ArrayList<>();
         if (premiumConfig != null) {
             newConfig.set("scoreboard-teams.case-sensitive-sorting", premiumConfig.getBoolean("case-sensitive-sorting", true));
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", premiumConfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename","nametag","belowname","another")));
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.static-lines", premiumConfig.getConfigurationSection("unlimited-nametag-mode-static-lines"));
             sortingType = premiumConfig.getString("sorting-type", "GROUPS");
             sortingPlaceholder = premiumConfig.getString("sorting-placeholder", "%some_level_maybe?%");
             placeholderOrder = premiumConfig.getStringList("placeholder-order", Arrays.asList("value1", "value2"));
         } else {
             newConfig.set("scoreboard-teams.case-sensitive-sorting", true);
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList("abovename","nametag","belowname","another"));
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.static-lines", new HashMap<String, Object>() {{put("myCustomLine", 0.66);}});
             sortingType = oldConfig.getBoolean("sort-players-by-permissions", false) ? "GROUP_PERMISSIONS" : "GROUPS";
             sortingPlaceholder = "";
         }
@@ -350,12 +341,6 @@ public class Converter {
         }
     }
 
-    public void convert331to332(@NotNull ConfigurationFile config) {
-        if (config.removeOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 3.3.1 to 3.3.2)"));
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public void convert332to400(@NotNull ConfigurationFile config) throws IOException {
         // Removed config options
@@ -415,7 +400,6 @@ public class Converter {
         disabledConditionConverter.accept(config.getConfigurationSection("header-footer"));
         disabledConditionConverter.accept(config.getConfigurationSection("tablist-name-formatting"));
         disabledConditionConverter.accept(config.getConfigurationSection("scoreboard-teams"));
-        disabledConditionConverter.accept(config.getConfigurationSection("scoreboard-teams.unlimited-nametag-mode"));
         disabledConditionConverter.accept(config.getConfigurationSection("yellow-number-in-tablist"));
         disabledConditionConverter.accept(config.getConfigurationSection("belowname-objective"));
 
@@ -441,5 +425,11 @@ public class Converter {
         config.setIfMissing("belowname-objective.fancy-display-players", "&c" + TabConstants.Placeholder.HEALTH);
         config.removeOption("tablist-name-formatting.align-tabsuffix-on-the-right");
         config.removeOption("tablist-name-formatting.character-width-overrides");
+    }
+
+    public void convert415to500(@NotNull ConfigurationFile config) {
+        if (config.removeOption("scoreboard-teams.unlimited-nametag-mode")) {
+            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.1.5 to 5.0.0"));
+        }
     }
 }

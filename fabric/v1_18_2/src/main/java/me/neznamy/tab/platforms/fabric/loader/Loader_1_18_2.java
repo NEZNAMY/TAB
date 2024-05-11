@@ -10,8 +10,6 @@ import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -22,7 +20,6 @@ import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket.PlayerUpdate;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
@@ -148,11 +145,6 @@ public class Loader_1_18_2 implements Loader {
     }
 
     @Override
-    public boolean isSneaking(@NotNull ServerPlayer player) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
     public void sendMessage(@NotNull CommandSourceStack source, @NotNull Component message) {
         throw new UnsupportedOperationException("Not implemented in this submodule");
     }
@@ -169,57 +161,13 @@ public class Loader_1_18_2 implements Loader {
     }
 
     @Override
-    @NotNull
-    public Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible, int markerPosition) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
     public boolean isPlayerInfo(@NotNull Packet<?> packet) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public boolean isBundlePacket(@NotNull Packet<?> packet) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets) {
         throw new UnsupportedOperationException("Not implemented in this submodule");
     }
 
     @Override
     @NotNull
     public Level getLevel(@NotNull ServerPlayer player) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public boolean isSpawnPlayerPacket(@NotNull Packet<?> packet) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public int getSpawnedPlayerId(@NotNull Packet<?> packet) {
         throw new UnsupportedOperationException("Not implemented in this submodule");
     }
 
@@ -253,11 +201,6 @@ public class Loader_1_18_2 implements Loader {
     @Override
     @NotNull
     public Packet<?> removeScore(@NotNull String objective, @NotNull String holder) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket) {
         throw new UnsupportedOperationException("Not implemented in this submodule");
     }
 

@@ -13,9 +13,7 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
-import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
 import me.neznamy.tab.shared.proxy.message.incoming.*;
 import me.neznamy.tab.shared.proxy.message.outgoing.RegisterPlaceholder;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +47,6 @@ public abstract class ProxyPlatform implements Platform {
         registeredMessages.put("Permission", HasPermission::new);
         registeredMessages.put("Invisible", Invisible::new);
         registeredMessages.put("Disguised", Disguised::new);
-        registeredMessages.put("Boat", OnBoat::new);
         registeredMessages.put("World", SetWorld::new);
         registeredMessages.put("Group", SetGroup::new);
         registeredMessages.put("Vanished", Vanished::new);
@@ -101,11 +98,6 @@ public abstract class ProxyPlatform implements Platform {
                 () -> "\"tps\" is a backend-only placeholder as the proxy does not tick anything. If you wish to display TPS of " +
                         "the server player is connected to, use placeholders from PlaceholderAPI and install TAB-Bridge for forwarding support to the proxy.");
         new UniversalPlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
-    }
-
-    @Override
-    public @NotNull NameTag getUnlimitedNameTags() {
-        return new ProxyNameTagX();
     }
 
     @Override

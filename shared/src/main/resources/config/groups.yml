@@ -15,7 +15,6 @@ _DEFAULT_:
   tabprefix: "%luckperms-prefix%"
   tagprefix: "%luckperms-prefix%"
   customtabname: "%player%"
-  customtagname: "%player%" # don't forget to enable unlimited nametag mode to make this one work
   tabsuffix: "%luckperms-suffix%"
   tagsuffix: "%luckperms-suffix%"
 

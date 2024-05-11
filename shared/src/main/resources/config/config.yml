@@ -50,18 +50,6 @@ scoreboard-teams:
   case-sensitive-sorting: true
   can-see-friendly-invisibles: false
   disable-condition: '%world%=disabledworld'
-  # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Unlimited-nametag-mode
-  unlimited-nametag-mode:
-    enabled: false
-    disable-on-boats: true
-    disable-condition: '%world%=disabledworld'
-    dynamic-lines:
-      - abovename
-      - nametag #the original one, combination of tagprefix + customtagname + tagsuffix
-      - belowname
-      - another
-    static-lines:
-      myCustomLine: 0.66
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective
 playerlist-objective:

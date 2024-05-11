@@ -4,7 +4,6 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,32 +29,11 @@ public class NameTagCommand extends SubCommand {
         }
         boolean silent = args.length == 3 && args[2].equals("-s");
 
-        switch (args[0].toLowerCase(Locale.US)) {
-            case "preview":
-                preview(sender,getTarget(sender, args, TabConstants.Permission.COMMAND_NAMETAG_PREVIEW_OTHER, TabConstants.Permission.COMMAND_NAMETAG_PREVIEW),silent);
-                break;
-            case "toggle":
-                toggle(sender,getTarget(sender, args, TabConstants.Permission.COMMAND_NAMETAG_TOGGLE_OTHER, TabConstants.Permission.COMMAND_NAMETAG_TOGGLE),silent);
-                break;
-            default:
-                sendMessages(sender, getMessages().getNameTagHelpMenu());
-                break;
+        if (args[0].toLowerCase(Locale.US).equals("toggle")) {
+            toggle(sender, getTarget(sender, args, TabConstants.Permission.COMMAND_NAMETAG_TOGGLE_OTHER, TabConstants.Permission.COMMAND_NAMETAG_TOGGLE), silent);
+        } else {
+            sendMessages(sender, getMessages().getNameTagHelpMenu());
         }
-    }
-
-    private void preview(@Nullable TabPlayer sender, @Nullable TabPlayer target, boolean silent) {
-        if (target == null) return;
-
-        NameTagX nameTagX = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
-        if (nameTagX == null) {
-            sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
-            return;
-        }
-        if (nameTagX.hasDisabledArmorStands(target)) {
-            sendMessage(sender, getMessages().getArmorStandsDisabledCannotPreview());
-            return;
-        }
-        nameTagX.toggleNameTagPreview(target, !silent);
     }
 
     private void toggle(@Nullable TabPlayer sender, @Nullable TabPlayer target, boolean silent) {
@@ -88,7 +66,7 @@ public class NameTagCommand extends SubCommand {
 
     @Override
     public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
-        if (arguments.length == 1) return getStartingArgument(Arrays.asList("toggle", "preview"), arguments[0]);
+        if (arguments.length == 1) return getStartingArgument(Collections.singletonList("toggle"), arguments[0]);
         if (arguments.length == 2) return getOnlinePlayers(arguments[1]);
         if (arguments.length == 3) return getStartingArgument(Collections.singletonList("-s"), arguments[2]);
         return Collections.emptyList();

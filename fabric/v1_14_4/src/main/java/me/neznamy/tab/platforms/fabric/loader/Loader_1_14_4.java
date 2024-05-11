@@ -10,8 +10,6 @@ import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -27,9 +25,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket.PlayerUpdate;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
@@ -117,11 +112,6 @@ public class Loader_1_14_4 implements Loader {
     }
 
     @Override
-    public boolean isSneaking(@NotNull ServerPlayer player) {
-        return player.isSneaking();
-    }
-
-    @Override
     public void sendMessage(@NotNull ServerPlayer player, @NotNull Component message) {
         player.sendMessage(message);
     }
@@ -153,34 +143,6 @@ public class Loader_1_14_4 implements Loader {
             String teamName = String.valueOf(ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet));
             playersField.set(packet, scoreboard.onTeamPacket(action, teamName, players));
         }
-    }
-
-    @Override
-    @NotNull
-    public Packet<ClientGamePacketListener> spawnEntity(@NotNull Level level, int id, @NotNull UUID uuid, @NotNull Object type, @NotNull Location location) {
-        if (dummyEntity == null) dummyEntity = new ArmorStand(level, 0, 0, 0);
-        dummyEntity.setId(id);
-        dummyEntity.setUUID(uuid);
-        dummyEntity.setPos(location.getX(), location.getY(), location.getZ());
-        return new ClientboundAddMobPacket(dummyEntity);
-    }
-
-    @Override
-    @NotNull
-    public Packet<ClientGamePacketListener> newEntityMetadata(int entityId, @NotNull EntityData data) {
-        return new ClientboundSetEntityDataPacket(entityId, (SynchedEntityData) data.build(), true);
-    }
-
-    @Override
-    @NotNull
-    public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible, int markerPosition) {
-        Optional<Component> name = Optional.of(TabComponent.optimized(displayName).convert(viewer.getVersion()));
-        SynchedEntityData data = new SynchedEntityData(null);
-        data.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
-        data.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT), name);
-        data.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
-        data.define(new EntityDataAccessor<>(markerPosition, EntityDataSerializers.BYTE), EntityData.MARKER_FLAG);
-        return () -> data;
     }
 
     @Override
@@ -221,38 +183,9 @@ public class Loader_1_14_4 implements Loader {
     }
 
     @Override
-    public boolean isBundlePacket(@NotNull Packet<?> packet) {
-        return false;
-    }
-
-    @Override
-    @NotNull
-    public Iterable<Object> getBundledPackets(@NotNull Packet<?> bundlePacket) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void sendPackets(@NotNull ServerPlayer player, @NotNull Iterable<Packet<ClientGamePacketListener>> packets) {
-        for (Packet<?> packet : packets) {
-            player.connection.send(packet);
-        }
-    }
-
-    @Override
     @NotNull
     public Level getLevel(@NotNull ServerPlayer player) {
         return player.level;
-    }
-
-    @Override
-    public boolean isSpawnPlayerPacket(@NotNull Packet<?> packet) {
-        return packet instanceof ClientboundAddPlayerPacket;
-    }
-
-    @Override
-    @SneakyThrows
-    public int getSpawnedPlayerId(@NotNull Packet<?> packet) {
-        return ReflectionUtils.getFields(ClientboundAddPlayerPacket.class, int.class).get(0).getInt(packet);
     }
 
     @Override
@@ -289,12 +222,6 @@ public class Loader_1_14_4 implements Loader {
     @NotNull
     public Packet<?> removeScore(@NotNull String objective, @NotNull String holder) {
         return new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, holder, 0);
-    }
-
-    @Override
-    @SneakyThrows
-    public int[] getDestroyedEntities(@NotNull Packet<?> destroyPacket) {
-        return (int[]) ReflectionUtils.getOnlyField(destroyPacket.getClass()).get(destroyPacket);
     }
 
     @Override

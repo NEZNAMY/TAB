@@ -88,9 +88,4 @@ public class FoliaPlatform extends BukkitPlatform {
         entityScheduler.getClass().getMethod("run", Plugin.class, Consumer.class, Runnable.class)
                 .invoke(entityScheduler, getPlugin(), consumer, null);
     }
-
-    @Override
-    public void runEntityTask(@NotNull Entity entity, @NotNull Runnable task) {
-        runSync(entity, task);
-    }
 }

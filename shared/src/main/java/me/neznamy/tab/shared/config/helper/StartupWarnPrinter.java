@@ -186,12 +186,6 @@ public class StartupWarnPrinter {
         startupWarn("Line \"" + line + "\" in condition " + conditionName + " is not a valid condition pattern.");
     }
 
-    public void invisibleAndUnlimitedNameTagsAreMutuallyExclusive() {
-        startupWarn("Unlimited name tag mode is enabled as well as invisible name tags. These 2 options are mutually exclusive.",
-                "If you want name tags to be invisible, you don't need unlimited name tag mode at all.",
-                "If you want enhanced name tags without limits, making them invisible would defeat the purpose.");
-    }
-
     public void invalidDateFormat(@NotNull String format) {
         startupWarn("Format \"" + format + "\" is not a valid date/time format. Did you try to use color codes?");
     }

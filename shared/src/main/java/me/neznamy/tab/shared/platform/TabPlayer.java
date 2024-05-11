@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.hook.FloodgateHook;
@@ -91,9 +90,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Data for scoreboard team */
     public final NameTag.PlayerData teamData = new NameTag.PlayerData();
 
-    /** Data for unlimited nametags */
-    public final NameTagX.PlayerData unlimitedNametagData = new NameTagX.PlayerData();
-
     /** Data for Layout */
     public final LayoutManagerImpl.PlayerData layoutData = new LayoutManagerImpl.PlayerData();
 
@@ -105,9 +101,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Whether player has disabled nametags or not */
     public final AtomicBoolean disabledNametags = new AtomicBoolean();
-
-    /** Whether player has disabled unlimited nametags or not */
-    public final AtomicBoolean disabledUnlimitedNametags = new AtomicBoolean();
 
     /** Whether player has disabled belowname or not */
     public final AtomicBoolean disabledBelowname = new AtomicBoolean();

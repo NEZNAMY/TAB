@@ -46,8 +46,6 @@ public class TabConstants {
         public static final String WORLD_SWITCH = "World Switch";
         public static final String SERVER_SWITCH = "Server Switch";
         public static final String COMMAND_PREPROCESS = "Command Preprocess";
-        public static final String PLAYER_SNEAK = "Player Sneak";
-        public static final String PLAYER_RESPAWN = "Player Respawn";
         public static final String PLUGIN_MESSAGE = "Plugin Message processing";
         public static final String REDIS_BUNGEE_MESSAGE = "Redis Message processing";
 
@@ -56,11 +54,6 @@ public class TabConstants {
         public static final String PING_CHANGE = "Processing ping change";
         public static final String NICK_PLUGIN_COMPATIBILITY = "Compatibility with nick plugins";
         public static final String BYTE_BUF = "ByteBuf";
-        public static final String PACKET_PLAYER_MOVE = "Processing player move";
-        public static final String PACKET_ENTITY_MOVE_PASSENGER = "Processing entity move (with player passenger)";
-        public static final String PACKET_ENTITY_SPAWN = "Processing entity spawn";
-        public static final String PACKET_ENTITY_DESTROY = "Processing entity destroy";
-        public static final String RAW_PACKET_OUT = "Packet reading (out)";
         public static final String PACKET_LOGIN = "Login packet";
         public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
 
@@ -73,9 +66,6 @@ public class TabConstants {
         public static final String GAMEMODE_CHANGE = "Processing gamemode change";
         public static final String TABLIST_CLEAR = "TabList entry re-add";
         public static final String VANISH_CHANGE = "Vanish status change";
-        public static final String REFRESHING_NAME_TAG_VISIBILITY = "Refreshing NameTag visibility";
-        public static final String PROCESSING_PLAYER_MOVEMENT = "Processing player movement";
-        public static final String TELEPORTING_WITHER = "Teleporting wither";
     }
 
     /**
@@ -104,8 +94,6 @@ public class TabConstants {
         public static final String COMMAND_MYSQL_UPLOAD             = "tab.mysql.upload";
         public static final String COMMAND_NAMETAG_TOGGLE           = "tab.nametag.toggle";
         public static final String COMMAND_NAMETAG_TOGGLE_OTHER     = "tab.nametag.toggle.other";
-        public static final String COMMAND_NAMETAG_PREVIEW          = "tab.nametag.preview";
-        public static final String COMMAND_NAMETAG_PREVIEW_OTHER    = "tab.nametag.preview.other";
 
         public static final String COMMAND_SCOREBOARD_ANNOUNCE      = "tab.announce.scoreboard";
         public static final String COMMAND_SCOREBOARD_TOGGLE        = "tab.scoreboard.toggle";
@@ -137,12 +125,7 @@ public class TabConstants {
         public static final String TABSUFFIX = "tabsuffix";
 
         public static final String TAGPREFIX = "tagprefix";
-        public static final String CUSTOMTAGNAME = "customtagname";
         public static final String TAGSUFFIX = "tagsuffix";
-
-        public static final String ABOVENAME = "abovename";
-        public static final String NAMETAG = "nametag";
-        public static final String BELOWNAME = "belowname";
     }
 
     /**
@@ -169,9 +152,6 @@ public class TabConstants {
         public static final String NAME_TAGS_COLLISION = "NameTagCollision";
         public static final String NAME_TAGS_VISIBILITY = "NameTagVisibility";
         public static final String PLACEHOLDER_MANAGER = "PlaceholderManager";
-        public static final String UNLIMITED_NAME_TAGS = "NameTagX";
-        public static final String UNLIMITED_NAME_TAGS_PACKET_LISTENER = "nametagx-packet";
-        public static final String UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER = "nametagx-vehicle";
         public static final String PING_SPOOF = "PingSpoof";
 
         //Bukkit only
@@ -258,7 +238,6 @@ public class TabConstants {
         // Placeholders for internal use
         public static final String COLLISION = "%collision%";
         public static final String INVISIBLE = "%invisible%";
-        public static final String VEHICLE = "%vehicle%";
 
         // Bukkit only
         public static final String TPS = "%tps%";
@@ -290,7 +269,6 @@ public class TabConstants {
         public static final String PERMISSION_SYSTEM = "permission_system";
         public static final String GLOBAL_PLAYER_LIST_ENABLED = "global_playerlist_enabled";
         public static final String SERVER_VERSION = "server_version";
-        public static final String UNLIMITED_NAME_TAG_MODE_ENABLED = "unlimited_nametag_mode_enabled";
 
     }
 }

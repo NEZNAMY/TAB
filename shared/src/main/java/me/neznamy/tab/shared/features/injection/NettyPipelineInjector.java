@@ -107,7 +107,6 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                     });
                     return;
                 }
-                TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
             } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }

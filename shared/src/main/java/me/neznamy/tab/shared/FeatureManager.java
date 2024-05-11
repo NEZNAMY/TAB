@@ -7,10 +7,10 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.GlobalPlayerList;
+import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -34,9 +34,6 @@ public class FeatureManager {
     /** All registered features in an array to avoid memory allocations on iteration */
     @NotNull
     private TabFeature[] values = new TabFeature[0];
-
-    /** Flag tracking presence of a feature listening to raw packets for faster check with better performance */
-    private boolean hasPacketSendListener;
 
     /** Flag tracking presence of a feature listening to latency change for faster check with better performance */
     private boolean hasLatencyChangeListener;
@@ -229,24 +226,6 @@ public class FeatureManager {
     }
 
     /**
-     * Calls onPacketSend(TabPlayer, Object) on all features
-     * 
-     * @param   receiver
-     *          packet receiver
-     * @param   packet
-     *          OUT packet coming from the server
-     */
-    public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        if (!hasPacketSendListener) return;
-        for (TabFeature f : values) {
-            if (!(f instanceof PacketSendListener)) continue;
-            long time = System.nanoTime();
-            ((PacketSendListener)f).onPacketSend(receiver, packet);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);
-        }
-    }
-
-    /**
      * Calls onDisplayObjective(...) on all features
      *
      * @param   packetReceiver
@@ -389,9 +368,6 @@ public class FeatureManager {
         if (featureHandler instanceof GameModeListener) {
             TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.GAMEMODE);
         }
-        if (featureHandler instanceof PacketSendListener) {
-            hasPacketSendListener = true;
-        }
         if (featureHandler instanceof LatencyListener) {
             hasLatencyChangeListener = true;
         }
@@ -454,7 +430,6 @@ public class FeatureManager {
         boolean yellowNumber       = configuration.getConfig().getBoolean("playerlist-objective.enabled", true);
         boolean belowName          = configuration.getConfig().getBoolean("belowname-objective.enabled", false);
         boolean teams              = configuration.getConfig().getBoolean("scoreboard-teams.enabled", true);
-        boolean unlimitedTags      = configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false);
         boolean globalPlayerList   = configuration.getConfig().getBoolean("global-playerlist.enabled", false);
         boolean tablistFormatting  = configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true);
 
@@ -472,7 +447,7 @@ public class FeatureManager {
             TabFeature pwp = TAB.getInstance().getPlatform().getPerWorldPlayerList();
             if (pwp != null) featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, pwp);
         }
-        if (bossbar)      featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, TAB.getInstance().getPlatform().getBossBar());
+        if (bossbar)      featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
         if (pingSpoof)    featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
         if (headerFooter) featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
         if (spectatorFix) featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
@@ -482,18 +457,7 @@ public class FeatureManager {
         if (teams || layout) featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
 
         // Must be loaded after: Sorting
-        if (teams) {
-            if (unlimitedTags) {
-                NameTag unlimited = TAB.getInstance().getPlatform().getUnlimitedNameTags();
-                if (unlimited instanceof NameTagX) {
-                    featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, unlimited);
-                } else {
-                    featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, unlimited);
-                }
-            } else {
-                featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
-            }
-        }
+        if (teams) featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
 
         // Must be loaded after: Sorting
         if (layout) featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl());

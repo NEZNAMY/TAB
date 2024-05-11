@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.backend;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -49,11 +48,4 @@ public abstract class BackendTabPlayer extends TabPlayer {
      * @return  player's display name
      */
     public abstract String getDisplayName();
-
-    /**
-     * Returns player's entity view
-     *
-     * @return  player's entity view
-     */
-    public abstract EntityView getEntityView();
 }

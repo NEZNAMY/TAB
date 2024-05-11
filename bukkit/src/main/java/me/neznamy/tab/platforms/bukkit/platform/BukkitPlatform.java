@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.platform;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
-import me.neznamy.tab.platforms.bukkit.entity.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
@@ -21,13 +20,9 @@ import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
-import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
-import me.neznamy.tab.platforms.bukkit.features.BukkitNameTagX;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
@@ -41,7 +36,6 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -95,7 +89,6 @@ public class BukkitPlatform implements BackendPlatform {
             PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
         }
         ComponentConverter.tryLoad();
-        PacketEntityView.tryLoad();
         PingRetriever.tryLoad();
         TabListBase.findInstance();
         ScoreboardLoader.tryLoad();
@@ -104,13 +97,6 @@ public class BukkitPlatform implements BackendPlatform {
         }
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] " + EnumChatFormat.GRAY + "Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
-    }
-
-    @Override
-    @NotNull
-    public BossBarManagerImpl getBossBar() {
-        if (BukkitReflection.getMinorVersion() <= 8) return new WitherBossBar(plugin);
-        return new BossBarManagerImpl();
     }
 
     @Override
@@ -144,15 +130,6 @@ public class BukkitPlatform implements BackendPlatform {
     @Nullable
     public PipelineInjector createPipelineInjector() {
         return BukkitReflection.getMinorVersion() >= 8 && BukkitPipelineInjector.isAvailable() ? new BukkitPipelineInjector() : null;
-    }
-
-    @Override
-    @NotNull
-    public NameTag getUnlimitedNameTags() {
-        return BukkitReflection.getMinorVersion() >= 8 &&
-                PacketEntityView.isAvailable() &&
-                BukkitPipelineInjector.isAvailable() ?
-                new BukkitNameTagX(plugin) : new NameTag();
     }
 
     @Override
@@ -252,8 +229,6 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     public void startMetrics() {
         Metrics metrics = new Metrics(plugin, TabConstants.BSTATS_PLUGIN_ID_BUKKIT);
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED,
-                () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM,
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
@@ -305,18 +280,6 @@ public class BukkitPlatform implements BackendPlatform {
     public double getMSPT() {
         if (paperMspt) return Bukkit.getAverageTickTime();
         return -1;
-    }
-
-    /**
-     * Runs an entity task that may or may not need to use its main thread.
-     *
-     * @param   entity
-     *          Entity to work with
-     * @param   task
-     *          Task to run
-     */
-    public void runEntityTask(@NotNull Entity entity, @NotNull Runnable task) {
-        task.run();
     }
 
     @Override

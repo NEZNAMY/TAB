@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
  * NameTags - anti-override
  * Scoreboard - disabling tab's scoreboard to prevent conflict
  * PingSpoof - full feature functionality
- * Unlimited name tags - replacement for bukkit events with much better accuracy and reliability
  * NickCompatibility - Detect name changes from other plugins
  */
 public abstract class PipelineInjector extends TabFeature implements JoinListener, Loadable, UnLoadable {
