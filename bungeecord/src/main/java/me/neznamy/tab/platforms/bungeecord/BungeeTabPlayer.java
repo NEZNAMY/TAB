@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.BossBar;
+import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -45,7 +46,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Player's boss bar view */
     @NotNull
-    private final BossBar bossBar = new BungeeBossBar(this);
+    private final BossBar bossBar = getVersion().getMinorVersion() >= 9 ? new BungeeBossBar(this) : new DummyBossBar();
 
     /**
      * Constructs new instance for given player
