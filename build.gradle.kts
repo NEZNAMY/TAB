@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = "me.neznamy"
-    version = "4.1.5-SNAPSHOT"
+    version = "5.0.0-SNAPSHOT"
     description = "An all-in-one solution that works"
 
     ext.set("id", "tab")
