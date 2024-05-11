@@ -212,8 +212,8 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        return !hasHiddenNameTag(p) && !hasHiddenNameTag(p, viewer) && !invisibleNameTags
-                && !p.hasInvisibilityPotion() && !viewer.teamData.invisibleNameTagView;
+        if (viewer.getVersion().getMinorVersion() == 8 && p.hasInvisibilityPotion()) return false;
+        return !hasHiddenNameTag(p) && !hasHiddenNameTag(p, viewer) && !invisibleNameTags && !viewer.teamData.invisibleNameTagView;
     }
 
     @Override
