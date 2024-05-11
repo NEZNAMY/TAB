@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Class representing a component style.
+ */
 @Data @NoArgsConstructor
 public class ChatModifier {
 
@@ -16,6 +19,12 @@ public class ChatModifier {
     private boolean underlined;
     @Nullable private String font;
 
+    /**
+     * Constructs a copy of provided modifier.
+     *
+     * @param   modifier
+     *          Modifier to copy
+     */
     public ChatModifier(@NotNull ChatModifier modifier) {
         color = modifier.color;
         bold = modifier.bold;

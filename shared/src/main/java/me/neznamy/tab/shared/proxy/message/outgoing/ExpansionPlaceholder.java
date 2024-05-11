@@ -5,6 +5,9 @@ import com.google.common.io.ByteStreams;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Plugin message to update placeholder value in TAB's expansion in bridge.
+ */
 @AllArgsConstructor
 @SuppressWarnings("UnstableApiUsage")
 public class ExpansionPlaceholder implements OutgoingMessage {

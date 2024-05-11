@@ -73,7 +73,7 @@ public class CpuCommand extends SubCommand {
         }
     }
 
-    public void sendToConsole(@NotNull Map<String, Map<String, Float>> features) {
+    private void sendToConsole(@NotNull Map<String, Map<String, Float>> features) {
         TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.color("&8&l" + LINE_CHAR + " &6Features:")));
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.color(
@@ -86,7 +86,7 @@ public class CpuCommand extends SubCommand {
         }
     }
 
-    public void sendToPlayer(@NotNull TabPlayer sender, @NotNull Map<String, Map<String, Float>> features) {
+    private void sendToPlayer(@NotNull TabPlayer sender, @NotNull Map<String, Map<String, Float>> features) {
         sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (execute from console for more info):");
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();

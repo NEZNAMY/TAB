@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
+/**
+ * Dummy implementation when no suitable one is available.
+ */
 public class DummyBossBar implements BossBar {
 
     @Override

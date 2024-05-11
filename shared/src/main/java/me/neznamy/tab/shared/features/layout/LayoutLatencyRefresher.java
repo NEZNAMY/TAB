@@ -7,11 +7,20 @@ import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Layout sub-feature updating latency of layout entries to match player latencies.
+ */
 public class LayoutLatencyRefresher extends TabFeature implements Refreshable {
 
     @NotNull
     private final LayoutManagerImpl manager;
 
+    /**
+     * Constructs new instance with given parameter and registers PING as used placeholder.
+     *
+     * @param   manager
+     *          Layout manager
+     */
     public LayoutLatencyRefresher(@NotNull LayoutManagerImpl manager) {
         this.manager = manager;
         addUsedPlaceholder(TabConstants.Placeholder.PING);

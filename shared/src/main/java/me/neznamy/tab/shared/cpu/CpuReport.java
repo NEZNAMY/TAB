@@ -7,6 +7,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Class containing a CPU usage report from the previous 10 seconds.
+ */
 @Getter
 public class CpuReport {
 

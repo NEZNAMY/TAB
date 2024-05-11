@@ -23,6 +23,13 @@ import java.util.stream.Collectors;
  */
 public class Converter {
 
+    /**
+     * Converts animations file from 2.8.10 to 2.9.0.
+     * This removes the "animations" key, which is unnecessary.
+     *
+     * @param   animations
+     *          Animation file
+     */
     public void convert2810to290(@NotNull ConfigurationFile animations) {
         if (animations.getValues().size() == 1 && animations.getValues().containsKey("animations")) {
             TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 2.8.10 to 2.9.0"));
@@ -185,9 +192,9 @@ public class Converter {
                 }
             }
         }
-        for (Object definedBossBar : bars.keySet()) {
-            bars.get(definedBossBar).put("announcement-bar", !activeBossBars.contains(definedBossBar));
-            bars.get(definedBossBar).remove("permission-required");
+        for (Map.Entry<Object, Map<String, Object>> entry : bars.entrySet()) {
+            entry.getValue().put("announcement-bar", !activeBossBars.contains(entry.getKey()));
+            entry.getValue().remove("permission-required");
         }
         newConfig.set("bossbar.default-bars", null);
         newConfig.set("bossbar.bars", bars);
@@ -335,12 +342,36 @@ public class Converter {
         return group.replace(oldSeparator, ";");
     }
 
+    /**
+     * Converts config from 3.0.1 to 3.0.2.
+     * This removes "remove-strings" option, which was removed.
+     *
+     * @param   config
+     *          Config file
+     */
     public void convert301to302(@NotNull ConfigurationFile config) {
         if (config.removeOption("placeholders.remove-strings")) {
             TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 3.0.1 to 3.0.2"));
         }
     }
 
+    /**
+     * Converts config from 3.3.2 to 4.0.0.
+     * This version:
+     * - Removes fix-pet-names option which got split into a separate plugin
+     * - Removes bossbar / scoreboard disable-condition
+     * - Removes hidden "remove-ghost-players" option
+     * - Removes unnecessary fill-profile-key option
+     * - Merges placeholder refresh intervals instead of using categories
+     * - Merges layout to config.yml
+     * - Removes hide-vanished-players from layout as it now offers per-player view
+     * - Replaces disable in world/server with disable-condition
+     *
+     * @param   config
+     *          Config file
+     * @throws  IOException
+     *          If layout.yml file exists and has invalid yaml syntax
+     */
     @SuppressWarnings("unchecked")
     public void convert332to400(@NotNull ConfigurationFile config) throws IOException {
         // Removed config options
@@ -407,12 +438,30 @@ public class Converter {
         config.removeOption("layout.hide-vanished-players");
     }
 
+    /**
+     * Converts config from 4.0.3 to 4.0.4.
+     * This removes "update-latency" option from global playerlist, which is now forced.
+     *
+     * @param   config
+     *          Config file
+     */
     public void convert403to404(@NotNull ConfigurationFile config) {
         if (config.removeOption("global-playerlist.update-latency")) {
             TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.0.3 to 4.0.4"));
         }
     }
 
+    /**
+     * Converts config from 4.0.9 to 4.1.0.
+     * This change:
+     * - Renames yellow number to playerlist objective
+     * - Adds 1.20.3+ content to playerlist objective
+     * - Adds 1.20.3+ content to belowname objective
+     * - Removes aligned playerlist feature
+     *
+     * @param   config
+     *          Config file
+     */
     public void convert409to410(@NotNull ConfigurationFile config) {
         if (config.hasConfigOption("yellow-number-in-tablist")) {
             TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.0.9 to 4.1.0"));
@@ -427,6 +476,13 @@ public class Converter {
         config.removeOption("tablist-name-formatting.character-width-overrides");
     }
 
+    /**
+     * Converts config from 4.1.5 to 5.0.0.
+     * This removes unlimited nametag mode option from config, which got removed.
+     *
+     * @param   config
+     *          Config file
+     */
     public void convert415to500(@NotNull ConfigurationFile config) {
         if (config.removeOption("scoreboard-teams.unlimited-nametag-mode")) {
             TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.1.5 to 5.0.0"));

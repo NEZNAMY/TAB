@@ -133,29 +133,87 @@ public class CpuManager {
         }
     }
 
+    /**
+     * Runs a task in TAB's thread and measures how long it took to process.
+     *
+     * @param   feature
+     *          Feature running the task
+     * @param   type
+     *          Usage type of the feature
+     * @param   task
+     *          Task to run
+     */
     public void runMeasuredTask(@NotNull String feature, @NotNull String type, @NotNull Runnable task) {
         submit(() -> runAndMeasure(task, feature, type));
     }
 
+    /**
+     * Runs a task in TAB's thread.
+     *
+     * @param   task
+     *          Task to run
+     */
     public void runTask(@NotNull Runnable task) {
         submit(task);
     }
 
+    /**
+     * Starts a repeating task that measures how long it takes.
+     *
+     * @param   intervalMilliseconds
+     *          How often should the task run
+     * @param   feature
+     *          Feature executing the task
+     * @param   type
+     *          Usage the of the feature
+     * @param   task
+     *          Task to run periodically
+     */
     public void startRepeatingMeasuredTask(int intervalMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
         if (processingThread.isShutdown()) return;
         processingThread.scheduleAtFixedRate(() -> runAndMeasure(task, feature, type), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Starts a repeating task.
+     *
+     * @param   intervalMilliseconds
+     *          How often should the task run
+     * @param   task
+     *          Task to run periodically
+     */
     public void startRepeatingTask(int intervalMilliseconds, @NotNull Runnable task) {
         if (processingThread.isShutdown()) return;
         processingThread.scheduleAtFixedRate(() -> run(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Runs a task with a delay.
+     *
+     * @param   delayMilliseconds
+     *          How long to wait until task is executed
+     * @param   feature
+     *          Feature executing the task
+     * @param   type
+     *          Usage the of the feature
+     * @param   task
+     *          Task to run after a delay
+     */
     public void runTaskLater(int delayMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
         if (processingThread.isShutdown()) return;
         processingThread.schedule(() -> runAndMeasure(task, feature, type), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Runs a task and measures how long it took.
+     *
+     * @param   task
+     *          Task to run
+     * @param   feature
+     *          Feature executing the task
+     * @param   type
+     *          Usage the of the feature
+     */
     public void runAndMeasure(@NotNull Runnable task, @NotNull String feature, @NotNull String type) {
         if (!trackUsage) {
             run(task);

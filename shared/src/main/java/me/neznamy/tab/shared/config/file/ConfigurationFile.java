@@ -99,6 +99,14 @@ public abstract class ConfigurationFile {
         return getObject(path, null);
     }
 
+    /**
+     * Returns element with specified path. If nothing is found, {@code null} is returned.
+     *
+     * @param   path
+     *          Path as an array of map keys
+     * @return  Value at specified path
+     */
+    @Nullable
     public Object getObject(String[] path) {
         Object value = values;
         for (String section : path) {
@@ -275,6 +283,10 @@ public abstract class ConfigurationFile {
      * @param   path
      *          Path to the option with sections separated with "{@code .}"
      * @return  value from configuration file as {@code Map<K, V>}
+     * @param   <K>
+     *          Map key type
+     * @param   <V>
+     *          Map value type
      */
     public @NotNull <K, V> Map<K, V> getConfigurationSection(@NonNull String path) {
         if (path.isEmpty()) return (Map<K, V>) values;

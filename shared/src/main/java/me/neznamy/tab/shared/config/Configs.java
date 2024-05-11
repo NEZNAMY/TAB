@@ -108,6 +108,8 @@ public class Configs {
      * @param   defaultValue
      *          value to return if option is not present in file
      * @return  value with specified path or default value if not present
+     * @param   <T>
+     *          Class type of the config option
      */
     @SuppressWarnings("unchecked")
     public @NotNull <T> T getSecretOption(@NotNull String path, @NotNull T defaultValue) {
@@ -115,6 +117,11 @@ public class Configs {
         return value == null ? defaultValue : (T) value;
     }
 
+    /**
+     * Returns playerdata.yml file used for storing feature toggle status.
+     *
+     * @return  playerdata.yml file
+     */
     public ConfigurationFile getPlayerDataFile() {
         if (playerdata == null) {
             File file = new File(TAB.getInstance().getDataFolder(), "playerdata.yml");
@@ -129,6 +136,16 @@ public class Configs {
         return playerdata;
     }
 
+    /**
+     * Returns world/server group name which specified element belongs to.
+     * If nothing is found, element itself is returned.
+     *
+     * @param   serverGroups
+     *          Defined groups
+     * @param   element
+     *          Element to find
+     * @return  Group containing the element or element itself if not found
+     */
     public String getGroup(@NotNull List<Object> serverGroups, @Nullable String element) {
         if (serverGroups.isEmpty() || element == null) return element;
         for (Object worldGroup : serverGroups) {
@@ -145,6 +162,17 @@ public class Configs {
         return element;
     }
 
+    /**
+     * Returns world/server group name which specified element belongs to.
+     * If nothing is found, element itself is returned.
+     * This also hooks into global playerlist to see groups defined there.
+     *
+     * @param   serverGroups
+     *          Defined groups
+     * @param   server
+     *          Server to find
+     * @return  Group containing the element or element itself if not found
+     */
     public String getServerGroup(@NotNull List<Object> serverGroups, @Nullable String server) {
         String globalGroup = tryServerGroup(serverGroups, server);
         if (globalGroup != null) return globalGroup;

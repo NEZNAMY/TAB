@@ -14,6 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * A fixed layout slot with defined slot, text and maybe also ping and skin.
+ */
 @RequiredArgsConstructor
 public class FixedSlot extends TabFeature implements Refreshable {
 
@@ -45,6 +48,13 @@ public class FixedSlot extends TabFeature implements Refreshable {
         return "Updating fixed slots";
     }
 
+    /**
+     * Creates a tablist entry from this slot for given viewer.
+     *
+     * @param   viewer
+     *          Player viewing the slot
+     * @return  Tablist entry from this slot
+     */
     public @NotNull TabList.Entry createEntry(@NotNull TabPlayer viewer) {
         viewer.setProperty(this, propertyName, text);
         viewer.setProperty(this, skinProperty, skin);
@@ -59,6 +69,17 @@ public class FixedSlot extends TabFeature implements Refreshable {
         );
     }
 
+    /**
+     * Creates a new instance with given parameters. It may return {@code null} if pattern is invalid.
+     *
+     * @param   line
+     *          Line definition
+     * @param   pattern
+     *          Layout this slot belongs to
+     * @param   manager
+     *          Layout manager
+     * @return  New slot using given line or {@code null} if invalid
+     */
     public static @Nullable FixedSlot fromLine(@NotNull String line, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
         String[] array = line.split("\\|");
         if (array.length < 1) {

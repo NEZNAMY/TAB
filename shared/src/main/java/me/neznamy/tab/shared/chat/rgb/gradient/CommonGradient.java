@@ -8,6 +8,9 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Common class for all gradient patterns.
+ */
 @AllArgsConstructor
 public class CommonGradient implements GradientPattern {
 

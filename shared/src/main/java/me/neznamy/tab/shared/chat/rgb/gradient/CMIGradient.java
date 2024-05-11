@@ -5,11 +5,17 @@ import org.jetbrains.annotations.NotNull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Gradient formatter using CMI's syntax.
+ */
 public class CMIGradient extends CommonGradient {
 
     //pattern for {#RRGGBB<>}
     private final Pattern shortcutPattern = Pattern.compile("\\{#[0-9a-fA-F]{6}<>}");
-    
+
+    /**
+     * Constructs new instance.
+     */
     public CMIGradient() {
         super(Pattern.compile("\\{#[0-9a-fA-F]{6}>}[^{]*\\{#[0-9a-fA-F]{6}<}"),
                 Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>}[^{]*\\{#[0-9a-fA-F]{6}<}"),
