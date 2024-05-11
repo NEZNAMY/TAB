@@ -15,7 +15,7 @@ public class ParentGroup {
     @Getter private final int[] slots;
     private final TabPlayer viewer;
     @Getter private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
-    @Getter final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
+    @Getter private final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
     public ParentGroup(@NotNull LayoutView layout, @NotNull GroupPattern pattern, @NotNull TabPlayer viewer) {
         this.layout = layout;
