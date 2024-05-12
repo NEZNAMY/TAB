@@ -1,12 +1,5 @@
 accessWidener v1 named
 
-# Entity packets
-accessible field net/minecraft/network/protocol/game/ClientboundTeleportEntityPacket id I
-accessible field net/minecraft/network/protocol/game/ClientboundMoveEntityPacket entityId I
-accessible field net/minecraft/network/protocol/game/ClientboundMoveEntityPacket xa S
-accessible field net/minecraft/network/protocol/game/ClientboundMoveEntityPacket ya S
-accessible field net/minecraft/network/protocol/game/ClientboundMoveEntityPacket za S
-
 # Scoreboard packets
 accessible field net/minecraft/network/protocol/game/ClientboundSetObjectivePacket objectiveName Ljava/lang/String;
 accessible field net/minecraft/network/protocol/game/ClientboundSetObjectivePacket method I
