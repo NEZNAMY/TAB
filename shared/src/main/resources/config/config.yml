@@ -93,7 +93,6 @@ scoreboard:
   use-numbers: true
   static-number: 0
   delay-on-join-milliseconds: 0
-  respect-other-plugins: true
   scoreboards:
     scoreboard-1.20.3+:
       title: "<#E0B11E>MyServer</#FF0000>"

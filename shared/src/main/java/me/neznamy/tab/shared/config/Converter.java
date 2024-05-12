@@ -484,8 +484,10 @@ public class Converter {
      *          Config file
      */
     public void convert415to500(@NotNull ConfigurationFile config) {
-        if (config.removeOption("scoreboard-teams.unlimited-nametag-mode")) {
+        if (config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode")) {
             TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.1.5 to 5.0.0"));
+            config.removeOption("scoreboard-teams.unlimited-nametag-mode");
+            config.removeOption("scoreboard.respect-other-plugins");
         }
     }
 }

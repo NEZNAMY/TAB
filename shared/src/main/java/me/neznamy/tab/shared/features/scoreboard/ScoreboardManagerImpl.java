@@ -29,7 +29,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     @Getter private final boolean usingNumbers = config().getBoolean("scoreboard.use-numbers", false);
     private final boolean rememberToggleChoice = config().getBoolean("scoreboard.remember-toggle-choice", false);
     private final boolean hiddenByDefault = config().getBoolean("scoreboard.hidden-by-default", false);
-    private final boolean respectOtherPlugins = config().getBoolean("scoreboard.respect-other-plugins", true);
     @Getter private final int staticNumber = config().getInt("scoreboard.static-number", 0);
     private final int joinDelay = config().getInt("scoreboard.delay-on-join-milliseconds", 0);
 
@@ -99,7 +98,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.getScoreboard().setAntiOverrideScoreboard(respectOtherPlugins);
+        connectedPlayer.getScoreboard().setAntiOverrideScoreboard(true);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(connectedPlayer, "");
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(connectedPlayer, false);
         if (joinDelay > 0) {
@@ -173,7 +172,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void onDisplayObjective(@NotNull TabPlayer receiver, int slot, @NotNull String objective) {
-        if (respectOtherPlugins && slot == Scoreboard.DisplaySlot.SIDEBAR && !objective.equals(OBJECTIVE_NAME)) {
+        if (slot == Scoreboard.DisplaySlot.SIDEBAR && !objective.equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", hiding TAB one.");
             receiver.scoreboardData.otherPluginScoreboard = objective;
             ScoreboardImpl sb = receiver.scoreboardData.activeScoreboard;
@@ -185,7 +184,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void onObjective(@NotNull TabPlayer receiver, int action, @NotNull String objective) {
-        if (respectOtherPlugins && action == Scoreboard.ObjectiveAction.UNREGISTER && objective.equals(receiver.scoreboardData.otherPluginScoreboard)) {
+        if (action == Scoreboard.ObjectiveAction.UNREGISTER && objective.equals(receiver.scoreboardData.otherPluginScoreboard)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
             receiver.scoreboardData.otherPluginScoreboard = null;
             TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> sendHighestScoreboard(receiver));
