@@ -117,16 +117,25 @@ public class BossBarLine implements BossBar {
     /**
      * Parses string into color and returns it. If parsing failed, PURPLE is returned.
      *
+     * @param   player
+     *          Player to parse color for
      * @param   color
      *          string to parse
      * @return  parsed color
      */
     @NotNull
-    public BarColor parseColor(@NonNull String color) {
+    public BarColor parseColor(@NotNull TabPlayer player, @NonNull String color) {
         try {
             return BarColor.valueOf(color);
         } catch (IllegalArgumentException e) {
-            // TODO send warn
+            TAB.getInstance().getConfigHelper().runtime().invalidBossBarProperty(
+                    this,
+                    color,
+                    player.getProperty(propertyColor).getCurrentRawValue(),
+                    player,
+                    "color",
+                    "one of the pre-defined values " + Arrays.toString(BarColor.values())
+            );
             return BarColor.PURPLE;
         }
     }
@@ -134,16 +143,25 @@ public class BossBarLine implements BossBar {
     /**
      * Parses string into style and returns it. If parsing failed, PROGRESS is returned.
      *
+     * @param   player
+     *          Player to parse style for
      * @param   style
      *          string to parse
      * @return  parsed style
      */
     @NotNull
-    public BarStyle parseStyle(@NonNull String style) {
+    public BarStyle parseStyle(@NotNull TabPlayer player, @NonNull String style) {
         try {
             return BarStyle.valueOf(style);
         } catch (IllegalArgumentException e) {
-            // TODO send warn
+            TAB.getInstance().getConfigHelper().runtime().invalidBossBarProperty(
+                    this,
+                    style,
+                    player.getProperty(propertyStyle).getCurrentRawValue(),
+                    player,
+                    "style",
+                    "one of the pre-defined values " + Arrays.toString(BarStyle.values())
+            );
             return BarStyle.PROGRESS;
         }
     }
@@ -165,11 +183,13 @@ public class BossBarLine implements BossBar {
             if (value > 100) value = 100;
             return value;
         } catch (NumberFormatException e) {
-            TAB.getInstance().getConfigHelper().runtime().invalidNumberForBossBarProgress(
+            TAB.getInstance().getConfigHelper().runtime().invalidBossBarProperty(
                     this,
                     progress,
                     player.getProperty(propertyProgress).getCurrentRawValue(),
-                    player
+                    player,
+                    "progress",
+                    "a number between 0 and 100"
             );
             return 100;
         }
@@ -186,8 +206,8 @@ public class BossBarLine implements BossBar {
                 uniqueId,
                 player.getProperty(propertyTitle).updateAndGet(),
                 parseProgress(player, player.getProperty(propertyProgress).updateAndGet())/100,
-                parseColor(player.getProperty(propertyColor).updateAndGet()),
-                parseStyle(player.getProperty(propertyStyle).updateAndGet())
+                parseColor(player, player.getProperty(propertyColor).updateAndGet()),
+                parseStyle(player, player.getProperty(propertyStyle).updateAndGet())
         );
     }
 
@@ -236,7 +256,7 @@ public class BossBarLine implements BossBar {
         this.color = color;
         for (TabPlayer p : players) {
             p.setProperty(colorRefresher, propertyColor, color);
-            p.getBossBar().update(uniqueId, parseColor(p.getProperty(propertyColor).get()));
+            p.getBossBar().update(uniqueId, parseColor(p, p.getProperty(propertyColor).get()));
         }
     }
 
@@ -251,7 +271,7 @@ public class BossBarLine implements BossBar {
         this.style = style;
         for (TabPlayer p : players) {
             p.setProperty(styleRefresher, propertyColor, style);
-            p.getBossBar().update(uniqueId, parseStyle(p.getProperty(propertyStyle).get()));
+            p.getBossBar().update(uniqueId, parseStyle(p, p.getProperty(propertyStyle).get()));
         }
     }
 
@@ -338,7 +358,7 @@ public class BossBarLine implements BossBar {
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
-            refreshed.getBossBar().update(uniqueId, parseColor(refreshed.getProperty(propertyColor).updateAndGet()));
+            refreshed.getBossBar().update(uniqueId, parseColor(refreshed, refreshed.getProperty(propertyColor).updateAndGet()));
         }
 
         @Override
@@ -359,7 +379,7 @@ public class BossBarLine implements BossBar {
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
-            refreshed.getBossBar().update(uniqueId, parseStyle(refreshed.getProperty(propertyStyle).updateAndGet()));
+            refreshed.getBossBar().update(uniqueId, parseStyle(refreshed, refreshed.getProperty(propertyStyle).updateAndGet()));
         }
 
         @Override
