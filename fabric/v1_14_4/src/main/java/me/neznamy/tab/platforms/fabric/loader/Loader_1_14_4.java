@@ -29,7 +29,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Objective;
@@ -53,7 +52,6 @@ import java.util.*;
 public class Loader_1_14_4 implements Loader {
 
     private final ProtocolVersion serverVersion;
-    private ArmorStand dummyEntity;
 
     @Override
     @NotNull
