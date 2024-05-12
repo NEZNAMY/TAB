@@ -45,6 +45,11 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
     @Setter
     private boolean antiOverrideTeams;
 
+    /** Flag tracking other plugin detection for Scoreboards */
+    @Getter
+    @Setter
+    private boolean antiOverrideScoreboard;
+
     /**
      * Sets display slot of an objective.
      *

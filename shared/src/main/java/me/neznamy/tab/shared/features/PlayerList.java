@@ -48,7 +48,8 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.disabledPlayerList);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
         if (antiOverrideTabList) {
-            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, () -> {
+            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, getFeatureName(),
+                    TabConstants.CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC, () -> {
                 for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                     p.getTabList().checkDisplayNames();
                 }

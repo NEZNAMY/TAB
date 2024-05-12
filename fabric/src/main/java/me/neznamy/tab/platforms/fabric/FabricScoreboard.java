@@ -120,11 +120,13 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer, Component> {
 
     @Override
     public void onPacketSend(@NonNull Object packet) {
-        if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
-            TAB.getInstance().getFeatureManager().onDisplayObjective(player, FabricMultiVersion.getDisplaySlot(display), display.objectiveName);
-        }
-        if (packet instanceof ClientboundSetObjectivePacket objective) {
-            TAB.getInstance().getFeatureManager().onObjective(player, objective.method, objective.objectiveName);
+        if (isAntiOverrideScoreboard()) {
+            if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
+                TAB.getInstance().getFeatureManager().onDisplayObjective(player, FabricMultiVersion.getDisplaySlot(display), display.objectiveName);
+            }
+            if (packet instanceof ClientboundSetObjectivePacket objective) {
+                TAB.getInstance().getFeatureManager().onObjective(player, objective.method, objective.objectiveName);
+            }
         }
         if (isAntiOverrideTeams()) {
             FabricMultiVersion.checkTeamPacket((Packet<?>) packet, this);

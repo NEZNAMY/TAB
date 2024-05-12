@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -87,18 +88,22 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
-                if (player.getVersion().getMinorVersion() >= 8)
+                if (player.getVersion().getMinorVersion() >= 8) {
+                    long time = System.nanoTime();
                     player.getTabList().onPacketSend(packet);
+                    TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PACKET, System.nanoTime()-time);
+                }
 
-                long time = System.nanoTime();
-                player.getScoreboard().onPacketSend(packet);
-                TAB.getInstance().getCPUManager().addTime("Scoreboard management", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+                if (player.getScoreboard().isAntiOverrideTeams() || player.getScoreboard().isAntiOverrideScoreboard()) {
+                    long time = System.nanoTime();
+                    player.getScoreboard().onPacketSend(packet);
+                    TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_SCOREBOARDS_PACKET, System.nanoTime()-time);
+                }
 
                 if (isLogin(packet)) {
                     player.getScoreboard().freeze();
                     super.write(context, packet, channelPromise);
-                    TAB.getInstance().getCPUManager().runTaskLater(200, getFeatureName(),
-                            TabConstants.CpuUsageCategory.PACKET_LOGIN, () -> {
+                    TAB.getInstance().getCPUManager().runTaskLater(200, getFeatureName(), CpuUsageCategory.PACKET_LOGIN, () -> {
                         TAB.getInstance().getFeatureManager().onLoginPacket(player);
                         if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                             // For 1.20.2+ we need to do this, because server switch event is called before tablist is cleared

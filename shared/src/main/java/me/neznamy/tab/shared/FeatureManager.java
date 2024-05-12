@@ -238,9 +238,7 @@ public class FeatureManager {
     public void onDisplayObjective(@NotNull TabPlayer packetReceiver, int slot, @NotNull String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof DisplayObjectiveListener)) continue;
-            long time = System.nanoTime();
             ((DisplayObjectiveListener)f).onDisplayObjective(packetReceiver, slot, objective);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }
 
@@ -257,9 +255,7 @@ public class FeatureManager {
     public void onObjective(@NotNull TabPlayer packetReceiver, int action, @NotNull String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof ObjectiveListener)) continue;
-            long time = System.nanoTime();
             ((ObjectiveListener)f).onObjective(packetReceiver, action, objective);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }
 

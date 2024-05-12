@@ -148,13 +148,15 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer, BaseComponent>
 
     @Override
     public void onPacketSend(@NonNull Object packet) {
-        if (packet instanceof ScoreboardDisplay) {
-            ScoreboardDisplay display = (ScoreboardDisplay) packet;
-            TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getPosition(), display.getName());
-        }
-        if (packet instanceof ScoreboardObjective) {
-            ScoreboardObjective objective = (ScoreboardObjective) packet;
-            TAB.getInstance().getFeatureManager().onObjective(player, objective.getAction(), objective.getName());
+        if (isAntiOverrideScoreboard()) {
+            if (packet instanceof ScoreboardDisplay) {
+                ScoreboardDisplay display = (ScoreboardDisplay) packet;
+                TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getPosition(), display.getName());
+            }
+            if (packet instanceof ScoreboardObjective) {
+                ScoreboardObjective objective = (ScoreboardObjective) packet;
+                TAB.getInstance().getFeatureManager().onObjective(player, objective.getAction(), objective.getName());
+            }
         }
         if (isAntiOverrideTeams() && packet instanceof Team) {
             Team team = (Team) packet;
