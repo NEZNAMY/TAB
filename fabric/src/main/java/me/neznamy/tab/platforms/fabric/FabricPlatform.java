@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -24,6 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Platform implementation for Fabric
@@ -48,9 +49,14 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public void loadPlayers() {
-        for (ServerPlayer player : PlayerLookup.all(server)) {
+        for (ServerPlayer player : getOnlinePlayers()) {
             TAB.getInstance().addPlayer(new FabricTabPlayer(this, player));
         }
+    }
+
+    private Collection<ServerPlayer> getOnlinePlayers() {
+        // It's nullable on startup
+        return server.getPlayerList() == null ? Collections.emptyList() : server.getPlayerList().getPlayers();
     }
 
     @Override
