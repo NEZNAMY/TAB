@@ -16,7 +16,6 @@ import me.neznamy.tab.shared.hook.FloodgateHook;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
-import me.neznamy.tab.shared.placeholders.expansion.PlayerExpansionValues;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,7 +96,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final BossBarManagerImpl.PlayerData bossbarData = new BossBarManagerImpl.PlayerData();
 
     /** Data for plugin's PlaceholderAPI expansion */
-    public final PlayerExpansionValues expansionValues = new PlayerExpansionValues();
+    public final Map<String, String> expansionValues = new HashMap<>();
 
     /** Whether player has disabled nametags or not */
     public final AtomicBoolean disabledNametags = new AtomicBoolean();

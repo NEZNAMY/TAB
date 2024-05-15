@@ -14,7 +14,7 @@ public class ProxyTabExpansion implements TabExpansion {
 
     @Override
     public void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value) {
-        player.expansionValues.values.put(key, value);
+        player.expansionValues.put(key, value);
         ((ProxyTabPlayer)player).sendPluginMessage(new ExpansionPlaceholder(key, value));
     }
 
@@ -30,7 +30,7 @@ public class ProxyTabExpansion implements TabExpansion {
      *          Player to resend all values to
      */
     public void resendAllValues(@NotNull ProxyTabPlayer player) {
-        for (Map.Entry<String, String> entry : player.expansionValues.values.entrySet()) {
+        for (Map.Entry<String, String> entry : player.expansionValues.entrySet()) {
             player.sendPluginMessage(new ExpansionPlaceholder(entry.getKey(), entry.getValue()));
         }
     }
