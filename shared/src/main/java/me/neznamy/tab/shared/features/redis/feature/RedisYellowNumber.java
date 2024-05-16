@@ -56,7 +56,7 @@ public class RedisYellowNumber extends RedisFeature {
     @Override
     public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {
         out.writeInt(yellowNumber.getValueNumber(player));
-        out.writeUTF(player.getProperty(yellowNumber.getPROPERTY_VALUE_FANCY()).get());
+        out.writeUTF(player.playerlistObjectiveData.valueModern.get());
     }
 
     @Override

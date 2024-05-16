@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NickCompatibility;
+import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -99,6 +100,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Data for Header/Footer */
     public final HeaderFooter.PlayerData headerFooterData = new HeaderFooter.PlayerData();
 
+    /** Data for Playerlist Objective */
+    public final YellowNumber.PlayerData playerlistObjectiveData = new YellowNumber.PlayerData();
+
     /** Data for plugin's PlaceholderAPI expansion */
     public final Map<String, String> expansionValues = new HashMap<>();
 
@@ -110,9 +114,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Whether player has disabled tablist formatting or not */
     public final AtomicBoolean disabledPlayerList = new AtomicBoolean();
-
-    /** Whether player has disabled playerlist objective or not */
-    public final AtomicBoolean disabledYellowNumber = new AtomicBoolean();
 
     /**
      * Constructs new instance with given parameters
