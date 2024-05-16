@@ -1,18 +1,20 @@
 package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature handler for header and footer.
@@ -20,6 +22,8 @@ import java.util.List;
 public class HeaderFooter extends TabFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, Refreshable {
 
+    private final String HEADER = "header";
+    private final String FOOTER = "footer";
     private final List<Object> worldGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-world").keySet());
     private final List<Object> serverGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-server").keySet());
     private final DisableChecker disableChecker;
@@ -29,7 +33,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
      */
     public HeaderFooter() {
         Condition disableCondition = Condition.getCondition(config().getString("header-footer.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.disabledHeaderFooter);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.headerFooterData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
         TAB.getInstance().getConfigHelper().hint().checkHeaderFooterForRedundancy(config().getConfigurationSection("header-footer"));
     }
@@ -44,17 +48,20 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     @Override
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (p.disabledHeaderFooter.get()) continue;
+            if (p.headerFooterData.disabled.get()) continue;
             sendHeaderFooter(p, "","");
         }
     }
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        connectedPlayer.headerFooterData.header = new Property(this, connectedPlayer, getProperty(connectedPlayer, HEADER));
+        connectedPlayer.headerFooterData.footer = new Property(this, connectedPlayer, getProperty(connectedPlayer, FOOTER));
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
-            connectedPlayer.disabledHeaderFooter.set(true);
+            connectedPlayer.headerFooterData.disabled.set(true);
+        } else {
+            sendHeaderFooter(connectedPlayer, connectedPlayer.headerFooterData.header.get(), connectedPlayer.headerFooterData.footer.get());
         }
-        refresh(connectedPlayer, true);
     }
 
     @Override
@@ -65,26 +72,17 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     @Override
     public void onWorldChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
-        updateProperties(p);
-    }
-
-    private void updateProperties(TabPlayer p) {
-        boolean refresh = p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER));
-        if (p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER))) {
-            refresh = true;
-        }
-        if (refresh) {
-            sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get());
+        if (p.headerFooterData.setHeaderFooter(getProperty(p, HEADER), getProperty(p, FOOTER))) {
+            sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
         }
     }
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (force) {
-            p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER));
-            p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER));
+            p.headerFooterData.setHeaderFooter(getProperty(p, HEADER), getProperty(p, FOOTER));
         }
-        sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).updateAndGet(), p.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+        sendHeaderFooter(p, p.headerFooterData.header.updateAndGet(), p.headerFooterData.footer.updateAndGet());
     }
 
     @Override
@@ -105,7 +103,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         if (disabledNow) {
             p.getTabList().setPlayerListHeaderFooter(new SimpleComponent(""), new SimpleComponent(""));
         } else {
-            sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get());
+            sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
         }
     }
 
@@ -140,7 +138,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     private void sendHeaderFooter(TabPlayer player, String header, String footer) {
-        if (player.disabledHeaderFooter.get()) return;
+        if (player.headerFooterData.disabled.get()) return;
         player.getTabList().setPlayerListHeaderFooter(TabComponent.optimized(header), TabComponent.optimized(footer));
     }
 
@@ -159,9 +157,8 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         ensureActive();
         TabPlayer player = (TabPlayer) p;
         player.ensureLoaded();
-        player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
-                player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+        player.headerFooterData.header.setTemporaryValue(header);
+        sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
     }
 
     @Override
@@ -169,9 +166,8 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         ensureActive();
         TabPlayer player = (TabPlayer) p;
         player.ensureLoaded();
-        player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
-                player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+        player.headerFooterData.footer.setTemporaryValue(footer);
+        sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
     }
 
     @Override
@@ -179,9 +175,47 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         ensureActive();
         TabPlayer player = (TabPlayer) p;
         player.ensureLoaded();
-        player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
-        player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
-                player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+        player.headerFooterData.header.setTemporaryValue(header);
+        player.headerFooterData.footer.setTemporaryValue(footer);
+        sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+    }
+
+    /**
+     * Class holding header/footer data for players.
+     */
+    public static class PlayerData {
+
+        /** Player's header */
+        public Property header;
+
+        /** Player's footer */
+        public Property footer;
+
+        /** Flag tracking whether this feature is disabled for the player with condition or not */
+        public final AtomicBoolean disabled = new AtomicBoolean();
+
+        /**
+         * Sets header and footer to new values and returns {@code true} if some property's
+         * raw value has changed, {@code false} if not.
+         *
+         * @param   rawHeader
+         *          New raw header to use
+         * @param   rawFooter
+         *          New raw footer to use
+         * @return  Whether at least one raw value changed or not
+
+         */
+        public boolean setHeaderFooter(@NotNull String rawHeader, @NotNull String rawFooter) {
+            boolean changed = false;
+            if (!header.getOriginalRawValue().equals(rawHeader)) {
+                header.changeRawValue(rawHeader, null);
+                changed = true;
+            }
+            if (!footer.getOriginalRawValue().equals(rawFooter)) {
+                footer.changeRawValue(rawFooter, null);
+                changed = true;
+            }
+            return changed;
+        }
     }
 }

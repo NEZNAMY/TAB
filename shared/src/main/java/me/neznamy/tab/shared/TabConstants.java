@@ -123,10 +123,6 @@ public class TabConstants {
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Property {
-
-        public static final String HEADER = "header";
-        public static final String FOOTER = "footer";
-
         public static final String TABPREFIX = "tabprefix";
         public static final String CUSTOMTABNAME = "customtabname";
         public static final String TABSUFFIX = "tabsuffix";

@@ -68,6 +68,22 @@ public class Property {
      * Constructs new instance with given parameters and prepares
      * the formatter for use by detecting placeholders and reformatting the text.
      *
+     * @param   listener
+     *          Feature which should receive refresh method if placeholder changes value
+     * @param   owner
+     *          Player this text belongs to
+     * @param   rawValue
+     *          Raw value using raw placeholder identifiers
+     */
+    public Property(@Nullable Refreshable listener, @NotNull TabPlayer owner,
+                    @NotNull String rawValue) {
+        this(null, listener, owner, rawValue, null);
+    }
+
+    /**
+     * Constructs new instance with given parameters and prepares
+     * the formatter for use by detecting placeholders and reformatting the text.
+     *
      * @param   name
      *          Property name to use in expansion (nullable if not use)
      * @param   listener

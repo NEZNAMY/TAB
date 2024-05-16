@@ -6,6 +6,7 @@ import lombok.Setter;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
@@ -95,6 +96,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Data for BossBar */
     public final BossBarManagerImpl.PlayerData bossbarData = new BossBarManagerImpl.PlayerData();
 
+    /** Data for Header/Footer */
+    public final HeaderFooter.PlayerData headerFooterData = new HeaderFooter.PlayerData();
+
     /** Data for plugin's PlaceholderAPI expansion */
     public final Map<String, String> expansionValues = new HashMap<>();
 
@@ -103,9 +107,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Whether player has disabled belowname or not */
     public final AtomicBoolean disabledBelowname = new AtomicBoolean();
-
-    /** Whether player has disabled header/footer or not */
-    public final AtomicBoolean disabledHeaderFooter = new AtomicBoolean();
 
     /** Whether player has disabled tablist formatting or not */
     public final AtomicBoolean disabledPlayerList = new AtomicBoolean();
