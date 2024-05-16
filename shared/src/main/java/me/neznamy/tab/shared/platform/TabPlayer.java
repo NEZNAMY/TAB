@@ -6,6 +6,7 @@ import lombok.Setter;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.YellowNumber;
@@ -103,14 +104,14 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Data for Playerlist Objective */
     public final YellowNumber.PlayerData playerlistObjectiveData = new YellowNumber.PlayerData();
 
+    /** Data for Belowname Objective */
+    public final BelowName.PlayerData belowNameData = new BelowName.PlayerData();
+
     /** Data for plugin's PlaceholderAPI expansion */
     public final Map<String, String> expansionValues = new HashMap<>();
 
     /** Whether player has disabled nametags or not */
     public final AtomicBoolean disabledNametags = new AtomicBoolean();
-
-    /** Whether player has disabled belowname or not */
-    public final AtomicBoolean disabledBelowname = new AtomicBoolean();
 
     /** Whether player has disabled tablist formatting or not */
     public final AtomicBoolean disabledPlayerList = new AtomicBoolean();

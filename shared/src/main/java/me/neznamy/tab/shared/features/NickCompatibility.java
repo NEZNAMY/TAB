@@ -85,7 +85,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
             if (belowname != null) {
                 int value = belowname.getValue(player);
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    belowname.setScore(viewer, player, value, player.getProperty(belowname.getFANCY_FORMAT_PROPERTY()).get());
+                    belowname.setScore(viewer, player, value, player.belowNameData.numberFormat.get());
                 }
             }
             if (yellownumber != null) {
