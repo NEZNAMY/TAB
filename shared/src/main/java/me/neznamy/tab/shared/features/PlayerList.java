@@ -238,7 +238,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         connectedPlayer.getTabList().setAntiOverride(antiOverrideTabList);
         updateProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
-            connectedPlayer.disabledHeaderFooter.set(true);
+            connectedPlayer.disabledPlayerList.set(true);
             return;
         }
         Runnable r = () -> {
