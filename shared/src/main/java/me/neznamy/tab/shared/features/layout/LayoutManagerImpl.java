@@ -34,16 +34,21 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     private final int emptySlotPing = config().getInt("layout.empty-slot-ping-value", 1000);
 
     private final SkinManager skinManager = new SkinManager(defaultSkin, defaultSkinHashMap);
-    private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>() {{
-        for (int slot=1; slot<=80; slot++) {
-            put(slot, new UUID(0, direction.translateSlot(slot)));
-        }
-    }};
+    private final Map<Integer, UUID> uuids = new HashMap<>();
     private final Map<String, LayoutPattern> layouts = loadLayouts();
     private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(p -> p.layoutData.sortingString)));
     private PlayerList playerList;
 
     private static boolean teamsEnabled;
+
+    /**
+     * Constructs new instance and loads config options.
+     */
+    public LayoutManagerImpl() {
+        for (int slot=1; slot<=80; slot++) {
+            uuids.put(slot, new UUID(0, direction.translateSlot(slot)));
+        }
+    }
 
     public String getDefaultSkin(int slot) {
         return defaultSkinHashMap.getOrDefault(slot, defaultSkin);

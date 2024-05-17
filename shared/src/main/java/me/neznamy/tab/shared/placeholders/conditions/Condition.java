@@ -26,26 +26,12 @@ public class Condition {
     private static Map<String, Condition> registeredConditions = new HashMap<>();
 
     /** All supported sub-condition types */
-    @Getter private static final Map<String, Function<String, Function<TabPlayer, Boolean>>> conditionTypes =
-            new LinkedHashMap<String, Function<String, Function<TabPlayer, Boolean>>>() {{
-
-        put(">=", line -> new NumericCondition(line.split(">="), (left, right) -> left >= right)::isMet);
-        put(">", line -> new NumericCondition(line.split(">"), (left, right) -> left > right)::isMet);
-        put("<=", line -> new NumericCondition(line.split("<="), (left, right) -> left <= right)::isMet);
-        put("<-", line -> new StringCondition(line.split("<-"), String::contains)::isMet);
-        put("<", line -> new NumericCondition(line.split("<"), (left, right) -> left < right)::isMet);
-        put("|-", line -> new StringCondition(line.split("\\|-"), String::startsWith)::isMet);
-        put("-|", line -> new StringCondition(line.split("-\\|"), String::endsWith)::isMet);
-        put("!=", line -> new StringCondition(line.split("!="), (left, right) -> !left.equals(right))::isMet);
-        put("=", line -> new StringCondition(line.split("="), String::equals)::isMet);
-        put("permission:", line -> {
-            String node = line.split(":")[1];
-            return p -> p.hasPermission(node);
-        });
-    }};
+    @Getter
+    private static final Map<String, Function<String, Function<TabPlayer, Boolean>>> conditionTypes = new LinkedHashMap<>();
 
     /** Name of this condition defined in configuration */
-    @Getter private final String name;
+    @Getter
+    private final String name;
 
     /** All defined sub-conditions inside this conditions */
     protected final List<Function<TabPlayer, Boolean>> subConditions = new ArrayList<>();
@@ -67,6 +53,22 @@ public class Condition {
 
     /** List of all placeholders used inside this condition */
     private final List<String> placeholdersInConditions = new ArrayList<>();
+
+    static {
+        conditionTypes.put(">=", line -> new NumericCondition(line.split(">="), (left, right) -> left >= right)::isMet);
+        conditionTypes.put(">", line -> new NumericCondition(line.split(">"), (left, right) -> left > right)::isMet);
+        conditionTypes.put("<=", line -> new NumericCondition(line.split("<="), (left, right) -> left <= right)::isMet);
+        conditionTypes.put("<-", line -> new StringCondition(line.split("<-"), String::contains)::isMet);
+        conditionTypes.put("<", line -> new NumericCondition(line.split("<"), (left, right) -> left < right)::isMet);
+        conditionTypes.put("|-", line -> new StringCondition(line.split("\\|-"), String::startsWith)::isMet);
+        conditionTypes.put("-|", line -> new StringCondition(line.split("-\\|"), String::endsWith)::isMet);
+        conditionTypes.put("!=", line -> new StringCondition(line.split("!="), (left, right) -> !left.equals(right))::isMet);
+        conditionTypes.put("=", line -> new StringCondition(line.split("="), String::equals)::isMet);
+        conditionTypes.put("permission:", line -> {
+            String node = line.split(":")[1];
+            return p -> p.hasPermission(node);
+        });
+    }
 
     /**
      * Constructs new instance with given parameters and registers
