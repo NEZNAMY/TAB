@@ -21,15 +21,6 @@ import org.jetbrains.annotations.Nullable;
 @RequiredArgsConstructor
 public abstract class SubCommand {
 
-    //all properties assignable with a command
-    @Getter private static final List<String> allProperties = Arrays.asList(
-            TabConstants.Property.TABPREFIX,
-            TabConstants.Property.TABSUFFIX,
-            TabConstants.Property.TAGPREFIX,
-            TabConstants.Property.TAGSUFFIX,
-            TabConstants.Property.CUSTOMTABNAME
-    );
-
     //subcommands of this command
     private final Map<String, SubCommand> subcommands = new HashMap<>();
 

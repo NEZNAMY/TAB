@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -59,8 +58,8 @@ public class RedisTeams extends RedisFeature {
     @Override
     public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {
         out.writeUTF(player.sortingData.getShortTeamName());
-        out.writeUTF(player.getProperty(TabConstants.Property.TAGPREFIX).get());
-        out.writeUTF(player.getProperty(TabConstants.Property.TAGSUFFIX).get());
+        out.writeUTF(player.teamData.prefix.get());
+        out.writeUTF(player.teamData.suffix.get());
         out.writeUTF((nameTags.getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER).toString());
     }
 

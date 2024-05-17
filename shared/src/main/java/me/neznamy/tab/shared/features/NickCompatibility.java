@@ -69,12 +69,12 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    String prefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
+                    String prefix = player.teamData.prefix.getFormat(viewer);
                     viewer.getScoreboard().unregisterTeam(player.sortingData.getShortTeamName());
                     viewer.getScoreboard().registerTeam(
                             player.sortingData.getShortTeamName(),
                             prefix,
-                            player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer),
+                            player.teamData.suffix.getFormat(viewer),
                             nameTags.getTeamVisibility(player, viewer) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER,
                             player.teamData.getCollisionRule() ? Scoreboard.CollisionRule.ALWAYS : Scoreboard.CollisionRule.NEVER,
                             Collections.singletonList(player.getNickname()),

@@ -79,20 +79,20 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, getTeamName(analyzed));
         sendMessage(sender, getTeamNameNote(analyzed));
         if (tab.getFeatureManager().isFeatureEnabled(TabConstants.Feature.PLAYER_LIST)) {
-            showProperty(sender, analyzed, TabConstants.Property.TABPREFIX, analyzed.disabledPlayerList.get());
-            showProperty(sender, analyzed, TabConstants.Property.TABSUFFIX, analyzed.disabledPlayerList.get());
-            showProperty(sender, analyzed, TabConstants.Property.CUSTOMTABNAME, analyzed.disabledPlayerList.get());
+            showProperty(sender, analyzed.tablistData.prefix.getName(), analyzed.tablistData.prefix, analyzed.tablistData.disabled.get());
+            showProperty(sender, analyzed.tablistData.name.getName(), analyzed.tablistData.name, analyzed.tablistData.disabled.get());
+            showProperty(sender, analyzed.tablistData.suffix.getName(), analyzed.tablistData.suffix, analyzed.tablistData.disabled.get());
         } else {
-            sendMessage(sender, "&atabprefix: &cDisabled");
-            sendMessage(sender, "&atabsuffix: &cDisabled");
-            sendMessage(sender, "&acustomtabname: &cDisabled");
+            sendMessage(sender, "&a" + analyzed.tablistData.prefix.getName() + ": &cDisabled");
+            sendMessage(sender, "&a" + analyzed.tablistData.name.getName() + ": &cDisabled");
+            sendMessage(sender, "&a" + analyzed.tablistData.suffix.getName() + ": &cDisabled");
         }
         if (tab.getNameTagManager() != null) {
-            showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, analyzed.disabledNametags.get());
-            showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, analyzed.disabledNametags.get());
+            showProperty(sender, analyzed.teamData.prefix.getName(), analyzed.teamData.prefix, analyzed.teamData.disabled.get());
+            showProperty(sender, analyzed.teamData.suffix.getName(), analyzed.teamData.suffix, analyzed.teamData.disabled.get());
         } else {
-            sendMessage(sender, "&atagprefix: &cDisabled");
-            sendMessage(sender, "&atagsuffix: &cDisabled");
+            sendMessage(sender, "&a" + analyzed.teamData.prefix.getName() + ": &cDisabled");
+            sendMessage(sender, "&a" + analyzed.teamData.suffix.getName() + ": &cDisabled");
         }
         sendMessage(sender, separator);
     }
@@ -148,7 +148,7 @@ public class DebugCommand extends SubCommand {
     private @NotNull String getTeamName(@NotNull TabPlayer analyzed) {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
-        if (TAB.getInstance().getNameTagManager() != null && analyzed.disabledNametags.get()) {
+        if (TAB.getInstance().getNameTagManager() != null && analyzed.teamData.disabled.get()) {
             return "&eTeam name: &cSorting is disabled in player's world/server";
         }
         return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
@@ -163,7 +163,7 @@ public class DebugCommand extends SubCommand {
      * @return  team name note of specified player
      */
     private @NotNull String getTeamNameNote(@NotNull TabPlayer analyzed) {
-        if (TAB.getInstance().getNameTagManager() != null && analyzed.disabledNametags.get()) {
+        if (TAB.getInstance().getNameTagManager() != null && analyzed.teamData.disabled.get()) {
             return "";
         }
         return "&eSorting note: &r" + analyzed.sortingData.teamNameNote;
@@ -174,20 +174,17 @@ public class DebugCommand extends SubCommand {
      *
      * @param   sender
      *          command sender or null if console
-     * @param   analyzed
-     *          analyzed player
-     * @param   property
+     * @param   propertyName
      *          property name
      * @param   disabled
      *          if feature the property belongs to is disabled or not
      */
-    private void showProperty(@Nullable TabPlayer sender, @NotNull TabPlayer analyzed, @NotNull String property, boolean disabled) {
+    private void showProperty(@Nullable TabPlayer sender, @NotNull String propertyName, @NotNull Property property, boolean disabled) {
         if (disabled) {
-            sendMessage(sender, "&a" + property + ": &cDisabled in player's world/server");
+            sendMessage(sender, "&a" + propertyName + ": &cDisabled for player with condition");
         } else {
-            Property pr = analyzed.getProperty(property);
-            String rawValue = EnumChatFormat.decolor(pr.getCurrentRawValue());
-            String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(Source: %s)")), property, rawValue, pr.getSource());
+            String rawValue = EnumChatFormat.decolor(property.getCurrentRawValue());
+            String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(Source: %s)")), propertyName, rawValue, property.getSource());
             sendRawMessage(sender, value);
         }
     }

@@ -21,7 +21,7 @@ public class VisibilityRefresher extends TabFeature implements Refreshable {
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        if (p.disabledNametags.get()) return;
+        if (p.teamData.disabled.get()) return;
         nameTags.updateTeamData(p);
     }
 

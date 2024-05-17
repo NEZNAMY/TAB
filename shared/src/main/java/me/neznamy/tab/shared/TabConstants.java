@@ -118,20 +118,6 @@ public class TabConstants {
     }
 
     /**
-     * Internal property names used to store text
-     * under a specific key
-     */
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Property {
-        public static final String TABPREFIX = "tabprefix";
-        public static final String CUSTOMTABNAME = "customtabname";
-        public static final String TABSUFFIX = "tabsuffix";
-
-        public static final String TAGPREFIX = "tagprefix";
-        public static final String TAGSUFFIX = "tagsuffix";
-    }
-
-    /**
      * Feature names used to register features under in the
      * feature manager which they can be retrieved by.
      */

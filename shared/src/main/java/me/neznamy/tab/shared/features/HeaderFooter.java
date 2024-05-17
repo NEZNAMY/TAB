@@ -206,15 +206,8 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
          */
         public boolean setHeaderFooter(@NotNull String rawHeader, @NotNull String rawFooter) {
-            boolean changed = false;
-            if (!header.getOriginalRawValue().equals(rawHeader)) {
-                header.changeRawValue(rawHeader, null);
-                changed = true;
-            }
-            if (!footer.getOriginalRawValue().equals(rawFooter)) {
-                footer.changeRawValue(rawFooter, null);
-                changed = true;
-            }
+            boolean changed = header.changeRawValue(rawHeader, null);
+            if (footer.changeRawValue(rawFooter, null)) changed = true;
             return changed;
         }
     }

@@ -23,7 +23,9 @@ public class Property {
     private static long counter;
 
     /** Internal identifier for this text for PlaceholderAPI expansion, null if it should not be exposed */
-    @Nullable private final String name;
+    @Getter
+    @Nullable
+    private final String name;
 
     /**
      * Feature defining this text, which will receive refresh function
@@ -182,14 +184,16 @@ public class Property {
      *          new raw value to use
      * @param   newSource
      *          new source of the text
+     * @return  Whether raw value changed or not
      */
-    public void changeRawValue(@NotNull String newValue, @Nullable String newSource) {
-        if (originalRawValue.equals(newValue)) return;
+    public boolean changeRawValue(@NotNull String newValue, @Nullable String newSource) {
+        if (originalRawValue.equals(newValue)) return false;
         originalRawValue = newValue;
         source = newSource;
         if (temporaryValue == null) {
             analyze(originalRawValue);
         }
+        return true;
     }
 
     /**

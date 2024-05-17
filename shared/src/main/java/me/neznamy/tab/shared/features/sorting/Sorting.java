@@ -68,7 +68,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         String previousShortName = p.sortingData.shortTeamName;
         constructTeamNames(p);
         if (!p.sortingData.shortTeamName.equals(previousShortName)) {
-            if (nameTags != null && p.sortingData.forcedTeamName == null && !nameTags.hasTeamHandlingPaused(p) && !p.disabledNametags.get()) {
+            if (nameTags != null && p.sortingData.forcedTeamName == null && !nameTags.hasTeamHandlingPaused(p) && !p.teamData.disabled.get()) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(previousShortName);
                 }
@@ -212,8 +212,8 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         if (nametag != null) nametag.registerTeam(p);
         if (layout != null) layout.updateTeamName(p, p.sortingData.fullTeamName);
         if (redis != null && nametag != null) redis.updateTeam(p, p.sortingData.getShortTeamName(),
-                (p).getProperty(TabConstants.Property.TAGPREFIX).get(),
-                (p).getProperty(TabConstants.Property.TAGSUFFIX).get(),
+                p.teamData.prefix.get(),
+                p.teamData.suffix.get(),
                 (nametag.getTeamVisibility(p, p) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER));
     }
 

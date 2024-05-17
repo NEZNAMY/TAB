@@ -6,10 +6,7 @@ import lombok.Setter;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.NickCompatibility;
-import me.neznamy.tab.shared.features.YellowNumber;
+import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -24,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Abstract class storing common variables and functions for player,
@@ -107,14 +103,11 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Data for Belowname Objective */
     public final BelowName.PlayerData belowNameData = new BelowName.PlayerData();
 
+    /** Data for tablist formatting */
+    public final PlayerList.PlayerData tablistData = new PlayerList.PlayerData();
+
     /** Data for plugin's PlaceholderAPI expansion */
     public final Map<String, String> expansionValues = new HashMap<>();
-
-    /** Whether player has disabled nametags or not */
-    public final AtomicBoolean disabledNametags = new AtomicBoolean();
-
-    /** Whether player has disabled tablist formatting or not */
-    public final AtomicBoolean disabledPlayerList = new AtomicBoolean();
 
     /**
      * Constructs new instance with given parameters
@@ -153,47 +146,20 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * Sets player's property with provided key to provided value. If it existed,
      * the raw value is changed. If it did not exist, it is created.
      *
-     * @param   feature
-     *          Feature creating the property
-     * @param   identifier
-     *          Property's unique identifier
-     * @param   rawValue
-     *          Raw value with raw placeholders
-     * @param   source
-     *          Source of raw value
-     * @return  {@code true} if property did not exist or existed with different raw value,
-     *          {@code false} if property existed with the same raw value already.
-     */
-    private boolean setProperty(@Nullable Refreshable feature, @NotNull String identifier, @NotNull String rawValue,
-                                @Nullable String source, boolean exposeInExpansion) {
-        Property p = getProperty(identifier);
-        if (p == null) {
-            properties.put(identifier, new Property(exposeInExpansion ? identifier : null, feature, this, rawValue, source));
-            return true;
-        } else {
-            if (!p.getOriginalRawValue().equals(rawValue)) {
-                p.changeRawValue(rawValue, source);
-                return true;
-            }
-            return false;
-        }
-    }
-
-    /**
-     * Sets property with specified name to new value. If property did not exist before, it is
-     * created and {@code true} is returned. If it existed, it is overridden and {@code true} is returned.
-     * {@code false} is returned otherwise.
-     *
-     * @param   feature
-     *          feature using this property to get placeholders registered
-     * @param   identifier
-     *          property name
-     * @param   rawValue
-     *          new raw value
-     * @return  {@code true} if value changed / did not exist, {@code false} if value did not change
+     * @param feature    Feature creating the property
+     * @param identifier Property's unique identifier
+     * @param rawValue   Raw value with raw placeholders
+     * @return {@code true} if property did not exist or existed with different raw value,
+     * {@code false} if property existed with the same raw value already.
      */
     public boolean setProperty(@Nullable Refreshable feature, @NotNull String identifier, @NotNull String rawValue) {
-        return setProperty(feature, identifier, rawValue, null, false);
+        Property p = getProperty(identifier);
+        if (p == null) {
+            properties.put(identifier, new Property(null, feature, this, rawValue, null));
+            return true;
+        } else {
+            return p.changeRawValue(rawValue, null);
+        }
     }
 
     /**
@@ -285,19 +251,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     }
 
     /**
-     * Loads property from config using standard property loading algorithm
-     *
-     * @param   feature
-     *          Feature using this property
-     * @param   property
-     *          property name to load
-     * @return  {@code true} if value did not exist or changed, {@code false} otherwise
-     */
-    public boolean loadPropertyFromConfig(@Nullable Refreshable feature, @NotNull String property) {
-        return loadPropertyFromConfig(feature, property, "");
-    }
-
-    /**
      * Loads property from config using standard property loading algorithm. If the property is
      * not set in config, {@code ifNotSet} value is used.
      *
@@ -309,7 +262,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *          value to use if property is not defined in config
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
-    public boolean loadPropertyFromConfig(@Nullable Refreshable feature, @NotNull String property, @NotNull String ifNotSet) {
+    public Property loadPropertyFromConfig(@Nullable Refreshable feature, @NotNull String property, @NotNull String ifNotSet) {
         String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(name, property, server, world);
         if (value.length == 0) {
             value = TAB.getInstance().getConfiguration().getUsers().getProperty(uniqueId.toString(), property, server, world);
@@ -318,9 +271,35 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
             value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), property, server, world);
         }
         if (value.length > 0) {
-            return setProperty(feature, property, value[0], value[1], true);
+            return new Property(property, feature, this, value[0], value[1]);
         }
-        return setProperty(feature, property, ifNotSet, "None", true);
+        return new Property(property, feature, this, ifNotSet, "None");
+    }
+
+    /**
+     * Loads property from config using standard property loading algorithm. If the property is
+     * not set in config, {@code ifNotSet} value is used.
+     *
+     * @param   property
+     *          property to update
+     * @param   propertyName
+     *          Name of property to load from configuration
+     * @param   ifNotSet
+     *          value to use if property is not defined in config
+     * @return  {@code true} if value did not exist or changed, {@code false} otherwise
+     */
+    public boolean updatePropertyFromConfig(@NotNull Property property, @NotNull String propertyName, @NotNull String ifNotSet) {
+        String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(name, propertyName, server, world);
+        if (value.length == 0) {
+            value = TAB.getInstance().getConfiguration().getUsers().getProperty(uniqueId.toString(), propertyName, server, world);
+        }
+        if (value.length == 0) {
+            value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), propertyName, server, world);
+        }
+        if (value.length > 0) {
+            return property.changeRawValue(value[0], value[1]);
+        }
+        return property.changeRawValue(ifNotSet, "None");
     }
 
     /**

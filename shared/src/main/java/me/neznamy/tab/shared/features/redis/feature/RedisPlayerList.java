@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -51,9 +50,9 @@ public class RedisPlayerList extends RedisFeature {
 
     @Override
     public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {
-        out.writeUTF(player.getProperty(TabConstants.Property.TABPREFIX).get() +
-                player.getProperty(TabConstants.Property.CUSTOMTABNAME).get() +
-                player.getProperty(TabConstants.Property.TABSUFFIX).get());
+        out.writeUTF(player.tablistData.prefix.get() +
+                player.tablistData.name.get() +
+                player.tablistData.suffix.get());
     }
 
     @Override

@@ -3,24 +3,32 @@ package me.neznamy.tab.shared.features.nametags;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.nametag.NameTagManager;
+import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NameTag extends TabFeature implements NameTagManager, JoinListener, QuitListener,
         Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, LoginPacketListener,
         VanishListener {
 
+    /** Name of the property used in configuration */
+    public static final String TAGPREFIX = "tagprefix";
+
+    /** Name of the property used in configuration */
+    public static final String TAGSUFFIX = "tagsuffix";
+    
     protected final boolean invisibleNameTags = config().getBoolean("scoreboard-teams.invisible-nametags", false);
     private final boolean canSeeFriendlyInvisibles = config().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
     private final boolean antiOverride = config().getBoolean("scoreboard-teams.anti-override", true);
@@ -32,7 +40,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     public NameTag() {
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.disabledNametags);
+        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.teamData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         if (!antiOverride) TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
     }
@@ -46,9 +54,9 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             all.getScoreboard().setAntiOverrideTeams(antiOverride);
-            updateProperties(all);
+            loadProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
-                all.disabledNametags.set(true);
+                all.teamData.disabled.set(true);
                 continue;
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
@@ -58,7 +66,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
                 if (target.isVanished() && !TAB.getInstance().getPlatform().canSee(viewer, target)) {
                     target.teamData.vanishedFor.add(viewer.getUniqueId());
                 }
-                if (!target.disabledNametags.get()) registerTeam(target, viewer);
+                if (!target.teamData.disabled.get()) registerTeam(target, viewer);
             }
         }
     }
@@ -67,7 +75,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void unload() {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (hasTeamHandlingPaused(target) || target.disabledNametags.get()) continue;
+                if (hasTeamHandlingPaused(target) || target.teamData.disabled.get()) continue;
                 viewer.getScoreboard().unregisterTeam(target.sortingData.getShortTeamName());
             }
         }
@@ -75,14 +83,14 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (refreshed.disabledNametags.get()) return;
+        if (refreshed.teamData.disabled.get()) return;
         boolean refresh;
         if (force) {
             updateProperties(refreshed);
             refresh = true;
         } else {
-            boolean prefix = refreshed.getProperty(TabConstants.Property.TAGPREFIX).update();
-            boolean suffix = refreshed.getProperty(TabConstants.Property.TAGSUFFIX).update();
+            boolean prefix = refreshed.teamData.prefix.update();
+            boolean suffix = refreshed.teamData.suffix.update();
             refresh = prefix || suffix;
         }
         if (refresh) updateTeamData(refreshed);
@@ -97,7 +105,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         connectedPlayer.getScoreboard().setAntiOverrideTeams(antiOverride);
-        updateProperties(connectedPlayer);
+        loadProperties(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == connectedPlayer) continue; //avoiding double registration
             if (connectedPlayer.isVanished() && !TAB.getInstance().getPlatform().canSee(all, connectedPlayer)) {
@@ -106,13 +114,13 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             if (all.isVanished() && !TAB.getInstance().getPlatform().canSee(connectedPlayer, all)) {
                 all.teamData.vanishedFor.add(connectedPlayer.getUniqueId());
             }
-            if (!all.disabledNametags.get()) {
+            if (!all.teamData.disabled.get()) {
                 registerTeam(all, connectedPlayer);
             }
         }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(connectedPlayer, true);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
-            connectedPlayer.disabledNametags.set(true);
+            connectedPlayer.teamData.disabled.set(true);
             return;
         }
         registerTeam(connectedPlayer);
@@ -120,7 +128,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
-        if (!disconnectedPlayer.disabledNametags.get() && !hasTeamHandlingPaused(disconnectedPlayer)) {
+        if (!disconnectedPlayer.teamData.disabled.get() && !hasTeamHandlingPaused(disconnectedPlayer)) {
             String teamName = disconnectedPlayer.sortingData.getShortTeamName();
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
@@ -133,12 +141,37 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
 
     @Override
     public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        if (updateProperties(p) && !p.disabledNametags.get()) updateTeamData(p);
+        if (updateProperties(p) && !p.teamData.disabled.get()) updateTeamData(p);
     }
 
     @Override
     public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
-        if (updateProperties(changed) && !changed.disabledNametags.get()) updateTeamData(changed);
+        if (updateProperties(changed) && !changed.teamData.disabled.get()) updateTeamData(changed);
+    }
+
+    /**
+     * Loads properties from config.
+     *
+     * @param   player
+     *          Player to load properties for
+     */
+    private void loadProperties(@NotNull TabPlayer player) {
+        player.teamData.prefix = player.loadPropertyFromConfig(this, TAGPREFIX, "");
+        player.teamData.suffix = player.loadPropertyFromConfig(this, TAGSUFFIX, "");
+    }
+
+    /**
+     * Loads all properties from config and returns {@code true} if at least
+     * one of them either wasn't loaded or changed value, {@code false} otherwise.
+     *
+     * @param   p
+     *          Player to update properties of
+     * @return  {@code true} if at least one property changed, {@code false} if not
+     */
+    private boolean updateProperties(@NotNull TabPlayer p) {
+        boolean changed = p.updatePropertyFromConfig(p.teamData.prefix, TAGPREFIX, "");
+        if (p.updatePropertyFromConfig(p.teamData.suffix, TAGSUFFIX, "")) changed = true;
+        return changed;
     }
 
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
@@ -154,19 +187,19 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             updateTeamData(p, viewer);
         }
         if (redis != null) redis.updateTeam(p, p.sortingData.getShortTeamName(),
-                p.getProperty(TabConstants.Property.TAGPREFIX).get(),
-                p.getProperty(TabConstants.Property.TAGSUFFIX).get(),
+                p.teamData.prefix.get(),
+                p.teamData.suffix.get(),
                 getTeamVisibility(p, p) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
     }
 
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (!viewer.getScoreboard().containsTeam(p.sortingData.getShortTeamName())) return;
         boolean visible = getTeamVisibility(p, viewer);
-        String prefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
+        String prefix = p.teamData.prefix.getFormat(viewer);
         viewer.getScoreboard().updateTeam(
                 p.sortingData.getShortTeamName(),
                 prefix,
-                p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer),
+                p.teamData.suffix.getFormat(viewer),
                 visible ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 teamOptions,
@@ -192,23 +225,17 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (hasTeamHandlingPaused(p)) return;
         if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
-        String prefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
+        String prefix = p.teamData.prefix.getFormat(viewer);
         viewer.getScoreboard().registerTeam(
                 p.sortingData.getShortTeamName(),
                 prefix,
-                p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer),
+                p.teamData.suffix.getFormat(viewer),
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 Collections.singletonList(p.getNickname()),
                 teamOptions,
                 EnumChatFormat.lastColorsOf(prefix)
         );
-    }
-
-    protected boolean updateProperties(@NonNull TabPlayer p) {
-        boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TAGPREFIX);
-        if (p.loadPropertyFromConfig(this, TabConstants.Property.TAGSUFFIX)) changed = true;
-        return changed;
     }
 
     public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
@@ -220,7 +247,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void onLoginPacket(TabPlayer player) {
         if (!player.isLoaded()) return;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!all.disabledNametags.get() && all.isLoaded()) registerTeam(all, player);
+            if (!all.teamData.disabled.get() && all.isLoaded()) registerTeam(all, player);
         }
     }
 
@@ -311,7 +338,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.teamHandlingPaused) return;
-        if (!p.disabledNametags.get()) unregisterTeam(p, p.sortingData.getShortTeamName());
+        if (!p.teamData.disabled.get()) unregisterTeam(p, p.sortingData.getShortTeamName());
         p.teamData.teamHandlingPaused = true; //setting after, so unregisterTeam method runs
     }
 
@@ -322,7 +349,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         p.ensureLoaded();
         if (!p.teamData.teamHandlingPaused) return;
         p.teamData.teamHandlingPaused = false; //setting before, so registerTeam method runs
-        if (!p.disabledNametags.get()) registerTeam(p);
+        if (!p.teamData.disabled.get()) registerTeam(p);
     }
 
     @Override
@@ -354,7 +381,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        p.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
+        p.teamData.prefix.setTemporaryValue(prefix);
         updateTeamData(p);
     }
 
@@ -363,7 +390,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        p.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
+        p.teamData.suffix.setTemporaryValue(suffix);
         updateTeamData(p);
     }
 
@@ -372,7 +399,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        return p.getProperty(TabConstants.Property.TAGPREFIX).getTemporaryValue();
+        return p.teamData.prefix.getTemporaryValue();
     }
 
     @Override
@@ -380,7 +407,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        return p.getProperty(TabConstants.Property.TAGSUFFIX).getTemporaryValue();
+        return p.teamData.suffix.getTemporaryValue();
     }
 
     @Override
@@ -389,7 +416,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        return p.getProperty(TabConstants.Property.TAGPREFIX).getOriginalRawValue();
+        return p.teamData.prefix.getOriginalRawValue();
     }
 
     @Override
@@ -398,7 +425,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        return p.getProperty(TabConstants.Property.TAGSUFFIX).getOriginalRawValue();
+        return p.teamData.suffix.getOriginalRawValue();
     }
 
     @Override
@@ -429,6 +456,15 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
      */
     public static class PlayerData {
 
+        /** Player's tagprefix */
+        public Property prefix;
+
+        /** Player's tagsuffix */
+        public Property suffix;
+
+        /** Flag tracking whether this feature is disabled for the player with condition or not */
+        public final AtomicBoolean disabled = new AtomicBoolean();
+        
         /** Flag tracking whether this player has name tag hidden globally using API or not */
         public boolean hiddenNameTag;
 
