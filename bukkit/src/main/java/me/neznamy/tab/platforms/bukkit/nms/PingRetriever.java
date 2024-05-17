@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
-import me.neznamy.tab.shared.util.FunctionWithException;
+import me.neznamy.tab.shared.util.ToIntFunction;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 public class PingRetriever {
 
     /** Ping getter function */
-    private static FunctionWithException<Player, Integer> getPing;
+    private static ToIntFunction<Player> getPing;
 
     /**
      * Attempts to load required classes, fields and methods and marks class as available.
