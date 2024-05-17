@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
@@ -39,16 +38,8 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = config().getBoolean("tablist-name-formatting.anti-override", true);
 
-    private final LayoutManagerImpl layoutManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
     private RedisSupport redis;
     protected final DisableChecker disableChecker;
-
-    /**
-     * Flag tracking when the plugin is disabling to properly clear
-     * display name by setting it to null value and not force the value back
-     * with the anti-override.
-     */
-    private boolean disabling;
 
     /**
      * Constructs new instance, registers disable checker into feature manager and starts anti-override.
@@ -82,12 +73,10 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
      * @return  UUID of TabList entry representing requested player
      */
     public UUID getTablistUUID(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
-        if (layoutManager != null) {
-            if (viewer.layoutData.view != null) {
-                PlayerSlot slot = viewer.layoutData.view.getSlot(p);
-                if (slot != null) {
-                    return slot.getUniqueId();
-                }
+        if (viewer.layoutData.view != null) {
+            PlayerSlot slot = viewer.layoutData.view.getSlot(p);
+            if (slot != null) {
+                return slot.getUniqueId();
             }
         }
         return p.getTablistId(); //layout not enabled or player not visible to viewer
@@ -184,7 +173,6 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
 
     @Override
     public void unload() {
-        disabling = true;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {

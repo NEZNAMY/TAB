@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.layout.ParentGroup;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.types.*;
@@ -20,16 +18,12 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
     /** Value to display as ping instead of real ping */
     private final int value = config().getInt("ping-spoof.value", 0);
 
-    private LayoutManagerImpl layoutManager;
-
     @Override
     public int onLatencyChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id, int latency) {
-        if (layoutManager != null) {
-            if (packetReceiver.layoutData.view != null) {
-                for (ParentGroup group : packetReceiver.layoutData.view.getGroups()) {
-                    PlayerSlot slot = group.getPlayerSlots().get((int) id.getLeastSignificantBits());
-                    if (slot != null && slot.getPlayer() != null) return value;
-                }
+        if (packetReceiver.layoutData.view != null) {
+            for (ParentGroup group : packetReceiver.layoutData.view.getGroups()) {
+                PlayerSlot slot = group.getPlayerSlots().get((int) id.getLeastSignificantBits());
+                if (slot != null && slot.getPlayer() != null) return value;
             }
         }
         if (TAB.getInstance().getPlayer(id) != null) return value;
@@ -38,7 +32,6 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
 
     @Override
     public void load() {
-        layoutManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
         updateAll(false);
     }
 
