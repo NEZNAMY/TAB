@@ -114,18 +114,4 @@ public class StructuredComponent extends TabComponent {
         builder.append(modifier.getMagicCodes());
         return builder.toString();
     }
-
-    /**
-     * Returns raw text without colors, only works correctly when component is organized
-     *
-     * @return  raw text in this component and all child components
-     */
-    public @NotNull String toRawText() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(text);
-        for (StructuredComponent child : getExtra()) {
-            builder.append(child.text);
-        }
-        return builder.toString();
-    }
 }
