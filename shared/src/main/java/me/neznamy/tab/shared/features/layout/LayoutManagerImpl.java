@@ -35,7 +35,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     private final SkinManager skinManager = new SkinManager(defaultSkin, defaultSkinHashMap);
     private final Map<Integer, UUID> uuids = new HashMap<>();
-    private final Map<String, LayoutPattern> layouts = loadLayouts();
+    private final Map<String, LayoutPattern> layouts;
     private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(p -> p.layoutData.sortingString)));
     private PlayerList playerList;
 
@@ -48,6 +48,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
         for (int slot=1; slot<=80; slot++) {
             uuids.put(slot, new UUID(0, direction.translateSlot(slot)));
         }
+        layouts = loadLayouts();
     }
 
     public String getDefaultSkin(int slot) {
