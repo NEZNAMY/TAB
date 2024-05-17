@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Feature handler for header and footer.
  */
-public class HeaderFooter extends TabFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
-        WorldSwitchListener, ServerSwitchListener, Refreshable {
+public class HeaderFooter extends RefreshableFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
+        WorldSwitchListener, ServerSwitchListener {
 
     private final String HEADER = "header";
     private final String FOOTER = "footer";
@@ -32,6 +32,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
      * Constructs new instance and registers disable condition checker to feature manager.
      */
     public HeaderFooter() {
+        super("Header/Footer", "Updating header/footer");
         Condition disableCondition = Condition.getCondition(config().getString("header-footer.disable-condition"));
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.headerFooterData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
@@ -85,12 +86,6 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
         sendHeaderFooter(p, p.headerFooterData.header.updateAndGet(), p.headerFooterData.footer.updateAndGet());
     }
 
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating header/footer";
-    }
-
     /**
      * Processes disable condition change.
      *
@@ -140,12 +135,6 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     private void sendHeaderFooter(TabPlayer player, String header, String footer) {
         if (player.headerFooterData.disabled.get()) return;
         player.getTabList().setPlayerListHeaderFooter(TabComponent.optimized(header), TabComponent.optimized(footer));
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Header/Footer";
     }
 
     // ------------------

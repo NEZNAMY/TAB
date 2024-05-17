@@ -19,6 +19,13 @@ import org.jetbrains.annotations.NotNull;
 public abstract class PipelineInjector extends TabFeature implements JoinListener, Loadable, UnLoadable {
 
     /**
+     * Constructs new instance.
+     */
+    protected PipelineInjector() {
+        super("Pipeline injection");
+    }
+
+    /**
      * Injects handler into player's channel.
      *
      * @param   player
@@ -51,11 +58,5 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         inject(connectedPlayer);
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Pipeline injection";
     }
 }

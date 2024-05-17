@@ -48,6 +48,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @NotNull private final Map<Class<? extends RedisMessage>, String> classStringMap = new HashMap<>();
 
     protected RedisSupport() {
+        super("RedisSupport");
         registerMessage("load", Load.class, Load::new);
         registerMessage("loadrequest", LoadRequest.class, LoadRequest::new);
         registerMessage("join", PlayerJoin.class, PlayerJoin::new);
@@ -295,11 +296,5 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         sendMessage(new UpdateVanishStatus(player.getTablistId(), player.isVanished()));
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "RedisSupport";
     }
 }

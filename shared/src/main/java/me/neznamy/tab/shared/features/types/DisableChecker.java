@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -14,13 +13,7 @@ import java.util.function.Function;
 /**
  * Class checking if disable-condition of each feature is met or not.
  */
-public class DisableChecker extends TabFeature implements Refreshable {
-
-    @Getter
-    private final String featureName;
-
-    @Getter
-    private final String refreshDisplayName = "Refreshing disable condition";
+public class DisableChecker extends RefreshableFeature {
 
     @Nullable
     private final Condition disableCondition;
@@ -45,7 +38,7 @@ public class DisableChecker extends TabFeature implements Refreshable {
      */
     public DisableChecker(@NotNull String featureName, @Nullable Condition disableCondition,
                           @NotNull BiConsumer<TabPlayer, Boolean> action, @NotNull Function<TabPlayer, AtomicBoolean> field) {
-        this.featureName = featureName;
+        super(featureName, "Refreshing disable condition");
         this.disableCondition = disableCondition;
         this.action = action;
         this.field = field;

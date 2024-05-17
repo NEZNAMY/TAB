@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features;
 
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -19,8 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Feature handler for BelowName feature
  */
-public class BelowName extends TabFeature implements JoinListener, Loadable, UnLoadable,
-        Refreshable, LoginPacketListener, WorldSwitchListener, ServerSwitchListener {
+public class BelowName extends RefreshableFeature implements JoinListener, Loadable, UnLoadable,
+        LoginPacketListener, WorldSwitchListener, ServerSwitchListener {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -30,7 +29,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     private final String fancyDisplayDefault = config().getString("belowname-objective.fancy-display-default", "NPC");
     private final String fancyDisplayPlayers = config().getString("belowname-objective.fancy-display-players", "&c" + TabConstants.Placeholder.HEALTH);
 
-    private final TextRefresher textRefresher = new TextRefresher(this);
+    private final TextRefresher textRefresher = new TextRefresher();
     private final DisableChecker disableChecker;
     private RedisSupport redis;
 
@@ -38,6 +37,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
      * Constructs new instance and registers disable condition checker and text refresher to feature manager.
      */
     public BelowName() {
+        super("BelowName", "Updating BelowName number");
         Condition disableCondition = Condition.getCondition(config().getString("belowname-objective.disable-condition"));
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.belowNameData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
@@ -157,12 +157,6 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating BelowName number";
-    }
-
-    @Override
     public void onLoginPacket(@NotNull TabPlayer player) {
         if (player.belowNameData.disabled.get() || !player.isLoaded()) return;
         register(player);
@@ -205,12 +199,6 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         );
     }
 
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "BelowName";
-    }
-
     /**
      * Returns {@code true} if the two players are in the same server and world,
      * {@code false} if not.
@@ -243,10 +231,11 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         }
     }
 
-    @RequiredArgsConstructor
-    private static class TextRefresher extends TabFeature implements Refreshable {
+    private static class TextRefresher extends RefreshableFeature {
 
-        private final BelowName feature;
+        private TextRefresher() {
+            super("BelowName", "Updating BelowName text");
+        }
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
@@ -257,18 +246,6 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                     Scoreboard.HealthDisplay.INTEGER,
                     TabComponent.optimized(refreshed.belowNameData.defaultNumberFormat.updateAndGet())
             );
-        }
-
-        @Override
-        @NotNull
-        public String getRefreshDisplayName() {
-            return "Updating BelowName text";
-        }
-
-        @Override
-        @NotNull
-        public String getFeatureName() {
-            return feature.getFeatureName();
         }
     }
 

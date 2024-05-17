@@ -40,6 +40,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      *          Plugin instance to register events
      */
     public PerWorldPlayerList(JavaPlugin plugin) {
+        super("Per world PlayerList");
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -124,11 +125,5 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
             }
         }
         return viewerWorldGroup.equals(targetWorldGroup);
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Per world PlayerList";
     }
 }

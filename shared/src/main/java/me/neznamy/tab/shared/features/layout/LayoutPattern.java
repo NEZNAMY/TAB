@@ -5,7 +5,7 @@ import lombok.NonNull;
 import me.neznamy.tab.api.tablist.layout.Layout;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 @Getter
-public class LayoutPattern extends TabFeature implements Refreshable, Layout {
+public class LayoutPattern extends RefreshableFeature implements Layout {
 
     @NotNull private final LayoutManagerImpl manager;
     @NotNull private final String name;
@@ -25,6 +25,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
 
     @SuppressWarnings("unchecked")
     public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull Map<String, Object> map) {
+        super(manager.getFeatureName(), "Updating player groups");
         this.manager = manager;
         this.name = name;
         TAB.getInstance().getConfigHelper().startup().checkLayoutMap(name, map);
@@ -71,18 +72,6 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         manager.tickAllLayouts();
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating player groups";
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return manager.getFeatureName();
     }
 
     // ------------------

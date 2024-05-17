@@ -7,7 +7,7 @@ import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
@@ -54,7 +54,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     @Override
     public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target, @Nullable Object value) {
         if (hasValueChanged((TabPlayer) viewer, (TabPlayer) target, value)) {
-            for (Refreshable r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
+            for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
                 long startTime = System.nanoTime();
                 r.refresh((TabPlayer) target, true);
                 TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
@@ -88,13 +88,13 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 
     @Override
     public void updateFromNested(@NonNull TabPlayer viewer) {
-        Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier);
+        Set<RefreshableFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier);
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             Object value = request(viewer, target);
             String s = replacements.findReplacement(String.valueOf(value));
             lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
             if (!target.isLoaded()) return; // Updated on join
-            for (Refreshable f : usage) {
+            for (RefreshableFeature f : usage) {
                 long time = System.nanoTime();
                 f.refresh(target, true);
                 TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
@@ -102,7 +102,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
             updateParents(target);
         }
         if (!viewer.isLoaded()) return; // Updated on join
-        for (Refreshable f : usage) {
+        for (RefreshableFeature f : usage) {
             long time = System.nanoTime();
             f.refresh(viewer, true);
             TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);

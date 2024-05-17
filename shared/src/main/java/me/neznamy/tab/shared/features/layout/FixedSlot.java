@@ -2,14 +2,12 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.TabFeature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,8 +16,7 @@ import java.util.UUID;
 /**
  * A fixed layout slot with defined slot, text and maybe also ping and skin.
  */
-@RequiredArgsConstructor
-public class FixedSlot extends TabFeature implements Refreshable {
+public class FixedSlot extends RefreshableFeature {
 
     @NonNull private final LayoutManagerImpl manager;
     @Getter private final int slot;
@@ -31,22 +28,30 @@ public class FixedSlot extends TabFeature implements Refreshable {
     @NonNull private final String skinProperty;
     private final int ping;
 
+    public FixedSlot(@NonNull LayoutManagerImpl manager, int slot, @NonNull LayoutPattern pattern, @NonNull UUID id,
+                     @NonNull String text, @NonNull String propertyName, @NonNull String skin, @NonNull String skinProperty, int ping) {
+        super(manager.getFeatureName(), "Updating fixed slots");
+        this.manager = manager;
+        this.slot = slot;
+        this.pattern = pattern;
+        this.id = id;
+        this.text = text;
+        this.propertyName = propertyName;
+        this.skin = skin;
+        this.skinProperty = skinProperty;
+        this.ping = ping;
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.layoutData.view == null || p.layoutData.view.getPattern() != pattern ||
-                p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
+                p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return; // TODO check if / make view null for <1.8 and bedrock to skip all these checks everywhere
         if (p.getProperty(skinProperty).update()) {
             p.getTabList().removeEntry(id);
             p.getTabList().addEntry(createEntry(p));
         } else {
             p.getTabList().updateDisplayName(id, TabComponent.optimized(p.getProperty(propertyName).updateAndGet()));
         }
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating fixed slots";
     }
 
     /**
@@ -117,11 +122,5 @@ public class FixedSlot extends TabFeature implements Refreshable {
         );
         if (!text.isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), slot), f);
         return f;
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return manager.getFeatureName();
     }
 }

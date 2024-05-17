@@ -17,6 +17,13 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         ServerSwitchListener, WorldSwitchListener, VanishListener {
 
     /**
+     * Constructs new instance.
+     */
+    public SpectatorFix() {
+        super("Spectator fix");
+    }
+
+    /**
      * Sends GameMode update of all players to either their real GameMode if
      * {@code realGameMode} is {@code true} or fake value if it's {@code false}.
      *
@@ -97,11 +104,5 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
             if (viewer == player || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
             viewer.getTabList().updateGameMode(player.getTablistId(), 0);
         }
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Spectator fix";
     }
 }

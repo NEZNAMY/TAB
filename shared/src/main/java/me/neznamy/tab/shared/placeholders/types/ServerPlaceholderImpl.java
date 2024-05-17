@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
@@ -51,7 +51,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     @Override
     public void updateValue(@Nullable Object value) {
         if (hasValueChanged(value)) {
-            for (Refreshable r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
+            for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     if (!all.isLoaded()) return; // Updated on join
                     long startTime = System.nanoTime();

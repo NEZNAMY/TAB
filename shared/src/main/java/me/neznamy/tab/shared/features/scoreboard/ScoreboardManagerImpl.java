@@ -17,8 +17,8 @@ import java.util.Map.Entry;
 /**
  * Feature handler for scoreboard feature.
  */
-public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager, JoinListener,
-        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable, Refreshable,
+public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
+        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable,
         QuitListener, LoginPacketListener {
 
     /** Objective name used by this feature */
@@ -43,6 +43,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     //active scoreboard announcement
     @Nullable
     private me.neznamy.tab.api.scoreboard.Scoreboard announcement;
+
+    /**
+     * Constructs new instance and loads config options.
+     */
+    public ScoreboardManagerImpl() {
+        super("Scoreboard", "Switching scoreboards");
+    }
 
     @Override
     public void load() {
@@ -81,12 +88,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         if (p.scoreboardData.forcedScoreboard != null || !hasScoreboardVisible(p) ||
                 announcement != null || p.scoreboardData.otherPluginScoreboard != null || p.scoreboardData.joinDelayed) return;
         sendHighestScoreboard(p);
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Switching scoreboards";
     }
 
     @Override
@@ -214,12 +215,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             scoreboard.removePlayerFromSet(player);
             scoreboard.addPlayer(player);
         }
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Scoreboard";
     }
 
     // ------------------

@@ -20,8 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
-public class YellowNumber extends TabFeature implements JoinListener, Loadable, UnLoadable,
-        Refreshable, LoginPacketListener {
+public class YellowNumber extends RefreshableFeature implements JoinListener, Loadable, UnLoadable, LoginPacketListener {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
@@ -44,6 +43,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
      * Constructs new instance and registers disable condition checker to feature manager.
      */
     public YellowNumber() {
+        super("Playerlist Objective", "Updating value");
         Condition disableCondition = Condition.getCondition(config().getString("playerlist-objective.disable-condition"));
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.playerlistObjectiveData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
@@ -152,12 +152,6 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating value";
-    }
-
-    @Override
     public void onLoginPacket(@NotNull TabPlayer p) {
         if (p.playerlistObjectiveData.disabled.get() || !p.isLoaded()) return;
         register(p);
@@ -193,12 +187,6 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
                 null, // Unused by this objective slot
                 TabComponent.optimized(fancyValue)
         );
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Playerlist Objective";
     }
 
     /**

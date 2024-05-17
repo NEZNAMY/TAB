@@ -18,6 +18,13 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
     /** Value to display as ping instead of real ping */
     private final int value = config().getInt("ping-spoof.value", 0);
 
+    /**
+     * Constructs new instance.
+     */
+    public PingSpoof() {
+        super("Ping spoof");
+    }
+
     @Override
     public int onLatencyChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id, int latency) {
         if (packetReceiver.layoutData.view != null) {
@@ -54,11 +61,5 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
                 viewer.getTabList().updateLatency(target.getTablistId(), realPing ? target.getPing() : value);
             }
         }
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Ping spoof";
     }
 }

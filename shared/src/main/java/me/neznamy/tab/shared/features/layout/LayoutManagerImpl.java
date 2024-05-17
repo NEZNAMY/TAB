@@ -22,8 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-public class LayoutManagerImpl extends TabFeature implements LayoutManager, JoinListener, QuitListener, VanishListener, Loadable,
-        UnLoadable, Refreshable, TabListClearListener {
+public class LayoutManagerImpl extends RefreshableFeature implements LayoutManager, JoinListener, QuitListener, VanishListener, Loadable,
+        UnLoadable, TabListClearListener {
 
     /** Config options */
     private final Direction direction = parseDirection(config().getString("layout.direction", "COLUMNS"));
@@ -45,6 +45,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
      * Constructs new instance and loads config options.
      */
     public LayoutManagerImpl() {
+        super("Layout", "Switching layouts");
         for (int slot=1; slot<=80; slot++) {
             uuids.put(slot, new UUID(0, direction.translateSlot(slot)));
         }
@@ -79,7 +80,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     public void load() {
         playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
         teamsEnabled = TAB.getInstance().getNameTagManager() != null;
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher());
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
@@ -150,12 +151,6 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     }
 
     @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Switching layouts";
-    }
-
-    @Override
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
@@ -185,12 +180,6 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
         p.layoutData.sortingString = teamName;
         sortedPlayers.put(p, teamName);
         tickAllLayouts();
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Layout";
     }
 
     @Override

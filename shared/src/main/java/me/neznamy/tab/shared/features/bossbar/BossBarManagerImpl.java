@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 /**
  * Class for handling BossBar feature
  */
-public class BossBarManagerImpl extends TabFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
-        UnLoadable, Refreshable, LoginPacketListener, QuitListener {
+public class BossBarManagerImpl extends RefreshableFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
+        UnLoadable, LoginPacketListener, QuitListener {
 
     //default BossBars
     private final List<String> defaultBars = new ArrayList<>();
@@ -51,6 +51,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      * Constructs new instance and loads configuration
      */
     public BossBarManagerImpl() {
+        super("BossBar", "Updating display conditions");
         for (Object bar : config().getConfigurationSection("bossbar.bars").keySet()) {
             BossBarLine line = loadFromConfig(bar.toString());
             registeredBossBars.put(bar.toString(), line);
@@ -105,12 +106,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
             showBossBars(p, defaultBars);
             showBossBars(p, announcedBossBars.stream().map(BossBar::getName).collect(Collectors.toList()));
         }
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating display conditions";
     }
 
     @Override
@@ -184,12 +179,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
         for (BossBar line : lineValues) {
             ((BossBarLine)line).removePlayerRaw(disconnectedPlayer);
         }
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "BossBar";
     }
 
     // ------------------

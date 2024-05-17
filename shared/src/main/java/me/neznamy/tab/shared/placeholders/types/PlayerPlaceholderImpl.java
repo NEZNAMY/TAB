@@ -4,7 +4,7 @@ import lombok.NonNull;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +51,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Object value) {
         if (hasValueChanged((TabPlayer) player, value)) {
             if (!player.isLoaded()) return; // Updated on join
-            for (Refreshable r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
+            for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
                 long startTime = System.nanoTime();
                 r.refresh((TabPlayer) player, false);
                 TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);

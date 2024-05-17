@@ -1,8 +1,5 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.Collections;
-import java.util.UUID;
-
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -19,6 +16,9 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.UUID;
+
 /**
  * This feature attempts to provide compatibility with nick/disguise plugins by
  * listening to player add packet and see if nickname is different. If it is, player
@@ -33,6 +33,13 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     @Nullable private final RedisTeams redisTeams = redis == null ? null : redis.getRedisTeams();
     @Nullable private final RedisYellowNumber redisYellowNumber = redis == null ? null : redis.getRedisYellowNumber();
     @Nullable private final RedisBelowName redisBelowName = redis == null ? null : redis.getRedisBelowName();
+
+    /**
+     * Constructs new instance.
+     */
+    public NickCompatibility() {
+        super("Nick compatibility");
+    }
 
     public synchronized void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
         TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
@@ -137,11 +144,5 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             }
         });
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Nick compatibility";
     }
 }

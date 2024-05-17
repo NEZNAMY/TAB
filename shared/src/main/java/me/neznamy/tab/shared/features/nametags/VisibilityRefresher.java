@@ -2,17 +2,27 @@ package me.neznamy.tab.shared.features.nametags;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
-public class VisibilityRefresher extends TabFeature implements Refreshable {
+/**
+ * Sub-feature that makes nametags invisible for players who are invisible
+ * for 1.8 players to compensate for a client-sided bug.
+ */
+public class VisibilityRefresher extends RefreshableFeature {
 
     @NotNull
     private final NameTag nameTags;
 
+    /**
+     * Constructs new instance and registers {@link TabConstants.Placeholder#INVISIBLE} placeholders.
+     *
+     * @param   nameTags
+     *          Parent feature
+     */
     public VisibilityRefresher(@NotNull NameTag nameTags) {
+        super(nameTags.getFeatureName(), "Updating NameTag visibility");
         this.nameTags = nameTags;
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, 500,
                 p -> Boolean.toString(((TabPlayer)p).hasInvisibilityPotion()));
@@ -23,17 +33,5 @@ public class VisibilityRefresher extends TabFeature implements Refreshable {
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.disabled.get()) return;
         nameTags.updateTeamData(p);
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating NameTag visibility";
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return nameTags.getFeatureName();
     }
 }

@@ -2,17 +2,18 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.api.scoreboard.Line;
+import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.StableDynamicLine;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.scoreboard.lines.*;
-import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +23,7 @@ import java.util.*;
  * A class representing a scoreboard configured in config
  */
 @Getter
-public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.scoreboard.Scoreboard, Refreshable {
+public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab.api.scoreboard.Scoreboard {
 
     private final String titleProperty = Property.randomName();
 
@@ -83,6 +84,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      */
     public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull String title,
                           @NonNull List<String> lines, boolean dynamicLinesOnly) {
+        super(manager.getFeatureName(), "Updating Scoreboard title");
         this.manager = manager;
         this.name = name;
         this.title = title;
@@ -183,12 +185,6 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         );
     }
 
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating Scoreboard title";
-    }
-
     /**
      * Recalculate scores for each line if using numbers. This takes into
      * consideration lines that are not visible.
@@ -224,12 +220,6 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
      */
     public void removePlayerFromSet(@NonNull TabPlayer player) {
         players.remove(player);
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return manager.getFeatureName();
     }
 
     // ------------------

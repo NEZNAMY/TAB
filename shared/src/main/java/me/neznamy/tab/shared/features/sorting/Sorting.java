@@ -10,8 +10,7 @@ import me.neznamy.tab.api.tablist.SortingManager;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -34,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Class for handling player sorting rules
  */
-public class Sorting extends TabFeature implements SortingManager, JoinListener, Loadable, Refreshable {
+public class Sorting extends RefreshableFeature implements SortingManager, JoinListener, Loadable {
 
     private NameTag nameTags;
     private LayoutManagerImpl layout;
@@ -53,6 +52,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
      * Constructs new instance and loads config options
      */
     public Sorting() {
+        super("Sorting", "Updating team names");
         types.put("GROUPS", Groups::new);
         types.put("PERMISSIONS", Permissions::new);
         types.put("PLACEHOLDER", Placeholder::new);
@@ -71,12 +71,6 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
             if (nameTags != null) nameTags.updateTeamName(p, previousShortName);
             if (layout != null) layout.updateTeamName(p, p.sortingData.getFullTeamName());
         }
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating team name";
     }
 
     @Override
@@ -181,12 +175,6 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
      */
     public @NotNull String typesToString() {
         return Arrays.stream(usedSortingTypes).map(SortingType::getDisplayName).collect(Collectors.joining(" -> "));
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Sorting";
     }
 
     // ------------------

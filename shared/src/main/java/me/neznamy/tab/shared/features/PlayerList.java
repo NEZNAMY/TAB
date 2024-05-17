@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Feature handler for TabList display names
  */
 @Getter
-public class PlayerList extends TabFeature implements TabListFormatManager, JoinListener, Loadable,
-        UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, VanishListener {
+public class PlayerList extends RefreshableFeature implements TabListFormatManager, JoinListener, Loadable,
+        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener {
 
     /** Name of the property used in configuration */
     public static final String TABPREFIX = "tabprefix";
@@ -45,6 +45,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
      * Constructs new instance, registers disable checker into feature manager and starts anti-override.
      */
     public PlayerList() {
+        super("Tablist name formatting", "Updating TabList format");
         Condition disableCondition = Condition.getCondition(config().getString("tablist-name-formatting.disable-condition"));
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.tablistData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
@@ -238,12 +239,6 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
     }
 
     @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating TabList format";
-    }
-
-    @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         connectedPlayer.getTabList().setAntiOverride(antiOverrideTabList);
         loadProperties(connectedPlayer);
@@ -274,12 +269,6 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
         }
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Tablist name formatting";
     }
 
     // ------------------

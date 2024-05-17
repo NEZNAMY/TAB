@@ -9,8 +9,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.features.scoreboard.ScoreRefresher;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
@@ -25,7 +24,7 @@ import java.util.WeakHashMap;
  * Abstract class representing a line of scoreboard
  */
 @Getter
-public abstract class ScoreboardLine extends TabFeature implements Line, Refreshable {
+public abstract class ScoreboardLine extends RefreshableFeature implements Line {
 
     //ID of this line
     protected final int lineNumber;
@@ -58,6 +57,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line, Refresh
      *          ID of this line
      */
     protected ScoreboardLine(@NonNull ScoreboardImpl parent, int lineNumber, String text) {
+        super(parent.getFeatureName(), "Updating Scoreboard lines");
         initializeText(text);
         this.parent = parent;
         this.lineNumber = lineNumber;
@@ -260,17 +260,5 @@ public abstract class ScoreboardLine extends TabFeature implements Line, Refresh
                 0,
                 EnumChatFormat.RESET
         );
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating Scoreboard lines";
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return parent.getFeatureName();
     }
 }

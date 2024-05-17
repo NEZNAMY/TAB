@@ -1,21 +1,20 @@
 package me.neznamy.tab.shared.features.bossbar;
 
-import java.util.*;
-
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 /**
  * Class representing a BossBar from configuration
@@ -311,87 +310,55 @@ public class BossBarLine implements BossBar {
         return players.contains((TabPlayer) player);
     }
 
-    private class TextRefresher extends TabFeature implements Refreshable {
+    private class TextRefresher extends RefreshableFeature {
+
+        private TextRefresher() {
+            super("BossBar", "Updating text");
+        }
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, refreshed.getProperty(propertyTitle).updateAndGet());
         }
-
-        @Override
-        @NotNull
-        public String getRefreshDisplayName() {
-            return "Updating text";
-        }
-
-        @Override
-        @NotNull
-        public String getFeatureName() {
-            return "BossBar";
-        }
     }
 
-    private class ProgressRefresher extends TabFeature implements Refreshable {
+    private class ProgressRefresher extends RefreshableFeature {
+
+        private ProgressRefresher() {
+            super( "BossBar", "Updating progress");
+        }
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseProgress(refreshed, refreshed.getProperty(propertyProgress).updateAndGet())/100);
         }
-
-        @Override
-        @NotNull
-        public String getRefreshDisplayName() {
-            return "Updating progress";
-        }
-
-        @Override
-        @NotNull
-        public String getFeatureName() {
-            return "BossBar";
-        }
     }
 
-    private class ColorRefresher extends TabFeature implements Refreshable {
+    private class ColorRefresher extends RefreshableFeature {
+
+        private ColorRefresher() {
+            super( "BossBar", "Updating color");
+        }
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseColor(refreshed, refreshed.getProperty(propertyColor).updateAndGet()));
         }
-
-        @Override
-        @NotNull
-        public String getRefreshDisplayName() {
-            return "Updating color";
-        }
-
-        @Override
-        @NotNull
-        public String getFeatureName() {
-            return "BossBar";
-        }
     }
 
-    private class StyleRefresher extends TabFeature implements Refreshable {
+    private class StyleRefresher extends RefreshableFeature {
+
+        private StyleRefresher() {
+            super("BossBar", "Updating style");
+        }
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseStyle(refreshed, refreshed.getProperty(propertyStyle).updateAndGet()));
-        }
-
-        @Override
-        @NotNull
-        public String getRefreshDisplayName() {
-            return "Updating style";
-        }
-
-        @Override
-        @NotNull
-        public String getFeatureName() {
-            return "BossBar";
         }
     }
 }

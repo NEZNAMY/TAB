@@ -1,11 +1,10 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,8 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Feature refreshing NumberFormat in scoreboard for players.
  */
-@RequiredArgsConstructor
-public class ScoreRefresher extends TabFeature implements Refreshable {
+public class ScoreRefresher extends RefreshableFeature {
 
     private final String NUMBER_FORMAT_PROPERTY = Property.randomName();
 
@@ -23,6 +21,20 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
 
     /** Configured number format */
     private final String numberFormat;
+
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   line
+     *          Line this NumberFormat belongs to
+     * @param   numberFormat
+     *          Configured number format
+     */
+    public ScoreRefresher(@NonNull ScoreboardLine line, @NonNull String numberFormat) {
+        super(line.getFeatureName(), "Updating NumberFormat");
+        this.line = line;
+        this.numberFormat = numberFormat;
+    }
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
@@ -35,12 +47,6 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
                 null,
                 getNumberFormat(refreshed)
         );
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating NumberFormat";
     }
 
     /**
@@ -63,11 +69,5 @@ public class ScoreRefresher extends TabFeature implements Refreshable {
     @Nullable
     public TabComponent getNumberFormat(@NotNull TabPlayer player) {
         return TabComponent.optimized(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return line.getFeatureName();
     }
 }

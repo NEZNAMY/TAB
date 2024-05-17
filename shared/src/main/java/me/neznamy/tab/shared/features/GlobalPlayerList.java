@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Feature handler for global PlayerList feature.
  */
-public class GlobalPlayerList extends TabFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
-        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, Refreshable {
+public class GlobalPlayerList extends RefreshableFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
+        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener {
 
     // config options
     private final List<String> spyServers = config().getStringList("global-playerlist.spy-servers",
@@ -31,6 +31,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
      * Constructs new instance and registers new placeholders.
      */
     public GlobalPlayerList() {
+        super("Global PlayerList", "Updating latency");
         for (Map.Entry<String, List<String>> entry : sharedServers.entrySet()) {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
                 int count = 0;
@@ -233,17 +234,5 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
                 viewer.getTabList().updateLatency(refreshed.getTablistId(), refreshed.getPing());
             }
         }
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating latency";
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "Global PlayerList";
     }
 }

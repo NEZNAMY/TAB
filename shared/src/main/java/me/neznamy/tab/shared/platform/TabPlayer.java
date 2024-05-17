@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.hook.FloodgateHook;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -152,7 +152,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return {@code true} if property did not exist or existed with different raw value,
      * {@code false} if property existed with the same raw value already.
      */
-    public boolean setProperty(@Nullable Refreshable feature, @NotNull String identifier, @NotNull String rawValue) {
+    public boolean setProperty(@Nullable RefreshableFeature feature, @NotNull String identifier, @NotNull String rawValue) {
         Property p = getProperty(identifier);
         if (p == null) {
             properties.put(identifier, new Property(null, feature, this, rawValue, null));
@@ -262,7 +262,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *          value to use if property is not defined in config
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
-    public Property loadPropertyFromConfig(@Nullable Refreshable feature, @NotNull String property, @NotNull String ifNotSet) {
+    public Property loadPropertyFromConfig(@Nullable RefreshableFeature feature, @NotNull String property, @NotNull String ifNotSet) {
         String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(name, property, server, world);
         if (value.length == 0) {
             value = TAB.getInstance().getConfiguration().getUsers().getProperty(uniqueId.toString(), property, server, world);

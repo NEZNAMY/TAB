@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
@@ -31,7 +31,7 @@ public class Property {
      * Feature defining this text, which will receive refresh function
      * if any of placeholders used in it change value.
      */
-    @Nullable private final Refreshable listener;
+    @Nullable private final RefreshableFeature listener;
     
     /** Player this text belongs to */
     @NotNull private final TabPlayer owner;
@@ -77,7 +77,7 @@ public class Property {
      * @param   rawValue
      *          Raw value using raw placeholder identifiers
      */
-    public Property(@Nullable Refreshable listener, @NotNull TabPlayer owner,
+    public Property(@Nullable RefreshableFeature listener, @NotNull TabPlayer owner,
                     @NotNull String rawValue) {
         this(null, listener, owner, rawValue, null);
     }
@@ -97,7 +97,7 @@ public class Property {
      * @param   source
      *          Source of the text used in debug command
      */
-    public Property(@Nullable String name, @Nullable Refreshable listener, @NotNull TabPlayer owner,
+    public Property(@Nullable String name, @Nullable RefreshableFeature listener, @NotNull TabPlayer owner,
                     @NotNull String rawValue, @Nullable String source) {
         this.name = name;
         this.listener = listener;

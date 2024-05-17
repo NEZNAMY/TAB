@@ -92,7 +92,7 @@ public class FeatureManager {
      */
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         for (TabFeature f : values) {
-            if (f instanceof Refreshable) ((Refreshable)f).refresh(refreshed, force);
+            if (f instanceof RefreshableFeature) ((RefreshableFeature)f).refresh(refreshed, force);
         }
     }
 

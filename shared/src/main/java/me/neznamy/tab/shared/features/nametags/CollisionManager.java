@@ -1,12 +1,10 @@
 package me.neznamy.tab.shared.features.nametags;
 
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -14,11 +12,21 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Class managing collision rule for players.
  */
-@RequiredArgsConstructor
-public class CollisionManager extends TabFeature implements JoinListener, Loadable, Refreshable {
+public class CollisionManager extends RefreshableFeature implements JoinListener, Loadable {
 
     private final NameTag nameTags;
     private final Condition refreshCondition = Condition.getCondition(config().getString("scoreboard-teams.enable-collision", "true"));
+
+    /**
+     * Constructs new instance.
+     *
+     * @param   nameTags
+     *          Parent feature
+     */
+    public CollisionManager(@NotNull NameTag nameTags) {
+        super(nameTags.getFeatureName(), "Updating collision");
+        this.nameTags = nameTags;
+    }
 
     @Override
     public void load() {
@@ -44,17 +52,5 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.disabled.get()) return;
         nameTags.updateTeamData(p);
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating collision";
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return nameTags.getFeatureName();
     }
 }

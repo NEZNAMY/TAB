@@ -19,8 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NameTag extends TabFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, LoginPacketListener,
+public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
+        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, LoginPacketListener,
         VanishListener {
 
     /** Name of the property used in configuration */
@@ -39,6 +39,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     private RedisSupport redis;
 
     public NameTag() {
+        super("NameTags", "Updating prefix/suffix");
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.teamData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
@@ -94,12 +95,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             refresh = prefix || suffix;
         }
         if (refresh) updateTeamData(refreshed);
-    }
-
-    @Override
-    @NotNull
-    public String getRefreshDisplayName() {
-        return "Updating prefix/suffix";
     }
 
     @Override
@@ -283,12 +278,6 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             }
             player.teamData.vanishedFor.clear();
         }
-    }
-
-    @Override
-    @NotNull
-    public String getFeatureName() {
-        return "NameTags";
     }
 
     // ------------------
