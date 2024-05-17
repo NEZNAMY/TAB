@@ -122,7 +122,7 @@ public class BukkitPlatform implements BackendPlatform {
         }
         // Override for the PAPI placeholder to prevent console errors on unsupported server versions when ping field changes
         manager.registerPlayerPlaceholder("%player_ping%", manager.getRefreshInterval("%player_ping%"),
-                p -> ((TabPlayer) p).getPing());
+                p -> Integer.toString(((TabPlayer) p).getPing()));
         BackendPlatform.super.registerPlaceholders();
     }
 

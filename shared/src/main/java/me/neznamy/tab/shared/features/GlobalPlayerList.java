@@ -37,7 +37,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
                 for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                     if (entry.getValue().contains(player.getServer()) && !player.isVanished()) count++;
                 }
-                return count;
+                return Integer.toString(count);
             });
         }
     }

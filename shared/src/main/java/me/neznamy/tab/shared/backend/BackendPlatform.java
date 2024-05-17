@@ -30,7 +30,7 @@ public interface BackendPlatform extends Platform {
         UniversalPlaceholderRegistry registry = new UniversalPlaceholderRegistry();
         PlaceholderManager manager = TAB.getInstance().getPlaceholderManager();
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100,
-                p -> (int) Math.ceil(((BackendTabPlayer)p).getHealth()));
+                p -> Integer.toString((int) Math.ceil(((BackendTabPlayer)p).getHealth())));
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500,
                 p -> ((BackendTabPlayer)p).getDisplayName());
         manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000,

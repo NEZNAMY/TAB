@@ -50,16 +50,16 @@ public class UniversalPlaceholderRegistry {
 
     private void registerConstants(@NotNull PlaceholderManager manager) {
         // Player
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.BEDROCK, -1, p -> ((TabPlayer)p).isBedrockPlayer());
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.BEDROCK, -1, p -> Boolean.toString(((TabPlayer)p).isBedrockPlayer()));
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.PLAYER, -1, me.neznamy.tab.api.TabPlayer::getName);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).getWorld());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer)p).getServer());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION, -1, p -> ((TabPlayer)p).getVersion().getFriendlyName());
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION_ID, -1, p -> ((TabPlayer)p).getVersion().getNetworkId());
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION_ID, -1, p -> Integer.toString(((TabPlayer)p).getVersion().getNetworkId()));
 
         // Server
         manager.registerServerPlaceholder("%%", -1, () -> "%");
-        manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX, -1, () -> ((int) (Runtime.getRuntime().maxMemory()/1024/1024)));
+        manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX, -1, () -> Integer.toString((int) (Runtime.getRuntime().maxMemory()/1024/1024)));
         manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX_GB, -1, () -> decimal2.format((float)Runtime.getRuntime().maxMemory()/1024/1024/1024));
         if (!LuckPermsHook.getInstance().isInstalled()) {
             manager.registerServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, -1, () -> "");
@@ -73,51 +73,51 @@ public class UniversalPlaceholderRegistry {
         SimpleDateFormat dateFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
         manager.registerServerPlaceholder(TabConstants.Placeholder.TIME, 500, () -> timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));
         manager.registerServerPlaceholder(TabConstants.Placeholder.DATE, 60000, () -> dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));
-        manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_USED, 200, () -> ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024)));
+        manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_USED, 200, () -> Integer.toString((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024)));
         manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_USED_GB, 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
         manager.registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (!player.isVanished()) count++;
             }
-            return count;
+            return Integer.toString(count);
         });
         manager.registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 2000, () -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (player.hasPermission(TabConstants.Permission.STAFF) && !player.isVanished()) count++;
             }
-            return count;
+            return Integer.toString(count);
         });
         manager.registerServerPlaceholder(TabConstants.Placeholder.NON_STAFF_ONLINE, 2000, () -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (!player.hasPermission(TabConstants.Permission.STAFF) && !player.isVanished()) count++;
             }
-            return count;
+            return Integer.toString(count);
         });
     }
 
     @SuppressWarnings("unchecked")
     private void registerPlayerPlaceholders(@NotNull PlaceholderManager manager) {
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, -1, me.neznamy.tab.api.TabPlayer::getGroup);
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.PING, 500, p -> ((TabPlayer)p).getPing());
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, p -> ((TabPlayer)p).isVanished());
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.PING, 500, p -> Integer.toString(((TabPlayer)p).getPing()));
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, p -> Boolean.toString(((TabPlayer)p).isVanished()));
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (((TabPlayer)p).getWorld().equals(player.getWorld()) && !player.isVanished()) count++;
             }
-            return count;
+            return Integer.toString(count);
         });
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (((TabPlayer)p).getServer().equals(player.getServer()) && !player.isVanished()) count++;
             }
-            return count;
+            return Integer.toString(count);
         });
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, 100, p -> ((TabPlayer)p).getGamemode());
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, 100, p -> Integer.toString(((TabPlayer)p).getGamemode()));
         if (LuckPermsHook.getInstance().isInstalled()) {
             int refresh = TAB.getInstance().getConfiguration().getPermissionRefreshInterval();
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, refresh,

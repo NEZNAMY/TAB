@@ -24,10 +24,10 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     public void load() {
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
             TabPlayer player = (TabPlayer) p;
-            if (player.teamData.forcedCollision != null) return player.teamData.forcedCollision;
+            if (player.teamData.forcedCollision != null) return Boolean.toString(player.teamData.forcedCollision);
             boolean newCollision = !((TabPlayer)p).isDisguised() && refreshCondition.isMet((TabPlayer) p);
             player.teamData.collisionRule = newCollision;
-            return newCollision;
+            return Boolean.toString(newCollision);
         });
         addUsedPlaceholder(TabConstants.Placeholder.COLLISION);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

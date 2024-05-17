@@ -215,7 +215,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             for (RedisPlayer player : redisPlayers.values()) {
                 if (!player.isVanished()) count++;
             }
-            return count;
+            return Integer.toString(count);
         });
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () -> {
             int count = 0;
@@ -225,7 +225,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             for (RedisPlayer player : redisPlayers.values()) {
                 if (!player.isVanished() && player.isStaff()) count++;
             }
-            return count;
+            return Integer.toString(count);
         });
     }
 

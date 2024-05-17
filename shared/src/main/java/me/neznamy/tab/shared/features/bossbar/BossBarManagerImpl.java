@@ -84,7 +84,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     @Override
     public void load() {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.COUNTDOWN, 100,
-                () -> TimeUnit.MILLISECONDS.toSeconds(announceEndTime - System.currentTimeMillis()));
+                () -> Long.toString(TimeUnit.MILLISECONDS.toSeconds(announceEndTime - System.currentTimeMillis())));
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
