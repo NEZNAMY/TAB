@@ -89,7 +89,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean isVanished() {
+    public boolean isVanished0() {
         for (MetadataValue v : getPlayer().getMetadata("vanished")) {
             if (v.asBoolean()) return true;
         }

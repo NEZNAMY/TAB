@@ -52,8 +52,8 @@ public class PlayerJoinResponse implements IncomingMessage {
         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), world);
         if (group != null) player.setGroup(group);
         // reset attributes from previous server to default false values, new server will send separate update packets if needed
-        if (player.vanished) { // Only trigger if bridge says player is vanished, do not trigger on proxy vanish
-            player.vanished = false;
+        if (player.isVanished()) { // Only trigger if bridge says player is vanished, do not trigger on proxy vanish
+            player.setVanished(false);
             TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
         }
         player.setDisguised(false);

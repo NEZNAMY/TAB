@@ -94,7 +94,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean isVanished() {
+    public boolean isVanished0() {
         return getPlayer().vanishState().get().invisible();
     }
 

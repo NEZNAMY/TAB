@@ -86,7 +86,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean isVanished() {
+    public boolean isVanished0() {
         return false;
     }
 
