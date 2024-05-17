@@ -341,55 +341,6 @@ public abstract class TabList<P extends TabPlayer, C> {
          * and scoreboard team prefix/suffix being visible in TabList instead.
          */
         @Nullable private TabComponent displayName;
-
-        /**
-         * Constructs new instance with given parameter.
-         *
-         * @param   uniqueId
-         *          Entry ID
-         */
-        public Entry(@NonNull UUID uniqueId) {
-            this.uniqueId = uniqueId;
-        }
-
-        /**
-         * Creates new instance with given display name.
-         *
-         * @param   id
-         *          Entry ID
-         * @param   displayName
-         *          Entry display name
-         * @return  Entry with given parameters
-         */
-        public static Entry displayName(@NonNull UUID id, @Nullable TabComponent displayName) {
-            return new Entry(id, "", null, false, 0, 0, displayName);
-        }
-
-        /**
-         * Creates new instance with given latency.
-         *
-         * @param   id
-         *          Entry ID
-         * @param   latency
-         *          Entry latency
-         * @return  Entry with given parameters
-         */
-        public static Entry latency(@NonNull UUID id, int latency) {
-            return new Entry(id, "", null, false, latency, 0, null);
-        }
-
-        /**
-         * Creates new instance with given game mode.
-         *
-         * @param   id
-         *          Entry ID
-         * @param   gameMode
-         *          Entry game mode
-         * @return  Entry with given parameters
-         */
-        public static Entry gameMode(@NonNull UUID id, int gameMode) {
-            return new Entry(id, "", null, false, 0, gameMode, null);
-        }
     }
 
     /**
