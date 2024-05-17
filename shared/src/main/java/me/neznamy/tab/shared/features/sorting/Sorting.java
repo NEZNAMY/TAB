@@ -68,13 +68,8 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         String previousShortName = p.sortingData.shortTeamName;
         constructTeamNames(p);
         if (!p.sortingData.shortTeamName.equals(previousShortName)) {
-            if (nameTags != null && p.sortingData.forcedTeamName == null && !nameTags.hasTeamHandlingPaused(p) && !p.teamData.disabled.get()) {
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.getScoreboard().unregisterTeam(previousShortName);
-                }
-                nameTags.registerTeam(p);
-            }
-            if (layout != null) layout.updateTeamName(p, p.sortingData.fullTeamName);
+            if (nameTags != null) nameTags.updateTeamName(p, previousShortName);
+            if (layout != null) layout.updateTeamName(p, p.sortingData.getFullTeamName());
         }
     }
 
@@ -204,17 +199,20 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (Objects.equals(p.sortingData.forcedTeamName, name)) return;
-        if (name != null && name.length() > Limitations.TEAM_NAME_LENGTH) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
-        if (name != null) p.sortingData.teamNameNote = "Set using API";
-        NameTag nametag = TAB.getInstance().getNameTagManager();
-        if (nametag != null) nametag.unregisterTeam(p, p.sortingData.getShortTeamName());
+        if (name != null) {
+            if (name.length() > Limitations.TEAM_NAME_LENGTH) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
+            p.sortingData.teamNameNote = "Set using API";
+        }
         p.sortingData.forcedTeamName = name;
-        if (nametag != null) nametag.registerTeam(p);
-        if (layout != null) layout.updateTeamName(p, p.sortingData.fullTeamName);
-        if (redis != null && nametag != null) redis.updateTeam(p, p.sortingData.getShortTeamName(),
-                p.teamData.prefix.get(),
-                p.teamData.suffix.get(),
-                (nametag.getTeamVisibility(p, p) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER));
+        if (layout != null) layout.updateTeamName(p, p.sortingData.getFullTeamName());
+        if (nameTags != null) {
+            nameTags.unregisterTeam(p, p.sortingData.getShortTeamName());
+            nameTags.registerTeam(p);
+            if (redis != null) {
+                redis.updateTeam(p, p.sortingData.getShortTeamName(), p.teamData.prefix.get(), p.teamData.suffix.get(),
+                        nameTags.getTeamVisibility(p, p) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER);
+            }
+        }
     }
 
     @Override
@@ -258,6 +256,16 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         @NotNull
         public String getShortTeamName() {
             return forcedTeamName != null ? forcedTeamName : shortTeamName;
+        }
+
+        /**
+         * Returns full team name. If forced using API, that value is returned.
+         *
+         * @return  full team name to use
+         */
+        @NotNull
+        public String getFullTeamName() {
+            return forcedTeamName != null ? forcedTeamName : fullTeamName;
         }
     }
 }

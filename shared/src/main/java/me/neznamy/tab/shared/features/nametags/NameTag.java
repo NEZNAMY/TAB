@@ -243,6 +243,21 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         return !hasHiddenNameTag(p) && !hasHiddenNameTag(p, viewer) && !invisibleNameTags && !viewer.teamData.invisibleNameTagView;
     }
 
+    /**
+     * Updates team name for a specified player to everyone.
+     *
+     * @param   player
+     *          Player to change team name of
+     * @param   previousShortName
+     *          Previous short team name of the player
+     */
+    public void updateTeamName(@NonNull TabPlayer player, @NonNull String previousShortName) {
+        if (player.sortingData.forcedTeamName != null) return;
+        if (hasTeamHandlingPaused(player) || player.teamData.disabled.get()) return;
+        unregisterTeam(player, previousShortName);
+        registerTeam(player);
+    }
+
     @Override
     public void onLoginPacket(TabPlayer player) {
         if (!player.isLoaded()) return;

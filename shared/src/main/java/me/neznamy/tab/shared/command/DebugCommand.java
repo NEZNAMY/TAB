@@ -152,7 +152,7 @@ public class DebugCommand extends SubCommand {
             return "&eTeam name: &cSorting is disabled in player's world/server";
         }
         return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
-                ? analyzed.sortingData.fullTeamName : analyzed.sortingData.getShortTeamName());
+                ? analyzed.sortingData.getFullTeamName() : analyzed.sortingData.getShortTeamName());
     }
 
     /**
