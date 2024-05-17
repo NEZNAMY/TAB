@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -20,14 +21,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FixedSlot extends TabFeature implements Refreshable {
 
-    private final LayoutManagerImpl manager;
+    @NonNull private final LayoutManagerImpl manager;
     @Getter private final int slot;
-    private final LayoutPattern pattern;
-    private final UUID id;
-    private final String text;
-    private final String propertyName;
-    private final String skin;
-    private final String skinProperty;
+    @NonNull private final LayoutPattern pattern;
+    @NonNull private final UUID id;
+    @NonNull private final String text;
+    @NonNull private final String propertyName;
+    @NonNull private final String skin;
+    @NonNull private final String skinProperty;
     private final int ping;
 
     @Override
