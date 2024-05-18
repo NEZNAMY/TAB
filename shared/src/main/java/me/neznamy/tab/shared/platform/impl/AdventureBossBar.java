@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
@@ -19,6 +21,10 @@ import org.jetbrains.annotations.NotNull;
  */
 @AllArgsConstructor
 public class AdventureBossBar implements BossBar {
+
+    /** Flag tracking whether this implementation is available on the server or not */
+    @Getter
+    private static final boolean available = ReflectionUtils.classExists("net.kyori.adventure.bossbar.BossBar");
 
     /** Player this BossBar belongs to */
     private final TabPlayer player;
