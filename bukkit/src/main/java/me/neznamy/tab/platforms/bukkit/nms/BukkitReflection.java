@@ -35,7 +35,7 @@ public class BukkitReflection {
 
     private static ServerVersion detectServerVersion() {
         FunctionWithException<String, Class<?>> classFunction = name -> Class.forName("net.minecraft." + name);
-        String[] array = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+        String[] array = CRAFTBUKKIT_PACKAGE.split("\\.");
         int minorVersion;
         if (array.length > 3) {
             // Normal packaging
