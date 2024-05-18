@@ -29,7 +29,7 @@ public class ScoreboardLoader {
             BukkitUtils.compatibilityError(PacketScoreboard.getException(), "Scoreboards", null,
                     "Scoreboard feature will not work",
                     "Belowname feature will not work",
-                    "Player objective feature will not work",
+                    "Playerlist objective feature will not work",
                     "Scoreboard teams feature will not work (nametags & sorting)");
         }
     }
