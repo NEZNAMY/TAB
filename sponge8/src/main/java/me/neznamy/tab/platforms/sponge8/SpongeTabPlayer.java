@@ -58,7 +58,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        getPlayer().sendMessage(message.convert(getVersion()));
+        getPlayer().sendMessage(message.toAdventure(getVersion()));
     }
 
     @Override

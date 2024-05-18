@@ -3,7 +3,9 @@ package me.neznamy.tab.shared.chat;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.util.ComponentCache;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,10 +33,18 @@ public abstract class TabComponent {
     });
 
     @Nullable
-    protected Object convertedModern;
+    private Object convertedModern;
 
     @Nullable
-    protected Object convertedLegacy;
+    private Object convertedLegacy;
+
+    /** Adventure component from this component for 1.16+ players */
+    @Nullable
+    private Component adventureModern;
+
+    /** Adventure component from this component for 1.15- players */
+    @Nullable
+    private Component adventureLegacy;
 
     /**
      * Converts this component to platform's component.
@@ -54,6 +64,24 @@ public abstract class TabComponent {
         } else {
             if (convertedLegacy == null) convertedLegacy = TAB.getInstance().getPlatform().convertComponent(this, false);
             return (T) convertedLegacy;
+        }
+    }
+
+    /**
+     * Converts this component to adventure component.
+     *
+     * @param   clientVersion
+     *          Client version
+     * @return  Converted component
+     */
+    @NotNull
+    public Component toAdventure(@NotNull ProtocolVersion clientVersion) {
+        if (clientVersion.supportsRGB()) {
+            if (adventureModern == null) adventureModern = AdventureHook.toAdventureComponent(this, true);
+            return adventureModern;
+        } else {
+            if (adventureLegacy == null) adventureLegacy = AdventureHook.toAdventureComponent(this, false);
+            return adventureLegacy;
         }
     }
 

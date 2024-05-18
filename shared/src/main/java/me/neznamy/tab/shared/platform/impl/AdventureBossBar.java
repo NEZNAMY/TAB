@@ -35,7 +35,7 @@ public class AdventureBossBar implements BossBar {
             return;
         }
         net.kyori.adventure.bossbar.BossBar bar = net.kyori.adventure.bossbar.BossBar.bossBar(
-                TabComponent.optimized(title).convert(player.getVersion()),
+                TabComponent.optimized(title).toAdventure(player.getVersion()),
                 progress,
                 Color.valueOf(color.name()),
                 Overlay.valueOf(style.name())
@@ -46,7 +46,7 @@ public class AdventureBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
-        bossBars.get(id).name(TabComponent.optimized(title).convert(player.getVersion()));
+        bossBars.get(id).name(TabComponent.optimized(title).toAdventure(player.getVersion()));
     }
 
     @Override
