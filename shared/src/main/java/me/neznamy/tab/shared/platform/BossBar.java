@@ -74,4 +74,18 @@ public interface BossBar {
      *          Unique identifier to match the bossbar with other functions
      */
     void remove(@NotNull UUID id);
+
+    /**
+     * Freezes the class, not letting any packets through.
+     */
+    default void freeze() {
+        // Empty by default
+    }
+
+    /**
+     * Unfreezes the class, enabling it back.
+     */
+    default void unfreeze() {
+        // Empty by default
+    }
 }

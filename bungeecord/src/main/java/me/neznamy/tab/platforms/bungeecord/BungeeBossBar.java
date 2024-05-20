@@ -29,8 +29,12 @@ public class BungeeBossBar implements BossBar {
     @NotNull
     private final Map<UUID, Integer> styles = new HashMap<>();
 
+    /** Flag tracking whether boss bars should be frozen or not */
+    private boolean frozen;
+
     @Override
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+        if (frozen) return; // Server switch
         net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 0);
         packet.setHealth(progress);
         packet.setTitle(TabComponent.optimized(title).convert(player.getVersion()));
@@ -44,6 +48,7 @@ public class BungeeBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
+        if (frozen) return; // Server switch
         net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 3);
         packet.setTitle(TabComponent.optimized(title).convert(player.getVersion()));
         player.sendPacket(packet);
@@ -51,6 +56,7 @@ public class BungeeBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, float progress) {
+        if (frozen) return; // Server switch
         net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 2);
         packet.setHealth(progress);
         player.sendPacket(packet);
@@ -58,6 +64,7 @@ public class BungeeBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarStyle style) {
+        if (frozen) return; // Server switch
         net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
         packet.setDivision(style.ordinal());
         packet.setColor(colors.get(id));
@@ -68,6 +75,7 @@ public class BungeeBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarColor color) {
+        if (frozen) return; // Server switch
         net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
         packet.setDivision(styles.get(id));
         packet.setColor(color.ordinal());
@@ -78,9 +86,20 @@ public class BungeeBossBar implements BossBar {
 
     @Override
     public void remove(@NotNull UUID id) {
+        if (frozen) return; // Server switch
         player.sendPacket(new net.md_5.bungee.protocol.packet.BossBar(id, 1));
 
         colors.remove(id);
         styles.remove(id);
+    }
+
+    @Override
+    public void freeze() {
+        frozen = true;
+    }
+
+    @Override
+    public void unfreeze() {
+        frozen = false;
     }
 }

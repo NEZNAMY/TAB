@@ -42,10 +42,12 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
         TAB tab = TAB.getInstance();
         if (tab.isPluginDisabled()) return;
 
-        // Avoid 1.20.3 client crash on scoreboard packets, do it sync to prevent packet being sent after event, but before processing
+        // Avoid 1.20.3+ client crash on scoreboard packets, do it sync to prevent packet being sent after event, but before processing
+        // Avoid 1.20.5+ client disconnect with "Network Protocol Error"
         TabPlayer p = tab.getPlayer(e.getPlayer().getUniqueId());
-        if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
+        if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
             p.getScoreboard().freeze();
+            p.getBossBar().freeze();
         }
 
         tab.getCPUManager().runTask(() -> {
