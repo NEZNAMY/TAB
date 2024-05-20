@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -108,6 +109,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                         if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                             // For 1.20.2+ we need to do this, because server switch event is called before tablist is cleared
                             TAB.getInstance().getFeatureManager().onTabListClear(player);
+                            ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
                         }
                     });
                     return;

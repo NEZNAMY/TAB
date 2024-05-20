@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -47,7 +48,7 @@ public class VelocityEventListener implements EventListener<Player> {
         if (e.getResult().isAllowed()) {
             TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
             if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-                p.getBossBar().freeze();
+                ((SafeBossBar<?>)p.getBossBar()).freeze();
             }
         }
     }
@@ -75,6 +76,7 @@ public class VelocityEventListener implements EventListener<Player> {
                 );
                 tab.getFeatureManager().onTabListClear(player);
                 tab.getFeatureManager().onLoginPacket(player);
+                ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
             }
         });
     }

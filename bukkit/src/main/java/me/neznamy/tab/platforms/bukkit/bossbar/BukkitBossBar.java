@@ -4,68 +4,65 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BossBar;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * BossBar for 1.9+ servers where Bukkit API is used. If ViaVersion is used
  * to allow 1.8 players, it will handle the entity and teleporting by itself.
  */
 @RequiredArgsConstructor
-public class BukkitBossBar implements BossBar {
+public class BukkitBossBar extends SafeBossBar<BossBar> {
 
-    /** Style array for fast access */
+    /** Style array because names do not match */
     private static final org.bukkit.boss.BarStyle[] styles = org.bukkit.boss.BarStyle.values();
-    
+
     /** Player this handler belongs to */
     @NotNull
     private final BukkitTabPlayer player;
 
-    /** Bukkit BossBars the player can currently see */
-    @NotNull
-    private final Map<UUID, org.bukkit.boss.BossBar> bossBars = new HashMap<>();
-
     @Override
-    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
-        if (bossBars.containsKey(id)) return;
-        org.bukkit.boss.BossBar bar = Bukkit.createBossBar(
+    @NotNull
+    public BossBar constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+        BossBar bar = Bukkit.createBossBar(
                 player.getPlatform().toBukkitFormat(TabComponent.optimized(title), player.getVersion().supportsRGB()),
                 org.bukkit.boss.BarColor.valueOf(color.name()),
                 styles[style.ordinal()]
         );
         bar.setProgress(progress);
-        bar.addPlayer(player.getPlayer());
-        bossBars.put(id, bar);
+        return bar;
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull String title) {
-        bossBars.get(id).setTitle(player.getPlatform().toBukkitFormat(TabComponent.optimized(title), player.getVersion().supportsRGB()));
+    public void create(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
+        bar.getBossBar().addPlayer(player.getPlayer());
     }
 
     @Override
-    public void update(@NotNull UUID id, float progress) {
-        bossBars.get(id).setProgress(progress);
+    public void updateTitle(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
+        bar.getBossBar().setTitle(player.getPlatform().toBukkitFormat(TabComponent.optimized(bar.getTitle()), player.getVersion().supportsRGB()));
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        bossBars.get(id).setStyle(styles[style.ordinal()]);
+    public void updateProgress(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
+        bar.getBossBar().setProgress(bar.getProgress());
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarColor color) {
-        bossBars.get(id).setColor(org.bukkit.boss.BarColor.valueOf(color.name()));
+    public void updateStyle(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
+        bar.getBossBar().setStyle(styles[bar.getStyle().ordinal()]);
     }
 
     @Override
-    public void remove(@NotNull UUID id) {
-        bossBars.remove(id).removePlayer(player.getPlayer());
+    public void updateColor(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
+        bar.getBossBar().setColor(org.bukkit.boss.BarColor.valueOf(bar.getColor().name()));
+    }
+
+    @Override
+    public void remove(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
+        bar.getBossBar().removePlayer(player.getPlayer());
     }
 }

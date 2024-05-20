@@ -1,22 +1,18 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.boss.*;
 import org.spongepowered.api.text.Text;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * BossBar implementation for Sponge 7 using its API.
  */
 @RequiredArgsConstructor
-public class SpongeBossBar implements BossBar {
+public class SpongeBossBar extends SafeBossBar<ServerBossBar> {
 
     /** Color array for fast access */
     private static final BossBarColor[] colors = {
@@ -42,43 +38,44 @@ public class SpongeBossBar implements BossBar {
     @NotNull
     private final SpongeTabPlayer player;
 
-    @NotNull
-    private final Map<UUID, ServerBossBar> bossBars = new HashMap<>();
-
     @Override
-    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
-        ServerBossBar bar = ServerBossBar.builder()
+    @NotNull
+    public ServerBossBar constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+        return ServerBossBar.builder()
                 .name(Text.of(title))
                 .color(colors[color.ordinal()])
                 .overlay(styles[style.ordinal()])
                 .percent(progress)
                 .build();
-        bossBars.put(id, bar);
-        bar.addPlayer(player.getPlayer());
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull String title) {
-        bossBars.get(id).setName(Text.of(title));
+    public void create(@NotNull BossBarInfo bar) {
+        bar.getBossBar().addPlayer(player.getPlayer());
     }
 
     @Override
-    public void update(@NotNull UUID id, float progress) {
-        bossBars.get(id).setPercent(progress);
+    public void updateTitle(@NotNull BossBarInfo bar) {
+        bar.getBossBar().setName(Text.of(bar.getTitle()));
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        bossBars.get(id).setOverlay(styles[style.ordinal()]);
+    public void updateProgress(@NotNull BossBarInfo bar) {
+        bar.getBossBar().setPercent(bar.getProgress());
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarColor color) {
-        bossBars.get(id).setColor(colors[color.ordinal()]);
+    public void updateStyle(@NotNull BossBarInfo bar) {
+        bar.getBossBar().setOverlay(styles[bar.getStyle().ordinal()]);
     }
 
     @Override
-    public void remove(@NotNull UUID id) {
-        bossBars.remove(id).removePlayer(player.getPlayer());
+    public void updateColor(@NotNull BossBarInfo bar) {
+        bar.getBossBar().setColor(colors[bar.getColor().ordinal()]);
+    }
+
+    @Override
+    public void remove(@NotNull BossBarInfo bar) {
+        bar.getBossBar().removePlayer(player.getPlayer());
     }
 }

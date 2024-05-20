@@ -1,14 +1,13 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
+import net.md_5.bungee.protocol.packet.BossBar;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -17,89 +16,57 @@ import java.util.UUID;
  * 1.9+ players, as dealing with entities would be simply impossible.
  */
 @RequiredArgsConstructor
-public class BungeeBossBar implements BossBar {
+public class BungeeBossBar extends SafeBossBar<UUID> {
 
+    /** Player this BossBar view belongs to */
     @NotNull
     private final BungeeTabPlayer player;
 
-    /** Both are included in the same action, need to remember and write them both */
+    @Override
     @NotNull
-    private final Map<UUID, Integer> colors = new HashMap<>();
-
-    @NotNull
-    private final Map<UUID, Integer> styles = new HashMap<>();
-
-    /** Flag tracking whether boss bars should be frozen or not */
-    private boolean frozen;
-
-    @Override
-    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
-        if (frozen) return; // Server switch
-        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 0);
-        packet.setHealth(progress);
-        packet.setTitle(TabComponent.optimized(title).convert(player.getVersion()));
-        packet.setColor(color.ordinal());
-        packet.setDivision(style.ordinal());
-        player.sendPacket(packet);
-
-        colors.put(id, color.ordinal());
-        styles.put(id, style.ordinal());
+    public UUID constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+        return UUID.randomUUID();
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull String title) {
-        if (frozen) return; // Server switch
-        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 3);
-        packet.setTitle(TabComponent.optimized(title).convert(player.getVersion()));
+    public void create(@NotNull BossBarInfo bar) {
+        BossBar packet = new BossBar(bar.getBossBar(), 0);
+        packet.setHealth(bar.getProgress());
+        packet.setTitle(TabComponent.optimized(bar.getTitle()).convert(player.getVersion()));
+        packet.setColor(bar.getColor().ordinal());
+        packet.setDivision(bar.getStyle().ordinal());
         player.sendPacket(packet);
     }
 
     @Override
-    public void update(@NotNull UUID id, float progress) {
-        if (frozen) return; // Server switch
-        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 2);
-        packet.setHealth(progress);
+    public void updateTitle(@NotNull BossBarInfo bar) {
+        BossBar packet = new BossBar(bar.getBossBar(), 3);
+        packet.setTitle(TabComponent.optimized(bar.getTitle()).convert(player.getVersion()));
         player.sendPacket(packet);
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        if (frozen) return; // Server switch
-        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
-        packet.setDivision(style.ordinal());
-        packet.setColor(colors.get(id));
+    public void updateProgress(@NotNull BossBarInfo bar) {
+        BossBar packet = new BossBar(bar.getBossBar(), 2);
+        packet.setHealth(bar.getProgress());
         player.sendPacket(packet);
-
-        styles.put(id, style.ordinal());
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarColor color) {
-        if (frozen) return; // Server switch
-        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
-        packet.setDivision(styles.get(id));
-        packet.setColor(color.ordinal());
+    public void updateStyle(@NotNull BossBarInfo bar) {
+        updateColor(bar);
+    }
+
+    @Override
+    public void updateColor(@NotNull BossBarInfo bar) {
+        BossBar packet = new BossBar(bar.getBossBar(), 4);
+        packet.setDivision(bar.getStyle().ordinal());
+        packet.setColor(bar.getColor().ordinal());
         player.sendPacket(packet);
-
-        colors.put(id, color.ordinal());
     }
 
     @Override
-    public void remove(@NotNull UUID id) {
-        if (frozen) return; // Server switch
-        player.sendPacket(new net.md_5.bungee.protocol.packet.BossBar(id, 1));
-
-        colors.remove(id);
-        styles.remove(id);
-    }
-
-    @Override
-    public void freeze() {
-        frozen = true;
-    }
-
-    @Override
-    public void unfreeze() {
-        frozen = false;
+    public void remove(@NotNull BossBarInfo bar) {
+        player.sendPacket(new BossBar(bar.getBossBar(), 1));
     }
 }

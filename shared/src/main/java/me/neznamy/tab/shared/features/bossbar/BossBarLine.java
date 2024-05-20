@@ -195,22 +195,6 @@ public class BossBarLine implements BossBar {
     }
 
     /**
-     * Resends bossbar to the player.
-     *
-     * @param   player
-     *          Player to resend bossbar to
-     */
-    public void sendToPlayerRaw(@NotNull TabPlayer player) {
-        player.getBossBar().create(
-                uniqueId,
-                player.getProperty(propertyTitle).updateAndGet(),
-                parseProgress(player, player.getProperty(propertyProgress).updateAndGet())/100,
-                parseColor(player, player.getProperty(propertyColor).updateAndGet()),
-                parseStyle(player, player.getProperty(propertyStyle).updateAndGet())
-        );
-    }
-
-    /**
      * Removes player from set of players.
      *
      * @param   player
@@ -288,7 +272,13 @@ public class BossBarLine implements BossBar {
         player.setProperty(progressRefresher, propertyProgress, progress);
         player.setProperty(colorRefresher, propertyColor, color);
         player.setProperty(styleRefresher, propertyStyle, style);
-        sendToPlayerRaw(player);
+        player.getBossBar().create(
+                uniqueId,
+                player.getProperty(propertyTitle).updateAndGet(),
+                parseProgress(player, player.getProperty(propertyProgress).updateAndGet())/100,
+                parseColor(player, player.getProperty(propertyColor).updateAndGet()),
+                parseStyle(player, player.getProperty(propertyStyle).updateAndGet())
+        );
     }
 
     @Override

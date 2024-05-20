@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -47,7 +48,7 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
         TabPlayer p = tab.getPlayer(e.getPlayer().getUniqueId());
         if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
             p.getScoreboard().freeze();
-            p.getBossBar().freeze();
+            ((SafeBossBar<?>)p.getBossBar()).freeze();
         }
 
         tab.getCPUManager().runTask(() -> {
@@ -59,6 +60,7 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
                 // Sending these packets before login packet will also crash the client on 1.20.3
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     player.getScoreboard().freeze();
+                    ((SafeBossBar<?>)player.getBossBar()).freeze();
                 }
 
                 tab.getFeatureManager().onJoin(player);

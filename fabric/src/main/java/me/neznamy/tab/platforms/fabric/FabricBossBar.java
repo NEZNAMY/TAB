@@ -4,64 +4,61 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.BossBar;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.world.BossEvent.BossBarColor;
 import net.minecraft.world.BossEvent.BossBarOverlay;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 /**
  * BossBar implementation for Fabric using packets.
  */
 @RequiredArgsConstructor
-public class FabricBossBar implements BossBar {
+public class FabricBossBar extends SafeBossBar<ServerBossEvent> {
 
     /** Player this BossBar belongs to */
     @NotNull
     private final FabricTabPlayer player;
 
-    /** Map of BossBars visible to the player */
-    @NotNull
-    private final Map<UUID, ServerBossEvent> bars = new HashMap<>();
-
     @Override
-    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    @NotNull
+    public ServerBossEvent constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         ServerBossEvent bar = new ServerBossEvent(
                 TabComponent.optimized(title).convert(player.getVersion()),
                 BossBarColor.valueOf(color.name()),
                 BossBarOverlay.valueOf(style.name())
         );
         bar.setProgress(progress); // Somehow the compiled method name is same despite method being renamed in 1.17
-        bars.put(id, bar);
-        bar.addPlayer(player.getPlayer());
+        return bar;
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull String title) {
-        bars.get(id).setName(TabComponent.optimized(title).convert(player.getVersion()));
+    public void create(@NotNull BossBarInfo bar) {
+        bar.getBossBar().addPlayer(player.getPlayer());
     }
 
     @Override
-    public void update(@NotNull UUID id, float progress) {
-        bars.get(id).setProgress(progress); // Somehow the compiled method name is same despite method being renamed in 1.17
+    public void updateTitle(@NotNull BossBarInfo bar) {
+        bar.getBossBar().setName(TabComponent.optimized(bar.getTitle()).convert(player.getVersion()));
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        bars.get(id).setOverlay(BossBarOverlay.valueOf(style.name()));
+    public void updateProgress(@NotNull BossBarInfo bar) {
+        bar.getBossBar().setProgress(bar.getProgress()); // Somehow the compiled method name is same despite method being renamed in 1.17
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarColor color) {
-        bars.get(id).setColor(BossBarColor.valueOf(color.name()));
+    public void updateStyle(@NotNull BossBarInfo bar) {
+        bar.getBossBar().setOverlay(BossBarOverlay.valueOf(bar.getStyle().name()));
     }
 
     @Override
-    public void remove(@NotNull UUID id) {
-        bars.remove(id).removePlayer(player.getPlayer());
+    public void updateColor(@NotNull BossBarInfo bar) {
+        bar.getBossBar().setColor(BossBarColor.valueOf(bar.getColor().name()));
+    }
+
+    @Override
+    public void remove(@NotNull BossBarInfo bar) {
+        bar.getBossBar().removePlayer(player.getPlayer());
     }
 }
