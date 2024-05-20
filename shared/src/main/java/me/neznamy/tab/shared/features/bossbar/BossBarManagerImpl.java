@@ -168,12 +168,11 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
         }
     }
 
-
-
     @Override
     public void onLoginPacket(TabPlayer player) {
         // Since 1.20.2, Login packet clears BossBars as well
         if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+            player.getBossBar().unfreeze();
             for (BossBar bar : lineValues) {
                 if (bar.containsPlayer(player)) {
                     ((BossBarLine)bar).sendToPlayerRaw(player);
