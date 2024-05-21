@@ -27,7 +27,7 @@ public class SpongeEventListener implements EventListener<ServerPlayer> {
      */
     @Listener
     public void onQuit(ServerSideConnectionEvent.Disconnect event) {
-        quit(event.player().uniqueId());
+        quit(SpongeMultiVersion.getUniqueId.apply(event));
     }
 
     /**

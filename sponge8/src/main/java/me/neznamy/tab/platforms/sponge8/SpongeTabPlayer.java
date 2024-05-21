@@ -53,7 +53,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getPing() {
-        return getPlayer().connection().latency();
+        return SpongeMultiVersion.getPing.applyAsInt(getPlayer());
     }
 
     @Override

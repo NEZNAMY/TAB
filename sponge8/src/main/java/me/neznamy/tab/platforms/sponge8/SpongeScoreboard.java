@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.kyori.adventure.text.Component;
@@ -69,7 +68,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         org.spongepowered.api.scoreboard.objective.Objective obj = org.spongepowered.api.scoreboard.objective.Objective.builder()
                 .name(objective.getName())
-                .displayName(adventure(objective.getName()))
+                .displayName(adventure(objective.getTitle()))
                 .objectiveDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()])
                 .criterion(Criteria.DUMMY)
                 .build();
@@ -85,19 +84,19 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         sb.objective(objective.getName()).ifPresent(obj -> {
-            obj.setDisplayName(adventure(objective.getName()));
+            obj.setDisplayName(adventure(objective.getTitle()));
             obj.setDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()]);
         });
     }
 
     @Override
     public void setScore(@NonNull Score score) {
-        sb.objective(score.getObjective()).ifPresent(o -> findOrCreateScore(o, score.getHolder()).setScore(score.getValue()));
+        sb.objective(score.getObjective()).ifPresent(o -> SpongeMultiVersion.findOrCreateScore.apply(o, score.getHolder()).setScore(score.getValue()));
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
-        sb.objective(score.getObjective()).ifPresent(o -> o.removeScore(findOrCreateScore(o, score.getHolder())));
+        sb.objective(score.getObjective()).ifPresent(o -> o.removeScore(SpongeMultiVersion.findOrCreateScore.apply(o, score.getHolder())));
     }
 
     @Override
@@ -136,18 +135,6 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
             spongeTeam.setCollisionRule(collisionRules[team.getCollision().ordinal()]);
             spongeTeam.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
         });
-    }
-
-    @NotNull
-    @SneakyThrows
-    private org.spongepowered.api.scoreboard.Score findOrCreateScore(@NotNull org.spongepowered.api.scoreboard.objective.Objective objective, @NonNull String holder) {
-        try {
-            // Sponge 8 - 10 (and early 11) (1.16.5 - 1.20.2)
-            return objective.findOrCreateScore(adventure(holder));
-        } catch (NoSuchMethodError e) {
-            // Sponge 11+ (1.20.4+)
-            return (org.spongepowered.api.scoreboard.Score) objective.getClass().getMethod("findOrCreateScore", String.class).invoke(objective, holder);
-        }
     }
 
     /**
