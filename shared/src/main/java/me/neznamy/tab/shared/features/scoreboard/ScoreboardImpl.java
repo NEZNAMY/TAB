@@ -142,12 +142,12 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         if (players.contains(p)) return; //already registered
         p.setProperty(this, titleProperty, title);
         p.getScoreboard().registerObjective(
+                Scoreboard.DisplaySlot.SIDEBAR,
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 p.getProperty(titleProperty).updateAndGet(),
                 Scoreboard.HealthDisplay.INTEGER,
                 new SimpleComponent("")
         );
-        p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }
@@ -213,7 +213,6 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
 
     /**
      * Removes this player from list of players who can see it.
-     * Used on Login packet which clears all scoreboards.
      *
      * @param   player
      *          Player to remove from set

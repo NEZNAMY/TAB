@@ -65,11 +65,6 @@ public class RedisBelowName extends RedisFeature {
         player.setBelowNameFancy(TabComponent.optimized(in.readUTF()));
     }
 
-    @Override
-    public void onLoginPacket(@NotNull TabPlayer player) {
-        onJoin(player);
-    }
-
     @NoArgsConstructor
     @AllArgsConstructor
     public class Update extends RedisMessage {

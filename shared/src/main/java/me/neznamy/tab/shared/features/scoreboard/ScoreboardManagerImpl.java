@@ -5,6 +5,7 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
@@ -19,7 +20,7 @@ import java.util.Map.Entry;
  */
 public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
         CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable,
-        QuitListener, LoginPacketListener {
+        QuitListener {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
@@ -99,7 +100,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.getScoreboard().setAntiOverrideScoreboard(true);
+        ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideScoreboard(true);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(connectedPlayer, "");
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(connectedPlayer, false);
         if (joinDelay > 0) {
@@ -173,7 +174,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
 
     @Override
     public void onDisplayObjective(@NotNull TabPlayer receiver, int slot, @NotNull String objective) {
-        if (slot == Scoreboard.DisplaySlot.SIDEBAR && !objective.equals(OBJECTIVE_NAME)) {
+        if (slot == Scoreboard.DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", hiding TAB one.");
             receiver.scoreboardData.otherPluginScoreboard = objective;
             ScoreboardImpl sb = receiver.scoreboardData.activeScoreboard;
@@ -203,17 +204,6 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         ScoreboardImpl sb = disconnectedPlayer.scoreboardData.activeScoreboard;
         if (sb != null) {
             sb.removePlayerFromSet(disconnectedPlayer);
-        }
-    }
-
-    @Override
-    public void onLoginPacket(TabPlayer player) {
-        if (!player.isLoaded()) return;
-        player.scoreboardData.otherPluginScoreboard = null;
-        ScoreboardImpl scoreboard = player.scoreboardData.activeScoreboard;
-        if (scoreboard != null) {
-            scoreboard.removePlayerFromSet(player);
-            scoreboard.addPlayer(player);
         }
     }
 

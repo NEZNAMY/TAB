@@ -4,6 +4,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.EventListener;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -47,7 +48,7 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
         // Avoid 1.20.5+ client disconnect with "Network Protocol Error"
         TabPlayer p = tab.getPlayer(e.getPlayer().getUniqueId());
         if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-            p.getScoreboard().freeze();
+            ((SafeScoreboard<?>)p.getScoreboard()).setFrozen(true);
             ((SafeBossBar<?>)p.getBossBar()).freeze();
         }
 
@@ -59,10 +60,9 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
                 // Things will get cleared immediately after, so no point in sending it, also someone said it fixed some warn from Geyser
                 // Sending these packets before login packet will also crash the client on 1.20.3
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-                    player.getScoreboard().freeze();
+                    ((SafeScoreboard<?>)player.getScoreboard()).setFrozen(true);
                     ((SafeBossBar<?>)player.getBossBar()).freeze();
                 }
-
                 tab.getFeatureManager().onJoin(player);
             } else {
                 tab.getFeatureManager().onServerChange(player.getUniqueId(), e.getPlayer().getServer().getInfo().getName());

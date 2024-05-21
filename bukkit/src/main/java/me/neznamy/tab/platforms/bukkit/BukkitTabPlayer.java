@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 public class BukkitTabPlayer extends BackendTabPlayer {
 
     @NotNull
-    private final Scoreboard<BukkitTabPlayer, ?> scoreboard = ScoreboardLoader.getInstance().apply(this);
+    private final Scoreboard scoreboard = ScoreboardLoader.getInstance().apply(this);
 
     @NotNull
     private final TabListBase<?> tabList = TabListBase.getInstance().apply(this);

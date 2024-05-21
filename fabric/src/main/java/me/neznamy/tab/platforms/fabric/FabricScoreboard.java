@@ -2,32 +2,27 @@ package me.neznamy.tab.platforms.fabric;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
-import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Scoreboard implementation for Fabric using packets.
  */
-public class FabricScoreboard extends Scoreboard<FabricTabPlayer, Component> {
+public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
 
     private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
 
-    private final Map<String, Objective> objectives = new HashMap<>();
+    private final Map<String, net.minecraft.world.scores.Objective> objectives = new HashMap<>();
 
     /**
      * Constructs new instance with given player.
@@ -40,82 +35,73 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer, Component> {
     }
 
     @Override
-    public void setDisplaySlot0(int slot, @NonNull String objective) {
-        player.sendPacket(FabricMultiVersion.setDisplaySlot(slot, objectives.get(objective)));
-    }
-
-    @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                   @Nullable Component numberFormat) {
-        Objective obj = FabricMultiVersion.newObjective(
-                objectiveName,
-                toComponent(title),
-                RenderType.values()[display],
-                numberFormat
+    public void registerObjective(@NonNull Objective objective) {
+        net.minecraft.world.scores.Objective obj = FabricMultiVersion.newObjective(
+                objective.getName(),
+                toComponent(objective.getTitle()),
+                RenderType.values()[objective.getHealthDisplay().ordinal()],
+                objective.getNumberFormat() == null ? null : objective.getNumberFormat().convert(player.getVersion())
         );
-        objectives.put(objectiveName, obj);
+        objectives.put(objective.getName(), obj);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
+        player.sendPacket(FabricMultiVersion.setDisplaySlot(objective.getDisplaySlot().ordinal(), objectives.get(objective.getName())));
     }
 
     @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
-        player.sendPacket(new ClientboundSetObjectivePacket(objectives.remove(objectiveName), ObjectiveAction.UNREGISTER));
+    public void unregisterObjective(@NonNull Objective objective) {
+        player.sendPacket(new ClientboundSetObjectivePacket(objectives.remove(objective.getName()), ObjectiveAction.UNREGISTER));
     }
 
     @Override
-    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                 @Nullable Component numberFormat) {
-        Objective obj = objectives.get(objectiveName);
-        obj.setDisplayName(toComponent(title));
-        obj.setRenderType(RenderType.values()[display]);
+    public void updateObjective(@NonNull Objective objective) {
+        net.minecraft.world.scores.Objective obj = objectives.get(objective.getName());
+        obj.setDisplayName(toComponent(objective.getTitle()));
+        obj.setRenderType(RenderType.values()[objective.getHealthDisplay().ordinal()]);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE));
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
-                              @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
-                              @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
-        PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
-        team.setAllowFriendlyFire((options & 0x01) > 0);
-        team.setSeeFriendlyInvisibles((options & 0x02) > 0);
-        team.setColor(ChatFormatting.valueOf(color.name()));
-        team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
-        team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
-        team.setPlayerPrefix(toComponent(prefix));
-        team.setPlayerSuffix(toComponent(suffix));
-        team.getPlayers().addAll(players);
-        player.sendPacket(FabricMultiVersion.registerTeam(team));
+    public void setScore(@NonNull Score score) {
+        player.sendPacket(FabricMultiVersion.setScore(score.getObjective(), score.getHolder(), score.getValue(),
+                score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
+                score.getNumberFormat() == null ? null : score.getNumberFormat().convert(player.getVersion())));
     }
 
     @Override
-    public void unregisterTeam0(@NonNull String name) {
-        player.sendPacket(FabricMultiVersion.unregisterTeam(new PlayerTeam(dummyScoreboard, name)));
+    public void removeScore(@NonNull Score score) {
+        player.sendPacket(FabricMultiVersion.removeScore(score.getObjective(), score.getHolder()));
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
-                            @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
-                            int options, @NonNull EnumChatFormat color) {
-        PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
-        team.setAllowFriendlyFire((options & 0x01) != 0);
-        team.setSeeFriendlyInvisibles((options & 0x02) != 0);
-        team.setColor(ChatFormatting.valueOf(color.name()));
-        team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
-        team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
-        team.setPlayerPrefix(toComponent(prefix));
-        team.setPlayerSuffix(toComponent(suffix));
-        player.sendPacket(FabricMultiVersion.updateTeam(team));
+    public void registerTeam(@NonNull Team team) {
+        PlayerTeam t = new PlayerTeam(dummyScoreboard, team.getName());
+        t.setAllowFriendlyFire((team.getOptions() & 0x01) > 0);
+        t.setSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0);
+        t.setColor(ChatFormatting.valueOf(team.getColor().name()));
+        t.setCollisionRule(net.minecraft.world.scores.Team.CollisionRule.valueOf(team.getCollision().name()));
+        t.setNameTagVisibility(net.minecraft.world.scores.Team.Visibility.valueOf(team.getVisibility().name()));
+        t.setPlayerPrefix(toComponent(team.getPrefix()));
+        t.setPlayerSuffix(toComponent(team.getSuffix()));
+        t.getPlayers().addAll(team.getPlayers());
+        player.sendPacket(FabricMultiVersion.registerTeam(t));
     }
 
     @Override
-    public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                          @Nullable Component displayName, @Nullable Component numberFormat) {
-        player.sendPacket(FabricMultiVersion.setScore(objective, scoreHolder, score, displayName, numberFormat));
+    public void unregisterTeam(@NonNull Team team) {
+        player.sendPacket(FabricMultiVersion.unregisterTeam(new PlayerTeam(dummyScoreboard, team.getName())));
     }
 
     @Override
-    public void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
-        player.sendPacket(FabricMultiVersion.removeScore(objective, scoreHolder));
+    public void updateTeam(@NonNull Team team) {
+        PlayerTeam t = new PlayerTeam(dummyScoreboard, team.getName());
+        t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
+        t.setSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
+        t.setColor(ChatFormatting.valueOf(team.getColor().name()));
+        t.setCollisionRule(net.minecraft.world.scores.Team.CollisionRule.valueOf(team.getCollision().name()));
+        t.setNameTagVisibility(net.minecraft.world.scores.Team.Visibility.valueOf(team.getVisibility().name()));
+        t.setPlayerPrefix(toComponent(team.getPrefix()));
+        t.setPlayerSuffix(toComponent(team.getSuffix()));
+        player.sendPacket(FabricMultiVersion.updateTeam(t));
     }
 
     @Override

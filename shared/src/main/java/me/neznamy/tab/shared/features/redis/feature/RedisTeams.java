@@ -73,11 +73,6 @@ public class RedisTeams extends RedisFeature {
         player.setNameVisibility(NameVisibility.getByName(in.readUTF()));
     }
 
-    @Override
-    public void onLoginPacket(@NotNull TabPlayer player) {
-        onJoin(player);
-    }
-
     private @NotNull String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15, int id) {
         String potentialTeamName = currentName15 + (char)id;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

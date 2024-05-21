@@ -1,0 +1,448 @@
+package me.neznamy.tab.shared.platform.decorators;
+
+import lombok.*;
+import me.neznamy.tab.shared.Limitations;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+
+/**
+ * An abstract class for adding safety checks into Scoreboard-related functions
+ * to prevent various issues:<p>
+ * - Client crash when performing an invalid action (1.5 - 1.7)<p>
+ * - Client crash on server switch before login packet is sent on BungeeCord (1.20.3+)<p>
+ * - Disconnect with "Network Protocol Error" when performing an invalid action (1.20.5+)<p>
+ * - Geyser console spam when performing an invalid action (Bedrock)
+ *
+ * @param   <T>
+ *          Platform's TabPlayer class
+ */
+@RequiredArgsConstructor
+@Setter
+public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard {
+
+    /** Static to prevent spam when packet is sent to each player */
+    private static String lastTeamOverrideMessage;
+
+    /** Player this scoreboard belongs to */
+    protected final T player;
+
+    /** Player-to-Team map of expected teams of players */
+    private final Map<String, String> expectedTeams = new HashMap<>();
+
+    /** Flag tracking time between Login packet send and its processing */
+    private boolean frozen;
+    
+    /** Registered objectives */
+    private final Map<String, Objective> objectives = new HashMap<>();
+
+    /** Registered teams */
+    private final Map<String, Team> teams = new HashMap<>();
+
+    /** Flag tracking anti-override value for teams */
+    @Getter
+    private boolean antiOverrideTeams;
+
+    /** Flag tracking other plugin detection for Scoreboards */
+    @Getter
+    private boolean antiOverrideScoreboard;
+
+    @Override
+    public final void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull String title,
+                                        @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {
+        if (objectives.containsKey(objectiveName)) {
+            error("Tried to register duplicated objective %s to player ", objectiveName);
+            return;
+        }
+        Objective objective = new Objective(
+                displaySlot,
+                objectiveName,
+                cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13),
+                display,
+                numberFormat
+        );
+        objectives.put(objectiveName, objective);
+        if (frozen) return;
+        registerObjective(objective);
+    }
+
+    @Override
+    public final void unregisterObjective(@NonNull String objectiveName) {
+        Objective objective = objectives.remove(objectiveName);
+        if (objective == null) {
+            error("Tried to unregister non-existing objective %s for player ", objectiveName);
+            return;
+        }
+        if (frozen) return;
+        unregisterObjective(objective);
+    }
+
+    @Override
+    public final void updateObjective(@NonNull String objectiveName, @NonNull String title,
+                                      @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {
+        Objective objective = objectives.get(objectiveName);
+        if (objective == null) {
+            error("Tried to modify non-existing objective %s for player ", objectiveName);
+            return;
+        }
+        objective.update(cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
+        if (frozen) return;
+        updateObjective(objective);
+    }
+
+    @Override
+    public final void setScore(@NonNull String objectiveName, @NonNull String scoreHolder, int value,
+                               @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
+        Objective objective = objectives.get(objectiveName);
+        if (objective == null) {
+            error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objectiveName);
+            return;
+        }
+        Score score = objective.getScores().get(scoreHolder);
+        if (score == null) {
+            score = new Score(objectiveName, scoreHolder, value, displayName, numberFormat);
+            objective.getScores().put(scoreHolder, score);
+        } else {
+            score.update(value, displayName, numberFormat);
+        }
+        if (frozen) return;
+        setScore(score);
+    }
+
+    @Override
+    public final void removeScore(@NonNull String objectiveName, @NonNull String scoreHolder) {
+        Objective objective = objectives.get(objectiveName);
+        if (objective == null) {
+            error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objectiveName);
+            return;
+        }
+        Score score = objective.getScores().remove(scoreHolder);
+        if (score == null) return;
+        if (frozen) return;
+        removeScore(score);
+    }
+
+    @Override
+    public final void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                                   @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                                   @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
+        if (teams.containsKey(name)) {
+            error("Tried to register duplicated team %s to player ", name);
+            return;
+        }
+        Team team = new Team(name, cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13), visibility, collision, players, options, color);
+        teams.put(name, team);
+        for (String player : players) {
+            expectedTeams.put(player, name);
+        }
+        if (frozen) return;
+        registerTeam(team);
+    }
+
+    @Override
+    public final void unregisterTeam(@NonNull String teamName) {
+        Team team = teams.remove(teamName);
+        if (team == null) {
+            error("Tried to unregister non-existing team %s for player ", teamName);
+            return;
+        }
+        for (Map.Entry<String, String> entry : expectedTeams.entrySet()) {
+            if (entry.getValue().equals(teamName)) {
+                expectedTeams.remove(entry.getKey());
+                break;
+            }
+        }
+        if (frozen) return;
+        unregisterTeam(team);
+    }
+
+    @Override
+    public final void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+                                 @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
+                                 int options, @NonNull EnumChatFormat color) {
+        Team team = teams.get(name);
+        if (team == null) {
+            error("Tried to modify non-existing team %s for player ", name);
+            return;
+        }
+        team.update(cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13), cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                visibility, collision, options, color);
+        if (frozen) return;
+        updateTeam(team);
+    }
+
+    @Override
+    public void resend() {
+        for (Objective objective : objectives.values()) {
+            registerObjective(objective);
+            for (Score score : objective.getScores().values()) {
+                setScore(score);
+            }
+        }
+        for (Team team : teams.values()) {
+            registerTeam(team);
+        }
+    }
+
+    /**
+     * Prints a debug message if attempted to perform an invalid operation.
+     *
+     * @param   format
+     *          Message format
+     * @param   args
+     *          Format arguments
+     */
+    private void error(@NonNull String format, @NonNull Object... args) {
+        TAB.getInstance().getErrorManager().printError(String.format(format, args) + player.getName(), null);
+    }
+
+    /**
+     * Cuts given string to specified character length (or length-1 if last character is a color character)
+     * and translates RGB to legacy colors. If string is not that long, the original string is returned.
+     * RGB codes are converted into legacy, since cutting is only needed for &lt;1.13.
+     * If {@code string} is {@code null}, empty string is returned.
+     *
+     * @param   string
+     *          String to cut
+     * @param   length
+     *          Length to cut to
+     * @return  string cut to {@code length} characters
+     */
+    private String cutTo(@Nullable String string, int length) {
+        if (player.getVersion().getMinorVersion() >= 13) return string;
+        if (string == null) return "";
+        String legacyText = string;
+        if (string.contains("#")) {
+            //converting RGB to legacy colors
+            legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
+        }
+        if (legacyText.length() <= length) return legacyText;
+        if (legacyText.charAt(length-1) == EnumChatFormat.COLOR_CHAR) {
+            return legacyText.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
+        } else {
+            return legacyText.substring(0, length);
+        }
+    }
+
+    /**
+     * Processes packet send.
+     *
+     * @param   packet
+     *          Packet sent by the server
+     */
+    public void onPacketSend(@NonNull Object packet) {
+        // Implemented by platforms with pipeline injection
+    }
+
+    /**
+     * Returns {@code true} if this scoreboard contains team with specified name,
+     * {@code false} if not.
+     *
+     * @param   teamName
+     *          Name of team to check
+     * @return  {@code true} if scoreboard contains the team, {@code false} if not
+     */
+    public boolean containsTeam(@NonNull String teamName) {
+        return teams.containsKey(teamName);
+    }
+
+    /**
+     * Checks if team contains a player who should belong to a different team and if override attempt was detected,
+     * sends a warning and removes player from the collection.
+     *
+     * @param   action
+     *          Team packet action
+     * @param   teamName
+     *          Team name in the packet
+     * @param   players
+     *          Players in the packet
+     * @return  Modified collection of players
+     */
+    @NotNull
+    public Collection<String> onTeamPacket(int action, @NonNull String teamName, @NonNull Collection<String> players) {
+        Collection<String> newList = new ArrayList<>();
+        for (String entry : players) {
+            String expectedTeam = expectedTeams.get(entry);
+            if (expectedTeam == null) {
+                newList.add(entry);
+                continue;
+            }
+            if (!teamName.equals(expectedTeam)) {
+                // on REMOVE_PLAYER don't warn, just remove the player (required to prevent FPS drop, #1193)
+                // will still throw error and freeze if removing after team handling was paused (API, disable condition),
+                // since expected team is null, but add action was blocked previously but remove will not be blocked anymore,
+                // but that is a very specific case that people are unlikely to even reproduce
+                // workaround would be complicated, just let it be for now
+                if (action == TeamAction.CREATE || action == TeamAction.ADD_PLAYER) {
+                    logTeamOverride(teamName, entry, expectedTeam);
+                }
+            } else {
+                newList.add(entry);
+            }
+        }
+        return newList;
+    }
+
+    /**
+     * Logs a message into anti-override log when blocking attempt to add
+     * a player into a team.
+     *
+     * @param   team
+     *          Team name from another source
+     * @param   player
+     *          Player who was about to be added into the team
+     * @param   expectedTeam
+     *          Expected name of the team
+     */
+    public static void logTeamOverride(@NonNull String team, @NonNull String player, @NonNull String expectedTeam) {
+        String message = "Blocked attempt to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
+        //not logging the same message for every online player who received the packet
+        if (!message.equals(lastTeamOverrideMessage)) {
+            lastTeamOverrideMessage = message;
+            TAB.getInstance().getErrorManager().printError(message, Collections.emptyList(), false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
+        }
+    }
+
+    /**
+     * Registers an objective
+     *
+     * @param   objective
+     *          Objective to register
+     */
+    public abstract void registerObjective(@NonNull Objective objective);
+
+    /**
+     * Unregisters an objective
+     *
+     * @param   objective
+     *          Objective to unregister
+     */
+    public abstract void unregisterObjective(@NonNull Objective objective);
+
+    /**
+     * Updates an objective
+     *
+     * @param   objective
+     *          Objective to update
+     */
+    public abstract void updateObjective(@NonNull Objective objective);
+
+    /**
+     * Sets score value
+     *
+     * @param   score
+     *          Score to set
+     */
+    public abstract void setScore(@NonNull Score score);
+
+    /**
+     * Removes score value
+     *
+     * @param   score
+     *          Score to remove
+     */
+    public abstract void removeScore(@NonNull Score score);
+
+    /**
+     * Registers a team
+     *
+     * @param   team
+     *          Team to register
+     */
+    public abstract void registerTeam(@NonNull Team team);
+
+    /**
+     * Unregisters a team
+     *
+     * @param   team
+     *          Team to unregister
+     */
+    public abstract void unregisterTeam(@NonNull Team team);
+
+    /**
+     * Updates a team
+     *
+     * @param   team
+     *          Team to update
+     */
+    public abstract void updateTeam(@NonNull Team team);
+
+    /**
+     * Structure holding objective data.
+     */
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class Objective {
+
+        @NonNull private final DisplaySlot displaySlot;
+        @NonNull private final String name;
+        @NonNull private String title;
+        @NonNull private HealthDisplay healthDisplay;
+        @Nullable private TabComponent numberFormat;
+        @NonNull private final Map<String, Score> scores = new HashMap<>();
+
+        private void update(@NonNull String title, @NonNull HealthDisplay healthDisplay, @Nullable TabComponent numberFormat) {
+            this.title = title;
+            this.healthDisplay = healthDisplay;
+            this.numberFormat = numberFormat;
+        }
+    }
+
+    /**
+     * Structure holding score data.
+     */
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class Score {
+
+        @NonNull private final String objective;
+        @NonNull private final String holder;
+        private int value;
+        @Nullable private TabComponent displayName;
+        @Nullable private TabComponent numberFormat;
+
+        private void update(int value, @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
+            this.value = value;
+            this.displayName = displayName;
+            this.numberFormat = numberFormat;
+        }
+    }
+
+    /**
+     * Structure holding team data.
+     */
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class Team {
+
+        @NonNull private final String name;
+        @NonNull private String prefix;
+        @NonNull private String suffix;
+        @NonNull private NameVisibility visibility;
+        @NonNull private CollisionRule collision;
+        @NonNull private Collection<String> players;
+        private int options;
+        @NonNull private EnumChatFormat color;
+
+        private void update(@NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
+                            @NonNull CollisionRule collision, int options, @NonNull EnumChatFormat color) {
+            this.prefix = prefix;
+            this.suffix = suffix;
+            this.visibility = visibility;
+            this.collision = collision;
+            this.options = options;
+            this.color = color;
+        }
+    }
+}

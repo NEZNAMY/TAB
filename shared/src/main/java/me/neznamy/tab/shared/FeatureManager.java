@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.util.*;
-
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
@@ -20,6 +18,8 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.Unload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 /**
  * Feature registration which offers calls to all features
@@ -313,22 +313,6 @@ public class FeatureManager {
             TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PING_CHANGE, System.nanoTime() - time);
         }
         return newLatency;
-    }
-
-    /**
-     * Forwards login packet send to enabled features.
-     *
-     * @param   packetReceiver
-     *          Player who received the packet
-     */
-    public void onLoginPacket(TabPlayer packetReceiver) {
-        packetReceiver.getScoreboard().unfreeze();
-        for (TabFeature f : values) {
-            if (!(f instanceof LoginPacketListener)) continue;
-            long time = System.nanoTime();
-            ((LoginPacketListener)f).onLoginPacket(packetReceiver);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PACKET_LOGIN, System.nanoTime() - time);
-        }
     }
 
     /**

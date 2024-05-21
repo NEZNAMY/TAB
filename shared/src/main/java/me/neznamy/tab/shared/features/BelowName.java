@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Feature handler for BelowName feature
  */
 public class BelowName extends RefreshableFeature implements JoinListener, Loadable, UnLoadable,
-        LoginPacketListener, WorldSwitchListener, ServerSwitchListener {
+        WorldSwitchListener, ServerSwitchListener {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -156,24 +156,14 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
         if (redis != null) redis.updateBelowName(refreshed, number, fancy.get());
     }
 
-    @Override
-    public void onLoginPacket(@NotNull TabPlayer player) {
-        if (player.belowNameData.disabled.get() || !player.isLoaded()) return;
-        register(player);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!sameServerAndWorld(all, player)) continue;
-            if (all.isLoaded()) setScore(player, all, getValue(all), all.belowNameData.numberFormat.getFormat(player));
-        }
-    }
-
     private void register(@NotNull TabPlayer player) {
         player.getScoreboard().registerObjective(
+                Scoreboard.DisplaySlot.BELOW_NAME,
                 OBJECTIVE_NAME,
                 player.belowNameData.text.updateAndGet(),
                 Scoreboard.HealthDisplay.INTEGER,
                 TabComponent.optimized(player.belowNameData.defaultNumberFormat.updateAndGet())
         );
-        player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
     }
 
     /**

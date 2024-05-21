@@ -5,6 +5,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.impl.DummyScoreboard;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -17,7 +18,7 @@ public class ScoreboardLoader {
     /** Instance function */
     @Getter
     @NotNull
-    private static Function<BukkitTabPlayer, Scoreboard<BukkitTabPlayer, ?>> instance = NullScoreboard::new;
+    private static Function<BukkitTabPlayer, Scoreboard> instance = DummyScoreboard::new;
 
     /**
      * Tries to load Scoreboard packets.

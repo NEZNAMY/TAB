@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("UnstableApiUsage")
 @Getter
 public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener,
-        Loadable, UnLoadable, ServerSwitchListener, LoginPacketListener,
+        Loadable, UnLoadable, ServerSwitchListener,
         VanishListener, TabListClearListener {
 
     /** Redis players on other proxies by their UUID */
@@ -281,11 +281,6 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     public void registerMessage(@NotNull String name, @NotNull Class<? extends RedisMessage> clazz, @NotNull Supplier<RedisMessage> supplier) {
         messages.put(name, supplier);
         classStringMap.put(clazz, name);
-    }
-
-    @Override
-    public void onLoginPacket(TabPlayer player) {
-        features.forEach(f -> f.onLoginPacket(player));
     }
 
     @Override

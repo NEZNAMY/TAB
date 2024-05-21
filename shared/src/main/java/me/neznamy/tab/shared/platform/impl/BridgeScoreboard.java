@@ -1,23 +1,18 @@
 package me.neznamy.tab.shared.platform.impl;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.hook.AdventureHook;
-import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetDisplayObjective;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetObjective;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetScore;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetScoreboardTeam;
-import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
 
 /**
  * Scoreboard handler using bridge to encode the packets.
  */
-public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer, Component> {
+public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
 
     /**
      * Constructs new instance.
@@ -30,62 +25,81 @@ public class BridgeScoreboard extends Scoreboard<ProxyTabPlayer, Component> {
     }
 
     @Override
-    public void setDisplaySlot0(int slot, @NonNull String objective) {
-        player.sendPluginMessage(new SetDisplayObjective(slot, objective));
+    public void registerObjective(@NonNull Objective objective) {
+        player.sendPluginMessage(new SetObjective(
+                objective.getName(),
+                ObjectiveAction.REGISTER,
+                objective.getTitle(),
+                objective.getHealthDisplay().ordinal(),
+                objective.getNumberFormat() == null ? null : AdventureHook.serialize(objective.getNumberFormat().toAdventure(player.getVersion())))
+        );
+        player.sendPluginMessage(new SetDisplayObjective(objective.getDisplaySlot(), objective.getName()));
     }
 
     @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                   @Nullable Component numberFormat) {
-        player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.REGISTER, title, display,
-                numberFormat == null ? null : AdventureHook.serialize(numberFormat)));
+    public void unregisterObjective(@NonNull Objective objective) {
+        player.sendPluginMessage(new SetObjective(objective.getName()));
     }
 
     @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
-        player.sendPluginMessage(new SetObjective(objectiveName));
+    public void updateObjective(@NonNull Objective objective) {
+        player.sendPluginMessage(new SetObjective(
+                objective.getName(),
+                ObjectiveAction.UPDATE,
+                objective.getTitle(),
+                objective.getHealthDisplay().ordinal(),
+                objective.getNumberFormat() == null ? null : AdventureHook.serialize(objective.getNumberFormat().toAdventure(player.getVersion())))
+        );
     }
 
     @Override
-    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, int display,
-                                 @Nullable Component numberFormat) {
-        player.sendPluginMessage(new SetObjective(objectiveName, ObjectiveAction.UPDATE, title, display,
-                numberFormat == null ? null : AdventureHook.serialize(numberFormat)));
-    }
-
-    @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
-                              @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
-                              @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
-        player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.CREATE, prefix, suffix, options,
-                visibility.toString(), collision.toString(), color.ordinal(), players));
-    }
-
-    @Override
-    public void unregisterTeam0(@NonNull String name) {
-        player.sendPluginMessage(new SetScoreboardTeam(name));
-    }
-
-    @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
-                            @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
-                            int options, @NonNull EnumChatFormat color) {
-        player.sendPluginMessage(new SetScoreboardTeam(name, TeamAction.UPDATE, prefix, suffix, options,
-                visibility.toString(), collision.toString(), color.ordinal(), null));
-    }
-
-    @Override
-    public void setScore0(@NonNull String objective, @NonNull String scoreHolder, int score,
-                          @Nullable Component displayName, @Nullable Component numberFormat) {
+    public void setScore(@NonNull Score score) {
         player.sendPluginMessage(new SetScore(
-                objective, ScoreAction.CHANGE, scoreHolder, score,
-                displayName == null ? null : AdventureHook.serialize(displayName),
-                numberFormat == null ? null : AdventureHook.serialize(numberFormat)
+                score.getObjective(),
+                ScoreAction.CHANGE,
+                score.getHolder(),
+                score.getValue(),
+                score.getDisplayName() == null ? null : AdventureHook.serialize(score.getDisplayName().toAdventure(player.getVersion())),
+                score.getNumberFormat() == null ? null : AdventureHook.serialize(score.getNumberFormat().toAdventure(player.getVersion()))
         ));
     }
 
     @Override
-    public void removeScore0(@NonNull String objective, @NonNull String scoreHolder) {
-        player.sendPluginMessage(new SetScore(objective, scoreHolder));
+    public void removeScore(@NonNull Score score) {
+        player.sendPluginMessage(new SetScore(score.getObjective(), score.getHolder()));
+    }
+
+    @Override
+    public void registerTeam(@NonNull Team team) {
+        player.sendPluginMessage(new SetScoreboardTeam(
+                team.getName(),
+                TeamAction.CREATE, 
+                team.getPrefix(),
+                team.getSuffix(),
+                team.getOptions(),
+                team.getVisibility().toString(),
+                team.getCollision().toString(),
+                team.getColor().ordinal(),
+                team.getPlayers()
+        ));
+    }
+
+    @Override
+    public void unregisterTeam(@NonNull Team team) {
+        player.sendPluginMessage(new SetScoreboardTeam(team.getName()));
+    }
+
+    @Override
+    public void updateTeam(@NonNull Team team) {
+        player.sendPluginMessage(new SetScoreboardTeam(team.getName(),
+                TeamAction.UPDATE,
+                team.getPrefix(),
+                team.getSuffix(),
+                team.getOptions(),
+                team.getVisibility().toString(),
+                team.getCollision().toString(),
+                team.getColor().ordinal(),
+                null
+        ));
     }
 }

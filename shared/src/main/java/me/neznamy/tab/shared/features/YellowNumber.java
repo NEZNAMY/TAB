@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
-public class YellowNumber extends RefreshableFeature implements JoinListener, Loadable, UnLoadable, LoginPacketListener {
+public class YellowNumber extends RefreshableFeature implements JoinListener, Loadable, UnLoadable {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
@@ -33,7 +33,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
     private final String rawValueFancy = config().getString("playerlist-objective.fancy-value", "&7Ping: " + TabConstants.Placeholder.PING);
 
     /** Scoreboard display type */
-    private final int displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) ||
+    private final Scoreboard.HealthDisplay displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) ||
             "%player_health%".equals(rawValue) || "%player_health_rounded%".equals(rawValue) ?
             Scoreboard.HealthDisplay.HEARTS : Scoreboard.HealthDisplay.INTEGER;
     private final DisableChecker disableChecker;
@@ -151,19 +151,9 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
         if (redis != null) redis.updateYellowNumber(refreshed, value, refreshed.playerlistObjectiveData.valueModern.get());
     }
 
-    @Override
-    public void onLoginPacket(@NotNull TabPlayer p) {
-        if (p.playerlistObjectiveData.disabled.get() || !p.isLoaded()) return;
-        register(p);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.isLoaded()) setScore(p, all, getValueNumber(all), all.playerlistObjectiveData.valueModern.getFormat(p));
-        }
-    }
-
     private void register(@NotNull TabPlayer player) {
         if (player.isBedrockPlayer()) return;
-        player.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType, new SimpleComponent(""));
-        player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+        player.getScoreboard().registerObjective(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME, TITLE, displayType, new SimpleComponent(""));
     }
 
     /**

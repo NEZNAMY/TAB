@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard.Team;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard.TeamAction;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -148,133 +149,95 @@ public class TeamPacketData {
     /**
      * Creates team register packet with specified parameters.
      *
-     * @param   team
+     * @param   nmsTeam
      *          Team to register
-     * @param   prefix
-     *          Team prefix for 1.12-
+     * @param   team
+     *          Team data
      * @param   prefixComponent
      *          Team prefix component for 1.13+
-     * @param   suffix
-     *          Team suffix for 1.12-
      * @param   suffixComponent
      *          Team suffix component for 1.13+
-     * @param   visibility
-     *          Nametag visibility rule
-     * @param   collision
-     *          Player collision rule
-     * @param   players
-     *          Team members
-     * @param   options
-     *          Team flags
-     * @param   color
-     *          Team color for 1.13+
      * @return  Register team packet with specified parameters
      */
     @SneakyThrows
-    public Object registerTeam(@NonNull Object team, @NonNull String prefix, @Nullable Object prefixComponent,
-                               @NonNull String suffix, @Nullable Object suffixComponent,
-                               @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
-                               @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
-        updateTeamData(team, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
-        ((Collection<String>) ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(players);
+    public Object registerTeam(@NonNull Object nmsTeam, @NonNull Team team, @Nullable Object prefixComponent,
+                               @Nullable Object suffixComponent) {
+        updateTeamData(nmsTeam, team, prefixComponent, suffixComponent);
+        ((Collection<String>) ScoreboardTeam_getPlayerNameSet.invoke(nmsTeam)).addAll(team.getPlayers());
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-            return TeamPacketConstructor_ofBoolean.invoke(null, team, true);
+            return TeamPacketConstructor_ofBoolean.invoke(null, nmsTeam, true);
         } else {
-            return newTeamPacket.newInstance(team, TeamAction.CREATE);
+            return newTeamPacket.newInstance(nmsTeam, TeamAction.CREATE);
         }
     }
 
     /**
      * Creates unregister team packet with given team.
      *
-     * @param   team
+     * @param   nmsTeam
      *          Team to unregister
      * @return  Packet for unregistering team
      */
     @SneakyThrows
-    public Object unregisterTeam(@NonNull Object team) {
+    public Object unregisterTeam(@NonNull Object nmsTeam) {
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-            return TeamPacketConstructor_of.invoke(null, team);
+            return TeamPacketConstructor_of.invoke(null, nmsTeam);
         } else {
-            return newTeamPacket.newInstance(team, TeamAction.REMOVE);
+            return newTeamPacket.newInstance(nmsTeam, TeamAction.REMOVE);
         }
     }
 
     /**
      * Creates team update packet with specified parameters.
      *
-     * @param   team
+     * @param   nmsTeam
      *          Team to update
-     * @param   prefix
-     *          Team prefix for 1.12-
+     * @param   team
+     *          Team data
      * @param   prefixComponent
      *          Team prefix component for 1.13+
-     * @param   suffix
-     *          Team suffix for 1.12-
      * @param   suffixComponent
      *          Team suffix component for 1.13+
-     * @param   visibility
-     *          Nametag visibility rule
-     * @param   collision
-     *          Player collision rule
-     * @param   options
-     *          Team flags
-     * @param   color
-     *          Team color for 1.13+
      * @return  Update team packet with specified parameters
      */
     @SneakyThrows
-    public Object updateTeam(@NonNull Object team, @NonNull String prefix, @Nullable Object prefixComponent,
-                             @NonNull String suffix, @Nullable Object suffixComponent,
-                             @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
-                             int options, @NonNull EnumChatFormat color) {
-        updateTeamData(team, prefix, prefixComponent, suffix, suffixComponent, visibility, collision, options, color);
+    public Object updateTeam(@NonNull Object nmsTeam, @NonNull Team team, @Nullable Object prefixComponent,
+                             @Nullable Object suffixComponent) {
+        updateTeamData(nmsTeam, team, prefixComponent, suffixComponent);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-            return TeamPacketConstructor_ofBoolean.invoke(null, team, false);
+            return TeamPacketConstructor_ofBoolean.invoke(null, nmsTeam, false);
         } else {
-            return newTeamPacket.newInstance(team, TeamAction.UPDATE);
+            return newTeamPacket.newInstance(nmsTeam, TeamAction.UPDATE);
         }
     }
 
     /**
      * Updates team properties.
      *
-     * @param   team
+     * @param   nmsTeam
      *          Team to update
-     * @param   prefix
-     *          Team prefix for 1.12-
+     * @param   team
+     *          Team data
      * @param   prefixComponent
      *          Team prefix component for 1.13+
-     * @param   suffix
-     *          Team suffix for 1.12-
      * @param   suffixComponent
      *          Team suffix component for 1.13+
-     * @param   visibility
-     *          Nametag visibility rule
-     * @param   collision
-     *          Player collision rule
-     * @param   options
-     *          Team flags
-     * @param   color
-     *          Team color for 1.13+
      */
     @SneakyThrows
-    private void updateTeamData(@NonNull Object team, @NonNull String prefix, @Nullable Object prefixComponent,
-                                  @NonNull String suffix, @Nullable Object suffixComponent,
-                                  @NonNull Scoreboard.NameVisibility visibility, @NonNull Scoreboard.CollisionRule collision,
-                                  int options, @NonNull EnumChatFormat color) {
-        ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
-        ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
+    private void updateTeamData(@NonNull Object nmsTeam, @NonNull Team team, @Nullable Object prefixComponent,
+                                @Nullable Object suffixComponent) {
+        ScoreboardTeam_setAllowFriendlyFire.invoke(nmsTeam, (team.getOptions() & 0x1) > 0);
+        ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(nmsTeam, (team.getOptions() & 0x2) > 0);
         if (BukkitReflection.getMinorVersion() >= MODERN_TEAM_DATA_VERSION) {
-            ScoreboardTeam_setPrefix.invoke(team, prefixComponent);
-            ScoreboardTeam_setSuffix.invoke(team, suffixComponent);
-            ScoreboardTeam_setColor.invoke(team, chatFormats[color.ordinal()]);
+            ScoreboardTeam_setPrefix.invoke(nmsTeam, prefixComponent);
+            ScoreboardTeam_setSuffix.invoke(nmsTeam, suffixComponent);
+            ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().ordinal()]);
         } else {
-            ScoreboardTeam_setPrefix.invoke(team, prefix);
-            ScoreboardTeam_setSuffix.invoke(team, suffix);
+            ScoreboardTeam_setPrefix.invoke(nmsTeam, team.getPrefix());
+            ScoreboardTeam_setSuffix.invoke(nmsTeam, team.getSuffix());
         }
-        setVisibility.accept(team, visibility);
-        setCollision.accept(team, collision);
+        setVisibility.accept(nmsTeam, team.getVisibility());
+        setCollision.accept(nmsTeam, team.getCollision());
     }
 
     /**
@@ -303,7 +266,7 @@ public class TeamPacketData {
         if (!TeamPacketClass.isInstance(packet)) return;
         int action = TeamPacket_ACTION.getInt(packet);
         if (action == TeamAction.REMOVE || action == TeamAction.UPDATE) return;
-        TeamPacket_PLAYERS.set(packet, player.getScoreboard().onTeamPacket(
+        TeamPacket_PLAYERS.set(packet, ((SafeScoreboard<?>)player.getScoreboard()).onTeamPacket(
                 action, (String) TeamPacket_NAME.get(packet), (Collection<String>) TeamPacket_PLAYERS.get(packet)));
     }
 }

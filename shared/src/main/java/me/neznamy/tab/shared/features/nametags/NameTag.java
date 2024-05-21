@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -20,8 +21,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, LoginPacketListener,
-        VanishListener {
+        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener {
 
     /** Name of the property used in configuration */
     public static final String TAGPREFIX = "tagprefix";
@@ -54,7 +54,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            all.getScoreboard().setAntiOverrideTeams(antiOverride);
+            ((SafeScoreboard<?>)all.getScoreboard()).setAntiOverrideTeams(antiOverride);
             loadProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
                 all.teamData.disabled.set(true);
@@ -99,7 +99,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.getScoreboard().setAntiOverrideTeams(antiOverride);
+        ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideTeams(antiOverride);
         loadProperties(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == connectedPlayer) continue; //avoiding double registration
@@ -127,7 +127,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             String teamName = disconnectedPlayer.sortingData.getShortTeamName();
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
-                if (viewer.getScoreboard().containsTeam(teamName)) {
+                if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(teamName)) {
                     viewer.getScoreboard().unregisterTeam(teamName);
                 }
             }
@@ -188,7 +188,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        if (!viewer.getScoreboard().containsTeam(p.sortingData.getShortTeamName())) return;
+        if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(p.sortingData.getShortTeamName())) return;
         boolean visible = getTeamVisibility(p, viewer);
         String prefix = p.teamData.prefix.getFormat(viewer);
         viewer.getScoreboard().updateTeam(
@@ -205,7 +205,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getScoreboard().containsTeam(teamName)) {
+            if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(teamName)) {
                 viewer.getScoreboard().unregisterTeam(teamName);
             }
         }
@@ -251,14 +251,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (hasTeamHandlingPaused(player) || player.teamData.disabled.get()) return;
         unregisterTeam(player, previousShortName);
         registerTeam(player);
-    }
-
-    @Override
-    public void onLoginPacket(TabPlayer player) {
-        if (!player.isLoaded()) return;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!all.teamData.disabled.get() && all.isLoaded()) registerTeam(all, player);
-        }
     }
 
     @Override

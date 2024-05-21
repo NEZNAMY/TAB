@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.platform.EventListener;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
@@ -69,13 +70,12 @@ public class VelocityEventListener implements EventListener<Player> {
             if (player == null) {
                 tab.getFeatureManager().onJoin(createPlayer(e.getPlayer()));
             } else {
-                player.getScoreboard().freeze(); // Prevent server switch listeners from sending packets before re-registering objectives in onLoginPacket
+                player.getScoreboard().resend();
                 tab.getFeatureManager().onServerChange(
                         player.getUniqueId(),
                         e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null")
                 );
                 tab.getFeatureManager().onTabListClear(player);
-                tab.getFeatureManager().onLoginPacket(player);
                 ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
             }
         });

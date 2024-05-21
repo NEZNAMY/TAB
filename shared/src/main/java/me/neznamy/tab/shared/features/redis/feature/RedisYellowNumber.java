@@ -65,11 +65,6 @@ public class RedisYellowNumber extends RedisFeature {
         player.setPlayerlistFancy(TabComponent.optimized(in.readUTF()));
     }
 
-    @Override
-    public void onLoginPacket(@NotNull TabPlayer player) {
-        onJoin(player);
-    }
-
     @NoArgsConstructor
     @AllArgsConstructor
     public class Update extends RedisMessage {

@@ -68,14 +68,12 @@ public class SpongePlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(
-                AdventureHook.toAdventureComponent(message, true)));
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(message.toAdventure(serverVersion)));
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(
-                AdventureHook.toAdventureComponent(message, true))); // Sponge console does not support colors
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(message.toAdventure(serverVersion))); // Sponge console does not support colors
     }
 
     @Override
