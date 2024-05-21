@@ -40,6 +40,7 @@ public class PlaceholderRefreshTask implements Runnable {
 
     @Override
     public void run() {
+        boolean trackUsage = TAB.getInstance().getCpu().isTrackUsage();
         TabPlayer[] players = TAB.getInstance().getOnlinePlayers();
         for (Placeholder placeholder : placeholdersToRefresh) {
             long nanoTime = 0;
@@ -77,7 +78,7 @@ public class PlaceholderRefreshTask implements Runnable {
                 if (relationalPlaceholderResults == null) relationalPlaceholderResults = new HashMap<>();
                 relationalPlaceholderResults.put(relationalPlaceholder, viewerMap);
             }
-            usedTime.put(placeholder.getIdentifier(), nanoTime);
+            if (trackUsage) usedTime.put(placeholder.getIdentifier(), nanoTime);
         }
     }
 }
