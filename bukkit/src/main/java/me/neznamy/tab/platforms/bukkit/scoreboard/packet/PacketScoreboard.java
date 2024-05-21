@@ -198,6 +198,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @SneakyThrows
     private Object newObjectivePacket(int action, @NonNull String objectiveName, @NonNull String title, int display,
                                       @Nullable Object numberFormat) {
+        // TODO save objectives and reuse them for better performance
         Object packet = newObjectivePacket.newInstance(newObjective(objectiveName, title, display, numberFormat), action);
         if (BukkitReflection.getMinorVersion() >= 8 && BukkitReflection.getMinorVersion() < 13) {
             Objective_RENDER_TYPE.set(packet, healthDisplays[display]);
