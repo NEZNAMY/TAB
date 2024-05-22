@@ -267,7 +267,6 @@ public class BossBarLine implements BossBar {
     public void addPlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
         if (players.contains(player)) return;
-        players.add(player);
         player.setProperty(textRefresher, propertyTitle, title);
         player.setProperty(progressRefresher, propertyProgress, progress);
         player.setProperty(colorRefresher, propertyColor, color);
@@ -279,6 +278,7 @@ public class BossBarLine implements BossBar {
                 parseColor(player, player.getProperty(propertyColor).updateAndGet()),
                 parseStyle(player, player.getProperty(propertyStyle).updateAndGet())
         );
+        players.add(player);
     }
 
     @Override
