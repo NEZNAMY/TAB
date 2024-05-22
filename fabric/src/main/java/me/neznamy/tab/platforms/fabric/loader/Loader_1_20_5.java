@@ -89,7 +89,7 @@ public class Loader_1_20_5 implements Loader {
                 null,
                 null,
                 null,
-                modifier.getFont() == null ? null : new ResourceLocation(modifier.getFont())
+                modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont())
         );
     }
 
