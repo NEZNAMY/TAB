@@ -264,12 +264,12 @@ public class BossBarLine implements BossBar {
     public void addPlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
         if (players.contains(player)) return;
-        players.add(player);
         player.setProperty(textRefresher, propertyTitle, title);
         player.setProperty(progressRefresher, propertyProgress, progress);
         player.setProperty(colorRefresher, propertyColor, color);
         player.setProperty(styleRefresher, propertyStyle, style);
         sendToPlayerRaw(player);
+        players.add(player);
     }
 
     @Override
