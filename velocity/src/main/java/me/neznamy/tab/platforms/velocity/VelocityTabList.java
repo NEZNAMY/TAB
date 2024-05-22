@@ -4,8 +4,8 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * TabList implementation for Velocity using its API.
  */
-public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
+public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component> {
 
     /**
      * Constructs new instance.
@@ -33,7 +33,7 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
     }
 
     @Override
-    public void updateDisplayName0(@NonNull UUID entry, @Nullable Component displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable Component displayName) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(displayName));
     }
 
@@ -53,7 +53,7 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
     }
 
     @Override
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Component displayName) {
+    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Component displayName) {
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(new GameProfile(
@@ -80,7 +80,7 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter0(@NonNull Component header, @NonNull Component footer) {
+    public void setPlayerListHeaderFooter(@NonNull Component header, @NonNull Component footer) {
         player.getPlayer().sendPlayerListHeaderAndFooter(header, footer);
     }
 
@@ -95,7 +95,6 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
             player.getPlayer().getTabList().getEntry(target.getUniqueId()).ifPresent(entry -> {
                 Component expectedComponent = getExpectedDisplayName(target);
                 if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
-                    displayNameWrong(entry.getProfile().getName(), player);
                     entry.setDisplayName(expectedComponent);
                 }
             });

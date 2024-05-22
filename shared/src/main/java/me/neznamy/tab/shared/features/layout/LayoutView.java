@@ -8,10 +8,7 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -64,7 +61,9 @@ public class LayoutView {
 
     public void destroy() {
         if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) return;
-        viewer.getTabList().removeEntries(manager.getUuids().values());
+        for (UUID id : manager.getUuids().values()) {
+            viewer.getTabList().removeEntry(id);
+        }
     }
 
     public void tick() {

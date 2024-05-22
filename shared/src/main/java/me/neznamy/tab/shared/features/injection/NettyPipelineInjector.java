@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,7 +93,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
             try {
                 if (player.getVersion().getMinorVersion() >= 8) {
                     long time = System.nanoTime();
-                    player.getTabList().onPacketSend(packet);
+                    ((TrackedTabList<?, ?>)player.getTabList()).onPacketSend(packet);
                     TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PACKET, System.nanoTime()-time);
                 }
 

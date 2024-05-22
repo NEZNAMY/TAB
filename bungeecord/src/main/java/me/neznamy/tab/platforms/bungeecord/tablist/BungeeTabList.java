@@ -4,7 +4,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -23,7 +23,7 @@ import java.util.UUID;
  * Abstract TabList class for BungeeCord containing
  * common code for all implementations.
  */
-public abstract class BungeeTabList extends TabList<BungeeTabPlayer, BaseComponent> {
+public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, BaseComponent> {
 
     /** Pointer to UUIDs in player's TabList */
     private final Collection<UUID> uuids;
@@ -42,7 +42,7 @@ public abstract class BungeeTabList extends TabList<BungeeTabPlayer, BaseCompone
     }
 
     @Override
-    public void setPlayerListHeaderFooter0(@NonNull BaseComponent header, @NonNull BaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NonNull BaseComponent header, @NonNull BaseComponent footer) {
         player.sendPacket(new PlayerListHeaderFooter(header, footer));
     }
 

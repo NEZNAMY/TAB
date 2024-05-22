@@ -2,8 +2,8 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
@@ -18,7 +18,7 @@ import java.util.UUID;
 /**
  * TabList implementation for Sponge 7 and lower
  */
-public class SpongeTabList extends TabList<SpongeTabPlayer, Text> {
+public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Text> {
 
     /** Gamemode array for fast access */
     private static final GameMode[] gameModes = {
@@ -41,7 +41,7 @@ public class SpongeTabList extends TabList<SpongeTabPlayer, Text> {
     }
 
     @Override
-    public void updateDisplayName0(@NonNull UUID entry, @Nullable Text displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable Text displayName) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(displayName));
     }
 
@@ -61,7 +61,7 @@ public class SpongeTabList extends TabList<SpongeTabPlayer, Text> {
     }
 
     @Override
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Text displayName) {
+    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Text displayName) {
         GameProfile profile = GameProfile.of(id, name);
         if (skin != null) profile.getPropertyMap().put(TEXTURES_PROPERTY, ProfileProperty.of(
                 TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
@@ -76,7 +76,7 @@ public class SpongeTabList extends TabList<SpongeTabPlayer, Text> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter0(@NonNull Text header, @NonNull Text footer) {
+    public void setPlayerListHeaderFooter(@NonNull Text header, @NonNull Text footer) {
         player.getPlayer().getTabList().setHeaderAndFooter(header, footer);
     }
 
@@ -91,7 +91,6 @@ public class SpongeTabList extends TabList<SpongeTabPlayer, Text> {
             player.getPlayer().getTabList().getEntry(target.getUniqueId()).ifPresent(entry -> {
                 Text expectedComponent = getExpectedDisplayName(target);
                 if (expectedComponent != null && entry.getDisplayName().orElse(null) != expectedComponent) {
-                    displayNameWrong(target.getName(), player);
                     entry.setDisplayName(expectedComponent);
                 }
             });

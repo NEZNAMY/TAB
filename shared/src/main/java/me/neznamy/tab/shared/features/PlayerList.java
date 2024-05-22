@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +54,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, getFeatureName(),
                     TabConstants.CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC, () -> {
                 for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                    p.getTabList().checkDisplayNames();
+                    ((TrackedTabList<?, ?>)p.getTabList()).checkDisplayNames();
                 }
             });
         } else {
@@ -154,7 +155,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void load() {
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            all.getTabList().setAntiOverride(antiOverrideTabList);
+            ((TrackedTabList<?, ?>)all.getTabList()).setAntiOverride(antiOverrideTabList);
             loadProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
                 all.tablistData.disabled.set(true);
@@ -240,7 +241,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.getTabList().setAntiOverride(antiOverrideTabList);
+        ((TrackedTabList<?, ?>)connectedPlayer.getTabList()).setAntiOverride(antiOverrideTabList);
         loadProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.tablistData.disabled.set(true);

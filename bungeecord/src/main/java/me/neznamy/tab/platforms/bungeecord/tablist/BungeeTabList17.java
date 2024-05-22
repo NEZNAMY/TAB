@@ -53,10 +53,10 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName0(@NonNull UUID entry, @Nullable BaseComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable BaseComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));
-        addEntry0(entry, userNames.get(entry), null, false, 0, 0, displayName);
+        addEntry(entry, userNames.get(entry), null, false, 0, 0, displayName);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable BaseComponent displayName) {
+    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable BaseComponent displayName) {
         addUuid(id);
         update(PlayerListItem.Action.ADD_PLAYER, createItem(name, displayName == null ? new TextComponent(name) : displayName, latency));
 
@@ -86,7 +86,7 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter0(@NonNull BaseComponent header, @NonNull BaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NonNull BaseComponent header, @NonNull BaseComponent footer) {
         // Not available on 1.7
     }
 

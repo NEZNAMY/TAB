@@ -154,7 +154,9 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
-            p.getTabList().removeEntries(uuids.values());
+            for (UUID id : uuids.values()) {
+                p.getTabList().removeEntry(id);
+            }
         }
     }
 

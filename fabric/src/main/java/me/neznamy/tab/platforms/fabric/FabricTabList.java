@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.*;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,7 @@ import java.util.UUID;
 /**
  * TabList implementation for Fabric using packets.
  */
-public class FabricTabList extends TabList<FabricTabPlayer, Component> {
+public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
 
     /**
      * Constructs new instance.
@@ -34,7 +35,7 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    public void updateDisplayName0(@NonNull UUID entry, @Nullable Component displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable Component displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_DISPLAY_NAME,
                 new Builder(entry, "", null, false, 0, 0, displayName)));
     }
@@ -60,13 +61,13 @@ public class FabricTabList extends TabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Component displayName) {
+    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Component displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.ADD_PLAYER,
                 new Builder(id, name, skin, listed, latency, gameMode, displayName)));
     }
 
     @Override
-    public void setPlayerListHeaderFooter0(@NonNull Component header, @NonNull Component footer) {
+    public void setPlayerListHeaderFooter(@NonNull Component header, @NonNull Component footer) {
         player.sendPacket(FabricMultiVersion.newHeaderFooter(header, footer));
     }
 

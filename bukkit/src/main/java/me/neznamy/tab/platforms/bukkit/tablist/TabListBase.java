@@ -7,7 +7,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +20,7 @@ import java.util.function.Function;
  * @param   <C>
  *          Component class
  */
-public abstract class TabListBase<C> extends TabList<BukkitTabPlayer, C> {
+public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> {
 
     /** Instance function */
     @Getter
@@ -71,7 +71,7 @@ public abstract class TabListBase<C> extends TabList<BukkitTabPlayer, C> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter0(@NonNull Object header, @NonNull Object footer) {
+    public void setPlayerListHeaderFooter(@NonNull Object header, @NonNull Object footer) {
         // Not used here
     }
 

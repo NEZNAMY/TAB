@@ -46,7 +46,7 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName0(@NonNull UUID entry, @Nullable BaseComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable BaseComponent displayName) {
         Item item = item(entry);
         item.setDisplayName(displayName);
         sendPacket(Action.UPDATE_DISPLAY_NAME, item);
@@ -74,7 +74,7 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void addEntry0(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable BaseComponent displayName) {
+    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable BaseComponent displayName) {
         addUuid(id);
         sendPacket(Action.ADD_PLAYER, entryToItem(id, name, skin, listed, latency, gameMode, displayName));
     }

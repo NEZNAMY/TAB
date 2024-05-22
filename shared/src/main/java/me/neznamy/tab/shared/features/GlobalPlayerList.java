@@ -47,12 +47,12 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void load() {
         addUsedPlaceholder(TabConstants.Placeholder.PING);
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            List<TabList.Entry> entries = new ArrayList<>();
             for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer.getServer().equals(displayed.getServer())) continue;
-                if (shouldSee(viewer, displayed)) entries.add(getAddInfoData(displayed, viewer));
+                if (shouldSee(viewer, displayed)) {
+                    viewer.getTabList().addEntry(getAddInfoData(displayed, viewer));
+                }
             }
-            if (!entries.isEmpty()) viewer.getTabList().addEntries(entries);
         }
     }
 
