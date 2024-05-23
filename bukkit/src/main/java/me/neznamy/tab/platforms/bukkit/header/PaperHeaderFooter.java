@@ -10,9 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Header/footer sender using Paper's API added in 1.16.5.
- * Thanks to both cache and direct component conversion, this
- * implementation is even faster than using NMS components
- * and is therefore preferred if available.
  */
 public class PaperHeaderFooter extends HeaderFooter {
 
