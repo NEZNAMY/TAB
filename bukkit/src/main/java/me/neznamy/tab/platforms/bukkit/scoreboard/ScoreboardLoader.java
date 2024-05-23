@@ -1,13 +1,16 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.impl.DummyScoreboard;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -21,17 +24,33 @@ public class ScoreboardLoader {
     private static Function<BukkitTabPlayer, Scoreboard> instance = DummyScoreboard::new;
 
     /**
-     * Tries to load Scoreboard packets.
+     * Finds the best available instance for current server software.
      */
-    public static void tryLoad() {
+    public static void findInstance() {
         if (PacketScoreboard.isAvailable()) {
             instance = PacketScoreboard::new;
         } else {
-            BukkitUtils.compatibilityError(PacketScoreboard.getException(), "Scoreboards", null,
-                    "Scoreboard feature will not work",
-                    "Belowname feature will not work",
-                    "Playerlist objective feature will not work",
-                    "Scoreboard teams feature will not work (nametags & sorting)");
+            Exception e = PacketScoreboard.getException();
+            if (PaperScoreboard.isAvailable()) {
+                instance = PaperScoreboard::new;
+                BukkitUtils.compatibilityError(e, "Scoreboards", "Paper API", "Compatibility with other plugins being reduced");
+            } else if (BukkitScoreboard.isAvailable()) {
+                instance = BukkitScoreboard::new;
+                List<String> missingFeatures = Lists.newArrayList(
+                        "Compatibility with other plugins being reduced",
+                        "Features receiving new artificial character limits"
+                );
+                if (BukkitReflection.is1_20_3Plus()) {
+                    missingFeatures.add("1.20.3+ visuals not working due to lack of API"); // soontm?
+                }
+                BukkitUtils.compatibilityError(e, "Scoreboards", "Bukkit API", missingFeatures.toArray(new String[0]));
+            } else {
+                BukkitUtils.compatibilityError(e, "Scoreboards", null,
+                        "Scoreboard feature will not work",
+                        "Belowname feature will not work",
+                        "Player objective feature will not work",
+                        "Scoreboard teams feature will not work (nametags & sorting)");
+            }
         }
     }
 }

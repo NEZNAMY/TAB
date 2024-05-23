@@ -37,6 +37,7 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -92,7 +93,9 @@ public class BukkitPlatform implements BackendPlatform {
         ComponentConverter.tryLoad();
         PingRetriever.tryLoad();
         TabListBase.findInstance();
-        ScoreboardLoader.tryLoad();
+        if (BukkitReflection.getMinorVersion() >= 5) {
+            ScoreboardLoader.findInstance();
+        }
         if (BukkitReflection.getMinorVersion() >= 8) {
             BukkitPipelineInjector.tryLoad();
             HeaderFooter.findInstance();
@@ -282,6 +285,18 @@ public class BukkitPlatform implements BackendPlatform {
     public double getMSPT() {
         if (paperMspt) return Bukkit.getAverageTickTime();
         return -1;
+    }
+
+    /**
+     * Runs task in the main thread for given entity.
+     *
+     * @param   entity
+     *          Entity's main thread
+     * @param   task
+     *          Task to run
+     */
+    public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
+        Bukkit.getScheduler().runTask(plugin, task);
     }
 
     @Override

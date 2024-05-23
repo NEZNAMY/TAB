@@ -80,6 +80,7 @@ public class FoliaPlatform extends BukkitPlatform {
      * @param   task
      *          Task to run
      */
+    @Override
     @SneakyThrows
     @SuppressWarnings("JavaReflectionMemberAccess")
     public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
