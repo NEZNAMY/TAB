@@ -71,11 +71,6 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull Object header, @NonNull Object footer) {
-        // Not used here
-    }
-
-    @Override
     public boolean containsEntry(@NonNull UUID entry) {
         return true; // TODO?
     }

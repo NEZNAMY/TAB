@@ -4,6 +4,7 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.kyori.adventure.text.Component;
@@ -80,8 +81,8 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull Component header, @NonNull Component footer) {
-        player.getPlayer().sendPlayerListHeaderAndFooter(header, footer);
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventure(player.getVersion()), footer.toAdventure(player.getVersion()));
     }
 
     @Override

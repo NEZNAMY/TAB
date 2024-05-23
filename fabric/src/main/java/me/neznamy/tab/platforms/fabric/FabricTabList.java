@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.*;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.minecraft.network.chat.Component;
@@ -67,8 +68,11 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull Component header, @NonNull Component footer) {
-        player.sendPacket(FabricMultiVersion.newHeaderFooter(header, footer));
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        player.sendPacket(FabricMultiVersion.newHeaderFooter(
+                player.getPlatform().convertComponent(header, player.getVersion().supportsRGB()),
+                player.getPlatform().convertComponent(footer, player.getVersion().supportsRGB())
+        ));
     }
 
     @Override

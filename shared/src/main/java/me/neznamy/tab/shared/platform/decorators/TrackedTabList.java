@@ -29,7 +29,8 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
 
     /** Tablist display name anti-override flag */
     @Setter
-    protected boolean antiOverride;
+    @Getter
+    private boolean antiOverride;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
     private final Map<TabPlayer, C> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
@@ -38,12 +39,6 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
     private final Map<RedisPlayer, C> expectedRedisDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
-
-    /** Expected header sent by the plugin */
-    private C expectedHeader;
-
-    /** Expected footer sent by the plugin */
-    private C expectedFooter;
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
@@ -62,15 +57,6 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
             // Compensation for 1.8.0 client sided bug
             updateDisplayName(entry.getUniqueId(), component);
         }
-    }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        C convertedHeader = header.convert(player.getVersion());
-        C convertedFooter = footer.convert(player.getVersion());
-        expectedHeader = convertedHeader;
-        expectedFooter = convertedFooter;
-        setPlayerListHeaderFooter(convertedHeader, convertedFooter);
     }
 
     /**
@@ -176,14 +162,4 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
      */
     public abstract void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                   boolean listed, int latency, int gameMode, @Nullable C displayName);
-
-    /**
-     * Sets header and footer to specified values.
-     *
-     * @param   header
-     *          Header to use
-     * @param   footer
-     *          Footer to use
-     */
-    public abstract void setPlayerListHeaderFooter(@NonNull C header, @NonNull C footer);
 }

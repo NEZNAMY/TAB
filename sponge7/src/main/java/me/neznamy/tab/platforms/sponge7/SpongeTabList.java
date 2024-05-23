@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
@@ -76,8 +77,11 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Text> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull Text header, @NonNull Text footer) {
-        player.getPlayer().getTabList().setHeaderAndFooter(header, footer);
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        player.getPlayer().getTabList().setHeaderAndFooter(
+                player.getPlatform().convertComponent(header, player.getVersion().supportsRGB()),
+                player.getPlatform().convertComponent(footer, player.getVersion().supportsRGB())
+        );
     }
 
     @Override

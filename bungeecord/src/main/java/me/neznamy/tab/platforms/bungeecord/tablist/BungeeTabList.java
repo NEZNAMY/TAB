@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
@@ -42,8 +43,11 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull BaseComponent header, @NonNull BaseComponent footer) {
-        player.sendPacket(new PlayerListHeaderFooter(header, footer));
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        player.sendPacket(new PlayerListHeaderFooter(
+                player.getPlatform().convertComponent(header, player.getVersion().supportsRGB()),
+                player.getPlatform().convertComponent(footer, player.getVersion().supportsRGB())
+        ));
     }
 
     /**
