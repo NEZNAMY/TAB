@@ -69,10 +69,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.sendPacket(FabricMultiVersion.newHeaderFooter(
-                player.getPlatform().convertComponent(header, player.getVersion().supportsRGB()),
-                player.getPlatform().convertComponent(footer, player.getVersion().supportsRGB())
-        ));
+        player.sendPacket(FabricMultiVersion.newHeaderFooter(toComponent(header), toComponent(footer)));
     }
 
     @Override
