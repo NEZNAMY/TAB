@@ -3,30 +3,15 @@ package me.neznamy.tab.shared.chat;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  * A class representing a component color, which can be either RGB or legacy code.
  */
 public class TextColor {
 
     /** Instances from legacy colors to avoid new class initialization each time */
-    private static final TextColor[] legacyColors = {
-            new TextColor(EnumChatFormat.BLACK),
-            new TextColor(EnumChatFormat.DARK_BLUE),
-            new TextColor(EnumChatFormat.DARK_GREEN),
-            new TextColor(EnumChatFormat.DARK_AQUA),
-            new TextColor(EnumChatFormat.DARK_RED),
-            new TextColor(EnumChatFormat.DARK_PURPLE),
-            new TextColor(EnumChatFormat.GOLD),
-            new TextColor(EnumChatFormat.GRAY),
-            new TextColor(EnumChatFormat.DARK_GRAY),
-            new TextColor(EnumChatFormat.BLUE),
-            new TextColor(EnumChatFormat.GREEN),
-            new TextColor(EnumChatFormat.AQUA),
-            new TextColor(EnumChatFormat.RED),
-            new TextColor(EnumChatFormat.LIGHT_PURPLE),
-            new TextColor(EnumChatFormat.YELLOW),
-            new TextColor(EnumChatFormat.WHITE)
-    };
+    private static final TextColor[] legacyColors = Arrays.stream(EnumChatFormat.VALUES).map(TextColor::new).toArray(TextColor[]::new);
 
     /**
      * RGB values as a single number of 3 8-bit numbers (0-255).
