@@ -25,7 +25,7 @@ public class BukkitTabList extends TabListBase<String> {
     }
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry0(@NonNull UUID entry) {
         // Shrug
     }
 

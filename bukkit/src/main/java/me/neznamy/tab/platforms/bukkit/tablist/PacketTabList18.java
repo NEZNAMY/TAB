@@ -109,7 +109,7 @@ public class PacketTabList18 extends TabListBase<Object> {
     }
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry0(@NonNull UUID entry) {
         packetSender.sendPacket(player.getPlayer(),
                 createPacket(Action.REMOVE_PLAYER, entry, "", null, false, 0, 0, null));
     }

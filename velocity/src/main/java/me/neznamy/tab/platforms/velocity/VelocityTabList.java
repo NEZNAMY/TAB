@@ -3,15 +3,15 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * TabList implementation for Velocity using its API.
@@ -29,7 +29,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
     }
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry0(@NonNull UUID entry) {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
@@ -92,13 +92,11 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
 
     @Override
     public void checkDisplayNames() {
-        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-            player.getPlayer().getTabList().getEntry(target.getUniqueId()).ifPresent(entry -> {
-                Component expectedComponent = getExpectedDisplayName(target);
-                if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
-                    entry.setDisplayName(expectedComponent);
-                }
-            });
-        }
+        player.getPlayer().getTabList().getEntries().forEach(entry -> {
+            Component expectedComponent = getExpectedDisplayName(entry.getProfile().getId());
+            if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
+                entry.setDisplayName(expectedComponent);
+            }
+        });
     }
 }

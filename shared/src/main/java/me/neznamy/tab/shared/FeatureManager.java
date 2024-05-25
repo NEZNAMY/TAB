@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.Unload;
@@ -128,6 +129,9 @@ public class FeatureManager {
             TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
         }
         TAB.getInstance().removePlayer(disconnectedPlayer);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            ((TrackedTabList<?, ?>)all.getTabList()).removeExpectedDisplayName(disconnectedPlayer.getTablistId());
+        }
         TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
     }
 

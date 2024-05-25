@@ -1,9 +1,7 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +35,7 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Component> {
     }
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry0(@NonNull UUID entry) {
         player.getPlayer().tabList().removeEntry(entry);
     }
 
@@ -89,13 +87,11 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Component> {
 
     @Override
     public void checkDisplayNames() {
-        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-            player.getPlayer().tabList().entry(target.getUniqueId()).ifPresent(entry -> {
-                Component expectedComponent = getExpectedDisplayName(target);
-                if (expectedComponent != null && entry.displayName().orElse(null) != expectedComponent) {
-                    entry.setDisplayName(expectedComponent);
-                }
-            });
-        }
+        player.getPlayer().tabList().entries().forEach(entry -> {
+            Component expectedComponent = getExpectedDisplayName(entry.profile().uniqueId());
+            if (expectedComponent != null && entry.displayName().orElse(null) != expectedComponent) {
+                entry.setDisplayName(expectedComponent);
+            }
+        });
     }
 }

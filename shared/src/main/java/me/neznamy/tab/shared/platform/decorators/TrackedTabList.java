@@ -1,11 +1,7 @@
 package me.neznamy.tab.shared.platform.decorators;
 
 import lombok.*;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -33,30 +29,53 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
     private boolean antiOverride;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<TabPlayer, C> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<UUID, C> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
-    private final RedisSupport redisSupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-
-    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<RedisPlayer, C> expectedRedisDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+    @Override
+    public void removeEntry(@NonNull UUID entry) {
+        expectedDisplayNames.remove(entry);
+        removeEntry0(entry);
+    }
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         C component = displayName == null ? null : toComponent(displayName);
-        setExpectedDisplayName(entry, component);
+        if (antiOverride) expectedDisplayNames.put(entry, component);
         updateDisplayName(entry, component);
     }
 
     @Override
     public void addEntry(@NonNull Entry entry) {
         C component = entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName());
-        setExpectedDisplayName(entry.getUniqueId(), component);
+        if (antiOverride) expectedDisplayNames.put(entry.getUniqueId(), component);
         addEntry(entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(), entry.getLatency(), entry.getGameMode(), component);
-
         if (player.getVersion().getMinorVersion() == 8) {
             // Compensation for 1.8.0 client sided bug
             updateDisplayName(entry.getUniqueId(), component);
         }
+    }
+
+    /**
+     * Returns expected display name for specified UUID. If nothing is found or anti-override is disabled,
+     * {@code null} is returned.
+     *
+     * @param   id
+     *          UUID of tablist entry
+     * @return  Expected display name or {@code null} if not found or anti-override is disabled
+     */
+    @Nullable
+    public C getExpectedDisplayName(@NotNull UUID id) {
+        return expectedDisplayNames.get(id);
+    }
+
+    /**
+     * Removes UUID from expected display names (to prevent memory leak).
+     *
+     * @param   id
+     *          UUID to remove
+     */
+    public void removeExpectedDisplayName(@NotNull UUID id) {
+        expectedDisplayNames.remove(id);
     }
 
     /**
@@ -78,48 +97,6 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
         // Empty by default, overridden by Bukkit, BungeeCord and Fabric
     }
 
-    private void setExpectedDisplayName(@NonNull UUID entry, @Nullable C displayName) {
-        if (!antiOverride) return;
-        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(entry);
-        if (player != null) expectedDisplayNames.put(player, displayName);
-
-        if (redisSupport != null) {
-            RedisPlayer redisPlayer = redisSupport.getRedisPlayers().get(entry);
-            if (redisPlayer != null) expectedRedisDisplayNames.put(redisPlayer, displayName);
-        }
-    }
-
-    /**
-     * Returns expected display name for specified UUID. If nothing is found,
-     * {@code null} is returned.
-     *
-     * @param   id
-     *          UUID of tablist entry
-     * @return  Expected display name or {@code null}
-     */
-    @Nullable
-    public C getExpectedDisplayName(@NotNull UUID id) {
-        if (!antiOverride) return null;
-
-        TabPlayer player = TAB.getInstance().getPlayerByTabListUUID(id);
-        if (player != null && expectedDisplayNames.containsKey(player)) {
-            return expectedDisplayNames.get(player);
-        }
-
-        if (redisSupport != null) {
-            RedisPlayer redisPlayer = redisSupport.getRedisPlayers().get(id);
-            if (redisPlayer != null && expectedRedisDisplayNames.containsKey(redisPlayer)) {
-                return expectedRedisDisplayNames.get(redisPlayer);
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    protected C getExpectedDisplayName(@NonNull TabPlayer player) {
-        return expectedDisplayNames.get(player);
-    }
-
     /**
      * Converts TAB component into platform's component.
      *
@@ -130,6 +107,14 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
     public C toComponent(@NonNull TabComponent component) {
         return component.convert(player.getVersion());
     }
+
+    /**
+     * Removes entry from the TabList.
+     *
+     * @param   entry
+     *          Entry to remove
+     */
+    public abstract void removeEntry0(@NonNull UUID entry);
 
     /**
      * Updates display name of an entry. Using {@code null} makes it undefined and
@@ -161,5 +146,5 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
      *          Entry display name
      */
     public abstract void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                  boolean listed, int latency, int gameMode, @Nullable C displayName);
+                                  boolean listed, int latency, int gameMode, @Nullable C displayName);
 }

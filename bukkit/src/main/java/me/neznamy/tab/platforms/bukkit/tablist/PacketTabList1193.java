@@ -90,7 +90,7 @@ public class PacketTabList1193 extends PacketTabList18 {
 
     @Override
     @SneakyThrows
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry0(@NonNull UUID entry) {
         packetSender.sendPacket(player.getPlayer(), newRemovePacket.newInstance(Collections.singletonList(entry)));
     }
 

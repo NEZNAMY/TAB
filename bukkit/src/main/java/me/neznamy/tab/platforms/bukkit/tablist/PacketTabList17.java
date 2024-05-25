@@ -73,7 +73,7 @@ public class PacketTabList17 extends TabListBase<String> {
 
     @Override
     @SneakyThrows
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry0(@NonNull UUID entry) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), false, 0));
         userNames.remove(entry);
