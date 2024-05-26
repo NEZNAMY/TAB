@@ -80,27 +80,27 @@ public abstract class SortingType {
 
     /**
      * Compresses a number to ### format, where # is a character symbol representing
-     * a number in a base of 65536. The first two represent the whole part, the third one decimal part.
+     * a number in a base of 65534. The first two represent the whole part, the third one decimal part.
      * The maximum number it will work properly with is {@link Integer#MAX_VALUE}.
      *
      * @param   number
      *          Number to convert
-     * @return  3 characters long String of converted number with a base of 65536.
+     * @return  3 characters long String of converted number with a base of 65534.
      */
     public String compressNumber(double number) {
         int wholePart = (int) number;
-        char decimalChar = (char) ((number - wholePart) * (Character.MAX_VALUE - 1));
+        int base = Character.MAX_VALUE - 1;
+        char decimalChar = (char) ((number - wholePart) * base);
         // The \ symbol breaks json syntax, skip it (and reduce range) (why is it not being escaped by json writer?)
         if (decimalChar >= '\\') decimalChar++;
         StringBuilder sb = new StringBuilder();
         while (wholePart > 0) {
-            char digit = (char) (wholePart % (Character.MAX_VALUE - 1));
+            char digit = (char) (wholePart % base);
             if (digit >= '\\') digit++;
-            sb.append(digit);
-            wholePart /= Character.MAX_VALUE;
+            sb.insert(0, digit);
+            wholePart /= base;
         }
-        sb.reverse();
-        if (sb.length() == 1) sb.insert(0, (char) 0); // Avoid a single # if number is < 65535
+        if (sb.length() == 1) sb.insert(0, (char) 0); // Avoid a single # if number is < base
         sb.append(decimalChar);
         return sb.toString();
     }
