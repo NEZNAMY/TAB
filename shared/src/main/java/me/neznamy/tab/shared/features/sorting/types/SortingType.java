@@ -100,7 +100,9 @@ public abstract class SortingType {
             sb.insert(0, digit);
             wholePart /= base;
         }
-        if (sb.length() == 1) sb.insert(0, (char) 0); // Avoid a single # if number is < base
+        while (sb.length() < 2) {
+            sb.insert(0, (char) 0); // Avoid a single # if number is < base
+        }
         sb.append(decimalChar);
         return sb.toString();
     }
