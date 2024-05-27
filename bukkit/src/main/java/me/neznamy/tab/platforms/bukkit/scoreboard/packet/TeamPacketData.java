@@ -61,7 +61,7 @@ public class TeamPacketData {
         int minorVersion = BukkitReflection.getMinorVersion();
         Class<?> Scoreboard = BukkitReflection.getClass("world.scores.Scoreboard", "Scoreboard");
         Class<?> scoreboardTeam = BukkitReflection.getClass("world.scores.PlayerTeam", "world.scores.ScoreboardTeam", "ScoreboardTeam");
-        Class<?> enumChatFormatClass = BukkitReflection.getClass("ChatFormatting", "EnumChatFormat", "EnumChatFormat");
+        Class<?> enumChatFormatClass = BukkitReflection.getClass("ChatFormatting", "EnumChatFormat");
         TeamPacketClass = BukkitReflection.getClass(
                 "network.protocol.game.ClientboundSetPlayerTeamPacket", // Mojang mapped
                 "network.protocol.game.PacketPlayOutScoreboardTeam", // Bukkit 1.17+
