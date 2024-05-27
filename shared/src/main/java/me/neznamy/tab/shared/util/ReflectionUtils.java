@@ -107,7 +107,7 @@ public class ReflectionUtils {
      * Returns method with specified possible names and parameters. Throws exception if no such method was found
      *
      * @param   clazz
-     *          lass to get method from
+     *          class to get method from
      * @param   names
      *          possible method names
      * @param   parameterTypes
