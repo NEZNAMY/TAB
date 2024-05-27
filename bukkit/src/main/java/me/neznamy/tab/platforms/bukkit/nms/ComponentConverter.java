@@ -41,7 +41,7 @@ public class ComponentConverter {
 
     // 1.16+
     private Method ChatHexColor_fromRGB;
-    private Constructor<?> newMinecraftKey;
+    private Method ResourceLocation_tryParse;
 
     /**
      * Constructs new instance and loads all NMS classes, constructors and methods.
@@ -67,13 +67,13 @@ public class ComponentConverter {
         }
         if (BukkitReflection.getMinorVersion() >= 16) {
             Class<?> chatHexColor = BukkitReflection.getClass("network.chat.TextColor", "network.chat.ChatHexColor", "ChatHexColor");
-            Class<?> MinecraftKey = BukkitReflection.getClass("resources.ResourceLocation", "resources.MinecraftKey", "MinecraftKey");
+            Class<?> ResourceLocation = BukkitReflection.getClass("resources.ResourceLocation", "resources.MinecraftKey", "MinecraftKey");
             Class<?> chatClickable = BukkitReflection.getClass("network.chat.ClickEvent", "network.chat.ChatClickable", "ChatClickable");
             Class<?> chatHoverable = BukkitReflection.getClass("network.chat.HoverEvent", "network.chat.ChatHoverable", "ChatHoverable");
-            newMinecraftKey = MinecraftKey.getConstructor(String.class);
+            ResourceLocation_tryParse = ReflectionUtils.getMethod(ResourceLocation, new String[]{"tryParse", "m_135820_", "a"}, String.class);
             ChatHexColor_fromRGB = ReflectionUtils.getOnlyMethod(chatHexColor, chatHexColor, int.class);
             newChatModifier = ReflectionUtils.setAccessible(ChatModifier.getDeclaredConstructor(chatHexColor, Boolean.class, Boolean.class, Boolean.class,
-                    Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, MinecraftKey));
+                    Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
             convertModifier = this::createModifierModern;
         } else {
             newChatModifier = ChatModifier.getConstructor();
@@ -124,7 +124,7 @@ public class ComponentConverter {
                 null,
                 null,
                 null,
-                modifier.getFont() == null ? null : newMinecraftKey.newInstance(modifier.getFont())
+                modifier.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, modifier.getFont())
         );
     }
 
