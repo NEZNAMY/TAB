@@ -36,6 +36,11 @@ public class CpuManager {
     private final ScheduledExecutorService placeholderThread = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder().setNameFormat("TAB Placeholder Refreshing Thread").build());
 
+    /** Scheduler for refreshing permission groups */
+    @Getter
+    private final ScheduledExecutorService groupRefreshingThread = Executors.newSingleThreadScheduledExecutor(
+            new ThreadFactoryBuilder().setNameFormat("TAB Permission Group Refreshing Thread").build());
+
     /** Tasks submitted to main thread before plugin was fully enabled */
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
 
@@ -68,6 +73,7 @@ public class CpuManager {
     public void cancelAllTasks() {
         processingThread.shutdownNow();
         placeholderThread.shutdownNow();
+        groupRefreshingThread.shutdownNow();
     }
 
     /**

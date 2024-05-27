@@ -56,6 +56,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @Getter @Setter private String server;
 
     /** Player's permission group defined in permission plugin or with permission nodes */
+    @Getter
     private String permissionGroup = TabConstants.NO_GROUP;
 
     /** Player's permission group override using API */
@@ -182,7 +183,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public void setGroup(@NotNull String permissionGroup) {
         if (this.permissionGroup.equals(permissionGroup)) return;
         this.permissionGroup = permissionGroup;
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, permissionGroup);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, getGroup());
         forceRefresh();
     }
 
@@ -190,7 +191,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public void setTemporaryGroup(@Nullable String group) {
         if (Objects.equals(group, temporaryGroup)) return;
         temporaryGroup = group;
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, group);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, getGroup());
         forceRefresh();
     }
 
