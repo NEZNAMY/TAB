@@ -5,6 +5,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -85,13 +86,21 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             } while (!textBefore.equals(text));
             return text;
         }
-        if (identifier.startsWith("placeholder_")) {
-            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring("placeholder_".length()) + "%", TAB.getInstance().getPlaceholderManager());
-        }
         if (player == null) return "<Player cannot be null>";
         TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
         if (p == null || !p.isLoaded()) return "<Player is not loaded>";
+        if (identifier.startsWith("placeholder_")) {
+            String requestedPlaceholder = "%" + identifier.substring("placeholder_".length()) + "%";
+            PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
+            pm.addUsedPlaceholder(requestedPlaceholder, pm);
+            return pm.getPlaceholder(requestedPlaceholder).getLastValue(p);
+        }
         return p.expansionValues.get(identifier);
+    }
+
+    @Override
+    public void setPlaceholderValue(@NotNull TabPlayer player, @NotNull String placeholder, @NotNull String value) {
+        // Do not unnecessarily do all placeholders, just retrieve them on request to save resources by not using string builder all the time
     }
 
     @Override
