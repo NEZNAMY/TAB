@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
@@ -52,8 +53,9 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @SneakyThrows
     public int getPing() {
-        return SpongeMultiVersion.getPing.applyAsInt(getPlayer());
+        return SpongeMultiVersion.getPing.apply(getPlayer());
     }
 
     @Override

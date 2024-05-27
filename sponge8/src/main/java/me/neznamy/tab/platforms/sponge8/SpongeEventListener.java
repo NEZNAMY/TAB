@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -26,6 +27,7 @@ public class SpongeEventListener implements EventListener<ServerPlayer> {
      *          Disconnect event
      */
     @Listener
+    @SneakyThrows
     public void onQuit(ServerSideConnectionEvent.Disconnect event) {
         quit(SpongeMultiVersion.getUniqueId.apply(event));
     }

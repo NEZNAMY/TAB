@@ -1,8 +1,13 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.util.BiFunctionWithException;
+import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import me.neznamy.tab.shared.util.ToIntFunction;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 import org.spongepowered.api.profile.GameProfile;
@@ -11,9 +16,6 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.ToIntFunction;
 
 /**
  * Class managing code that varies based on server version.
@@ -22,24 +24,18 @@ import java.util.function.ToIntFunction;
 public class SpongeMultiVersion {
 
     /** Function for getting score from an objective */
-    public static final BiFunction<Objective, String, Score> findOrCreateScore;
+    private static final BiFunctionWithException<Objective, String, Score> findOrCreateScore;
 
     /** Function for getting player's ping*/
     public static final ToIntFunction<ServerPlayer> getPing;
 
     /** Function for getting UUID from disconnect event */
-    public static final Function<ServerSideConnectionEvent.Disconnect, UUID> getUniqueId;
+    public static final FunctionWithException<ServerSideConnectionEvent.Disconnect, UUID> getUniqueId;
 
     static {
         if (ReflectionUtils.methodExists(Objective.class, "findOrCreateScore", String.class)) {
             // Sponge 11+ (1.20.4+)
-            findOrCreateScore = (objective, holder) -> {
-                try {
-                    return (Score) Objective.class.getMethod("findOrCreateScore", String.class).invoke(objective, holder);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            };
+            findOrCreateScore = (objective, holder) -> (Score) Objective.class.getMethod("findOrCreateScore", String.class).invoke(objective, holder);
         } else {
             // Sponge 8 - 10 (and early 11) (1.16.5 - 1.20.2)
             findOrCreateScore = (objective, holder) -> objective.findOrCreateScore(TabComponent.optimized(holder).toAdventure(ProtocolVersion.LATEST_KNOWN_VERSION));
@@ -48,13 +44,9 @@ public class SpongeMultiVersion {
         if (!ReflectionUtils.classExists("org.spongepowered.api.network.ServerPlayerConnection")) {
             // Sponge 11+ (1.20.6+)
             getPing = player -> {
-                try {
-                    Object connection = player.getClass().getMethod("connection").invoke(player);
-                    Optional<Object> state = (Optional<Object>) connection.getClass().getMethod("state").invoke(connection);
-                    return (int) state.get().getClass().getMethod("latency").invoke(state.get());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                Object connection = player.getClass().getMethod("connection").invoke(player);
+                Optional<Object> state = (Optional<Object>) connection.getClass().getMethod("state").invoke(connection);
+                return (int) state.get().getClass().getMethod("latency").invoke(state.get());
             };
         } else {
             // Sponge 8 - 10 (and early 11) (1.16.5 - 1.20.4)
@@ -63,17 +55,25 @@ public class SpongeMultiVersion {
 
         if (!ReflectionUtils.methodExists(ServerSideConnectionEvent.Disconnect.class, "player")) {
             // Sponge 11+ (1.20.6+)
-            getUniqueId = event -> {
-                try {
-                    Optional<GameProfile> profile = (Optional<GameProfile>) ReflectionUtils.setAccessible(event.getClass().getMethod("profile")).invoke(event);
-                    return profile.get().uuid();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            };
+            getUniqueId = event -> ((Optional<GameProfile>) ReflectionUtils.setAccessible(event.getClass().getMethod("profile")).invoke(event)).get().uuid();
         } else {
             // Sponge 8 - 10 (and early 11) (1.16.5 - 1.20.4)
             getUniqueId = event -> event.player().uniqueId();
         }
+    }
+
+    /**
+     * Returns score of holder in given objective. If it does not exist, it is created.
+     *
+     * @param   objective
+     *          Objective to get score from
+     * @param   holder
+     *          Score holder
+     * @return  Score of given holder in objective
+     */
+    @SneakyThrows
+    @NotNull
+    public static Score findOrCreateScore(@NotNull Objective objective, @NotNull String holder) {
+        return findOrCreateScore.apply(objective, holder);
     }
 }
