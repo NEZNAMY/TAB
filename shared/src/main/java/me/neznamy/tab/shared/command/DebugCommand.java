@@ -79,20 +79,20 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, getTeamName(analyzed));
         sendMessage(sender, getTeamNameNote(analyzed));
         if (tab.getFeatureManager().isFeatureEnabled(TabConstants.Feature.PLAYER_LIST)) {
-            showProperty(sender, analyzed.tablistData.prefix.getName(), analyzed.tablistData.prefix, analyzed.tablistData.disabled.get());
-            showProperty(sender, analyzed.tablistData.name.getName(), analyzed.tablistData.name, analyzed.tablistData.disabled.get());
-            showProperty(sender, analyzed.tablistData.suffix.getName(), analyzed.tablistData.suffix, analyzed.tablistData.disabled.get());
+            showProperty(sender, analyzed.tablistData.prefix, analyzed.tablistData.disabled.get());
+            showProperty(sender, analyzed.tablistData.name, analyzed.tablistData.disabled.get());
+            showProperty(sender, analyzed.tablistData.suffix, analyzed.tablistData.disabled.get());
         } else {
-            sendMessage(sender, "&a" + analyzed.tablistData.prefix.getName() + ": &cDisabled");
-            sendMessage(sender, "&a" + analyzed.tablistData.name.getName() + ": &cDisabled");
-            sendMessage(sender, "&a" + analyzed.tablistData.suffix.getName() + ": &cDisabled");
+            sendMessage(sender, "&atabprefix: &cDisabled");
+            sendMessage(sender, "&acustomtabname: &cDisabled");
+            sendMessage(sender, "&atabsuffix: &cDisabled");
         }
         if (tab.getNameTagManager() != null) {
-            showProperty(sender, analyzed.teamData.prefix.getName(), analyzed.teamData.prefix, analyzed.teamData.disabled.get());
-            showProperty(sender, analyzed.teamData.suffix.getName(), analyzed.teamData.suffix, analyzed.teamData.disabled.get());
+            showProperty(sender, analyzed.teamData.prefix, analyzed.teamData.disabled.get());
+            showProperty(sender, analyzed.teamData.suffix, analyzed.teamData.disabled.get());
         } else {
-            sendMessage(sender, "&a" + analyzed.teamData.prefix.getName() + ": &cDisabled");
-            sendMessage(sender, "&a" + analyzed.teamData.suffix.getName() + ": &cDisabled");
+            sendMessage(sender, "&atagprefix: &cDisabled");
+            sendMessage(sender, "&atagsuffix: &cDisabled");
         }
         sendMessage(sender, separator);
     }
@@ -174,17 +174,17 @@ public class DebugCommand extends SubCommand {
      *
      * @param   sender
      *          command sender or null if console
-     * @param   propertyName
-     *          property name
+     * @param   property
+     *          property to show
      * @param   disabled
      *          if feature the property belongs to is disabled or not
      */
-    private void showProperty(@Nullable TabPlayer sender, @NotNull String propertyName, @NotNull Property property, boolean disabled) {
+    private void showProperty(@Nullable TabPlayer sender, @NotNull Property property, boolean disabled) {
         if (disabled) {
-            sendMessage(sender, "&a" + propertyName + ": &cDisabled for player with condition");
+            sendMessage(sender, "&a" + property.getName() + ": &cDisabled for player with condition");
         } else {
             String rawValue = EnumChatFormat.decolor(property.getCurrentRawValue());
-            String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(Source: %s)")), propertyName, rawValue, property.getSource());
+            String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(Source: %s)")), property.getName(), rawValue, property.getSource());
             sendRawMessage(sender, value);
         }
     }
