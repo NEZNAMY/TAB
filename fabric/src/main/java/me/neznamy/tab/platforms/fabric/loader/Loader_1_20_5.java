@@ -135,7 +135,7 @@ public class Loader_1_20_5 implements Loader {
     @Override
     public void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard) {
         if (packet instanceof ClientboundSetPlayerTeamPacket team) {
-            if (team.method == Scoreboard.TeamAction.REMOVE || team.method == Scoreboard.TeamAction.UPDATE) return;
+            if (team.method == Scoreboard.TeamAction.UPDATE) return;
             team.players = scoreboard.onTeamPacket(team.method, team.getName(), team.players);
         }
     }

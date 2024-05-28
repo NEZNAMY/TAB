@@ -141,7 +141,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         }
         if (isAntiOverrideTeams() && packet instanceof net.md_5.bungee.protocol.packet.Team) {
             net.md_5.bungee.protocol.packet.Team team = (net.md_5.bungee.protocol.packet.Team) packet;
-            if (team.getMode() == TeamAction.REMOVE || team.getMode() == TeamAction.UPDATE) return;
+            if (team.getMode() == TeamAction.UPDATE) return;
             team.setPlayers(onTeamPacket(team.getMode(), team.getName(), Lists.newArrayList(team.getPlayers())).toArray(new String[0]));
         }
     }
