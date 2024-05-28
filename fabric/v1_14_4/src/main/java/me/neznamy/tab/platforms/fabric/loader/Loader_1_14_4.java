@@ -147,7 +147,7 @@ public class Loader_1_14_4 implements Loader {
     public void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard) {
         if (packet instanceof ClientboundSetPlayerTeamPacket) {
             int action = ReflectionUtils.getInstanceFields(packet.getClass(), int.class).get(0).getInt(packet);
-            if (action == Scoreboard.TeamAction.REMOVE || action == Scoreboard.TeamAction.UPDATE) return;
+            if (action == Scoreboard.TeamAction.UPDATE) return;
             Field playersField = ReflectionUtils.getFields(packet.getClass(), Collection.class).get(0);
             Collection<String> players = (Collection<String>) playersField.get(packet);
             String teamName = String.valueOf(ReflectionUtils.getFields(packet.getClass(), String.class).get(0).get(packet));

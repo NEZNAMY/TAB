@@ -37,6 +37,12 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
     /** Player-to-Team map of expected teams of players */
     private final Map<String, String> expectedTeams = new HashMap<>();
 
+    /** Map of blocked team adds, key is player and value is team name */
+    private final Map<String, String> blockedTeamAdds = new HashMap<>();
+
+    /** Map of allowed team adds, key is player and value is team name */
+    private final Map<String, String> allowedTeamAdds = new HashMap<>();
+
     /** Flag tracking time between Login packet send and its processing */
     private boolean frozen;
 
@@ -372,24 +378,44 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
     @NotNull
     public Collection<String> onTeamPacket(int action, @NonNull String teamName, @NonNull Collection<String> players) {
         Collection<String> newList = new ArrayList<>();
-        for (String entry : players) {
-            String expectedTeam = expectedTeams.get(entry);
-            if (expectedTeam == null) {
-                newList.add(entry);
-                continue;
-            }
-            if (!teamName.equals(expectedTeam)) {
-                // on REMOVE_PLAYER don't warn, just remove the player (required to prevent FPS drop, #1193)
-                // will still throw error and freeze if removing after team handling was paused (API, disable condition),
-                // since expected team is null, but add action was blocked previously but remove will not be blocked anymore,
-                // but that is a very specific case that people are unlikely to even reproduce
-                // workaround would be complicated, just let it be for now
-                if (action == TeamAction.CREATE || action == TeamAction.ADD_PLAYER) {
+        if (action == TeamAction.CREATE || action == TeamAction.ADD_PLAYER) {
+            for (String entry : players) {
+                String expectedTeam = expectedTeams.get(entry);
+                if (expectedTeam == null) {
+                    blockedTeamAdds.remove(entry);
+                    allowedTeamAdds.put(entry, teamName);
+                    newList.add(entry);
+                    continue;
+                }
+                if (teamName.equals(expectedTeam)) {
+                    newList.add(entry);
+                    allowedTeamAdds.remove(entry);
+                } else {
+                    blockedTeamAdds.put(entry, teamName);
                     logTeamOverride(teamName, entry, expectedTeam);
                 }
-            } else {
-                newList.add(entry);
             }
+        }
+        if (action == TeamAction.REMOVE_PLAYER) {
+            // TAB does not send remove player, making checks easier
+            for (String entry : players) {
+                String expectedTeam = expectedTeams.get(entry);
+                if (expectedTeam != null) {
+                    allowedTeamAdds.remove(entry);
+                    blockedTeamAdds.remove(entry);
+                    continue;
+                }
+                if (allowedTeamAdds.containsKey(entry)) {
+                    allowedTeamAdds.remove(entry);
+                    newList.add(entry);
+                    continue;
+                }
+                blockedTeamAdds.remove(entry);
+            }
+        }
+        if (action == TeamAction.REMOVE) {
+            allowedTeamAdds.entrySet().removeIf(entry -> entry.getValue().equals(teamName));
+            blockedTeamAdds.entrySet().removeIf(entry -> entry.getValue().equals(teamName));
         }
         return newList;
     }
@@ -403,7 +429,7 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
      * @param   player
      *          Player who was about to be added into the team
      * @param   expectedTeam
-     *          Expected name of the team
+     *          Expected team
      */
     public static void logTeamOverride(@NonNull String team, @NonNull String player, @NonNull String expectedTeam) {
         String message = "Blocked attempt to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
