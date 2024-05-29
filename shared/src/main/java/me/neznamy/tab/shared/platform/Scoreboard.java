@@ -395,6 +395,7 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
                     logTeamOverride(teamName, entry, expectedTeam);
                 }
             }
+            return newList;
         }
         if (action == TeamAction.REMOVE_PLAYER) {
             // TAB does not send remove player, making checks easier
@@ -412,12 +413,13 @@ public abstract class Scoreboard<T extends TabPlayer, C> {
                 }
                 blockedTeamAdds.remove(entry);
             }
+            return newList;
         }
         if (action == TeamAction.REMOVE) {
             allowedTeamAdds.entrySet().removeIf(entry -> entry.getValue().equals(teamName));
             blockedTeamAdds.entrySet().removeIf(entry -> entry.getValue().equals(teamName));
         }
-        return newList;
+        return players;
     }
 
     /**
