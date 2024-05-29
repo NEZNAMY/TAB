@@ -17,6 +17,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Class storing all team related fields and methods.
@@ -71,7 +72,12 @@ public class TeamPacketData {
         emptyScoreboard = Scoreboard.getConstructor().newInstance();
         newScoreboardTeam = scoreboardTeam.getConstructor(Scoreboard, String.class);
         TeamPacket_NAME = ReflectionUtils.getFields(TeamPacketClass, String.class).get(0);
-        TeamPacket_ACTION = ReflectionUtils.getInstanceFields(TeamPacketClass, int.class).get(0);
+        List<Field> intFields = ReflectionUtils.getInstanceFields(TeamPacketClass, int.class);
+        if (minorVersion >= 8 && minorVersion <= 12) {
+            TeamPacket_ACTION = intFields.get(1);
+        } else {
+            TeamPacket_ACTION = intFields.get(0);
+        }
         TeamPacket_PLAYERS = ReflectionUtils.getOnlyField(TeamPacketClass, Collection.class);
         ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getOnlyMethod(scoreboardTeam, Collection.class);
         chatFormats = (Enum<?>[]) enumChatFormatClass.getMethod("values").invoke(null);
