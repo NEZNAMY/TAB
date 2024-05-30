@@ -88,7 +88,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
         }
         if (player == null) return "<Player cannot be null>";
         TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
-        if (p == null || !p.isLoaded()) return "<Player is not loaded>";
+        if (p == null) return "<Player is not loaded>";
         if (identifier.startsWith("placeholder_")) {
             String requestedPlaceholder = "%" + identifier.substring("placeholder_".length()) + "%";
             PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
