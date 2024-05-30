@@ -90,7 +90,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     @Override
     @NotNull
     public String getLastValueSafe(@NotNull TabPlayer player) {
-        return identifier;
+        return lastValue;
     }
 
     /**
