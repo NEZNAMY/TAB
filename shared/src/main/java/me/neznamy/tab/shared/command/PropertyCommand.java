@@ -42,7 +42,7 @@ public abstract class PropertyCommand extends SubCommand {
             server = args[args.length-1];
             value = value.startsWith("-s") ? "" : value.substring(0, value.length()-server.length()-4);
         }
-        if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+        if (((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) && value.length() > 1) {
             value = value.substring(1, value.length()-1);
         }
         String property = args[1].toLowerCase();
