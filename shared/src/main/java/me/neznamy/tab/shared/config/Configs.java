@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Core of loading configuration files
@@ -97,7 +98,9 @@ public class Configs {
         }
         groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
         users = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
-        TAB.getInstance().getConfigHelper().hint().checkForRedundantElseReplacement(config.getConfigurationSection("placeholder-output-replacements"));
+        Map<Object, Object> replacements = config.getConfigurationSection("placeholder-output-replacements");
+        TAB.getInstance().getConfigHelper().hint().checkForRedundantElseReplacement(replacements);
+        TAB.getInstance().getConfigHelper().startup().checkReplacementKeys(replacements.keySet());
     }
 
     /**

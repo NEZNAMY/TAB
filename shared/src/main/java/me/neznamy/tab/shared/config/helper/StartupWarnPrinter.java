@@ -375,6 +375,23 @@ public class StartupWarnPrinter {
     }
 
     /**
+     * Checks if placeholder identifiers in placeholder output replacements are valid
+     * placeholder patterns starting and ending with %.
+     *
+     * @param   placeholders
+     *          Placeholder identifier keys
+     */
+    public void checkReplacementKeys(@NotNull Set<Object> placeholders) {
+        for (Object identifier : placeholders) {
+            String str = identifier.toString();
+            if (!str.startsWith("%") || !str.endsWith("%")) {
+                startupWarn("Placeholder output replacements have a section for \"" + identifier + "\", which is not " +
+                        "a valid placeholder pattern (placeholders must start and end with %)");
+            }
+        }
+    }
+
+    /**
      * Sends a startup warn message into console
      *
      * @param   messages
