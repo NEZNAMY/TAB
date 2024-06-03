@@ -453,9 +453,11 @@ public class FeatureManager {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
         }
 
-        // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
-        RedisSupport redis = TAB.getInstance().getPlatform().getRedisSupport();
-        if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
+        if (configuration.isEnableRedisHook()) {
+            // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
+            RedisSupport redis = TAB.getInstance().getPlatform().getRedisSupport();
+            if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
+        }
 
         featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
     }

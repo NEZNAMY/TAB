@@ -37,6 +37,7 @@ public class Configs {
     private final boolean pipelineInjection = getSecretOption("pipeline-injection", true);
     private final String serverName = getSecretOption("server-name", "N/A");
     private final int permissionRefreshInterval = config.getInt("permission-refresh-interval", 1000);
+    private final boolean enableRedisHook = config.getBoolean("enable-redisbungee-support", true);
 
     //animations.yml file
     private final ConfigurationFile animationFile = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/animations.yml"),
