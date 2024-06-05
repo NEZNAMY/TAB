@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -66,7 +65,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    @Nullable
+    @NotNull
     @SneakyThrows
     protected Channel getChannel(@NotNull TabPlayer player) {
         return getChannel.apply(player);

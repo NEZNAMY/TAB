@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
 import me.neznamy.tab.platforms.bungeecord.hook.BungeePremiumVanishHook;
+import me.neznamy.tab.platforms.bungeecord.injection.BungeePipelineInjector;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.*;

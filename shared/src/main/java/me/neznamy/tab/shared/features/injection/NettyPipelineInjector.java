@@ -2,23 +2,20 @@ package me.neznamy.tab.shared.features.injection;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
-import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 /**
  * A pipeline injector for Netty connections. As most servers use Netty, this avoids code duplication.
@@ -31,23 +28,13 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     @Getter private final Function<TabPlayer, ChannelDuplexHandler> channelFunction = TabChannelDuplexHandler::new;
 
-    @Nullable
+    @NotNull
     protected abstract Channel getChannel(@NotNull TabPlayer player);
 
-    /**
-     * Injects custom channel duplex handler to prevent other plugins from overriding this one
-     *
-     * @param   player
-     *          player to inject
-     */
     @Override
     public void inject(@NotNull TabPlayer player) {
         Channel channel = getChannel(player);
-        if (player.getVersion().getMinorVersion() < 8 || channel == null) return; //hello A248
-        if (!channel.pipeline().names().contains(injectPosition)) {
-            //fake player or waterfall bug
-            return;
-        }
+        if (!channel.pipeline().names().contains(injectPosition)) return; // Player got disconnected instantly or fake player
         uninject(player);
         try {
             channel.pipeline().addBefore(injectPosition, TabConstants.PIPELINE_HANDLER_NAME, getChannelFunction().apply(player));
@@ -59,7 +46,6 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
     @Override
     public void uninject(@NotNull TabPlayer player) {
         Channel channel = getChannel(player);
-        if (player.getVersion().getMinorVersion() < 8 || channel == null) return; //hello A248
         try {
             if (channel.pipeline().names().contains(TabConstants.PIPELINE_HANDLER_NAME)) channel.pipeline().remove(TabConstants.PIPELINE_HANDLER_NAME);
         } catch (NoSuchElementException e) {
@@ -69,21 +55,10 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
     }
 
     /**
-     * Returns {@code true} if packet is Login packet, {@code false} if not.
-     *
-     * @param   packet
-     *          Packet to check
-     * @return  {@code true} if packet is Login packet, {@code false} if not
-     */
-    public boolean isLogin(@NotNull Object packet) {
-        return false; // Default implementation
-    }
-
-    /**
      * TAB's custom channel duplex handler.
      */
     @RequiredArgsConstructor
-    public class TabChannelDuplexHandler extends ChannelDuplexHandler {
+    public static class TabChannelDuplexHandler extends ChannelDuplexHandler {
 
         /** Injected player */
         protected final TabPlayer player;
@@ -94,28 +69,12 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                 if (player.getVersion().getMinorVersion() >= 8) {
                     long time = System.nanoTime();
                     ((TrackedTabList<?, ?>)player.getTabList()).onPacketSend(packet);
-                    TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PACKET, System.nanoTime()-time);
+                    TAB.getInstance().getCPUManager().addTime("Pipeline injection", CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PACKET, System.nanoTime()-time);
                 }
-
                 if (((SafeScoreboard<?>)player.getScoreboard()).isAntiOverrideTeams() || ((SafeScoreboard<?>)player.getScoreboard()).isAntiOverrideScoreboard()) {
                     long time = System.nanoTime();
                     ((SafeScoreboard<?>)player.getScoreboard()).onPacketSend(packet);
-                    TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_SCOREBOARDS_PACKET, System.nanoTime()-time);
-                }
-
-                if (isLogin(packet)) {
-                    ((SafeScoreboard<?>)player.getScoreboard()).setFrozen(true);
-                    super.write(context, packet, channelPromise);
-                    TAB.getInstance().getCPUManager().runTaskLater(200, getFeatureName(), CpuUsageCategory.PACKET_LOGIN, () -> {
-                        ((SafeScoreboard<?>)player.getScoreboard()).setFrozen(false);
-                        player.getScoreboard().resend();
-                        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-                            // For 1.20.2+ we need to do this, because server switch event is called before tablist is cleared
-                            TAB.getInstance().getFeatureManager().onTabListClear(player);
-                            ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
-                        }
-                    });
-                    return;
+                    TAB.getInstance().getCPUManager().addTime("Pipeline injection", CpuUsageCategory.ANTI_OVERRIDE_SCOREBOARDS_PACKET, System.nanoTime()-time);
                 }
             } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);

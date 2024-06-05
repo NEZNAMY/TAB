@@ -236,7 +236,6 @@ public class Converter {
         newConfig.set("scoreboard.use-numbers", false);
         newConfig.set("scoreboard.static-number", 0);
         newConfig.set("scoreboard.delay-on-join-milliseconds", 0);
-        newConfig.set("scoreboard.respect-other-plugins", true);
         newConfig.set("scoreboard.scoreboards.admin.display-condition", "permission:tab.scoreboard.admin");
         newConfig.set("scoreboard.scoreboards.admin.title", "Admin scoreboard");
         newConfig.set("scoreboard.scoreboards.admin.lines", Arrays.asList("%animation:MyAnimation1%", "&6Online:", "* &eOnline&7: &f%online%&7",
