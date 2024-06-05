@@ -6,6 +6,7 @@ import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -51,12 +53,14 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.tablistData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
         if (antiOverrideTabList) {
-            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, getFeatureName(),
-                    TabConstants.CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC, () -> {
-                for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                    ((TrackedTabList<?, ?>)p.getTabList()).checkDisplayNames();
-                }
-            });
+            TAB.getInstance().getCpu().getTablistEntryCheckThread().scheduleAtFixedRate(() -> {
+                        long time = System.nanoTime();
+                        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                            ((TrackedTabList<?, ?>)p.getTabList()).checkDisplayNames();
+                        }
+                        TAB.getInstance().getCpu().addTime(getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC, System.nanoTime() - time);
+                    }, 500, 500, TimeUnit.MILLISECONDS
+            );
         } else {
             TAB.getInstance().getConfigHelper().startup().tablistAntiOverrideDisabled();
         }
@@ -189,7 +193,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         if (updateProperties(p) && !p.tablistData.disabled.get()) updatePlayer(p, true);
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
-        TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
+        TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!all.tablistData.disabled.get() && p.getVersion().getMinorVersion() >= 8
                         //&& p.getTabList().containsEntry(all.getTablistId())
@@ -256,7 +260,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         };
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
         if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) {
-            TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+            TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), CpuUsageCategory.PLAYER_JOIN, r);
         } else {
             r.run();
         }
