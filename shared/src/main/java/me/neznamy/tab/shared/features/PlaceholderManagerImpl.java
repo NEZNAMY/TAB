@@ -103,17 +103,31 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     
     private void refreshFeatures(@NotNull Map<TabPlayer, Set<RefreshableFeature>> forceUpdate, @NotNull Map<TabPlayer, Set<RefreshableFeature>> update) {
         for (Entry<TabPlayer, Set<RefreshableFeature>> entry : update.entrySet()) {
-            for (RefreshableFeature r : entry.getValue()) {
-                long startTime = System.nanoTime();
-                r.refresh(entry.getKey(), false);
-                cpu.addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+            for (RefreshableFeature f : entry.getValue()) {
+                Runnable r = () -> {
+                    long startTime = System.nanoTime();
+                    f.refresh(entry.getKey(), false);
+                    cpu.addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime() - startTime);
+                };
+                if (f instanceof CustomThreaded) {
+                    ((CustomThreaded) f).getCustomThread().submit(r);
+                } else {
+                    r.run();
+                }
             }
         }
         for (Entry<TabPlayer, Set<RefreshableFeature>> entry : forceUpdate.entrySet()) {
-            for (RefreshableFeature r : entry.getValue()) {
-                long startTime = System.nanoTime();
-                r.refresh(entry.getKey(), true);
-                cpu.addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+            for (RefreshableFeature f : entry.getValue()) {
+                Runnable r = () -> {
+                    long startTime = System.nanoTime();
+                    f.refresh(entry.getKey(), true);
+                    cpu.addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime() - startTime);
+                };
+                if (f instanceof CustomThreaded) {
+                    ((CustomThreaded) f).getCustomThread().submit(r);
+                } else {
+                    r.run();
+                }
             }
         }
     }

@@ -63,7 +63,7 @@ public class CpuManager {
      * @return  Executor service with given thread name
      */
     @NotNull
-    private ScheduledExecutorService newExecutor(@NotNull String name) {
+    public ScheduledExecutorService newExecutor(@NotNull String name) {
         return Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
                         .setNameFormat(name)

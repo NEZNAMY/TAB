@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
@@ -14,14 +15,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature handler for header and footer.
  */
 public class HeaderFooter extends RefreshableFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
-        WorldSwitchListener, ServerSwitchListener {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded {
 
+    @Getter
+    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Header/Footer Thread");
     private final String HEADER = "header";
     private final String FOOTER = "footer";
     private final List<Object> worldGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-world").keySet());
@@ -144,29 +148,32 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public void setHeader(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String header) {
         ensureActive();
-        TabPlayer player = (TabPlayer) p;
-        player.ensureLoaded();
-        player.headerFooterData.header.setTemporaryValue(header);
-        sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+        customThread.submit(() -> {
+            TabPlayer player = (TabPlayer) p;
+            player.headerFooterData.header.setTemporaryValue(header);
+            sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+        });
     }
 
     @Override
     public void setFooter(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String footer) {
         ensureActive();
-        TabPlayer player = (TabPlayer) p;
-        player.ensureLoaded();
-        player.headerFooterData.footer.setTemporaryValue(footer);
-        sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+        customThread.submit(() -> {
+            TabPlayer player = (TabPlayer) p;
+            player.headerFooterData.footer.setTemporaryValue(footer);
+            sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+        });
     }
 
     @Override
     public void setHeaderAndFooter(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String header, @Nullable String footer) {
         ensureActive();
-        TabPlayer player = (TabPlayer) p;
-        player.ensureLoaded();
-        player.headerFooterData.header.setTemporaryValue(header);
-        player.headerFooterData.footer.setTemporaryValue(footer);
-        sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+        customThread.submit(() -> {
+            TabPlayer player = (TabPlayer) p;
+            player.headerFooterData.header.setTemporaryValue(header);
+            player.headerFooterData.footer.setTemporaryValue(footer);
+            sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+        });
     }
 
     /**
