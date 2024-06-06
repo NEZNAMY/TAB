@@ -46,8 +46,11 @@ public class TabConstants {
         public static final String WORLD_SWITCH = "World Switch";
         public static final String SERVER_SWITCH = "Server Switch";
         public static final String COMMAND_PREPROCESS = "Command Preprocess";
-        public static final String PLUGIN_MESSAGE = "Plugin Message processing";
         public static final String REDIS_BUNGEE_MESSAGE = "Redis Message processing";
+
+        public static final String PLUGIN_MESSAGE_RECEIVE = "Processing incoming message";
+        public static final String PLUGIN_MESSAGE_ENCODE = "Encoding message";
+        public static final String PLUGIN_MESSAGE_SEND = "Sending message";
 
         /** Periodic task checking for current and expected display names of all entries */
         public static final String ANTI_OVERRIDE_TABLIST_PERIODIC = "Tablist anti override (periodic task)";

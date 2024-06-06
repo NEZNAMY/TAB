@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.message.outgoing.OutgoingMessage;
 import me.neznamy.tab.shared.proxy.message.outgoing.PermissionRequest;
 import me.neznamy.tab.shared.proxy.message.outgoing.PlayerJoin;
+import me.neznamy.tab.shared.task.PluginMessageEncodeTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -135,6 +136,6 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      *          Plugin message to send
      */
     public void sendPluginMessage(@NotNull OutgoingMessage message) {
-        sendPluginMessage(message.write().toByteArray());
+        TAB.getInstance().getCpu().getPluginMessageEncodeThread().submit(new PluginMessageEncodeTask(this, message));
     }
 }

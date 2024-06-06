@@ -63,7 +63,7 @@ public interface EventListener<T> {
      */
     default void pluginMessage(@NotNull UUID player, byte[] message) {
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
-                TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () ->
+                TabConstants.CpuUsageCategory.PLUGIN_MESSAGE_RECEIVE, () ->
                     ((ProxyPlatform)TAB.getInstance().getPlatform()).onPluginMessage(player, message));
     }
 
