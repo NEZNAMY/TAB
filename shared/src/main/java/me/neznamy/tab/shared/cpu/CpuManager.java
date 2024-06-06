@@ -28,28 +28,23 @@ public class CpuManager {
     @Nullable @Getter private CpuReport lastReport;
 
     /** Scheduler for scheduling delayed and repeating tasks */
-    private final ScheduledExecutorService processingThread = Executors.newSingleThreadScheduledExecutor(
-            new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
+    private final ScheduledExecutorService processingThread = newExecutor("TAB Processing Thread");
 
     /** Scheduler for placeholder refreshing task to prevent inefficient placeholders from lagging the entire plugin */
     @Getter
-    private final ScheduledExecutorService placeholderThread = Executors.newSingleThreadScheduledExecutor(
-            new ThreadFactoryBuilder().setNameFormat("TAB Placeholder Refreshing Thread").build());
+    private final ScheduledExecutorService placeholderThread = newExecutor("TAB Placeholder Refreshing Thread");
 
     /** Scheduler for refreshing permission groups */
     @Getter
-    private final ScheduledExecutorService groupRefreshingThread = Executors.newSingleThreadScheduledExecutor(
-            new ThreadFactoryBuilder().setNameFormat("TAB Permission Group Refreshing Thread").build());
+    private final ScheduledExecutorService groupRefreshingThread = newExecutor("TAB Permission Group Refreshing Thread");
 
     /** Scheduler for checking for tablist entry values */
     @Getter
-    private final ScheduledExecutorService tablistEntryCheckThread = Executors.newSingleThreadScheduledExecutor(
-            new ThreadFactoryBuilder().setNameFormat("TAB TabList Entry Checker Thread").build());
+    private final ScheduledExecutorService tablistEntryCheckThread = newExecutor("TAB TabList Entry Checker Thread");
 
     /** Scheduler for encoding and sending plugin messages */
     @Getter
-    private final ScheduledExecutorService pluginMessageEncodeThread = Executors.newSingleThreadScheduledExecutor(
-            new ThreadFactoryBuilder().setNameFormat("TAB Plugin Message Encoding Thread").build());
+    private final ScheduledExecutorService pluginMessageEncodeThread = newExecutor("TAB Plugin Message Encoding Thread");
 
     /** Tasks submitted to main thread before plugin was fully enabled */
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
@@ -59,6 +54,22 @@ public class CpuManager {
 
     /** Boolean tracking whether CPU usage should be tracked or not */
     @Getter private boolean trackUsage;
+
+    /**
+     * Creates a new single threaded executor with given name.
+     *
+     * @param   name
+     *          Name of the created thread
+     * @return  Executor service with given thread name
+     */
+    @NotNull
+    private ScheduledExecutorService newExecutor(@NotNull String name) {
+        return Executors.newSingleThreadScheduledExecutor(
+                new ThreadFactoryBuilder()
+                        .setNameFormat(name)
+                        .setUncaughtExceptionHandler((thread, throwable) -> TAB.getInstance().getErrorManager().taskThrewError(throwable))
+                        .build());
+    }
 
     /**
      * Enables CPU usage tracking and returns {@code true} if it was not enabled previously.
