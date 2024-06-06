@@ -15,6 +15,9 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
 import net.md_5.bungee.protocol.packet.ScoreboardScoreReset;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Scoreboard handler for BungeeCord. Because it does not offer
  * any Scoreboard API and the scoreboard class it has is just a
@@ -142,7 +145,8 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         if (isAntiOverrideTeams() && packet instanceof net.md_5.bungee.protocol.packet.Team) {
             net.md_5.bungee.protocol.packet.Team team = (net.md_5.bungee.protocol.packet.Team) packet;
             if (team.getMode() == TeamAction.UPDATE) return;
-            team.setPlayers(onTeamPacket(team.getMode(), team.getName(), Lists.newArrayList(team.getPlayers())).toArray(new String[0]));
+            List<String> players = team.getPlayers() == null ? Collections.emptyList() : Lists.newArrayList(team.getPlayers());
+            team.setPlayers(onTeamPacket(team.getMode(), team.getName(), players).toArray(new String[0]));
         }
     }
 
