@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An abstract class for adding safety checks into Scoreboard-related functions
@@ -44,10 +45,10 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     private boolean frozen;
     
     /** Registered objectives */
-    private final Map<String, Objective> objectives = new HashMap<>();
+    private final Map<String, Objective> objectives = new ConcurrentHashMap<>();
 
     /** Registered teams */
-    private final Map<String, Team> teams = new HashMap<>();
+    private final Map<String, Team> teams = new ConcurrentHashMap<>();
 
     /** Flag tracking anti-override value for teams */
     @Getter
