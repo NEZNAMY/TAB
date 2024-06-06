@@ -38,7 +38,8 @@ public class ComponentCache<K, V> {
      * @return  Converted component
      */
     @SneakyThrows
-    public @NotNull V get(@NotNull K key, @Nullable ProtocolVersion clientVersion) {
+    @NotNull
+    public synchronized V get(@NotNull K key, @Nullable ProtocolVersion clientVersion) {
         Map<K, V> cache = clientVersion == null || clientVersion.supportsRGB() ? cacheModern : cacheLegacy;
         if (cache.size() > cacheSize) cache.clear();
         return cache.computeIfAbsent(key, k -> function.apply(k, clientVersion));

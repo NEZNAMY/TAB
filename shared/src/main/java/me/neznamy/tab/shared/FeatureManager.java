@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.Unload;
+import me.neznamy.tab.shared.task.FeatureTasks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,15 +53,11 @@ public class FeatureManager {
     public void load() {
         for (TabFeature f : values) {
             if (!(f instanceof Loadable)) continue;
-            Runnable r = () -> {
-                long time = System.currentTimeMillis();
-                ((Loadable) f).load();
-                TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed load in " + (System.currentTimeMillis()-time) + "ms");
-            };
+            FeatureTasks.Load task = new FeatureTasks.Load((Loadable) f);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                ((CustomThreaded) f).getCustomThread().submit(task);
             } else {
-                r.run();
+                task.run();
             }
         }
         if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
@@ -76,19 +73,15 @@ public class FeatureManager {
     public void unload() {
         for (TabFeature f : values) {
             if (!(f instanceof UnLoadable)) continue;
-            Runnable r = () -> {
-                long time = System.currentTimeMillis();
-                TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed unload in " + (System.currentTimeMillis()-time) + "ms");
-                ((UnLoadable) f).unload();
-            };
+            FeatureTasks.Unload task = new FeatureTasks.Unload((UnLoadable) f);
             if (f instanceof CustomThreaded) {
                 ScheduledExecutorService thread = ((CustomThreaded) f).getCustomThread();
                 thread.submit(() -> {
-                    r.run();
+                    task.run();
                     thread.shutdownNow();
                 });
             } else {
-                r.run();
+                task.run();
             }
         }
         for (TabFeature f : values) {
@@ -113,11 +106,11 @@ public class FeatureManager {
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         for (TabFeature f : values) {
             if (!(f instanceof RefreshableFeature)) continue;
-            Runnable r = () -> ((RefreshableFeature)f).refresh(refreshed, force);
+            FeatureTasks.Refresh task = new FeatureTasks.Refresh((RefreshableFeature) f, refreshed, force);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                ((CustomThreaded) f).getCustomThread().submit(task);
             } else {
-                r.run();
+                task.run();
             }
         }
     }
@@ -131,9 +124,12 @@ public class FeatureManager {
     public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof GameModeListener)) continue;
-            long time = System.nanoTime();
-            ((GameModeListener) f).onGameModeChange(player);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.GAMEMODE_CHANGE, System.nanoTime() - time);
+            FeatureTasks.GameModeChange task = new FeatureTasks.GameModeChange((GameModeListener) f, player);
+            if (f instanceof CustomThreaded) {
+                ((CustomThreaded) f).getCustomThread().submit(task);
+            } else {
+                task.run();
+            }
         }
     }
 
@@ -149,15 +145,11 @@ public class FeatureManager {
         long millis = System.currentTimeMillis();
         for (TabFeature f : values) {
             if (!(f instanceof QuitListener)) continue;
-            Runnable r = () -> {
-                long time = System.nanoTime();
-                ((QuitListener)f).onQuit(disconnectedPlayer);
-                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
-            };
+            FeatureTasks.Quit task = new FeatureTasks.Quit((QuitListener) f, disconnectedPlayer);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                ((CustomThreaded) f).getCustomThread().submit(task);
             } else {
-                r.run();
+                task.run();
             }
         }
         TAB.getInstance().removePlayer(disconnectedPlayer);
@@ -178,16 +170,11 @@ public class FeatureManager {
         TAB.getInstance().addPlayer(connectedPlayer);
         for (TabFeature f : values) {
             if (!(f instanceof JoinListener)) continue;
-            Runnable r = () -> {
-                long time = System.nanoTime();
-                ((JoinListener)f).onJoin(connectedPlayer);
-                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
-                TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed player join in " + (System.nanoTime()-time)/1000000 + "ms");
-            };
+            FeatureTasks.Join task = new FeatureTasks.Join((JoinListener) f, connectedPlayer);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                ((CustomThreaded) f).getCustomThread().submit(task);
             } else {
-                r.run();
+                task.run();
             }
         }
         connectedPlayer.markAsLoaded(true);
@@ -213,15 +200,11 @@ public class FeatureManager {
         changed.setWorld(to);
         for (TabFeature f : values) {
             if (!(f instanceof WorldSwitchListener)) continue;
-            Runnable r = () -> {
-                long time = System.nanoTime();
-                ((WorldSwitchListener) f).onWorldChange(changed, from, to);
-                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
-            };
+            FeatureTasks.WorldSwitch change = new FeatureTasks.WorldSwitch((WorldSwitchListener) f, changed, from, to);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                ((CustomThreaded) f).getCustomThread().submit(change);
             } else {
-                r.run();
+                change.run();
             }
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
@@ -243,15 +226,11 @@ public class FeatureManager {
         ((ProxyTabPlayer)changed).sendJoinPluginMessage();
         for (TabFeature f : values) {
             if (!(f instanceof ServerSwitchListener)) continue;
-            Runnable r = () -> {
-                long time = System.nanoTime();
-                ((ServerSwitchListener) f).onServerChange(changed, from, to);
-                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
-            };
+            FeatureTasks.ServerSwitch change = new FeatureTasks.ServerSwitch((ServerSwitchListener) f, changed, from, to);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                ((CustomThreaded) f).getCustomThread().submit(change);
             } else {
-                r.run();
+                change.run();
             }
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
@@ -333,15 +312,11 @@ public class FeatureManager {
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof VanishListener)) continue;
-            Runnable r = () -> {
-                long time = System.nanoTime();
-                ((VanishListener)f).onVanishStatusChange(player);
-                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.VANISH_CHANGE, System.nanoTime()-time);
-            };
+            FeatureTasks.VanishStatus task = new FeatureTasks.VanishStatus((VanishListener) f, player);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                ((CustomThreaded) f).getCustomThread().submit(task);
             } else {
-                r.run();
+                task.run();
             }
         }
     }
@@ -397,15 +372,11 @@ public class FeatureManager {
     public void onTabListClear(TabPlayer packetReceiver) {
         for (TabFeature f : values) {
             if (!(f instanceof TabListClearListener)) continue;
-            Runnable r = () -> {
-                long time = System.nanoTime();
-                ((TabListClearListener)f).onTabListClear(packetReceiver);
-                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.TABLIST_CLEAR, System.nanoTime() - time);
-            };
+            FeatureTasks.TabListClear task = new FeatureTasks.TabListClear((TabListClearListener) f, packetReceiver);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                ((CustomThreaded) f).getCustomThread().submit(task);
             } else {
-                r.run();
+                task.run();
             }
         }
     }

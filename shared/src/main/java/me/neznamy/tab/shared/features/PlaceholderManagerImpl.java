@@ -27,6 +27,7 @@ import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.task.FeatureTasks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -104,29 +105,21 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     private void refreshFeatures(@NotNull Map<TabPlayer, Set<RefreshableFeature>> forceUpdate, @NotNull Map<TabPlayer, Set<RefreshableFeature>> update) {
         for (Entry<TabPlayer, Set<RefreshableFeature>> entry : update.entrySet()) {
             for (RefreshableFeature f : entry.getValue()) {
-                Runnable r = () -> {
-                    long startTime = System.nanoTime();
-                    f.refresh(entry.getKey(), false);
-                    cpu.addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime() - startTime);
-                };
+                FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, entry.getKey(), false);
                 if (f instanceof CustomThreaded) {
-                    ((CustomThreaded) f).getCustomThread().submit(r);
+                    ((CustomThreaded) f).getCustomThread().submit(task);
                 } else {
-                    r.run();
+                    task.run();
                 }
             }
         }
         for (Entry<TabPlayer, Set<RefreshableFeature>> entry : forceUpdate.entrySet()) {
             for (RefreshableFeature f : entry.getValue()) {
-                Runnable r = () -> {
-                    long startTime = System.nanoTime();
-                    f.refresh(entry.getKey(), true);
-                    cpu.addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime() - startTime);
-                };
+                FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, entry.getKey(), true);
                 if (f instanceof CustomThreaded) {
-                    ((CustomThreaded) f).getCustomThread().submit(r);
+                    ((CustomThreaded) f).getCustomThread().submit(task);
                 } else {
-                    r.run();
+                    task.run();
                 }
             }
         }
