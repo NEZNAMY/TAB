@@ -155,9 +155,13 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         if (serverMinorVersion >= TEAM_COLOR_VERSION)
             t.setColor(ChatColor.valueOf(team.getColor().name()));
         if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
-            team.getPlayers().forEach(t::addEntry);
+            for (String player : team.getPlayers()) {
+                t.addEntry(player);
+            }
         } else {
-            team.getPlayers().forEach(p -> t.addPlayer(Bukkit.getOfflinePlayer(p)));
+            for (String player : team.getPlayers()) {
+                t.addPlayer(Bukkit.getOfflinePlayer(player));
+            }
         }
         t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         t.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);

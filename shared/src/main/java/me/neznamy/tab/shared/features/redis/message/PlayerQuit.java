@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.redis.feature.RedisFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,9 @@ public class PlayerQuit extends RedisMessage {
     public void process(@NotNull RedisSupport redisSupport) {
         RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
         if (target == null) return; // Print warn?
-        redisSupport.getFeatures().forEach(f -> f.onQuit(target));
+        for (RedisFeature f : redisSupport.getFeatures()) {
+            f.onQuit(target);
+        }
         redisSupport.getRedisPlayers().remove(target.getUniqueId());
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             ((TrackedTabList<?, ?>)all.getTabList()).removeExpectedDisplayName(target.getUniqueId());

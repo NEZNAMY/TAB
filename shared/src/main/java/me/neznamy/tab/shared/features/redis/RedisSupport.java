@@ -240,13 +240,17 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @Override
     public void onJoin(@NotNull TabPlayer p) {
         sendMessage(new PlayerJoin(this, p));
-        features.forEach(f -> f.onJoin(p));
+        for (RedisFeature f : features) {
+            f.onJoin(p);
+        }
     }
 
     @Override
     public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         sendMessage(new ServerSwitch(p.getTablistId(), to));
-        features.forEach(f -> f.onServerSwitch(p));
+        for (RedisFeature f : features) {
+            f.onServerSwitch(p);
+        }
     }
 
     @Override
@@ -285,7 +289,9 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
 
     @Override
     public void onTabListClear(@NotNull TabPlayer player) {
-        features.forEach(f -> f.onTabListClear(player));
+        for (RedisFeature f : features) {
+            f.onTabListClear(player);
+        }
     }
 
     @Override

@@ -41,7 +41,9 @@ public class LayoutView {
 
     public void send() {
         if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) return;
-        groups.forEach(ParentGroup::sendSlots);
+        for (ParentGroup group : groups) {
+            group.sendSlots();
+        }
         for (FixedSlot slot : fixedSlots) {
             viewer.getTabList().addEntry(slot.createEntry(viewer));
         }

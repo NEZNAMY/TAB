@@ -49,7 +49,9 @@ public abstract class RefreshableFeature extends TabFeature {
      */
     public void addUsedPlaceholders(@NotNull Collection<String> placeholders) {
         if (placeholders.isEmpty()) return;
-        placeholders.forEach(p -> TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(p, this));
+        for (String p : placeholders) {
+            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(p, this);
+        }
     }
 
     /**

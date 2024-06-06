@@ -215,7 +215,9 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         if (override && placeholderUsage.containsKey(placeholder.getIdentifier())) {
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (!p.isLoaded()) continue;
-                placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
+                for (RefreshableFeature f : placeholderUsage.get(placeholder.getIdentifier())) {
+                    f.refresh(p, true);
+                }
             }
         }
         return placeholder;

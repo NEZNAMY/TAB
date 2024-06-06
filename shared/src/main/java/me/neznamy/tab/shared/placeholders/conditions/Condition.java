@@ -234,7 +234,9 @@ public class Condition {
      * before they are registered properly.
      */
     public static void finishSetups() {
-        registeredConditions.values().forEach(Condition::finishSetup);
+        for (Condition c : registeredConditions.values()) {
+            c.finishSetup();
+        }
     }
 
     /**

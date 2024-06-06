@@ -79,8 +79,12 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
         TabPlayer user = getPlayer(player);
         if (user == null) return;
         values.remove(user);
-        perWorld.keySet().forEach(world -> perWorld.get(world).remove(user));
-        perServer.keySet().forEach(server -> perServer.get(server).remove(user));
+        for (WeakHashMap<TabPlayer, Map<String, Object>> worldValues : perWorld.values()) {
+            worldValues.remove(user);
+        }
+        for (WeakHashMap<TabPlayer, Map<String, Object>> serverValues : perServer.values()) {
+            serverValues.remove(user);
+        }
     }
 
     @Override

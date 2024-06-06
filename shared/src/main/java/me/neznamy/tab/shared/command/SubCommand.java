@@ -76,7 +76,9 @@ public abstract class SubCommand {
      *          messages to send
      */
     public void sendMessages(@Nullable TabPlayer sender, @NotNull List<String> messages) {
-        messages.forEach(m -> sendMessage(sender, m));
+        for (String message : messages) {
+            sendMessage(sender, message);
+        }
     }
 
     /**

@@ -51,6 +51,8 @@ public class ParentGroup {
     }
     
     public void sendSlots() {
-        playerSlots.values().forEach(s -> viewer.getTabList().addEntry(s.getSlot(viewer)));
+        for (PlayerSlot s : playerSlots.values()) {
+            viewer.getTabList().addEntry(s.getSlot(viewer));
+        }
     }
 }
