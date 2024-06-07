@@ -8,6 +8,7 @@ import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -15,11 +16,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Class representing a BossBar from configuration
  */
 public class BossBarLine implements BossBar {
+
+    private final BossBarManagerImpl manager;
 
     //BossBar name
     @Getter private final String name;
@@ -81,6 +85,7 @@ public class BossBarLine implements BossBar {
      */
     public BossBarLine(@NonNull BossBarManagerImpl manager, @NonNull String name, @Nullable String displayCondition,
                        @NonNull String color, @NonNull String style, @NonNull String title, @NonNull String progress, boolean announcementOnly) {
+        this.manager = manager;
         this.name = name;
         this.displayCondition = Condition.getCondition(displayCondition);
         if (this.displayCondition != null) {
@@ -300,7 +305,7 @@ public class BossBarLine implements BossBar {
         return players.contains((TabPlayer) player);
     }
 
-    private class TextRefresher extends RefreshableFeature {
+    private class TextRefresher extends RefreshableFeature implements CustomThreaded {
 
         private TextRefresher() {
             super("BossBar", "Updating text");
@@ -311,9 +316,15 @@ public class BossBarLine implements BossBar {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, refreshed.getProperty(propertyTitle).updateAndGet());
         }
+
+        @Override
+        @NotNull
+        public ScheduledExecutorService getCustomThread() {
+            return manager.getCustomThread();
+        }
     }
 
-    private class ProgressRefresher extends RefreshableFeature {
+    private class ProgressRefresher extends RefreshableFeature implements CustomThreaded {
 
         private ProgressRefresher() {
             super( "BossBar", "Updating progress");
@@ -324,9 +335,15 @@ public class BossBarLine implements BossBar {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseProgress(refreshed, refreshed.getProperty(propertyProgress).updateAndGet())/100);
         }
+
+        @Override
+        @NotNull
+        public ScheduledExecutorService getCustomThread() {
+            return manager.getCustomThread();
+        }
     }
 
-    private class ColorRefresher extends RefreshableFeature {
+    private class ColorRefresher extends RefreshableFeature implements CustomThreaded {
 
         private ColorRefresher() {
             super( "BossBar", "Updating color");
@@ -337,9 +354,15 @@ public class BossBarLine implements BossBar {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseColor(refreshed, refreshed.getProperty(propertyColor).updateAndGet()));
         }
+
+        @Override
+        @NotNull
+        public ScheduledExecutorService getCustomThread() {
+            return manager.getCustomThread();
+        }
     }
 
-    private class StyleRefresher extends RefreshableFeature {
+    private class StyleRefresher extends RefreshableFeature implements CustomThreaded {
 
         private StyleRefresher() {
             super("BossBar", "Updating style");
@@ -349,6 +372,12 @@ public class BossBarLine implements BossBar {
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseStyle(refreshed, refreshed.getProperty(propertyStyle).updateAndGet()));
+        }
+
+        @Override
+        @NotNull
+        public ScheduledExecutorService getCustomThread() {
+            return manager.getCustomThread();
         }
     }
 }

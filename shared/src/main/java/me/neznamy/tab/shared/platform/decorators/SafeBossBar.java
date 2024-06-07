@@ -29,7 +29,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     private boolean frozen;
 
     @Override
-    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    public synchronized void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         BossBarInfo bar = new BossBarInfo(title, progress, color, style, constructBossBar(title, progress, color, style));
         bossBars.put(id, bar);
         if (frozen) return;
@@ -37,7 +37,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull String title) {
+    public synchronized void update(@NotNull UUID id, @NotNull String title) {
         BossBarInfo bar = bossBars.get(id);
         if (bar == null) return;
         bar.setTitle(title);
@@ -46,7 +46,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     }
 
     @Override
-    public void update(@NotNull UUID id, float progress) {
+    public synchronized void update(@NotNull UUID id, float progress) {
         BossBarInfo bar = bossBars.get(id);
         if (bar == null) return;
         bar.setProgress(progress);
@@ -55,7 +55,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarStyle style) {
+    public synchronized void update(@NotNull UUID id, @NotNull BarStyle style) {
         BossBarInfo bar = bossBars.get(id);
         if (bar == null) return;
         bar.setStyle(style);
@@ -64,7 +64,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     }
 
     @Override
-    public void update(@NotNull UUID id, @NotNull BarColor color) {
+    public synchronized void update(@NotNull UUID id, @NotNull BarColor color) {
         BossBarInfo bar = bossBars.get(id);
         if (bar == null) return;
         bar.setColor(color);
@@ -73,7 +73,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     }
 
     @Override
-    public void remove(@NotNull UUID id) {
+    public synchronized void remove(@NotNull UUID id) {
         BossBarInfo bar = bossBars.remove(id);
         if (bar == null) return;
         if (frozen) return;
@@ -83,14 +83,14 @@ public abstract class SafeBossBar<T> implements BossBar {
     /**
      * Freezes the class, not letting any packets through.
      */
-    public void freeze() {
+    public synchronized void freeze() {
         frozen = true;
     }
 
     /**
      * Unfreezes the class back, enabling it back and resending all BossBars to the player.
      */
-    public void unfreezeAndResend() {
+    public synchronized void unfreezeAndResend() {
         frozen = false;
         for (BossBarInfo bar : bossBars.values()) {
             // Destroy previous reference due to Adventure bug

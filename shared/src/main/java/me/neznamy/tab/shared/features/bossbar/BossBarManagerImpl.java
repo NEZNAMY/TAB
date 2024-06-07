@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,10 @@ import java.util.stream.Collectors;
  * Class for handling BossBar feature
  */
 public class BossBarManagerImpl extends RefreshableFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
-        UnLoadable, QuitListener {
+        UnLoadable, QuitListener, CustomThreaded {
+
+    @Getter
+    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB BossBar Thread");
 
     //default BossBars
     private final List<String> defaultBars = new ArrayList<>();
@@ -198,19 +202,19 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     }
 
     @Override
-    public void toggleBossBar(me.neznamy.tab.api.@NonNull TabPlayer player, boolean sendToggleMessage) {
+    public void toggleBossBar(@NonNull me.neznamy.tab.api.TabPlayer player, boolean sendToggleMessage) {
         ensureActive();
         setBossBarVisible(player, !hasBossBarVisible(player), sendToggleMessage);
     }
 
     @Override
-    public boolean hasBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer player) {
+    public boolean hasBossBarVisible(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         return ((TabPlayer)player).bossbarData.visible;
     }
 
     @Override
-    public void setBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer p, boolean visible, boolean sendToggleMessage) {
+    public void setBossBarVisible(@NonNull me.neznamy.tab.api.TabPlayer p, boolean visible, boolean sendToggleMessage) {
         ensureActive();
         TabPlayer player = (TabPlayer) p;
         if (player.bossbarData.visible == visible) return;
@@ -253,20 +257,19 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     }
 
     private void savePlayers() {
-        synchronized (bossBarOffPlayers) {
-            TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", new ArrayList<>(bossBarOffPlayers));
-        }
+        TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", new ArrayList<>(bossBarOffPlayers));
     }
 
     @Override
-    public void sendBossBarTemporarily(me.neznamy.tab.api.@NonNull TabPlayer player, @NonNull String bossBar, int duration) {
+    public void sendBossBarTemporarily(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull String bossBar, int duration) {
         ensureActive();
-        if (!hasBossBarVisible(player)) return;
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), "Adding temporary BossBar", () -> line.addPlayer(player));
-        TAB.getInstance().getCPUManager().runTaskLater((int) TimeUnit.SECONDS.toMillis(duration),
-                getFeatureName(), "Removing temporary BossBar", () -> line.removePlayer(player));
+        if (!hasBossBarVisible(player)) return;
+        customThread.submit(() -> measureTask(() -> line.addPlayer(player), "Adding temporary BossBar"));
+        customThread.schedule(() -> measureTask(() -> {
+            if (((TabPlayer)player).isOnline()) line.removePlayer(player);
+        }, "Removing temporary BossBar"), duration, TimeUnit.SECONDS);
     }
 
     @Override
@@ -274,22 +277,21 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         ensureActive();
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-        List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(
-                this::hasBossBarVisible).collect(Collectors.toList());
-        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), "Adding announced BossBar", () -> {
+        customThread.submit(() -> measureTask(() -> {
+            List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(this::hasBossBarVisible).collect(Collectors.toList());
             announcedBossBars.add(line);
             announceEndTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(duration);
             for (TabPlayer all : players) {
                 if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);
             }
-        });
-        TAB.getInstance().getCPUManager().runTaskLater((int) TimeUnit.SECONDS.toMillis(duration),
-                getFeatureName(), "Removing announced BossBar", () -> {
-                    for (TabPlayer all : players) {
-                        line.removePlayer(all);
-                    }
-                    announcedBossBars.remove(line);
-                });
+        }, "Adding announced BossBar"));
+        customThread.schedule(() -> measureTask(() -> {
+            List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(this::hasBossBarVisible).collect(Collectors.toList());
+            for (TabPlayer all : players) {
+                line.removePlayer(all);
+            }
+            announcedBossBars.remove(line);
+        }, "Removing announced BossBar"), duration, TimeUnit.SECONDS);
     }
 
     /**

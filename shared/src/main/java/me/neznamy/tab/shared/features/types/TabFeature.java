@@ -44,4 +44,10 @@ public class TabFeature {
     public ConfigurationFile config() {
         return TAB.getInstance().getConfiguration().getConfig();
     }
+
+    protected void measureTask(@NotNull Runnable task, @NotNull String usageType) {
+        long time = System.nanoTime();
+        task.run();
+        TAB.getInstance().getCpu().addTime(featureName, usageType, System.nanoTime()-time);
+    }
 }

@@ -117,14 +117,14 @@ public interface BossBarManager {
     void setBossBarVisible(@NonNull TabPlayer player, boolean visible, boolean sendToggleMessage);
 
     /**
-     * Temporarily displays registered BossBar to player for specified amount of time in milliseconds.
+     * Temporarily displays registered BossBar to player for specified amount of time in seconds.
      *
      * @param   player
      *          Player to show BossBar to
      * @param   bossBar
      *          Name of registered BossBar to show
      * @param   duration
-     *          In milliseconds for how long should BossBar be displayed
+     *          In seconds for how long should BossBar be displayed
      * @throws  IllegalArgumentException
      *          if no BossBar with specified name exists
      * @see     #announceBossBar(String, int)
@@ -133,12 +133,12 @@ public interface BossBarManager {
     void sendBossBarTemporarily(@NonNull TabPlayer player, @NonNull String bossBar, int duration);
 
     /**
-     * Temporarily displays registered BossBar to all players for specified amount of time in milliseconds.
+     * Temporarily displays registered BossBar to all players for specified amount of time in seconds.
      *
      * @param   bossBar
      *          Name of registered BossBar to show
      * @param   duration
-     *          In milliseconds for how long should BossBar be displayed
+     *          In seconds for how long should BossBar be displayed
      * @throws  IllegalArgumentException
      *          if no BossBar with specified name exists
      * @see     #sendBossBarTemporarily(TabPlayer, String, int)
