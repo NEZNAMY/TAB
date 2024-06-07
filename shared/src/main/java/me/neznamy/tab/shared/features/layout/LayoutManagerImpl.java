@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
@@ -38,6 +39,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
     private final Map<String, LayoutPattern> layouts;
     private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(p -> p.layoutData.sortingString)));
     private PlayerList playerList;
+    private PingSpoof pingSpoof;
 
     private static boolean teamsEnabled;
 
@@ -79,8 +81,9 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
     @Override
     public void load() {
         playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+        pingSpoof = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PING_SPOOF);
         teamsEnabled = TAB.getInstance().getNameTagManager() != null;
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher());
+        if (pingSpoof == null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher());
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }

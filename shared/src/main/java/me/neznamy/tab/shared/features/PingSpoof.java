@@ -1,8 +1,7 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.layout.ParentGroup;
-import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +12,7 @@ import java.util.UUID;
  * This feature hides real ping of players in connection bar and
  * replaces it with a custom fake value.
  */
+@Getter
 public class PingSpoof extends TabFeature implements JoinListener, LatencyListener, Loadable, UnLoadable {
 
     /** Value to display as ping instead of real ping */
@@ -27,13 +27,7 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
 
     @Override
     public int onLatencyChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id, int latency) {
-        if (packetReceiver.layoutData.view != null) {
-            for (ParentGroup group : packetReceiver.layoutData.view.getGroups()) {
-                PlayerSlot slot = group.getPlayerSlots().get((int) id.getLeastSignificantBits());
-                if (slot != null && slot.getPlayer() != null) return value;
-            }
-        }
-        if (TAB.getInstance().getPlayer(id) != null) return value;
+        if (TAB.getInstance().getPlayerByTabListUUID(id) != null) return value;
         return latency;
     }
 

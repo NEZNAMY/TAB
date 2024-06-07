@@ -30,24 +30,24 @@ public class PlayerSlot {
         layout.getViewer().getTabList().addEntry(getSlot(layout.getViewer()));
     }
 
-    public @NotNull TabList.Entry getSlot(@NotNull TabPlayer p) {
+    public @NotNull TabList.Entry getSlot(@NotNull TabPlayer viewer) {
         TabList.Entry data;
         TabPlayer player = this.player; //avoiding NPE from concurrent access
         if (player != null) {
             PlayerList playerList = layout.getManager().getPlayerList();
             data = new TabList.Entry(
                     uniqueId,
-                    layout.getManager().getDirection().getEntryName(p, slot),
+                    layout.getManager().getDirection().getEntryName(viewer, slot),
                     player.getSkin(),
                     true,
-                    player.getPing(),
+                    layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getValue() : player.getPing(),
                     0,
-                    playerList == null ? new SimpleComponent(player.getName()) : playerList.getTabFormat(player, p)
+                    playerList == null ? new SimpleComponent(player.getName()) : playerList.getTabFormat(player, viewer)
             );
         } else {
             data = new TabList.Entry(
                     uniqueId,
-                    layout.getManager().getDirection().getEntryName(p, slot),
+                    layout.getManager().getDirection().getEntryName(viewer, slot),
                     layout.getManager().getSkinManager().getDefaultSkin(slot),
                     true,
                     layout.getManager().getEmptySlotPing(),
