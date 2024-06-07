@@ -270,6 +270,7 @@ public class CpuManager {
      *          Usage the of the feature
      */
     public void execute(@NotNull ExecutorService service, @NotNull Runnable task, @NotNull String feature, @NotNull String type) {
+        if (service.isShutdown()) return;
         if (!trackUsage) {
             execute(service, task);
             return;
@@ -286,6 +287,7 @@ public class CpuManager {
     }
 
     public void execute(@NotNull ExecutorService service, @NotNull Runnable task) {
+        if (service.isShutdown()) return;
         service.execute(() -> {
             try {
                 task.run();
