@@ -485,15 +485,13 @@ public class FeatureManager {
         if (yellowNumber) featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
         if (belowName)    featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
         if (teams || layout) featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
+        if (tablistFormatting) featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
 
         // Must be loaded after: Sorting
         if (teams) featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
 
-        // Must be loaded after: Sorting
+        // Must be loaded after: Sorting, PlayerList
         if (layout) featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl());
-
-        // Must be loaded after: Layout
-        if (tablistFormatting) featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
 
         // Must be loaded after: PlayerList
         if (globalPlayerList && TAB.getInstance().getPlatform().isProxy()) {

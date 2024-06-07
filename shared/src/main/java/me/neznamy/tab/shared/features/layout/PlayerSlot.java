@@ -42,7 +42,7 @@ public class PlayerSlot {
                     true,
                     layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getValue() : player.getPing(),
                     0,
-                    playerList == null ? new SimpleComponent(player.getName()) : playerList.getTabFormat(player, viewer)
+                    playerList == null || player.tablistData.disabled.get() ? new SimpleComponent(player.getName()) : playerList.getTabFormat(player, viewer)
             );
         } else {
             data = new TabList.Entry(
