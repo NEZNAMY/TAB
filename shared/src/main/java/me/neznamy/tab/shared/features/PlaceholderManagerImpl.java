@@ -79,7 +79,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         if (placeholders.isEmpty()) return;
         PlaceholderRefreshTask task = new PlaceholderRefreshTask(placeholders);
         cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_REFRESH_INIT, System.nanoTime() - time);
-        cpu.getPlaceholderThread().submit(() -> {
+        cpu.execute(cpu.getPlaceholderThread(), () -> {
             // Run in placeholder refreshing thread
             long time2 = System.nanoTime();
             task.run();
@@ -107,7 +107,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             for (RefreshableFeature f : entry.getValue()) {
                 FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, entry.getKey(), false);
                 if (f instanceof CustomThreaded) {
-                    ((CustomThreaded) f).getCustomThread().submit(task);
+                    TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
                 } else {
                     task.run();
                 }
@@ -117,7 +117,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             for (RefreshableFeature f : entry.getValue()) {
                 FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, entry.getKey(), true);
                 if (f instanceof CustomThreaded) {
-                    ((CustomThreaded) f).getCustomThread().submit(task);
+                    TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
                 } else {
                     task.run();
                 }

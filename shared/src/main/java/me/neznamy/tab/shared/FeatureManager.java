@@ -55,7 +55,7 @@ public class FeatureManager {
             if (!(f instanceof Loadable)) continue;
             FeatureTasks.Load task = new FeatureTasks.Load((Loadable) f);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(task);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
                 task.run();
             }
@@ -76,7 +76,7 @@ public class FeatureManager {
             FeatureTasks.Unload task = new FeatureTasks.Unload((UnLoadable) f);
             if (f instanceof CustomThreaded) {
                 ScheduledExecutorService thread = ((CustomThreaded) f).getCustomThread();
-                thread.submit(() -> {
+                TAB.getInstance().getCpu().execute(thread, () -> {
                     task.run();
                     thread.shutdownNow();
                 });
@@ -108,7 +108,7 @@ public class FeatureManager {
             if (!(f instanceof RefreshableFeature)) continue;
             FeatureTasks.Refresh task = new FeatureTasks.Refresh((RefreshableFeature) f, refreshed, force);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(task);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
                 task.run();
             }
@@ -126,7 +126,7 @@ public class FeatureManager {
             if (!(f instanceof GameModeListener)) continue;
             FeatureTasks.GameModeChange task = new FeatureTasks.GameModeChange((GameModeListener) f, player);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(task);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
                 task.run();
             }
@@ -147,7 +147,7 @@ public class FeatureManager {
             if (!(f instanceof QuitListener)) continue;
             FeatureTasks.Quit task = new FeatureTasks.Quit((QuitListener) f, disconnectedPlayer);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(task);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
                 task.run();
             }
@@ -172,7 +172,7 @@ public class FeatureManager {
             if (!(f instanceof JoinListener)) continue;
             FeatureTasks.Join task = new FeatureTasks.Join((JoinListener) f, connectedPlayer);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(task);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
                 task.run();
             }
@@ -202,7 +202,7 @@ public class FeatureManager {
             if (!(f instanceof WorldSwitchListener)) continue;
             FeatureTasks.WorldSwitch change = new FeatureTasks.WorldSwitch((WorldSwitchListener) f, changed, from, to);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(change);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), change);
             } else {
                 change.run();
             }
@@ -228,7 +228,7 @@ public class FeatureManager {
             if (!(f instanceof ServerSwitchListener)) continue;
             FeatureTasks.ServerSwitch change = new FeatureTasks.ServerSwitch((ServerSwitchListener) f, changed, from, to);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(change);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), change);
             } else {
                 change.run();
             }
@@ -274,7 +274,7 @@ public class FeatureManager {
             if (!(f instanceof DisplayObjectiveListener)) continue;
             Runnable r = () -> ((DisplayObjectiveListener)f).onDisplayObjective(packetReceiver, slot, objective);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), r);
             } else {
                 r.run();
             }
@@ -296,7 +296,7 @@ public class FeatureManager {
             if (!(f instanceof ObjectiveListener)) continue;
             Runnable r = () -> ((ObjectiveListener)f).onObjective(packetReceiver, action, objective);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(r);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), r);
             } else {
                 r.run();
             }
@@ -314,7 +314,7 @@ public class FeatureManager {
             if (!(f instanceof VanishListener)) continue;
             FeatureTasks.VanishStatus task = new FeatureTasks.VanishStatus((VanishListener) f, player);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(task);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
                 task.run();
             }
@@ -374,7 +374,7 @@ public class FeatureManager {
             if (!(f instanceof TabListClearListener)) continue;
             FeatureTasks.TabListClear task = new FeatureTasks.TabListClear((TabListClearListener) f, packetReceiver);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().submit(task);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
                 task.run();
             }

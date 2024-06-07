@@ -266,7 +266,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         if (!hasBossBarVisible(player)) return;
-        customThread.submit(() -> measureTask(() -> line.addPlayer(player), "Adding temporary BossBar"));
+        TAB.getInstance().getCpu().execute(customThread, () -> line.addPlayer(player), getFeatureName(), "Adding temporary BossBar");
         customThread.schedule(() -> measureTask(() -> {
             if (((TabPlayer)player).isOnline()) line.removePlayer(player);
         }, "Removing temporary BossBar"), duration, TimeUnit.SECONDS);
@@ -277,14 +277,14 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         ensureActive();
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-        customThread.submit(() -> measureTask(() -> {
+        TAB.getInstance().getCpu().execute(customThread, () -> {
             List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(this::hasBossBarVisible).collect(Collectors.toList());
             announcedBossBars.add(line);
             announceEndTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(duration);
             for (TabPlayer all : players) {
                 if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);
             }
-        }, "Adding announced BossBar"));
+        }, getFeatureName(), "Adding announced BossBar");
         customThread.schedule(() -> measureTask(() -> {
             List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(this::hasBossBarVisible).collect(Collectors.toList());
             for (TabPlayer all : players) {

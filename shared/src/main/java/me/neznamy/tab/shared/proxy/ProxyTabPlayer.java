@@ -136,6 +136,6 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      *          Plugin message to send
      */
     public void sendPluginMessage(@NotNull OutgoingMessage message) {
-        TAB.getInstance().getCpu().getPluginMessageEncodeThread().submit(new PluginMessageEncodeTask(this, message));
+        TAB.getInstance().getCpu().execute(TAB.getInstance().getCpu().getPluginMessageEncodeThread(), new PluginMessageEncodeTask(this, message));
     }
 }

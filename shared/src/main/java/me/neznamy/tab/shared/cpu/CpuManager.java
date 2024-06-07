@@ -64,11 +64,7 @@ public class CpuManager {
      */
     @NotNull
     public ScheduledExecutorService newExecutor(@NotNull String name) {
-        return Executors.newSingleThreadScheduledExecutor(
-                new ThreadFactoryBuilder()
-                        .setNameFormat(name)
-                        .setUncaughtExceptionHandler((thread, throwable) -> TAB.getInstance().getErrorManager().taskThrewError(throwable))
-                        .build());
+        return Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(name).build());
     }
 
     /**
@@ -122,7 +118,7 @@ public class CpuManager {
             taskQueue.add(task);
             return;
         }
-        processingThread.submit(() -> run(task));
+        execute(processingThread, task);
     }
 
     /**
@@ -259,5 +255,43 @@ public class CpuManager {
         } catch (Exception | LinkageError | StackOverflowError e) {
             TAB.getInstance().getErrorManager().taskThrewError(e);
         }
+    }
+
+    /**
+     * Runs a task and measures how long it took.
+     *
+     * @param   service
+     *          Executor service to submit task to
+     * @param   task
+     *          Task to run
+     * @param   feature
+     *          Feature executing the task
+     * @param   type
+     *          Usage the of the feature
+     */
+    public void execute(@NotNull ExecutorService service, @NotNull Runnable task, @NotNull String feature, @NotNull String type) {
+        if (!trackUsage) {
+            execute(service, task);
+            return;
+        }
+        service.execute(() -> {
+            try {
+                long time = System.nanoTime();
+                run(task);
+                addTime(feature, type, System.nanoTime() - time);
+            } catch (Exception | LinkageError | StackOverflowError e) {
+                TAB.getInstance().getErrorManager().taskThrewError(e);
+            }
+        });
+    }
+
+    public void execute(@NotNull ExecutorService service, @NotNull Runnable task) {
+        service.execute(() -> {
+            try {
+                task.run();
+            } catch (Exception | LinkageError | StackOverflowError e) {
+                TAB.getInstance().getErrorManager().taskThrewError(e);
+            }
+        });
     }
 }
