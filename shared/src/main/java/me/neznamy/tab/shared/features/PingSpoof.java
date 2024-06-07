@@ -7,13 +7,17 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * This feature hides real ping of players in connection bar and
  * replaces it with a custom fake value.
  */
 @Getter
-public class PingSpoof extends TabFeature implements JoinListener, LatencyListener, Loadable, UnLoadable {
+public class PingSpoof extends TabFeature implements JoinListener, LatencyListener, Loadable, UnLoadable, CustomThreaded {
+
+    @Getter
+    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Ping Spoof Thread");
 
     /** Value to display as ping instead of real ping */
     private final int value = config().getInt("ping-spoof.value", 0);
