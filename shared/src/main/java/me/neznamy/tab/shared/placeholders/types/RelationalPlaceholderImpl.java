@@ -7,12 +7,14 @@ import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.task.FeatureTasks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,9 +57,12 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target, @Nullable Object value) {
         if (hasValueChanged((TabPlayer) viewer, (TabPlayer) target, value)) {
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
-                long startTime = System.nanoTime();
-                r.refresh((TabPlayer) target, true);
-                TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+                FeatureTasks.Refresh task = new FeatureTasks.Refresh(r, (TabPlayer) target, true);
+                if (r instanceof CustomThreaded) {
+                    TAB.getInstance().getCpu().execute(((CustomThreaded) r).getCustomThread(), task);
+                } else {
+                    task.run();
+                }
             }
         }
     }
@@ -95,17 +100,23 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
             lastValues.computeIfAbsent(viewer, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
             if (!target.isLoaded()) return; // Updated on join
             for (RefreshableFeature f : usage) {
-                long time = System.nanoTime();
-                f.refresh(target, true);
-                TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
+                FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, target, true);
+                if (f instanceof CustomThreaded) {
+                    TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                } else {
+                    task.run();
+                }
             }
             updateParents(target);
         }
         if (!viewer.isLoaded()) return; // Updated on join
         for (RefreshableFeature f : usage) {
-            long time = System.nanoTime();
-            f.refresh(viewer, true);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
+            FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, viewer, true);
+            if (f instanceof CustomThreaded) {
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+            } else {
+                task.run();
+            }
         }
         updateParents(viewer);
     }
