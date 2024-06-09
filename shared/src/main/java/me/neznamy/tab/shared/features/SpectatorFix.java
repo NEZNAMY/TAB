@@ -7,6 +7,8 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * Cancelling GameMode change packet to spectator GameMode to avoid players being moved on
  * the bottom of TabList with transparent name. Does not work on self as that would result
@@ -14,7 +16,9 @@ import org.jetbrains.annotations.NotNull;
  */
 @Getter
 public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable,
-        ServerSwitchListener, WorldSwitchListener, VanishListener {
+        ServerSwitchListener, WorldSwitchListener, VanishListener, CustomThreaded {
+
+    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Spectator Fix Thread");
 
     /**
      * Constructs new instance.
@@ -59,8 +63,8 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
 
     @Override
     public void onJoin(@NotNull TabPlayer p) {
-        TAB.getInstance().getCPUManager().runTaskLater(100, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN,
-                () -> updatePlayer(p, false, true));
+        TAB.getInstance().getCpu().executeLater(customThread, () -> updatePlayer(p, false, true),
+                getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, 100);
     }
 
     @Override
@@ -80,11 +84,11 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         // 200ms delay for global playerlist, taking extra time
-        TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
+        TAB.getInstance().getCpu().executeLater(customThread, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 updatePlayer(all, false, true);
             }
-        });
+        }, getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, 300);
     }
 
     @Override
