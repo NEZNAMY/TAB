@@ -275,26 +275,12 @@ public class CpuManager {
             execute(service, task);
             return;
         }
-        service.execute(() -> {
-            try {
-                long time = System.nanoTime();
-                run(task);
-                addTime(feature, type, System.nanoTime() - time);
-            } catch (Exception | LinkageError | StackOverflowError e) {
-                TAB.getInstance().getErrorManager().taskThrewError(e);
-            }
-        });
+        service.execute(new TimedCaughtTask(this, task, feature, type));
     }
 
     public void execute(@NotNull ExecutorService service, @NotNull Runnable task) {
         if (service.isShutdown()) return;
-        service.execute(() -> {
-            try {
-                task.run();
-            } catch (Exception | LinkageError | StackOverflowError e) {
-                TAB.getInstance().getErrorManager().taskThrewError(e);
-            }
-        });
+        service.execute(new CaughtTask(task));
     }
 
     public void executeLater(@NotNull ScheduledExecutorService service, @NotNull Runnable task, @NotNull String feature, @NotNull String type, int delayMillis) {
@@ -303,25 +289,11 @@ public class CpuManager {
             executeLater(service, task, delayMillis);
             return;
         }
-        service.schedule(() -> {
-            try {
-                long time = System.nanoTime();
-                run(task);
-                addTime(feature, type, System.nanoTime() - time);
-            } catch (Exception | LinkageError | StackOverflowError e) {
-                TAB.getInstance().getErrorManager().taskThrewError(e);
-            }
-        }, delayMillis, TimeUnit.MILLISECONDS);
+        service.schedule(new TimedCaughtTask(this, task, feature, type), delayMillis, TimeUnit.MILLISECONDS);
     }
 
     public void executeLater(@NotNull ScheduledExecutorService service, @NotNull Runnable task, int delayMillis) {
         if (service.isShutdown()) return;
-        service.schedule(() -> {
-            try {
-                run(task);
-            } catch (Exception | LinkageError | StackOverflowError e) {
-                TAB.getInstance().getErrorManager().taskThrewError(e);
-            }
-        }, delayMillis, TimeUnit.MILLISECONDS);
+        service.schedule(new CaughtTask(task), delayMillis, TimeUnit.MILLISECONDS);
     }
 }
