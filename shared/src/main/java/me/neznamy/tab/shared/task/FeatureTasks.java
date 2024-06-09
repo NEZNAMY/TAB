@@ -151,4 +151,36 @@ public class FeatureTasks {
             TAB.getInstance().debug("Feature " + listener.getClass().getSimpleName() + " processed unload in " + (System.currentTimeMillis()-time) + "ms");
         }
     }
+
+    @RequiredArgsConstructor
+    public static class OnObjective implements Runnable {
+
+        private final ObjectiveListener listener;
+        private final TabPlayer packetReceiver;
+        private final int action;
+        private final String objective;
+
+        @Override
+        public void run() {
+            long time = System.nanoTime();
+            listener.onObjective(packetReceiver, action, objective);
+            TAB.getInstance().getCPUManager().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.SCOREBOARD_PACKET_CHECK, System.nanoTime() - time);
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class OnDisplayObjective implements Runnable {
+
+        private final DisplayObjectiveListener listener;
+        private final TabPlayer packetReceiver;
+        private final int slot;
+        private final String objective;
+
+        @Override
+        public void run() {
+            long time = System.nanoTime();
+            listener.onDisplayObjective(packetReceiver, slot, objective);
+            TAB.getInstance().getCPUManager().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.SCOREBOARD_PACKET_CHECK, System.nanoTime() - time);
+        }
+    }
 }

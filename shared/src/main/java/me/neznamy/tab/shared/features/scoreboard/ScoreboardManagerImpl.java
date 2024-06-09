@@ -14,16 +14,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Feature handler for scoreboard feature.
  */
 public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
         CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable,
-        QuitListener {
+        QuitListener, CustomThreaded {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
+
+    @Getter
+    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Scoreboard Thread");
 
     //config options
     @Getter private final String command = config().getString("scoreboard.toggle-command", "/sb");
@@ -105,11 +109,11 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(connectedPlayer, false);
         if (joinDelay > 0) {
             connectedPlayer.scoreboardData.joinDelayed = true;
-            TAB.getInstance().getCPUManager().runTaskLater(joinDelay, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
+            TAB.getInstance().getCpu().executeLater(customThread, () -> {
                 if (connectedPlayer.scoreboardData.otherPluginScoreboard == null)
                     setScoreboardVisible(connectedPlayer, hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
                 connectedPlayer.scoreboardData.joinDelayed = false;
-            });
+            }, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, joinDelay);
         } else {
             setScoreboardVisible(connectedPlayer, hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
         }
@@ -179,7 +183,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             receiver.scoreboardData.otherPluginScoreboard = objective;
             ScoreboardImpl sb = receiver.scoreboardData.activeScoreboard;
             if (sb != null) {
-                TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> sb.removePlayer(receiver));
+                sb.removePlayer(receiver);
             }
         }
     }
@@ -189,7 +193,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         if (action == Scoreboard.ObjectiveAction.UNREGISTER && objective.equals(receiver.scoreboardData.otherPluginScoreboard)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
             receiver.scoreboardData.otherPluginScoreboard = null;
-            TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> sendHighestScoreboard(receiver));
+            sendHighestScoreboard(receiver);
         }
     }
 
@@ -326,7 +330,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         ScoreboardImpl sb = (ScoreboardImpl) registeredScoreboards.get(scoreboard);
         if (sb == null) throw new IllegalArgumentException("No registered scoreboard found with name " + scoreboard);
         Map<TabPlayer, ScoreboardImpl> previous = new HashMap<>();
-        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), "Adding announced Scoreboard", () -> {
+        TAB.getInstance().getCpu().execute(customThread, () -> {
             announcement = sb;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!hasScoreboardVisible(all)) continue;
@@ -334,16 +338,15 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
                 if (all.scoreboardData.activeScoreboard != null) all.scoreboardData.activeScoreboard.removePlayer(all);
                 sb.addPlayer(all);
             }
-        });
-        TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
-                getFeatureName(), "Removing announced Scoreboard", () -> {
-                    for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        if (!hasScoreboardVisible(all)) continue;
-                        sb.removePlayer(all);
-                        if (previous.get(all) != null) previous.get(all).addPlayer(all);
-                    }
-                    announcement = null;
-                });
+        }, getFeatureName(), "Adding announced Scoreboard");
+        TAB.getInstance().getCpu().executeLater(customThread, () -> {
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (!hasScoreboardVisible(all)) continue;
+                sb.removePlayer(all);
+                if (previous.get(all) != null) previous.get(all).addPlayer(all);
+            }
+            announcement = null;
+        }, getFeatureName(), "Removing announced Scoreboard", duration*1000);
     }
 
     @Override

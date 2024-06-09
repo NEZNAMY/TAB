@@ -296,4 +296,32 @@ public class CpuManager {
             }
         });
     }
+
+    public void executeLater(@NotNull ScheduledExecutorService service, @NotNull Runnable task, @NotNull String feature, @NotNull String type, int delayMillis) {
+        if (service.isShutdown()) return;
+        if (!trackUsage) {
+            executeLater(service, task, delayMillis);
+            return;
+        }
+        service.schedule(() -> {
+            try {
+                long time = System.nanoTime();
+                run(task);
+                addTime(feature, type, System.nanoTime() - time);
+            } catch (Exception | LinkageError | StackOverflowError e) {
+                TAB.getInstance().getErrorManager().taskThrewError(e);
+            }
+        }, delayMillis, TimeUnit.MILLISECONDS);
+    }
+
+    public void executeLater(@NotNull ScheduledExecutorService service, @NotNull Runnable task, int delayMillis) {
+        if (service.isShutdown()) return;
+        service.schedule(() -> {
+            try {
+                run(task);
+            } catch (Exception | LinkageError | StackOverflowError e) {
+                TAB.getInstance().getErrorManager().taskThrewError(e);
+            }
+        }, delayMillis, TimeUnit.MILLISECONDS);
+    }
 }

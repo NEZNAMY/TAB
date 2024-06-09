@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.features.scoreboard.ScoreRefresher;
+import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -19,12 +20,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Abstract class representing a line of scoreboard
  */
 @Getter
-public abstract class ScoreboardLine extends RefreshableFeature implements Line {
+public abstract class ScoreboardLine extends RefreshableFeature implements Line, CustomThreaded {
 
     //ID of this line
     protected final int lineNumber;
@@ -260,5 +262,11 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line 
                 0,
                 EnumChatFormat.RESET
         );
+    }
+
+    @Override
+    @NotNull
+    public ScheduledExecutorService getCustomThread() {
+        return parent.getCustomThread();
     }
 }

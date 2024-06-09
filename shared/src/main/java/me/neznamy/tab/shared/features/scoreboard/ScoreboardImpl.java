@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.StableDynamicLine;
+import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -18,12 +19,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * A class representing a scoreboard configured in config
  */
 @Getter
-public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab.api.scoreboard.Scoreboard {
+public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab.api.scoreboard.Scoreboard, CustomThreaded {
 
     private final String titleProperty = Property.randomName();
 
@@ -267,5 +269,11 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
             removePlayer(all);
         }
         players.clear();
+    }
+
+    @Override
+    @NotNull
+    public ScheduledExecutorService getCustomThread() {
+        return manager.getCustomThread();
     }
 }

@@ -4,15 +4,18 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
+import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * Feature refreshing NumberFormat in scoreboard for players.
  */
-public class ScoreRefresher extends RefreshableFeature {
+public class ScoreRefresher extends RefreshableFeature implements CustomThreaded {
 
     private final String NUMBER_FORMAT_PROPERTY = Property.randomName();
 
@@ -69,5 +72,11 @@ public class ScoreRefresher extends RefreshableFeature {
     @Nullable
     public TabComponent getNumberFormat(@NotNull TabPlayer player) {
         return TabComponent.optimized(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());
+    }
+
+    @Override
+    @NotNull
+    public ScheduledExecutorService getCustomThread() {
+        return line.getCustomThread();
     }
 }

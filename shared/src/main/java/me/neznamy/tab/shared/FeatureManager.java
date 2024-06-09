@@ -272,11 +272,11 @@ public class FeatureManager {
     public void onDisplayObjective(@NotNull TabPlayer packetReceiver, int slot, @NotNull String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof DisplayObjectiveListener)) continue;
-            Runnable r = () -> ((DisplayObjectiveListener)f).onDisplayObjective(packetReceiver, slot, objective);
+            FeatureTasks.OnDisplayObjective task = new FeatureTasks.OnDisplayObjective((DisplayObjectiveListener) f, packetReceiver, slot, objective);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), r);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
-                r.run();
+                task.run();
             }
         }
     }
@@ -294,11 +294,11 @@ public class FeatureManager {
     public void onObjective(@NotNull TabPlayer packetReceiver, int action, @NotNull String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof ObjectiveListener)) continue;
-            Runnable r = () -> ((ObjectiveListener)f).onObjective(packetReceiver, action, objective);
+            FeatureTasks.OnObjective task = new FeatureTasks.OnObjective((ObjectiveListener) f, packetReceiver, action, objective);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), r);
+                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
             } else {
-                r.run();
+                task.run();
             }
         }
     }
