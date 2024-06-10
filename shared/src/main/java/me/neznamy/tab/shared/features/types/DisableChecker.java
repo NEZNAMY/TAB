@@ -38,7 +38,7 @@ public class DisableChecker extends RefreshableFeature {
      */
     public DisableChecker(@NotNull String featureName, @Nullable Condition disableCondition,
                           @NotNull BiConsumer<TabPlayer, Boolean> action, @NotNull Function<TabPlayer, AtomicBoolean> field) {
-        super(featureName, "Refreshing disable condition");
+        super(featureName, TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
         this.disableCondition = disableCondition;
         this.action = action;
         this.field = field;

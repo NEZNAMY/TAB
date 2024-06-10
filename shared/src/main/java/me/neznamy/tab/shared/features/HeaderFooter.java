@@ -99,11 +99,13 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      *          Whether the feature is disabled now or not
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        if (disabledNow) {
-            p.getTabList().setPlayerListHeaderFooter(new SimpleComponent(""), new SimpleComponent(""));
-        } else {
-            sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
-        }
+        TAB.getInstance().getCpu().execute(customThread, () -> {
+            if (disabledNow) {
+                p.getTabList().setPlayerListHeaderFooter(new SimpleComponent(""), new SimpleComponent(""));
+            } else {
+                sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
+            }
+        }, getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
     }
 
     private String getProperty(TabPlayer p, String property) {
