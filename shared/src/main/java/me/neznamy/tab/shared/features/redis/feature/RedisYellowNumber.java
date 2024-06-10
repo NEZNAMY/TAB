@@ -28,6 +28,15 @@ public class RedisYellowNumber extends RedisFeature {
     }
 
     @Override
+    public void load() {
+        TAB.getInstance().getCpu().execute(yellowNumber.getCustomThread(), () -> {
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                redisSupport.sendMessage(new Update(all.getTablistId(), yellowNumber.getValueNumber(all), all.playerlistObjectiveData.valueModern.get()));
+            }
+        }, redisSupport.getFeatureName(), "Resending all Playerlist Objective data on reload");
+    }
+
+    @Override
     public void onJoin(@NotNull TabPlayer player) {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
             player.getScoreboard().setScore(
@@ -38,6 +47,9 @@ public class RedisYellowNumber extends RedisFeature {
                     redis.getPlayerlistFancy()
             );
         }
+        TAB.getInstance().getCpu().execute(yellowNumber.getCustomThread(),
+                () -> redisSupport.sendMessage(new Update(player.getTablistId(), yellowNumber.getValueNumber(player), player.playerlistObjectiveData.valueModern.get())),
+                redisSupport.getFeatureName(), "Updating Playerlist Objective");
     }
 
     @Override
@@ -51,18 +63,6 @@ public class RedisYellowNumber extends RedisFeature {
                     player.getPlayerlistFancy()
             );
         }
-    }
-
-    @Override
-    public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {
-        out.writeInt(yellowNumber.getValueNumber(player));
-        out.writeUTF(player.playerlistObjectiveData.valueModern.get());
-    }
-
-    @Override
-    public void read(@NotNull ByteArrayDataInput in, @NotNull RedisPlayer player) {
-        player.setPlayerlistNumber(in.readInt());
-        player.setPlayerlistFancy(TabComponent.optimized(in.readUTF()));
     }
 
     @NoArgsConstructor

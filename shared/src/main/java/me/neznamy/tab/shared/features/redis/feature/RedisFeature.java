@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class RedisFeature {
 
+    public void load() {/* Do nothing by default */}
+
     public abstract void onJoin(@NotNull TabPlayer player);
 
     public abstract void onJoin(@NotNull RedisPlayer player);
@@ -18,9 +20,9 @@ public abstract class RedisFeature {
 
     public void onQuit(@NotNull RedisPlayer player) {/* Do nothing by default */}
 
-    public abstract void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player);
+    public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {/* Do nothing by default */}
 
-    public abstract void read(@NotNull ByteArrayDataInput in, @NotNull RedisPlayer player);
+    public void read(@NotNull ByteArrayDataInput in, @NotNull RedisPlayer player) {/* Do nothing by default */}
 
     public void onTabListClear(@NotNull TabPlayer player) {/* Do nothing by default */}
 

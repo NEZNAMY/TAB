@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -14,19 +15,23 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
-public class YellowNumber extends RefreshableFeature implements JoinListener, Loadable, UnLoadable {
+public class YellowNumber extends RefreshableFeature implements JoinListener, Loadable, UnLoadable, CustomThreaded {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
 
     /** Scoreboard title which is unused in java */
     private static final String TITLE = "PlayerListObjectiveTitle"; // Unused by this objective slot (on Java, only visible on Bedrock)
+
+    @Getter
+    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Playerlist Objective Thread");
 
     /** Numeric value to display */
     private final String rawValue = config().getString("playerlist-objective.value", TabConstants.Placeholder.PING);
@@ -117,6 +122,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
         Property valueFancy = connectedPlayer.playerlistObjectiveData.valueModern;
         valueFancy.update();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all.playerlistObjectiveData.valueLegacy == null) continue; // Player not loaded by this feature yet
             setScore(all, connectedPlayer, value, valueFancy.getFormat(connectedPlayer));
             if (all != connectedPlayer) {
                 setScore(connectedPlayer, all, getValueNumber(all), all.playerlistObjectiveData.valueModern.getFormat(connectedPlayer));
@@ -177,6 +183,21 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
                 null, // Unused by this objective slot
                 TabComponent.optimized(fancyValue)
         );
+    }
+
+    /**
+     * Processes nickname change of player by updating score with player's new nickname.
+     *
+     * @param   player
+     *          Player to process nickname change of
+     */
+    public void processNicknameChange(@NotNull TabPlayer player) {
+        TAB.getInstance().getCpu().execute(customThread, () -> {
+            int value = getValueNumber(player);
+            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                setScore(viewer, player, value, player.playerlistObjectiveData.valueModern.get());
+            }
+        }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS);
     }
 
     /**

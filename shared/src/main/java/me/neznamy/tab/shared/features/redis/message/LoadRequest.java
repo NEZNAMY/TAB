@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.redis.feature.RedisFeature;
 import org.jetbrains.annotations.NotNull;
 
 public class LoadRequest extends RedisMessage {
@@ -21,5 +22,8 @@ public class LoadRequest extends RedisMessage {
     @Override
     public void process(@NotNull RedisSupport redisSupport) {
         redisSupport.sendMessage(new Load(redisSupport, TAB.getInstance().getOnlinePlayers()));
+        for (RedisFeature feature : redisSupport.getFeatures()) {
+            feature.load();
+        }
     }
 }

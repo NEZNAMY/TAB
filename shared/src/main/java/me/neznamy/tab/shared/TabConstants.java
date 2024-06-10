@@ -77,6 +77,7 @@ public class TabConstants {
         public static final String TABLIST_CLEAR = "TabList entry re-add";
         public static final String VANISH_CHANGE = "Vanish status change";
         public static final String DISABLE_CONDITION_CHANGE = "Refreshing disable condition";
+        public static final String NICKNAME_CHANGE_PROCESS = "Processing nickname change";
     }
 
     /**

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -13,17 +14,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature handler for BelowName feature
  */
 public class BelowName extends RefreshableFeature implements JoinListener, Loadable, UnLoadable,
-        WorldSwitchListener, ServerSwitchListener {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
-    
+
+    @Getter
+    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Belowname Objective Thread");
+
     private final String rawNumber = config().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = config().getString("belowname-objective.text", "Health");
     private final String fancyDisplayDefault = config().getString("belowname-objective.fancy-display-default", "NPC");
@@ -94,6 +99,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
         Property fancy = connectedPlayer.belowNameData.numberFormat;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!sameServerAndWorld(connectedPlayer, all)) continue;
+            if (all.belowNameData.score == null) continue; // Player not loaded by this feature yet
             setScore(all, connectedPlayer, number, fancy.getFormat(all));
             if (all != connectedPlayer) {
                 setScore(connectedPlayer, all, getValue(all), all.belowNameData.numberFormat.getFormat(connectedPlayer));
@@ -219,6 +225,21 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
             setScore(player, all, getValue(all), all.belowNameData.numberFormat.getFormat(player));
             if (all != player) setScore(all, player, getValue(player), player.belowNameData.numberFormat.getFormat(all));
         }
+    }
+
+    /**
+     * Processes nickname change of player by updating score with player's new nickname.
+     *
+     * @param   player
+     *          Player to process nickname change of
+     */
+    public void processNicknameChange(@NotNull TabPlayer player) {
+        TAB.getInstance().getCpu().execute(customThread, () -> {
+            int value = getValue(player);
+            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                setScore(viewer, player, value, player.belowNameData.numberFormat.get());
+            }
+        }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS);
     }
 
     private static class TextRefresher extends RefreshableFeature {

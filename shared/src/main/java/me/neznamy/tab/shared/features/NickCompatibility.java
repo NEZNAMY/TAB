@@ -89,17 +89,8 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                             EnumChatFormat.lastColorsOf(prefix)
                     );
                 }
-            if (belowname != null) {
-                int value = belowname.getValue(player);
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    belowname.setScore(viewer, player, value, player.belowNameData.numberFormat.get());
-                }
-            }
-            if (yellownumber != null) {
-                int value = yellownumber.getValueNumber(player);
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers())
-                    yellownumber.setScore(viewer, player, value, player.playerlistObjectiveData.valueModern.get());
-            }
+            if (belowname != null) belowname.processNicknameChange(player);
+            if (yellownumber != null) yellownumber.processNicknameChange(player);
         });
     }
 
