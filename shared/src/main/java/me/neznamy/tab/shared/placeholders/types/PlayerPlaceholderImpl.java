@@ -56,7 +56,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
                 FeatureTasks.Refresh task = new FeatureTasks.Refresh(r, (TabPlayer) player, false);
                 if (r instanceof CustomThreaded) {
-                    TAB.getInstance().getCpu().execute(((CustomThreaded) r).getCustomThread(), task);
+                    ((CustomThreaded) r).getCustomThread().execute(task);
                 } else {
                     task.run();
                 }

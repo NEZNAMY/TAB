@@ -29,7 +29,7 @@ public class RedisBelowName extends RedisFeature {
 
     @Override
     public void load() {
-        TAB.getInstance().getCpu().execute(belowName.getCustomThread(), () -> {
+        belowName.getCustomThread().execute(() -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 redisSupport.sendMessage(new Update(all.getTablistId(), belowName.getValue(all), all.belowNameData.numberFormat.get()));
             }
@@ -47,7 +47,7 @@ public class RedisBelowName extends RedisFeature {
                     redis.getBelowNameFancy()
             );
         }
-        TAB.getInstance().getCpu().execute(belowName.getCustomThread(),
+        belowName.getCustomThread().execute(
                 () -> redisSupport.sendMessage(new Update(player.getTablistId(), belowName.getValue(player), player.belowNameData.numberFormat.get())),
                 redisSupport.getFeatureName(), "Updating Belowname");
     }

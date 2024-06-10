@@ -5,6 +5,7 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -14,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Feature handler for scoreboard feature.
@@ -27,7 +27,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
     @Getter
-    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Scoreboard Thread");
+    private final ThreadExecutor customThread = new ThreadExecutor("TAB Scoreboard Thread");
 
     //config options
     @Getter private final String command = config().getString("scoreboard.toggle-command", "/sb");
@@ -109,7 +109,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(connectedPlayer, false);
         if (joinDelay > 0) {
             connectedPlayer.scoreboardData.joinDelayed = true;
-            TAB.getInstance().getCpu().executeLater(customThread, () -> {
+            customThread.executeLater(() -> {
                 if (connectedPlayer.scoreboardData.otherPluginScoreboard == null)
                     setScoreboardVisible(connectedPlayer, hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
                 connectedPlayer.scoreboardData.joinDelayed = false;
@@ -330,7 +330,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         ScoreboardImpl sb = (ScoreboardImpl) registeredScoreboards.get(scoreboard);
         if (sb == null) throw new IllegalArgumentException("No registered scoreboard found with name " + scoreboard);
         Map<TabPlayer, ScoreboardImpl> previous = new HashMap<>();
-        TAB.getInstance().getCpu().execute(customThread, () -> {
+        customThread.execute(() -> {
             announcement = sb;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!hasScoreboardVisible(all)) continue;
@@ -339,7 +339,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
                 sb.addPlayer(all);
             }
         }, getFeatureName(), "Adding announced Scoreboard");
-        TAB.getInstance().getCpu().executeLater(customThread, () -> {
+        customThread.executeLater(() -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!hasScoreboardVisible(all)) continue;
                 sb.removePlayer(all);

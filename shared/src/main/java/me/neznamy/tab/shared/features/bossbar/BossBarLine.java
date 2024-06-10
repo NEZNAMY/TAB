@@ -8,6 +8,7 @@ import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -16,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Class representing a BossBar from configuration
@@ -319,7 +319,7 @@ public class BossBarLine implements BossBar {
 
         @Override
         @NotNull
-        public ScheduledExecutorService getCustomThread() {
+        public ThreadExecutor getCustomThread() {
             return manager.getCustomThread();
         }
     }
@@ -338,7 +338,7 @@ public class BossBarLine implements BossBar {
 
         @Override
         @NotNull
-        public ScheduledExecutorService getCustomThread() {
+        public ThreadExecutor getCustomThread() {
             return manager.getCustomThread();
         }
     }
@@ -357,7 +357,7 @@ public class BossBarLine implements BossBar {
 
         @Override
         @NotNull
-        public ScheduledExecutorService getCustomThread() {
+        public ThreadExecutor getCustomThread() {
             return manager.getCustomThread();
         }
     }
@@ -376,7 +376,7 @@ public class BossBarLine implements BossBar {
 
         @Override
         @NotNull
-        public ScheduledExecutorService getCustomThread() {
+        public ThreadExecutor getCustomThread() {
             return manager.getCustomThread();
         }
     }

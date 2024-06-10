@@ -42,11 +42,11 @@ public class GroupManager {
     public GroupManager(@NotNull String permissionPlugin, @NotNull Function<TabPlayer, String> groupFunction) {
         this.permissionPlugin = permissionPlugin;
         this.groupFunction = groupFunction;
-        TAB.getInstance().getCpu().getGroupRefreshingThread().scheduleAtFixedRate(
+        TAB.getInstance().getCpu().getGroupRefreshingThread().repeatTask(
                 new GroupRefreshTask(detectGroup),
-                TAB.getInstance().getConfiguration().getPermissionRefreshInterval(),
-                TAB.getInstance().getConfiguration().getPermissionRefreshInterval(),
-                TimeUnit.MILLISECONDS
+                "Permission group refreshing",
+                "Periodic task",
+                TAB.getInstance().getConfiguration().getPermissionRefreshInterval()
         );
     }
 

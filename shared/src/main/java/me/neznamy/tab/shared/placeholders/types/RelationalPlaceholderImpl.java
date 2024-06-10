@@ -59,7 +59,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
                 FeatureTasks.Refresh task = new FeatureTasks.Refresh(r, (TabPlayer) target, true);
                 if (r instanceof CustomThreaded) {
-                    TAB.getInstance().getCpu().execute(((CustomThreaded) r).getCustomThread(), task);
+                    ((CustomThreaded) r).getCustomThread().execute(task);
                 } else {
                     task.run();
                 }
@@ -102,7 +102,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
             for (RefreshableFeature f : usage) {
                 FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, target, true);
                 if (f instanceof CustomThreaded) {
-                    TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                    ((CustomThreaded) f).getCustomThread().execute(task);
                 } else {
                     task.run();
                 }
@@ -113,7 +113,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         for (RefreshableFeature f : usage) {
             FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, viewer, true);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }

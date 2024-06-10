@@ -4,10 +4,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 import lombok.Getter;
-import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,23 +25,24 @@ public class CpuManager {
     @Nullable @Getter private CpuReport lastReport;
 
     /** Scheduler for scheduling delayed and repeating tasks */
-    private final ScheduledExecutorService processingThread = newExecutor("TAB Processing Thread");
+    @Getter
+    private final ThreadExecutor processingThread = new ThreadExecutor("TAB Processing Thread");
 
     /** Scheduler for placeholder refreshing task to prevent inefficient placeholders from lagging the entire plugin */
     @Getter
-    private final ScheduledExecutorService placeholderThread = newExecutor("TAB Placeholder Refreshing Thread");
+    private final ThreadExecutor placeholderThread = new ThreadExecutor("TAB Placeholder Refreshing Thread");
 
     /** Scheduler for refreshing permission groups */
     @Getter
-    private final ScheduledExecutorService groupRefreshingThread = newExecutor("TAB Permission Group Refreshing Thread");
+    private final ThreadExecutor groupRefreshingThread = new ThreadExecutor("TAB Permission Group Refreshing Thread");
 
     /** Scheduler for checking for tablist entry values */
     @Getter
-    private final ScheduledExecutorService tablistEntryCheckThread = newExecutor("TAB TabList Entry Checker Thread");
+    private final ThreadExecutor tablistEntryCheckThread = new ThreadExecutor("TAB TabList Entry Checker Thread");
 
     /** Scheduler for encoding and sending plugin messages */
     @Getter
-    private final ScheduledExecutorService pluginMessageEncodeThread = newExecutor("TAB Plugin Message Encoding Thread");
+    private final ThreadExecutor pluginMessageEncodeThread = new ThreadExecutor("TAB Plugin Message Encoding Thread");
 
     /** Tasks submitted to main thread before plugin was fully enabled */
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
@@ -56,18 +54,6 @@ public class CpuManager {
     @Getter private boolean trackUsage;
 
     /**
-     * Creates a new single threaded executor with given name.
-     *
-     * @param   name
-     *          Name of the created thread
-     * @return  Executor service with given thread name
-     */
-    @NotNull
-    public ScheduledExecutorService newExecutor(@NotNull String name) {
-        return Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(name).build());
-    }
-
-    /**
      * Enables CPU usage tracking and returns {@code true} if it was not enabled previously.
      * If it was, does nothing and returns {@code false}.
      *
@@ -76,11 +62,11 @@ public class CpuManager {
     public boolean enableTracking() {
         if (trackUsage) return false;
         trackUsage = true;
-        startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), () -> {
+        processingThread.repeatTask(() -> {
             lastReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
-        });
+        }, ((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS)));
         return true;
     }
 
@@ -88,11 +74,11 @@ public class CpuManager {
      * Cancels all tasks and shuts down thread pools
      */
     public void cancelAllTasks() {
-        processingThread.shutdownNow();
-        placeholderThread.shutdownNow();
-        groupRefreshingThread.shutdownNow();
-        tablistEntryCheckThread.shutdownNow();
-        pluginMessageEncodeThread.shutdownNow();
+        processingThread.shutdown();
+        placeholderThread.shutdown();
+        groupRefreshingThread.shutdown();
+        tablistEntryCheckThread.shutdown();
+        pluginMessageEncodeThread.shutdown();
     }
 
     /**
@@ -113,12 +99,11 @@ public class CpuManager {
      * @param task task to execute
      */
     private void submit(@NotNull Runnable task) {
-        if (processingThread.isShutdown()) return;
         if (!enabled) {
             taskQueue.add(task);
             return;
         }
-        execute(processingThread, task);
+        processingThread.execute(task);
     }
 
     /**
@@ -169,7 +154,7 @@ public class CpuManager {
      *          Task to run
      */
     public void runMeasuredTask(@NotNull String feature, @NotNull String type, @NotNull Runnable task) {
-        submit(() -> runAndMeasure(task, feature, type));
+        submit(new TimedCaughtTask(this, task, feature, type));
     }
 
     /**
@@ -180,36 +165,6 @@ public class CpuManager {
      */
     public void runTask(@NotNull Runnable task) {
         submit(task);
-    }
-
-    /**
-     * Starts a repeating task that measures how long it takes.
-     *
-     * @param   intervalMilliseconds
-     *          How often should the task run
-     * @param   feature
-     *          Feature executing the task
-     * @param   type
-     *          Usage the of the feature
-     * @param   task
-     *          Task to run periodically
-     */
-    public void startRepeatingMeasuredTask(int intervalMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
-        if (processingThread.isShutdown()) return;
-        processingThread.scheduleAtFixedRate(() -> runAndMeasure(task, feature, type), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Starts a repeating task.
-     *
-     * @param   intervalMilliseconds
-     *          How often should the task run
-     * @param   task
-     *          Task to run periodically
-     */
-    public void startRepeatingTask(int intervalMilliseconds, @NotNull Runnable task) {
-        if (processingThread.isShutdown()) return;
-        processingThread.scheduleAtFixedRate(() -> run(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -225,75 +180,6 @@ public class CpuManager {
      *          Task to run after a delay
      */
     public void runTaskLater(int delayMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
-        if (processingThread.isShutdown()) return;
-        processingThread.schedule(() -> runAndMeasure(task, feature, type), delayMilliseconds, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Runs a task and measures how long it took.
-     *
-     * @param   task
-     *          Task to run
-     * @param   feature
-     *          Feature executing the task
-     * @param   type
-     *          Usage the of the feature
-     */
-    public void runAndMeasure(@NotNull Runnable task, @NotNull String feature, @NotNull String type) {
-        if (!trackUsage) {
-            run(task);
-            return;
-        }
-        long time = System.nanoTime();
-        run(task);
-        addTime(feature, type, System.nanoTime() - time);
-    }
-
-    private void run(@NotNull Runnable task) {
-        try {
-            task.run();
-        } catch (Exception | LinkageError | StackOverflowError e) {
-            TAB.getInstance().getErrorManager().taskThrewError(e);
-        }
-    }
-
-    /**
-     * Runs a task and measures how long it took.
-     *
-     * @param   service
-     *          Executor service to submit task to
-     * @param   task
-     *          Task to run
-     * @param   feature
-     *          Feature executing the task
-     * @param   type
-     *          Usage the of the feature
-     */
-    public void execute(@NotNull ExecutorService service, @NotNull Runnable task, @NotNull String feature, @NotNull String type) {
-        if (service.isShutdown()) return;
-        if (!trackUsage) {
-            execute(service, task);
-            return;
-        }
-        service.execute(new TimedCaughtTask(this, task, feature, type));
-    }
-
-    public void execute(@NotNull ExecutorService service, @NotNull Runnable task) {
-        if (service.isShutdown()) return;
-        service.execute(new CaughtTask(task));
-    }
-
-    public void executeLater(@NotNull ScheduledExecutorService service, @NotNull Runnable task, @NotNull String feature, @NotNull String type, int delayMillis) {
-        if (service.isShutdown()) return;
-        if (!trackUsage) {
-            executeLater(service, task, delayMillis);
-            return;
-        }
-        service.schedule(new TimedCaughtTask(this, task, feature, type), delayMillis, TimeUnit.MILLISECONDS);
-    }
-
-    public void executeLater(@NotNull ScheduledExecutorService service, @NotNull Runnable task, int delayMillis) {
-        if (service.isShutdown()) return;
-        service.schedule(new CaughtTask(task), delayMillis, TimeUnit.MILLISECONDS);
+        processingThread.executeLater(task, feature, type, delayMilliseconds);
     }
 }

@@ -19,7 +19,6 @@ public class GroupRefreshTask implements Runnable {
 
     @Override
     public void run() {
-        long time = System.nanoTime();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             String oldGroup = all.getPermissionGroup();
             String newGroup = detectGroup.apply(all);
@@ -28,6 +27,5 @@ public class GroupRefreshTask implements Runnable {
                 TAB.getInstance().getCpu().runMeasuredTask("Permission group refreshing", "Applying changes", () -> all.setGroup(newGroup));
             }
         }
-        TAB.getInstance().getCpu().addTime("Permission group refreshing", "Periodic task", System.nanoTime() - time);
     }
 }

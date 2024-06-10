@@ -58,7 +58,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
                     if (!all.isLoaded()) return; // Updated on join
                     FeatureTasks.Refresh task = new FeatureTasks.Refresh(r, all, false);
                     if (r instanceof CustomThreaded) {
-                        TAB.getInstance().getCpu().execute(((CustomThreaded) r).getCustomThread(), task);
+                        ((CustomThreaded) r).getCustomThread().execute(task);
                     } else {
                         task.run();
                     }

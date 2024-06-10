@@ -41,7 +41,7 @@ public class FoliaPlatform extends BukkitPlatform {
                 "%mspt% and %tps% return the default values (0 and 20)."));
 
         // Folia never calls PlayerChangedWorldEvent, this is a workaround
-        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "Folia compatibility", "Refreshing world", () -> {
+        TAB.getInstance().getCpu().getProcessingThread().repeatTask(()  -> {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 String bukkitWorld = ((Player)player.getPlayer()).getWorld().getName();
                 if (!player.getWorld().equals(bukkitWorld)) {
@@ -52,7 +52,7 @@ public class FoliaPlatform extends BukkitPlatform {
                     }
                 }
             }
-        });
+        }, "Folia compatibility", "Refreshing world", 100);
     }
 
     @Override

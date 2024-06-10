@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.StableDynamicLine;
@@ -19,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * A class representing a scoreboard configured in config
@@ -273,7 +273,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
 
     @Override
     @NotNull
-    public ScheduledExecutorService getCustomThread() {
+    public ThreadExecutor getCustomThread() {
         return manager.getCustomThread();
     }
 }

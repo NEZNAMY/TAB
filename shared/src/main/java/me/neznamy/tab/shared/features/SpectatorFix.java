@@ -3,11 +3,10 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Cancelling GameMode change packet to spectator GameMode to avoid players being moved on
@@ -18,7 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable,
         ServerSwitchListener, WorldSwitchListener, VanishListener, CustomThreaded {
 
-    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Spectator Fix Thread");
+    private final ThreadExecutor customThread = new ThreadExecutor("TAB Spectator Fix Thread");
 
     /**
      * Constructs new instance.
@@ -63,7 +62,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
 
     @Override
     public void onJoin(@NotNull TabPlayer p) {
-        TAB.getInstance().getCpu().executeLater(customThread, () -> updatePlayer(p, false, true),
+        customThread.executeLater(() -> updatePlayer(p, false, true),
                 getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, 100);
     }
 
@@ -84,7 +83,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         // 200ms delay for global playerlist, taking extra time
-        TAB.getInstance().getCpu().executeLater(customThread, () -> {
+        customThread.executeLater(() -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 updatePlayer(all, false, true);
             }

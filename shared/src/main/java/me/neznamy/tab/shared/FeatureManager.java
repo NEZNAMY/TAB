@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -22,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Feature registration which offers calls to all features
@@ -55,7 +55,7 @@ public class FeatureManager {
             if (!(f instanceof Loadable)) continue;
             FeatureTasks.Load task = new FeatureTasks.Load((Loadable) f);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }
@@ -75,10 +75,10 @@ public class FeatureManager {
             if (!(f instanceof UnLoadable)) continue;
             FeatureTasks.Unload task = new FeatureTasks.Unload((UnLoadable) f);
             if (f instanceof CustomThreaded) {
-                ScheduledExecutorService thread = ((CustomThreaded) f).getCustomThread();
-                TAB.getInstance().getCpu().execute(thread, () -> {
+                ThreadExecutor thread = ((CustomThreaded) f).getCustomThread();
+                thread.execute(() -> {
                     task.run();
-                    thread.shutdownNow();
+                    thread.shutdown();
                 });
             } else {
                 task.run();
@@ -108,7 +108,7 @@ public class FeatureManager {
             if (!(f instanceof RefreshableFeature)) continue;
             FeatureTasks.Refresh task = new FeatureTasks.Refresh((RefreshableFeature) f, refreshed, force);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }
@@ -126,7 +126,7 @@ public class FeatureManager {
             if (!(f instanceof GameModeListener)) continue;
             FeatureTasks.GameModeChange task = new FeatureTasks.GameModeChange((GameModeListener) f, player);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }
@@ -147,7 +147,7 @@ public class FeatureManager {
             if (!(f instanceof QuitListener)) continue;
             FeatureTasks.Quit task = new FeatureTasks.Quit((QuitListener) f, disconnectedPlayer);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }
@@ -172,7 +172,7 @@ public class FeatureManager {
             if (!(f instanceof JoinListener)) continue;
             FeatureTasks.Join task = new FeatureTasks.Join((JoinListener) f, connectedPlayer);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }
@@ -202,7 +202,7 @@ public class FeatureManager {
             if (!(f instanceof WorldSwitchListener)) continue;
             FeatureTasks.WorldSwitch change = new FeatureTasks.WorldSwitch((WorldSwitchListener) f, changed, from, to);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), change);
+                ((CustomThreaded) f).getCustomThread().execute(change);
             } else {
                 change.run();
             }
@@ -228,7 +228,7 @@ public class FeatureManager {
             if (!(f instanceof ServerSwitchListener)) continue;
             FeatureTasks.ServerSwitch change = new FeatureTasks.ServerSwitch((ServerSwitchListener) f, changed, from, to);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), change);
+                ((CustomThreaded) f).getCustomThread().execute(change);
             } else {
                 change.run();
             }
@@ -274,7 +274,7 @@ public class FeatureManager {
             if (!(f instanceof DisplayObjectiveListener)) continue;
             FeatureTasks.OnDisplayObjective task = new FeatureTasks.OnDisplayObjective((DisplayObjectiveListener) f, packetReceiver, slot, objective);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }
@@ -296,7 +296,7 @@ public class FeatureManager {
             if (!(f instanceof ObjectiveListener)) continue;
             FeatureTasks.OnObjective task = new FeatureTasks.OnObjective((ObjectiveListener) f, packetReceiver, action, objective);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }
@@ -314,7 +314,7 @@ public class FeatureManager {
             if (!(f instanceof VanishListener)) continue;
             FeatureTasks.VanishStatus task = new FeatureTasks.VanishStatus((VanishListener) f, player);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }
@@ -374,7 +374,7 @@ public class FeatureManager {
             if (!(f instanceof TabListClearListener)) continue;
             FeatureTasks.TabListClear task = new FeatureTasks.TabListClear((TabListClearListener) f, packetReceiver);
             if (f instanceof CustomThreaded) {
-                TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
                 task.run();
             }

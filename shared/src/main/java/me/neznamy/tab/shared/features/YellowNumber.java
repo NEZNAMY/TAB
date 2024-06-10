@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -15,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -31,7 +31,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
     private static final String TITLE = "PlayerListObjectiveTitle"; // Unused by this objective slot (on Java, only visible on Bedrock)
 
     @Getter
-    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Playerlist Objective Thread");
+    private final ThreadExecutor customThread = new ThreadExecutor("TAB Playerlist Objective Thread");
 
     /** Numeric value to display */
     private final String rawValue = config().getString("playerlist-objective.value", TabConstants.Placeholder.PING);
@@ -140,11 +140,13 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
      *          Whether the feature is disabled now or not
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        if (disabledNow) {
-            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
-        } else {
-            onJoin(p);
-        }
+        customThread.execute(() -> {
+            if (disabledNow) {
+                p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
+            } else {
+                onJoin(p);
+            }
+        }, getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
     }
 
     @Override
@@ -192,7 +194,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
      *          Player to process nickname change of
      */
     public void processNicknameChange(@NotNull TabPlayer player) {
-        TAB.getInstance().getCpu().execute(customThread, () -> {
+        customThread.execute(() -> {
             int value = getValueNumber(player);
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 setScore(viewer, player, value, player.playerlistObjectiveData.valueModern.get());

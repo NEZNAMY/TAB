@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -14,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -27,7 +27,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
 
     @Getter
-    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Belowname Objective Thread");
+    private final ThreadExecutor customThread = new ThreadExecutor("TAB Belowname Objective Thread");
 
     private final String rawNumber = config().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = config().getString("belowname-objective.text", "Health");
@@ -234,7 +234,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
      *          Player to process nickname change of
      */
     public void processNicknameChange(@NotNull TabPlayer player) {
-        TAB.getInstance().getCpu().execute(customThread, () -> {
+        customThread.execute(() -> {
             int value = getValue(player);
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 setScore(viewer, player, value, player.belowNameData.numberFormat.get());

@@ -79,7 +79,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         if (placeholders.isEmpty()) return;
         PlaceholderRefreshTask task = new PlaceholderRefreshTask(placeholders);
         cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_REFRESH_INIT, System.nanoTime() - time);
-        cpu.execute(cpu.getPlaceholderThread(), () -> {
+        cpu.getPlaceholderThread().execute(() -> {
             // Run in placeholder refreshing thread
             long time2 = System.nanoTime();
             task.run();
@@ -107,7 +107,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             for (RefreshableFeature f : entry.getValue()) {
                 FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, entry.getKey(), false);
                 if (f instanceof CustomThreaded) {
-                    TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                    ((CustomThreaded) f).getCustomThread().execute(task);
                 } else {
                     task.run();
                 }
@@ -117,7 +117,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             for (RefreshableFeature f : entry.getValue()) {
                 FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, entry.getKey(), true);
                 if (f instanceof CustomThreaded) {
-                    TAB.getInstance().getCpu().execute(((CustomThreaded) f).getCustomThread(), task);
+                    ((CustomThreaded) f).getCustomThread().execute(task);
                 } else {
                     task.run();
                 }
@@ -232,7 +232,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
 
     @Override
     public void load() {
-        cpu.startRepeatingTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this::refresh);
+        cpu.getProcessingThread().repeatTask(this::refresh, TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
         for (Placeholder pl : usedPlaceholders) {
             if (pl instanceof ServerPlaceholderImpl) {
                 ((ServerPlaceholderImpl)pl).update();

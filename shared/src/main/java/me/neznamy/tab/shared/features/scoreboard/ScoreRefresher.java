@@ -3,14 +3,13 @@ package me.neznamy.tab.shared.features.scoreboard;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Feature refreshing NumberFormat in scoreboard for players.
@@ -76,7 +75,7 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
 
     @Override
     @NotNull
-    public ScheduledExecutorService getCustomThread() {
+    public ThreadExecutor getCustomThread() {
         return line.getCustomThread();
     }
 }

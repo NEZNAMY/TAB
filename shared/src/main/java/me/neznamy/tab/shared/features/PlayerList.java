@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -53,13 +52,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.tablistData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
         if (antiOverrideTabList) {
-            TAB.getInstance().getCpu().getTablistEntryCheckThread().scheduleAtFixedRate(() -> {
-                        long time = System.nanoTime();
+            TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(() -> {
                         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                             ((TrackedTabList<?, ?>)p.getTabList()).checkDisplayNames();
                         }
-                        TAB.getInstance().getCpu().addTime(getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC, System.nanoTime() - time);
-                    }, 500, 500, TimeUnit.MILLISECONDS
+                    }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC, 500
             );
         } else {
             TAB.getInstance().getConfigHelper().startup().tablistAntiOverrideDisabled();

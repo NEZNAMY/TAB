@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -15,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -25,7 +25,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         WorldSwitchListener, ServerSwitchListener, CustomThreaded {
 
     @Getter
-    private final ScheduledExecutorService customThread = TAB.getInstance().getCpu().newExecutor("TAB Header/Footer Thread");
+    private final ThreadExecutor customThread = new ThreadExecutor("TAB Header/Footer Thread");
     private final String HEADER = "header";
     private final String FOOTER = "footer";
     private final List<Object> worldGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-world").keySet());
@@ -99,7 +99,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      *          Whether the feature is disabled now or not
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        TAB.getInstance().getCpu().execute(customThread, () -> {
+        customThread.execute(() -> {
             if (disabledNow) {
                 p.getTabList().setPlayerListHeaderFooter(new SimpleComponent(""), new SimpleComponent(""));
             } else {
@@ -150,7 +150,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public void setHeader(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String header) {
         ensureActive();
-        TAB.getInstance().getCpu().execute(customThread, () -> {
+        customThread.execute(() -> {
             TabPlayer player = (TabPlayer) p;
             player.headerFooterData.header.setTemporaryValue(header);
             sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
@@ -160,7 +160,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public void setFooter(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String footer) {
         ensureActive();
-        TAB.getInstance().getCpu().execute(customThread, () -> {
+        customThread.execute(() -> {
             TabPlayer player = (TabPlayer) p;
             player.headerFooterData.footer.setTemporaryValue(footer);
             sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
@@ -170,7 +170,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public void setHeaderAndFooter(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String header, @Nullable String footer) {
         ensureActive();
-        TAB.getInstance().getCpu().execute(customThread, () -> {
+        customThread.execute(() -> {
             TabPlayer player = (TabPlayer) p;
             player.headerFooterData.header.setTemporaryValue(header);
             player.headerFooterData.footer.setTemporaryValue(footer);
