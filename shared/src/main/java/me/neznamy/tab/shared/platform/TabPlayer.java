@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract class storing common variables and functions for player,
@@ -66,7 +67,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @Getter private final boolean bedrockPlayer;
 
     /** Player's property map where key is unique identifier and value is property object */
-    private final Map<String, Property> properties = new HashMap<>();
+    private final ConcurrentHashMap<String, Property> properties = new ConcurrentHashMap<>();
 
     /** Player's game version */
     @Getter protected final ProtocolVersion version;
