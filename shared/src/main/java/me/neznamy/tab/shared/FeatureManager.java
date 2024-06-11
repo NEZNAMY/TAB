@@ -389,7 +389,7 @@ public class FeatureManager {
      * @param   featureHandler
      *          Feature handler
      */
-    public void registerFeature(@NotNull String featureName, @NotNull TabFeature featureHandler) {
+    public synchronized void registerFeature(@NotNull String featureName, @NotNull TabFeature featureHandler) {
         features.put(featureName, featureHandler);
         values = features.values().toArray(new TabFeature[0]);
         if (featureHandler instanceof VanishListener) {
