@@ -63,12 +63,13 @@ public class Placeholder extends SortingType {
         String output = EnumChatFormat.color(setPlaceholders(p));
         p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder.getIdentifier() + " returned \"&e" + output + "&r\"";
         int position;
-        if (!sortingMap.containsKey(output.toLowerCase(Locale.US))) {
-            TAB.getInstance().getConfigHelper().runtime().valueNotInPredefinedValues(sortingPlaceholder.getIdentifier(), sortingMap.keySet(), output, p);
+        String cleanOutput = output.trim().toLowerCase(Locale.US);
+        if (!sortingMap.containsKey(cleanOutput)) {
+            TAB.getInstance().getConfigHelper().runtime().valueNotInPredefinedValues(sortingPlaceholder.getIdentifier(), sortingMap.keySet(), cleanOutput, p);
             position = sortingMap.size()+1;
             p.sortingData.teamNameNote += "&c (not in list)&r. ";
         } else {
-            position = sortingMap.get(output.toLowerCase(Locale.US));
+            position = sortingMap.get(cleanOutput);
             p.sortingData.teamNameNote += "&r &a(#" + position + " in list). &r";
         }
         return String.valueOf((char) (position + 47));
