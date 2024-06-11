@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.util;
 
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +36,6 @@ public class ComponentCache<K, V> {
      *          Client version to convert for
      * @return  Converted component
      */
-    @SneakyThrows
     @NotNull
     public synchronized V get(@NotNull K key, @Nullable ProtocolVersion clientVersion) {
         Map<K, V> cache = clientVersion == null || clientVersion.supportsRGB() ? cacheModern : cacheLegacy;
