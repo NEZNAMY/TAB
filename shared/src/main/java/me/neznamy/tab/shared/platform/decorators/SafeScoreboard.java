@@ -59,7 +59,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     private boolean antiOverrideScoreboard;
 
     @Override
-    public final void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull String title,
+    public synchronized void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull String title,
                                         @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {
         if (objectives.containsKey(objectiveName)) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
@@ -78,7 +78,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public final void unregisterObjective(@NonNull String objectiveName) {
+    public synchronized void unregisterObjective(@NonNull String objectiveName) {
         Objective objective = objectives.remove(objectiveName);
         if (objective == null) {
             error("Tried to unregister non-existing objective %s for player ", objectiveName);
@@ -89,7 +89,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public final void updateObjective(@NonNull String objectiveName, @NonNull String title,
+    public synchronized void updateObjective(@NonNull String objectiveName, @NonNull String title,
                                       @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {
         Objective objective = objectives.get(objectiveName);
         if (objective == null) {
@@ -102,7 +102,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public final void setScore(@NonNull String objectiveName, @NonNull String scoreHolder, int value,
+    public synchronized void setScore(@NonNull String objectiveName, @NonNull String scoreHolder, int value,
                                @Nullable TabComponent displayName, @Nullable TabComponent numberFormat) {
         Objective objective = objectives.get(objectiveName);
         if (objective == null) {
@@ -121,7 +121,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public final void removeScore(@NonNull String objectiveName, @NonNull String scoreHolder) {
+    public synchronized void removeScore(@NonNull String objectiveName, @NonNull String scoreHolder) {
         Objective objective = objectives.get(objectiveName);
         if (objective == null) {
             error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", scoreHolder, objectiveName);
@@ -134,7 +134,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public final void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+    public synchronized void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
                                    @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                                    @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         if (teams.containsKey(name)) {
@@ -149,7 +149,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public final void unregisterTeam(@NonNull String teamName) {
+    public synchronized void unregisterTeam(@NonNull String teamName) {
         Team team = teams.remove(teamName);
         if (team == null) {
             error("Tried to unregister non-existing team %s for player ", teamName);
@@ -160,7 +160,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public final void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+    public synchronized void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
                                  @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                                  int options, @NonNull EnumChatFormat color) {
         Team team = teams.get(name);
@@ -245,7 +245,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
      *          Name of team to check
      * @return  {@code true} if scoreboard contains the team, {@code false} if not
      */
-    public boolean containsTeam(@NonNull String teamName) {
+    public synchronized boolean containsTeam(@NonNull String teamName) {
         return teams.containsKey(teamName);
     }
 
