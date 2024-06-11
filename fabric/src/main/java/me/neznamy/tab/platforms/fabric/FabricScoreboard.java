@@ -12,17 +12,12 @@ import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Scoreboard implementation for Fabric using packets.
  */
 public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
 
     private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
-
-    private final Map<String, net.minecraft.world.scores.Objective> objectives = new HashMap<>();
 
     /**
      * Constructs new instance with given player.
@@ -42,19 +37,19 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
                 RenderType.values()[objective.getHealthDisplay().ordinal()],
                 objective.getNumberFormat() == null ? null : objective.getNumberFormat().convert(player.getVersion())
         );
-        objectives.put(objective.getName(), obj);
+        objective.setPlatformObjective(obj);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
-        player.sendPacket(FabricMultiVersion.setDisplaySlot(objective.getDisplaySlot().ordinal(), objectives.get(objective.getName())));
+        player.sendPacket(FabricMultiVersion.setDisplaySlot(objective.getDisplaySlot().ordinal(), obj));
     }
 
     @Override
     public void unregisterObjective(@NonNull Objective objective) {
-        player.sendPacket(new ClientboundSetObjectivePacket(objectives.remove(objective.getName()), ObjectiveAction.UNREGISTER));
+        player.sendPacket(new ClientboundSetObjectivePacket((net.minecraft.world.scores.Objective) objective.getPlatformObjective(), ObjectiveAction.UNREGISTER));
     }
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
-        net.minecraft.world.scores.Objective obj = objectives.get(objective.getName());
+        net.minecraft.world.scores.Objective obj = (net.minecraft.world.scores.Objective) objective.getPlatformObjective();
         obj.setDisplayName(toComponent(objective.getTitle()));
         obj.setRenderType(RenderType.values()[objective.getHealthDisplay().ordinal()]);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE));
@@ -83,17 +78,18 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         t.setPlayerPrefix(toComponent(team.getPrefix()));
         t.setPlayerSuffix(toComponent(team.getSuffix()));
         t.getPlayers().addAll(team.getPlayers());
+        team.setPlatformTeam(t);
         player.sendPacket(FabricMultiVersion.registerTeam(t));
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        player.sendPacket(FabricMultiVersion.unregisterTeam(new PlayerTeam(dummyScoreboard, team.getName())));
+        player.sendPacket(FabricMultiVersion.unregisterTeam((PlayerTeam) team.getPlatformTeam()));
     }
 
     @Override
     public void updateTeam(@NonNull Team team) {
-        PlayerTeam t = new PlayerTeam(dummyScoreboard, team.getName());
+        PlayerTeam t = (PlayerTeam) team.getPlatformTeam();
         t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         t.setSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
         t.setColor(ChatFormatting.valueOf(team.getColor().name()));

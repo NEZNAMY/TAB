@@ -17,9 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Scoreboard implementation which uses packets
@@ -56,8 +54,6 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Getter private static TeamPacketData teamPacketData;
     @Getter private static DisplayPacketData displayPacketData;
     private static PacketSender packetSender;
-
-    private final Map<String, Object> teams = new HashMap<>();
 
     static {
         try {
@@ -168,18 +164,18 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void registerTeam(@NonNull Team team) {
         Object nmsTeam = teamPacketData.createTeam(team.getName());
-        teams.put(team.getName(), nmsTeam);
+        team.setPlatformTeam(nmsTeam);
         packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(nmsTeam, team, toComponent(team.getPrefix()), toComponent(team.getSuffix())));
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(teams.remove(team.getName())));
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(team.getPlatformTeam()));
     }
 
     @Override
     public void updateTeam(@NonNull Team team) {
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(teams.get(team.getName()), team, toComponent(team.getPrefix()), toComponent(team.getSuffix())));
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(team.getPlatformTeam(), team, toComponent(team.getPrefix()), toComponent(team.getSuffix())));
     }
 
     @Override

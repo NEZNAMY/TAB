@@ -70,7 +70,8 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
                 objectiveName,
                 cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13),
                 display,
-                numberFormat
+                numberFormat,
+                null
         );
         objectives.put(objectiveName, objective);
         if (frozen) return;
@@ -142,7 +143,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
             return;
         }
         Team team = new Team(name, cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
-                cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13), visibility, collision, players, options, color);
+                cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13), visibility, collision, players, options, color, null);
         teams.put(name, team);
         if (frozen) return;
         registerTeam(team);
@@ -413,6 +414,9 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         @Nullable private TabComponent numberFormat;
         @NonNull private final Map<String, Score> scores = new HashMap<>();
 
+        /** Platform's objective object (if it has one) for fast access */
+        @Nullable private Object platformObjective;
+
         private void update(@NonNull String title, @NonNull HealthDisplay healthDisplay, @Nullable TabComponent numberFormat) {
             this.title = title;
             this.healthDisplay = healthDisplay;
@@ -457,6 +461,9 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         @NonNull private Collection<String> players;
         private int options;
         @NonNull private EnumChatFormat color;
+
+        /** Platform's team object (if it has one) for fast access */
+        @Nullable private Object platformTeam;
 
         private void update(@NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
                             @NonNull CollisionRule collision, int options, @NonNull EnumChatFormat color) {
