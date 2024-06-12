@@ -9,13 +9,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Cache to save resources when converting the same
- * values over and over.
+ * Cache to save resources when converting the same values over and over.
  *
  * @param   <K>
- *          Source component
+ *          Source to convert from
  * @param   <V>
- *          Target component
+ *          Target to convert to
  */
 @RequiredArgsConstructor
 public class Cache<K, V> {
@@ -31,8 +30,8 @@ public class Cache<K, V> {
      * into the cache and then returned.
      *
      * @param   key
-     *          Source component
-     * @return  Converted component
+     *          Source to convert
+     * @return  Converted value
      */
     @NotNull
     public synchronized V get(@NotNull K key) {
