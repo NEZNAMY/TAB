@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard.Team;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -239,8 +240,8 @@ public class TeamPacketData {
             ScoreboardTeam_setSuffix.invoke(nmsTeam, suffixComponent);
             ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().ordinal()]);
         } else {
-            ScoreboardTeam_setPrefix.invoke(nmsTeam, team.getPrefix());
-            ScoreboardTeam_setSuffix.invoke(nmsTeam, team.getSuffix());
+            ScoreboardTeam_setPrefix.invoke(nmsTeam, SafeScoreboard.cutTo(team.getPrefix().toLegacyText(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
+            ScoreboardTeam_setSuffix.invoke(nmsTeam, SafeScoreboard.cutTo(team.getSuffix().toLegacyText(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
         }
         setVisibility.accept(nmsTeam, team.getVisibility());
         setCollision.accept(nmsTeam, team.getCollision());

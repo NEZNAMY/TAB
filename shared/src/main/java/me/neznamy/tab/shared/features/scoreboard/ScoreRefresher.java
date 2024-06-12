@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
  * Feature refreshing NumberFormat in scoreboard for players.
  */
 public class ScoreRefresher extends RefreshableFeature implements CustomThreaded {
+
+    private static final StringToComponentCache cache = new StringToComponentCache("Scoreboard NumberFormat", 1000);
 
     private final String NUMBER_FORMAT_PROPERTY = Property.randomName();
 
@@ -70,7 +73,7 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
      */
     @Nullable
     public TabComponent getNumberFormat(@NotNull TabPlayer player) {
-        return TabComponent.optimized(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());
+        return cache.get(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());
     }
 
     @Override

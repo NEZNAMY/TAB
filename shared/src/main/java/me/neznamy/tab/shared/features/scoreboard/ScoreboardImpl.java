@@ -146,7 +146,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         p.getScoreboard().registerObjective(
                 Scoreboard.DisplaySlot.SIDEBAR,
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
-                p.getProperty(titleProperty).updateAndGet(),
+                manager.getCache().get(p.getProperty(titleProperty).updateAndGet()),
                 Scoreboard.HealthDisplay.INTEGER,
                 new SimpleComponent("")
         );
@@ -181,7 +181,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         if (!players.contains(refreshed)) return;
         refreshed.getScoreboard().updateObjective(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
-                refreshed.getProperty(titleProperty).updateAndGet(),
+                manager.getCache().get(refreshed.getProperty(titleProperty).updateAndGet()),
                 Scoreboard.HealthDisplay.INTEGER,
                 new SimpleComponent("")
         );

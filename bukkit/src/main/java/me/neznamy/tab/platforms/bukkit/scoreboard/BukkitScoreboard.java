@@ -202,7 +202,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      *          Score display type
      * @return  Created objective
      */
-    public org.bukkit.scoreboard.Objective newObjective(@NonNull String objectiveName, @NonNull String criteria, @NonNull String title, @NonNull HealthDisplay display) {
+    public org.bukkit.scoreboard.Objective newObjective(@NonNull String objectiveName, @NonNull String criteria, @NonNull TabComponent title, @NonNull HealthDisplay display) {
         if (serverMinorVersion >= RENDER_TYPE_VERSION) {
             return scoreboard.registerNewObjective(
                     objectiveName,
@@ -225,7 +225,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      * @param   displayName
      *          New display name
      */
-    public void setDisplayName(@NonNull org.bukkit.scoreboard.Objective objective, @NonNull String displayName) {
+    public void setDisplayName(@NonNull org.bukkit.scoreboard.Objective objective, @NonNull TabComponent displayName) {
         objective.setDisplayName(transform(displayName, TITLE_LIMIT_MODERN, Limitations.SCOREBOARD_TITLE_PRE_1_13));
     }
 
@@ -237,7 +237,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      * @param   prefix
      *          Prefix to change to
      */
-    public void setPrefix(@NonNull org.bukkit.scoreboard.Team team, @NonNull String prefix) {
+    public void setPrefix(@NonNull org.bukkit.scoreboard.Team team, @NonNull TabComponent prefix) {
         team.setPrefix(transform(prefix, PREFIX_SUFFIX_LIMIT_MODERN, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
@@ -249,7 +249,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      * @param   suffix
      *          Suffix to change to
      */
-    public void setSuffix(@NonNull org.bukkit.scoreboard.Team team, @NonNull String suffix) {
+    public void setSuffix(@NonNull org.bukkit.scoreboard.Team team, @NonNull TabComponent suffix) {
         team.setSuffix(transform(suffix, PREFIX_SUFFIX_LIMIT_MODERN, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
@@ -265,8 +265,8 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      * @return  Converted text
      */
     @NonNull
-    private String transform(@NonNull String text, int maxLengthModern, int maxLengthLegacy) {
-        String transformed = player.getPlatform().toBukkitFormat(TabComponent.optimized(text), player.getVersion().supportsRGB());
+    private String transform(@NonNull TabComponent text, int maxLengthModern, int maxLengthLegacy) {
+        String transformed = player.getPlatform().toBukkitFormat(text, player.getVersion().supportsRGB());
         if (player.getPlatform().getServerVersion().supportsRGB() && maxLengthModern < TITLE_LIMIT_MODERN) { // Scoreboard title is not stripping colors
             while (ChatColor.stripColor(transformed).length() > maxLengthModern)
                 transformed = transformed.substring(0, transformed.length()-1);

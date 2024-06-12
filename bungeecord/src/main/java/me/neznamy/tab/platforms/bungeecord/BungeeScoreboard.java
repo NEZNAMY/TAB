@@ -2,8 +2,10 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.google.common.collect.Lists;
 import lombok.NonNull;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -42,7 +44,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         player.sendPacket(new ScoreboardObjective(
                 objective.getName(),
-                either(objective.getTitle()),
+                either(objective.getTitle(), Limitations.SCOREBOARD_TITLE_PRE_1_13),
                 ScoreboardObjective.HealthDisplay.values()[objective.getHealthDisplay().ordinal()],
                 (byte) ObjectiveAction.REGISTER,
                 numberFormat(objective.getNumberFormat())
@@ -54,7 +56,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     public void unregisterObjective(@NonNull Objective objective) {
         player.sendPacket(new ScoreboardObjective(
                 objective.getName(),
-                either(""), // Empty value instead of null to prevent NPE kick on 1.7
+                either(objective.getTitle(), Limitations.SCOREBOARD_TITLE_PRE_1_13), // Empty value instead of null to prevent NPE kick on 1.7
                 null,
                 (byte) ObjectiveAction.UNREGISTER,
                 null
@@ -65,7 +67,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     public void updateObjective(@NonNull Objective objective) {
         player.sendPacket(new ScoreboardObjective(
                 objective.getName(),
-                either(objective.getTitle()),
+                either(objective.getTitle(), Limitations.SCOREBOARD_TITLE_PRE_1_13),
                 ScoreboardObjective.HealthDisplay.values()[objective.getHealthDisplay().ordinal()],
                 (byte) ObjectiveAction.UPDATE,
                 numberFormat(objective.getNumberFormat())
@@ -98,9 +100,9 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         player.sendPacket(new net.md_5.bungee.protocol.packet.Team(
                 team.getName(),
                 (byte) TeamAction.CREATE,
-                either(team.getName()),
-                either(team.getPrefix()),
-                either(team.getSuffix()),
+                either(new SimpleComponent(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                either(team.getPrefix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 team.getVisibility().toString(),
                 team.getCollision().toString(),
                 player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().ordinal() : 0,
@@ -119,9 +121,9 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         player.sendPacket(new net.md_5.bungee.protocol.packet.Team(
                 team.getName(),
                 (byte) TeamAction.UPDATE,
-                either(team.getName()),
-                either(team.getPrefix()),
-                either(team.getSuffix()),
+                either(new SimpleComponent(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                either(team.getPrefix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 team.getVisibility().toString(),
                 team.getCollision().toString(),
                 player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().ordinal() : 0,
@@ -150,11 +152,11 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         }
     }
 
-    private Either<String, BaseComponent> either(@NonNull String text) {
+    private Either<String, BaseComponent> either(@NonNull TabComponent text, int legacyLimit) {
         if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
-            return Either.right(TabComponent.optimized(text).convert(player.getVersion()));
+            return Either.right(text.convert(player.getVersion()));
         } else {
-            return Either.left(text);
+            return Either.left(cutTo(text.toLegacyText(), legacyLimit));
         }
     }
 

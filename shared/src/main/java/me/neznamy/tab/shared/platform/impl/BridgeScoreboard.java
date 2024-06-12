@@ -29,7 +29,7 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
         player.sendPluginMessage(new SetObjective(
                 objective.getName(),
                 ObjectiveAction.REGISTER,
-                objective.getTitle(),
+                objective.getTitle().toFlatText(),
                 objective.getHealthDisplay().ordinal(),
                 objective.getNumberFormat() == null ? null : AdventureHook.serialize(objective.getNumberFormat().toAdventure(player.getVersion())))
         );
@@ -46,7 +46,7 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
         player.sendPluginMessage(new SetObjective(
                 objective.getName(),
                 ObjectiveAction.UPDATE,
-                objective.getTitle(),
+                objective.getTitle().toFlatText(),
                 objective.getHealthDisplay().ordinal(),
                 objective.getNumberFormat() == null ? null : AdventureHook.serialize(objective.getNumberFormat().toAdventure(player.getVersion())))
         );
@@ -74,8 +74,8 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
         player.sendPluginMessage(new SetScoreboardTeam(
                 team.getName(),
                 TeamAction.CREATE, 
-                team.getPrefix(),
-                team.getSuffix(),
+                team.getPrefix().toFlatText(),
+                team.getSuffix().toFlatText(),
                 team.getOptions(),
                 team.getVisibility().toString(),
                 team.getCollision().toString(),
@@ -93,8 +93,8 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
     public void updateTeam(@NonNull Team team) {
         player.sendPluginMessage(new SetScoreboardTeam(team.getName(),
                 TeamAction.UPDATE,
-                team.getPrefix(),
-                team.getSuffix(),
+                team.getPrefix().toFlatText(),
+                team.getSuffix().toFlatText(),
                 team.getOptions(),
                 team.getVisibility().toString(),
                 team.getCollision().toString(),

@@ -26,7 +26,7 @@ public abstract class TabComponent {
      * Component cache maps to avoid large memory allocations as well as
      * higher CPU usage when using animations which send the same text on repeat.
      */
-    private static final StringToComponentCache stringCache = new StringToComponentCache("Global component cache", 1000);
+    private static final StringToComponentCache stringCache = new StringToComponentCache("Global component", 1000);
 
     @Nullable
     private Object convertedModern;
@@ -86,7 +86,16 @@ public abstract class TabComponent {
      *
      * @return  The simple text format using legacy colors
      */
+    @NotNull
     public abstract String toLegacyText();
+
+    /**
+     * Converts this component into a string. RGB colors are represented as #RRGGBB.
+     *
+     * @return  String version of this component
+     */
+    @NotNull
+    public abstract String toFlatText();
 
     /**
      * Returns the most optimized component based on text. Returns null if text is null,

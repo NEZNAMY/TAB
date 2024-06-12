@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +26,9 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
+
+    @Getter
+    private final StringToComponentCache cache = new StringToComponentCache("Scoreboard", 1000);
 
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Scoreboard Thread");

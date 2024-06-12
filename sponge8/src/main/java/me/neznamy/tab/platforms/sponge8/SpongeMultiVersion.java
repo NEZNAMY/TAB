@@ -1,12 +1,11 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.BiFunctionWithException;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.ToIntFunction;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
@@ -38,7 +37,7 @@ public class SpongeMultiVersion {
             findOrCreateScore = (objective, holder) -> (Score) Objective.class.getMethod("findOrCreateScore", String.class).invoke(objective, holder);
         } else {
             // Sponge 8 - 10 (and early 11) (1.16.5 - 1.20.2)
-            findOrCreateScore = (objective, holder) -> objective.findOrCreateScore(TabComponent.optimized(holder).toAdventure(ProtocolVersion.LATEST_KNOWN_VERSION));
+            findOrCreateScore = (objective, holder) -> objective.findOrCreateScore(Component.text(holder));
         }
 
         if (!ReflectionUtils.classExists("org.spongepowered.api.network.ServerPlayerConnection")) {

@@ -1,11 +1,9 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.scoreboard.CollisionRules;
 import org.spongepowered.api.scoreboard.Visibilities;
 import org.spongepowered.api.scoreboard.Visibility;
@@ -68,7 +66,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         org.spongepowered.api.scoreboard.objective.Objective obj = org.spongepowered.api.scoreboard.objective.Objective.builder()
                 .name(objective.getName())
-                .displayName(adventure(objective.getTitle()))
+                .displayName(objective.getTitle().toAdventure(player.getVersion()))
                 .objectiveDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()])
                 .criterion(Criteria.DUMMY)
                 .build();
@@ -84,7 +82,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         sb.objective(objective.getName()).ifPresent(obj -> {
-            obj.setDisplayName(adventure(objective.getTitle()));
+            obj.setDisplayName(objective.getTitle().toAdventure(player.getVersion()));
             obj.setDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()]);
         });
     }
@@ -103,9 +101,9 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void registerTeam(@NonNull Team team) {
         org.spongepowered.api.scoreboard.Team spongeTeam = org.spongepowered.api.scoreboard.Team.builder()
                 .name(team.getName())
-                .displayName(adventure(team.getName()))
-                .prefix(adventure(team.getPrefix()))
-                .suffix(adventure(team.getSuffix()))
+                .displayName(Component.text(team.getName()))
+                .prefix(team.getPrefix().toAdventure(player.getVersion()))
+                .suffix(team.getSuffix().toAdventure(player.getVersion()))
                 .color(NamedTextColor.NAMES.valueOr(team.getColor().name(), NamedTextColor.WHITE))
                 .allowFriendlyFire((team.getOptions() & 0x01) != 0)
                 .canSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0)
@@ -113,7 +111,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
                 .nameTagVisibility(visibilities[team.getVisibility().ordinal()])
                 .build();
         for (String member : team.getPlayers()) {
-            spongeTeam.addMember(adventure(member));
+            spongeTeam.addMember(Component.text(member));
         }
         sb.registerTeam(spongeTeam);
     }
@@ -126,26 +124,14 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     @Override
     public void updateTeam(@NonNull Team team) {
         sb.team(team.getName()).ifPresent(spongeTeam -> {
-            spongeTeam.setDisplayName(adventure(team.getName()));
-            spongeTeam.setPrefix(adventure(team.getPrefix()));
-            spongeTeam.setSuffix(adventure(team.getSuffix()));
+            spongeTeam.setDisplayName(Component.text(team.getName()));
+            spongeTeam.setPrefix(team.getPrefix().toAdventure(player.getVersion()));
+            spongeTeam.setSuffix(team.getSuffix().toAdventure(player.getVersion()));
             spongeTeam.setColor(NamedTextColor.NAMES.valueOr(team.getColor().name(), NamedTextColor.WHITE));
             spongeTeam.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
             spongeTeam.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
             spongeTeam.setCollisionRule(collisionRules[team.getCollision().ordinal()]);
             spongeTeam.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
         });
-    }
-
-    /**
-     * Converts text to Adventure component.
-     *
-     * @param   text
-     *          Text to convert
-     * @return  Converted text
-     */
-    @NotNull
-    private Component adventure(@NonNull String text) {
-        return TabComponent.optimized(text).toAdventure(player.getVersion());
     }
 }

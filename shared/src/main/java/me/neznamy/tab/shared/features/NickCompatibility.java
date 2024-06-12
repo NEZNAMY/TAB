@@ -80,8 +80,8 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                     viewer.getScoreboard().unregisterTeam(player.sortingData.getShortTeamName());
                     viewer.getScoreboard().registerTeam(
                             player.sortingData.getShortTeamName(),
-                            prefix,
-                            player.teamData.suffix.getFormat(viewer),
+                            nameTags.getCache().get(prefix),
+                            nameTags.getCache().get(player.teamData.suffix.getFormat(viewer)),
                             nameTags.getTeamVisibility(player, viewer) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER,
                             player.teamData.getCollisionRule() ? Scoreboard.CollisionRule.ALWAYS : Scoreboard.CollisionRule.NEVER,
                             Collections.singletonList(player.getNickname()),
@@ -102,8 +102,8 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                     viewer.getScoreboard().unregisterTeam(teamName);
                     viewer.getScoreboard().registerTeam(
                             teamName,
-                            player.getTagPrefix(),
-                            player.getTagSuffix(),
+                            redisTeams.getNameTags().getCache().get(player.getTagPrefix()),
+                            redisTeams.getNameTags().getCache().get(player.getTagSuffix()),
                             player.getNameVisibility(),
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(player.getNickname()),

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.platform.decorators;
 
 import lombok.*;
-import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -59,7 +58,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     private boolean antiOverrideScoreboard;
 
     @Override
-    public synchronized void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull String title,
+    public synchronized void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull TabComponent title,
                                         @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {
         if (objectives.containsKey(objectiveName)) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
@@ -68,7 +67,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         Objective objective = new Objective(
                 displaySlot,
                 objectiveName,
-                cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13),
+                title,
                 display,
                 numberFormat,
                 null
@@ -90,14 +89,14 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public synchronized void updateObjective(@NonNull String objectiveName, @NonNull String title,
+    public synchronized void updateObjective(@NonNull String objectiveName, @NonNull TabComponent title,
                                       @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {
         Objective objective = objectives.get(objectiveName);
         if (objective == null) {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
         }
-        objective.update(cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13), display, numberFormat);
+        objective.update(title, display, numberFormat);
         if (frozen) return;
         updateObjective(objective);
     }
@@ -135,15 +134,14 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public synchronized void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+    public synchronized void registerTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                                    @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                                    @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         if (teams.containsKey(name)) {
             error("Tried to register duplicated team %s to player ", name);
             return;
         }
-        Team team = new Team(name, cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
-                cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13), visibility, collision, players, options, color, null);
+        Team team = new Team(name, prefix, suffix, visibility, collision, players, options, color, null);
         teams.put(name, team);
         if (frozen) return;
         registerTeam(team);
@@ -161,7 +159,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public synchronized void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+    public synchronized void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                                  @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                                  int options, @NonNull EnumChatFormat color) {
         Team team = teams.get(name);
@@ -169,8 +167,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
             error("Tried to modify non-existing team %s for player ", name);
             return;
         }
-        team.update(cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13), cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
-                visibility, collision, options, color);
+        team.update(prefix, suffix, visibility, collision, options, color);
         if (frozen) return;
         updateTeam(team);
     }
@@ -212,8 +209,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
      *          Length to cut to
      * @return  string cut to {@code length} characters
      */
-    private String cutTo(@Nullable String string, int length) {
-        if (player.getVersion().getMinorVersion() >= 13) return string;
+    public static String cutTo(@Nullable String string, int length) {
         if (string == null) return "";
         String legacyText = string;
         if (string.contains("#")) {
@@ -409,7 +405,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
 
         @NonNull private final DisplaySlot displaySlot;
         @NonNull private final String name;
-        @NonNull private String title;
+        @NonNull private TabComponent title;
         @NonNull private HealthDisplay healthDisplay;
         @Nullable private TabComponent numberFormat;
         @NonNull private final Map<String, Score> scores = new HashMap<>();
@@ -417,7 +413,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         /** Platform's objective object (if it has one) for fast access */
         @Nullable private Object platformObjective;
 
-        private void update(@NonNull String title, @NonNull HealthDisplay healthDisplay, @Nullable TabComponent numberFormat) {
+        private void update(@NonNull TabComponent title, @NonNull HealthDisplay healthDisplay, @Nullable TabComponent numberFormat) {
             this.title = title;
             this.healthDisplay = healthDisplay;
             this.numberFormat = numberFormat;
@@ -454,8 +450,8 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     public static class Team {
 
         @NonNull private final String name;
-        @NonNull private String prefix;
-        @NonNull private String suffix;
+        @NonNull private TabComponent prefix;
+        @NonNull private TabComponent suffix;
         @NonNull private NameVisibility visibility;
         @NonNull private CollisionRule collision;
         @NonNull private Collection<String> players;
@@ -465,7 +461,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         /** Platform's team object (if it has one) for fast access */
         @Nullable private Object platformTeam;
 
-        private void update(@NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
+        private void update(@NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull NameVisibility visibility,
                             @NonNull CollisionRule collision, int options, @NonNull EnumChatFormat color) {
             this.prefix = prefix;
             this.suffix = suffix;

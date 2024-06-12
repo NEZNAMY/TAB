@@ -74,6 +74,19 @@ public class StructuredComponent extends TabComponent {
         return builder.toString();
     }
 
+    @Override
+    @NotNull
+    public String toFlatText() {
+        StringBuilder builder = new StringBuilder();
+        if (modifier.getColor() != null) builder.append("#").append(modifier.getColor().getHexCode());
+        builder.append(modifier.getMagicCodes());
+        builder.append(text);
+        for (StructuredComponent child : getExtra()) {
+            builder.append(child.toFlatText());
+        }
+        return builder.toString();
+    }
+
     /**
      * Appends text to string builder, might also add color and magic codes if they are different
      * from previous component in chain.

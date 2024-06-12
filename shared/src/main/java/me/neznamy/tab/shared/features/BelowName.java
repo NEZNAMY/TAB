@@ -169,7 +169,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
         player.getScoreboard().registerObjective(
                 Scoreboard.DisplaySlot.BELOW_NAME,
                 OBJECTIVE_NAME,
-                player.belowNameData.text.updateAndGet(),
+                cache.get(player.belowNameData.text.updateAndGet()),
                 Scoreboard.HealthDisplay.INTEGER,
                 cache.get(player.belowNameData.defaultNumberFormat.updateAndGet())
         );
@@ -256,7 +256,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
             if (refreshed.belowNameData.disabled.get()) return;
             refreshed.getScoreboard().updateObjective(
                     OBJECTIVE_NAME,
-                    refreshed.belowNameData.text.updateAndGet(),
+                    cache.get(refreshed.belowNameData.text.updateAndGet()),
                     Scoreboard.HealthDisplay.INTEGER,
                     cache.get(refreshed.belowNameData.defaultNumberFormat.updateAndGet())
             );

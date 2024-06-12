@@ -19,4 +19,10 @@ public class SimpleComponent extends TabComponent {
     public String toLegacyText() {
         return text;
     }
+
+    @Override
+    @NotNull
+    public String toFlatText() {
+        return text;
+    }
 }

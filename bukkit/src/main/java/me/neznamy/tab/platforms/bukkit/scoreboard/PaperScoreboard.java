@@ -45,24 +45,24 @@ public class PaperScoreboard extends BukkitScoreboard {
 
     @Override
     public org.bukkit.scoreboard.Objective newObjective(@NonNull String objectiveName, @NonNull String criteria,
-                                                        @NonNull String title, @NonNull HealthDisplay display) {
+                                                        @NonNull TabComponent title, @NonNull HealthDisplay display) {
         return scoreboard.registerNewObjective(objectiveName, criteria,
-                TabComponent.optimized(title).toAdventure(player.getVersion()), RenderType.values()[display.ordinal()]);
+                title.toAdventure(player.getVersion()), RenderType.values()[display.ordinal()]);
     }
 
     @Override
-    public void setDisplayName(@NonNull org.bukkit.scoreboard.Objective objective, @NonNull String displayName) {
-        objective.displayName(TabComponent.optimized(displayName).toAdventure(player.getVersion()));
+    public void setDisplayName(@NonNull org.bukkit.scoreboard.Objective objective, @NonNull TabComponent displayName) {
+        objective.displayName(displayName.toAdventure(player.getVersion()));
     }
 
     @Override
-    public void setPrefix(@NonNull org.bukkit.scoreboard.Team team, @NonNull String prefix) {
-        team.prefix(TabComponent.optimized(prefix).toAdventure(player.getVersion()));
+    public void setPrefix(@NonNull org.bukkit.scoreboard.Team team, @NonNull TabComponent prefix) {
+        team.prefix(prefix.toAdventure(player.getVersion()));
     }
 
     @Override
-    public void setSuffix(@NonNull org.bukkit.scoreboard.Team team, @NonNull String suffix) {
-        team.suffix(TabComponent.optimized(suffix).toAdventure(player.getVersion()));
+    public void setSuffix(@NonNull org.bukkit.scoreboard.Team team, @NonNull TabComponent suffix) {
+        team.suffix(suffix.toAdventure(player.getVersion()));
     }
 
     @Override

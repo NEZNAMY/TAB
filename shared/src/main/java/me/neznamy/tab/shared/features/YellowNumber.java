@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
@@ -28,7 +29,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
 
     /** Scoreboard title which is unused in java */
-    private static final String TITLE = "PlayerListObjectiveTitle"; // Unused by this objective slot (on Java, only visible on Bedrock)
+    private static final TabComponent TITLE = new SimpleComponent("PlayerListObjectiveTitle"); // Unused by this objective slot (on Java, only visible on Bedrock)
 
     @Getter
     private final StringToComponentCache cache = new StringToComponentCache("Playerlist Objective", 1000);

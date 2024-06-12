@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +34,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private final boolean canSeeFriendlyInvisibles = config().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
     private final boolean antiOverride = config().getBoolean("scoreboard-teams.anti-override", true);
 
+    @Getter private final StringToComponentCache cache = new StringToComponentCache("NameTags", 1000);
     @Getter private final CollisionManager collisionManager = new CollisionManager(this);
     @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
     @Getter private final DisableChecker disableChecker;
@@ -193,8 +195,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         String prefix = p.teamData.prefix.getFormat(viewer);
         viewer.getScoreboard().updateTeam(
                 p.sortingData.getShortTeamName(),
-                prefix,
-                p.teamData.suffix.getFormat(viewer),
+                cache.get(prefix),
+                cache.get(p.teamData.suffix.getFormat(viewer)),
                 visible ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 teamOptions,
@@ -223,8 +225,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         String prefix = p.teamData.prefix.getFormat(viewer);
         viewer.getScoreboard().registerTeam(
                 p.sortingData.getShortTeamName(),
-                prefix,
-                p.teamData.suffix.getFormat(viewer),
+                cache.get(prefix),
+                cache.get(p.teamData.suffix.getFormat(viewer)),
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 Collections.singletonList(p.getNickname()),

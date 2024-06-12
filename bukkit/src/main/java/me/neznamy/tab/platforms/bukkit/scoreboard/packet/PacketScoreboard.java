@@ -7,13 +7,13 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.util.cache.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -134,12 +134,15 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                 objective.getHealthDisplay().ordinal(),
                 objective.getNumberFormat()
         ));
-        packetSender.sendPacket(player.getPlayer(), displayPacketData.setDisplaySlot(objective.getDisplaySlot().ordinal(), newObjective(objective.getName(), "", 0, null)));
+        packetSender.sendPacket(player.getPlayer(), displayPacketData.setDisplaySlot(
+                objective.getDisplaySlot().ordinal(),
+                newObjective(objective.getName(), objective.getTitle(), 0, null)
+        ));
     }
 
     @Override
     public void unregisterObjective(@NonNull Objective objective) {
-        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UNREGISTER, objective.getName(), "", 0, null));
+        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UNREGISTER, objective.getName(), objective.getTitle(), 0, null));
     }
 
     @Override
@@ -169,7 +172,12 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     public void registerTeam(@NonNull Team team) {
         Object nmsTeam = teamPacketData.createTeam(team.getName());
         team.setPlatformTeam(nmsTeam);
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(nmsTeam, team, toComponent(team.getPrefix()), toComponent(team.getSuffix())));
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(
+                nmsTeam,
+                team,
+                team.getPrefix().convert(player.getVersion()),
+                team.getSuffix().convert(player.getVersion())
+        ));
     }
 
     @Override
@@ -179,7 +187,12 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateTeam(@NonNull Team team) {
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(team.getPlatformTeam(), team, toComponent(team.getPrefix()), toComponent(team.getSuffix())));
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(
+                team.getPlatformTeam(),
+                team,
+                team.getPrefix().convert(player.getVersion()),
+                team.getSuffix().convert(player.getVersion())
+        ));
     }
 
     @Override
@@ -196,7 +209,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @SneakyThrows
-    private Object newObjectivePacket(int action, @NonNull String objectiveName, @NonNull String title, int display,
+    private Object newObjectivePacket(int action, @NonNull String objectiveName, @NonNull TabComponent title, int display,
                                       @Nullable TabComponent numberFormat) {
         // TODO save objectives and reuse them for better performance
         Object packet = newObjectivePacket.newInstance(newObjective(objectiveName, title, display, numberFormat), action);
@@ -220,7 +233,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      * @return  Created objective
      */
     @SneakyThrows
-    public Object newObjective(@NonNull String objectiveName, @NonNull String title, int renderType,
+    public Object newObjective(@NonNull String objectiveName, @NonNull TabComponent title, int renderType,
                                @Nullable TabComponent numberFormat) {
         if (BukkitReflection.is1_20_3Plus()) {
             // 1.20.3+
@@ -228,7 +241,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                     emptyScoreboard,
                     objectiveName,
                     null, // Criteria
-                    toComponent(title),
+                    title.convert(player.getVersion()),
                     healthDisplays[renderType],
                     false, // Auto update
                     numberFormat == null ? null : fixedFormatCache.get(numberFormat, player.getVersion())
@@ -240,19 +253,14 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                     emptyScoreboard,
                     objectiveName,
                     null, // Criteria
-                    toComponent(title),
+                    title.convert(player.getVersion()),
                     healthDisplays[renderType]
             );
         }
         // 1.5 - 1.12.2
         Object objective = newScoreboardObjective.newInstance(emptyScoreboard, objectiveName, IScoreboardCriteria_dummy);
-        ScoreboardObjective_setDisplayName.invoke(objective, title);
+        ScoreboardObjective_setDisplayName.invoke(objective, cutTo(title.toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
         return objective;
-    }
-
-    @NotNull
-    private Object toComponent(@NonNull String text) {
-        return TabComponent.optimized(text).convert(player.getVersion());
     }
 
     @Nullable

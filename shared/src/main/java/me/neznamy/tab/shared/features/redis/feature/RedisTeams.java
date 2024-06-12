@@ -33,18 +33,32 @@ public class RedisTeams extends RedisFeature {
     @Override
     public void onJoin(@NotNull TabPlayer player) {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
-            player.getScoreboard().registerTeam(redis.getTeamName(), redis.getTagPrefix(), redis.getTagSuffix(),
-                        redis.getNameVisibility(), CollisionRule.ALWAYS,
-                        Collections.singletonList(redis.getNickname()), 2, EnumChatFormat.lastColorsOf(redis.getTagPrefix()));
+            player.getScoreboard().registerTeam(
+                    redis.getTeamName(),
+                    nameTags.getCache().get(redis.getTagPrefix()),
+                    nameTags.getCache().get(redis.getTagSuffix()),
+                    redis.getNameVisibility(),
+                    CollisionRule.ALWAYS,
+                    Collections.singletonList(redis.getNickname()),
+                    2,
+                    EnumChatFormat.lastColorsOf(redis.getTagPrefix())
+            );
         }
     }
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            viewer.getScoreboard().registerTeam(player.getTeamName(), player.getTagPrefix(), player.getTagSuffix(),
-                    player.getNameVisibility(), CollisionRule.ALWAYS,
-                    Collections.singletonList(player.getNickname()), 2, EnumChatFormat.lastColorsOf(player.getTagPrefix()));
+            viewer.getScoreboard().registerTeam(
+                    player.getTeamName(),
+                    nameTags.getCache().get(player.getTagPrefix()),
+                    nameTags.getCache().get(player.getTagSuffix()),
+                    player.getNameVisibility(),
+                    CollisionRule.ALWAYS,
+                    Collections.singletonList(player.getNickname()),
+                    2,
+                    EnumChatFormat.lastColorsOf(player.getTagPrefix())
+            );
         }
     }
 
@@ -129,12 +143,12 @@ public class RedisTeams extends RedisFeature {
             if (!oldTeamName.equals(newTeamName)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(oldTeamName);
-                    viewer.getScoreboard().registerTeam(newTeamName, prefix, suffix, nameVisibility,
+                    viewer.getScoreboard().registerTeam(newTeamName, nameTags.getCache().get(prefix), nameTags.getCache().get(suffix), nameVisibility,
                             CollisionRule.ALWAYS, Collections.singletonList(target.getNickname()), 2, EnumChatFormat.lastColorsOf(prefix));
                 }
             } else {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.getScoreboard().updateTeam(oldTeamName, prefix, suffix, nameVisibility,
+                    viewer.getScoreboard().updateTeam(oldTeamName, nameTags.getCache().get(prefix), nameTags.getCache().get(suffix), nameVisibility,
                             CollisionRule.ALWAYS, 2, EnumChatFormat.lastColorsOf(prefix));
                 }
             }

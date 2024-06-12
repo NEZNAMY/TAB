@@ -145,8 +145,8 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
         );
         p.getScoreboard().registerTeam(
                 teamName,
-                prefix,
-                suffix,
+                parent.getManager().getCache().get(prefix),
+                parent.getManager().getCache().get(suffix),
                 Scoreboard.NameVisibility.NEVER,
                 Scoreboard.CollisionRule.NEVER,
                 Collections.singletonList(fakePlayer),
@@ -255,8 +255,8 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
     protected void updateTeam(@NotNull TabPlayer player, @NotNull String prefix, @NotNull String suffix) {
         player.getScoreboard().updateTeam(
                 teamName,
-                prefix,
-                suffix,
+                parent.getManager().getCache().get(prefix),
+                parent.getManager().getCache().get(suffix),
                 Scoreboard.NameVisibility.ALWAYS,
                 Scoreboard.CollisionRule.ALWAYS,
                 0,

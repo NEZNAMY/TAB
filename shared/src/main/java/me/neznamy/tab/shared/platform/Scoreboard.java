@@ -31,7 +31,7 @@ public interface Scoreboard {
      * @param   numberFormat
      *          Default number format for all scores in this objective (1.20.3+)
      */
-    void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull String title,
+    void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull TabComponent title,
                            @NonNull HealthDisplay display, @Nullable TabComponent numberFormat);
 
     /**
@@ -54,7 +54,7 @@ public interface Scoreboard {
      * @param   numberFormat
      *          New default number format for all scores
      */
-    void updateObjective(@NonNull String objectiveName, @NonNull String title, HealthDisplay display, @Nullable TabComponent numberFormat);
+    void updateObjective(@NonNull String objectiveName, @NonNull TabComponent title, HealthDisplay display, @Nullable TabComponent numberFormat);
     
     /**
      * Sets score of a holder to specified value.
@@ -105,7 +105,7 @@ public interface Scoreboard {
      * @param   color
      *          Team color (name color and prefix/suffix color start)
      */
-    void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+    void registerTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                       @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                       @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color);
 
@@ -137,7 +137,7 @@ public interface Scoreboard {
      * @param   color
      *          New team color (name color and prefix/suffix color start)
      */
-    void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix,
+    void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                     @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                     int options, @NonNull EnumChatFormat color);
 

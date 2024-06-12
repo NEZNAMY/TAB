@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import org.spongepowered.api.scoreboard.CollisionRules;
 import org.spongepowered.api.scoreboard.Visibilities;
@@ -65,7 +66,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         org.spongepowered.api.scoreboard.objective.Objective obj = org.spongepowered.api.scoreboard.objective.Objective.builder()
                 .name(objective.getName())
-                .displayName(Text.of(objective.getTitle()))
+                .displayName(Text.of(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)))
                 .objectiveDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()])
                 .criterion(Criteria.DUMMY)
                 .build();
@@ -81,7 +82,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         sb.getObjective(objective.getName()).ifPresent(obj -> {
-            obj.setDisplayName(Text.of(objective.getTitle()));
+            obj.setDisplayName(objective.getTitle().convert(player.getVersion()));
             obj.setDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()]);
         });
     }
@@ -101,8 +102,8 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
         org.spongepowered.api.scoreboard.Team spongeTeam = org.spongepowered.api.scoreboard.Team.builder()
                 .name(team.getName())
                 .displayName(Text.of(team.getName()))
-                .prefix(Text.of(team.getPrefix()))
-                .suffix(Text.of(team.getSuffix()))
+                .prefix(Text.of(cutTo(team.getPrefix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)))
+                .suffix(Text.of(cutTo(team.getSuffix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)))
                 .allowFriendlyFire((team.getOptions() & 0x01) != 0)
                 .canSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0)
                 .collisionRule(collisionRules[team.getCollision().ordinal()])
@@ -123,8 +124,8 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void updateTeam(@NonNull Team team) {
         sb.getTeam(team.getName()).ifPresent(spongeTeam -> {
             spongeTeam.setDisplayName(Text.of(team.getName()));
-            spongeTeam.setPrefix(Text.of(team.getPrefix()));
-            spongeTeam.setSuffix(Text.of(team.getSuffix()));
+            spongeTeam.setPrefix(Text.of(cutTo(team.getPrefix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
+            spongeTeam.setSuffix(Text.of(cutTo(team.getSuffix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
             spongeTeam.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
             spongeTeam.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
             spongeTeam.setCollisionRule(collisionRules[team.getCollision().ordinal()]);

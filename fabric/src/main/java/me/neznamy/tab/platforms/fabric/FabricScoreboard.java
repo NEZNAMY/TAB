@@ -2,10 +2,8 @@ package me.neznamy.tab.platforms.fabric;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
@@ -33,7 +31,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         net.minecraft.world.scores.Objective obj = FabricMultiVersion.newObjective(
                 objective.getName(),
-                toComponent(objective.getTitle()),
+                objective.getTitle().convert(player.getVersion()),
                 RenderType.values()[objective.getHealthDisplay().ordinal()],
                 objective.getNumberFormat() == null ? null : objective.getNumberFormat().convert(player.getVersion())
         );
@@ -50,7 +48,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         net.minecraft.world.scores.Objective obj = (net.minecraft.world.scores.Objective) objective.getPlatformObjective();
-        obj.setDisplayName(toComponent(objective.getTitle()));
+        obj.setDisplayName(objective.getTitle().convert(player.getVersion()));
         obj.setRenderType(RenderType.values()[objective.getHealthDisplay().ordinal()]);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE));
     }
@@ -75,8 +73,8 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         t.setColor(ChatFormatting.valueOf(team.getColor().name()));
         t.setCollisionRule(net.minecraft.world.scores.Team.CollisionRule.valueOf(team.getCollision().name()));
         t.setNameTagVisibility(net.minecraft.world.scores.Team.Visibility.valueOf(team.getVisibility().name()));
-        t.setPlayerPrefix(toComponent(team.getPrefix()));
-        t.setPlayerSuffix(toComponent(team.getSuffix()));
+        t.setPlayerPrefix(team.getPrefix().convert(player.getVersion()));
+        t.setPlayerSuffix(team.getSuffix().convert(player.getVersion()));
         t.getPlayers().addAll(team.getPlayers());
         team.setPlatformTeam(t);
         player.sendPacket(FabricMultiVersion.registerTeam(t));
@@ -95,8 +93,8 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         t.setColor(ChatFormatting.valueOf(team.getColor().name()));
         t.setCollisionRule(net.minecraft.world.scores.Team.CollisionRule.valueOf(team.getCollision().name()));
         t.setNameTagVisibility(net.minecraft.world.scores.Team.Visibility.valueOf(team.getVisibility().name()));
-        t.setPlayerPrefix(toComponent(team.getPrefix()));
-        t.setPlayerSuffix(toComponent(team.getSuffix()));
+        t.setPlayerPrefix(team.getPrefix().convert(player.getVersion()));
+        t.setPlayerSuffix(team.getSuffix().convert(player.getVersion()));
         player.sendPacket(FabricMultiVersion.updateTeam(t));
     }
 
@@ -113,10 +111,5 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         if (isAntiOverrideTeams()) {
             FabricMultiVersion.checkTeamPacket((Packet<?>) packet, this);
         }
-    }
-
-    @NonNull
-    private Component toComponent(@NonNull String string) {
-        return TabComponent.optimized(string).convert(player.getVersion());
     }
 }
