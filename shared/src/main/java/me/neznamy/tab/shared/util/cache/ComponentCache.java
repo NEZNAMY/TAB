@@ -44,7 +44,7 @@ public class ComponentCache<K, V> {
         accessCount++;
         Map<K, V> cache = clientVersion == null || clientVersion.supportsRGB() ? cacheModern : cacheLegacy;
         if (cache.size() > cacheSize) {
-            float efficiency = (float) accessCount / (accessCount + cacheSize);
+            float efficiency = (float) (accessCount-cacheSize) / accessCount;
             TAB.getInstance().debug("Clearing " + name + " cache due to limit (efficiency " + efficiency*100 + "% with " + accessCount + " accesses)");
             accessCount = 0;
             cache.clear();
