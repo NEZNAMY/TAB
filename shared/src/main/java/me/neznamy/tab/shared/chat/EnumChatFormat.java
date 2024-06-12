@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.chat;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.util.cache.ComponentCache;
+import me.neznamy.tab.shared.util.cache.Cache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,8 +45,8 @@ public enum EnumChatFormat {
     public static final String COLOR_STRING = String.valueOf(COLOR_CHAR);
 
     /** Cache for last colors to prevent massive memory allocations on request */
-    private static final ComponentCache<String, EnumChatFormat> lastColorCache =
-            new ComponentCache<>("LastPrefixColor", 1000, (string, version) -> lastColorsOf0(string));
+    private static final Cache<String, EnumChatFormat> lastColorCache =
+            new Cache<>("LastPrefixColor", 1000, EnumChatFormat::lastColorsOf0);
 
     /** Character representing the color or magic code */
     private final char character;
@@ -106,7 +106,7 @@ public enum EnumChatFormat {
      * @return  last used color code in given string or WHITE if nothing is found
      */
     public static @NotNull EnumChatFormat lastColorsOf(@NotNull String string) {
-        return lastColorCache.get(string, null);
+        return lastColorCache.get(string);
     }
 
     /**
