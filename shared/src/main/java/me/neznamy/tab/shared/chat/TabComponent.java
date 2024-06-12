@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +42,12 @@ public abstract class TabComponent {
     /** Adventure component from this component for 1.15- players */
     @Nullable
     private Component adventureLegacy;
+
+    @Nullable
+    private String jsonModern;
+
+    @Nullable
+    private String jsonLegacy;
 
     /**
      * Converts this component to platform's component.
@@ -78,6 +85,24 @@ public abstract class TabComponent {
         } else {
             if (adventureLegacy == null) adventureLegacy = AdventureHook.toAdventureComponent(this, false);
             return adventureLegacy;
+        }
+    }
+
+    /**
+     * Serializes this component to string using Adventure API.
+     *
+     * @param   clientVersion
+     *          Client version to serialize for
+     * @return  Serialized json
+     */
+    @NotNull
+    public String serialize(@NotNull ProtocolVersion clientVersion) {
+        if (clientVersion.supportsRGB()) {
+            if (jsonModern == null) jsonModern = GsonComponentSerializer.gson().serialize(toAdventure(clientVersion));
+            return jsonModern;
+        } else {
+            if (jsonLegacy == null) jsonLegacy = GsonComponentSerializer.gson().serialize(toAdventure(clientVersion));
+            return jsonLegacy;
         }
     }
 

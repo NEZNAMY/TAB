@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.platform.impl;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetDisplayObjective;
@@ -31,7 +30,7 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
                 ObjectiveAction.REGISTER,
                 objective.getTitle().toFlatText(),
                 objective.getHealthDisplay().ordinal(),
-                objective.getNumberFormat() == null ? null : AdventureHook.serialize(objective.getNumberFormat().toAdventure(player.getVersion())))
+                objective.getNumberFormat() == null ? null : objective.getNumberFormat().serialize(player.getVersion()))
         );
         player.sendPluginMessage(new SetDisplayObjective(objective.getDisplaySlot(), objective.getName()));
     }
@@ -48,7 +47,7 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
                 ObjectiveAction.UPDATE,
                 objective.getTitle().toFlatText(),
                 objective.getHealthDisplay().ordinal(),
-                objective.getNumberFormat() == null ? null : AdventureHook.serialize(objective.getNumberFormat().toAdventure(player.getVersion())))
+                objective.getNumberFormat() == null ? null : objective.getNumberFormat().serialize(player.getVersion()))
         );
     }
 
@@ -59,8 +58,8 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
                 ScoreAction.CHANGE,
                 score.getHolder(),
                 score.getValue(),
-                score.getDisplayName() == null ? null : AdventureHook.serialize(score.getDisplayName().toAdventure(player.getVersion())),
-                score.getNumberFormat() == null ? null : AdventureHook.serialize(score.getNumberFormat().toAdventure(player.getVersion()))
+                score.getDisplayName() == null ? null : score.getDisplayName().serialize(player.getVersion()),
+                score.getNumberFormat() == null ? null : score.getNumberFormat().serialize(player.getVersion())
         ));
     }
 

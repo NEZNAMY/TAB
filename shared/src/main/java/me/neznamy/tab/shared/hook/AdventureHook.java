@@ -4,12 +4,10 @@ import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.util.cache.ComponentCache;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,10 +17,6 @@ import java.util.*;
  * Class for Adventure component conversion.
  */
 public class AdventureHook {
-
-    /** Component to string cache for better performance */
-    private static final ComponentCache<Component, String> componentToString = new ComponentCache<>("Adventure component", 1000,
-            (component, version) -> GsonComponentSerializer.gson().serialize(component));
 
     /** Array of all 32 possible decoration combinations for fast access */
     private static final EnumSet<TextDecoration>[] decorations = loadDecorations();
@@ -79,18 +73,6 @@ public class AdventureHook {
             adventureComponent = adventureComponent.children(list);
         }
         return adventureComponent;
-    }
-
-    /**
-     * Serializes component using Adventure API.
-     *
-     * @param   component
-     *          Component to serialize
-     * @return  Serialized component to json
-     */
-    @NotNull
-    public static String serialize(@NotNull Component component) {
-        return componentToString.get(component, null);
     }
 
     /**
