@@ -230,13 +230,13 @@ public class Loader_1_20_5 implements Loader {
     @Override
     @NotNull
     public Objective newObjective(@NotNull String name, @NotNull Component displayName,
-                                  @NotNull RenderType renderType, @Nullable Component numberFormat) {
+                                  @NotNull RenderType renderType, @Nullable TabComponent numberFormat) {
         return Register1_20_3.newObjective(name, displayName, renderType, numberFormat);
     }
 
     @Override
     @NotNull
-    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat) {
+    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat) {
         return Register1_20_3.setScore(objective, holder, score, displayName, numberFormat);
     }
 
@@ -264,23 +264,27 @@ public class Loader_1_20_5 implements Loader {
 
         @NotNull
         public static Objective newObjective(@NotNull String name, @NotNull Component displayName,
-                                      @NotNull RenderType renderType, @Nullable Component numberFormat) {
-            return new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType, false,
-                    numberFormat == null ? null : new FixedFormat(numberFormat));
+                                      @NotNull RenderType renderType, @Nullable TabComponent numberFormat) {
+            return new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType, false, toFixedFormat(numberFormat));
         }
 
         @NotNull
         @SneakyThrows
-        public static Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat) {
+        public static Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat) {
             try {
                 // 1.20.5+
-                return new ClientboundSetScorePacket(holder, objective, score, Optional.ofNullable(displayName),
-                        Optional.ofNullable(numberFormat == null ? null : new FixedFormat(numberFormat)));
+                return new ClientboundSetScorePacket(holder, objective, score, Optional.ofNullable(displayName), Optional.ofNullable(toFixedFormat(numberFormat)));
             } catch (Throwable t) {
                 // 1.20.3 / 1.20.4
                 return ClientboundSetScorePacket.class.getConstructor(String.class, String.class, int.class, Component.class, NumberFormat.class)
-                        .newInstance(holder, objective, score, displayName, numberFormat == null ? null : new FixedFormat(numberFormat));
+                        .newInstance(holder, objective, score, displayName, toFixedFormat(numberFormat));
             }
+        }
+
+        @Nullable
+        private static FixedFormat toFixedFormat(@Nullable TabComponent component) {
+            if (component == null) return null;
+            return component.toFixedFormat(FixedFormat::new);
         }
     }
 

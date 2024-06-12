@@ -225,13 +225,13 @@ public class Loader_1_14_4 implements Loader {
     @Override
     @NotNull
     public Objective newObjective(@NotNull String name, @NotNull Component displayName,
-                                  @NotNull RenderType renderType, @Nullable Component numberFormat) {
+                                  @NotNull RenderType renderType, @Nullable TabComponent numberFormat) {
         return new Objective(dummyScoreboard, name, ObjectiveCriteria.DUMMY, displayName, renderType);
     }
 
     @Override
     @NotNull
-    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat) {
+    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat) {
         return new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, holder, score);
     }
 

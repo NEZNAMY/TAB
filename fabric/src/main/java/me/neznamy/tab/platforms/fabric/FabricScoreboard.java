@@ -33,7 +33,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
                 objective.getName(),
                 objective.getTitle().convert(player.getVersion()),
                 RenderType.values()[objective.getHealthDisplay().ordinal()],
-                objective.getNumberFormat() == null ? null : objective.getNumberFormat().convert(player.getVersion())
+                objective.getNumberFormat()
         );
         objective.setPlatformObjective(obj);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
@@ -57,7 +57,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     public void setScore(@NonNull Score score) {
         player.sendPacket(FabricMultiVersion.setScore(score.getObjective(), score.getHolder(), score.getValue(),
                 score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
-                score.getNumberFormat() == null ? null : score.getNumberFormat().convert(player.getVersion())));
+                score.getNumberFormat()));
     }
 
     @Override

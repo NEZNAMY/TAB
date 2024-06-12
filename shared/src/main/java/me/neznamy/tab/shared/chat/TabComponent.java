@@ -1,9 +1,11 @@
 package me.neznamy.tab.shared.chat;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.AdventureHook;
+import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -48,6 +50,9 @@ public abstract class TabComponent {
 
     @Nullable
     private String jsonLegacy;
+
+    @Nullable
+    private Object fixedFormat;
 
     /**
      * Converts this component to platform's component.
@@ -104,6 +109,25 @@ public abstract class TabComponent {
             if (jsonLegacy == null) jsonLegacy = GsonComponentSerializer.gson().serialize(toAdventure(clientVersion));
             return jsonLegacy;
         }
+    }
+
+    /**
+     * Creates a FixedFormat using given platform-specific create function.
+     * If the value is already initialized, it is returned immediately instead.
+     *
+     * @param   createFunction
+     *          Platform's function to convert platform component to FixedFormat
+     * @return  Platform's FixedFormat from this component
+     * @param   <F>
+     *          Platform's FixedFormat type
+     * @param   <C>
+     *          Platform's Component type
+     */
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    public <F, C> F toFixedFormat(FunctionWithException<C, F> createFunction) {
+        if (fixedFormat == null) fixedFormat = createFunction.apply(convert(ProtocolVersion.LATEST_KNOWN_VERSION)); // Numbers formats are 1.20.3+, which is above 1.16
+        return (F) fixedFormat;
     }
 
     /**

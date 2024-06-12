@@ -274,7 +274,7 @@ public interface Loader {
      * @return  New objective with given parameters
      */
     @NotNull
-    Objective newObjective(@NotNull String name, @NotNull Component displayName, @NotNull RenderType renderType, @Nullable Component numberFormat);
+    Objective newObjective(@NotNull String name, @NotNull Component displayName, @NotNull RenderType renderType, @Nullable TabComponent numberFormat);
 
     /**
      * Creates a new set score packet with given parameters.
@@ -292,7 +292,7 @@ public interface Loader {
      * @return  New set score packet with given parameters
      */
     @NotNull
-    Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat);
+    Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat);
 
     /**
      * Sets style in a component to specified style.

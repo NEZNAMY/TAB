@@ -206,13 +206,13 @@ public class Loader_1_18_2 implements Loader {
 
     @Override
     @NotNull
-    public Objective newObjective(@NotNull String name, @NotNull Component displayName, ObjectiveCriteria.@NotNull RenderType renderType, @Nullable Component numberFormat) {
+    public Objective newObjective(@NotNull String name, @NotNull Component displayName, ObjectiveCriteria.@NotNull RenderType renderType, @Nullable TabComponent numberFormat) {
         throw new UnsupportedOperationException("Not implemented in this submodule");
     }
 
     @Override
     @NotNull
-    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable Component numberFormat) {
+    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat) {
         throw new UnsupportedOperationException("Not implemented in this submodule");
     }
 

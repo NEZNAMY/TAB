@@ -8,11 +8,9 @@ import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.Limitations;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
-import me.neznamy.tab.shared.util.cache.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,8 +54,6 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Getter private static TeamPacketData teamPacketData;
     @Getter private static DisplayPacketData displayPacketData;
     private static PacketSender packetSender;
-
-    private static final ComponentCache<TabComponent, Object> fixedFormatCache = new ComponentCache<>("FixedFormat", 1000, PacketScoreboard::toFixedFormat);
 
     static {
         try {
@@ -160,7 +156,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     public void setScore(@NonNull Score score) {
         packetSender.sendPacket(player.getPlayer(), scorePacketData.setScore(score.getObjective(), score.getHolder(), score.getValue(),
                 score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
-                score.getNumberFormat() == null ? null : fixedFormatCache.get(score.getNumberFormat(), player.getVersion())));
+                score.getNumberFormat() == null ? null : toFixedFormat(score.getNumberFormat())));
     }
 
     @Override
@@ -244,7 +240,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                     title.convert(player.getVersion()),
                     healthDisplays[renderType],
                     false, // Auto update
-                    numberFormat == null ? null : fixedFormatCache.get(numberFormat, player.getVersion())
+                    numberFormat == null ? null : toFixedFormat(numberFormat)
             );
         }
         if (BukkitReflection.getMinorVersion() >= 13) {
@@ -265,8 +261,8 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Nullable
     @SneakyThrows
-    private static Object toFixedFormat(@NonNull TabComponent component, @NonNull ProtocolVersion version) {
+    private static Object toFixedFormat(@NonNull TabComponent component) {
         if (newFixedFormat == null) return null;
-        return newFixedFormat.newInstance((Object) component.convert(version));
+        return component.toFixedFormat(nmsComponent -> newFixedFormat.newInstance(nmsComponent));
     }
 }

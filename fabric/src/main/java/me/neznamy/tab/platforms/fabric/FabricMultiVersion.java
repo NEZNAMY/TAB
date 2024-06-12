@@ -395,7 +395,7 @@ public class FabricMultiVersion {
      */
     @NotNull
     public static Objective newObjective(@NotNull String name, @NotNull Component displayName,
-                                         @NotNull RenderType renderType, @Nullable Component numberFormat) {
+                                         @NotNull RenderType renderType, @Nullable TabComponent numberFormat) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.newObjective(name, displayName, renderType, numberFormat);
         return loader1_14_4.newObjective(name, displayName, renderType, numberFormat);
     }
@@ -417,7 +417,7 @@ public class FabricMultiVersion {
      */
     @NotNull
     public static Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score,
-                                     @Nullable Component displayName, @Nullable Component numberFormat) {
+                                     @Nullable Component displayName, @Nullable TabComponent numberFormat) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderNew.setScore(objective, holder, score, displayName, numberFormat);
         return loader1_14_4.setScore(objective, holder, score, displayName, numberFormat);
     }
