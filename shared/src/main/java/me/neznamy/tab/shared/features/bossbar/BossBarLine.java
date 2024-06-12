@@ -219,7 +219,7 @@ public class BossBarLine implements BossBar {
         this.title = title;
         for (TabPlayer p : players) {
             p.setProperty(textRefresher, propertyTitle, title);
-            p.getBossBar().update(uniqueId, p.getProperty(propertyTitle).get());
+            p.getBossBar().update(uniqueId, manager.getCache().get(p.getProperty(propertyTitle).get()));
         }
     }
 
@@ -278,7 +278,7 @@ public class BossBarLine implements BossBar {
         player.setProperty(styleRefresher, propertyStyle, style);
         player.getBossBar().create(
                 uniqueId,
-                player.getProperty(propertyTitle).updateAndGet(),
+                manager.getCache().get(player.getProperty(propertyTitle).updateAndGet()),
                 parseProgress(player, player.getProperty(propertyProgress).updateAndGet())/100,
                 parseColor(player, player.getProperty(propertyColor).updateAndGet()),
                 parseStyle(player, player.getProperty(propertyStyle).updateAndGet())
@@ -314,7 +314,7 @@ public class BossBarLine implements BossBar {
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
-            refreshed.getBossBar().update(uniqueId, refreshed.getProperty(propertyTitle).updateAndGet());
+            refreshed.getBossBar().update(uniqueId, manager.getCache().get(refreshed.getProperty(propertyTitle).updateAndGet()));
         }
 
         @Override

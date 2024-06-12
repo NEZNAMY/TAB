@@ -3,10 +3,10 @@ package me.neznamy.tab.platforms.sponge7;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.boss.*;
-import org.spongepowered.api.text.Text;
 
 /**
  * BossBar implementation for Sponge 7 using its API.
@@ -40,9 +40,9 @@ public class SpongeBossBar extends SafeBossBar<ServerBossBar> {
 
     @Override
     @NotNull
-    public ServerBossBar constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    public ServerBossBar constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         return ServerBossBar.builder()
-                .name(Text.of(title))
+                .name(title.convert(player.getVersion()))
                 .color(colors[color.ordinal()])
                 .overlay(styles[style.ordinal()])
                 .percent(progress)
@@ -56,7 +56,7 @@ public class SpongeBossBar extends SafeBossBar<ServerBossBar> {
 
     @Override
     public void updateTitle(@NotNull BossBarInfo bar) {
-        bar.getBossBar().setName(Text.of(bar.getTitle()));
+        bar.getBossBar().setName(bar.getTitle().convert(player.getVersion()));
     }
 
     @Override

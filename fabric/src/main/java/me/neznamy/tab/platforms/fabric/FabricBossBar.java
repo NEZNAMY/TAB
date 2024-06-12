@@ -22,9 +22,9 @@ public class FabricBossBar extends SafeBossBar<ServerBossEvent> {
 
     @Override
     @NotNull
-    public ServerBossEvent constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    public ServerBossEvent constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         ServerBossEvent bar = new ServerBossEvent(
-                TabComponent.optimized(title).convert(player.getVersion()),
+                title.convert(player.getVersion()),
                 BossBarColor.valueOf(color.name()),
                 BossBarOverlay.valueOf(style.name())
         );
@@ -39,7 +39,7 @@ public class FabricBossBar extends SafeBossBar<ServerBossEvent> {
 
     @Override
     public void updateTitle(@NotNull BossBarInfo bar) {
-        bar.getBossBar().setName(TabComponent.optimized(bar.getTitle()).convert(player.getVersion()));
+        bar.getBossBar().setName(bar.getTitle().convert(player.getVersion()));
     }
 
     @Override

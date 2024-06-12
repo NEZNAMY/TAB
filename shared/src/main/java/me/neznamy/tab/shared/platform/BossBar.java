@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.shared.chat.TabComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -25,7 +26,7 @@ public interface BossBar {
      * @param   style
      *          BossBar style
      */
-    void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style);
+    void create(@NotNull UUID id, @NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style);
 
     /**
      * Updates title
@@ -35,7 +36,7 @@ public interface BossBar {
      * @param   title
      *          New title
      */
-    void update(@NotNull UUID id, @NotNull String title);
+    void update(@NotNull UUID id, @NotNull TabComponent title);
 
     /**
      * Updates progress

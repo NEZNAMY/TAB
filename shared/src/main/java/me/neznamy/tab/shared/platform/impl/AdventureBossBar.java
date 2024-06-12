@@ -29,9 +29,9 @@ public class AdventureBossBar extends SafeBossBar<BossBar> {
 
     @Override
     @NotNull
-    public BossBar constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    public BossBar constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         return BossBar.bossBar(
-                TabComponent.optimized(title).toAdventure(player.getVersion()),
+                title.toAdventure(player.getVersion()),
                 progress,
                 Color.valueOf(color.name()),
                 Overlay.valueOf(style.name())
@@ -45,7 +45,7 @@ public class AdventureBossBar extends SafeBossBar<BossBar> {
 
     @Override
     public void updateTitle(@NotNull BossBarInfo bar) {
-        bar.getBossBar().name(TabComponent.optimized(bar.getTitle()).toAdventure(player.getVersion()));
+        bar.getBossBar().name(bar.getTitle().toAdventure(player.getVersion()));
     }
 
     @Override

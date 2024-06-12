@@ -27,9 +27,9 @@ public class ViaBossBar extends SafeBossBar<BossBar> {
 
     @Override
     @NotNull
-    public BossBar constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    public BossBar constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         return Via.getAPI().legacyAPI().createLegacyBossBar(
-                TabComponent.optimized(title).toLegacyText(),
+                title.toLegacyText(),
                 progress,
                 BossColor.valueOf(color.name()),
                 styles[style.ordinal()]
@@ -43,7 +43,7 @@ public class ViaBossBar extends SafeBossBar<BossBar> {
 
     @Override
     public void updateTitle(@NotNull BossBarInfo bar) {
-        bar.getBossBar().setTitle(TabComponent.optimized(bar.getTitle()).toLegacyText());
+        bar.getBossBar().setTitle(bar.getTitle().toLegacyText());
     }
 
     @Override

@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -22,6 +23,9 @@ import java.util.stream.Collectors;
  */
 public class BossBarManagerImpl extends RefreshableFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
         UnLoadable, QuitListener, CustomThreaded {
+
+    @Getter
+    private final StringToComponentCache cache = new StringToComponentCache("BossBar", 1000);
 
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB BossBar Thread");

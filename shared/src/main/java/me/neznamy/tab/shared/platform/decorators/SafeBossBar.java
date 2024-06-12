@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.platform.decorators;
 import lombok.*;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.BossBar;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +30,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     private boolean frozen;
 
     @Override
-    public synchronized void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    public synchronized void create(@NotNull UUID id, @NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         BossBarInfo bar = new BossBarInfo(title, progress, color, style, constructBossBar(title, progress, color, style));
         bossBars.put(id, bar);
         if (frozen) return;
@@ -37,7 +38,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     }
 
     @Override
-    public synchronized void update(@NotNull UUID id, @NotNull String title) {
+    public synchronized void update(@NotNull UUID id, @NotNull TabComponent title) {
         BossBarInfo bar = bossBars.get(id);
         if (bar == null) return;
         bar.setTitle(title);
@@ -113,7 +114,7 @@ public abstract class SafeBossBar<T> implements BossBar {
      * @return  Platform's BossBar with given data
      */
     @NotNull
-    public abstract T constructBossBar(@NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style);
+    public abstract T constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style);
 
     /**
      * Creates the BossBar and sends it to the player.
@@ -172,7 +173,7 @@ public abstract class SafeBossBar<T> implements BossBar {
     public class BossBarInfo {
 
         /** BossBar's title */
-        @NonNull private String title;
+        @NonNull private TabComponent title;
 
         /** BossBar's progress */
         private float progress;
