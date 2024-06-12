@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Feature handler for BelowName feature
  */
-public class BelowName extends RefreshableFeature implements JoinListener, Loadable, UnLoadable,
+public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, CustomThreaded {
 
     /** Objective name used by this feature */
@@ -31,6 +32,9 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
 
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Belowname Objective Thread");
+
+    @Getter
+    private OnlinePlayers onlinePlayers;
 
     private final String rawNumber = config().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = config().getString("belowname-objective.text", "Health");
@@ -55,9 +59,10 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
 
     @Override
     public void load() {
+        onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         Map<TabPlayer, Integer> values = new HashMap<>();
-        for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer loaded : onlinePlayers.getPlayers()) {
             loadProperties(loaded);
             if (disableChecker.isDisableConditionMet(loaded)) {
                 loaded.belowNameData.disabled.set(true);
@@ -66,7 +71,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
             }
             values.put(loaded, getValue(loaded));
         }
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
                 TabPlayer target = entry.getKey();
                 if (!sameServerAndWorld(viewer, target)) continue;
@@ -84,7 +89,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : onlinePlayers.getPlayers()) {
             if (p.belowNameData.disabled.get()) continue;
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
@@ -92,6 +97,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        onlinePlayers.addPlayer(connectedPlayer);
         loadProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.belowNameData.disabled.set(true);
@@ -100,9 +106,8 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
         }
         int number = getValue(connectedPlayer);
         Property fancy = connectedPlayer.belowNameData.numberFormat;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (!sameServerAndWorld(connectedPlayer, all)) continue;
-            if (all.belowNameData.score == null) continue; // Player not loaded by this feature yet
             setScore(all, connectedPlayer, number, fancy.getFormat(all));
             if (all != connectedPlayer) {
                 setScore(connectedPlayer, all, getValue(all), all.belowNameData.numberFormat.getFormat(connectedPlayer));
@@ -158,7 +163,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
         int number = getValue(refreshed);
         Property fancy = refreshed.belowNameData.numberFormat;
         fancy.update();
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (!sameServerAndWorld(viewer, refreshed)) continue;
             setScore(viewer, refreshed, number, fancy.getFormat(viewer));
         }
@@ -223,7 +228,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
     }
 
     private void updatePlayer(@NotNull TabPlayer player) {
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (!sameServerAndWorld(all, player)) continue;
             setScore(player, all, getValue(all), all.belowNameData.numberFormat.getFormat(player));
             if (all != player) setScore(all, player, getValue(player), player.belowNameData.numberFormat.getFormat(all));
@@ -239,10 +244,15 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
     public void processNicknameChange(@NotNull TabPlayer player) {
         customThread.execute(() -> {
             int value = getValue(player);
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 setScore(viewer, player, value, player.belowNameData.numberFormat.get());
             }
         }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS);
+    }
+
+    @Override
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
+        onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
     private class TextRefresher extends RefreshableFeature {

@@ -29,7 +29,7 @@ public class RedisYellowNumber extends RedisFeature {
     @Override
     public void load() {
         yellowNumber.getCustomThread().execute(() -> {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer all : yellowNumber.getOnlinePlayers().getPlayers()) {
                 redisSupport.sendMessage(new Update(all.getTablistId(), yellowNumber.getValueNumber(all), all.playerlistObjectiveData.valueModern.get()));
             }
         }, redisSupport.getFeatureName(), "Resending all Playerlist Objective data on reload");
@@ -53,7 +53,7 @@ public class RedisYellowNumber extends RedisFeature {
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : yellowNumber.getOnlinePlayers().getPlayers()) {
             viewer.getScoreboard().setScore(
                     YellowNumber.OBJECTIVE_NAME,
                     player.getNickname(),

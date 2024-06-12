@@ -29,7 +29,7 @@ public class RedisBelowName extends RedisFeature {
     @Override
     public void load() {
         belowName.getCustomThread().execute(() -> {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer all : belowName.getOnlinePlayers().getPlayers()) {
                 redisSupport.sendMessage(new Update(all.getTablistId(), belowName.getValue(all), all.belowNameData.numberFormat.get()));
             }
         }, redisSupport.getFeatureName(), "Resending all Belowname data on reload");
@@ -53,7 +53,7 @@ public class RedisBelowName extends RedisFeature {
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : belowName.getOnlinePlayers().getPlayers()) {
             viewer.getScoreboard().setScore(
                     BelowName.OBJECTIVE_NAME,
                     player.getNickname(),

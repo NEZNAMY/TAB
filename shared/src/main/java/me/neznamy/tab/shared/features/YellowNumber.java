@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
-public class YellowNumber extends RefreshableFeature implements JoinListener, Loadable, UnLoadable, CustomThreaded {
+public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable, UnLoadable, CustomThreaded {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
@@ -36,6 +37,9 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
 
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Playerlist Objective Thread");
+
+    @Getter
+    private OnlinePlayers onlinePlayers;
 
     /** Numeric value to display */
     private final String rawValue = config().getString("playerlist-objective.value", TabConstants.Placeholder.PING);
@@ -86,9 +90,10 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
 
     @Override
     public void load() {
+        onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         Map<TabPlayer, Integer> values = new HashMap<>();
-        for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer loaded : onlinePlayers.getPlayers()) {
             loaded.playerlistObjectiveData.valueLegacy = new Property(this, loaded, rawValue);
             loaded.playerlistObjectiveData.valueModern = new Property(this, loaded, rawValueFancy);
             if (disableChecker.isDisableConditionMet(loaded)) {
@@ -98,7 +103,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
             }
             values.put(loaded, getValueNumber(loaded));
         }
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
                 setScore(viewer, entry.getKey(), entry.getValue(), entry.getKey().playerlistObjectiveData.valueModern.getFormat(viewer));
             }
@@ -107,7 +112,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : onlinePlayers.getPlayers()) {
             if (p.playerlistObjectiveData.disabled.get() || p.isBedrockPlayer()) continue;
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
@@ -115,6 +120,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        onlinePlayers.addPlayer(connectedPlayer);
         connectedPlayer.playerlistObjectiveData.valueLegacy = new Property(this, connectedPlayer, rawValue);
         connectedPlayer.playerlistObjectiveData.valueModern = new Property(this, connectedPlayer, rawValueFancy);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
@@ -125,8 +131,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
         int value = getValueNumber(connectedPlayer);
         Property valueFancy = connectedPlayer.playerlistObjectiveData.valueModern;
         valueFancy.update();
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.playerlistObjectiveData.valueLegacy == null) continue; // Player not loaded by this feature yet
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
             setScore(all, connectedPlayer, value, valueFancy.getFormat(connectedPlayer));
             if (all != connectedPlayer) {
                 setScore(connectedPlayer, all, getValueNumber(all), all.playerlistObjectiveData.valueModern.getFormat(connectedPlayer));
@@ -157,7 +162,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         int value = getValueNumber(refreshed);
         refreshed.playerlistObjectiveData.valueModern.update();
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, refreshed, value, refreshed.playerlistObjectiveData.valueModern.getFormat(viewer));
         }
         if (redis != null) redis.updateYellowNumber(refreshed, value, refreshed.playerlistObjectiveData.valueModern.get());
@@ -200,10 +205,15 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
     public void processNicknameChange(@NotNull TabPlayer player) {
         customThread.execute(() -> {
             int value = getValueNumber(player);
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 setScore(viewer, player, value, player.playerlistObjectiveData.valueModern.get());
             }
         }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS);
+    }
+
+    @Override
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
+        onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
     /**
