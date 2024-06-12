@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -57,7 +56,7 @@ public class RedisPlayerList extends RedisFeature {
 
     @Override
     public void read(@NotNull ByteArrayDataInput in, @NotNull RedisPlayer player) {
-        player.setTabFormat(TabComponent.optimized(in.readUTF()));
+        player.setTabFormat(playerList.getCache().get(in.readUTF()));
     }
 
     @Override
@@ -92,7 +91,7 @@ public class RedisPlayerList extends RedisFeature {
         public void process(@NotNull RedisSupport redisSupport) {
             RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
             if (target == null) return; // Print warn?
-            target.setTabFormat(TabComponent.optimized(format));
+            target.setTabFormat(playerList.getCache().get(format));
             onJoin(target);
         }
     }

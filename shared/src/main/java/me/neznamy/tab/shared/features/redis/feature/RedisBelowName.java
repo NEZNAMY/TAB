@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -92,7 +91,7 @@ public class RedisBelowName extends RedisFeature {
             RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
             if (target == null) return; // Print warn?
             target.setBelowNameNumber(value);
-            target.setBelowNameFancy(TabComponent.optimized(fancyValue));
+            target.setBelowNameFancy(belowName.getCache().get(fancyValue));
             onJoin(target);
         }
     }

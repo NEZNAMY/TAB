@@ -26,7 +26,9 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
 
+    @Getter
     private final StringToComponentCache cache = new StringToComponentCache("BelowName", 1000);
+
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Belowname Objective Thread");
 

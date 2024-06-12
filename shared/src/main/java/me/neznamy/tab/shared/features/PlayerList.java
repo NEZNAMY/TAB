@@ -38,6 +38,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     /** Name of the property used in configuration */
     public static final String TABSUFFIX = "tabsuffix";
 
+    @Getter
     private final StringToComponentCache cache = new StringToComponentCache("Tablist formatting", 1000);
 
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */

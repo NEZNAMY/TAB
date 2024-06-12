@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -92,7 +91,7 @@ public class RedisYellowNumber extends RedisFeature {
             RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
             if (target == null) return; // Print warn?
             target.setPlayerlistNumber(value);
-            target.setPlayerlistFancy(TabComponent.optimized(fancyValue));
+            target.setPlayerlistFancy(yellowNumber.getCache().get(fancyValue));
             onJoin(target);
         }
     }

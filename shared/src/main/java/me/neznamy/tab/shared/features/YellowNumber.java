@@ -30,7 +30,9 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
     /** Scoreboard title which is unused in java */
     private static final String TITLE = "PlayerListObjectiveTitle"; // Unused by this objective slot (on Java, only visible on Bedrock)
 
+    @Getter
     private final StringToComponentCache cache = new StringToComponentCache("Playerlist Objective", 1000);
+
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Playerlist Objective Thread");
 
