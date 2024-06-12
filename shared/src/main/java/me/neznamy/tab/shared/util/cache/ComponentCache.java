@@ -1,7 +1,8 @@
-package me.neznamy.tab.shared.util;
+package me.neznamy.tab.shared.util.cache;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,9 +19,11 @@ import java.util.function.BiFunction;
  * @param   <V>
  *          Target component
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ComponentCache<K, V> {
 
+    private int accessCount;
+    private final String name;
     private final int cacheSize;
     private final BiFunction<K, ProtocolVersion, V> function;
     private final Map<K, V> cacheModern = new HashMap<>();
@@ -38,8 +41,14 @@ public class ComponentCache<K, V> {
      */
     @NotNull
     public synchronized V get(@NotNull K key, @Nullable ProtocolVersion clientVersion) {
+        accessCount++;
         Map<K, V> cache = clientVersion == null || clientVersion.supportsRGB() ? cacheModern : cacheLegacy;
-        if (cache.size() > cacheSize) cache.clear();
+        if (cache.size() > cacheSize) {
+            float efficiency = (float) accessCount / (accessCount + cacheSize);
+            TAB.getInstance().debug("Clearing " + name + " cache due to limit (efficiency " + efficiency*100 + "% with " + accessCount + " accesses)");
+            accessCount = 0;
+            cache.clear();
+        }
         return cache.computeIfAbsent(key, k -> function.apply(k, clientVersion));
     }
 }

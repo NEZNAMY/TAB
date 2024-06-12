@@ -4,7 +4,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.AdventureHook;
-import me.neznamy.tab.shared.util.ComponentCache;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,11 +26,7 @@ public abstract class TabComponent {
      * Component cache maps to avoid large memory allocations as well as
      * higher CPU usage when using animations which send the same text on repeat.
      */
-    private static final ComponentCache<String, TabComponent> stringCache = new ComponentCache<>(1000, (text, clientVersion) -> {
-        return text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x") || text.contains("<") ?
-                fromColoredText(text) : //contains RGB colors or font
-                new SimpleComponent(text); //no RGB
-    });
+    private static final StringToComponentCache stringCache = new StringToComponentCache("Global component cache", 1000);
 
     @Nullable
     private Object convertedModern;
@@ -103,7 +99,7 @@ public abstract class TabComponent {
      */
     @NotNull
     public static TabComponent optimized(@NotNull String text) {
-        return stringCache.get(text, null);
+        return stringCache.get(text);
     }
 
     /**

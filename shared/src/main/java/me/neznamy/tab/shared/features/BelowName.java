@@ -4,13 +4,13 @@ import lombok.Getter;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -26,6 +26,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
 
+    private final StringToComponentCache cache = new StringToComponentCache("BelowName", 1000);
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Belowname Objective Thread");
 
@@ -168,7 +169,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
                 OBJECTIVE_NAME,
                 player.belowNameData.text.updateAndGet(),
                 Scoreboard.HealthDisplay.INTEGER,
-                TabComponent.optimized(player.belowNameData.defaultNumberFormat.updateAndGet())
+                cache.get(player.belowNameData.defaultNumberFormat.updateAndGet())
         );
     }
 
@@ -191,7 +192,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
                 scoreHolder.getNickname(),
                 value,
                 null, // Unused by this objective slot
-                TabComponent.optimized(fancyDisplay)
+                cache.get(fancyDisplay)
         );
     }
 
@@ -242,7 +243,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
         }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS);
     }
 
-    private static class TextRefresher extends RefreshableFeature {
+    private class TextRefresher extends RefreshableFeature {
 
         private TextRefresher() {
             super("BelowName", "Updating BelowName text");
@@ -255,7 +256,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, Loada
                     OBJECTIVE_NAME,
                     refreshed.belowNameData.text.updateAndGet(),
                     Scoreboard.HealthDisplay.INTEGER,
-                    TabComponent.optimized(refreshed.belowNameData.defaultNumberFormat.updateAndGet())
+                    cache.get(refreshed.belowNameData.defaultNumberFormat.updateAndGet())
             );
         }
     }

@@ -5,13 +5,13 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -30,6 +30,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
     /** Scoreboard title which is unused in java */
     private static final String TITLE = "PlayerListObjectiveTitle"; // Unused by this objective slot (on Java, only visible on Bedrock)
 
+    private final StringToComponentCache cache = new StringToComponentCache("Playerlist Objective", 1000);
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Playerlist Objective Thread");
 
@@ -183,7 +184,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Lo
                 scoreHolder.getNickname(),
                 value,
                 null, // Unused by this objective slot
-                TabComponent.optimized(fancyValue)
+                cache.get(fancyValue)
         );
     }
 

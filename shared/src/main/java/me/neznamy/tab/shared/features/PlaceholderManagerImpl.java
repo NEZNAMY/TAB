@@ -223,7 +223,12 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (!p.isLoaded()) continue;
                 for (RefreshableFeature f : placeholderUsage.get(placeholder.getIdentifier())) {
-                    f.refresh(p, true);
+                    FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, p, true);
+                    if (f instanceof CustomThreaded) {
+                        ((CustomThreaded) f).getCustomThread().execute(task);
+                    } else {
+                        task.run();
+                    }
                 }
             }
         }

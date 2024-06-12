@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +37,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     /** Name of the property used in configuration */
     public static final String TABSUFFIX = "tabsuffix";
+
+    private final StringToComponentCache cache = new StringToComponentCache("Tablist formatting", 1000);
 
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = config().getBoolean("tablist-name-formatting.anti-override", true);
@@ -149,7 +152,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         if (prefix == null || name == null || suffix == null) {
             return null;
         }
-        return TabComponent.optimized(prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer));
+        return cache.get(prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer));
     }
 
     @Override

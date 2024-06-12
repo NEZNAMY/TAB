@@ -6,11 +6,11 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HeaderFooter extends RefreshableFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, CustomThreaded {
 
-    @Getter
-    private final ThreadExecutor customThread = new ThreadExecutor("TAB Header/Footer Thread");
+    private final StringToComponentCache cache = new StringToComponentCache("Header/Footer", 1000);
+    @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB Header/Footer Thread");
     private final String HEADER = "header";
     private final String FOOTER = "footer";
     private final List<Object> worldGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-world").keySet());
@@ -140,7 +140,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
 
     private void sendHeaderFooter(TabPlayer player, String header, String footer) {
         if (player.headerFooterData.disabled.get()) return;
-        player.getTabList().setPlayerListHeaderFooter(TabComponent.optimized(header), TabComponent.optimized(footer));
+        player.getTabList().setPlayerListHeaderFooter(cache.get(header), cache.get(footer));
     }
 
     // ------------------
