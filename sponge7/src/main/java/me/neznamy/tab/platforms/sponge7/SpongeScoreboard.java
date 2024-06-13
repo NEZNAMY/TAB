@@ -82,7 +82,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         sb.getObjective(objective.getName()).ifPresent(obj -> {
-            obj.setDisplayName(objective.getTitle().convert(player.getVersion()));
+            obj.setDisplayName(Text.of(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
             obj.setDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()]);
         });
     }
