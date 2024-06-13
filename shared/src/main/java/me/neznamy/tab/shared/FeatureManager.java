@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.*;
 
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.*;
@@ -487,6 +488,17 @@ public class FeatureManager {
                 NameTag unlimited = TAB.getInstance().getPlatform().getUnlimitedNameTags();
                 if (unlimited instanceof NameTagX) {
                     featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, unlimited);
+                    for (String message : new String[]{
+                            "---------------------------------------------------------------------",
+                            "You have unlimited nametag mode feature enabled.",
+                            "This feature is scheduled for removal in a future TAB release.",
+                            "Please considering the alternative solutions available to achieve your desired result.",
+                            "No bug reports with this feature will be accepted anymore.",
+                            "Read 4.1.6 changelogs for more info.",
+                            "---------------------------------------------------------------------"
+                    }) {
+                        TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(message));
+                    }
                 } else {
                     featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, unlimited);
                 }
