@@ -494,7 +494,8 @@ public class FeatureManager {
                             "This feature is scheduled for removal in a future TAB release.",
                             "Please considering the alternative solutions available to achieve your desired result.",
                             "No bug reports with this feature will be accepted anymore.",
-                            "Read 4.1.6 changelogs for more info.",
+                            "No support with this feature will be provided anymore.",
+                            "See https://gist.github.com/NEZNAMY/f4cabf2fd9251a836b5eb877720dee5c/ for more info.",
                             "---------------------------------------------------------------------"
                     }) {
                         TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(message));
