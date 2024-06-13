@@ -59,6 +59,7 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
                 // Sending these packets before login packet will also crash the client on 1.20.3
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     player.getScoreboard().freeze();
+                    player.getBossBar().freeze();
                 }
 
                 tab.getFeatureManager().onJoin(player);
