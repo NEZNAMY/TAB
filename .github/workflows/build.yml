@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - master
+      - v5
 jobs:
   build:
     name: Build
