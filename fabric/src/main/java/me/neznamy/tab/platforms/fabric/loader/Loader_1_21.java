@@ -36,13 +36,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * Method loader compiled using Minecraft 1.20.5.
+ * Method loader compiled using Minecraft 1.21.
  */
 @SuppressWarnings({
         "DataFlowIssue", // Profile is not null on add action
         "unused" // Actually used, just via reflection
 })
-public class Loader_1_20_5 implements Loader {
+public class Loader_1_21 implements Loader {
 
     @Override
     @NotNull
