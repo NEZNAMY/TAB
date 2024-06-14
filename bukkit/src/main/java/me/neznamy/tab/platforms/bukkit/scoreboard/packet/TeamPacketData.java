@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.Limitations;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard.Team;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -12,7 +13,7 @@ import me.neznamy.tab.shared.platform.Scoreboard.TeamAction;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.BiConsumerWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -156,25 +157,20 @@ public class TeamPacketData {
     /**
      * Creates team register packet with specified parameters.
      *
-     * @param   nmsTeam
-     *          Team to register
      * @param   team
-     *          Team data
-     * @param   prefixComponent
-     *          Team prefix component for 1.13+
-     * @param   suffixComponent
-     *          Team suffix component for 1.13+
+     *          Team to register
+     * @param   clientVersion
+     *          Version to create the values for
      * @return  Register team packet with specified parameters
      */
     @SneakyThrows
-    public Object registerTeam(@NonNull Object nmsTeam, @NonNull Team team, @Nullable Object prefixComponent,
-                               @Nullable Object suffixComponent) {
-        updateTeamData(nmsTeam, team, prefixComponent, suffixComponent);
-        ((Collection<String>) ScoreboardTeam_getPlayerNameSet.invoke(nmsTeam)).addAll(team.getPlayers());
+    public Object registerTeam(@NonNull Team team, @NotNull ProtocolVersion clientVersion) {
+        updateTeamData(team, clientVersion);
+        ((Collection<String>) ScoreboardTeam_getPlayerNameSet.invoke(team.getPlatformTeam())).addAll(team.getPlayers());
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-            return TeamPacketConstructor_ofBoolean.invoke(null, nmsTeam, true);
+            return TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
         } else {
-            return newTeamPacket.newInstance(nmsTeam, TeamAction.CREATE);
+            return newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.CREATE);
         }
     }
 
@@ -197,51 +193,48 @@ public class TeamPacketData {
     /**
      * Creates team update packet with specified parameters.
      *
-     * @param   nmsTeam
-     *          Team to update
      * @param   team
-     *          Team data
-     * @param   prefixComponent
-     *          Team prefix component for 1.13+
-     * @param   suffixComponent
-     *          Team suffix component for 1.13+
+     *          Team to update
+     * @param   clientVersion
+     *          Version to create the values for
      * @return  Update team packet with specified parameters
      */
     @SneakyThrows
-    public Object updateTeam(@NonNull Object nmsTeam, @NonNull Team team, @Nullable Object prefixComponent,
-                             @Nullable Object suffixComponent) {
-        updateTeamData(nmsTeam, team, prefixComponent, suffixComponent);
+    public Object updateTeam(@NonNull Team team, @NotNull ProtocolVersion clientVersion) {
+        updateTeamData(team, clientVersion);
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-            return TeamPacketConstructor_ofBoolean.invoke(null, nmsTeam, false);
+            return TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), false);
         } else {
-            return newTeamPacket.newInstance(nmsTeam, TeamAction.UPDATE);
+            return newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.UPDATE);
         }
     }
 
     /**
      * Updates team properties.
      *
-     * @param   nmsTeam
-     *          Team to update
      * @param   team
-     *          Team data
-     * @param   prefixComponent
-     *          Team prefix component for 1.13+
-     * @param   suffixComponent
-     *          Team suffix component for 1.13+
+     *          Team to update
+     * @param   clientVersion
+     *          Version to create the values for
      */
     @SneakyThrows
-    private void updateTeamData(@NonNull Object nmsTeam, @NonNull Team team, @Nullable Object prefixComponent,
-                                @Nullable Object suffixComponent) {
+    private void updateTeamData(@NonNull Team team, @NotNull ProtocolVersion clientVersion) {
+        Object nmsTeam = team.getPlatformTeam();
         ScoreboardTeam_setAllowFriendlyFire.invoke(nmsTeam, (team.getOptions() & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(nmsTeam, (team.getOptions() & 0x2) > 0);
         if (BukkitReflection.getMinorVersion() >= MODERN_TEAM_DATA_VERSION) {
-            ScoreboardTeam_setPrefix.invoke(nmsTeam, prefixComponent);
-            ScoreboardTeam_setSuffix.invoke(nmsTeam, suffixComponent);
+            ScoreboardTeam_setPrefix.invoke(nmsTeam, team.getPrefix().convert(clientVersion));
+            ScoreboardTeam_setSuffix.invoke(nmsTeam, team.getSuffix().convert(clientVersion));
             ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().ordinal()]);
         } else {
-            ScoreboardTeam_setPrefix.invoke(nmsTeam, SafeScoreboard.cutTo(team.getPrefix().toLegacyText(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
-            ScoreboardTeam_setSuffix.invoke(nmsTeam, SafeScoreboard.cutTo(team.getSuffix().toLegacyText(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
+            String prefix = team.getPrefix().toLegacyText();
+            String suffix = team.getSuffix().toLegacyText();
+            if (clientVersion.getMinorVersion() < 13) {
+                prefix = SafeScoreboard.cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13);
+                suffix = SafeScoreboard.cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13);
+            }
+            ScoreboardTeam_setPrefix.invoke(nmsTeam, prefix);
+            ScoreboardTeam_setSuffix.invoke(nmsTeam, suffix);
         }
         setVisibility.accept(nmsTeam, team.getVisibility());
         setCollision.accept(nmsTeam, team.getCollision());

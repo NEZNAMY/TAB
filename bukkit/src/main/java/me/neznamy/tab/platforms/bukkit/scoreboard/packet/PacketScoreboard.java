@@ -168,12 +168,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     public void registerTeam(@NonNull Team team) {
         Object nmsTeam = teamPacketData.createTeam(team.getName());
         team.setPlatformTeam(nmsTeam);
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(
-                nmsTeam,
-                team,
-                team.getPrefix().convert(player.getVersion()),
-                team.getSuffix().convert(player.getVersion())
-        ));
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(team, player.getVersion()));
     }
 
     @Override
@@ -183,12 +178,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateTeam(@NonNull Team team) {
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(
-                team.getPlatformTeam(),
-                team,
-                team.getPrefix().convert(player.getVersion()),
-                team.getSuffix().convert(player.getVersion())
-        ));
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(team, player.getVersion()));
     }
 
     @Override
@@ -255,7 +245,8 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         }
         // 1.5 - 1.12.2
         Object objective = newScoreboardObjective.newInstance(emptyScoreboard, objectiveName, IScoreboardCriteria_dummy);
-        ScoreboardObjective_setDisplayName.invoke(objective, cutTo(title.toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
+        String cutTitle = player.getVersion().getMinorVersion() >= 13 ? title.toLegacyText() : cutTo(title.toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13);
+        ScoreboardObjective_setDisplayName.invoke(objective, cutTitle);
         return objective;
     }
 
