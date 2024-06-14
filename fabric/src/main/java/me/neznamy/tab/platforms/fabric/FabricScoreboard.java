@@ -66,17 +66,15 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     }
 
     @Override
+    public Object createTeam(@NonNull String name) {
+        return new PlayerTeam(dummyScoreboard, name);
+    }
+
+    @Override
     public void registerTeam(@NonNull Team team) {
-        PlayerTeam t = new PlayerTeam(dummyScoreboard, team.getName());
-        t.setAllowFriendlyFire((team.getOptions() & 0x01) > 0);
-        t.setSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0);
-        t.setColor(ChatFormatting.valueOf(team.getColor().name()));
-        t.setCollisionRule(net.minecraft.world.scores.Team.CollisionRule.valueOf(team.getCollision().name()));
-        t.setNameTagVisibility(net.minecraft.world.scores.Team.Visibility.valueOf(team.getVisibility().name()));
-        t.setPlayerPrefix(team.getPrefix().convert(player.getVersion()));
-        t.setPlayerSuffix(team.getSuffix().convert(player.getVersion()));
+        updateTeamProperties(team);
+        PlayerTeam t = (PlayerTeam) team.getPlatformTeam();
         t.getPlayers().addAll(team.getPlayers());
-        team.setPlatformTeam(t);
         player.sendPacket(FabricMultiVersion.registerTeam(t));
     }
 
@@ -87,6 +85,11 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
 
     @Override
     public void updateTeam(@NonNull Team team) {
+        updateTeamProperties(team);
+        player.sendPacket(FabricMultiVersion.updateTeam((PlayerTeam) team.getPlatformTeam()));
+    }
+
+    private void updateTeamProperties(@NonNull Team team) {
         PlayerTeam t = (PlayerTeam) team.getPlatformTeam();
         t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         t.setSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
@@ -95,7 +98,6 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         t.setNameTagVisibility(net.minecraft.world.scores.Team.Visibility.valueOf(team.getVisibility().name()));
         t.setPlayerPrefix(team.getPrefix().convert(player.getVersion()));
         t.setPlayerSuffix(team.getSuffix().convert(player.getVersion()));
-        player.sendPacket(FabricMultiVersion.updateTeam(t));
     }
 
     @Override

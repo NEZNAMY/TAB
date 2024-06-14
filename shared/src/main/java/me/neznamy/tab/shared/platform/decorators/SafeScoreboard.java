@@ -141,7 +141,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
             error("Tried to register duplicated team %s to player ", name);
             return;
         }
-        Team team = new Team(name, prefix, suffix, visibility, collision, players, options, color, null);
+        Team team = new Team(createTeam(name), name, prefix, suffix, visibility, collision, players, options, color);
         teams.put(name, team);
         if (frozen) return;
         registerTeam(team);
@@ -372,6 +372,15 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     public abstract void removeScore(@NonNull Score score);
 
     /**
+     * Constructs platform's team object with given name
+     *
+     * @param   name
+     *          Team name
+     * @return  Platform's team object with given name
+     */
+    public abstract Object createTeam(@NonNull String name);
+
+    /**
      * Registers a team
      *
      * @param   team
@@ -449,6 +458,8 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Setter
     public static class Team {
 
+        /** Platform's team object for fast access */
+        @NotNull private final Object platformTeam;
         @NonNull private final String name;
         @NonNull private TabComponent prefix;
         @NonNull private TabComponent suffix;
@@ -457,9 +468,6 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         @NonNull private Collection<String> players;
         private int options;
         @NonNull private EnumChatFormat color;
-
-        /** Platform's team object (if it has one) for fast access */
-        @Nullable private Object platformTeam;
 
         private void update(@NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull NameVisibility visibility,
                             @NonNull CollisionRule collision, int options, @NonNull EnumChatFormat color) {

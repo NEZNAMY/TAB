@@ -143,9 +143,14 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @Override
+    public Object createTeam(@NonNull String name) {
+        return scoreboard.registerNewTeam(name);
+    }
+
+    @Override
     public void registerTeam(@NonNull Team team) {
         checkPlayerScoreboard();
-        org.bukkit.scoreboard.Team t = scoreboard.registerNewTeam(team.getName());
+        org.bukkit.scoreboard.Team t = (org.bukkit.scoreboard.Team) team.getPlatformTeam();
         setPrefix(t, team.getPrefix());
         setSuffix(t, team.getSuffix());
         if (serverMinorVersion >= 8)

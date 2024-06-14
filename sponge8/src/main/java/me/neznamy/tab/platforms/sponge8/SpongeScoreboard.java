@@ -98,6 +98,11 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     }
 
     @Override
+    public Object createTeam(@NonNull String name) {
+        return new Object(); // This implementation does not need teams tracked
+    }
+
+    @Override
     public void registerTeam(@NonNull Team team) {
         org.spongepowered.api.scoreboard.Team spongeTeam = org.spongepowered.api.scoreboard.Team.builder()
                 .name(team.getName())

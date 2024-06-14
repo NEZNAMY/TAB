@@ -177,16 +177,16 @@ public class TeamPacketData {
     /**
      * Creates unregister team packet with given team.
      *
-     * @param   nmsTeam
+     * @param   team
      *          Team to unregister
      * @return  Packet for unregistering team
      */
     @SneakyThrows
-    public Object unregisterTeam(@NonNull Object nmsTeam) {
+    public Object unregisterTeam(@NonNull Team team) {
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-            return TeamPacketConstructor_of.invoke(null, nmsTeam);
+            return TeamPacketConstructor_of.invoke(null, team.getPlatformTeam());
         } else {
-            return newTeamPacket.newInstance(nmsTeam, TeamAction.REMOVE);
+            return newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.REMOVE);
         }
     }
 
@@ -223,8 +223,8 @@ public class TeamPacketData {
         ScoreboardTeam_setAllowFriendlyFire.invoke(nmsTeam, (team.getOptions() & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(nmsTeam, (team.getOptions() & 0x2) > 0);
         if (BukkitReflection.getMinorVersion() >= MODERN_TEAM_DATA_VERSION) {
-            ScoreboardTeam_setPrefix.invoke(nmsTeam, team.getPrefix().convert(clientVersion));
-            ScoreboardTeam_setSuffix.invoke(nmsTeam, team.getSuffix().convert(clientVersion));
+            ScoreboardTeam_setPrefix.invoke(nmsTeam, (Object) team.getPrefix().convert(clientVersion));
+            ScoreboardTeam_setSuffix.invoke(nmsTeam, (Object) team.getSuffix().convert(clientVersion));
             ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().ordinal()]);
         } else {
             String prefix = team.getPrefix().toLegacyText();

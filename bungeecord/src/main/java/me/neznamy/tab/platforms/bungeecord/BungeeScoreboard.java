@@ -96,6 +96,11 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     }
 
     @Override
+    public Object createTeam(@NonNull String name) {
+        return new Object(); // This implementation does not use team objects
+    }
+
+    @Override
     public void registerTeam(@NonNull Team team) {
         player.sendPacket(new net.md_5.bungee.protocol.packet.Team(
                 team.getName(),

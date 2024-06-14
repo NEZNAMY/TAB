@@ -69,6 +69,11 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
     }
 
     @Override
+    public Object createTeam(@NonNull String name) {
+        return new Object(); // This implementation does not use team objects
+    }
+
+    @Override
     public void registerTeam(@NonNull Team team) {
         player.sendPluginMessage(new SetScoreboardTeam(
                 team.getName(),

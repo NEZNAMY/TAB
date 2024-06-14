@@ -165,15 +165,18 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @Override
+    public Object createTeam(@NonNull String name) {
+        return teamPacketData.createTeam(name);
+    }
+
+    @Override
     public void registerTeam(@NonNull Team team) {
-        Object nmsTeam = teamPacketData.createTeam(team.getName());
-        team.setPlatformTeam(nmsTeam);
         packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(team, player.getVersion()));
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(team.getPlatformTeam()));
+        packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(team));
     }
 
     @Override

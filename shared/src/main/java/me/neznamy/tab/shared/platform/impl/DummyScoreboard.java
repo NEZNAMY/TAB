@@ -45,6 +45,11 @@ public class DummyScoreboard extends SafeScoreboard<TabPlayer> {
     }
 
     @Override
+    public Object createTeam(@NonNull String name) {
+        return new Object();
+    }
+
+    @Override
     public void registerTeam(@NonNull Team team) {
         // Do nothing
     }
