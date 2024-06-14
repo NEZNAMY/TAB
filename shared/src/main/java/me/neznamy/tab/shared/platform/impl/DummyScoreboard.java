@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.platform.impl;
 import lombok.NonNull;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Dummy implementation if no scoreboard implementation is available.
@@ -45,6 +46,7 @@ public class DummyScoreboard extends SafeScoreboard<TabPlayer> {
     }
 
     @Override
+    @NotNull
     public Object createTeam(@NonNull String name) {
         return new Object();
     }

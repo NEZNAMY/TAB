@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.proxy.message.outgoing.SetDisplayObjective;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetObjective;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetScore;
 import me.neznamy.tab.shared.proxy.message.outgoing.SetScoreboardTeam;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Scoreboard handler using bridge to encode the packets.
@@ -69,6 +70,7 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
     }
 
     @Override
+    @NotNull
     public Object createTeam(@NonNull String name) {
         return new Object(); // This implementation does not use team objects
     }

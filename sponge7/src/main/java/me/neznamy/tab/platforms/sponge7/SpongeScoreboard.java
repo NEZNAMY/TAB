@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.sponge7;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.scoreboard.CollisionRules;
 import org.spongepowered.api.scoreboard.Visibilities;
 import org.spongepowered.api.scoreboard.Visibility;
@@ -98,6 +99,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     }
 
     @Override
+    @NotNull
     public Object createTeam(@NonNull String name) {
         return new Object(); // This implementation does not need teams tracked
     }

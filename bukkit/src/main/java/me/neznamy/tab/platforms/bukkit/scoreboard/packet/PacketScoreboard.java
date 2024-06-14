@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -150,6 +151,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @Override
+    @NotNull
     public Object createTeam(@NonNull String name) {
         return teamPacketData.createTeam(name);
     }

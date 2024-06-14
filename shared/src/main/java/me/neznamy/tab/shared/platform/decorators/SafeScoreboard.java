@@ -378,6 +378,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
      *          Team name
      * @return  Platform's team object with given name
      */
+    @NotNull
     public abstract Object createTeam(@NonNull String name);
 
     /**

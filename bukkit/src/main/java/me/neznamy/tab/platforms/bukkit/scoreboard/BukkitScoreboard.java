@@ -143,6 +143,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @Override
+    @NotNull
     public Object createTeam(@NonNull String name) {
         return scoreboard.registerNewTeam(name);
     }

@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Scoreboard implementation for Fabric using packets.
@@ -66,6 +67,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     }
 
     @Override
+    @NotNull
     public Object createTeam(@NonNull String name) {
         return new PlayerTeam(dummyScoreboard, name);
     }

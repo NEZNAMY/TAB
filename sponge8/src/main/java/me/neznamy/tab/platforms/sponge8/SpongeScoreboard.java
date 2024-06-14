@@ -4,6 +4,7 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.scoreboard.CollisionRules;
 import org.spongepowered.api.scoreboard.Visibilities;
 import org.spongepowered.api.scoreboard.Visibility;
@@ -98,6 +99,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     }
 
     @Override
+    @NotNull
     public Object createTeam(@NonNull String name) {
         return new Object(); // This implementation does not need teams tracked
     }
