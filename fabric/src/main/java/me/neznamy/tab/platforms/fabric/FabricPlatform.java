@@ -115,6 +115,7 @@ public class FabricPlatform implements BackendPlatform {
     }
 
     @Override
+    @NotNull
     public Component convertComponent(@NotNull TabComponent component, boolean modern) {
         if (component instanceof SimpleComponent) return FabricMultiVersion.newTextComponent(((SimpleComponent) component).getText());
 

@@ -108,6 +108,7 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    @NotNull
     public Text convertComponent(@NotNull TabComponent component, boolean modern) {
         return Text.of(component.toLegacyText());
     }

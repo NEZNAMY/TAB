@@ -107,6 +107,7 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
+    @NotNull
     public Component convertComponent(@NotNull TabComponent component, boolean modern) {
         return AdventureHook.toAdventureComponent(component, modern);
     }

@@ -136,6 +136,7 @@ public interface Platform {
      *          Whether clients supports RGB or not
      * @return  Converted component
      */
+    @NotNull
     Object convertComponent(@NotNull TabComponent component, boolean modern);
 
     /**

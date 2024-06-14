@@ -125,6 +125,7 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
+    @NotNull
     public BaseComponent convertComponent(@NotNull TabComponent component, boolean modern) {
         if (component instanceof SimpleComponent) return new TextComponent(component.toLegacyText());
         StructuredComponent iComponent = (StructuredComponent) component;
