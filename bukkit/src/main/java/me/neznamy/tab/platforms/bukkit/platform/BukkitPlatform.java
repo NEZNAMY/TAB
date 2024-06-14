@@ -1,13 +1,15 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
+import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
+import me.neznamy.tab.platforms.bukkit.nms.converter.ReflectionComponentConverter;
 import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
 import me.neznamy.tab.shared.GroupManager;
@@ -45,6 +47,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.EnumSet;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -72,12 +75,20 @@ public class BukkitPlatform implements BackendPlatform {
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
+    /** Flag tracking availability of direct NMS code for 1.20.5+ paper using mojang mappings with paperweight */
+    private final boolean enhancedDirectNMS = ReflectionUtils.classExists("io.papermc.paper.util.TickThread") &&
+            EnumSet.of(
+                    ProtocolVersion.V1_20_5,
+                    ProtocolVersion.V1_20_6
+            ).contains(serverVersion);
+
     /**
      * Constructs new instance with given plugin.
      *
      * @param   plugin
      *          Plugin
      */
+    @SneakyThrows
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         long time = System.currentTimeMillis();
@@ -90,15 +101,17 @@ public class BukkitPlatform implements BackendPlatform {
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
         }
-        ComponentConverter.tryLoad();
         PingRetriever.tryLoad();
-        TabListBase.findInstance();
-        if (BukkitReflection.getMinorVersion() >= 5) {
+        if (enhancedDirectNMS) {
+            Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getMethod("load").invoke(null);
+        } else {
+            ReflectionComponentConverter.tryLoad();
             ScoreboardLoader.findInstance();
-        }
-        if (BukkitReflection.getMinorVersion() >= 8) {
-            BukkitPipelineInjector.tryLoad();
-            HeaderFooter.findInstance();
+            TabListBase.findInstance();
+            if (BukkitReflection.getMinorVersion() >= 8) {
+                HeaderFooter.findInstance();
+                BukkitPipelineInjector.tryLoad();
+            }
         }
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] " + EnumChatFormat.GRAY + "Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");

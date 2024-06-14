@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import io.netty.channel.Channel;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
@@ -18,6 +19,7 @@ import java.lang.reflect.Method;
 public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     /** Function for getting player's channel */
+    @Setter
     private static FunctionWithException<TabPlayer, Channel> getChannel;
 
     /**

@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.Setter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
@@ -20,6 +21,7 @@ public class ScoreboardLoader {
 
     /** Instance function */
     @Getter
+    @Setter
     @NotNull
     private static Function<BukkitTabPlayer, Scoreboard> instance = DummyScoreboard::new;
 

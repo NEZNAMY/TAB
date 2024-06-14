@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.header;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
+import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.BiFunctionWithException;
@@ -32,7 +32,7 @@ public class PacketHeaderFooter extends HeaderFooter {
         Class<?> Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         Class<?> HeaderFooterClass = BukkitReflection.getClass("network.protocol.game.ClientboundTabListPacket",
                 "network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
-        ComponentConverter.ensureAvailable();
+        if (ComponentConverter.INSTANCE == null) throw new IllegalStateException("Component converter is not available");
         if (BukkitReflection.getMinorVersion() >= 17) {
             Constructor<?> newHeaderFooter = HeaderFooterClass.getConstructor(Component, Component);
             createPacket = newHeaderFooter::newInstance;

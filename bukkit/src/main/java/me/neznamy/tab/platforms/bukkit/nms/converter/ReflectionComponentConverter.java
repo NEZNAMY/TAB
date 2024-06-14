@@ -1,6 +1,7 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.nms.converter;
 
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.StructuredComponent;
@@ -8,7 +9,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -20,11 +20,7 @@ import java.util.function.BiFunction;
  * Class for converting TAB component into NMS components (1.7+).
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class ComponentConverter {
-
-    /** Instance of the class */
-    @Nullable
-    public static ComponentConverter INSTANCE;
+public class ReflectionComponentConverter extends ComponentConverter {
 
     private final FunctionWithException<String, Object> newTextComponent;
     private final BiFunction<ChatModifier, Boolean, Object> convertModifier;
@@ -49,7 +45,7 @@ public class ComponentConverter {
      * @throws  ReflectiveOperationException
      *          If something failed
      */
-    private ComponentConverter() throws ReflectiveOperationException {
+    private ReflectionComponentConverter() throws ReflectiveOperationException {
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         if (BukkitReflection.getMinorVersion() >= 19) {
             Method IChatBaseComponent_b = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"b", "literal"}, String.class);
@@ -82,16 +78,9 @@ public class ComponentConverter {
         }
     }
 
-    /**
-     * Converts TAB component to NMS component.
-     *
-     * @param   component
-     *          Component to convert
-     * @param   modern
-     *          Whether client supports RGB or not
-     * @return  Converted component
-     */
+    @Override
     @SneakyThrows
+    @NotNull
     public Object convert(@NotNull TabComponent component, boolean modern) {
         if (component instanceof SimpleComponent) return newTextComponent.apply(((SimpleComponent) component).getText());
 
@@ -147,15 +136,8 @@ public class ComponentConverter {
      */
     public static void tryLoad() {
         try {
-            INSTANCE = new ComponentConverter();
+            INSTANCE = new ReflectionComponentConverter();
         } catch (Exception ignored) {
         }
-    }
-
-    /**
-     * Makes sure the component converter is available and throws an exception if not.
-     */
-    public static void ensureAvailable() {
-        if (INSTANCE == null) throw new IllegalStateException("Component converter is not available");
     }
 }

@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
+import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
@@ -82,7 +82,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
             newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
             if (minorVersion >= 7) {
                 Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
-                ComponentConverter.ensureAvailable();
+                if (ComponentConverter.INSTANCE == null) throw new IllegalStateException("Component converter is not available");
             }
             if (minorVersion >= 8) {
                 Class<?> EnumScoreboardHealthDisplay = BukkitReflection.getClass(

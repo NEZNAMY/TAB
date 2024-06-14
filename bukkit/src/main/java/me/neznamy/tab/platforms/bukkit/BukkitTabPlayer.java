@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.bossbar.BossBarLoader;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
@@ -25,14 +26,9 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 public class BukkitTabPlayer extends BackendTabPlayer {
 
-    @NotNull
-    private final Scoreboard scoreboard = ScoreboardLoader.getInstance().apply(this);
-
-    @NotNull
-    private final TabListBase<?> tabList = TabListBase.getInstance().apply(this);
-
-    @NotNull
-    private final BossBar bossBar = BossBarLoader.findInstance(this);
+    @NotNull private final Scoreboard scoreboard;
+    @NotNull private final TabListBase<?> tabList;
+    @NotNull private final BossBar bossBar = BossBarLoader.findInstance(this);
 
     /** Player's connection for sending packets */
     @Nullable
@@ -46,8 +42,11 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      * @param   p
      *          bukkit player
      */
+    @SneakyThrows
     public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
         super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName(), platform.getServerVersion().getNetworkId());
+        scoreboard = ScoreboardLoader.getInstance().apply(this);
+        tabList = TabListBase.getInstance().apply(this);
     }
 
     @Override

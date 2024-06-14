@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
@@ -24,6 +25,7 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
 
     /** Instance function */
     @Getter
+    @Setter
     private static Function<BukkitTabPlayer, TabListBase<?>> instance;
 
     @Nullable
