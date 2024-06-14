@@ -124,30 +124,30 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerObjective(@NonNull Objective objective) {
-        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.REGISTER, objective));
-        packetSender.sendPacket(player.getPlayer(), displayPacketData.setDisplaySlot(objective.getDisplaySlot().ordinal(), newObjective(objective)));
+        packetSender.sendPacket(player, newObjectivePacket(ObjectiveAction.REGISTER, objective));
+        packetSender.sendPacket(player, displayPacketData.setDisplaySlot(objective.getDisplaySlot().ordinal(), newObjective(objective)));
     }
 
     @Override
     public void unregisterObjective(@NonNull Objective objective) {
-        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UNREGISTER, objective));
+        packetSender.sendPacket(player, newObjectivePacket(ObjectiveAction.UNREGISTER, objective));
     }
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
-        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UPDATE, objective));
+        packetSender.sendPacket(player, newObjectivePacket(ObjectiveAction.UPDATE, objective));
     }
 
     @Override
     public void setScore(@NonNull Score score) {
-        packetSender.sendPacket(player.getPlayer(), scorePacketData.setScore(score.getObjective(), score.getHolder(), score.getValue(),
+        packetSender.sendPacket(player, scorePacketData.setScore(score.getObjective(), score.getHolder(), score.getValue(),
                 score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
                 score.getNumberFormat() == null ? null : toFixedFormat(score.getNumberFormat())));
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
-        packetSender.sendPacket(player.getPlayer(), scorePacketData.removeScore(score.getObjective(), score.getHolder()));
+        packetSender.sendPacket(player, scorePacketData.removeScore(score.getObjective(), score.getHolder()));
     }
 
     @Override
@@ -158,17 +158,17 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerTeam(@NonNull Team team) {
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.registerTeam(team, player.getVersion()));
+        packetSender.sendPacket(player, teamPacketData.registerTeam(team, player.getVersion()));
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.unregisterTeam(team));
+        packetSender.sendPacket(player, teamPacketData.unregisterTeam(team));
     }
 
     @Override
     public void updateTeam(@NonNull Team team) {
-        packetSender.sendPacket(player.getPlayer(), teamPacketData.updateTeam(team, player.getVersion()));
+        packetSender.sendPacket(player, teamPacketData.updateTeam(team, player.getVersion()));
     }
 
     @Override

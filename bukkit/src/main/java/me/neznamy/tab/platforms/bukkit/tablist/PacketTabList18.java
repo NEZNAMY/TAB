@@ -110,25 +110,25 @@ public class PacketTabList18 extends TabListBase<Object> {
 
     @Override
     public void removeEntry0(@NonNull UUID entry) {
-        packetSender.sendPacket(player.getPlayer(),
+        packetSender.sendPacket(player,
                 createPacket(Action.REMOVE_PLAYER, entry, "", null, false, 0, 0, null));
     }
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable Object displayName) {
-        packetSender.sendPacket(player.getPlayer(),
+        packetSender.sendPacket(player,
                 createPacket(Action.UPDATE_DISPLAY_NAME, entry, "", null, false, 0, 0, displayName));
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
-        packetSender.sendPacket(player.getPlayer(),
+        packetSender.sendPacket(player,
                 createPacket(Action.UPDATE_LATENCY, entry, "", null, false, latency, 0, null));
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
-        packetSender.sendPacket(player.getPlayer(),
+        packetSender.sendPacket(player,
                 createPacket(Action.UPDATE_GAME_MODE, entry, "", null, false, 0, gameMode, null));
     }
 
@@ -139,7 +139,7 @@ public class PacketTabList18 extends TabListBase<Object> {
 
     @Override
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Object displayName) {
-        packetSender.sendPacket(player.getPlayer(),
+        packetSender.sendPacket(player,
                 createPacket(Action.ADD_PLAYER, id, name, skin, listed, latency, gameMode, displayName));
     }
 

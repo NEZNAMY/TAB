@@ -75,7 +75,7 @@ public class PacketTabList17 extends TabListBase<String> {
     @SneakyThrows
     public void removeEntry0(@NonNull UUID entry) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-        packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), false, 0));
+        packetSender.sendPacket(player, newPacket.apply(displayNames.get(entry), false, 0));
         userNames.remove(entry);
         displayNames.remove(entry);
     }
@@ -84,7 +84,7 @@ public class PacketTabList17 extends TabListBase<String> {
     @SneakyThrows
     public void updateDisplayName(@NonNull UUID entry, @Nullable String displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-        packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), false, 0));
+        packetSender.sendPacket(player, newPacket.apply(displayNames.get(entry), false, 0));
         addEntry(entry, userNames.get(entry), null, false, 0, 0, displayName);
     }
 
@@ -92,7 +92,7 @@ public class PacketTabList17 extends TabListBase<String> {
     @SneakyThrows
     public void updateLatency(@NonNull UUID entry, int latency) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-        packetSender.sendPacket(player.getPlayer(), newPacket.apply(displayNames.get(entry), true, latency));
+        packetSender.sendPacket(player, newPacket.apply(displayNames.get(entry), true, latency));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class PacketTabList17 extends TabListBase<String> {
     @SneakyThrows
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable String displayName) {
         String display = displayName == null ? name : displayName;
-        packetSender.sendPacket(player.getPlayer(), newPacket.apply(display, true, latency));
+        packetSender.sendPacket(player, newPacket.apply(display, true, latency));
         userNames.put(id, name);
         displayNames.put(id, display);
     }

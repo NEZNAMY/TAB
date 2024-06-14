@@ -34,6 +34,10 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @NotNull
     private final BossBar bossBar = BossBarLoader.findInstance(this);
 
+    /** Player's connection for sending packets */
+    @Nullable
+    public Object connection;
+
     /**
      * Constructs new instance with given bukkit player
      *

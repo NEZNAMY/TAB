@@ -91,12 +91,12 @@ public class PacketTabList1193 extends PacketTabList18 {
     @Override
     @SneakyThrows
     public void removeEntry0(@NonNull UUID entry) {
-        packetSender.sendPacket(player.getPlayer(), newRemovePacket.newInstance(Collections.singletonList(entry)));
+        packetSender.sendPacket(player, newRemovePacket.newInstance(Collections.singletonList(entry)));
     }
 
     @Override
     public void updateListed(@NonNull UUID entry, boolean listed) {
-        packetSender.sendPacket(player.getPlayer(),
+        packetSender.sendPacket(player,
                 createPacket(Action.UPDATE_LISTED, entry, "", null, listed, 0, 0, null));
     }
 
