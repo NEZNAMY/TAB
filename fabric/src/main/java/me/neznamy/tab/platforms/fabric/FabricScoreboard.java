@@ -8,6 +8,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +17,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
 
-    private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
+    private static final ChatFormatting[] formats = ChatFormatting.values();
+    private static final net.minecraft.world.scores.Team.CollisionRule[] collisions = net.minecraft.world.scores.Team.CollisionRule.values();
+    private static final net.minecraft.world.scores.Team.Visibility[] visibilities = net.minecraft.world.scores.Team.Visibility.values();
+    private static final Scoreboard dummyScoreboard = new Scoreboard();
 
     /**
      * Constructs new instance with given player.
@@ -95,9 +99,9 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         PlayerTeam t = (PlayerTeam) team.getPlatformTeam();
         t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         t.setSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
-        t.setColor(ChatFormatting.valueOf(team.getColor().name()));
-        t.setCollisionRule(net.minecraft.world.scores.Team.CollisionRule.valueOf(team.getCollision().name()));
-        t.setNameTagVisibility(net.minecraft.world.scores.Team.Visibility.valueOf(team.getVisibility().name()));
+        t.setColor(formats[team.getColor().ordinal()]);
+        t.setCollisionRule(collisions[team.getCollision().ordinal()]);
+        t.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
         t.setPlayerPrefix(team.getPrefix().convert(player.getVersion()));
         t.setPlayerSuffix(team.getSuffix().convert(player.getVersion()));
     }
