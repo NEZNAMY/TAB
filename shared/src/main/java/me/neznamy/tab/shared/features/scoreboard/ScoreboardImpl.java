@@ -264,7 +264,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
 
     @Override
     public void unregister() {
-        ensureActive();
+        //ensureActive(); //TODO resolve in a different way (may happen on reload)
         for (TabPlayer all : players.toArray(new TabPlayer[0])) {
             removePlayer(all);
         }
