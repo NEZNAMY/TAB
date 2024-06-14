@@ -123,33 +123,18 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerObjective(@NonNull Objective objective) {
-        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(
-                ObjectiveAction.REGISTER,
-                objective.getName(),
-                objective.getTitle(),
-                objective.getHealthDisplay().ordinal(),
-                objective.getNumberFormat()
-        ));
-        packetSender.sendPacket(player.getPlayer(), displayPacketData.setDisplaySlot(
-                objective.getDisplaySlot().ordinal(),
-                newObjective(objective.getName(), objective.getTitle(), 0, null)
-        ));
+        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.REGISTER, objective));
+        packetSender.sendPacket(player.getPlayer(), displayPacketData.setDisplaySlot(objective.getDisplaySlot().ordinal(), newObjective(objective)));
     }
 
     @Override
     public void unregisterObjective(@NonNull Objective objective) {
-        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UNREGISTER, objective.getName(), objective.getTitle(), 0, null));
+        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UNREGISTER, objective));
     }
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
-        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(
-                ObjectiveAction.UPDATE,
-                objective.getName(),
-                objective.getTitle(),
-                objective.getHealthDisplay().ordinal(),
-                objective.getNumberFormat()
-        ));
+        packetSender.sendPacket(player.getPlayer(), newObjectivePacket(ObjectiveAction.UPDATE, objective));
     }
 
     @Override
@@ -198,59 +183,44 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @SneakyThrows
-    private Object newObjectivePacket(int action, @NonNull String objectiveName, @NonNull TabComponent title, int display,
-                                      @Nullable TabComponent numberFormat) {
+    private Object newObjectivePacket(int action, @NonNull Objective objective) {
         // TODO save objectives and reuse them for better performance
-        Object packet = newObjectivePacket.newInstance(newObjective(objectiveName, title, display, numberFormat), action);
+        Object packet = newObjectivePacket.newInstance(newObjective(objective), action);
         if (BukkitReflection.getMinorVersion() >= 8 && BukkitReflection.getMinorVersion() < 13) {
-            Objective_RENDER_TYPE.set(packet, healthDisplays[display]);
+            Objective_RENDER_TYPE.set(packet, healthDisplays[objective.getHealthDisplay().ordinal()]);
         }
         return packet;
     }
 
-    /**
-     * Creates a new Scoreboard Objective with given parameters.
-     *
-     * @param   objectiveName
-     *          Objective name
-     * @param   title
-     *          Objective title
-     * @param   renderType
-     *          Render type
-     * @param   numberFormat
-     *          Default number format (1.20.3+)
-     * @return  Created objective
-     */
     @SneakyThrows
-    public Object newObjective(@NonNull String objectiveName, @NonNull TabComponent title, int renderType,
-                               @Nullable TabComponent numberFormat) {
+    private Object newObjective(@NonNull Objective objective) {
         if (BukkitReflection.is1_20_3Plus()) {
             // 1.20.3+
             return newScoreboardObjective.newInstance(
                     emptyScoreboard,
-                    objectiveName,
+                    objective.getName(),
                     null, // Criteria
-                    title.convert(player.getVersion()),
-                    healthDisplays[renderType],
+                    objective.getTitle().convert(player.getVersion()),
+                    healthDisplays[objective.getHealthDisplay().ordinal()],
                     false, // Auto update
-                    numberFormat == null ? null : toFixedFormat(numberFormat)
+                    objective.getNumberFormat() == null ? null : toFixedFormat(objective.getNumberFormat())
             );
         }
         if (BukkitReflection.getMinorVersion() >= 13) {
             // 1.13 - 1.20.2
             return newScoreboardObjective.newInstance(
                     emptyScoreboard,
-                    objectiveName,
+                    objective.getName(),
                     null, // Criteria
-                    title.convert(player.getVersion()),
-                    healthDisplays[renderType]
+                    objective.getTitle().convert(player.getVersion()),
+                    healthDisplays[objective.getHealthDisplay().ordinal()]
             );
         }
         // 1.5 - 1.12.2
-        Object objective = newScoreboardObjective.newInstance(emptyScoreboard, objectiveName, IScoreboardCriteria_dummy);
-        String cutTitle = player.getVersion().getMinorVersion() >= 13 ? title.toLegacyText() : cutTo(title.toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13);
-        ScoreboardObjective_setDisplayName.invoke(objective, cutTitle);
-        return objective;
+        Object nmsObjective = newScoreboardObjective.newInstance(emptyScoreboard, objective.getName(), IScoreboardCriteria_dummy);
+        String cutTitle = player.getVersion().getMinorVersion() >= 13 ? objective.getTitle().toLegacyText() : cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13);
+        ScoreboardObjective_setDisplayName.invoke(nmsObjective, cutTitle);
+        return nmsObjective;
     }
 
     @Nullable
