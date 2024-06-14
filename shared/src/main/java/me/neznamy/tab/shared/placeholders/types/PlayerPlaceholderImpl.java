@@ -93,12 +93,14 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     }
 
     @NotNull
-    public String getLastValue(@Nullable TabPlayer p) {
+    public synchronized String getLastValue(@Nullable TabPlayer p) {
         if (p == null) return identifier;
-        if (!lastValues.containsKey(p)) {
-            lastValues.put(p, replacements.findReplacement(identifier));
-            update(p);
-        }
+        String value = lastValues.get(p);
+        if (value != null) return value;
+
+        // Value not present, initialize
+        lastValues.put(p, replacements.findReplacement(identifier));
+        update(p);
         return lastValues.get(p);
     }
 
