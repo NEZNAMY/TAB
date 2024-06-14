@@ -87,6 +87,19 @@ public class StructuredComponent extends TabComponent {
         return builder.toString();
     }
 
+    @Override
+    @NotNull
+    protected TextColor fetchLastColor() {
+        TextColor lastColor = modifier.getColor();
+        for (StructuredComponent extra : getExtra()) {
+            if (extra.modifier.getColor() != null) {
+                lastColor = extra.modifier.getColor();
+            }
+        }
+        if (lastColor == null) lastColor = TextColor.legacy(EnumChatFormat.WHITE);
+        return lastColor;
+    }
+
     /**
      * Appends text to string builder, might also add color and magic codes if they are different
      * from previous component in chain.

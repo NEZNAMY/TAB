@@ -55,6 +55,13 @@ public abstract class TabComponent {
     private Object fixedFormat;
 
     /**
+     * Last color of this component. Used to determine team color based on last color of prefix.
+     * Saves as TextColor instead of EnumChatFormat to have things ready if Mojang adds RGB support to team color.
+     */
+    @Nullable
+    private TextColor lastColor;
+
+    /**
      * Converts this component to platform's component.
      *
      * @param   clientVersion
@@ -131,6 +138,17 @@ public abstract class TabComponent {
     }
 
     /**
+     * Returns last color of this component. This value is cached.
+     *
+     * @return  Last color of this component
+     */
+    @NotNull
+    public TextColor getLastColor() {
+        if (lastColor == null) lastColor = fetchLastColor();
+        return lastColor;
+    }
+
+    /**
      * Converts this component into a simple text with legacy colors (the closest match if color is set to RGB)
      *
      * @return  The simple text format using legacy colors
@@ -145,6 +163,14 @@ public abstract class TabComponent {
      */
     @NotNull
     public abstract String toFlatText();
+
+    /**
+     * Returns last color of this component.
+     *
+     * @return  Last color of this component
+     */
+    @NotNull
+    protected abstract TextColor fetchLastColor();
 
     /**
      * Returns the most optimized component based on text. Returns null if text is null,

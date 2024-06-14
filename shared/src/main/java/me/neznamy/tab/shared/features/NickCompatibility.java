@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -76,17 +76,17 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    String prefix = player.teamData.prefix.getFormat(viewer);
+                    TabComponent prefix = nameTags.getCache().get(player.teamData.prefix.getFormat(viewer));
                     viewer.getScoreboard().unregisterTeam(player.sortingData.getShortTeamName());
                     viewer.getScoreboard().registerTeam(
                             player.sortingData.getShortTeamName(),
-                            nameTags.getCache().get(prefix),
+                            prefix,
                             nameTags.getCache().get(player.teamData.suffix.getFormat(viewer)),
                             nameTags.getTeamVisibility(player, viewer) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER,
                             player.teamData.getCollisionRule() ? Scoreboard.CollisionRule.ALWAYS : Scoreboard.CollisionRule.NEVER,
                             Collections.singletonList(player.getNickname()),
                             nameTags.getTeamOptions(),
-                            EnumChatFormat.lastColorsOf(prefix)
+                            prefix.getLastColor().getLegacyColor()
                     );
                 }
             if (belowname != null) belowname.processNicknameChange(player);
@@ -100,15 +100,16 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 String teamName = player.getTeamName();
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(teamName);
+                    TabComponent prefix = redisTeams.getNameTags().getCache().get(player.getTagPrefix());
                     viewer.getScoreboard().registerTeam(
                             teamName,
-                            redisTeams.getNameTags().getCache().get(player.getTagPrefix()),
+                            prefix,
                             redisTeams.getNameTags().getCache().get(player.getTagSuffix()),
                             player.getNameVisibility(),
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(player.getNickname()),
                             redisTeams.getNameTags().getTeamOptions(),
-                            EnumChatFormat.lastColorsOf(player.getTagPrefix())
+                            prefix.getLastColor().getLegacyColor()
                     );
                 }
             }

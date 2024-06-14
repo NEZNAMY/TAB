@@ -6,7 +6,7 @@ import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -192,15 +192,15 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(p.sortingData.getShortTeamName())) return;
         boolean visible = getTeamVisibility(p, viewer);
-        String prefix = p.teamData.prefix.getFormat(viewer);
+        TabComponent prefix = cache.get(p.teamData.prefix.getFormat(viewer));
         viewer.getScoreboard().updateTeam(
                 p.sortingData.getShortTeamName(),
-                cache.get(prefix),
+                prefix,
                 cache.get(p.teamData.suffix.getFormat(viewer)),
                 visible ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 teamOptions,
-                EnumChatFormat.lastColorsOf(prefix)
+                prefix.getLastColor().getLegacyColor()
         );
     }
 
@@ -222,16 +222,16 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (hasTeamHandlingPaused(p)) return;
         if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
-        String prefix = p.teamData.prefix.getFormat(viewer);
+        TabComponent prefix = cache.get(p.teamData.prefix.getFormat(viewer));
         viewer.getScoreboard().registerTeam(
                 p.sortingData.getShortTeamName(),
-                cache.get(prefix),
+                prefix,
                 cache.get(p.teamData.suffix.getFormat(viewer)),
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 Collections.singletonList(p.getNickname()),
                 teamOptions,
-                EnumChatFormat.lastColorsOf(prefix)
+                prefix.getLastColor().getLegacyColor()
         );
     }
 

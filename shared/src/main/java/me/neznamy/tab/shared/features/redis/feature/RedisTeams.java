@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -33,15 +33,16 @@ public class RedisTeams extends RedisFeature {
     @Override
     public void onJoin(@NotNull TabPlayer player) {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
+            TabComponent prefix = nameTags.getCache().get(redis.getTagPrefix());
             player.getScoreboard().registerTeam(
                     redis.getTeamName(),
-                    nameTags.getCache().get(redis.getTagPrefix()),
+                    prefix,
                     nameTags.getCache().get(redis.getTagSuffix()),
                     redis.getNameVisibility(),
                     CollisionRule.ALWAYS,
                     Collections.singletonList(redis.getNickname()),
                     2,
-                    EnumChatFormat.lastColorsOf(redis.getTagPrefix())
+                    prefix.getLastColor().getLegacyColor()
             );
         }
     }
@@ -49,15 +50,16 @@ public class RedisTeams extends RedisFeature {
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            TabComponent prefix = nameTags.getCache().get(player.getTagPrefix());
             viewer.getScoreboard().registerTeam(
                     player.getTeamName(),
-                    nameTags.getCache().get(player.getTagPrefix()),
+                    prefix,
                     nameTags.getCache().get(player.getTagSuffix()),
                     player.getNameVisibility(),
                     CollisionRule.ALWAYS,
                     Collections.singletonList(player.getNickname()),
                     2,
-                    EnumChatFormat.lastColorsOf(player.getTagPrefix())
+                    prefix.getLastColor().getLegacyColor()
             );
         }
     }
@@ -140,16 +142,32 @@ public class RedisTeams extends RedisFeature {
             target.setTeamName(newTeamName);
             target.setTagPrefix(prefix);
             target.setTagSuffix(suffix);
+            TabComponent prefixComponent = nameTags.getCache().get(prefix);
             if (!oldTeamName.equals(newTeamName)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(oldTeamName);
-                    viewer.getScoreboard().registerTeam(newTeamName, nameTags.getCache().get(prefix), nameTags.getCache().get(suffix), nameVisibility,
-                            CollisionRule.ALWAYS, Collections.singletonList(target.getNickname()), 2, EnumChatFormat.lastColorsOf(prefix));
+                    viewer.getScoreboard().registerTeam(
+                            newTeamName,
+                            prefixComponent,
+                            nameTags.getCache().get(suffix),
+                            nameVisibility,
+                            CollisionRule.ALWAYS,
+                            Collections.singletonList(target.getNickname()),
+                            2,
+                            prefixComponent.getLastColor().getLegacyColor()
+                    );
                 }
             } else {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.getScoreboard().updateTeam(oldTeamName, nameTags.getCache().get(prefix), nameTags.getCache().get(suffix), nameVisibility,
-                            CollisionRule.ALWAYS, 2, EnumChatFormat.lastColorsOf(prefix));
+                    viewer.getScoreboard().updateTeam(
+                            oldTeamName,
+                            prefixComponent,
+                            nameTags.getCache().get(suffix),
+                            nameVisibility,
+                            CollisionRule.ALWAYS,
+                            2,
+                            prefixComponent.getLastColor().getLegacyColor()
+                    );
                 }
             }
         }

@@ -25,4 +25,18 @@ public class SimpleComponent extends TabComponent {
     public String toFlatText() {
         return text;
     }
+
+    @Override
+    @NotNull
+    protected TextColor fetchLastColor() {
+        if (text.isEmpty()) return TextColor.legacy(EnumChatFormat.WHITE);
+        String last = EnumChatFormat.getLastColors(text);
+        if (!last.isEmpty()) {
+            char c = last.toCharArray()[1];
+            for (EnumChatFormat e : EnumChatFormat.VALUES) {
+                if (e.getCharacter() == c) return TextColor.legacy(e);
+            }
+        }
+        return TextColor.legacy(EnumChatFormat.WHITE);
+    }
 }
