@@ -126,7 +126,7 @@ public interface TabList {
         @NonNull private UUID uniqueId;
 
         /** Real name of affected player */
-        @NonNull private String name = "";
+        @NonNull private String name;
 
         /** Player's skin, null for empty skin */
         @Nullable private Skin skin;
