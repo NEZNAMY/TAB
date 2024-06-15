@@ -185,6 +185,18 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
+    public synchronized void updateTeam(@NonNull String name, @NonNull CollisionRule collision) {
+        Team team = teams.get(name);
+        if (team == null) {
+            error("Tried to modify non-existing team %s for player ", name);
+            return;
+        }
+        team.collision = collision;
+        if (frozen) return;
+        updateTeam(team);
+    }
+
+    @Override
     public void resend() {
         for (Objective objective : objectives.values()) {
             registerObjective(objective);

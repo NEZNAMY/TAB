@@ -34,7 +34,7 @@ public class SetCollisionCommand extends SubCommand {
                 return;
             }
             feature.setCollisionRule(target, Boolean.parseBoolean(args[1]));
-            feature.updateTeamData(target);
+            feature.updateCollision(target);
         } else {
             sendMessage(sender, getMessages().getCollisionCommandUsage());
         }

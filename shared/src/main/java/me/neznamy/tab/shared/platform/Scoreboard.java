@@ -156,6 +156,16 @@ public interface Scoreboard {
     void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull EnumChatFormat color);
 
     /**
+     * Updates collision rule.
+     *
+     * @param   name
+     *          Team name
+     * @param   collision
+     *          New collision rule
+     */
+    void updateTeam(@NonNull String name, @NonNull CollisionRule collision);
+
+    /**
      * Resends all objectives and teams.
      */
     void resend();

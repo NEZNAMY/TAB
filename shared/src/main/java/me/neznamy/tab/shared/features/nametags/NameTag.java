@@ -138,12 +138,12 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        if (updateProperties(p) && !p.teamData.disabled.get()) updateTeamData(p);
+        if (updateProperties(p) && !p.teamData.disabled.get()) updatePrefixSuffix(p);
     }
 
     @Override
     public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
-        if (updateProperties(changed) && !changed.teamData.disabled.get()) updateTeamData(changed);
+        if (updateProperties(changed) && !changed.teamData.disabled.get()) updatePrefixSuffix(changed);
     }
 
     /**
@@ -210,7 +210,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      * @param   player
      *          Player to update prefix/suffix of
      */
-    public void updatePrefixSuffix(@NonNull TabPlayer player) {
+    private void updatePrefixSuffix(@NonNull TabPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.sortingData.getShortTeamName())) continue;
             TabComponent prefix = cache.get(player.teamData.prefix.getFormat(viewer));
@@ -225,6 +225,22 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 player.teamData.prefix.get(),
                 player.teamData.suffix.get(),
                 getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
+    }
+
+    /**
+     * Updates collision of a player for everyone.
+     *
+     * @param   player
+     *          Player to update collision of
+     */
+    public void updateCollision(@NonNull TabPlayer player) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.sortingData.getShortTeamName())) continue;
+            viewer.getScoreboard().updateTeam(
+                    player.sortingData.getShortTeamName(),
+                    player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
+            );
+        }
     }
 
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
@@ -386,7 +402,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         p.ensureLoaded();
         if (Objects.equals(p.teamData.forcedCollision, collision)) return;
         p.teamData.forcedCollision = collision;
-        updateTeamData(p);
+        updateCollision(p);
     }
 
     @Override
@@ -403,7 +419,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         p.teamData.prefix.setTemporaryValue(prefix);
-        updateTeamData(p);
+        updatePrefixSuffix(p);
     }
 
     @Override
@@ -412,7 +428,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         p.teamData.suffix.setTemporaryValue(suffix);
-        updateTeamData(p);
+        updatePrefixSuffix(p);
     }
 
     @Override
