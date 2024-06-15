@@ -290,17 +290,17 @@ public class Property {
         // Direct placeholders
         for (String identifier : relPlaceholders) {
             RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-            format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
+            format = format.replace(pl.getIdentifier(), EnumChatFormat.color(pl.getLastValue(viewer, owner)));
         }
 
         // Nested placeholders
         for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(format)) {
             if (!identifier.startsWith("%rel_")) continue;
             RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-            format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
+            format = format.replace(pl.getIdentifier(), EnumChatFormat.color(pl.getLastValue(viewer, owner)));
             if (listener != null) listener.addUsedPlaceholder(identifier);
         }
-        return EnumChatFormat.color(format);
+        return format;
     }
 
     /**
