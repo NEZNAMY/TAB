@@ -96,7 +96,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             boolean suffix = refreshed.teamData.suffix.update();
             refresh = prefix || suffix;
         }
-        if (refresh) updateTeamData(refreshed);
+        if (refresh) updatePrefixSuffix(refreshed);
     }
 
     @Override
@@ -202,6 +202,29 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 teamOptions,
                 prefix.getLastColor().getLegacyColor()
         );
+    }
+
+    /**
+     * Updates team prefix and suffix of given player.
+     *
+     * @param   player
+     *          Player to update prefix/suffix of
+     */
+    public void updatePrefixSuffix(@NonNull TabPlayer player) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.sortingData.getShortTeamName())) continue;
+            TabComponent prefix = cache.get(player.teamData.prefix.getFormat(viewer));
+            viewer.getScoreboard().updateTeam(
+                    player.sortingData.getShortTeamName(),
+                    prefix,
+                    cache.get(player.teamData.suffix.getFormat(viewer)),
+                    prefix.getLastColor().getLegacyColor()
+            );
+        }
+        if (redis != null) redis.updateTeam(player, player.sortingData.getShortTeamName(),
+                player.teamData.prefix.get(),
+                player.teamData.suffix.get(),
+                getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
     }
 
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {

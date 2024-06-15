@@ -173,6 +173,18 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
+    public synchronized void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull EnumChatFormat color) {
+        Team team = teams.get(name);
+        if (team == null) {
+            error("Tried to modify non-existing team %s for player ", name);
+            return;
+        }
+        team.update(prefix, suffix, color);
+        if (frozen) return;
+        updateTeam(team);
+    }
+
+    @Override
     public void resend() {
         for (Objective objective : objectives.values()) {
             registerObjective(objective);
@@ -477,6 +489,12 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
             this.visibility = visibility;
             this.collision = collision;
             this.options = options;
+            this.color = color;
+        }
+
+        private void update(@NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull EnumChatFormat color) {
+            this.prefix = prefix;
+            this.suffix = suffix;
             this.color = color;
         }
     }

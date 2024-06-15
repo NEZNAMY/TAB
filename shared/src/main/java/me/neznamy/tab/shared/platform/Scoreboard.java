@@ -142,6 +142,20 @@ public interface Scoreboard {
                     int options, @NonNull EnumChatFormat color);
 
     /**
+     * Updates team prefix, suffix and color.
+     *
+     * @param   name
+     *          Team name
+     * @param   prefix
+     *          New team prefix
+     * @param   suffix
+     *          New team suffix
+     * @param   color
+     *          New team color (name color and prefix/suffix color start)
+     */
+    void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull EnumChatFormat color);
+
+    /**
      * Resends all objectives and teams.
      */
     void resend();
