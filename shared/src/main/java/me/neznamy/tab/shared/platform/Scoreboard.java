@@ -166,6 +166,16 @@ public interface Scoreboard {
     void updateTeam(@NonNull String name, @NonNull CollisionRule collision);
 
     /**
+     * Updates visibility rule.
+     *
+     * @param   name
+     *          Team name
+     * @param   visibility
+     *          New visibility rule
+     */
+    void updateTeam(@NonNull String name, @NonNull NameVisibility visibility);
+
+    /**
      * Resends all objectives and teams.
      */
     void resend();

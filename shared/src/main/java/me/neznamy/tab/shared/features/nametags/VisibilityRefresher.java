@@ -32,6 +32,8 @@ public class VisibilityRefresher extends RefreshableFeature {
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.disabled.get()) return;
-        nameTags.updateTeamData(p);
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getVersion().getMinorVersion() == 8) nameTags.updateVisibility(p, viewer);
+        }
     }
 }
