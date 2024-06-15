@@ -14,8 +14,8 @@ allprojects {
 
 val platforms = setOf(
     projects.bukkit,
+    projects.bukkit.paper,
     projects.bungeecord,
-    projects.paper,
     projects.velocity,
     projects.sponge7,
     projects.sponge8,
