@@ -105,23 +105,33 @@ public class PaperPacketTabList extends TabListBase<Component> {
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
             List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
+            boolean rewritePacket = false;
             for (ClientboundPlayerInfoUpdatePacket.Entry nmsData : info.entries()) {
-                GameProfile profile = nmsData.profile();
+                boolean rewriteEntry = false;
                 Component displayName = nmsData.displayName();
                 int latency = nmsData.latency();
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
                     Component expectedDisplayName = getExpectedDisplayName(nmsData.profileId());
-                    if (expectedDisplayName != null) displayName = expectedDisplayName;
+                    if (expectedDisplayName != null) {
+                        displayName = expectedDisplayName;
+                        rewriteEntry = rewritePacket = true;
+                    }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
-                    latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, nmsData.profileId(), latency);
+                    int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, nmsData.profileId(), latency);
+                    if (newLatency != latency) {
+                        latency = newLatency;
+                        rewriteEntry = rewritePacket = true;
+                    }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
-                    TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), profile.getName());
+                    TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
                 }
-                updatedList.add(new ClientboundPlayerInfoUpdatePacket.Entry(nmsData.profileId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
+                updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
+                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()
+                ) : nmsData);
             }
-            entries.set(info, updatedList);
+            if (rewritePacket) entries.set(info, updatedList);
         }
     }
 
