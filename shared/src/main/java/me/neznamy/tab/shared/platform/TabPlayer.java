@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.hook.FloodgateHook;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
+import net.luckperms.api.model.user.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,6 +111,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Data for plugin's PlaceholderAPI expansion */
     public final Map<String, String> expansionValues = new HashMap<>();
+
+    /** LuckPerms user for fast access */
+    @Nullable public User luckPermsUser;
 
     /**
      * Constructs new instance with given parameters

@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.hook;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -27,9 +28,12 @@ public class LuckPermsHook {
 
     /** Function retrieving group of player from LuckPerms */
     private final Function<TabPlayer, String> groupFunction = p -> {
-        User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
-        if (user == null) return TabConstants.NO_GROUP;
-        return user.getPrimaryGroup();
+        if (p.luckPermsUser == null) p.luckPermsUser = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+        if (p.luckPermsUser == null) {
+            TAB.getInstance().debug("LuckPerms returned null user for player " + p.getName() + "( " + p.getUniqueId() + ")");
+            return TabConstants.NO_GROUP;
+        }
+        return p.luckPermsUser.getPrimaryGroup();
     };
 
     /**
