@@ -43,7 +43,7 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (!line.getParent().getPlayers().contains(refreshed)) return;
+        if (refreshed.scoreboardData.activeScoreboard != line.getParent()) return; //player has different scoreboard displayed
         if (refreshed.getProperty(NUMBER_FORMAT_PROPERTY) == null) return; // Shrug
         refreshed.getScoreboard().setScore(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,

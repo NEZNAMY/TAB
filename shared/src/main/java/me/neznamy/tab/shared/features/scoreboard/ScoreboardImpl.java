@@ -141,7 +141,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Player to send this scoreboard to
      */
     public void addPlayer(@NonNull TabPlayer p) {
-        if (players.contains(p)) return; //already registered
+        if (p.scoreboardData.activeScoreboard == this) return; // already registered
         p.setProperty(this, titleProperty, title);
         p.getScoreboard().registerObjective(
                 Scoreboard.DisplaySlot.SIDEBAR,
@@ -166,7 +166,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Player to unregister
      */
     public void removePlayer(@NonNull TabPlayer p) {
-        if (!players.remove(p)) return; //not registered
+        if (p.scoreboardData.activeScoreboard != this) return; // not registered
         p.getScoreboard().unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line line : lines) {
             if (((ScoreboardLine)line).isShownTo(p))
@@ -178,7 +178,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (!players.contains(refreshed)) return;
+        if (refreshed.scoreboardData.activeScoreboard != this) return; //player has different scoreboard displayed
         refreshed.getScoreboard().updateObjective(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 manager.getCache().get(refreshed.getProperty(titleProperty).updateAndGet()),

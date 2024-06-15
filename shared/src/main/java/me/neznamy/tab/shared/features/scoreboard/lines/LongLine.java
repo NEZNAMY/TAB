@@ -35,7 +35,7 @@ public class LongLine extends ScoreboardLine {
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
+        if (refreshed.scoreboardData.activeScoreboard != parent) return; //player has different scoreboard displayed
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
                 updateTeam(refreshed, refreshed.getProperty(textProperty).get(), "");
@@ -73,7 +73,7 @@ public class LongLine extends ScoreboardLine {
 
     @Override
     public void unregister(@NonNull TabPlayer p) {
-        if (parent.getPlayers().contains(p)) {
+        if (p.scoreboardData.activeScoreboard == parent) {
             removeLine(p, p.getProperty(nameProperty).get());
         }
     }

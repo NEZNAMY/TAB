@@ -35,7 +35,7 @@ public class StableDynamicLine extends ScoreboardLine {
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
+        if (refreshed.scoreboardData.activeScoreboard != parent) return; //player has different scoreboard displayed
         String[] prefixSuffix = replaceText(refreshed, force, false);
         if (prefixSuffix.length == 0) return;
         updateTeam(refreshed, prefixSuffix[0], prefixSuffix[1]);
@@ -52,7 +52,7 @@ public class StableDynamicLine extends ScoreboardLine {
 
     @Override
     public void unregister(@NonNull TabPlayer p) {
-        if (parent.getPlayers().contains(p) && !p.getProperty(textProperty).get().isEmpty()) {
+        if (p.scoreboardData.activeScoreboard == parent && !p.getProperty(textProperty).get().isEmpty()) {
             removeLine(p, getPlayerName());
         }
     }
