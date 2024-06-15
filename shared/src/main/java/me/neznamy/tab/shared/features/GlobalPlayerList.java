@@ -81,7 +81,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
      * @return  Name of server group for this server
      */
     @NotNull
-    public String getServerGroup(@NotNull String playerServer) {
+    public synchronized String getServerGroup(@NotNull String playerServer) {
         return serverToGroup.computeIfAbsent(playerServer, server -> {
             for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
                 for (String serverDefinition : group.getValue()) {
