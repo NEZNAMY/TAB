@@ -117,7 +117,8 @@ public class UniversalPlaceholderRegistry {
             }
             return Integer.toString(count);
         });
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, 100, p -> Integer.toString(((TabPlayer)p).getGamemode()));
+        String[] gameModeStrings = {"0", "1", "2", "3"}; // Fast access to not need to call Integer.toString()
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, 100, p -> gameModeStrings[((TabPlayer)p).getGamemode()]);
         if (LuckPermsHook.getInstance().isInstalled()) {
             int refresh = TAB.getInstance().getConfiguration().getPermissionRefreshInterval();
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, refresh,
