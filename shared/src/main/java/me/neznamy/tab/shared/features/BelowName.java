@@ -160,6 +160,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
+        if (refreshed.belowNameData.score == null) return; // Player not loaded yet (refresh called before onJoin)
         int number = getValue(refreshed);
         Property fancy = refreshed.belowNameData.numberFormat;
         fancy.update();
