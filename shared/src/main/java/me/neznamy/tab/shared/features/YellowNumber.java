@@ -160,6 +160,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
+        if (refreshed.playerlistObjectiveData.valueLegacy == null) return; // Player not loaded yet (refresh called before onJoin)
         int value = getValueNumber(refreshed);
         refreshed.playerlistObjectiveData.valueModern.update();
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
