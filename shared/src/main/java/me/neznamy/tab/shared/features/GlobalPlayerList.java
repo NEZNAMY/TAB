@@ -43,6 +43,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         super("Global PlayerList", "Updating latency");
         for (Map.Entry<String, List<String>> entry : sharedServers.entrySet()) {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
+                if (onlinePlayers == null) return "0"; // Not loaded yet
                 int count = 0;
                 for (TabPlayer player : onlinePlayers.getPlayers()) {
                     if (entry.getValue().contains(player.server) && !player.isVanished()) count++;
