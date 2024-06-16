@@ -11,7 +11,6 @@ import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -68,7 +67,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         String previousShortName = p.sortingData.shortTeamName;
         constructTeamNames(p);
         if (!p.sortingData.shortTeamName.equals(previousShortName)) {
-            if (nameTags != null) nameTags.updateTeamName(p, previousShortName);
+            if (nameTags != null) nameTags.updateTeamName(p, p.sortingData.getShortTeamName());
             if (layout != null) layout.updateTeamName(p, p.sortingData.getFullTeamName());
         }
     }
@@ -193,14 +192,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         }
         p.sortingData.forcedTeamName = name;
         if (layout != null) layout.updateTeamName(p, p.sortingData.getFullTeamName());
-        if (nameTags != null) {
-            nameTags.unregisterTeam(p, p.sortingData.getShortTeamName());
-            nameTags.registerTeam(p);
-            if (redis != null) {
-                redis.updateTeam(p, p.sortingData.getShortTeamName(), p.teamData.prefix.get(), p.teamData.suffix.get(),
-                        nameTags.getTeamVisibility(p, p) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER);
-            }
-        }
+        if (nameTags != null) nameTags.updateTeamName(p, p.sortingData.getShortTeamName());
     }
 
     @Override

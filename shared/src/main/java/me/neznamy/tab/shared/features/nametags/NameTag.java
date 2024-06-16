@@ -7,13 +7,16 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,13 +25,17 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener {
+        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded {
 
     /** Name of the property used in configuration */
     public static final String TAGPREFIX = "tagprefix";
 
     /** Name of the property used in configuration */
     public static final String TAGSUFFIX = "tagsuffix";
+
+    @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB NameTag Thread");
+
+    @Getter private OnlinePlayers onlinePlayers;
     
     protected final boolean invisibleNameTags = config().getBoolean("scoreboard-teams.invisible-nametags", false);
     private final boolean canSeeFriendlyInvisibles = config().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
@@ -38,7 +45,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Getter private final CollisionManager collisionManager = new CollisionManager(this);
     @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
     @Getter private final DisableChecker disableChecker;
-    private RedisSupport redis;
+    @Nullable private RedisSupport redis;
 
     public NameTag() {
         super("NameTags", "Updating prefix/suffix");
@@ -50,22 +57,24 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void load() {
+        onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         collisionManager.load();
         // RedisSupport is instantiated after NameTags, so must be loaded after
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
             ((SafeScoreboard<?>)all.getScoreboard()).setAntiOverrideTeams(antiOverride);
             loadProperties(all);
+            all.teamData.teamName = all.sortingData.shortTeamName; // Sorting is loaded sync before nametags
             if (disableChecker.isDisableConditionMet(all)) {
                 all.teamData.disabled.set(true);
                 continue;
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
         }
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            for (TabPlayer target : onlinePlayers.getPlayers()) {
                 if (target.isVanished() && !TAB.getInstance().getPlatform().canSee(viewer, target)) {
                     target.teamData.vanishedFor.add(viewer.getUniqueId());
                 }
@@ -76,10 +85,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void unload() {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            for (TabPlayer target : onlinePlayers.getPlayers()) {
                 if (hasTeamHandlingPaused(target) || target.teamData.disabled.get()) continue;
-                viewer.getScoreboard().unregisterTeam(target.sortingData.getShortTeamName());
+                viewer.getScoreboard().unregisterTeam(target.teamData.teamName);
             }
         }
     }
@@ -103,7 +112,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideTeams(antiOverride);
         loadProperties(connectedPlayer);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        connectedPlayer.teamData.teamName = connectedPlayer.sortingData.shortTeamName; // Sorting is loaded sync before nametags
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (all == connectedPlayer) continue; //avoiding double registration
             if (connectedPlayer.isVanished() && !TAB.getInstance().getPlatform().canSee(all, connectedPlayer)) {
                 connectedPlayer.teamData.vanishedFor.add(all.getUniqueId());
@@ -126,8 +136,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         if (!disconnectedPlayer.teamData.disabled.get() && !hasTeamHandlingPaused(disconnectedPlayer)) {
-            String teamName = disconnectedPlayer.sortingData.getShortTeamName();
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            String teamName = disconnectedPlayer.teamData.teamName;
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
                 if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(teamName)) {
                     viewer.getScoreboard().unregisterTeam(teamName);
@@ -144,6 +154,25 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         if (updateProperties(changed) && !changed.teamData.disabled.get()) updatePrefixSuffix(changed);
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        if (player.isVanished()) {
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                if (viewer == player) continue;
+                if (!TAB.getInstance().getPlatform().canSee(viewer, player)) {
+                    player.teamData.vanishedFor.add(viewer.getUniqueId());
+                    viewer.getScoreboard().unregisterTeam(player.teamData.teamName);
+                }
+            }
+        } else {
+            for (UUID id : player.teamData.vanishedFor) {
+                TabPlayer viewer = TAB.getInstance().getPlayer(id);
+                if (viewer != null) registerTeam(player, viewer);
+            }
+            player.teamData.vanishedFor.clear();
+        }
     }
 
     /**
@@ -172,11 +201,13 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        if (disabledNow) {
-            unregisterTeam(p, p.sortingData.getShortTeamName());
-        } else {
-            registerTeam(p);
-        }
+        customThread.execute(() -> {
+            if (disabledNow) {
+                unregisterTeam(p, p.teamData.teamName);
+            } else {
+                registerTeam(p);
+            }
+        }, getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
     }
 
     /**
@@ -186,17 +217,17 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          Player to update prefix/suffix of
      */
     private void updatePrefixSuffix(@NonNull TabPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.sortingData.getShortTeamName())) continue;
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue;
             TabComponent prefix = cache.get(player.teamData.prefix.getFormat(viewer));
             viewer.getScoreboard().updateTeam(
-                    player.sortingData.getShortTeamName(),
+                    player.teamData.teamName,
                     prefix,
                     cache.get(player.teamData.suffix.getFormat(viewer)),
                     prefix.getLastColor().getLegacyColor()
             );
         }
-        if (redis != null) redis.updateTeam(player, player.sortingData.getShortTeamName(),
+        if (redis != null) redis.updateTeam(player, player.teamData.teamName,
                 player.teamData.prefix.get(),
                 player.teamData.suffix.get(),
                 getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
@@ -207,14 +238,28 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *
      * @param   player
      *          Player to update collision of
+     * @param   moveToThread
+     *          Whether task should be moved to feature thread or not, because it already is
      */
-    public void updateCollision(@NonNull TabPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.sortingData.getShortTeamName())) continue;
-            viewer.getScoreboard().updateTeam(
-                    player.sortingData.getShortTeamName(),
-                    player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
-            );
+    public void updateCollision(@NonNull TabPlayer player, boolean moveToThread) {
+        if (moveToThread) {
+            customThread.execute(() -> {
+                for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                    if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue;
+                    viewer.getScoreboard().updateTeam(
+                            player.teamData.teamName,
+                            player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
+                    );
+                }
+            }, getFeatureName(), "Updating collision");
+        } else {
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue;
+                viewer.getScoreboard().updateTeam(
+                        player.teamData.teamName,
+                        player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
+                );
+            }
         }
     }
 
@@ -225,17 +270,19 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          Player to update visibility of
      */
     public void updateVisibility(@NonNull TabPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.sortingData.getShortTeamName())) continue;
-            viewer.getScoreboard().updateTeam(
-                    player.sortingData.getShortTeamName(),
-                    getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
-            );
-        }
-        if (redis != null) redis.updateTeam(player, player.sortingData.getShortTeamName(),
-                player.teamData.prefix.get(),
-                player.teamData.suffix.get(),
-                getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
+        customThread.execute(() -> {
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue;
+                viewer.getScoreboard().updateTeam(
+                        player.teamData.teamName,
+                        getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+                );
+            }
+            if (redis != null) redis.updateTeam(player, player.teamData.teamName,
+                    player.teamData.prefix.get(),
+                    player.teamData.suffix.get(),
+                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
+        }, getFeatureName(), "Updating visibility");
     }
 
     /**
@@ -247,16 +294,16 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          Viewer to send update to
      */
     public void updateVisibility(@NonNull TabPlayer player, @NonNull TabPlayer viewer) {
-        if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.sortingData.getShortTeamName())) return;
+        if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) return;
         viewer.getScoreboard().updateTeam(
-                player.sortingData.getShortTeamName(),
+                player.teamData.teamName,
                 getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
         );
     }
 
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(teamName)) {
                 viewer.getScoreboard().unregisterTeam(teamName);
             }
@@ -264,7 +311,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     public void registerTeam(@NonNull TabPlayer p) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             registerTeam(p, viewer);
         }
     }
@@ -274,7 +321,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
         TabComponent prefix = cache.get(p.teamData.prefix.getFormat(viewer));
         viewer.getScoreboard().registerTeam(
-                p.sortingData.getShortTeamName(),
+                p.teamData.teamName,
                 prefix,
                 cache.get(p.teamData.suffix.getFormat(viewer)),
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
@@ -295,33 +342,21 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *
      * @param   player
      *          Player to change team name of
-     * @param   previousShortName
-     *          Previous short team name of the player
+     * @param   newTeamName
+     *          New team name to use
      */
-    public void updateTeamName(@NonNull TabPlayer player, @NonNull String previousShortName) {
-        if (player.sortingData.forcedTeamName != null) return;
-        if (hasTeamHandlingPaused(player) || player.teamData.disabled.get()) return;
-        unregisterTeam(player, previousShortName);
-        registerTeam(player);
-    }
-
-    @Override
-    public void onVanishStatusChange(@NotNull TabPlayer player) {
-        if (player.isVanished()) {
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                if (viewer == player) continue;
-                if (!TAB.getInstance().getPlatform().canSee(viewer, player)) {
-                    player.teamData.vanishedFor.add(viewer.getUniqueId());
-                    viewer.getScoreboard().unregisterTeam(player.sortingData.getShortTeamName());
-                }
+    public void updateTeamName(@NonNull TabPlayer player, @NonNull String newTeamName) {
+        customThread.execute(() -> {
+            if (hasTeamHandlingPaused(player) || player.teamData.disabled.get()) {
+                player.teamData.teamName = newTeamName;
+                return;
             }
-        } else {
-            for (UUID id : player.teamData.vanishedFor) {
-                TabPlayer viewer = TAB.getInstance().getPlayer(id);
-                if (viewer != null) registerTeam(player, viewer);
-            }
-            player.teamData.vanishedFor.clear();
-        }
+            unregisterTeam(player, player.teamData.teamName);
+            player.teamData.teamName = newTeamName;
+            registerTeam(player);
+            if (redis != null) redis.updateTeam(player, player.teamData.teamName, player.teamData.prefix.get(), player.teamData.suffix.get(),
+                    getTeamVisibility(player, player) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER);
+        }, getFeatureName(), "Updating team name");
     }
 
     // ------------------
@@ -386,7 +421,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.teamHandlingPaused) return;
-        if (!p.teamData.disabled.get()) unregisterTeam(p, p.sortingData.getShortTeamName());
+        if (!p.teamData.disabled.get()) unregisterTeam(p, p.teamData.teamName);
         p.teamData.teamHandlingPaused = true; //setting after, so unregisterTeam method runs
     }
 
@@ -402,7 +437,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public boolean hasTeamHandlingPaused(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        ensureActive();
         return ((TabPlayer)player).teamData.teamHandlingPaused;
     }
 
@@ -413,7 +447,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         p.ensureLoaded();
         if (Objects.equals(p.teamData.forcedCollision, collision)) return;
         p.teamData.forcedCollision = collision;
-        updateCollision(p);
+        updateCollision(p, true);
     }
 
     @Override
@@ -429,8 +463,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        p.teamData.prefix.setTemporaryValue(prefix);
-        updatePrefixSuffix(p);
+        customThread.execute(() -> {
+            p.teamData.prefix.setTemporaryValue(prefix);
+            updatePrefixSuffix(p);
+        }, getFeatureName(), "Updating prefix");
     }
 
     @Override
@@ -438,8 +474,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        p.teamData.suffix.setTemporaryValue(suffix);
-        updatePrefixSuffix(p);
+        customThread.execute(() -> {
+            p.teamData.suffix.setTemporaryValue(suffix);
+            updatePrefixSuffix(p);
+        }, getFeatureName(), "Updating suffix");
     }
 
     @Override
@@ -488,7 +526,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden(), true);
         }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(player, !player.teamData.invisibleNameTagView);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
             updateVisibility(all, player);
         }
     }
@@ -503,6 +541,9 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      * Class holding team data for players.
      */
     public static class PlayerData {
+
+        /** Team name used for sorting */
+        public String teamName;
 
         /** Player's tagprefix */
         public Property prefix;

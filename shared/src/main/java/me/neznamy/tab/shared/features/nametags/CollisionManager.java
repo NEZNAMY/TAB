@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.features.nametags;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -12,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Class managing collision rule for players.
  */
-public class CollisionManager extends RefreshableFeature implements JoinListener, Loadable {
+public class CollisionManager extends RefreshableFeature implements JoinListener, Loadable, CustomThreaded {
 
     private final NameTag nameTags;
     private final Condition refreshCondition = Condition.getCondition(config().getString("scoreboard-teams.enable-collision", "true"));
@@ -51,6 +53,12 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.disabled.get()) return;
-        nameTags.updateCollision(p);
+        nameTags.updateCollision(p, false);
+    }
+
+    @Override
+    @NotNull
+    public ThreadExecutor getCustomThread() {
+        return nameTags.getCustomThread();
     }
 }

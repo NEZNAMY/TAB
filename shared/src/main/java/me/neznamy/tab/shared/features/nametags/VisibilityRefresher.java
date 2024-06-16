@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.features.nametags;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Sub-feature that makes nametags invisible for players who are invisible
  * for 1.8 players to compensate for a client-sided bug.
  */
-public class VisibilityRefresher extends RefreshableFeature {
+public class VisibilityRefresher extends RefreshableFeature implements CustomThreaded {
 
     @NotNull
     private final NameTag nameTags;
@@ -35,5 +37,11 @@ public class VisibilityRefresher extends RefreshableFeature {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() == 8) nameTags.updateVisibility(p, viewer);
         }
+    }
+
+    @Override
+    @NotNull
+    public ThreadExecutor getCustomThread() {
+        return nameTags.getCustomThread();
     }
 }
