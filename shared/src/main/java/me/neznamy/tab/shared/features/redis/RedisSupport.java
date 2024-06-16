@@ -227,6 +227,16 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             }
             return count;
         });
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
+            int count = 0;
+            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                if (((TabPlayer)p).getServer().equals(player.getServer()) && !player.isVanished()) count++;
+            }
+            for (RedisPlayer player : redisPlayers.values()) {
+                if (((TabPlayer)p).getServer().equals(player.getServer()) && !player.isVanished()) count++;
+            }
+            return count;
+        });
     }
 
     @Override
