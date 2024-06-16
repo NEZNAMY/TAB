@@ -52,8 +52,8 @@ public class UniversalPlaceholderRegistry {
         // Player
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.BEDROCK, -1, p -> Boolean.toString(((TabPlayer)p).isBedrockPlayer()));
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.PLAYER, -1, me.neznamy.tab.api.TabPlayer::getName);
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).getWorld());
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer)p).getServer());
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).world);
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer)p).server);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION, -1, p -> ((TabPlayer)p).getVersion().getFriendlyName());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION_ID, -1, p -> Integer.toString(((TabPlayer)p).getVersion().getNetworkId()));
 
@@ -106,14 +106,14 @@ public class UniversalPlaceholderRegistry {
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (((TabPlayer)p).getWorld().equals(player.getWorld()) && !player.isVanished()) count++;
+                if (((TabPlayer)p).world.equals(player.world) && !player.isVanished()) count++;
             }
             return Integer.toString(count);
         });
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (((TabPlayer)p).getServer().equals(player.getServer()) && !player.isVanished()) count++;
+                if (((TabPlayer)p).server.equals(player.server) && !player.isVanished()) count++;
             }
             return Integer.toString(count);
         });

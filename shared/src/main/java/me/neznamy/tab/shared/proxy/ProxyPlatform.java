@@ -73,7 +73,7 @@ public abstract class ProxyPlatform implements Platform {
             pl.registerServerPlaceholder(identifier, 1000, () -> {
                 int count = 0;
                 for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                    if (player.getServer().equals(server) && !player.isVanished()) count++;
+                    if (player.server.equals(server) && !player.isVanished()) count++;
                 }
                 return Integer.toString(count);
             });

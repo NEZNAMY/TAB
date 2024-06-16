@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.redis.feature;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.GlobalPlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -22,7 +21,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     public void onJoin(@NotNull TabPlayer player) {
         globalPlayerList.getCustomThread().execute(() -> {
             for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
-                if (!redis.getServer().equals(player.getServer()) && shouldSee(player, redis)) {
+                if (!redis.server.equals(player.server) && shouldSee(player, redis)) {
                     player.getTabList().addEntry(getEntry(redis));
                 }
             }
@@ -33,7 +32,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     public void onJoin(@NotNull RedisPlayer player) {
         globalPlayerList.getCustomThread().execute(() -> {
             for (TabPlayer viewer : globalPlayerList.getOnlinePlayers().getPlayers()) {
-                if (shouldSee(viewer, player) && !viewer.getServer().equals(player.getServer())) {
+                if (shouldSee(viewer, player) && !viewer.server.equals(player.server)) {
                     viewer.getTabList().addEntry(getEntry(player));
                 }
             }
@@ -44,7 +43,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     public void onServerSwitch(@NotNull RedisPlayer player) {
         globalPlayerList.getCustomThread().executeLater(() -> {
             for (TabPlayer viewer : globalPlayerList.getOnlinePlayers().getPlayers()) {
-                if (viewer.getServer().equals(player.getServer())) continue;
+                if (viewer.server.equals(player.server)) continue;
                 if (shouldSee(viewer, player)) {
                     viewer.getTabList().addEntry(getEntry(player));
                 } else {
@@ -58,7 +57,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     public void onQuit(@NotNull RedisPlayer player) {
         globalPlayerList.getCustomThread().execute(() -> {
             for (TabPlayer viewer : globalPlayerList.getOnlinePlayers().getPlayers()) {
-                if (!player.getServer().equals(viewer.getServer())) {
+                if (!player.server.equals(viewer.server)) {
                     viewer.getTabList().removeEntry(player.getUniqueId());
                 }
             }
@@ -96,8 +95,8 @@ public class RedisGlobalPlayerList extends RedisFeature {
 
     private boolean shouldSee(@NotNull TabPlayer viewer, @NotNull RedisPlayer target) {
         if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
-        if (globalPlayerList.isSpyServer(viewer.getServer())) return true;
-        return globalPlayerList.getServerGroup(viewer.getServer()).equals(globalPlayerList.getServerGroup(target.getServer()));
+        if (globalPlayerList.isSpyServer(viewer.server)) return true;
+        return globalPlayerList.getServerGroup(viewer.server).equals(globalPlayerList.getServerGroup(target.server));
     }
 
     @NotNull

@@ -115,21 +115,21 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     }
 
     private String getFromConfig(TabPlayer p, String property) {
-        String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getName(), property, p.getServer(), p.getWorld());
+        String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getName(), property, p.server, p.world);
         if (value.length > 0) {
             return value[0];
         }
-        value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getUniqueId().toString(), property, p.getServer(), p.getWorld());
+        value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getUniqueId().toString(), property, p.server, p.world);
         if (value.length > 0) {
             return value[0];
         }
-        value = TAB.getInstance().getConfiguration().getGroups().getProperty(p.getGroup(), property, p.getServer(), p.getWorld());
+        value = TAB.getInstance().getConfiguration().getGroups().getProperty(p.getGroup(), property, p.server, p.world);
         if (value.length > 0) {
             return value[0];
         }
-        List<String> lines = config().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.getWorld()) + "." + property);
+        List<String> lines = config().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.world) + "." + property);
         if (lines == null) {
-            lines = config().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getServerGroup(serverGroups, p.getServer()) + "." + property);
+            lines = config().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getServerGroup(serverGroups, p.server) + "." + property);
         }
         if (lines == null) {
             lines = config().getStringList("header-footer." + property);

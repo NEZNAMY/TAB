@@ -54,7 +54,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         if (player.getGamemode() != 3) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-            if (player != viewer && player.getServer().equals(viewer.getServer())) {
+            if (player != viewer && player.server.equals(viewer.server)) {
                 viewer.getTabList().updateGameMode(player.getTablistId(), 0);
             }
         }

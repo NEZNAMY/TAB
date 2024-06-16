@@ -44,7 +44,7 @@ public class FoliaPlatform extends BukkitPlatform {
         TAB.getInstance().getCpu().getProcessingThread().repeatTask(()  -> {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 String bukkitWorld = ((Player)player.getPlayer()).getWorld().getName();
-                if (!player.getWorld().equals(bukkitWorld)) {
+                if (!player.world.equals(bukkitWorld)) {
                     TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), bukkitWorld);
                     PerWorldPlayerList pwp = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST);
                     if (pwp != null) {

@@ -45,7 +45,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
                 int count = 0;
                 for (TabPlayer player : onlinePlayers.getPlayers()) {
-                    if (entry.getValue().contains(player.getServer()) && !player.isVanished()) count++;
+                    if (entry.getValue().contains(player.server) && !player.isVanished()) count++;
                 }
                 return Integer.toString(count);
             });
@@ -58,7 +58,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         addUsedPlaceholder(TabConstants.Placeholder.PING);
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (TabPlayer displayed : onlinePlayers.getPlayers()) {
-                if (viewer.getServer().equals(displayed.getServer())) continue;
+                if (viewer.server.equals(displayed.server)) continue;
                 if (shouldSee(viewer, displayed)) {
                     viewer.getTabList().addEntry(getAddInfoData(displayed, viewer));
                 }
@@ -78,8 +78,8 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
         if (displayed == viewer) return true;
         if (!TAB.getInstance().getPlatform().canSee(viewer, displayed)) return false;
-        if (isSpyServer(viewer.getServer())) return true;
-        return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
+        if (isSpyServer(viewer.server)) return true;
+        return getServerGroup(viewer.server).equals(getServerGroup(displayed.server));
     }
 
     /**
@@ -115,7 +115,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void unload() {
         for (TabPlayer displayed : onlinePlayers.getPlayers()) {
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (!displayed.getServer().equals(viewer.getServer())) viewer.getTabList().removeEntry(displayed.getTablistId());
+                if (!displayed.server.equals(viewer.server)) viewer.getTabList().removeEntry(displayed.getTablistId());
             }
         }
     }
@@ -124,7 +124,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            if (connectedPlayer.getServer().equals(all.getServer())) continue;
+            if (connectedPlayer.server.equals(all.server)) continue;
             if (shouldSee(all, connectedPlayer)) {
                 all.getTabList().addEntry(getAddInfoData(connectedPlayer, all));
             }
@@ -150,7 +150,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
             for (TabPlayer all : onlinePlayers.getPlayers()) {
                 // Remove for everyone and add back if visible, easy solution to display-others-as-spectators option
                 // Also do not remove/add players from the same server, let backend handle it
-                if (!all.getServer().equals(changed.getServer())) {
+                if (!all.server.equals(changed.server)) {
                     all.getTabList().removeEntry(changed.getTablistId());
                     if (shouldSee(all, changed)) {
                         all.getTabList().addEntry(getAddInfoData(changed, all));
@@ -164,7 +164,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onTabListClear(@NotNull TabPlayer player) {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             // Ignore players on the same server, since the server already sends add packet
-            if (!all.getServer().equals(player.getServer()) && shouldSee(player, all)) {
+            if (!all.server.equals(player.server) && shouldSee(player, all)) {
                 player.getTabList().addEntry(getAddInfoData(all, player));
             }
         }
@@ -185,7 +185,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         if (playerlist != null && !p.tablistData.disabled.get()) {
             format = playerlist.getTabFormat(p, viewer);
         }
-        int gameMode = (othersAsSpectators && !p.getServer().equals(viewer.getServer())) ||
+        int gameMode = (othersAsSpectators && !p.server.equals(viewer.server)) ||
                 (vanishedAsSpectators && p.isVanished()) ? 3 : p.getGamemode();
         return new TabList.Entry(
                 p.getTablistId(),
@@ -201,7 +201,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (!player.getServer().equals(viewer.getServer())) {
+            if (!player.server.equals(viewer.server)) {
                 viewer.getTabList().updateGameMode(player.getTablistId(), othersAsSpectators ? 3 : player.getGamemode());
             }
         }
@@ -242,7 +242,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         //player ping changed, must manually update latency for players on other servers
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (!refreshed.getServer().equals(viewer.getServer()) && viewer.getTabList().containsEntry(refreshed.getTablistId())) {
+            if (!refreshed.server.equals(viewer.server) && viewer.getTabList().containsEntry(refreshed.getTablistId())) {
                 viewer.getTabList().updateLatency(refreshed.getTablistId(), refreshed.getPing());
             }
         }

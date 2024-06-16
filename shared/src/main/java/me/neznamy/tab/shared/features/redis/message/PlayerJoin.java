@@ -30,7 +30,7 @@ public class PlayerJoin extends RedisMessage {
     public void write(@NotNull ByteArrayDataOutput out) {
         writeUUID(out, encodedPlayer.getTablistId());
         out.writeUTF(encodedPlayer.getName());
-        out.writeUTF(encodedPlayer.getServer());
+        out.writeUTF(encodedPlayer.server);
         out.writeBoolean(encodedPlayer.isVanished());
         out.writeBoolean(encodedPlayer.hasPermission(TabConstants.Permission.STAFF));
         for (RedisFeature f : redisSupport.getFeatures()) {

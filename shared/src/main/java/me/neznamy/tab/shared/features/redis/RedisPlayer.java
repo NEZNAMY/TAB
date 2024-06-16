@@ -30,7 +30,7 @@ public class RedisPlayer {
 
     /** Name of server the player is connected to */
     @NotNull
-    private String server;
+    public String server;
 
     /** Whether player is vanished or not */
     private boolean vanished;

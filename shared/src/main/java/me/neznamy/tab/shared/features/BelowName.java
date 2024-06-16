@@ -214,7 +214,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      * @return  {@code true} if players are in the same server and world, {@code false} otherwise
      */
     private boolean sameServerAndWorld(@NotNull TabPlayer player1, @NotNull TabPlayer player2) {
-        return player1.getServer().equals(player2.getServer()) && player1.getWorld().equals(player2.getWorld());
+        return player1.server.equals(player2.server) && player1.world.equals(player2.world);
     }
 
     @Override

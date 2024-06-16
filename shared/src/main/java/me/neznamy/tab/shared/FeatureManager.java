@@ -196,8 +196,8 @@ public class FeatureManager {
     public void onWorldChange(@NotNull UUID playerUUID, @NotNull String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
-        String from = changed.getWorld();
-        changed.setWorld(to);
+        String from = changed.world;
+        changed.world = to;
         for (TabFeature f : values) {
             if (!(f instanceof WorldSwitchListener)) continue;
             FeatureTasks.WorldSwitch change = new FeatureTasks.WorldSwitch((WorldSwitchListener) f, changed, from, to);
@@ -221,8 +221,8 @@ public class FeatureManager {
     public void onServerChange(@NotNull UUID playerUUID, @NotNull String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
-        String from = changed.getServer();
-        changed.setServer(to);
+        String from = changed.server;
+        changed.server = to;
         ((ProxyTabPlayer)changed).sendJoinPluginMessage();
         for (TabFeature f : values) {
             if (!(f instanceof ServerSwitchListener)) continue;

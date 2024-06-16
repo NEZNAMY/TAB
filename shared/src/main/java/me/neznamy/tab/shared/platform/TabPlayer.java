@@ -50,12 +50,12 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /**
      * World the player is currently in, {@code "N/A"} if TAB is
-     * installed on proxy and bukkit bridge is not installed
+     * installed on proxy and bridge is not installed
      */
-    @Getter @Setter private String world;
+    public String world;
 
-    /** Server the player is currently in, {@code "N/A"} if TAB is installed on Bukkit */
-    @Getter @Setter private String server;
+    /** Server the player is currently in, {@code "N/A"} if TAB is installed on backend */
+    public String server;
 
     /** Player's permission group defined in permission plugin or with permission nodes */
     @Getter
