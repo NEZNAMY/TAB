@@ -14,13 +14,17 @@ public class MiniMessageFormat implements RGBFormatter {
     private static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
             .hexColors().useUnusualXRepeatedCharacterHexFormat().build();
 
+    /** Dummy character to append to disable MiniMessage's color compacting that prevents team color from being detected as last color of prefix */
+    private static final char dummyChar = Character.MAX_VALUE;
+
     @Override
     @NotNull
     public String reformat(@NotNull String text) {
         if (!text.contains("<")) return text; // User did not even attempt to use MiniMessage
         if (text.contains(EnumChatFormat.COLOR_STRING)) return text;
         try {
-            return SERIALIZER.serialize(MiniMessage.miniMessage().deserialize(text));
+            String serialized = SERIALIZER.serialize(MiniMessage.miniMessage().deserialize(text + dummyChar));
+            return serialized.substring(0, serialized.length()-1); // Remove the dummy char back
         } catch (Throwable ignored) {
             return text;
         }
