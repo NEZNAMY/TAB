@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.util.OnlinePlayers;
+import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -48,7 +49,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 for (TabPlayer player : onlinePlayers.getPlayers()) {
                     if (entry.getValue().contains(player.server) && !player.isVanished()) count++;
                 }
-                return Integer.toString(count);
+                return PerformanceUtil.toString(count);
             });
         }
     }

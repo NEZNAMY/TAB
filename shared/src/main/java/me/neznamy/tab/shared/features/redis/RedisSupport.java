@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.features.redis.message.*;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -216,7 +217,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             for (RedisPlayer player : redisPlayers.values()) {
                 if (!player.isVanished()) count++;
             }
-            return Integer.toString(count);
+            return PerformanceUtil.toString(count);
         });
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () -> {
             int count = 0;
@@ -226,7 +227,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             for (RedisPlayer player : redisPlayers.values()) {
                 if (!player.isVanished() && player.isStaff()) count++;
             }
-            return Integer.toString(count);
+            return PerformanceUtil.toString(count);
         });
     }
 

@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.message.incoming.*;
 import me.neznamy.tab.shared.proxy.message.outgoing.RegisterPlaceholder;
+import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,7 +76,7 @@ public abstract class ProxyPlatform implements Platform {
                 for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                     if (player.server.equals(server) && !player.isVanished()) count++;
                 }
-                return Integer.toString(count);
+                return PerformanceUtil.toString(count);
             });
             return;
         }

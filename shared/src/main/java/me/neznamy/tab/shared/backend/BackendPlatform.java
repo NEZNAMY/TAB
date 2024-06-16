@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,7 +31,7 @@ public interface BackendPlatform extends Platform {
         UniversalPlaceholderRegistry registry = new UniversalPlaceholderRegistry();
         PlaceholderManager manager = TAB.getInstance().getPlaceholderManager();
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100,
-                p -> Integer.toString((int) Math.ceil(((BackendTabPlayer)p).getHealth())));
+                p -> PerformanceUtil.toString((int) Math.ceil(((BackendTabPlayer)p).getHealth())));
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500,
                 p -> ((BackendTabPlayer)p).getDisplayName());
         manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000,
