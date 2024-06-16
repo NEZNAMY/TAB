@@ -20,26 +20,30 @@ public class RedisGlobalPlayerList extends RedisFeature {
 
     @Override
     public void onJoin(@NotNull TabPlayer player) {
-        for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
-            if (!redis.getServer().equals(player.getServer()) && shouldSee(player, redis)) {
-                player.getTabList().addEntry(getEntry(redis));
+        globalPlayerList.getCustomThread().execute(() -> {
+            for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
+                if (!redis.getServer().equals(player.getServer()) && shouldSee(player, redis)) {
+                    player.getTabList().addEntry(getEntry(redis));
+                }
             }
-        }
+        }, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN);
     }
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (shouldSee(viewer, player) && !viewer.getServer().equals(player.getServer())) {
-                viewer.getTabList().addEntry(getEntry(player));
+        globalPlayerList.getCustomThread().execute(() -> {
+            for (TabPlayer viewer : globalPlayerList.getOnlinePlayers().getPlayers()) {
+                if (shouldSee(viewer, player) && !viewer.getServer().equals(player.getServer())) {
+                    viewer.getTabList().addEntry(getEntry(player));
+                }
             }
-        }
+        }, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN);
     }
 
     @Override
     public void onServerSwitch(@NotNull RedisPlayer player) {
-        TAB.getInstance().getCPUManager().runTaskLater(200, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        globalPlayerList.getCustomThread().executeLater(() -> {
+            for (TabPlayer viewer : globalPlayerList.getOnlinePlayers().getPlayers()) {
                 if (viewer.getServer().equals(player.getServer())) continue;
                 if (shouldSee(viewer, player)) {
                     viewer.getTabList().addEntry(getEntry(player));
@@ -47,16 +51,18 @@ public class RedisGlobalPlayerList extends RedisFeature {
                     viewer.getTabList().removeEntry(player.getUniqueId());
                 }
             }
-        });
+        }, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, 200);
     }
 
     @Override
     public void onQuit(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (!player.getServer().equals(viewer.getServer())) {
-                viewer.getTabList().removeEntry(player.getUniqueId());
+        globalPlayerList.getCustomThread().execute(() -> {
+            for (TabPlayer viewer : globalPlayerList.getOnlinePlayers().getPlayers()) {
+                if (!player.getServer().equals(viewer.getServer())) {
+                    viewer.getTabList().removeEntry(player.getUniqueId());
+                }
             }
-        }
+        }, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_QUIT);
     }
 
     @Override
@@ -101,18 +107,20 @@ public class RedisGlobalPlayerList extends RedisFeature {
 
     @Override
     public void onVanishStatusChange(@NotNull RedisPlayer player) {
-        if (player.isVanished()) {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (!shouldSee(all, player)) {
-                    all.getTabList().removeEntry(player.getUniqueId());
+        globalPlayerList.getCustomThread().execute(() -> {
+            if (player.isVanished()) {
+                for (TabPlayer all : globalPlayerList.getOnlinePlayers().getPlayers()) {
+                    if (!shouldSee(all, player)) {
+                        all.getTabList().removeEntry(player.getUniqueId());
+                    }
+                }
+            } else {
+                for (TabPlayer viewer : globalPlayerList.getOnlinePlayers().getPlayers()) {
+                    if (shouldSee(viewer, player)) {
+                        viewer.getTabList().addEntry(getEntry(player));
+                    }
                 }
             }
-        } else {
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                if (shouldSee(viewer, player)) {
-                    viewer.getTabList().addEntry(getEntry(player));
-                }
-            }
-        }
+        }, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.VANISH_CHANGE);
     }
 }
