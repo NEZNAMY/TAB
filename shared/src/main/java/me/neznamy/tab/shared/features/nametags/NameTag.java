@@ -110,6 +110,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        onlinePlayers.addPlayer(connectedPlayer);
         ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideTeams(antiOverride);
         loadProperties(connectedPlayer);
         connectedPlayer.teamData.teamName = connectedPlayer.sortingData.shortTeamName; // Sorting is loaded sync before nametags
@@ -135,10 +136,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
+        onlinePlayers.removePlayer(disconnectedPlayer);
         if (!disconnectedPlayer.teamData.disabled.get() && !hasTeamHandlingPaused(disconnectedPlayer)) {
             String teamName = disconnectedPlayer.teamData.teamName;
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (viewer == disconnectedPlayer) continue; //player who just disconnected
                 if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(teamName)) {
                     viewer.getScoreboard().unregisterTeam(teamName);
                 }
