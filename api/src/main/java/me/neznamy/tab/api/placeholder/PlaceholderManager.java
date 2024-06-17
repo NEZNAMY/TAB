@@ -30,7 +30,7 @@ public interface PlaceholderManager {
      *          If {@code identifier} does not start and end with {@code %} or
      *          {@code refresh} is not divisible by 50
      */
-    @NotNull ServerPlaceholder registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<Object> supplier);
+    @NotNull ServerPlaceholder registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<String> supplier);
 
     /**
      * Registers a player placeholder (placeholder different output per player)
@@ -46,7 +46,7 @@ public interface PlaceholderManager {
      *          If {@code identifier} does not start and end with {@code %} or
      *          {@code refresh} is not divisible by 50
      */
-    @NotNull PlayerPlaceholder registerPlayerPlaceholder(@NonNull String identifier, int refresh, @NonNull Function<TabPlayer, Object> function);
+    @NotNull PlayerPlaceholder registerPlayerPlaceholder(@NonNull String identifier, int refresh, @NonNull Function<TabPlayer, String> function);
 
     /**
      * Registers a relational placeholder (placeholder with output different for each player duo)
@@ -63,7 +63,7 @@ public interface PlaceholderManager {
      *          does not start with {@code %rel_} or
      *          {@code refresh} is not divisible by 50
      */
-    @NotNull RelationalPlaceholder registerRelationalPlaceholder(@NonNull String identifier, int refresh, @NonNull BiFunction<TabPlayer, TabPlayer, Object> function);
+    @NotNull RelationalPlaceholder registerRelationalPlaceholder(@NonNull String identifier, int refresh, @NonNull BiFunction<TabPlayer, TabPlayer, String> function);
 
     /**
      * Returns placeholder from specified identifier. If it does not exist, it is registered

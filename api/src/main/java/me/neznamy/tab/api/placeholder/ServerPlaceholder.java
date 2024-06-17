@@ -15,7 +15,7 @@ public interface ServerPlaceholder extends Placeholder {
      * @param   value
      *          New value
      */
-    void updateValue(@Nullable Object value);
+    void updateValue(@Nullable String value);
 
     /**
      * Force-updates placeholder value using previously provided update function.

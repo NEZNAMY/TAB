@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class TabPlaceholderRegisterEvent implements PlaceholderRegisterEvent {
 
     @NotNull private final String identifier;
-    private Supplier<Object> serverPlaceholder;
-    private Function<TabPlayer, Object> playerPlaceholder;
-    private BiFunction<TabPlayer, TabPlayer, Object> relationalPlaceholder;
+    private Supplier<String> serverPlaceholder;
+    private Function<TabPlayer, String> playerPlaceholder;
+    private BiFunction<TabPlayer, TabPlayer, String> relationalPlaceholder;
 }

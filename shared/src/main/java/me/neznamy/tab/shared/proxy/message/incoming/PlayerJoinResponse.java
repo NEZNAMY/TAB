@@ -73,9 +73,9 @@ public class PlayerJoinResponse implements IncomingMessage {
             } else {
                 Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
                 if (pl instanceof PlayerPlaceholder) {
-                    ((PlayerPlaceholder) pl).updateValue(player, entry.getValue());
+                    ((PlayerPlaceholder) pl).updateValue(player, (String) entry.getValue());
                 } else {
-                    ((ServerPlaceholder) pl).updateValue(entry.getValue());
+                    ((ServerPlaceholder) pl).updateValue((String) entry.getValue());
                 }
             }
         }

@@ -19,7 +19,7 @@ public interface PlayerPlaceholder extends Placeholder {
      * @param   value
      *          New value
      */
-    void updateValue(@NonNull TabPlayer player, @Nullable Object value);
+    void updateValue(@NonNull TabPlayer player, @Nullable String value);
 
     /**
      * Force-updates placeholder value using previously provided update function.

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlaceholder {
 
     /** Placeholder function returning fresh output on request */
-    private final Supplier<Object> supplier;
+    private final Supplier<String> supplier;
 
     /** Last known output of the placeholder */
     @Getter
@@ -38,7 +38,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      * @param   supplier
      *          supplier returning fresh output on request
      */
-    public ServerPlaceholderImpl(@NonNull String identifier, int refresh, @NonNull Supplier<Object> supplier) {
+    public ServerPlaceholderImpl(@NonNull String identifier, int refresh, @NonNull Supplier<String> supplier) {
         super(identifier, refresh);
         if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
         this.supplier = supplier;
@@ -51,7 +51,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     }
 
     @Override
-    public void updateValue(@Nullable Object value) {
+    public void updateValue(@Nullable String value) {
         if (hasValueChanged(value)) {
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -67,8 +67,9 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         }
     }
 
-    public boolean hasValueChanged(@Nullable Object value) {
-        String newValue = setPlaceholders(replacements.findReplacement(String.valueOf(value)), null);
+    public boolean hasValueChanged(@Nullable String value) {
+        if (value == null) return false;
+        String newValue = setPlaceholders(replacements.findReplacement(value), null);
 
         if (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValue.equals(newValue)) {
             lastValue = newValue;
@@ -106,7 +107,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      * @return  value placeholder returned or {@link #ERROR_VALUE} if it threw an error
      */
     @Nullable
-    public Object request() {
+    public String request() {
         long time = System.currentTimeMillis();
         try {
             return supplier.get();

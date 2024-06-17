@@ -28,7 +28,7 @@ public interface PlaceholderRegisterEvent extends TabEvent {
      * @param   supplier
      *          Placeholder replacer
      */
-    void setServerPlaceholder(@NonNull Supplier<Object> supplier);
+    void setServerPlaceholder(@NonNull Supplier<String> supplier);
 
     /**
      * Sets placeholder to specified player placeholder implementation.
@@ -36,7 +36,7 @@ public interface PlaceholderRegisterEvent extends TabEvent {
      * @param   function
      *          Placeholder replacer
      */
-    void setPlayerPlaceholder(@NonNull Function<TabPlayer, Object> function);
+    void setPlayerPlaceholder(@NonNull Function<TabPlayer, String> function);
 
     /**
      * Sets placeholder to specified relational placeholder implementation.
@@ -44,5 +44,5 @@ public interface PlaceholderRegisterEvent extends TabEvent {
      * @param   function
      *          Placeholder replacer
      */
-    void setRelationalPlaceholder(@NonNull BiFunction<TabPlayer, TabPlayer, Object> function);
+    void setRelationalPlaceholder(@NonNull BiFunction<TabPlayer, TabPlayer, String> function);
 }

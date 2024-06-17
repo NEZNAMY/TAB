@@ -21,7 +21,8 @@ public class Vanished implements IncomingMessage {
         if (player.isVanished() != vanished) {
             player.setVanished(vanished);
             TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
-            ((PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.VANISHED)).updateValue(player, player.isVanished());
+            ((PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.VANISHED))
+                    .updateValue(player, Boolean.toString(player.isVanished()));
         }
     }
 }

@@ -127,15 +127,15 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
 
     @NotNull
     private Map<TabPlayer, Set<RefreshableFeature>> updateRelationalPlaceholders(
-            @Nullable Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> results) {
+            @Nullable Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, String>>> results) {
         if (results == null) return Collections.emptyMap();
         Map<TabPlayer, Set<RefreshableFeature>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
-        for (Entry<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> entry : results.entrySet()) {
+        for (Entry<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, String>>> entry : results.entrySet()) {
             RelationalPlaceholderImpl placeholder = entry.getKey();
-            for (Entry<TabPlayer, Map<TabPlayer, Object>> viewerResult : entry.getValue().entrySet()) {
+            for (Entry<TabPlayer, Map<TabPlayer, String>> viewerResult : entry.getValue().entrySet()) {
                 TabPlayer viewer = viewerResult.getKey();
                 if (!viewer.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
-                for (Entry<TabPlayer, Object> targetResult : viewerResult.getValue().entrySet()) {
+                for (Entry<TabPlayer, String> targetResult : viewerResult.getValue().entrySet()) {
                     TabPlayer target = targetResult.getKey();
                     if (!target.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                     if (placeholder.hasValueChanged(viewer, target, targetResult.getValue())) {
@@ -148,12 +148,12 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         return update;
     }
 
-    private void updatePlayerPlaceholders(@NotNull Map<PlayerPlaceholderImpl, Map<TabPlayer, Object>> results,
+    private void updatePlayerPlaceholders(@NotNull Map<PlayerPlaceholderImpl, Map<TabPlayer, String>> results,
                                           @NotNull Map<TabPlayer, Set<RefreshableFeature>> update) {
         if (results.isEmpty()) return;
-        for (Entry<PlayerPlaceholderImpl, Map<TabPlayer, Object>> entry : results.entrySet()) {
+        for (Entry<PlayerPlaceholderImpl, Map<TabPlayer, String>> entry : results.entrySet()) {
             PlayerPlaceholderImpl placeholder = entry.getKey();
-            for (Entry<TabPlayer, Object> playerResult : entry.getValue().entrySet()) {
+            for (Entry<TabPlayer, String> playerResult : entry.getValue().entrySet()) {
                 TabPlayer player = playerResult.getKey();
                 if (!player.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                 if (placeholder.hasValueChanged(player, playerResult.getValue())) {
@@ -170,10 +170,10 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         }
     }
 
-    private void updateServerPlaceholders(@NotNull Map<ServerPlaceholderImpl, Object> results,
+    private void updateServerPlaceholders(@NotNull Map<ServerPlaceholderImpl, String> results,
                                           @NotNull Map<TabPlayer, Set<RefreshableFeature>> update) {
         if (results.isEmpty()) return;
-        for (Entry<ServerPlaceholderImpl, Object> entry : results.entrySet()) {
+        for (Entry<ServerPlaceholderImpl, String> entry : results.entrySet()) {
             ServerPlaceholderImpl placeholder = entry.getKey();
             if (placeholder.hasValueChanged(entry.getValue())) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -363,21 +363,21 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     // ------------------
 
     @Override
-    public @NotNull ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<Object> supplier) {
+    public @NotNull ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<String> supplier) {
         ensureActive();
         return registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
     }
 
     @Override
     public @NotNull PlayerPlaceholderImpl registerPlayerPlaceholder(@NonNull String identifier, int refresh,
-                                                                    @NonNull Function<me.neznamy.tab.api.TabPlayer, Object> function) {
+                                                                    @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
         ensureActive();
         return registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
     }
 
     @Override
     public @NotNull RelationalPlaceholderImpl registerRelationalPlaceholder(
-            @NonNull String identifier, int refresh, @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function) {
+            @NonNull String identifier, int refresh, @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
         ensureActive();
         return registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
     }

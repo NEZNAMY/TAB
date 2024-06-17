@@ -22,7 +22,7 @@ import java.util.function.Function;
 public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlaceholder {
 
     /** Placeholder function returning fresh output on request */
-    @NonNull private final Function<me.neznamy.tab.api.TabPlayer, Object> function;
+    @NonNull private final Function<me.neznamy.tab.api.TabPlayer, String> function;
 
     /** Last known values for each online player after applying replacements and nested placeholders */
     private final Map<TabPlayer, String> lastValues = Collections.synchronizedMap(new WeakHashMap<>());
@@ -38,7 +38,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      * @param   function
      *          refresh function which returns new up-to-date output on request
      */
-    public PlayerPlaceholderImpl(@NonNull String identifier, int refresh, @NonNull Function<me.neznamy.tab.api.TabPlayer, Object> function) {
+    public PlayerPlaceholderImpl(@NonNull String identifier, int refresh, @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
         super(identifier, refresh);
         if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
         this.function = function;
@@ -50,7 +50,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     }
 
     @Override
-    public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Object value) {
+    public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String value) {
         if (hasValueChanged((TabPlayer) player, value)) {
             if (!player.isLoaded()) return; // Updated on join
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
@@ -73,10 +73,10 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      *          New value
      * @return  {@code true} if value changed, {@code false} if not
      */
-    public boolean hasValueChanged(@NotNull TabPlayer p, @Nullable Object value) {
+    public boolean hasValueChanged(@NotNull TabPlayer p, @Nullable String value) {
         if (value == null) return false; //bridge placeholders, they are updated using updateValue method
         if (ERROR_VALUE.equals(value)) return false;
-        String newValue = replacements.findReplacement(setPlaceholders(String.valueOf(value), p));
+        String newValue = replacements.findReplacement(setPlaceholders(value, p));
         String lastValue = lastValues.get(p);
         if (lastValue == null || (!identifier.equals(newValue) && !newValue.equals(lastValue))) {
             lastValues.put(p, newValue);
@@ -119,7 +119,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      *          player to get placeholder value for
      * @return  value placeholder returned or {@link #ERROR_VALUE} if it threw an error
      */
-    public Object request(@NonNull TabPlayer p) {
+    public String request(@NonNull TabPlayer p) {
         long time = System.currentTimeMillis();
         try {
             return function.apply(p);

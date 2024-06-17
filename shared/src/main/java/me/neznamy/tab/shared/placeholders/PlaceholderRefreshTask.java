@@ -26,14 +26,14 @@ public class PlaceholderRefreshTask implements Runnable {
     private final Collection<Placeholder> placeholdersToRefresh;
 
     /** Map of server placeholder results */
-    private final Map<ServerPlaceholderImpl, Object> serverPlaceholderResults = new HashMap<>();
+    private final Map<ServerPlaceholderImpl, String> serverPlaceholderResults = new HashMap<>();
 
     /** Map of player placeholder results */
-    private final Map<PlayerPlaceholderImpl, Map<TabPlayer, Object>> playerPlaceholderResults = new HashMap<>();
+    private final Map<PlayerPlaceholderImpl, Map<TabPlayer, String>> playerPlaceholderResults = new HashMap<>();
 
     /** Map of relational placeholder results */
     @Nullable
-    private Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, Object>>> relationalPlaceholderResults;
+    private Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, String>>> relationalPlaceholderResults;
 
     /** Time it took placeholders to retrieve value (in nanoseconds) */
     private final Map<String, Long> usedTime = new HashMap<>();
@@ -47,16 +47,16 @@ public class PlaceholderRefreshTask implements Runnable {
             if (placeholder instanceof ServerPlaceholderImpl) {
                 ServerPlaceholderImpl serverPlaceholder = (ServerPlaceholderImpl) placeholder;
                 long startTime = System.nanoTime();
-                Object result = serverPlaceholder.request();
+                String result = serverPlaceholder.request();
                 nanoTime += System.nanoTime()-startTime;
                 serverPlaceholderResults.put(serverPlaceholder, result);
             }
             if (placeholder instanceof PlayerPlaceholderImpl) {
                 PlayerPlaceholderImpl playerPlaceholder = (PlayerPlaceholderImpl) placeholder;
-                Map<TabPlayer, Object> playerResults = new HashMap<>();
+                Map<TabPlayer, String> playerResults = new HashMap<>();
                 for (TabPlayer player : players) {
                     long startTime = System.nanoTime();
-                    Object result = playerPlaceholder.request(player);
+                    String result = playerPlaceholder.request(player);
                     nanoTime += System.nanoTime()-startTime;
                     playerResults.put(player, result);
                 }
@@ -64,12 +64,12 @@ public class PlaceholderRefreshTask implements Runnable {
             }
             if (placeholder instanceof RelationalPlaceholderImpl) {
                 RelationalPlaceholderImpl relationalPlaceholder = (RelationalPlaceholderImpl) placeholder;
-                Map<TabPlayer, Map<TabPlayer, Object>> viewerMap = new HashMap<>();
+                Map<TabPlayer, Map<TabPlayer, String>> viewerMap = new HashMap<>();
                 for (TabPlayer viewer : players) {
-                    Map<TabPlayer, Object> targetMap = new HashMap<>();
+                    Map<TabPlayer, String> targetMap = new HashMap<>();
                     for (TabPlayer target : players) {
                         long startTime = System.nanoTime();
-                        Object result = relationalPlaceholder.request(viewer, target);
+                        String result = relationalPlaceholder.request(viewer, target);
                         nanoTime += System.nanoTime()-startTime;
                         targetMap.put(target, result);
                     }
