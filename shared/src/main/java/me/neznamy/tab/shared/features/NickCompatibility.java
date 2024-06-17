@@ -6,9 +6,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.redis.feature.RedisBelowName;
-import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
-import me.neznamy.tab.shared.features.redis.feature.RedisYellowNumber;
 import me.neznamy.tab.shared.features.types.EntryAddListener;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -30,9 +27,6 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     @Nullable private final BelowName belowname = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
     @Nullable private final YellowNumber yellownumber = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.YELLOW_NUMBER);
     @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-    @Nullable private final RedisTeams redisTeams = redis == null ? null : redis.getRedisTeams();
-    @Nullable private final RedisYellowNumber redisYellowNumber = redis == null ? null : redis.getRedisYellowNumber();
-    @Nullable private final RedisBelowName redisBelowName = redis == null ? null : redis.getRedisBelowName();
 
     /**
      * Constructs new instance.
@@ -96,24 +90,24 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
 
     private void processNameChange(RedisPlayer player) {
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
-            if (redisTeams != null) {
+            if (nameTags != null) {
                 String teamName = player.getTeamName();
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(teamName);
-                    TabComponent prefix = redisTeams.getNameTags().getCache().get(player.getTagPrefix());
+                    TabComponent prefix = nameTags.getCache().get(player.getTagPrefix());
                     viewer.getScoreboard().registerTeam(
                             teamName,
                             prefix,
-                            redisTeams.getNameTags().getCache().get(player.getTagSuffix()),
+                            nameTags.getCache().get(player.getTagSuffix()),
                             player.getNameVisibility(),
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(player.getNickname()),
-                            redisTeams.getNameTags().getTeamOptions(),
+                            nameTags.getTeamOptions(),
                             prefix.getLastColor().getLegacyColor()
                     );
                 }
             }
-            if (redisBelowName != null) {
+            if (belowname != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     all.getScoreboard().setScore(
                             BelowName.OBJECTIVE_NAME,
@@ -124,7 +118,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                     );
                 }
             }
-            if (redisYellowNumber != null) {
+            if (yellownumber != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     all.getScoreboard().setScore(
                             YellowNumber.OBJECTIVE_NAME,

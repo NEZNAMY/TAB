@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -382,6 +383,93 @@ public class FeatureManager {
     }
 
     /**
+     * Called when another proxy is reloaded to request all data again.
+     */
+    public void onRedisLoadRequest() {
+        for (TabFeature f : values) {
+            if (!(f instanceof RedisFeature)) continue;
+            FeatureTasks.RedisReload task = new FeatureTasks.RedisReload((RedisFeature) f);
+            if (f instanceof CustomThreaded) {
+                ((CustomThreaded) f).getCustomThread().execute(task);
+            } else {
+                task.run();
+            }
+        }
+    }
+
+    /**
+     * Handles redis player join and forwards it to all features.
+     *
+     * @param   connectedPlayer
+     *          Player who joined
+     */
+    public void onJoin(@NotNull RedisPlayer connectedPlayer) {
+        for (TabFeature f : values) {
+            if (!(f instanceof RedisFeature)) continue;
+            FeatureTasks.RedisJoin task = new FeatureTasks.RedisJoin((RedisFeature) f, connectedPlayer);
+            if (f instanceof CustomThreaded) {
+                ((CustomThreaded) f).getCustomThread().execute(task);
+            } else {
+                task.run();
+            }
+        }
+    }
+
+    /**
+     * Handles redis player server switch and forwards it to all features.
+     *
+     * @param   connectedPlayer
+     *          Player who joined
+     */
+    public void onServerSwitch(@NotNull RedisPlayer connectedPlayer) {
+        for (TabFeature f : values) {
+            if (!(f instanceof RedisFeature)) continue;
+            FeatureTasks.RedisJoin task = new FeatureTasks.RedisJoin((RedisFeature) f, connectedPlayer);
+            if (f instanceof CustomThreaded) {
+                ((CustomThreaded) f).getCustomThread().execute(task);
+            } else {
+                task.run();
+            }
+        }
+    }
+
+    /**
+     * Handles redis player quit and forwards it to all features.
+     *
+     * @param   disconnectedPlayer
+     *          Player who left
+     */
+    public void onQuit(@NotNull RedisPlayer disconnectedPlayer) {
+        for (TabFeature f : values) {
+            if (!(f instanceof RedisFeature)) continue;
+            FeatureTasks.RedisQuit task = new FeatureTasks.RedisQuit((RedisFeature) f, disconnectedPlayer);
+            if (f instanceof CustomThreaded) {
+                ((CustomThreaded) f).getCustomThread().execute(task);
+            } else {
+                task.run();
+            }
+        }
+    }
+
+    /**
+     * Forwards vanish status change to all features.
+     *
+     * @param   player
+     *          Player whose vanish status changed
+     */
+    public void onVanishStatusChange(@NotNull RedisPlayer player) {
+        for (TabFeature f : values) {
+            if (!(f instanceof RedisFeature)) continue;
+            FeatureTasks.RedisVanishStatus task = new FeatureTasks.RedisVanishStatus((RedisFeature) f, player);
+            if (f instanceof CustomThreaded) {
+                ((CustomThreaded) f).getCustomThread().execute(task);
+            } else {
+                task.run();
+            }
+        }
+    }
+
+    /**
      * Registers feature with given parameters.
      *
      * @param   featureName
@@ -468,6 +556,12 @@ public class FeatureManager {
         if (spectatorFix && layout)       TAB.getInstance().getConfigHelper().hint().layoutIncludesPreventSpectatorEffect();
         if (globalPlayerList && layout)   TAB.getInstance().getConfigHelper().startup().bothGlobalPlayerListAndLayoutEnabled();
 
+        // Load the feature first, because it will be processed in main thread (to make it run before feature threads)
+        if (configuration.isEnableRedisHook()) {
+            RedisSupport redis = TAB.getInstance().getPlatform().getRedisSupport();
+            if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
+        }
+
         if (configuration.isPipelineInjection()) {
             PipelineInjector inj = TAB.getInstance().getPlatform().createPipelineInjector();
             if (inj != null) featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, inj);
@@ -496,12 +590,6 @@ public class FeatureManager {
         // Must be loaded after: PlayerList
         if (globalPlayerList && TAB.getInstance().getPlatform().isProxy()) {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
-        }
-
-        if (configuration.isEnableRedisHook()) {
-            // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
-            RedisSupport redis = TAB.getInstance().getPlatform().getRedisSupport();
-            if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
         }
 
         featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());

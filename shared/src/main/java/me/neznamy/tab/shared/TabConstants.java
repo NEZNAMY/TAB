@@ -66,6 +66,7 @@ public class TabConstants {
         public static final String BYTE_BUF = "ByteBuf";
         public static final String PACKET_LOGIN = "Login packet";
         public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
+        public static final String REDIS_RELOAD = "Processing reload from another proxy";
 
         // Placeholders
         public static final String PLACEHOLDER_REFRESH_INIT = "Phase #1 - Preparing for request";

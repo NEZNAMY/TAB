@@ -1,11 +1,17 @@
 package me.neznamy.tab.shared.features;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.redis.message.RedisMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -13,16 +19,18 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature handler for BelowName feature
  */
 public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable, UnLoadable,
-        WorldSwitchListener, ServerSwitchListener, CustomThreaded {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded, RedisFeature {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -43,7 +51,9 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
 
     private final TextRefresher textRefresher = new TextRefresher();
     private final DisableChecker disableChecker;
-    private RedisSupport redis;
+
+    @Nullable
+    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     /**
      * Constructs new instance and registers disable condition checker and text refresher to feature manager.
@@ -59,8 +69,10 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
 
     @Override
     public void load() {
+        if (redis != null) {
+            redis.registerMessage("belowname", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        }
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
-        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : onlinePlayers.getPlayers()) {
             loadProperties(loaded);
@@ -70,6 +82,9 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 register(loaded);
             }
             values.put(loaded, getValue(loaded));
+            if (redis != null) {
+                redis.sendMessage(new UpdateRedisPlayer(loaded.getTablistId(), values.get(loaded), loaded.belowNameData.numberFormat.get()));
+            }
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
@@ -113,7 +128,20 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 setScore(connectedPlayer, all, getValue(all), all.belowNameData.numberFormat.getFormat(connectedPlayer));
             }
         }
-        if (redis != null) redis.updateBelowName(connectedPlayer, number, fancy.get());
+        if (redis != null) {
+            redis.sendMessage(new UpdateRedisPlayer(connectedPlayer.getTablistId(), getValue(connectedPlayer), connectedPlayer.belowNameData.numberFormat.get()));
+            if (connectedPlayer.belowNameData.disabled.get()) return;
+            for (RedisPlayer redisPlayer : redis.getRedisPlayers().values()) {
+                if (redisPlayer.getBelowNameFancy() == null) continue; // This redis player is not loaded yet
+                connectedPlayer.getScoreboard().setScore(
+                        OBJECTIVE_NAME,
+                        redisPlayer.getNickname(),
+                        redisPlayer.getBelowNameNumber(),
+                        null, // Unused by this objective slot
+                        redisPlayer.getBelowNameFancy()
+                );
+            }
+        }
     }
 
     /**
@@ -168,7 +196,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
             if (!sameServerAndWorld(viewer, refreshed)) continue;
             setScore(viewer, refreshed, number, fancy.getFormat(viewer));
         }
-        if (redis != null) redis.updateBelowName(refreshed, number, fancy.get());
+        if (redis != null) redis.sendMessage(new UpdateRedisPlayer(refreshed.getTablistId(), number, fancy.get()));
     }
 
     private void register(@NotNull TabPlayer player) {
@@ -256,6 +284,13 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
+    @Override
+    public void onRedisLoadRequest() {
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
+            redis.sendMessage(new UpdateRedisPlayer(all.getTablistId(), getValue(all), all.belowNameData.numberFormat.get()));
+        }
+    }
+
     private class TextRefresher extends RefreshableFeature {
 
         private TextRefresher() {
@@ -293,5 +328,54 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
 
         /** Flag tracking whether this feature is disabled for the player with condition or not */
         public final AtomicBoolean disabled = new AtomicBoolean();
+    }
+
+    /**
+     * Redis message to update belowname data of a player.
+     */
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private class UpdateRedisPlayer extends RedisMessage {
+
+        private UUID playerId;
+        private int value;
+        private String fancyValue;
+
+        @NotNull
+        public ThreadExecutor getCustomThread() {
+            return customThread;
+        }
+
+        @Override
+        public void write(@NotNull ByteArrayDataOutput out) {
+            writeUUID(out, playerId);
+            out.writeInt(value);
+            out.writeUTF(fancyValue);
+        }
+
+        @Override
+        public void read(@NotNull ByteArrayDataInput in) {
+            playerId = readUUID(in);
+            value = in.readInt();
+            fancyValue = in.readUTF();
+        }
+
+        @Override
+        public void process(@NotNull RedisSupport redisSupport) {
+            RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
+            if (target == null) return; // Print warn?
+            target.setBelowNameNumber(value);
+            target.setBelowNameFancy(cache.get(fancyValue));
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                if (viewer.belowNameData.disabled.get()) continue;
+                viewer.getScoreboard().setScore(
+                        OBJECTIVE_NAME,
+                        target.getNickname(),
+                        target.getBelowNameNumber(),
+                        null, // Unused by this objective slot
+                        target.getBelowNameFancy()
+                );
+            }
+        }
     }
 }

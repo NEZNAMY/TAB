@@ -1,6 +1,10 @@
 package me.neznamy.tab.shared.features;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.shared.Property;
@@ -10,7 +14,9 @@ import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.redis.message.RedisMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -27,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Getter
 public class PlayerList extends RefreshableFeature implements TabListFormatManager, JoinListener, Loadable,
-        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener {
+        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, RedisFeature {
 
     /** Name of the property used in configuration */
     public static final String TABPREFIX = "tabprefix";
@@ -44,7 +50,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = config().getBoolean("tablist-name-formatting.anti-override", true);
 
-    private RedisSupport redis;
+    @Nullable
+    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
     protected final DisableChecker disableChecker;
 
     /**
@@ -133,8 +140,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
                     tablistId.getMostSignificantBits() == 0 ? new SimpleComponent(player.getName()) : null);
         }
-        if (redis != null) redis.updateTabFormat(player, player.tablistData.prefix.get() +
-                player.tablistData.name.get() + player.tablistData.suffix.get());
+        if (redis != null) redis.sendMessage(new UpdateRedisPlayer(player.getUniqueId(), player.tablistData.prefix.get() +
+                player.tablistData.name.get() + player.tablistData.suffix.get()));
     }
 
     /**
@@ -158,14 +165,17 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void load() {
-        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        if (redis != null) {
+            redis.registerMessage("tabformat", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             ((TrackedTabList<?, ?>)all.getTabList()).setAntiOverride(antiOverrideTabList);
             loadProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
                 all.tablistData.disabled.set(true);
             } else {
-                if (redis != null) redis.updateTabFormat(all, all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get());
+                if (redis != null) redis.sendMessage(new UpdateRedisPlayer(all.getUniqueId(),
+                        all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get()));
             }
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
@@ -204,6 +214,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                         //&& all.getTabList().containsEntry(p.getTablistId())
                 )
                     all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
+            }
+            if (redis != null) {
+                for (RedisPlayer redis : redis.getRedisPlayers().values()) {
+                    p.getTabList().updateDisplayName(redis.getUniqueId(), redis.getTabFormat());
+                }
             }
         });
     }
@@ -257,6 +272,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
+            }
+            if (redis != null) {
+                for (RedisPlayer redis : redis.getRedisPlayers().values()) {
+                    connectedPlayer.getTabList().updateDisplayName(redis.getUniqueId(), redis.getTabFormat());
+                }
             }
         };
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
@@ -347,6 +367,22 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         return ((TabPlayer)player).tablistData.suffix.getOriginalRawValue();
     }
 
+    @Override
+    public void onRedisLoadRequest() {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            redis.sendMessage(new UpdateRedisPlayer(all.getTablistId(), all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get()));
+        }
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull RedisPlayer player) {
+        if (player.isVanished()) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getVersion().getMinorVersion() < 8) continue;
+            viewer.getTabList().updateDisplayName(player.getUniqueId(), player.getTabFormat());
+        }
+    }
+
     /**
      * Class holding tablist formatting data for players.
      */
@@ -363,5 +399,39 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
         /** Flag tracking whether this feature is disabled for the player with condition or not */
         public final AtomicBoolean disabled = new AtomicBoolean();
+    }
+
+    /**
+     * Redis message to update tablist format of a player.
+     */
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private class UpdateRedisPlayer extends RedisMessage {
+
+        private UUID playerId;
+        private String format;
+
+        @Override
+        public void write(@NotNull ByteArrayDataOutput out) {
+            writeUUID(out, playerId);
+            out.writeUTF(format);
+        }
+
+        @Override
+        public void read(@NotNull ByteArrayDataInput in) {
+            playerId = readUUID(in);
+            format = in.readUTF();
+        }
+
+        @Override
+        public void process(@NotNull RedisSupport redisSupport) {
+            RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
+            if (target == null) return; // Print warn?
+            target.setTabFormat(cache.get(format));
+            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                if (viewer.getVersion().getMinorVersion() < 8) continue;
+                viewer.getTabList().updateDisplayName(target.getUniqueId(), target.getTabFormat());
+            }
+        }
     }
 }

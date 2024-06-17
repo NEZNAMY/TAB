@@ -7,6 +7,8 @@ import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -14,18 +16,22 @@ import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Feature handler for global PlayerList feature.
  */
 public class GlobalPlayerList extends RefreshableFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
-        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, CustomThreaded {
+        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, CustomThreaded, RedisFeature {
 
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Global PlayerList Thread");
 
     @Getter
     private OnlinePlayers onlinePlayers;
+
+    @Nullable
+    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     // config options
     private final List<String> spyServers = config().getStringList("global-playerlist.spy-servers",
@@ -48,6 +54,11 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 int count = 0;
                 for (TabPlayer player : onlinePlayers.getPlayers()) {
                     if (entry.getValue().contains(player.server) && !player.isVanished()) count++;
+                }
+                if (redis != null) {
+                    for (RedisPlayer player : redis.getRedisPlayers().values()) {
+                        if (entry.getValue().contains(player.server) && !player.isVanished()) count++;
+                    }
                 }
                 return PerformanceUtil.toString(count);
             });
@@ -134,6 +145,13 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 connectedPlayer.getTabList().addEntry(getAddInfoData(all, connectedPlayer));
             }
         }
+        if (redis != null) {
+            for (RedisPlayer redis : redis.getRedisPlayers().values()) {
+                if (!redis.server.equals(connectedPlayer.server) && shouldSee(connectedPlayer, redis)) {
+                    connectedPlayer.getTabList().addEntry(getEntry(redis));
+                }
+            }
+        }
     }
 
     @Override
@@ -168,6 +186,13 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
             // Ignore players on the same server, since the server already sends add packet
             if (!all.server.equals(player.server) && shouldSee(player, all)) {
                 player.getTabList().addEntry(getAddInfoData(all, player));
+            }
+        }
+        if (redis != null) {
+            for (RedisPlayer redis : redis.getRedisPlayers().values()) {
+                if (!redis.server.equals(player.server) && shouldSee(player, redis)) {
+                    player.getTabList().addEntry(getEntry(redis));
+                }
             }
         }
     }
@@ -246,6 +271,68 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (!refreshed.server.equals(viewer.server) && viewer.getTabList().containsEntry(refreshed.getTablistId())) {
                 viewer.getTabList().updateLatency(refreshed.getTablistId(), refreshed.getPing());
+            }
+        }
+    }
+
+    private boolean shouldSee(@NotNull TabPlayer viewer, @NotNull RedisPlayer target) {
+        if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
+        if (isSpyServer(viewer.server)) return true;
+        return getServerGroup(viewer.server).equals(getServerGroup(target.server));
+    }
+
+    @NotNull
+    private TabList.Entry getEntry(@NotNull RedisPlayer player) {
+        return new TabList.Entry(player.getUniqueId(), player.getNickname(), player.getSkin(), true, 0, 0, player.getTabFormat());
+    }
+
+    // ------------------
+    // RedisBungee
+    // ------------------
+
+    @Override
+    public void onJoin(@NotNull RedisPlayer player) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            if (shouldSee(viewer, player) && !viewer.server.equals(player.server)) {
+                viewer.getTabList().addEntry(getEntry(player));
+            }
+        }
+    }
+
+    @Override
+    public void onServerSwitch(@NotNull RedisPlayer player) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            if (viewer.server.equals(player.server)) continue;
+            if (shouldSee(viewer, player)) {
+                viewer.getTabList().addEntry(getEntry(player));
+            } else {
+                viewer.getTabList().removeEntry(player.getUniqueId());
+            }
+        }
+    }
+
+    @Override
+    public void onQuit(@NotNull RedisPlayer player) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            if (!player.server.equals(viewer.server)) {
+                viewer.getTabList().removeEntry(player.getUniqueId());
+            }
+        }
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull RedisPlayer player) {
+        if (player.isVanished()) {
+            for (TabPlayer all : onlinePlayers.getPlayers()) {
+                if (!shouldSee(all, player)) {
+                    all.getTabList().removeEntry(player.getUniqueId());
+                }
+            }
+        } else {
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                if (shouldSee(viewer, player)) {
+                    viewer.getTabList().addEntry(getEntry(player));
+                }
             }
         }
     }

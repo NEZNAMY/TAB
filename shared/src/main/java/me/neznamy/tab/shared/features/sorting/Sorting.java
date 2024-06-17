@@ -157,7 +157,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
                 return checkTeamName(p, currentName, id+1);
             }
         }
-        if (redis != null && redis.getRedisTeams() != null) {
+        if (redis != null && nameTags != null) {
             for (RedisPlayer all : redis.getRedisPlayers().values()) {
                 if (all.getTeamName().equals(potentialTeamName)) {
                     return checkTeamName(p, currentName, id+1);

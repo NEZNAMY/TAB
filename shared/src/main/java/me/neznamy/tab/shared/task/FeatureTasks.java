@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.task;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
@@ -181,6 +182,75 @@ public class FeatureTasks {
             long time = System.nanoTime();
             listener.onDisplayObjective(packetReceiver, slot, objective);
             TAB.getInstance().getCPUManager().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.SCOREBOARD_PACKET_CHECK, System.nanoTime() - time);
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class RedisReload implements Runnable {
+
+        private final RedisFeature listener;
+
+        @Override
+        public void run() {
+            long time = System.nanoTime();
+            listener.onRedisLoadRequest();
+            TAB.getInstance().getCPUManager().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.REDIS_RELOAD, System.nanoTime() - time);
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class RedisJoin implements Runnable {
+
+        private final RedisFeature listener;
+        private final RedisPlayer player;
+
+        @Override
+        public void run() {
+            long time = System.nanoTime();
+            listener.onJoin(player);
+            TAB.getInstance().getCPUManager().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class RedisServerSwitch implements Runnable {
+
+        private final RedisFeature listener;
+        private final RedisPlayer player;
+
+        @Override
+        public void run() {
+            long time = System.nanoTime();
+            listener.onServerSwitch(player);
+            TAB.getInstance().getCPUManager().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class RedisQuit implements Runnable {
+
+        private final RedisFeature listener;
+        private final RedisPlayer player;
+
+        @Override
+        public void run() {
+            long time = System.nanoTime();
+            listener.onQuit(player);
+            TAB.getInstance().getCPUManager().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class RedisVanishStatus implements Runnable {
+
+        private final RedisFeature listener;
+        private final RedisPlayer player;
+
+        @Override
+        public void run() {
+            long time = System.nanoTime();
+            listener.onVanishStatusChange(player);
+            TAB.getInstance().getCPUManager().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.VANISH_CHANGE, System.nanoTime()-time);
         }
     }
 }

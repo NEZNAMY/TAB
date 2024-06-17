@@ -10,12 +10,10 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 public class Load extends RedisMessage {
 
-    private RedisSupport redisSupport;
     private TabPlayer[] players;
     private PlayerJoin[] decodedPlayers;
 
-    public Load(@NotNull RedisSupport redisSupport, @NotNull TabPlayer[] players) {
-        this.redisSupport = redisSupport;
+    public Load(@NotNull TabPlayer[] players) {
         this.players = players;
     }
 
@@ -23,7 +21,7 @@ public class Load extends RedisMessage {
     public void write(@NotNull ByteArrayDataOutput out) {
         out.writeInt(players.length);
         for (TabPlayer player : players) {
-            new PlayerJoin(redisSupport, player).write(out);
+            new PlayerJoin(player).write(out);
         }
     }
 

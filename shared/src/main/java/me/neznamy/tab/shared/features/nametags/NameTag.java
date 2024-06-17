@@ -1,6 +1,10 @@
 package me.neznamy.tab.shared.features.nametags;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.Property;
@@ -8,10 +12,11 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.redis.message.RedisMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
@@ -25,7 +30,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded {
+        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, RedisFeature {
 
     /** Name of the property used in configuration */
     public static final String TAGPREFIX = "tagprefix";
@@ -45,7 +50,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Getter private final CollisionManager collisionManager = new CollisionManager(this);
     @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
     @Getter private final DisableChecker disableChecker;
-    @Nullable private RedisSupport redis;
+    @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     public NameTag() {
         super("NameTags", "Updating prefix/suffix");
@@ -57,11 +62,12 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void load() {
+        if (redis != null) {
+            redis.registerMessage("teams", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        }
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         collisionManager.load();
-        // RedisSupport is instantiated after NameTags, so must be loaded after
-        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             ((SafeScoreboard<?>)all.getScoreboard()).setAntiOverrideTeams(antiOverride);
@@ -72,6 +78,15 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 continue;
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
+            if (redis != null) {
+                redis.sendMessage(new UpdateRedisPlayer(
+                        all.getTablistId(),
+                        all.teamData.teamName,
+                        all.teamData.prefix.get(),
+                        all.teamData.suffix.get(),
+                        getTeamVisibility(all, all) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+                ));
+            }
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (TabPlayer target : onlinePlayers.getPlayers()) {
@@ -132,6 +147,29 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             return;
         }
         registerTeam(connectedPlayer);
+        if (redis != null) {
+            for (RedisPlayer redis : redis.getRedisPlayers().values()) {
+                if (redis.getTagPrefix() == null) continue; // This redis player is not loaded yet
+                TabComponent prefix = cache.get(redis.getTagPrefix());
+                connectedPlayer.getScoreboard().registerTeam(
+                        redis.getTeamName(),
+                        prefix,
+                        cache.get(redis.getTagSuffix()),
+                        redis.getNameVisibility(),
+                        CollisionRule.ALWAYS,
+                        Collections.singletonList(redis.getNickname()),
+                        2,
+                        prefix.getLastColor().getLegacyColor()
+                );
+            }
+            redis.sendMessage(new UpdateRedisPlayer(
+                    connectedPlayer.getTablistId(),
+                    connectedPlayer.teamData.teamName,
+                    connectedPlayer.teamData.prefix.get(),
+                    connectedPlayer.teamData.suffix.get(),
+                    getTeamVisibility(connectedPlayer, connectedPlayer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+            ));
+        }
     }
 
     @Override
@@ -228,10 +266,13 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     prefix.getLastColor().getLegacyColor()
             );
         }
-        if (redis != null) redis.updateTeam(player, player.teamData.teamName,
+        if (redis != null) redis.sendMessage(new UpdateRedisPlayer(
+                player.getTablistId(),
+                player.teamData.teamName,
                 player.teamData.prefix.get(),
                 player.teamData.suffix.get(),
-                getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
+                getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+        ));
     }
 
     /**
@@ -279,10 +320,11 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
                 );
             }
-            if (redis != null) redis.updateTeam(player, player.teamData.teamName,
+            if (redis != null) redis.sendMessage(new UpdateRedisPlayer(player.getTablistId(), player.teamData.teamName,
                     player.teamData.prefix.get(),
                     player.teamData.suffix.get(),
-                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
+                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+            ));
         }, getFeatureName(), "Updating visibility");
     }
 
@@ -355,9 +397,36 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             unregisterTeam(player, player.teamData.teamName);
             player.teamData.teamName = newTeamName;
             registerTeam(player);
-            if (redis != null) redis.updateTeam(player, player.teamData.teamName, player.teamData.prefix.get(), player.teamData.suffix.get(),
-                    getTeamVisibility(player, player) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER);
+            if (redis != null) redis.sendMessage(new UpdateRedisPlayer(
+                    player.getTablistId(),
+                    player.teamData.teamName,
+                    player.teamData.prefix.get(),
+                    player.teamData.suffix.get(),
+                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+            ));
         }, getFeatureName(), "Updating team name");
+    }
+
+    @Override
+    public void onRedisLoadRequest() {
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
+            redis.sendMessage(new UpdateRedisPlayer(
+                    all.getTablistId(),
+                    all.teamData.teamName,
+                    all.teamData.prefix.get(),
+                    all.teamData.suffix.get(),
+                    getTeamVisibility(all, all) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+            ));
+        }
+    }
+
+    @Override
+    public void onQuit(@NotNull RedisPlayer player) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.getTeamName())) {
+                viewer.getScoreboard().unregisterTeam(player.getTeamName());
+            }
+        }
     }
 
     // ------------------
@@ -585,6 +654,99 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
          */
         public boolean getCollisionRule() {
             return forcedCollision != null ? forcedCollision : collisionRule;
+        }
+    }
+
+    /**
+     * Redis message to update team data of a player.
+     */
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private class UpdateRedisPlayer extends RedisMessage {
+
+        private UUID playerId;
+        private String teamName;
+        private String prefix;
+        private String suffix;
+        private NameVisibility nameVisibility;
+
+        @NotNull
+        public ThreadExecutor getCustomThread() {
+            return customThread;
+        }
+
+        @Override
+        public void write(@NotNull ByteArrayDataOutput out) {
+            writeUUID(out, playerId);
+            out.writeUTF(teamName);
+            out.writeUTF(prefix);
+            out.writeUTF(suffix);
+            out.writeUTF(nameVisibility.toString());
+        }
+
+        @Override
+        public void read(@NotNull ByteArrayDataInput in) {
+            playerId = readUUID(in);
+            teamName = in.readUTF();
+            prefix = in.readUTF();
+            suffix = in.readUTF();
+            nameVisibility = NameVisibility.getByName(in.readUTF());
+        }
+
+        @Override
+        public void process(@NotNull RedisSupport redisSupport) {
+            RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
+            if (target == null) return; // Print warn?
+            String oldTeamName = target.getTeamName();
+            String newTeamName = checkTeamName(target, teamName.substring(0, teamName.length()-1), 65);
+            target.setTeamName(newTeamName);
+            target.setTagPrefix(prefix);
+            target.setTagSuffix(suffix);
+            target.setNameVisibility(nameVisibility);
+            TabComponent prefixComponent = cache.get(prefix);
+            if (!newTeamName.equals(oldTeamName)) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                    if (oldTeamName != null) viewer.getScoreboard().unregisterTeam(oldTeamName);
+                    viewer.getScoreboard().registerTeam(
+                            newTeamName,
+                            prefixComponent,
+                            cache.get(suffix),
+                            nameVisibility,
+                            CollisionRule.ALWAYS,
+                            Collections.singletonList(target.getNickname()),
+                            2,
+                            prefixComponent.getLastColor().getLegacyColor()
+                    );
+                }
+            } else {
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                    viewer.getScoreboard().updateTeam(
+                            oldTeamName,
+                            prefixComponent,
+                            cache.get(suffix),
+                            nameVisibility,
+                            CollisionRule.ALWAYS,
+                            2,
+                            prefixComponent.getLastColor().getLegacyColor()
+                    );
+                }
+            }
+        }
+
+        private @NotNull String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15, int id) {
+            String potentialTeamName = currentName15 + (char)id;
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (all.teamData.teamName.equals(potentialTeamName)) {
+                    return checkTeamName(player, currentName15, id+1);
+                }
+            }
+            for (RedisPlayer all : redis.getRedisPlayers().values()) {
+                if (all == player) continue;
+                if (potentialTeamName.equals(all.getTeamName())) {
+                    return checkTeamName(player, currentName15, id+1);
+                }
+            }
+            return potentialTeamName;
         }
     }
 }

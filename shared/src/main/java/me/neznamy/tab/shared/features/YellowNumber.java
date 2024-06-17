@@ -1,13 +1,19 @@
 package me.neznamy.tab.shared.features;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.redis.message.RedisMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -15,16 +21,19 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
-public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable, UnLoadable, CustomThreaded {
+public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable, UnLoadable,
+        CustomThreaded, RedisFeature {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
@@ -50,7 +59,9 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             "%player_health%".equals(rawValue) || "%player_health_rounded%".equals(rawValue) ?
             Scoreboard.HealthDisplay.HEARTS : Scoreboard.HealthDisplay.INTEGER;
     private final DisableChecker disableChecker;
-    private RedisSupport redis;
+
+    @Nullable
+    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);;
 
     /**
      * Constructs new instance and registers disable condition checker to feature manager.
@@ -90,8 +101,10 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
 
     @Override
     public void load() {
+        if (redis != null) {
+            redis.registerMessage("yellow-number", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        }
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
-        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : onlinePlayers.getPlayers()) {
             loaded.playerlistObjectiveData.valueLegacy = new Property(this, loaded, rawValue);
@@ -102,6 +115,9 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
                 register(loaded);
             }
             values.put(loaded, getValueNumber(loaded));
+            if (redis != null) {
+                redis.sendMessage(new UpdateRedisPlayer(loaded.getTablistId(), values.get(loaded), loaded.playerlistObjectiveData.valueModern.get()));
+            }
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
@@ -137,7 +153,20 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
                 setScore(connectedPlayer, all, getValueNumber(all), all.playerlistObjectiveData.valueModern.getFormat(connectedPlayer));
             }
         }
-        if (redis != null) redis.updateYellowNumber(connectedPlayer, value, valueFancy.get());
+        if (redis != null) {
+            redis.sendMessage(new UpdateRedisPlayer(connectedPlayer.getTablistId(), getValueNumber(connectedPlayer), connectedPlayer.playerlistObjectiveData.valueModern.get()));
+            if (connectedPlayer.isBedrockPlayer() || connectedPlayer.playerlistObjectiveData.disabled.get()) return;
+            for (RedisPlayer redis : redis.getRedisPlayers().values()) {
+                if (redis.getPlayerlistFancy() == null) continue; // This redis player is not loaded yet
+                connectedPlayer.getScoreboard().setScore(
+                        OBJECTIVE_NAME,
+                        redis.getNickname(),
+                        redis.getPlayerlistNumber(),
+                        null, // Unused by this objective slot
+                        redis.getPlayerlistFancy()
+                );
+            }
+        }
     }
 
     /**
@@ -166,7 +195,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, refreshed, value, refreshed.playerlistObjectiveData.valueModern.getFormat(viewer));
         }
-        if (redis != null) redis.updateYellowNumber(refreshed, value, refreshed.playerlistObjectiveData.valueModern.get());
+        if (redis != null) redis.sendMessage(new UpdateRedisPlayer(refreshed.getTablistId(), value, refreshed.playerlistObjectiveData.valueModern.get()));
     }
 
     private void register(@NotNull TabPlayer player) {
@@ -217,6 +246,13 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
+    @Override
+    public void onRedisLoadRequest() {
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
+            redis.sendMessage(new UpdateRedisPlayer(all.getTablistId(), getValueNumber(all), all.playerlistObjectiveData.valueModern.get()));
+        }
+    }
+
     /**
      * Class holding header/footer data for players.
      */
@@ -230,5 +266,54 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
 
         /** Flag tracking whether this feature is disabled for the player with condition or not */
         public final AtomicBoolean disabled = new AtomicBoolean();
+    }
+
+    /**
+     * Redis message to update playerlist objective data of a player.
+     */
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private class UpdateRedisPlayer extends RedisMessage {
+
+        private UUID playerId;
+        private int value;
+        private String fancyValue;
+
+        @NotNull
+        public ThreadExecutor getCustomThread() {
+            return customThread;
+        }
+
+        @Override
+        public void write(@NotNull ByteArrayDataOutput out) {
+            writeUUID(out, playerId);
+            out.writeInt(value);
+            out.writeUTF(fancyValue);
+        }
+
+        @Override
+        public void read(@NotNull ByteArrayDataInput in) {
+            playerId = readUUID(in);
+            value = in.readInt();
+            fancyValue = in.readUTF();
+        }
+
+        @Override
+        public void process(@NotNull RedisSupport redisSupport) {
+            RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
+            if (target == null) return; // Print warn?
+            target.setPlayerlistNumber(value);
+            target.setPlayerlistFancy(cache.get(fancyValue));
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                if (viewer.isBedrockPlayer() || viewer.playerlistObjectiveData.disabled.get()) continue;
+                viewer.getScoreboard().setScore(
+                        OBJECTIVE_NAME,
+                        target.getNickname(),
+                        target.getPlayerlistNumber(),
+                        null, // Unused by this objective slot
+                        target.getPlayerlistFancy()
+                );
+            }
+        }
     }
 }
