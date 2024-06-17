@@ -216,8 +216,11 @@ public class PacketTabList18 extends TabListBase<Object> {
                 if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName);
             }
             if (action.equals(Action.UPDATE_LATENCY.name()) || action.equals(Action.ADD_PLAYER.name())) {
-                int latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, PlayerInfoData_Latency.getInt(nmsData));
-                PlayerInfoData_Latency.set(nmsData, latency);
+                int oldLatency = PlayerInfoData_Latency.getInt(nmsData);
+                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, oldLatency);
+                if (oldLatency != newLatency) {
+                    PlayerInfoData_Latency.set(nmsData, newLatency);
+                }
             }
             if (action.equals(Action.ADD_PLAYER.name())) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
