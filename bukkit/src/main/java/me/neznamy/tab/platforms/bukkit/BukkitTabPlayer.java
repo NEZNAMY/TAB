@@ -26,8 +26,8 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 public class BukkitTabPlayer extends BackendTabPlayer {
 
-    @NotNull private final Scoreboard scoreboard;
-    @NotNull private final TabListBase<?> tabList;
+    @NotNull private final Scoreboard scoreboard = ScoreboardLoader.getInstance().apply(this);
+    @NotNull private final TabListBase<?> tabList = TabListBase.getInstance().apply(this);
     @NotNull private final BossBar bossBar = BossBarLoader.findInstance(this);
 
     /** Player's connection for sending packets */
@@ -45,8 +45,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @SneakyThrows
     public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
         super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName(), platform.getServerVersion().getNetworkId());
-        scoreboard = ScoreboardLoader.getInstance().apply(this);
-        tabList = TabListBase.getInstance().apply(this);
     }
 
     @Override
