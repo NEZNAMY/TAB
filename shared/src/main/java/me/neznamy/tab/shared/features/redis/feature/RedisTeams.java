@@ -32,6 +32,21 @@ public class RedisTeams extends RedisFeature {
     }
 
     @Override
+    public void load() {
+        nameTags.getCustomThread().execute(() -> {
+            for (TabPlayer all : nameTags.getOnlinePlayers().getPlayers()) {
+                redisSupport.sendMessage(new Update(
+                        all.getTablistId(),
+                        all.teamData.teamName,
+                        all.teamData.prefix.get(),
+                        all.teamData.suffix.get(),
+                        nameTags.getTeamVisibility(all, all) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+                ));
+            }
+        }, redisSupport.getFeatureName(), "Resending all Teams data on reload");
+    }
+
+    @Override
     public void onJoin(@NotNull TabPlayer player) {
         nameTags.getCustomThread().execute(() -> {
             for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
@@ -47,6 +62,13 @@ public class RedisTeams extends RedisFeature {
                         prefix.getLastColor().getLegacyColor()
                 );
             }
+            redisSupport.sendMessage(new Update(
+                    player.getTablistId(),
+                    player.teamData.teamName,
+                    player.teamData.prefix.get(),
+                    player.teamData.suffix.get(),
+                    nameTags.getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+            ));
         }, nameTags.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN);
     }
 
@@ -76,40 +98,6 @@ public class RedisTeams extends RedisFeature {
                 viewer.getScoreboard().unregisterTeam(player.getTeamName());
             }
         }, nameTags.getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_QUIT);
-    }
-
-    @Override
-    public void write(@NotNull ByteArrayDataOutput out, @NotNull TabPlayer player) {
-        out.writeUTF(player.teamData.teamName);
-        out.writeUTF(player.teamData.prefix.get());
-        out.writeUTF(player.teamData.suffix.get());
-        out.writeUTF((nameTags.getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER).toString());
-    }
-
-    @Override
-    public void read(@NotNull ByteArrayDataInput in, @NotNull RedisPlayer player) {
-        String teamName = in.readUTF();
-        teamName = checkTeamName(player, teamName.substring(0, teamName.length()-1), 65);
-        player.setTeamName(teamName);
-        player.setTagPrefix(in.readUTF());
-        player.setTagSuffix(in.readUTF());
-        player.setNameVisibility(NameVisibility.getByName(in.readUTF()));
-    }
-
-    private @NotNull String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15, int id) {
-        String potentialTeamName = currentName15 + (char)id;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.teamData.teamName.equals(potentialTeamName)) {
-                return checkTeamName(player, currentName15, id+1);
-            }
-        }
-        for (RedisPlayer all : redisSupport.getRedisPlayers().values()) {
-            if (all == player) continue;
-            if (potentialTeamName.equals(all.getTeamName())) {
-                return checkTeamName(player, currentName15, id+1);
-            }
-        }
-        return potentialTeamName;
     }
 
     @NoArgsConstructor
@@ -177,6 +165,22 @@ public class RedisTeams extends RedisFeature {
                     );
                 }
             }
+        }
+
+        private @NotNull String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15, int id) {
+            String potentialTeamName = currentName15 + (char)id;
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (all.teamData.teamName.equals(potentialTeamName)) {
+                    return checkTeamName(player, currentName15, id+1);
+                }
+            }
+            for (RedisPlayer all : redisSupport.getRedisPlayers().values()) {
+                if (all == player) continue;
+                if (potentialTeamName.equals(all.getTeamName())) {
+                    return checkTeamName(player, currentName15, id+1);
+                }
+            }
+            return potentialTeamName;
         }
     }
 }
