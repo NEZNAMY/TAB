@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.bossbar.BossBarLoader;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
@@ -42,7 +41,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      * @param   p
      *          bukkit player
      */
-    @SneakyThrows
     public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
         super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName(), platform.getServerVersion().getNetworkId());
     }
