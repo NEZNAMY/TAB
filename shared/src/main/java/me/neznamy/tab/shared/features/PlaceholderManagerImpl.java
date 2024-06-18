@@ -94,7 +94,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         long time = System.nanoTime();
         Map<RefreshableFeature, Collection<TabPlayer>> update = new HashMap<>();
         for (RefreshableFeature f : updateServerPlaceholders(task.getServerPlaceholderResults())) {
-            update.put(f, TAB.getInstance().getData().values());
+            update.put(f, new HashSet<>(TAB.getInstance().getData().values()));
         }
         updatePlayerPlaceholders(task.getPlayerPlaceholderResults(), update);
         Map<RefreshableFeature, Collection<TabPlayer>> forceUpdate = updateRelationalPlaceholders(task.getRelationalPlaceholderResults());
