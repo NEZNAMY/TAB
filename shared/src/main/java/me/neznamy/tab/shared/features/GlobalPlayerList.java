@@ -105,23 +105,26 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
      */
     @NotNull
     public synchronized String getServerGroup(@NotNull String playerServer) {
-        return serverToGroup.computeIfAbsent(playerServer, server -> {
-            for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
-                for (String serverDefinition : group.getValue()) {
-                    if (serverDefinition.endsWith("*")) {
-                        if (server.toLowerCase().startsWith(serverDefinition.substring(0, serverDefinition.length()-1).toLowerCase()))
-                            return group.getKey();
-                    } else if (serverDefinition.startsWith("*")) {
-                        if (server.toLowerCase().endsWith(serverDefinition.substring(1).toLowerCase()))
-                            return group.getKey();
-                    }  else {
-                        if (server.equalsIgnoreCase(serverDefinition))
-                            return group.getKey();
-                    }
+        return serverToGroup.computeIfAbsent(playerServer, this::computeServerGroup);
+    }
+
+    @NotNull
+    private String computeServerGroup(@NotNull String server) {
+        for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
+            for (String serverDefinition : group.getValue()) {
+                if (serverDefinition.endsWith("*")) {
+                    if (server.toLowerCase().startsWith(serverDefinition.substring(0, serverDefinition.length()-1).toLowerCase()))
+                        return group.getKey();
+                } else if (serverDefinition.startsWith("*")) {
+                    if (server.toLowerCase().endsWith(serverDefinition.substring(1).toLowerCase()))
+                        return group.getKey();
+                }  else {
+                    if (server.equalsIgnoreCase(serverDefinition))
+                        return group.getKey();
                 }
             }
-            return isolateUnlistedServers ? "isolated:" + server : "DEFAULT";
-        });
+        }
+        return isolateUnlistedServers ? "isolated:" + server : "DEFAULT";
     }
 
     @Override
