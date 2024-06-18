@@ -17,13 +17,13 @@ jobs:
           distribution: 'temurin'
           java-version: 21
       - name: Cache SonarCloud packages
-        uses: actions/cache@v3.2.3 #https://github.com/actions/cache/releases
+        uses: actions/cache@v4.0.2 #https://github.com/actions/cache/releases
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Cache Gradle
-        uses: actions/cache@v3.2.3 #https://github.com/actions/cache/releases
+        uses: actions/cache@v4.0.2 #https://github.com/actions/cache/releases
         with:
           path: |
             ~/.gradle/caches
@@ -36,7 +36,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: ./gradlew clean build
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.2 #https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@v4.3.3 #https://github.com/actions/upload-artifact/releases
         with:
           name: Click here to download
           path: jar/build/libs/TAB-**.jar
