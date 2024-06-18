@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Feature handler for header and footer.
  */
 public class HeaderFooter extends RefreshableFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
-        WorldSwitchListener, ServerSwitchListener, CustomThreaded {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded, GroupListener {
 
     private final StringToComponentCache cache = new StringToComponentCache("Header/Footer", 1000);
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB Header/Footer Thread");
@@ -77,7 +77,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
 
     @Override
     public void onWorldChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
-        if (p.headerFooterData.setHeaderFooter(getProperty(p, HEADER), getProperty(p, FOOTER))) {
+        if (updateProperties(p)) {
             sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
         }
     }
@@ -85,9 +85,30 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (force) {
-            p.headerFooterData.setHeaderFooter(getProperty(p, HEADER), getProperty(p, FOOTER));
+            updateProperties(p);
         }
         sendHeaderFooter(p, p.headerFooterData.header.updateAndGet(), p.headerFooterData.footer.updateAndGet());
+    }
+
+    @Override
+    public void onGroupChange(@NotNull TabPlayer player) {
+        if (updateProperties(player)) {
+            sendHeaderFooter(player, player.headerFooterData.header.get(), player.headerFooterData.footer.get());
+        }
+    }
+
+    /**
+     * Loads all properties from config and returns {@code true} if at least
+     * one of them either wasn't loaded or changed value, {@code false} otherwise.
+     *
+     * @param   player
+     *          Player to update properties of
+     * @return  {@code true} if at least one property changed, {@code false} if not
+     */
+    private boolean updateProperties(@NotNull TabPlayer player) {
+        boolean changed = player.headerFooterData.header.changeRawValue(getProperty(player, HEADER), null);
+        if (player.headerFooterData.footer.changeRawValue(getProperty(player, FOOTER), null)) changed = true;
+        return changed;
     }
 
     /**
@@ -191,22 +212,5 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
 
         /** Flag tracking whether this feature is disabled for the player with condition or not */
         public final AtomicBoolean disabled = new AtomicBoolean();
-
-        /**
-         * Sets header and footer to new values and returns {@code true} if some property's
-         * raw value has changed, {@code false} if not.
-         *
-         * @param   rawHeader
-         *          New raw header to use
-         * @param   rawFooter
-         *          New raw footer to use
-         * @return  Whether at least one raw value changed or not
-
-         */
-        public boolean setHeaderFooter(@NotNull String rawHeader, @NotNull String rawFooter) {
-            boolean changed = header.changeRawValue(rawHeader, null);
-            if (footer.changeRawValue(rawFooter, null)) changed = true;
-            return changed;
-        }
     }
 }

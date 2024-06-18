@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, RedisFeature {
+        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, RedisFeature, GroupListener {
 
     /** Name of the property used in configuration */
     public static final String TAGPREFIX = "tagprefix";
@@ -121,6 +121,13 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             refresh = prefix || suffix;
         }
         if (refresh) updatePrefixSuffix(refreshed);
+    }
+
+    @Override
+    public void onGroupChange(@NotNull TabPlayer player) {
+        if (updateProperties(player) && !player.teamData.disabled.get()) {
+            updatePrefixSuffix(player);
+        }
     }
 
     @Override

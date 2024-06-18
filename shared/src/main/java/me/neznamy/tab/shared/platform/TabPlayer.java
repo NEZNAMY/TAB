@@ -196,7 +196,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         if (this.permissionGroup.equals(permissionGroup)) return;
         this.permissionGroup = permissionGroup;
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, getGroup());
-        forceRefresh();
+        TAB.getInstance().getFeatureManager().onGroupChange(this);
     }
 
     @Override
@@ -204,7 +204,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         if (Objects.equals(group, temporaryGroup)) return;
         temporaryGroup = group;
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, getGroup());
-        forceRefresh();
+        TAB.getInstance().getFeatureManager().onGroupChange(this);
     }
 
     @Override
@@ -240,11 +240,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         } else {
             sendMessage(new SimpleComponent(message));
         }
-    }
-
-    public void forceRefresh() {
-        if (!loaded) return;
-        TAB.getInstance().getFeatureManager().refresh(this, true);
     }
 
     /**

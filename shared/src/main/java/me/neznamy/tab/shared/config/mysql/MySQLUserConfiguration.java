@@ -145,7 +145,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
                 }
                 TAB.getInstance().debug("Loaded MySQL data of " + player.getName());
                 if (crs.size() > 0 || crs2.size() > 0) {
-                    player.forceRefresh();
+                    TAB.getInstance().getFeatureManager().onGroupChange(player);
                 }
             } catch (SQLException e) {
                 TAB.getInstance().getErrorManager().mysqlQueryFailed(e);

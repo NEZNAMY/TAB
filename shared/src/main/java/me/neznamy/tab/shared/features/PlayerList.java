@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Getter
 public class PlayerList extends RefreshableFeature implements TabListFormatManager, JoinListener, Loadable,
-        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, RedisFeature {
+        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, RedisFeature, GroupListener {
 
     /** Name of the property used in configuration */
     public static final String TABPREFIX = "tabprefix";
@@ -256,6 +256,13 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         if (refreshed.tablistData.disabled.get()) return;
         if (refresh) {
             updatePlayer(refreshed, true);
+        }
+    }
+
+    @Override
+    public void onGroupChange(@NotNull TabPlayer player) {
+        if (updateProperties(player)) {
+            updatePlayer(player, true);
         }
     }
 

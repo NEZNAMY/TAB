@@ -97,17 +97,15 @@ public class FeatureManager {
     }
 
     /**
-     * Calls refresh(TabPlayer, boolean) on all features
-     * 
-     * @param   refreshed
-     *          player to refresh
-     * @param   force
-     *          whether refresh should be forced or not
+     * Calls onGroupChange to all features implementing {@link GroupListener}.
+     *
+     * @param   player
+     *          player with new group
      */
-    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
+    public void onGroupChange(@NotNull TabPlayer player) {
         for (TabFeature f : values) {
-            if (!(f instanceof RefreshableFeature)) continue;
-            FeatureTasks.Refresh task = new FeatureTasks.Refresh((RefreshableFeature) f, refreshed, force);
+            if (!(f instanceof GroupListener)) continue;
+            FeatureTasks.GroupChange task = new FeatureTasks.GroupChange((GroupListener) f, player);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {

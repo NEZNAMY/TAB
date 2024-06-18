@@ -48,7 +48,7 @@ public class GroupCommand extends PropertyCommand {
             TAB.getInstance().getConfiguration().getGroups().remove(group);
             for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
                 if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
-                    pl.forceRefresh();
+                    TAB.getInstance().getFeatureManager().onGroupChange(pl);
                 }
             }
             sendMessage(sender, getMessages().getGroupDataRemoved(group));
@@ -90,7 +90,7 @@ public class GroupCommand extends PropertyCommand {
         TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, server, world, value.isEmpty() ? null : value);
         for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
             if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
-                pl.forceRefresh();
+                TAB.getInstance().getFeatureManager().onGroupChange(pl);
             }
         }
     }

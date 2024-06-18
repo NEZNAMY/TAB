@@ -205,6 +205,20 @@ public class FeatureTasks {
     }
 
     @RequiredArgsConstructor
+    public static class GroupChange implements Runnable {
+
+        private final GroupListener listener;
+        private final TabPlayer player;
+
+        @Override
+        public void run() {
+            long startTime = System.nanoTime();
+            listener.onGroupChange(player);
+            TAB.getInstance().getCpu().addTime(((TabFeature)listener).getFeatureName(), CpuUsageCategory.GROUP_CHANGE, System.nanoTime() - startTime);
+        }
+    }
+
+    @RequiredArgsConstructor
     public static class RedisReload implements Runnable {
 
         private final RedisFeature listener;

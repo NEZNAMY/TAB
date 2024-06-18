@@ -40,7 +40,7 @@ public class PlayerCommand extends PropertyCommand {
             TAB.getInstance().getConfiguration().getUsers().remove(player);
             TabPlayer pl = TAB.getInstance().getPlayer(player);
             if (pl != null) {
-                pl.forceRefresh();
+                TAB.getInstance().getFeatureManager().onGroupChange(pl);
             }
             sendMessage(sender, getMessages().getPlayerDataRemoved(player));
         } else {
@@ -63,7 +63,7 @@ public class PlayerCommand extends PropertyCommand {
             if (pl == null) pl = TAB.getInstance().getPlayer(UUID.fromString(player));
         } catch (IllegalArgumentException ignored) {} // not an uuid string
         if (pl != null) {
-            pl.forceRefresh();
+            TAB.getInstance().getFeatureManager().onGroupChange(pl);
         }
     }
 

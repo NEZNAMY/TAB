@@ -44,7 +44,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
     private void remove(@Nullable TabPlayer sender, @NotNull TabPlayer changed) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
             TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
-            changed.forceRefresh();
+            TAB.getInstance().getFeatureManager().onGroupChange(changed);
             sendMessage(sender, getMessages().getPlayerDataRemoved(changed.getName() + "(" + changed.getUniqueId() + ")"));
         } else {
             sendMessage(sender, getMessages().getNoPermission());
@@ -62,7 +62,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
         String[] property = TAB.getInstance().getConfiguration().getUsers().getProperty(player.getUniqueId().toString(), type, server, world);
         if (property.length > 0 && String.valueOf(value.isEmpty() ? null : value).equals(String.valueOf(property[0]))) return;
         TAB.getInstance().getConfiguration().getUsers().setProperty(player.getUniqueId().toString(), type, server, world, value.isEmpty() ? null : value);
-        player.forceRefresh();
+        TAB.getInstance().getFeatureManager().onGroupChange(player);
     }
     
     @Override
