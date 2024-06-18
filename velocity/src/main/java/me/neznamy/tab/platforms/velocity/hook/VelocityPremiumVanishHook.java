@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class VelocityPremiumVanishHook extends PremiumVanishHook {
 
     @Override
-    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+    public synchronized boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         return VelocityVanishAPI.canSee(((VelocityTabPlayer)viewer).getPlayer(), ((VelocityTabPlayer)target).getPlayer());
     }
 

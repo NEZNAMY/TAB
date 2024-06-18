@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class BukkitPremiumVanishHook extends PremiumVanishHook {
 
     @Override
-    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+    public synchronized boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         return VanishAPI.canSee(((BukkitTabPlayer)viewer).getPlayer(), ((BukkitTabPlayer)target).getPlayer());
     }
 
