@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.*;
@@ -114,6 +115,12 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** LuckPerms user for fast access */
     @Nullable public User luckPermsUser;
+
+    /** Last known values for each player placeholder after applying replacements and nested placeholders */
+    public final Map<PlayerPlaceholder, String> lastPlaceholderValues = Collections.synchronizedMap(new IdentityHashMap<>());
+
+    /** Last known values for each relational placeholder after applying replacements and nested placeholders */
+    public final Map<RelationalPlaceholder, Map<TabPlayer, String>> lastRelationalValues = Collections.synchronizedMap(new IdentityHashMap<>());
 
     /**
      * Constructs new instance with given parameters

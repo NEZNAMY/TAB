@@ -11,9 +11,6 @@ import me.neznamy.tab.shared.task.FeatureTasks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.function.Function;
 
 /**
@@ -23,9 +20,6 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
     /** Placeholder function returning fresh output on request */
     @NonNull private final Function<me.neznamy.tab.api.TabPlayer, String> function;
-
-    /** Last known values for each online player after applying replacements and nested placeholders */
-    private final Map<TabPlayer, String> lastValues = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Constructs new instance with given parameters
@@ -77,9 +71,9 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (value == null) return false; //bridge placeholders, they are updated using updateValue method
         if (ERROR_VALUE.equals(value)) return false;
         String newValue = replacements.findReplacement(setPlaceholders(value, p));
-        String lastValue = lastValues.get(p);
+        String lastValue = p.lastPlaceholderValues.get(this);
         if (lastValue == null || (!identifier.equals(newValue) && !newValue.equals(lastValue))) {
-            lastValues.put(p, newValue);
+            p.lastPlaceholderValues.put(this, newValue);
             updateParents(p);
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
             return true;
@@ -95,19 +89,19 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     @NotNull
     public synchronized String getLastValue(@Nullable TabPlayer p) {
         if (p == null) return identifier;
-        String value = lastValues.get(p);
+        String value = p.lastPlaceholderValues.get(this);
         if (value != null) return value;
 
         // Value not present, initialize
-        lastValues.put(p, replacements.findReplacement(identifier));
+        p.lastPlaceholderValues.put(this, replacements.findReplacement(identifier));
         update(p);
-        return lastValues.get(p);
+        return p.lastPlaceholderValues.get(this);
     }
 
     @Override
     @NotNull
     public String getLastValueSafe(@NotNull TabPlayer player) {
-        return lastValues.getOrDefault(player, identifier);
+        return player.lastPlaceholderValues.getOrDefault(this, identifier);
     }
 
     /**
