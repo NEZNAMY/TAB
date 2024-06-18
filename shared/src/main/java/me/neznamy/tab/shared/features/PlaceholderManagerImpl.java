@@ -92,46 +92,45 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
 
     private void processRefreshResults(@NotNull PlaceholderRefreshTask task) {
         long time = System.nanoTime();
-        Map<TabPlayer, Set<RefreshableFeature>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
-        updateServerPlaceholders(task.getServerPlaceholderResults(), update);
+        Map<RefreshableFeature, Collection<TabPlayer>> update = new HashMap<>();
+        for (RefreshableFeature f : updateServerPlaceholders(task.getServerPlaceholderResults())) {
+            update.put(f, TAB.getInstance().getData().values());
+        }
         updatePlayerPlaceholders(task.getPlayerPlaceholderResults(), update);
-        Map<TabPlayer, Set<RefreshableFeature>> forceUpdate = updateRelationalPlaceholders(task.getRelationalPlaceholderResults());
+        Map<RefreshableFeature, Collection<TabPlayer>> forceUpdate = updateRelationalPlaceholders(task.getRelationalPlaceholderResults());
         cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_SAVE, System.nanoTime() - time);
         cpu.addPlaceholderTimes(task.getUsedTime());
 
         refreshFeatures(forceUpdate, update);
     }
     
-    private void refreshFeatures(@NotNull Map<TabPlayer, Set<RefreshableFeature>> forceUpdate, @NotNull Map<TabPlayer, Set<RefreshableFeature>> update) {
-        for (Entry<TabPlayer, Set<RefreshableFeature>> entry : update.entrySet()) {
-            for (RefreshableFeature f : entry.getValue()) {
-                FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, entry.getKey(), false);
-                if (f instanceof CustomThreaded) {
-                    ((CustomThreaded) f).getCustomThread().execute(task);
-                } else {
-                    task.run();
-                }
+    private void refreshFeatures(@NotNull Map<RefreshableFeature, Collection<TabPlayer>> forceUpdate, @NotNull Map<RefreshableFeature, Collection<TabPlayer>> update) {
+        for (Entry<RefreshableFeature, Collection<TabPlayer>> entry : update.entrySet()) {
+            FeatureTasks.BulkRefresh task = new FeatureTasks.BulkRefresh(entry.getKey(), entry.getValue(), false);
+            if (entry.getKey() instanceof CustomThreaded) {
+                ((CustomThreaded) entry.getKey()).getCustomThread().execute(task);
+            } else {
+                task.run();
             }
         }
-        for (Entry<TabPlayer, Set<RefreshableFeature>> entry : forceUpdate.entrySet()) {
-            for (RefreshableFeature f : entry.getValue()) {
-                FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, entry.getKey(), true);
-                if (f instanceof CustomThreaded) {
-                    ((CustomThreaded) f).getCustomThread().execute(task);
-                } else {
-                    task.run();
-                }
+        for (Entry<RefreshableFeature, Collection<TabPlayer>> entry : forceUpdate.entrySet()) {
+            FeatureTasks.BulkRefresh task = new FeatureTasks.BulkRefresh(entry.getKey(), entry.getValue(), true);
+            if (entry.getKey() instanceof CustomThreaded) {
+                ((CustomThreaded) entry.getKey()).getCustomThread().execute(task);
+            } else {
+                task.run();
             }
         }
     }
 
     @NotNull
-    private Map<TabPlayer, Set<RefreshableFeature>> updateRelationalPlaceholders(
+    private Map<RefreshableFeature, Collection<TabPlayer>> updateRelationalPlaceholders(
             @Nullable Map<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, String>>> results) {
         if (results == null) return Collections.emptyMap();
-        Map<TabPlayer, Set<RefreshableFeature>> update = new HashMap<>(TAB.getInstance().getOnlinePlayers().length + 1, 1);
+        Map<RefreshableFeature, Collection<TabPlayer>> update = new HashMap<>();
         for (Entry<RelationalPlaceholderImpl, Map<TabPlayer, Map<TabPlayer, String>>> entry : results.entrySet()) {
             RelationalPlaceholderImpl placeholder = entry.getKey();
+            Collection<RefreshableFeature> placeholderUsage = getPlaceholderUsage(placeholder.getIdentifier());
             for (Entry<TabPlayer, Map<TabPlayer, String>> viewerResult : entry.getValue().entrySet()) {
                 TabPlayer viewer = viewerResult.getKey();
                 if (!viewer.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
@@ -140,7 +139,9 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
                     if (!target.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                     if (placeholder.hasValueChanged(viewer, target, targetResult.getValue())) {
                         placeholder.updateParents(target);
-                        update.computeIfAbsent(target, x -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+                        for (RefreshableFeature f : placeholderUsage) {
+                            update.computeIfAbsent(f, c -> new HashSet<>()).add(target);
+                        }
                     }
                 }
             }
@@ -149,16 +150,19 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     }
 
     private void updatePlayerPlaceholders(@NotNull Map<PlayerPlaceholderImpl, Map<TabPlayer, String>> results,
-                                          @NotNull Map<TabPlayer, Set<RefreshableFeature>> update) {
+                                          @NotNull Map<RefreshableFeature, Collection<TabPlayer>> update) {
         if (results.isEmpty()) return;
         for (Entry<PlayerPlaceholderImpl, Map<TabPlayer, String>> entry : results.entrySet()) {
             PlayerPlaceholderImpl placeholder = entry.getKey();
+            Set<RefreshableFeature> placeholderUsage = getPlaceholderUsage(placeholder.getIdentifier());
             for (Entry<TabPlayer, String> playerResult : entry.getValue().entrySet()) {
                 TabPlayer player = playerResult.getKey();
                 if (!player.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                 if (placeholder.hasValueChanged(player, playerResult.getValue())) {
                     placeholder.updateParents(player);
-                    update.computeIfAbsent(player, k -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+                    for (RefreshableFeature f : placeholderUsage) {
+                        update.computeIfAbsent(f, c -> new HashSet<>()).add(player);
+                    }
                     if (placeholder.getIdentifier().equals(TabConstants.Placeholder.VANISHED)) {
                         TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
                     }
@@ -170,18 +174,19 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         }
     }
 
-    private void updateServerPlaceholders(@NotNull Map<ServerPlaceholderImpl, String> results,
-                                          @NotNull Map<TabPlayer, Set<RefreshableFeature>> update) {
-        if (results.isEmpty()) return;
+    @NotNull
+    private Set<RefreshableFeature> updateServerPlaceholders(@NotNull Map<ServerPlaceholderImpl, String> results) {
+        Set<RefreshableFeature> set = new HashSet<>();
         for (Entry<ServerPlaceholderImpl, String> entry : results.entrySet()) {
             ServerPlaceholderImpl placeholder = entry.getKey();
             if (placeholder.hasValueChanged(entry.getValue())) {
+                set.addAll(getPlaceholderUsage(placeholder.getIdentifier()));
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     placeholder.updateParents(all);
-                    update.computeIfAbsent(all, k -> new HashSet<>()).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
                 }
             }
         }
+        return set;
     }
 
     /**

@@ -7,6 +7,8 @@ import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
+import java.util.Collection;
+
 public class FeatureTasks {
 
     @RequiredArgsConstructor
@@ -52,6 +54,23 @@ public class FeatureTasks {
         public void run() {
             long startTime = System.nanoTime();
             listener.refresh(player, force);
+            TAB.getInstance().getCpu().addTime(listener.getFeatureName(), listener.getRefreshDisplayName(), System.nanoTime() - startTime);
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class BulkRefresh implements Runnable {
+
+        private final RefreshableFeature listener;
+        private final Collection<TabPlayer> players;
+        private final boolean force;
+
+        @Override
+        public void run() {
+            long startTime = System.nanoTime();
+            for (TabPlayer player : players) {
+                listener.refresh(player, force);
+            }
             TAB.getInstance().getCpu().addTime(listener.getFeatureName(), listener.getRefreshDisplayName(), System.nanoTime() - startTime);
         }
     }
