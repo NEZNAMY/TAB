@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -136,6 +137,6 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      *          Plugin message to send
      */
     public void sendPluginMessage(@NotNull OutgoingMessage message) {
-        TAB.getInstance().getCpu().getPluginMessageEncodeThread().execute(new PluginMessageEncodeTask(this, message));
+        CpuManager.getPluginMessageEncodeThread().execute(new PluginMessageEncodeTask(this, message));
     }
 }

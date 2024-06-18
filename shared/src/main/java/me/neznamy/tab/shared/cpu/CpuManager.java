@@ -42,7 +42,7 @@ public class CpuManager {
 
     /** Scheduler for encoding and sending plugin messages */
     @Getter
-    private final ThreadExecutor pluginMessageEncodeThread = new ThreadExecutor("TAB Plugin Message Encoding Thread");
+    private static final ThreadExecutor pluginMessageEncodeThread = new ThreadExecutor("TAB Plugin Message Encoding Thread");
 
     /** Tasks submitted to main thread before plugin was fully enabled */
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
@@ -78,7 +78,6 @@ public class CpuManager {
         placeholderThread.shutdown();
         groupRefreshingThread.shutdown();
         tablistEntryCheckThread.shutdown();
-        pluginMessageEncodeThread.shutdown();
     }
 
     /**
