@@ -233,7 +233,12 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         this.title = title;
         for (TabPlayer p : players) {
             p.setProperty(this, titleProperty, title);
-            refresh(p, false);
+            p.getScoreboard().updateObjective(
+                    ScoreboardManagerImpl.OBJECTIVE_NAME,
+                    manager.getCache().get(p.getProperty(titleProperty).get()),
+                    Scoreboard.HealthDisplay.INTEGER,
+                    new SimpleComponent("")
+            );
         }
     }
 

@@ -84,7 +84,7 @@ public class LongLine extends ScoreboardLine {
         initializeText(text);
         for (TabPlayer p : parent.getPlayers()) {
             p.setProperty(this, textProperty, text);
-            refresh(p, true);
+            refresh(p, false);
         }
     }
 

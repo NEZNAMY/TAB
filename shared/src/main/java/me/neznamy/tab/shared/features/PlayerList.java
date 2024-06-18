@@ -272,11 +272,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         loadProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.tablistData.disabled.set(true);
-            return;
+        } else {
+            updatePlayer(connectedPlayer, true);
         }
+        if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
         Runnable r = () -> {
-            refresh(connectedPlayer, true);
-            if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; // Already updated above
                 connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
