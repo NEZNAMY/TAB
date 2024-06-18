@@ -271,7 +271,7 @@ public class BossBarLine implements BossBar {
     @Override
     public void addPlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
-        if (players.contains(player)) return;
+        if (player.bossbarData.visibleBossBars.contains(this)) return;
         player.setProperty(textRefresher, propertyTitle, title);
         player.setProperty(progressRefresher, propertyProgress, progress);
         player.setProperty(colorRefresher, propertyColor, color);
@@ -284,13 +284,15 @@ public class BossBarLine implements BossBar {
                 parseStyle(player, player.getProperty(propertyStyle).updateAndGet())
         );
         players.add(player);
+        player.bossbarData.visibleBossBars.add(this);
     }
 
     @Override
     public void removePlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
-        if (!players.contains(player)) return;
+        if (!player.bossbarData.visibleBossBars.contains(this)) return;
         players.remove(player);
+        player.bossbarData.visibleBossBars.remove(this);
         player.getBossBar().remove(uniqueId);
     }
 
@@ -302,7 +304,7 @@ public class BossBarLine implements BossBar {
 
     @Override
     public boolean containsPlayer(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        return players.contains((TabPlayer) player);
+        return ((TabPlayer)player).bossbarData.visibleBossBars.contains(this);
     }
 
     private class TextRefresher extends RefreshableFeature implements CustomThreaded {
@@ -313,7 +315,7 @@ public class BossBarLine implements BossBar {
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (!players.contains(refreshed)) return;
+            if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
             refreshed.getBossBar().update(uniqueId, manager.getCache().get(refreshed.getProperty(propertyTitle).updateAndGet()));
         }
 
@@ -332,7 +334,7 @@ public class BossBarLine implements BossBar {
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (!players.contains(refreshed)) return;
+            if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
             refreshed.getBossBar().update(uniqueId, parseProgress(refreshed, refreshed.getProperty(propertyProgress).updateAndGet())/100);
         }
 
@@ -351,7 +353,7 @@ public class BossBarLine implements BossBar {
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (!players.contains(refreshed)) return;
+            if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
             refreshed.getBossBar().update(uniqueId, parseColor(refreshed, refreshed.getProperty(propertyColor).updateAndGet()));
         }
 
@@ -370,7 +372,7 @@ public class BossBarLine implements BossBar {
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (!players.contains(refreshed)) return;
+            if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
             refreshed.getBossBar().update(uniqueId, parseStyle(refreshed, refreshed.getProperty(propertyStyle).updateAndGet()));
         }
 

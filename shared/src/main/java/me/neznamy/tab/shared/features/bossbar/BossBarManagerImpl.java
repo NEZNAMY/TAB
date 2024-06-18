@@ -106,7 +106,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         if (!hasBossBarVisible(p)) return;
         boolean conditionResultChange = false;
         for (BossBar line : lineValues) {
-            if (((BossBarLine)line).isConditionMet(p) != line.containsPlayer(p))
+            if (((BossBarLine)line).isConditionMet(p) != p.bossbarData.visibleBossBars.contains(line))
                 conditionResultChange = true;
         }
         if (conditionResultChange) {
@@ -164,7 +164,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     private void showBossBars(@NonNull TabPlayer p, @NonNull List<String> bars) {
         for (String defaultBar : bars) {
             BossBarLine bar = (BossBarLine) registeredBossBars.get(defaultBar);
-            if (bar.isConditionMet(p) && !bar.containsPlayer(p)) {
+            if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.contains(bar)) {
                 bar.addPlayer(p);
             }
         }
@@ -305,5 +305,8 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
 
         /** Whether player wishes to see boss bars or not */
         public boolean visible;
+
+        /** Boss bars this player can currently see */
+        public Set<BossBarLine> visibleBossBars = Collections.newSetFromMap(new IdentityHashMap<>());
     }
 }
