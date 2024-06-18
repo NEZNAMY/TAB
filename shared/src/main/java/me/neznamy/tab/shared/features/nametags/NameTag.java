@@ -449,7 +449,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        if (!p.teamData.hiddenNameTagFor.add((TabPlayer) viewer)) return;
+        if (!p.teamData.addHiddenNameTagFor((TabPlayer) viewer)) return;
         updateVisibility(p, (TabPlayer) viewer);
     }
 
@@ -469,7 +469,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        if (!p.teamData.hiddenNameTagFor.remove((TabPlayer) viewer)) return;
+        if (!p.teamData.removeHiddenNameTagFor((TabPlayer) viewer)) return;
         updateVisibility(p, (TabPlayer) viewer);
     }
 
@@ -482,7 +482,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         ensureActive();
-        return ((TabPlayer)player).teamData.hiddenNameTagFor.contains((TabPlayer) viewer);
+        return ((TabPlayer)player).teamData.hasHiddenNameTagFor((TabPlayer) viewer);
     }
 
     @Override
@@ -628,7 +628,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         public boolean hiddenNameTag;
 
         /** Players who should not see this player's name tag */
-        public final Set<TabPlayer> hiddenNameTagFor = Collections.newSetFromMap(new WeakHashMap<>());
+        @Nullable
+        private Set<TabPlayer> hiddenNameTagFor;
 
         /** Flag tracking whether team handling is paused or not */
         public boolean teamHandlingPaused;
@@ -654,6 +655,42 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
          */
         public boolean getCollisionRule() {
             return forcedCollision != null ? forcedCollision : collisionRule;
+        }
+
+        /**
+         * Returns {@code true} if nametag is hidden for specified viewer, {@code false} if not.
+         *
+         * @param   viewer
+         *          Player viewing the nametag
+         * @return  {@code true} if hidden for viewer, {@code false} if not
+         */
+        public boolean hasHiddenNameTagFor(@NotNull TabPlayer viewer) {
+            if (hiddenNameTagFor == null) return false;
+            return hiddenNameTagFor.contains(viewer);
+        }
+
+        /**
+         * Adds player to players to hide nametag for.
+         *
+         * @param   viewer
+         *          Player to hide nametag for
+         * @return  {@code true} if player was added, {@code false} if player was already added before
+         */
+        public boolean addHiddenNameTagFor(@NotNull TabPlayer viewer) {
+            if (hiddenNameTagFor == null) hiddenNameTagFor = Collections.newSetFromMap(new WeakHashMap<>());
+            return hiddenNameTagFor.add(viewer);
+        }
+
+        /**
+         * Removes player from players to hide nametag for.
+         *
+         * @param   viewer
+         *          Player to show back nametag for
+         * @return  {@code true} if player was remove, {@code false} if player was not in list
+         */
+        public boolean removeHiddenNameTagFor(@NotNull TabPlayer viewer) {
+            if (hiddenNameTagFor != null) return hiddenNameTagFor.remove(viewer);
+            return false;
         }
     }
 
