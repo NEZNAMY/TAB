@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
 import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
-import me.neznamy.tab.shared.features.GlobalPlayerList;
+import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -195,7 +195,7 @@ public class Configs {
         GlobalPlayerList t = featureManager.getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
         if (t == null) return null;
 
-        String globalGroup = t.getServerGroup(server);
+        String globalGroup = t.getServerGroupName(server);
         for (Object serverGroup : serverGroups) {
             if (globalGroup.equals(serverGroup.toString())) return globalGroup;
         }

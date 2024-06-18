@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features;
+package me.neznamy.tab.shared.features.globalplayerlist;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -7,6 +7,7 @@ import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabList;
@@ -40,7 +41,8 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     private final boolean othersAsSpectators = config().getBoolean("global-playerlist.display-others-as-spectators", false);
     private final boolean vanishedAsSpectators = config().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = config().getBoolean("global-playerlist.isolate-unlisted-servers", false);
-    private final Map<String, String> serverToGroup = new HashMap<>();
+    private final Map<String, String> serverToGroupName = new HashMap<>();
+    private final Map<String, Object> groupNameToGroup = new HashMap<>();
     private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 
     /**
@@ -69,6 +71,10 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void load() {
         onlinePlayers =  new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         addUsedPlaceholder(TabConstants.Placeholder.PING);
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
+            all.globalPlayerListData.serverGroup = getServerGroup(all.server);
+            all.globalPlayerListData.onSpyServer = spyServers.contains(all.server.toLowerCase());
+        }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (TabPlayer displayed : onlinePlayers.getPlayers()) {
                 if (viewer.server.equals(displayed.server)) continue;
@@ -91,8 +97,8 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
         if (displayed == viewer) return true;
         if (!TAB.getInstance().getPlatform().canSee(viewer, displayed)) return false;
-        if (isSpyServer(viewer.server)) return true;
-        return getServerGroup(viewer.server).equals(getServerGroup(displayed.server));
+        if (viewer.globalPlayerListData.onSpyServer) return true;
+        return viewer.globalPlayerListData.serverGroup == displayed.globalPlayerListData.serverGroup;
     }
 
     /**
@@ -104,8 +110,21 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
      * @return  Name of server group for this server
      */
     @NotNull
-    public synchronized String getServerGroup(@NotNull String playerServer) {
-        return serverToGroup.computeIfAbsent(playerServer, this::computeServerGroup);
+    public synchronized String getServerGroupName(@NotNull String playerServer) {
+        return serverToGroupName.computeIfAbsent(playerServer, this::computeServerGroup);
+    }
+
+    /**
+     * Returns server group of specified server. The returned object identity is equal for
+     * all servers in the same group.
+     *
+     * @param   playerServer
+     *          Server to get group of
+     * @return  Server group of specified server
+     */
+    @NotNull
+    private synchronized Object getServerGroup(@NotNull String playerServer) {
+        return groupNameToGroup.computeIfAbsent(getServerGroupName(playerServer), n -> new Object());
     }
 
     @NotNull
@@ -139,6 +158,8 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
+        connectedPlayer.globalPlayerListData.serverGroup = getServerGroup(connectedPlayer.server);
+        connectedPlayer.globalPlayerListData.onSpyServer = spyServers.contains(connectedPlayer.server.toLowerCase());
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (connectedPlayer.server.equals(all.server)) continue;
             if (shouldSee(all, connectedPlayer)) {
@@ -167,6 +188,8 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
 
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+        changed.globalPlayerListData.serverGroup = getServerGroup(changed.server);
+        changed.globalPlayerListData.onSpyServer = spyServers.contains(changed.server.toLowerCase());
         // TODO fix players potentially not appearing on rapid server switching (if anyone reports it)
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         customThread.executeLater(() -> {
@@ -256,23 +279,11 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         }
     }
 
-    /**
-     * Returns {@code true} if specified server is spy-server,
-     * {@code false} if not.
-     *
-     * @param   server
-     *          Server name to check
-     * @return  {@code true} if is spy-server, {@code false} if not
-     */
-    public boolean isSpyServer(@NotNull String server) {
-        return spyServers.contains(server.toLowerCase());
-    }
-
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         //player ping changed, must manually update latency for players on other servers
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (!refreshed.server.equals(viewer.server) && viewer.getTabList().containsEntry(refreshed.getTablistId())) {
+            if (viewer.globalPlayerListData.serverGroup == refreshed.globalPlayerListData.serverGroup && !refreshed.server.equals(viewer.server)) {
                 viewer.getTabList().updateLatency(refreshed.getTablistId(), refreshed.getPing());
             }
         }
@@ -280,8 +291,8 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
 
     private boolean shouldSee(@NotNull TabPlayer viewer, @NotNull RedisPlayer target) {
         if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
-        if (isSpyServer(viewer.server)) return true;
-        return getServerGroup(viewer.server).equals(getServerGroup(target.server));
+        if (viewer.globalPlayerListData.onSpyServer) return true;
+        return viewer.globalPlayerListData.serverGroup == target.serverGroup;
     }
 
     @NotNull
@@ -295,6 +306,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
+        player.serverGroup = getServerGroup(player.server);
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (shouldSee(viewer, player) && !viewer.server.equals(player.server)) {
                 viewer.getTabList().addEntry(getEntry(player));
@@ -304,6 +316,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
 
     @Override
     public void onServerSwitch(@NotNull RedisPlayer player) {
+        player.serverGroup = getServerGroup(player.server);
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (viewer.server.equals(player.server)) continue;
             if (shouldSee(viewer, player)) {
@@ -338,5 +351,17 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 }
             }
         }
+    }
+
+    /**
+     * Class holding global playerlist data for players.
+     */
+    public static class PlayerData {
+
+        /** Server group of server the player is connected to */
+        private Object serverGroup;
+
+        /** Flag tracking whether the player is on spy server or not */
+        private boolean onSpyServer;
     }
 }

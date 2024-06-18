@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
@@ -109,6 +110,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Data for tablist formatting */
     public final PlayerList.PlayerData tablistData = new PlayerList.PlayerData();
+
+    /** Data for global playerlist */
+    public final GlobalPlayerList.PlayerData globalPlayerListData = new GlobalPlayerList.PlayerData();
 
     /** Data for plugin's PlaceholderAPI expansion */
     public final Map<String, String> expansionValues = new HashMap<>();
