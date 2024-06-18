@@ -29,8 +29,12 @@ public class TextColor {
     /**
      * Boolean value whether the legacy color was forced with constructor or should be
      * automatically assigned as closest color.
-     * This value is used in gradients when converting text for legacy players. */
+     * This value is used in gradients when converting text for legacy players.
+     */
     @Getter private boolean legacyColorForced;
+
+    /** Flag tracking whether this color is actually a legacy color or not */
+    @Getter private boolean legacy;
 
     /**
      * Constructs new instance from provided 6-digit hex code string
@@ -71,6 +75,7 @@ public class TextColor {
         this.legacyColor = legacyColor;
         hexCode = String.format("%06X", legacyColor.getRgb());
         legacyColorForced = true;
+        legacy = true;
     }
 
     /**

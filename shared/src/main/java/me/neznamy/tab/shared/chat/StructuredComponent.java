@@ -30,6 +30,10 @@ public class StructuredComponent extends TabComponent {
     @Nullable
     private List<StructuredComponent> extra;
 
+    /** Component turned into flat text. RGB colors are represented as #RRGGBB. */
+    @Nullable
+    private String flatText;
+
     /**
      * Constructs a new component which is a clone of provided component
      *
@@ -77,14 +81,24 @@ public class StructuredComponent extends TabComponent {
     @Override
     @NotNull
     public String toFlatText() {
-        StringBuilder builder = new StringBuilder();
-        if (modifier.getColor() != null) builder.append("#").append(modifier.getColor().getHexCode());
-        builder.append(modifier.getMagicCodes());
-        builder.append(text);
-        for (StructuredComponent child : getExtra()) {
-            builder.append(child.toFlatText());
+        if (flatText == null) {
+            StringBuilder builder = new StringBuilder();
+            TextColor color = modifier.getColor();
+            if (color != null) {
+                if (color.isLegacy()) {
+                    builder.append(color.getLegacyColor());
+                } else {
+                    builder.append("#").append(color.getHexCode());
+                }
+            }
+            builder.append(modifier.getMagicCodes());
+            builder.append(text);
+            for (StructuredComponent child : getExtra()) {
+                builder.append(child.toFlatText());
+            }
+            flatText = builder.toString();
         }
-        return builder.toString();
+        return flatText;
     }
 
     @Override
