@@ -143,7 +143,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   parent
      *          parent placeholder using this placeholder in output
      */
-    public void addParent(@NonNull String parent) {
+    public synchronized void addParent(@NonNull String parent) {
         if (!parents.contains(parent)) parents.add(parent);
     }
 
@@ -154,7 +154,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   player
      *          Player to update placeholders for.
      */
-    public void updateParents(@NonNull TabPlayer player) {
+    public synchronized void updateParents(@NonNull TabPlayer player) {
         if (parents.isEmpty()) return;
         for (String id : parents) {
             TabPlaceholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(id);
