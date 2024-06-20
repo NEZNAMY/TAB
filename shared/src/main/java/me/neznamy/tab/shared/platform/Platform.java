@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ConcurrentModificationException;
 
 /**
  * An interface with methods that are called in universal code,
@@ -150,7 +151,12 @@ public interface Platform {
      * @return  {@code true} if can see, {@code false} if not.
      */
     default boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        if (PremiumVanishHook.getInstance() != null && PremiumVanishHook.getInstance().canSee(viewer, target)) return true;
+        try {
+            if (PremiumVanishHook.getInstance() != null && PremiumVanishHook.getInstance().canSee(viewer, target)) return true;
+        } catch (ConcurrentModificationException e) {
+            // PV error, try again
+            return canSee(viewer, target);
+        }
         return !target.isVanished() || viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
     }
 }
