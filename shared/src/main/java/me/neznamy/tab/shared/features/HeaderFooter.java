@@ -24,7 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HeaderFooter extends RefreshableFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, CustomThreaded, GroupListener {
 
-    private final StringToComponentCache cache = new StringToComponentCache("Header/Footer", 1000);
+    private final StringToComponentCache headerCache = new StringToComponentCache("Header", 1000);
+    private final StringToComponentCache footerCache = new StringToComponentCache("Footer", 1000);
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB Header/Footer Thread");
     private final String HEADER = "header";
     private final String FOOTER = "footer";
@@ -162,7 +163,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
 
     private void sendHeaderFooter(TabPlayer player, String header, String footer) {
         if (player.headerFooterData.disabled.get()) return;
-        player.getTabList().setPlayerListHeaderFooter(cache.get(header), cache.get(footer));
+        player.getTabList().setPlayerListHeaderFooter(headerCache.get(header), footerCache.get(footer));
     }
 
     // ------------------
