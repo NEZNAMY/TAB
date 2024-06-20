@@ -351,7 +351,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         );
     }
 
-    public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
+    private void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(teamName)) {
@@ -360,7 +360,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         }
     }
 
-    public void registerTeam(@NonNull TabPlayer p) {
+    private void registerTeam(@NonNull TabPlayer p) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             registerTeam(p, viewer);
         }
