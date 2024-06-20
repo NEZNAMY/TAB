@@ -113,8 +113,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
             for (BossBar line : lineValues) {
                 line.removePlayer(p); //remove all BossBars and then resend them again to keep them displayed in defined order
             }
-            showBossBars(p, defaultBars);
-            showBossBars(p, announcedBossBars.stream().map(BossBar::getName).collect(Collectors.toList()));
+            showBossBars(p);
         }
     }
 
@@ -149,21 +148,24 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
      */
     protected void detectBossBarsAndSend(@NonNull TabPlayer p) {
         if (!hasBossBarVisible(p)) return;
-        showBossBars(p, defaultBars);
-        showBossBars(p, announcedBossBars.stream().map(BossBar::getName).collect(Collectors.toList()));
+        showBossBars(p);
     }
 
     /**
-     * Shows BossBars to player if display condition is met
+     * Shows all boss bars the player should see and does not see already.
      *
      * @param   p
-     *          player to show BossBars to
-     * @param   bars
-     *          list of BossBars to check
+     *          Player to show boss bars to
      */
-    private void showBossBars(@NonNull TabPlayer p, @NonNull List<String> bars) {
-        for (String defaultBar : bars) {
+    private void showBossBars(@NonNull TabPlayer p) {
+        for (String defaultBar : defaultBars) {
             BossBarLine bar = (BossBarLine) registeredBossBars.get(defaultBar);
+            if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.contains(bar)) {
+                bar.addPlayer(p);
+            }
+        }
+        for (BossBar announced : announcedBossBars) {
+            BossBarLine bar = (BossBarLine) announced;
             if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.contains(bar)) {
                 bar.addPlayer(p);
             }
