@@ -401,9 +401,23 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 player.teamData.teamName = newTeamName;
                 return;
             }
-            unregisterTeam(player, player.teamData.teamName);
+
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue; // Player is vanished
+                viewer.getScoreboard().unregisterTeam(player.teamData.teamName);
+                TabComponent prefix = cache.get(player.teamData.prefix.getFormat(viewer));
+                viewer.getScoreboard().registerTeam(
+                        newTeamName,
+                        prefix,
+                        cache.get(player.teamData.suffix.getFormat(viewer)),
+                        getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
+                        player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
+                        Collections.singletonList(player.getNickname()),
+                        teamOptions,
+                        prefix.getLastColor().getLegacyColor()
+                );
+            }
             player.teamData.teamName = newTeamName;
-            registerTeam(player);
             if (redis != null) redis.sendMessage(new UpdateRedisPlayer(
                     player.getTablistId(),
                     player.teamData.teamName,
