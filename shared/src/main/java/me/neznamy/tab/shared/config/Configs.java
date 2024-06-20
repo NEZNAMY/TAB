@@ -70,7 +70,6 @@ public class Configs {
         converter.convert292to300(config);
         converter.convert301to302(config);
         converter.convert332to400(config);
-        converter.convert403to404(config);
         converter.convert409to410(config);
         converter.convert415to500(config);
         if (config.getBoolean("mysql.enabled", false)) {

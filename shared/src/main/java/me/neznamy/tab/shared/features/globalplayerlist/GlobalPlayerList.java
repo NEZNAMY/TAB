@@ -41,6 +41,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     private final boolean othersAsSpectators = config().getBoolean("global-playerlist.display-others-as-spectators", false);
     private final boolean vanishedAsSpectators = config().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = config().getBoolean("global-playerlist.isolate-unlisted-servers", false);
+    private final boolean updateLatency = config().getBoolean("global-playerlist.update-latency", false);
     private final Map<String, String> serverToGroupName = new HashMap<>();
     private final Map<String, Object> groupNameToGroup = new HashMap<>();
     private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
@@ -70,7 +71,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void load() {
         onlinePlayers =  new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
-        addUsedPlaceholder(TabConstants.Placeholder.PING);
+        if (updateLatency) addUsedPlaceholder(TabConstants.Placeholder.PING);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             all.globalPlayerListData.serverGroup = getServerGroup(all.server);
             all.globalPlayerListData.onSpyServer = spyServers.contains(all.server.toLowerCase());
@@ -245,7 +246,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 p.getNickname(),
                 p.getSkin(),
                 true,
-                p.getPing(),
+                updateLatency ? p.getPing() : 0,
                 gameMode,
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null
         );

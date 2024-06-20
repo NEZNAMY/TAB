@@ -438,19 +438,6 @@ public class Converter {
     }
 
     /**
-     * Converts config from 4.0.3 to 4.0.4.
-     * This removes "update-latency" option from global playerlist, which is now forced.
-     *
-     * @param   config
-     *          Config file
-     */
-    public void convert403to404(@NotNull ConfigurationFile config) {
-        if (config.removeOption("global-playerlist.update-latency")) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.0.3 to 4.0.4"));
-        }
-    }
-
-    /**
      * Converts config from 4.0.9 to 4.1.0.
      * This change:
      * - Renames yellow number to playerlist objective
