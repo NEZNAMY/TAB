@@ -209,7 +209,12 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public void resend() {
+    public synchronized boolean containsTeam(@NonNull String teamName) {
+        return teams.containsKey(teamName);
+    }
+
+    @Override
+    public synchronized void resend() {
         for (Objective objective : objectives.values()) {
             registerObjective(objective);
             for (Score score : objective.getScores().values()) {
@@ -268,18 +273,6 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
      */
     public void onPacketSend(@NonNull Object packet) {
         // Implemented by platforms with pipeline injection
-    }
-
-    /**
-     * Returns {@code true} if this scoreboard contains team with specified name,
-     * {@code false} if not.
-     *
-     * @param   teamName
-     *          Name of team to check
-     * @return  {@code true} if scoreboard contains the team, {@code false} if not
-     */
-    public synchronized boolean containsTeam(@NonNull String teamName) {
-        return teams.containsKey(teamName);
     }
 
     /**

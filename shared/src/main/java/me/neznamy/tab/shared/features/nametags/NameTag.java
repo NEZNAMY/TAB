@@ -185,7 +185,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (!disconnectedPlayer.teamData.disabled.get() && !hasTeamHandlingPaused(disconnectedPlayer)) {
             String teamName = disconnectedPlayer.teamData.teamName;
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(teamName)) {
+                if (viewer.getScoreboard().containsTeam(teamName)) {
                     viewer.getScoreboard().unregisterTeam(teamName);
                 }
             }
@@ -264,7 +264,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      */
     private void updatePrefixSuffix(@NonNull TabPlayer player) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue;
+            if (!viewer.getScoreboard().containsTeam(player.teamData.teamName)) continue;
             TabComponent prefix = cache.get(player.teamData.prefix.getFormat(viewer));
             viewer.getScoreboard().updateTeam(
                     player.teamData.teamName,
@@ -294,7 +294,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (moveToThread) {
             customThread.execute(() -> {
                 for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                    if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue;
+                    if (!viewer.getScoreboard().containsTeam(player.teamData.teamName)) continue;
                     viewer.getScoreboard().updateTeam(
                             player.teamData.teamName,
                             player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
@@ -303,7 +303,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             }, getFeatureName(), "Updating collision");
         } else {
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue;
+                if (!viewer.getScoreboard().containsTeam(player.teamData.teamName)) continue;
                 viewer.getScoreboard().updateTeam(
                         player.teamData.teamName,
                         player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
@@ -321,7 +321,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public void updateVisibility(@NonNull TabPlayer player) {
         customThread.execute(() -> {
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue;
+                if (!viewer.getScoreboard().containsTeam(player.teamData.teamName)) continue;
                 viewer.getScoreboard().updateTeam(
                         player.teamData.teamName,
                         getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
@@ -344,7 +344,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          Viewer to send update to
      */
     public void updateVisibility(@NonNull TabPlayer player, @NonNull TabPlayer viewer) {
-        if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) return;
+        if (!viewer.getScoreboard().containsTeam(player.teamData.teamName)) return;
         viewer.getScoreboard().updateTeam(
                 player.teamData.teamName,
                 getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
@@ -354,7 +354,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(teamName)) {
+            if (viewer.getScoreboard().containsTeam(teamName)) {
                 viewer.getScoreboard().unregisterTeam(teamName);
             }
         }
@@ -403,7 +403,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             }
 
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (!((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.teamData.teamName)) continue; // Player is vanished
+                if (!viewer.getScoreboard().containsTeam(player.teamData.teamName)) continue; // Player is vanished
                 viewer.getScoreboard().unregisterTeam(player.teamData.teamName);
                 TabComponent prefix = cache.get(player.teamData.prefix.getFormat(viewer));
                 viewer.getScoreboard().registerTeam(
@@ -444,7 +444,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void onQuit(@NotNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (((SafeScoreboard<?>)viewer.getScoreboard()).containsTeam(player.getTeamName())) {
+            if (viewer.getScoreboard().containsTeam(player.getTeamName())) {
                 viewer.getScoreboard().unregisterTeam(player.getTeamName());
             }
         }
