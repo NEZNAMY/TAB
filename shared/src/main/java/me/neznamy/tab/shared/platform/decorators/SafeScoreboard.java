@@ -214,6 +214,17 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
+    public synchronized void renameTeam(@NonNull String oldName, @NonNull String newName) {
+        Team team = teams.get(oldName);
+        if (team == null) {
+            error("Tried to rename non-existing team %s to %s", oldName, newName);
+            return;
+        }
+        unregisterTeam(oldName);
+        registerTeam(newName, team.prefix, team.suffix, team.visibility, team.collision, team.players, team.options, team.color);
+    }
+
+    @Override
     public synchronized void resend() {
         for (Objective objective : objectives.values()) {
             registerObjective(objective);

@@ -186,6 +186,16 @@ public interface Scoreboard {
     boolean containsTeam(@NonNull String teamName);
 
     /**
+     * Renames a team.
+     *
+     * @param   oldName
+     *          Current team name
+     * @param   newName
+     *          New team name
+     */
+    void renameTeam(@NonNull String oldName, @NonNull String newName);
+
+    /**
      * Resends all objectives and teams.
      */
     void resend();
