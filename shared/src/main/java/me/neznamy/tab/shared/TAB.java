@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 /**
  * Main class of the plugin storing data and implementing API
@@ -291,6 +292,11 @@ public class TAB extends TabAPI {
     @Override
     public @Nullable HeaderFooterManager getHeaderFooterManager() {
         return featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
+    }
+
+    @Override
+    public @NotNull Stream<me.neznamy.tab.api.TabPlayer> onlinePlayers() {
+        return data.values().stream().map(x -> x);
     }
 
     @Override
