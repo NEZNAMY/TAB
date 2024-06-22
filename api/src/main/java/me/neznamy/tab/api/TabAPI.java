@@ -1,7 +1,7 @@
 package me.neznamy.tab.api;
 
+import java.util.Collection;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import lombok.NonNull;
 import lombok.Setter;
@@ -77,9 +77,7 @@ public abstract class TabAPI {
      *
      * @return  stream of online players
      */
-    public @NotNull Stream<TabPlayer> onlinePlayers() {
-        return Stream.of(getOnlinePlayers());
-    }
+    public abstract @NotNull Collection<? extends TabPlayer> onlinePlayers();
 
     /**
      * Return BossBar manager instance if the feature is enabled. If not, returns {@code null}.
