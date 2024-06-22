@@ -28,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -291,6 +293,11 @@ public class TAB extends TabAPI {
     @Override
     public @Nullable HeaderFooterManager getHeaderFooterManager() {
         return featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
+    }
+
+    @Override
+    public @NotNull Collection<? extends TabPlayer> onlinePlayers() {
+        return Collections.unmodifiableCollection(data.values());
     }
 
     @Override

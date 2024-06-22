@@ -1,5 +1,6 @@
 package me.neznamy.tab.api;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import lombok.NonNull;
@@ -67,7 +68,16 @@ public abstract class TabAPI {
      *
      * @return  collection of online players
      */
+    @Deprecated
     public abstract @NotNull TabPlayer[] getOnlinePlayers();
+
+
+    /**
+     * Returns a stream of all online players
+     *
+     * @return  stream of online players
+     */
+    public abstract @NotNull Collection<? extends TabPlayer> onlinePlayers();
 
     /**
      * Return BossBar manager instance if the feature is enabled. If not, returns {@code null}.
