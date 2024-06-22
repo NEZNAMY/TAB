@@ -91,7 +91,7 @@ public class VelocityTabList extends TabList<VelocityTabPlayer, Component> {
 
     @Override
     public void checkDisplayNames() {
-        for (TabPlayer target : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             player.getPlayer().getTabList().getEntry(target.getUniqueId()).ifPresent(entry -> {
                 Component expectedComponent = getExpectedDisplayName(target);
                 if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {

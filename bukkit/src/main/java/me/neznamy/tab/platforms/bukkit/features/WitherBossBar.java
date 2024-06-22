@@ -51,7 +51,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
      * Updates Wither location for all online players
      */
     private void teleport() {
-        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
             for (BossBar line : getRegisteredBossBars().values()) {
                 if (!line.containsPlayer(p)) continue;

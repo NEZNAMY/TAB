@@ -68,7 +68,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     public void processNameChange(@NotNull TabPlayer player) {
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
-                for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     String prefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
                     viewer.getScoreboard().unregisterTeam(player.sortingData.getShortTeamName());
                     viewer.getScoreboard().registerTeam(
@@ -84,13 +84,13 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             if (belowname != null) {
                 int value = belowname.getValue(player);
-                for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     belowname.setScore(viewer, player, value, player.getProperty(belowname.getFANCY_FORMAT_PROPERTY()).get());
                 }
             }
             if (yellownumber != null) {
                 int value = yellownumber.getValueNumber(player);
-                for (TabPlayer viewer : TAB.getInstance().onlinePlayers())
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers())
                     yellownumber.setScore(viewer, player, value, player.getProperty(yellownumber.getPROPERTY_VALUE_FANCY()).get());
             }
         });
@@ -100,7 +100,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (redisTeams != null) {
                 String teamName = player.getTeamName();
-                for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(teamName);
                     viewer.getScoreboard().registerTeam(
                             teamName,
@@ -115,7 +115,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             }
             if (redisBelowName != null) {
-                for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     all.getScoreboard().setScore(
                             BelowName.OBJECTIVE_NAME,
                             player.getNickname(),
@@ -126,7 +126,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             }
             if (redisYellowNumber != null) {
-                for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     all.getScoreboard().setScore(
                             YellowNumber.OBJECTIVE_NAME,
                             player.getNickname(),

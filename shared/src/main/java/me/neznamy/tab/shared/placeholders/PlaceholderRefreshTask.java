@@ -40,8 +40,7 @@ public class PlaceholderRefreshTask implements Runnable {
 
     @Override
     public void run() {
-        Collection<? extends TabPlayer> players =
-                TAB.getInstance().onlinePlayers();
+        TabPlayer[] players = TAB.getInstance().getOnlinePlayers();
         for (Placeholder placeholder : placeholdersToRefresh) {
             long nanoTime = 0;
             if (placeholder instanceof ServerPlaceholderImpl) {

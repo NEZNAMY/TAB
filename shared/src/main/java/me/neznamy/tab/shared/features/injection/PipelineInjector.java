@@ -37,14 +37,14 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
 
     @Override
     public void load() {
-        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             inject(p);
         }
     }
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             uninject(p);
         }
     }

@@ -34,7 +34,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
 
     @Override
     public void load() {
-        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             entityIdMap.put(nameTagX.getEntityId(all), all);
         }
     }

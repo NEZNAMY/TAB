@@ -69,7 +69,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         constructTeamNames(p);
         if (!p.sortingData.shortTeamName.equals(previousShortName)) {
             if (nameTags != null && p.sortingData.forcedTeamName == null && !nameTags.hasTeamHandlingPaused(p) && !p.disabledNametags.get()) {
-                for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(previousShortName);
                 }
                 nameTags.registerTeam(p);
@@ -90,7 +90,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         nameTags = TAB.getInstance().getNameTagManager();
         layout = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             onJoin(all);
         }
     }
@@ -163,7 +163,7 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
      */
     private @NotNull String checkTeamName(@NotNull TabPlayer p, @NotNull StringBuilder currentName, int id) {
         String potentialTeamName = currentName.toString() + (char)id;
-        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == p) continue;
             if (potentialTeamName.equals(all.sortingData.shortTeamName)) {
                 return checkTeamName(p, currentName, id+1);

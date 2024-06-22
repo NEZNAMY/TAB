@@ -74,7 +74,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
         playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
         teamsEnabled = TAB.getInstance().getNameTagManager() != null;
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
-        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
     }
@@ -112,7 +112,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
         // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
         if (highest == null) return;
-        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             p.getTabList().updateDisplayName(all.getTablistId(), null);
         }
     }
@@ -120,7 +120,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     @Override
     public void onQuit(@NotNull TabPlayer p) {
         sortedPlayers.remove(p);
-        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == p) continue;
             if (all.layoutData.view != null) all.layoutData.view.tick();
         }
@@ -151,7 +151,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
             p.getTabList().removeEntries(uuids.values());
         }
@@ -196,7 +196,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
      * Ticks layouts for all players.
      */
     public void tickAllLayouts() {
-        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.layoutData.view != null) all.layoutData.view.tick();
         }
     }

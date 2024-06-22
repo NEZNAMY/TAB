@@ -72,7 +72,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(entry.getKey()), sb);
         }
         definedScoreboards = registeredScoreboards.values().toArray(new me.neznamy.tab.api.scoreboard.Scoreboard[0]);
-        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
     }
@@ -343,7 +343,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         Map<TabPlayer, ScoreboardImpl> previous = new HashMap<>();
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), "Adding announced Scoreboard", () -> {
             announcement = sb;
-            for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!hasScoreboardVisible(all)) continue;
                 previous.put(all, all.scoreboardData.activeScoreboard);
                 if (all.scoreboardData.activeScoreboard != null) all.scoreboardData.activeScoreboard.removePlayer(all);
@@ -352,7 +352,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         });
         TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
                 getFeatureName(), "Removing announced Scoreboard", () -> {
-                    for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
+                    for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                         if (!hasScoreboardVisible(all)) continue;
                         sb.removePlayer(all);
                         if (previous.get(all) != null) previous.get(all).addPlayer(all);

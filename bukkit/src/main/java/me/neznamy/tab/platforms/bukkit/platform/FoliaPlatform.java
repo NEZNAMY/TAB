@@ -42,7 +42,7 @@ public class FoliaPlatform extends BukkitPlatform {
 
         // Folia never calls PlayerChangedWorldEvent, this is a workaround
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "Folia compatibility", "Refreshing world", () -> {
-            for (TabPlayer player : TAB.getInstance().onlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 String bukkitWorld = ((Player)player.getPlayer()).getWorld().getName();
                 if (!player.getWorld().equals(bukkitWorld)) {
                     TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), bukkitWorld);
