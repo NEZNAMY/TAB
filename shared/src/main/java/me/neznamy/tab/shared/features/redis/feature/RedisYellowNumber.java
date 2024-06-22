@@ -42,7 +42,7 @@ public class RedisYellowNumber extends RedisFeature {
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
             viewer.getScoreboard().setScore(
                     YellowNumber.OBJECTIVE_NAME,
                     player.getNickname(),

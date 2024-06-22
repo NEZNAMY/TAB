@@ -54,7 +54,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     public void load() {
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         Map<TabPlayer, Integer> values = new HashMap<>();
-        for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer loaded : TAB.getInstance().onlinePlayers()) {
             loaded.setProperty(this, NUMBER_PROPERTY, rawNumber);
             loaded.setProperty(this, FANCY_FORMAT_PROPERTY, fancyDisplayPlayers);
             loaded.setProperty(textRefresher, TEXT_PROPERTY, rawText);
@@ -66,7 +66,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
             }
             values.put(loaded, getValue(loaded));
         }
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
                 TabPlayer target = entry.getKey();
                 if (!sameServerAndWorld(viewer, target)) continue;
@@ -77,7 +77,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
             if (p.disabledBelowname.get()) continue;
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
@@ -96,7 +96,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         }
         int number = getValue(connectedPlayer);
         Property fancy = connectedPlayer.getProperty(FANCY_FORMAT_PROPERTY);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
             if (!sameServerAndWorld(connectedPlayer, all)) continue;
             setScore(all, connectedPlayer, number, fancy.getFormat(all));
             if (all != connectedPlayer) {
@@ -153,7 +153,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         int number = getValue(refreshed);
         Property fancy = refreshed.getProperty(FANCY_FORMAT_PROPERTY);
         fancy.update();
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
             if (!sameServerAndWorld(viewer, refreshed)) continue;
             setScore(viewer, refreshed, number, fancy.getFormat(viewer));
         }
@@ -170,7 +170,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     public void onLoginPacket(@NotNull TabPlayer player) {
         if (player.disabledBelowname.get() || !player.isLoaded()) return;
         register(player);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
             if (!sameServerAndWorld(all, player)) continue;
             if (all.isLoaded()) setScore(player, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(player));
         }
@@ -240,7 +240,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     private void updatePlayer(@NotNull TabPlayer player) {
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
             if (!sameServerAndWorld(all, player)) continue;
             setScore(player, all, getValue(all), all.getProperty(FANCY_FORMAT_PROPERTY).getFormat(player));
             if (all != player) setScore(all, player, getValue(player), player.getProperty(FANCY_FORMAT_PROPERTY).getFormat(all));

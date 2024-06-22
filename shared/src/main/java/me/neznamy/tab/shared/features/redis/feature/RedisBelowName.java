@@ -42,7 +42,7 @@ public class RedisBelowName extends RedisFeature {
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
             viewer.getScoreboard().setScore(
                     BelowName.OBJECTIVE_NAME,
                     player.getNickname(),

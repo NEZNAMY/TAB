@@ -88,7 +88,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
             if (seconds < 0) return 0;
             return seconds;
         });
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
             onJoin(p);
         }
     }
@@ -118,7 +118,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().onlinePlayers()) {
             for (BossBar line : lineValues) {
                 line.removePlayer(p);
             }
@@ -299,8 +299,11 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
         ensureActive();
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-        List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(
-                this::hasBossBarVisible).collect(Collectors.toList());
+        List<TabPlayer> players = TAB.getInstance()
+                .onlinePlayers()
+                .stream()
+                .filter(this::hasBossBarVisible)
+                .collect(Collectors.toList());
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), "Adding announced BossBar", () -> {
             announcedBossBars.add(line);
             announceEndTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(duration);

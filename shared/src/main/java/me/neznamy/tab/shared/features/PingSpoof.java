@@ -49,15 +49,15 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
             connectedPlayer.getTabList().updateLatency(all.getTablistId(), value);
             all.getTabList().updateLatency(connectedPlayer.getTablistId(), value);
         }
     }
 
     private void updateAll(boolean realPing) {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().onlinePlayers()) {
+            for (TabPlayer target : TAB.getInstance().onlinePlayers()) {
                 viewer.getTabList().updateLatency(target.getTablistId(), realPing ? target.getPing() : value);
             }
         }

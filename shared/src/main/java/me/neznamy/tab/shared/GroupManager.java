@@ -39,7 +39,7 @@ public class GroupManager {
         this.groupFunction = groupFunction;
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TAB.getInstance().getConfiguration().getPermissionRefreshInterval(),
                 "Permission group refreshing", "Refreshing task", () -> {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
                 all.setGroup(detectPermissionGroup(all));
             }
         });

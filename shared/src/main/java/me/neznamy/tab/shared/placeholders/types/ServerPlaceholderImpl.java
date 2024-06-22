@@ -52,7 +52,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     public void updateValue(@Nullable Object value) {
         if (hasValueChanged(value)) {
             for (Refreshable r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
                     if (!all.isLoaded()) return; // Updated on join
                     long startTime = System.nanoTime();
                     r.refresh(all, false);
@@ -67,7 +67,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 
         if (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValue.equals(newValue)) {
             lastValue = newValue;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer player : TAB.getInstance().onlinePlayers()) {
                 updateParents(player);
                 TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
             }

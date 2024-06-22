@@ -75,7 +75,7 @@ public abstract class ProxyPlatform implements Platform {
             String server = identifier.substring(8, identifier.length()-1);
             pl.registerServerPlaceholder(identifier, 1000, () -> {
                 int count = 0;
-                for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer player : TAB.getInstance().onlinePlayers()) {
                     if (player.getServer().equals(server) && !player.isVanished()) count++;
                 }
                 return count;
@@ -90,7 +90,7 @@ public abstract class ProxyPlatform implements Platform {
             placeholder = pl.registerPlayerPlaceholder(identifier, -1, player -> null);
         }
         bridgePlaceholders.put(placeholder.getIdentifier(), refresh);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
             ((ProxyTabPlayer)all).sendPluginMessage(new RegisterPlaceholder(placeholder.getIdentifier(), refresh));
         }
     }

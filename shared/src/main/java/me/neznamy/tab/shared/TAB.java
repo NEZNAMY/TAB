@@ -28,10 +28,11 @@ import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 /**
  * Main class of the plugin storing data and implementing API
@@ -49,8 +50,6 @@ public class TAB extends TabAPI {
     /** Players by their TabList UUID for faster lookup */
     private final Map<UUID, TabPlayer> playersByTabListId = new ConcurrentHashMap<>();
 
-    /** Online player array to avoid memory allocation when iterating */
-    private volatile TabPlayer[] onlinePlayers = new TabPlayer[0];
 
     /** Instance of plugin's main command */
     private TabCommand command;
@@ -179,7 +178,7 @@ public class TAB extends TabAPI {
             platform.loadPlayers();
             command = new TabCommand();
             featureManager.load();
-            for (TabPlayer p : onlinePlayers) p.markAsLoaded(false);
+            onlinePlayers().forEach(p -> p.markAsLoaded(false));
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
             cpu.enable();
@@ -223,7 +222,6 @@ public class TAB extends TabAPI {
         pluginDisabled = true;
         data.clear();
         playersByTabListId.clear();
-        onlinePlayers = new TabPlayer[0];
         cpu.cancelAllTasks();
     }
 
@@ -236,7 +234,6 @@ public class TAB extends TabAPI {
     public void addPlayer(@NotNull TabPlayer player) {
         data.put(player.getUniqueId(), player);
         playersByTabListId.put(player.getTablistId(), player);
-        onlinePlayers = data.values().toArray(new TabPlayer[0]);
     }
 
     /**
@@ -248,7 +245,6 @@ public class TAB extends TabAPI {
     public void removePlayer(@NotNull TabPlayer player) {
         data.remove(player.getUniqueId());
         playersByTabListId.remove(player.getTablistId());
-        onlinePlayers = data.values().toArray(new TabPlayer[0]);
     }
 
     /**
@@ -285,6 +281,11 @@ public class TAB extends TabAPI {
     }
 
     @Override
+    public @NotNull TabPlayer[] getOnlinePlayers() {
+        return data.values().toArray(new TabPlayer[0]);
+    }
+
+    @Override
     public @Nullable TabPlayer getPlayer(@NotNull UUID uniqueId) {
         return data.get(uniqueId);
     }
@@ -295,8 +296,8 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public @NotNull Stream<me.neznamy.tab.api.TabPlayer> onlinePlayers() {
-        return data.values().stream().map(x -> x);
+    public @NotNull Collection<? extends TabPlayer> onlinePlayers() {
+        return Collections.unmodifiableCollection(data.values());
     }
 
     @Override

@@ -88,7 +88,7 @@ public class SpongeTabList extends TabList<SpongeTabPlayer, Component> {
 
     @Override
     public void checkDisplayNames() {
-        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer target : TAB.getInstance().onlinePlayers()) {
             player.getPlayer().tabList().entry(target.getUniqueId()).ifPresent(entry -> {
                 Component expectedComponent = getExpectedDisplayName(target);
                 if (expectedComponent != null && entry.displayName().orElse(null) != expectedComponent) {

@@ -1,5 +1,8 @@
 package me.neznamy.tab.api;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -77,8 +80,8 @@ public abstract class TabAPI {
      *
      * @return  stream of online players
      */
-    public @NotNull Stream<TabPlayer> onlinePlayers() {
-        return Stream.of(getOnlinePlayers());
+    public @NotNull Collection<? extends TabPlayer> onlinePlayers() {
+        return Arrays.asList(getOnlinePlayers());
     }
 
     /**

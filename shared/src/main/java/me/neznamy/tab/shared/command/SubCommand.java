@@ -128,7 +128,7 @@ public abstract class SubCommand {
      */
     public @NotNull List<String> getOnlinePlayers(@NotNull String nameStart) {
         List<String> suggestions = new ArrayList<>();
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().onlinePlayers()) {
             if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
         }
         return suggestions;
