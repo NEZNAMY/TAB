@@ -45,7 +45,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
     @Override
     public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String value) {
-        if (hasValueChanged((TabPlayer) player, value)) {
+        if (hasValueChanged((TabPlayer) player, value, true)) {
             if (!player.isLoaded()) return; // Updated on join
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
                 FeatureTasks.Refresh task = new FeatureTasks.Refresh(r, (TabPlayer) player, false);
@@ -65,16 +65,18 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      *          Player to update value for
      * @param   value
      *          New value
+     * @param   updateParents
+     *          Whether parents should be updated or not
      * @return  {@code true} if value changed, {@code false} if not
      */
-    public boolean hasValueChanged(@NotNull TabPlayer p, @Nullable String value) {
+    public boolean hasValueChanged(@NotNull TabPlayer p, @Nullable String value, boolean updateParents) {
         if (value == null) return false; //bridge placeholders, they are updated using updateValue method
         if (ERROR_VALUE.equals(value)) return false;
         String newValue = replacements.findReplacement(setPlaceholders(value, p));
         String lastValue = p.lastPlaceholderValues.get(this);
         if (lastValue == null || (!identifier.equals(newValue) && !newValue.equals(lastValue))) {
             p.lastPlaceholderValues.put(this, newValue);
-            updateParents(p);
+            if (updateParents) updateParents(p);
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
             return true;
         }
@@ -83,7 +85,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
     @Override
     public void updateFromNested(@NonNull TabPlayer player) {
-        hasValueChanged(player, request(player));
+        hasValueChanged(player, request(player), true);
     }
 
     @NotNull
@@ -94,7 +96,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
         // Value not present, initialize
         p.lastPlaceholderValues.put(this, replacements.findReplacement(identifier));
-        update(p);
+        hasValueChanged(p, request(p), false);
         return p.lastPlaceholderValues.get(this);
     }
 

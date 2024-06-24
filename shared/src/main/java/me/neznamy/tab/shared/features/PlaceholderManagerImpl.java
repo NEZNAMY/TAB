@@ -158,7 +158,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             for (Entry<TabPlayer, String> playerResult : entry.getValue().entrySet()) {
                 TabPlayer player = playerResult.getKey();
                 if (!player.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
-                if (placeholder.hasValueChanged(player, playerResult.getValue())) {
+                if (placeholder.hasValueChanged(player, playerResult.getValue(), true)) {
                     placeholder.updateParents(player);
                     for (RefreshableFeature f : placeholderUsage) {
                         update.computeIfAbsent(f, c -> new HashSet<>()).add(player);
