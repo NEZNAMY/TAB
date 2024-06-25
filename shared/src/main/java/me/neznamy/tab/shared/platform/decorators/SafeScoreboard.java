@@ -209,7 +209,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public synchronized boolean containsTeam(@NonNull String teamName) {
+    public boolean containsTeam(@NonNull String teamName) {
         return teams.containsKey(teamName);
     }
 
