@@ -4,6 +4,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.Getter;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.TabList;
@@ -22,7 +23,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /** Player's scoreboard */
     @NotNull
-    private final BridgeScoreboard scoreboard = new BridgeScoreboard(this);
+    private final Scoreboard scoreboard;
 
     /** Player's tab list */
     @NotNull
@@ -43,6 +44,11 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     public VelocityTabPlayer(@NotNull VelocityPlatform platform, @NotNull Player p) {
         super(platform, p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().map(s ->
                 s.getServerInfo().getName()).orElse("null"), p.getProtocolVersion().getProtocol());
+        if (platform.isScoreboardAPI()) {
+            scoreboard = new VelocityScoreboard(this);
+        } else {
+            scoreboard = new BridgeScoreboard(this);
+        }
     }
     
     @Override

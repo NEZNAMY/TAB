@@ -69,7 +69,7 @@ public class VelocityEventListener implements EventListener<Player> {
             if (player == null) {
                 tab.getFeatureManager().onJoin(createPlayer(e.getPlayer()));
             } else {
-                player.getScoreboard().resend();
+                if (!(player.getScoreboard() instanceof VelocityScoreboard)) player.getScoreboard().resend();
                 tab.getFeatureManager().onServerChange(
                         player.getUniqueId(),
                         e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null")

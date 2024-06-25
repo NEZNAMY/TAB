@@ -2,8 +2,10 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.event.scoreboard.ObjectiveEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
+import com.velocitypowered.api.scoreboard.ScoreboardManager;
 import lombok.Getter;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
@@ -15,6 +17,8 @@ import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
@@ -27,13 +31,16 @@ import java.io.File;
 /**
  * Velocity implementation of Platform
  */
+@Getter
 public class VelocityPlatform extends ProxyPlatform {
 
     @NotNull
     private final VelocityTAB plugin;
 
+    /** Flag tracking presence of Velocity Scoreboard API */
+    private boolean scoreboardAPI;
+
     /** Plugin message channel */
-    @Getter
     private final MinecraftChannelIdentifier MCI = MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
 
     /**
@@ -44,6 +51,31 @@ public class VelocityPlatform extends ProxyPlatform {
      */
     public VelocityPlatform(VelocityTAB plugin) {
         this.plugin = plugin;
+        if (plugin.getServer().getPluginManager().isLoaded("velocity-scoreboard-api")) {
+            try {
+                ScoreboardManager.getInstance();
+                scoreboardAPI = true;
+                logInfo(TabComponent.fromColoredText(EnumChatFormat.GREEN + "Detected VelocityScoreboardAPI, using it for better performance"));
+                plugin.getServer().getEventManager().register(plugin, ObjectiveEvent.Display.class, e -> {
+                    TAB tab = TAB.getInstance();
+                    if (tab.isPluginDisabled()) return;
+                    tab.getCPUManager().runTask(() -> {
+                        TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
+                        if (player != null) tab.getFeatureManager().onDisplayObjective(player, e.getNewSlot().ordinal(), e.getObjective().getName());
+                    });
+                });
+                plugin.getServer().getEventManager().register(plugin, ObjectiveEvent.Unregister.class, e -> {
+                    TAB tab = TAB.getInstance();
+                    if (tab.isPluginDisabled()) return;
+                    tab.getCPUManager().runTask(() -> {
+                        TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
+                        if (player != null) tab.getFeatureManager().onObjective(player, Scoreboard.ObjectiveAction.UNREGISTER, e.getObjective().getName());
+                    });
+                });
+            } catch (IllegalStateException ignored) {
+                // Scoreboard API failed to enable due to an error
+            }
+        }
         if (plugin.getServer().getPluginManager().isLoaded("premiumvanish")) {
             PremiumVanishHook.setInstance(new VelocityPremiumVanishHook());
         }

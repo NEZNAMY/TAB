@@ -5,6 +5,7 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.2.0-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:3.2.0-SNAPSHOT")
     compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.9.0-4")
+    compileOnly("net.william278:velocityscoreboardapi:1.0.0-SNAPSHOT-d36677c")
 }
 
 tasks.compileJava {

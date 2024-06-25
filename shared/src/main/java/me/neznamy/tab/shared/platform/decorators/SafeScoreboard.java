@@ -500,7 +500,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     public static class Team {
 
         /** Platform's team object for fast access */
-        @NotNull private final Object platformTeam;
+        @NotNull private Object platformTeam;
         @NonNull private final String name;
         @NonNull private TabComponent prefix;
         @NonNull private TabComponent suffix;
