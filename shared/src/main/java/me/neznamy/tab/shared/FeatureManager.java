@@ -3,7 +3,6 @@ package me.neznamy.tab.shared;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
-import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
@@ -73,17 +72,15 @@ public class FeatureManager {
      * This function is called on plugin disable.
      */
     public void unload() {
+        // Shut down and then unload sync to prevent load running before old unload ends on reloads
         for (TabFeature f : values) {
-            if (!(f instanceof UnLoadable)) continue;
-            FeatureTasks.Unload task = new FeatureTasks.Unload((UnLoadable) f);
             if (f instanceof CustomThreaded) {
-                ThreadExecutor thread = ((CustomThreaded) f).getCustomThread();
-                thread.execute(() -> {
-                    task.run();
-                    thread.shutdown();
-                });
-            } else {
-                task.run();
+                ((CustomThreaded) f).getCustomThread().shutdown();
+            }
+            if (f instanceof UnLoadable) {
+                long time = System.currentTimeMillis();
+                ((UnLoadable) f).unload();
+                TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed unload in " + (System.currentTimeMillis()-time) + "ms");
             }
         }
         for (TabFeature f : values) {

@@ -160,19 +160,6 @@ public class FeatureTasks {
     }
 
     @RequiredArgsConstructor
-    public static class Unload implements Runnable {
-
-        private final UnLoadable listener;
-
-        @Override
-        public void run() {
-            long time = System.currentTimeMillis();
-            listener.unload();
-            TAB.getInstance().debug("Feature " + listener.getClass().getSimpleName() + " processed unload in " + (System.currentTimeMillis()-time) + "ms");
-        }
-    }
-
-    @RequiredArgsConstructor
     public static class OnObjective implements Runnable {
 
         private final ObjectiveListener listener;

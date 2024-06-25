@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.cpu;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,8 +30,12 @@ public class ThreadExecutor {
     /**
      * Shuts down the executor.
      */
+    @SneakyThrows
     public void shutdown() {
-        executor.shutdownNow();
+        executor.shutdown();
+        if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+            TAB.getInstance().getErrorManager().printError("Thread pool shutdown exceeded time limit of 500ms", null);
+        }
     }
     
     @NotNull
