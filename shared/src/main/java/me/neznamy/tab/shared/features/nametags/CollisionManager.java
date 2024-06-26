@@ -40,7 +40,7 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
             return Boolean.toString(newCollision);
         });
         addUsedPlaceholder(TabConstants.Placeholder.COLLISION);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : nameTags.getOnlinePlayers().getPlayers()) {
             onJoin(all);
         }
     }

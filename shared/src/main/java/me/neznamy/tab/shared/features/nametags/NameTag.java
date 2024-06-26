@@ -435,7 +435,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             TAB.getInstance().getErrorManager().printError("Unable to unregister team of redis player " + player.getName() + " on quit, because team is null", null);
             return;
         }
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (viewer.getScoreboard().containsTeam(player.getTeamName())) {
                 viewer.getScoreboard().unregisterTeam(player.getTeamName());
             }
@@ -755,7 +755,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             target.setNameVisibility(nameVisibility);
             TabComponent prefixComponent = cache.get(prefix);
             if (!newTeamName.equals(oldTeamName)) {
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                     if (oldTeamName != null) viewer.getScoreboard().unregisterTeam(oldTeamName);
                     viewer.getScoreboard().registerTeam(
                             newTeamName,
@@ -769,7 +769,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     );
                 }
             } else {
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                     viewer.getScoreboard().updateTeam(
                             oldTeamName,
                             prefixComponent,
@@ -785,7 +785,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
         private @NotNull String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15, int id) {
             String potentialTeamName = currentName15 + (char)id;
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer all : onlinePlayers.getPlayers()) {
                 if (all.teamData.teamName.equals(potentialTeamName)) {
                     return checkTeamName(player, currentName15, id+1);
                 }

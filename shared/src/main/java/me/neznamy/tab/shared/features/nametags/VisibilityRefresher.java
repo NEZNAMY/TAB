@@ -34,7 +34,7 @@ public class VisibilityRefresher extends RefreshableFeature implements CustomThr
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.disabled.get()) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
             if (viewer.getVersion().getMinorVersion() == 8) nameTags.updateVisibility(p, viewer);
         }
     }

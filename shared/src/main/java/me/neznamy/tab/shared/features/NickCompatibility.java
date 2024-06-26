@@ -69,7 +69,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     public void processNameChange(@NotNull TabPlayer player) {
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
                     TabComponent prefix = nameTags.getCache().get(player.teamData.prefix.getFormat(viewer));
                     viewer.getScoreboard().unregisterTeam(player.sortingData.getShortTeamName());
                     viewer.getScoreboard().registerTeam(
@@ -92,7 +92,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
         TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
             if (nameTags != null) {
                 String teamName = player.getTeamName();
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
                     viewer.getScoreboard().unregisterTeam(teamName);
                     TabComponent prefix = nameTags.getCache().get(player.getTagPrefix());
                     viewer.getScoreboard().registerTeam(
@@ -108,7 +108,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             }
             if (belowname != null) {
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer all : belowname.getOnlinePlayers().getPlayers()) {
                     all.getScoreboard().setScore(
                             BelowName.OBJECTIVE_NAME,
                             player.getNickname(),
@@ -119,7 +119,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             }
             if (yellownumber != null) {
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                for (TabPlayer all : yellownumber.getOnlinePlayers().getPlayers()) {
                     all.getScoreboard().setScore(
                             YellowNumber.OBJECTIVE_NAME,
                             player.getNickname(),
