@@ -431,6 +431,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void onQuit(@NotNull RedisPlayer player) {
+        if (player.getTeamName() == null) {
+            TAB.getInstance().getErrorManager().printError("Unable to unregister team of redis player " + player.getName() + " on quit, because team is null", null);
+            return;
+        }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getScoreboard().containsTeam(player.getTeamName())) {
                 viewer.getScoreboard().unregisterTeam(player.getTeamName());
