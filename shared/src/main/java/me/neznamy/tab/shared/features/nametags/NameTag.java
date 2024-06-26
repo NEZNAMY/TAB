@@ -105,6 +105,15 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 if (hasTeamHandlingPaused(target) || target.teamData.disabled.get()) continue;
                 viewer.getScoreboard().unregisterTeam(target.teamData.teamName);
             }
+            if (redis != null) {
+                for (RedisPlayer player : redis.getRedisPlayers().values()) {
+                    if (player.getTeamName() == null) {
+                        TAB.getInstance().getErrorManager().printError("Team name of redis player " + player.getName() + " is unexpectedly null on unload", null);
+                        continue;
+                    }
+                    viewer.getScoreboard().unregisterTeam(player.getTeamName());
+                }
+            }
         }
     }
 
