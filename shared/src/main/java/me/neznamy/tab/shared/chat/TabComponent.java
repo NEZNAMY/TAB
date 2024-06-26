@@ -65,6 +65,15 @@ public abstract class TabComponent {
     public abstract String toLegacyText();
 
     /**
+     * Converts this component into a string that only consists of text without any formatting.
+     *
+     * @return  String containing text of the component and extras
+     */
+    @NotNull
+    public abstract String toRawText();
+
+
+    /**
      * Returns the most optimized component based on text. Returns null if text is null,
      * organized component if RGB colors are used or simple component with only text field
      * containing the whole text when no RGB colors are used

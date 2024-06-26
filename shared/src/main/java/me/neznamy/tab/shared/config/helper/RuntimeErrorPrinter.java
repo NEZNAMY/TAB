@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.config.helper;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -196,6 +196,6 @@ public class RuntimeErrorPrinter {
      *          Message to log
      */
     private void error(@NotNull String message) {
-        TAB.getInstance().getPlatform().logWarn(new SimpleComponent(message));
+        TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(message));
     }
 }

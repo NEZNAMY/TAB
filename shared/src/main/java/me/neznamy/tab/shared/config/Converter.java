@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.config;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public class Converter {
 
     public void convert2810to290(@NotNull ConfigurationFile animations) {
         if (animations.getValues().size() == 1 && animations.getValues().containsKey("animations")) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 2.8.10 to 2.9.0"));
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 2.8.10 to 2.9.0"));
             animations.setValues(animations.getConfigurationSection("animations"));
             animations.save();
         }
@@ -42,7 +42,7 @@ public class Converter {
      */
     public void convert292to300(@NotNull ConfigurationFile currentConfig) throws IOException {
         if (!currentConfig.hasConfigOption("change-nametag-prefix-suffix")) return;
-        TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 2.9.2 to 3.0.0"));
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 2.9.2 to 3.0.0"));
 
         File folder = TAB.getInstance().getDataFolder();
         moveOldFiles();
@@ -346,13 +346,13 @@ public class Converter {
 
     public void convert301to302(@NotNull ConfigurationFile config) {
         if (config.removeOption("placeholders.remove-strings")) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 3.0.1 to 3.0.2"));
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 3.0.1 to 3.0.2"));
         }
     }
 
     public void convert331to332(@NotNull ConfigurationFile config) {
         if (config.removeOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 3.3.1 to 3.3.2)"));
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 3.3.1 to 3.3.2)"));
         }
     }
 
@@ -360,7 +360,7 @@ public class Converter {
     public void convert332to400(@NotNull ConfigurationFile config) throws IOException {
         // Removed config options
         if (config.hasConfigOption("fix-pet-names")) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 3.3.2 to 4.0.0"));
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 3.3.2 to 4.0.0"));
             config.set("fix-pet-names", null);
             config.set("bossbar.disable-in-worlds", null);
             config.set("bossbar.disable-in-servers", null);
@@ -425,13 +425,13 @@ public class Converter {
 
     public void convert403to404(@NotNull ConfigurationFile config) {
         if (config.removeOption("global-playerlist.update-latency")) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.0.3 to 4.0.4"));
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.0.3 to 4.0.4"));
         }
     }
 
     public void convert409to410(@NotNull ConfigurationFile config) {
         if (config.hasConfigOption("yellow-number-in-tablist")) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.0.9 to 4.1.0"));
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.0.9 to 4.1.0"));
             Map<Object, Object> section = config.getConfigurationSection("yellow-number-in-tablist");
             section.put("fancy-value", "&7Ping: %ping%");
             config.set("yellow-number-in-tablist", null);

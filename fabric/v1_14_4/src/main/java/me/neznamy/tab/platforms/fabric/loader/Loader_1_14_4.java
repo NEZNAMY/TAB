@@ -319,13 +319,13 @@ public class Loader_1_14_4 implements Loader {
     @SneakyThrows
     public void logInfo(@NotNull TabComponent message) {
         Object logger = ReflectionUtils.getFields(MinecraftServer.class, Class.forName("org.apache.logging.log4j.Logger")).get(0).get(null);
-        logger.getClass().getMethod("info", String.class).invoke(logger, "[TAB] " + message.toLegacyText());
+        logger.getClass().getMethod("info", String.class).invoke(logger, "[TAB] " + message.toRawText());
     }
 
     @Override
     @SneakyThrows
     public void logWarn(@NotNull TabComponent message) {
         Object logger = ReflectionUtils.getFields(MinecraftServer.class, Class.forName("org.apache.logging.log4j.Logger")).get(0).get(null);
-        logger.getClass().getMethod("warn", String.class).invoke(logger, "[TAB] " + message.toLegacyText());
+        logger.getClass().getMethod("warn", String.class).invoke(logger, "[TAB] " + message.toRawText());
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -56,13 +56,13 @@ public class YamlConfigurationFile extends ConfigurationFile {
             if (input != null) input.close();
             TAB tab = TAB.getInstance();
             tab.setBrokenFile(destination.getName());
-            tab.getPlatform().logWarn(new SimpleComponent("File " + destination + " has broken syntax."));
-            tab.getPlatform().logInfo(new SimpleComponent(EnumChatFormat.GOLD + "Error message from yaml parser: " + e.getMessage()));
+            tab.getPlatform().logWarn(TabComponent.fromColoredText("File " + destination + " has broken syntax."));
+            tab.getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GOLD + "Error message from yaml parser: " + e.getMessage()));
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
-                tab.getPlatform().logInfo(new SimpleComponent(EnumChatFormat.LIGHT_PURPLE + "Suggestions to fix yaml syntax:"));
+                tab.getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.LIGHT_PURPLE + "Suggestions to fix yaml syntax:"));
                 for (String suggestion : suggestions) {
-                    tab.getPlatform().logInfo(new SimpleComponent(EnumChatFormat.LIGHT_PURPLE + "- " + suggestion));
+                    tab.getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.LIGHT_PURPLE + "- " + suggestion));
                 }
             }
             throw e;
@@ -79,7 +79,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
             writer.close();
             fixHeader();
         } catch (IOException e) {
-            TAB.getInstance().getPlatform().logWarn(new SimpleComponent("Failed to save yaml file " + file.getPath() + " with content " + values.toString()));
+            TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText("Failed to save yaml file " + file.getPath() + " with content " + values.toString()));
         }
     }
 }

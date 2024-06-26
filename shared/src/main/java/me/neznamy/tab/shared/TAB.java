@@ -10,7 +10,7 @@ import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.helper.ConfigHelper;
 import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -186,10 +186,10 @@ public class TAB extends TabAPI {
             cpu.enable();
             configHelper.startup().checkErrorLog();
             configHelper.startup().printWarnCount();
-            platform.logInfo(new SimpleComponent(EnumChatFormat.GREEN + "Enabled in " + (System.currentTimeMillis()-time) + "ms"));
+            platform.logInfo(TabComponent.fromColoredText(EnumChatFormat.GREEN + "Enabled in " + (System.currentTimeMillis()-time) + "ms"));
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {
-            platform.logWarn(new SimpleComponent(EnumChatFormat.RED + "Did not enable due to a broken configuration file."));
+            platform.logWarn(TabComponent.fromColoredText(EnumChatFormat.RED + "Did not enable due to a broken configuration file."));
             kill();
             return (configuration == null ? "&4Failed to reload, file %file% has broken syntax. Check console for more info."
                     : configuration.getMessages().getReloadFailBrokenFile()).replace("%file%", brokenFile);
@@ -210,7 +210,7 @@ public class TAB extends TabAPI {
             long time = System.currentTimeMillis();
             if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
             featureManager.unload();
-            platform.logInfo(new SimpleComponent(EnumChatFormat.GREEN + "Disabled in " + (System.currentTimeMillis()-time) + "ms"));
+            platform.logInfo(TabComponent.fromColoredText(EnumChatFormat.GREEN + "Disabled in " + (System.currentTimeMillis()-time) + "ms"));
         } catch (Throwable e) {
             errorManager.criticalError("Failed to disable", e);
         }
@@ -324,6 +324,6 @@ public class TAB extends TabAPI {
      */
     public void debug(@NotNull String message) {
         if (configuration != null && configuration.isDebugMode())
-            platform.logInfo(new SimpleComponent(EnumChatFormat.BLUE + "[DEBUG] " + message));
+            platform.logInfo(TabComponent.fromColoredText(EnumChatFormat.BLUE + "[DEBUG] " + message));
     }
 }

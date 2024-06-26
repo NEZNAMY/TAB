@@ -320,12 +320,12 @@ public class Loader_1_21 implements Loader {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        MinecraftServer.LOGGER.info("[TAB] " + message.toLegacyText());
+        MinecraftServer.LOGGER.info("[TAB] " + message.toRawText());
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        MinecraftServer.LOGGER.warn("[TAB] " + message.toLegacyText());
+        MinecraftServer.LOGGER.warn("[TAB] " + message.toRawText());
     }
 
     /**

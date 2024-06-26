@@ -4,7 +4,7 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.layout.GroupPattern;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
@@ -389,7 +389,7 @@ public class StartupWarnPrinter {
     private void startupWarn(@NotNull String... messages) {
         warnCount++;
         for (String message : messages) {
-            TAB.getInstance().getPlatform().logWarn(new SimpleComponent(message));
+            TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(message));
         }
     }
 
@@ -398,7 +398,7 @@ public class StartupWarnPrinter {
      */
     public void printWarnCount() {
         if (warnCount == 0) return;
-        TAB.getInstance().getPlatform().logWarn(new SimpleComponent("Found a total of " + warnCount + " issues."));
+        TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText("Found a total of " + warnCount + " issues."));
         // Reset after printing to prevent count going up on each reload
         warnCount = 0;
     }

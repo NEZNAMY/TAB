@@ -14,7 +14,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +37,7 @@ public class MySQL {
         properties.setProperty("useSSL", String.valueOf(useSSL));
         properties.setProperty("characterEncoding", "UTF-8");
         con = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s", host, port, database), properties);
-        TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.GREEN + "Successfully connected to MySQL"));
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GREEN + "Successfully connected to MySQL"));
     }
     
     public void closeConnection() throws SQLException {

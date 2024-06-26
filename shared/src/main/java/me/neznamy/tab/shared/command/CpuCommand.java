@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.CpuReport;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -74,13 +74,13 @@ public class CpuCommand extends SubCommand {
     }
 
     public void sendToConsole(@NotNull Map<String, Map<String, Float>> features) {
-        TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.color("&8&l" + LINE_CHAR + " &6Features:")));
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.color("&8&l" + LINE_CHAR + " &6Features:")));
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.color(
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.color(
                     String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(),
                             colorize(decimal3.format(entry.getValue().values().stream().mapToDouble(Float::floatValue).sum()), 5, 1)))));
             for (Entry<String, Float> type : entry.getValue().entrySet()) {
-                TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.color(
+                TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.color(
                         String.format("&8&l%s     &7%s - %s%%", LINE_CHAR, type.getKey(), colorize(decimal3.format(type.getValue()), 5, 1)))));
             }
         }
@@ -91,7 +91,7 @@ public class CpuCommand extends SubCommand {
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
             String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
-            sender.sendMessage(new SimpleComponent(EnumChatFormat.color(core)));
+            sender.sendMessage(TabComponent.fromColoredText(EnumChatFormat.color(core)));
         }
     }
 

@@ -7,7 +7,6 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.player.TabList;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
-import java.util.UUID;
 
 /**
  * Main class for Velocity.
@@ -54,9 +52,8 @@ public class VelocityTAB {
      */
     @Subscribe
     public void onProxyInitialization(@Nullable ProxyInitializeEvent event) {
-        if (!ReflectionUtils.methodExists(TabList.class, "getEntry", UUID.class)) {
-            logger.warn(EnumChatFormat.RED + "The plugin requires Velocity build #229 " +
-                    "(released on February 20th, 2023) and up to work.");
+        if (!ReflectionUtils.classExists("net.kyori.adventure.text.logger.slf4j.ComponentLogger")) {
+            logger.warn(EnumChatFormat.RED + "The plugin requires Velocity build #274 (released on October 12th, 2023) and up to work.");
             return;
         }
         TAB.create(new VelocityPlatform(this));

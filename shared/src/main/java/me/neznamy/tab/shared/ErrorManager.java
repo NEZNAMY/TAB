@@ -3,7 +3,7 @@ package me.neznamy.tab.shared;
 import lombok.Getter;
 import me.neznamy.tab.api.event.TabEvent;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -118,13 +118,13 @@ public class ErrorManager {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
                         buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + EnumChatFormat.decolor(message) + System.lineSeparator());
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
-                        TAB.getInstance().getPlatform().logWarn(new SimpleComponent(message));
+                        TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(message));
                 }
                 for (String line : error) {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
                         buf.write(dateFormat.format(new Date()) + line + System.lineSeparator());
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
-                        TAB.getInstance().getPlatform().logWarn(new SimpleComponent(line));
+                        TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(line));
                 }
             }
         } catch (IOException ex) {
@@ -134,7 +134,7 @@ public class ErrorManager {
             lines.add("Original error: " + message);
             lines.addAll(error);
             for (String line : lines) {
-                TAB.getInstance().getPlatform().logWarn(new SimpleComponent(line));
+                TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(line));
             }
         }
     }
