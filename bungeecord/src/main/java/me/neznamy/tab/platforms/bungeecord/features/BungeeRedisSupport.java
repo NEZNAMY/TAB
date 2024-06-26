@@ -4,6 +4,7 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import lombok.AllArgsConstructor;
 import me.neznamy.tab.platforms.bungeecord.BungeeTAB;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import net.md_5.bungee.api.ProxyServer;
@@ -47,6 +48,10 @@ public class BungeeRedisSupport extends RedisSupport implements Listener {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
+        try {
+            RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
+        } catch (Exception e) {
+            TAB.getInstance().getErrorManager().redisBungeeMessageSendFail(e);
+        }
     }
 }

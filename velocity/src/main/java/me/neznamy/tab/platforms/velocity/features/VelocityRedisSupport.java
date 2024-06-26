@@ -5,6 +5,7 @@ import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import com.velocitypowered.api.event.Subscribe;
 import lombok.AllArgsConstructor;
 import me.neznamy.tab.platforms.velocity.VelocityTAB;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +46,10 @@ public class VelocityRedisSupport extends RedisSupport {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
+        try {
+            RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
+        } catch (Exception e) {
+            TAB.getInstance().getErrorManager().redisBungeeMessageSendFail(e);
+        }
     }
 }

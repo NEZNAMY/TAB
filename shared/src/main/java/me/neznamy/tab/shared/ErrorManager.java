@@ -325,4 +325,8 @@ public class ErrorManager {
             printError("#" + i++ + ": \n", exception, false, errorLog);
         }
     }
+
+    public void redisBungeeMessageSendFail(@NotNull Exception e) {
+        printError("Failed to deliver message through RedisBungee due to an error ", e, false, errorLog);
+    }
 }
