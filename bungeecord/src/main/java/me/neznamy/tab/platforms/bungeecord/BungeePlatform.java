@@ -54,7 +54,7 @@ public class BungeePlatform extends ProxyPlatform {
         try {
             ProxyConfig config = ProxyServer.getInstance().getConfig();
             if ((boolean) config.getClass().getMethod("isDisableTabListRewrite").invoke(config)) {
-                logWarn(new SimpleComponent("Waterfall's \"disable_tab_list_rewrite: true\" option may cause " +
+                logWarn(TabComponent.fromColoredText("Waterfall's \"disable_tab_list_rewrite: true\" option may cause " +
                         "the plugin to not work correctly. Disable it to avoid issues."));
             }
         } catch (Exception e) {

@@ -241,7 +241,7 @@ public class BukkitPlatform implements BackendPlatform {
             command.setExecutor(cmd);
             command.setTabCompleter(cmd);
         } else {
-            logWarn(new SimpleComponent("Failed to register command, is it defined in plugin.yml?"));
+            logWarn(TabComponent.fromColoredText("Failed to register command, is it defined in plugin.yml?"));
         }
     }
 

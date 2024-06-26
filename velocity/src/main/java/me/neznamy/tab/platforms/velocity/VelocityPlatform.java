@@ -9,6 +9,7 @@ import com.velocitypowered.api.scoreboard.ScoreboardManager;
 import lombok.Getter;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -22,6 +23,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +44,9 @@ public class VelocityPlatform extends ProxyPlatform {
 
     /** Plugin message channel */
     private final MinecraftChannelIdentifier MCI = MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
+
+    /** Logger for components */
+    private static final ComponentLogger logger = ComponentLogger.logger("TAB");
 
     /**
      * Constructs new instance with given plugin reference.
@@ -100,12 +105,12 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        plugin.getLogger().info(message.toLegacyText());
+        logger.info(message.toAdventure(ProtocolVersion.LATEST_KNOWN_VERSION));
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        plugin.getLogger().warn(EnumChatFormat.RED + message.toLegacyText());
+        logger.warn(message.toAdventure(ProtocolVersion.LATEST_KNOWN_VERSION));
     }
 
     @Override

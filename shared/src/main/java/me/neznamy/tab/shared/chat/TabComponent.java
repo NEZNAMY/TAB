@@ -165,6 +165,14 @@ public abstract class TabComponent {
     public abstract String toFlatText();
 
     /**
+     * Converts this component into a string that only consists of text without any formatting.
+     *
+     * @return  String containing text of the component and extras
+     */
+    @NotNull
+    public abstract String toRawText();
+
+    /**
      * Returns last color of this component.
      *
      * @return  Last color of this component

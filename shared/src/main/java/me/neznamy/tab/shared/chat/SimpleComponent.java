@@ -28,6 +28,12 @@ public class SimpleComponent extends TabComponent {
 
     @Override
     @NotNull
+    public String toRawText() {
+        return text;
+    }
+
+    @Override
+    @NotNull
     protected TextColor fetchLastColor() {
         if (text.isEmpty()) return TextColor.legacy(EnumChatFormat.WHITE);
         String last = EnumChatFormat.getLastColors(text);

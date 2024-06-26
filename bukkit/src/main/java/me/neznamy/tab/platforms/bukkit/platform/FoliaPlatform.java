@@ -5,7 +5,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.bukkit.entity.Entity;
@@ -37,7 +37,7 @@ public class FoliaPlatform extends BukkitPlatform {
         super.loadPlayers();
 
         // Values are never updated in the API, warn users
-        logWarn(new SimpleComponent("Folia never updates MSPT and TPS values in the API, making " +
+        logWarn(TabComponent.fromColoredText("Folia never updates MSPT and TPS values in the API, making " +
                 "%mspt% and %tps% return the default values (0 and 20)."));
 
         // Folia never calls PlayerChangedWorldEvent, this is a workaround

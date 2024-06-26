@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.config.helper;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.TabComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -100,6 +100,6 @@ public class HintPrinter {
      *          Message to log
      */
     private void hint(@NotNull String message) {
-        TAB.getInstance().getPlatform().logInfo(new SimpleComponent(EnumChatFormat.GOLD + "[Hint] " + message));
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GOLD + "[Hint] " + message));
     }
 }
