@@ -75,7 +75,9 @@ public class VelocityEventListener implements EventListener<Player> {
                         e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null")
                 );
                 tab.getFeatureManager().onTabListClear(player);
-                ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
+                }
             }
         });
     }
