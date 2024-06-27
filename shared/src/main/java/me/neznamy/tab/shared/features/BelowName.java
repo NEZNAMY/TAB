@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Feature handler for BelowName feature
  */
-public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable, UnLoadable,
+public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
         WorldSwitchListener, ServerSwitchListener, CustomThreaded, RedisFeature {
 
     /** Objective name used by this feature */
@@ -100,14 +100,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         player.belowNameData.numberFormat = new Property(this, player, fancyDisplayPlayers);
         player.belowNameData.text = new Property(textRefresher, player, rawText);
         player.belowNameData.defaultNumberFormat = new Property(textRefresher, player, fancyDisplayDefault);
-    }
-
-    @Override
-    public void unload() {
-        for (TabPlayer p : onlinePlayers.getPlayers()) {
-            if (p.belowNameData.disabled.get()) continue;
-            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
-        }
     }
 
     @Override

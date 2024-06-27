@@ -86,6 +86,9 @@ public class FeatureManager {
         for (TabFeature f : values) {
             f.deactivate();
         }
+        for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            player.getScoreboard().clear();
+        }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().unregisterExpansion();
         if (TAB.getInstance().getPlatform() instanceof ProxyPlatform) {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {

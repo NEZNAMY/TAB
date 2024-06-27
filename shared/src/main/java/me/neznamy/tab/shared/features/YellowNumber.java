@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
-public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable, UnLoadable,
+public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
         CustomThreaded, RedisFeature {
 
     /** Objective name used by this feature */
@@ -123,14 +123,6 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
                 setScore(viewer, entry.getKey(), entry.getValue(), entry.getKey().playerlistObjectiveData.valueModern.getFormat(viewer));
             }
-        }
-    }
-
-    @Override
-    public void unload() {
-        for (TabPlayer p : onlinePlayers.getPlayers()) {
-            if (p.playerlistObjectiveData.disabled.get() || p.isBedrockPlayer()) continue;
-            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
     }
 

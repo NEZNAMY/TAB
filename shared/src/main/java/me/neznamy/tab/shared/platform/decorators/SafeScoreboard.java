@@ -237,6 +237,16 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         }
     }
 
+    @Override
+    public synchronized void clear() {
+        for (Objective objective : objectives.values()) {
+            unregisterObjective(objective);
+        }
+        for (Team team : teams.values()) {
+            unregisterTeam(team);
+        }
+    }
+
     /**
      * Prints a debug message if attempted to perform an invalid operation.
      *

@@ -21,7 +21,7 @@ import java.util.Map.Entry;
  * Feature handler for scoreboard feature.
  */
 public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
-        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable,
+        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable,
         QuitListener, CustomThreaded {
 
     /** Objective name used by this feature */
@@ -97,13 +97,6 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         if (p.scoreboardData.forcedScoreboard != null || !hasScoreboardVisible(p) ||
                 announcement != null || p.scoreboardData.otherPluginScoreboard != null || p.scoreboardData.joinDelayed) return;
         sendHighestScoreboard(p);
-    }
-
-    @Override
-    public void unload() {
-        for (me.neznamy.tab.api.scoreboard.Scoreboard board : definedScoreboards) {
-            board.unregister();
-        }
     }
 
     @Override

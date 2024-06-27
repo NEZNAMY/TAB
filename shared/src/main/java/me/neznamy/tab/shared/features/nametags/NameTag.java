@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, RedisFeature, GroupListener {
+        Loadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, RedisFeature, GroupListener {
 
     /** Name of the property used in configuration */
     public static final String TAGPREFIX = "tagprefix";
@@ -94,25 +94,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     target.teamData.vanishedFor.add(viewer.getUniqueId());
                 }
                 if (!target.teamData.disabled.get()) registerTeam(target, viewer);
-            }
-        }
-    }
-
-    @Override
-    public void unload() {
-        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            for (TabPlayer target : onlinePlayers.getPlayers()) {
-                if (hasTeamHandlingPaused(target) || target.teamData.disabled.get()) continue;
-                viewer.getScoreboard().unregisterTeam(target.teamData.teamName);
-            }
-            if (redis != null) {
-                for (RedisPlayer player : redis.getRedisPlayers().values()) {
-                    if (player.getTeamName() == null) {
-                        TAB.getInstance().getErrorManager().printError("Team name of redis player " + player.getName() + " is unexpectedly null on unload", null);
-                        continue;
-                    }
-                    viewer.getScoreboard().unregisterTeam(player.getTeamName());
-                }
             }
         }
     }

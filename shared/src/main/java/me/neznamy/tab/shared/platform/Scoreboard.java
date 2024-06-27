@@ -201,6 +201,11 @@ public interface Scoreboard {
     void resend();
 
     /**
+     * Clears the entire scoreboard by unregistering all objectives and teams.
+     */
+    void clear();
+
+    /**
      * Team collision rule enum.
      */
     @AllArgsConstructor
