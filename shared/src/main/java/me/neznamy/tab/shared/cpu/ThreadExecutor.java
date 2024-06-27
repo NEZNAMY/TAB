@@ -36,7 +36,8 @@ public class ThreadExecutor {
     public void shutdown() {
         executor.shutdown();
         if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-            TAB.getInstance().getErrorManager().printError("Shutdown of thread " + threadName + " exceeded time limit of 500ms", null);
+            TAB.getInstance().getErrorManager().printError("Soft shutdown of thread " + threadName + " exceeded time limit of 500ms, forcing shutdown. This may cause issues.", null);
+            executor.shutdownNow();
         }
     }
     
