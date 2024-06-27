@@ -218,13 +218,17 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 if (viewer == player) continue;
                 if (!TAB.getInstance().getPlatform().canSee(viewer, player)) {
                     player.teamData.vanishedFor.add(viewer.getUniqueId());
-                    viewer.getScoreboard().unregisterTeam(player.teamData.teamName);
+                    if (!player.teamData.disabled.get()) {
+                        viewer.getScoreboard().unregisterTeam(player.teamData.teamName);
+                    }
                 }
             }
         } else {
-            for (UUID id : player.teamData.vanishedFor) {
-                TabPlayer viewer = TAB.getInstance().getPlayer(id);
-                if (viewer != null) registerTeam(player, viewer);
+            if (!player.teamData.disabled.get()) {
+                for (UUID id : player.teamData.vanishedFor) {
+                    TabPlayer viewer = TAB.getInstance().getPlayer(id);
+                    if (viewer != null) registerTeam(player, viewer);
+                }
             }
             player.teamData.vanishedFor.clear();
         }
