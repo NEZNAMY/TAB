@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit;
  * All tasks are try/catch-ed and might track CPU usage if needed.
  */
 public class ThreadExecutor {
-    
+
+    private final String threadName;
     private final ScheduledExecutorService executor;
 
     /**
@@ -24,6 +25,7 @@ public class ThreadExecutor {
      *          Name of the created thread
      */
     public ThreadExecutor(@NotNull String threadName) {
+        this.threadName = threadName;
         executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(threadName).build());
     }
 
@@ -34,7 +36,7 @@ public class ThreadExecutor {
     public void shutdown() {
         executor.shutdown();
         if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-            TAB.getInstance().getErrorManager().printError("Thread pool shutdown exceeded time limit of 500ms", null);
+            TAB.getInstance().getErrorManager().printError("Shutdown of thread " + threadName + " exceeded time limit of 500ms", null);
         }
     }
     
