@@ -80,7 +80,8 @@ public class BukkitPlatform implements BackendPlatform {
     private final boolean enhancedDirectNMS = ReflectionUtils.classExists("io.papermc.paper.util.TickThread") &&
             EnumSet.of(
                     ProtocolVersion.V1_20_5,
-                    ProtocolVersion.V1_20_6
+                    ProtocolVersion.V1_20_6,
+                    ProtocolVersion.V1_21
             ).contains(serverVersion);
 
     /**

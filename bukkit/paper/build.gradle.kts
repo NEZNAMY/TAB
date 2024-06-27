@@ -9,7 +9,7 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
-val version = "1.20.6-R0.1-SNAPSHOT"
+val version = "1.21-R0.1-SNAPSHOT"
 
 dependencies {
     implementation(projects.bukkit)
