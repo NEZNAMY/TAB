@@ -93,45 +93,42 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
 
     @Override
     public void registerTeam(@NonNull Team team) {
-        try {
-            team.setPlatformTeam(scoreboard.registerTeam(scoreboard.teamBuilder(team.getName())
-                    .prefix(TextHolder.of(team.getPrefix().toLegacyText(), team.getPrefix().toAdventure(player.getVersion())))
-                    .suffix(TextHolder.of(team.getSuffix().toLegacyText(), team.getSuffix().toAdventure(player.getVersion())))
-                    .nameVisibility(visibilities[team.getVisibility().ordinal()])
-                    .collisionRule(collisions[team.getCollision().ordinal()])
-                    .allowFriendlyFire((team.getOptions() & 0x01) > 0)
-                    .canSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0)
-                    .color(colors[team.getColor().ordinal()])
-                    .entries(team.getPlayers())
-            ));
-        } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("Failed to register team " + team.getName() + " for player " + player.getName(), e);
+        ProxyTeam previous = scoreboard.getTeam(team.getName());
+        if (previous != null) {
+            TAB.getInstance().getErrorManager().printError("Team " + previous.getName() + " already existed when registering for player " + player.getName() + ", unregistering", null);
+            scoreboard.unregisterTeam(previous.getName());
         }
+        team.setPlatformTeam(scoreboard.registerTeam(scoreboard.teamBuilder(team.getName())
+                .prefix(TextHolder.of(team.getPrefix().toLegacyText(), team.getPrefix().toAdventure(player.getVersion())))
+                .suffix(TextHolder.of(team.getSuffix().toLegacyText(), team.getSuffix().toAdventure(player.getVersion())))
+                .nameVisibility(visibilities[team.getVisibility().ordinal()])
+                .collisionRule(collisions[team.getCollision().ordinal()])
+                .allowFriendlyFire((team.getOptions() & 0x01) > 0)
+                .canSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0)
+                .color(colors[team.getColor().ordinal()])
+                .entries(team.getPlayers())
+        ));
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        try {
+        if (scoreboard.getTeam(team.getName()) != null) {
             scoreboard.unregisterTeam(team.getName());
-        } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("Failed to unregister team " + team.getName() + " for player " + player.getName(), e);
+        } else {
+            TAB.getInstance().getErrorManager().printError("Team " + team.getName() + " did not exist when unregistering for player " + player.getName(), null);
         }
     }
 
     @Override
     public void updateTeam(@NonNull Team team) {
-        try {
-            ((ProxyTeam)team.getPlatformTeam()).updateProperties(b -> b
-                    .prefix(TextHolder.of(team.getPrefix().toLegacyText(), team.getPrefix().toAdventure(player.getVersion())))
-                    .suffix(TextHolder.of(team.getSuffix().toLegacyText(), team.getSuffix().toAdventure(player.getVersion())))
-                    .nameVisibility(visibilities[team.getVisibility().ordinal()])
-                    .collisionRule(collisions[team.getCollision().ordinal()])
-                    .color(colors[team.getColor().ordinal()])
-                    .allowFriendlyFire((team.getOptions() & 0x01) > 0)
-                    .canSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0)
-            );
-        } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("Failed to update team " + team.getName() + " for player " + player.getName(), e);
-        }
+        ((ProxyTeam)team.getPlatformTeam()).updateProperties(b -> b
+                .prefix(TextHolder.of(team.getPrefix().toLegacyText(), team.getPrefix().toAdventure(player.getVersion())))
+                .suffix(TextHolder.of(team.getSuffix().toLegacyText(), team.getSuffix().toAdventure(player.getVersion())))
+                .nameVisibility(visibilities[team.getVisibility().ordinal()])
+                .collisionRule(collisions[team.getCollision().ordinal()])
+                .color(colors[team.getColor().ordinal()])
+                .allowFriendlyFire((team.getOptions() & 0x01) > 0)
+                .canSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0)
+        );
     }
 }
