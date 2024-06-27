@@ -39,7 +39,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     public HeaderFooter() {
         super("Header/Footer", "Updating header/footer");
         Condition disableCondition = Condition.getCondition(config().getString("header-footer.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.headerFooterData.disabled);
+        disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.headerFooterData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
         TAB.getInstance().getConfigHelper().hint().checkHeaderFooterForRedundancy(config().getConfigurationSection("header-footer"));
     }
@@ -122,13 +122,11 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      *          Whether the feature is disabled now or not
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        customThread.execute(() -> {
-            if (disabledNow) {
-                p.getTabList().setPlayerListHeaderFooter(new SimpleComponent(""), new SimpleComponent(""));
-            } else {
-                sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
-            }
-        }, getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
+        if (disabledNow) {
+            p.getTabList().setPlayerListHeaderFooter(new SimpleComponent(""), new SimpleComponent(""));
+        } else {
+            sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
+        }
     }
 
     private String getProperty(TabPlayer p, String property) {

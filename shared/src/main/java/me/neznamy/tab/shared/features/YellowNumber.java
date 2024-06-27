@@ -69,7 +69,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     public YellowNumber() {
         super("Playerlist Objective", "Updating value");
         Condition disableCondition = Condition.getCondition(config().getString("playerlist-objective.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.playerlistObjectiveData.disabled);
+        disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.playerlistObjectiveData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
     }
 
@@ -178,13 +178,11 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
      *          Whether the feature is disabled now or not
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        customThread.execute(() -> {
-            if (disabledNow) {
-                p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
-            } else {
-                onJoin(p);
-            }
-        }, getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
+        if (disabledNow) {
+            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
+        } else {
+            onJoin(p);
+        }
     }
 
     @Override

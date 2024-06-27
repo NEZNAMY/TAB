@@ -55,7 +55,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public NameTag() {
         super("NameTags", "Updating prefix/suffix");
         Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.teamData.disabled);
+        disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.teamData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         if (!antiOverride) TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
     }
@@ -260,13 +260,11 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        customThread.execute(() -> {
-            if (disabledNow) {
-                unregisterTeam(p, p.teamData.teamName);
-            } else {
-                registerTeam(p);
-            }
-        }, getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
+        if (disabledNow) {
+            unregisterTeam(p, p.teamData.teamName);
+        } else {
+            registerTeam(p);
+        }
     }
 
     /**

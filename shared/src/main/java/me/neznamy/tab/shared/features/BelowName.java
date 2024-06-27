@@ -61,7 +61,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     public BelowName() {
         super("BelowName", "Updating BelowName number");
         Condition disableCondition = Condition.getCondition(config().getString("belowname-objective.disable-condition"));
-        disableChecker = new DisableChecker(getFeatureName(), disableCondition, this::onDisableConditionChange, p -> p.belowNameData.disabled);
+        disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.belowNameData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
         TAB.getInstance().getConfigHelper().startup().checkBelowNameText(rawText);

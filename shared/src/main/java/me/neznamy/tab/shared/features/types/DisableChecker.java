@@ -15,6 +15,9 @@ import java.util.function.Function;
  */
 public class DisableChecker extends RefreshableFeature {
 
+    @NotNull
+    private final TabFeature feature;
+
     @Nullable
     private final Condition disableCondition;
 
@@ -27,8 +30,8 @@ public class DisableChecker extends RefreshableFeature {
     /**
      * Constructs new instance with given parameters.
      *
-     * @param   featureName
-     *          Name of feature this condition is for
+     * @param   feature
+     *          Feature this condition is for
      * @param   disableCondition
      *          Configured condition for disabling the feature
      * @param   action
@@ -36,9 +39,10 @@ public class DisableChecker extends RefreshableFeature {
      * @param   field
      *          Function that returns field storing disable status
      */
-    public DisableChecker(@NotNull String featureName, @Nullable Condition disableCondition,
+    public DisableChecker(@NotNull TabFeature feature, @Nullable Condition disableCondition,
                           @NotNull BiConsumer<TabPlayer, Boolean> action, @NotNull Function<TabPlayer, AtomicBoolean> field) {
-        super(featureName, TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
+        super(feature.getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
+        this.feature = feature;
         this.disableCondition = disableCondition;
         this.action = action;
         this.field = field;
@@ -48,11 +52,18 @@ public class DisableChecker extends RefreshableFeature {
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (disableCondition == null) return;
-        boolean disabledNow = disableCondition.isMet(refreshed);
-        AtomicBoolean value = field.apply(refreshed);
-        if (disabledNow == value.get()) return; // Condition result did not change, only placeholders inside
-        value.set(disabledNow);
-        action.accept(refreshed, disabledNow);
+        Runnable r = () -> {
+            boolean disabledNow = disableCondition.isMet(refreshed);
+            AtomicBoolean value = field.apply(refreshed);
+            if (disabledNow == value.get()) return; // Condition result did not change, only placeholders inside
+            value.set(disabledNow);
+            action.accept(refreshed, disabledNow);
+        };
+        if (feature instanceof CustomThreaded) {
+            ((CustomThreaded) feature).getCustomThread().execute(r, feature.getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
+        } else {
+            r.run();
+        }
     }
 
     /**
