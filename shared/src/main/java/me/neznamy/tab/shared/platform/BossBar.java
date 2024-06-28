@@ -75,4 +75,9 @@ public interface BossBar {
      *          Unique identifier to match the bossbar with other functions
      */
     void remove(@NotNull UUID id);
+
+    /**
+     * Unregisters all boss bars visible to the player.
+     */
+    void clear();
 }

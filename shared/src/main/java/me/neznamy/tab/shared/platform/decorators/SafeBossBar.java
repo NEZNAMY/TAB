@@ -81,6 +81,13 @@ public abstract class SafeBossBar<T> implements BossBar {
         remove(bar);
     }
 
+    @Override
+    public synchronized void clear() {
+        for (UUID id : bossBars.keySet()) {
+            remove(id);
+        }
+    }
+
     /**
      * Freezes the class, not letting any packets through.
      */

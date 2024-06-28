@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Class for handling BossBar feature
  */
 public class BossBarManagerImpl extends RefreshableFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
-        UnLoadable, QuitListener, CustomThreaded {
+        QuitListener, CustomThreaded {
 
     @Getter
     private final StringToComponentCache cache = new StringToComponentCache("BossBar", 1000);
@@ -114,15 +114,6 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
                 line.removePlayer(p); //remove all BossBars and then resend them again to keep them displayed in defined order
             }
             showBossBars(p);
-        }
-    }
-
-    @Override
-    public void unload() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            for (BossBar line : lineValues) {
-                line.removePlayer(p);
-            }
         }
     }
 
