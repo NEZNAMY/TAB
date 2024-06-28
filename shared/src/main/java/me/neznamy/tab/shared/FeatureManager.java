@@ -86,10 +86,12 @@ public class FeatureManager {
         for (TabFeature f : values) {
             f.deactivate();
         }
+        long time = System.currentTimeMillis();
         for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
             player.getScoreboard().clear();
             player.getBossBar().clear();
         }
+        TAB.getInstance().debug("Unregistered all scoreboard teams, objectives and boss bars for all players in " + (System.currentTimeMillis()-time) + "ms");
         TAB.getInstance().getPlaceholderManager().getTabExpansion().unregisterExpansion();
         if (TAB.getInstance().getPlatform() instanceof ProxyPlatform) {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
