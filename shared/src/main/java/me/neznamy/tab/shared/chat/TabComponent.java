@@ -6,7 +6,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.util.FunctionWithException;
-import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -24,12 +23,6 @@ public abstract class TabComponent {
 
     /** Pattern for detecting fonts */
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
-
-    /**
-     * Component cache maps to avoid large memory allocations as well as
-     * higher CPU usage when using animations which send the same text on repeat.
-     */
-    private static final StringToComponentCache stringCache = new StringToComponentCache("Global component", 1000);
 
     @Nullable
     private Object convertedModern;
@@ -179,20 +172,6 @@ public abstract class TabComponent {
      */
     @NotNull
     protected abstract TextColor fetchLastColor();
-
-    /**
-     * Returns the most optimized component based on text. Returns null if text is null,
-     * organized component if RGB colors are used or simple component with only text field
-     * containing the whole text when no RGB colors are used
-     *
-     * @param   text
-     *          text to create component from
-     * @return  The most performance-optimized component based on text
-     */
-    @NotNull
-    public static TabComponent optimized(@NotNull String text) {
-        return stringCache.get(text);
-    }
 
     /**
      * Returns organized component from colored text

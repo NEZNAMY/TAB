@@ -3,10 +3,10 @@ package me.neznamy.tab.shared.features.layout;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +14,8 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 public class PlayerSlot {
+
+    private static final StringToComponentCache cache = new StringToComponentCache("LayoutPlayerSlot", 100);
 
     private final int slot;
     private final LayoutView layout;
@@ -65,7 +67,7 @@ public class PlayerSlot {
             setPlayer(null);
         } else {
             if (layout.getViewer().getVersion().getMinorVersion() < 8 || layout.getViewer().isBedrockPlayer()) return;
-            layout.getViewer().getTabList().updateDisplayName(uniqueId, TabComponent.optimized(text));
+            layout.getViewer().getTabList().updateDisplayName(uniqueId, cache.get(text));
         }
     }
 }
