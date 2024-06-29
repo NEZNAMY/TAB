@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -97,6 +99,30 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      */
     public void setHasPermission(@NotNull String permission, boolean value) {
         permissions.put(permission, value);
+    }
+
+    /**
+     * Updates player's tracked gamemode for internal logic and placeholders.
+     *
+     * @param   gamemode
+     *          New gamemode
+     */
+    public void setGamemode(int gamemode) {
+        if (this.gamemode == gamemode) return; // Player join with player in survival mode
+        this.gamemode = gamemode;
+        ((PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GAMEMODE)).update(this);
+    }
+
+    /**
+     * Updates player's tracked invisibility potion value for internal logic and placeholders.
+     *
+     * @param   invisibilityPotion
+     *          Whether player has invisibility potion or not
+     */
+    public void setInvisibilityPotion(boolean invisibilityPotion) {
+        if (this.invisibilityPotion == invisibilityPotion) return; // Player join without invisibility potion
+        this.invisibilityPotion = invisibilityPotion;
+        ((PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.INVISIBLE)).update(this);
     }
 
     /**

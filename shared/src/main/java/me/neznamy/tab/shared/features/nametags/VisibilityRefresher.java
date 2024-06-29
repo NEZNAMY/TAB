@@ -26,7 +26,8 @@ public class VisibilityRefresher extends RefreshableFeature implements CustomThr
     public VisibilityRefresher(@NotNull NameTag nameTags) {
         super(nameTags.getFeatureName(), "Updating NameTag visibility");
         this.nameTags = nameTags;
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, 500,
+        int refresh = TAB.getInstance().getPlatform().isProxy() ? -1 : 500;
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, refresh,
                 p -> Boolean.toString(((TabPlayer)p).hasInvisibilityPotion()));
         addUsedPlaceholder(TabConstants.Placeholder.INVISIBLE);
     }
