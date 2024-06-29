@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +17,8 @@ import java.util.UUID;
  * A fixed layout slot with defined slot, text and maybe also ping and skin.
  */
 public class FixedSlot extends RefreshableFeature {
+
+    private static final StringToComponentCache cache = new StringToComponentCache("LayoutFixedSlot", 1000);
 
     @NonNull private final LayoutManagerImpl manager;
     @Getter private final int slot;
@@ -50,7 +52,7 @@ public class FixedSlot extends RefreshableFeature {
             p.getTabList().removeEntry(id);
             p.getTabList().addEntry(createEntry(p));
         } else {
-            p.getTabList().updateDisplayName(id, TabComponent.optimized(p.getProperty(propertyName).updateAndGet()));
+            p.getTabList().updateDisplayName(id, cache.get(p.getProperty(propertyName).updateAndGet()));
         }
     }
 
@@ -71,7 +73,7 @@ public class FixedSlot extends RefreshableFeature {
                 true,
                 ping,
                 0,
-                TabComponent.optimized(viewer.getProperty(propertyName).updateAndGet())
+                cache.get(viewer.getProperty(propertyName).updateAndGet())
         );
     }
 
