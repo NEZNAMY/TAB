@@ -54,7 +54,7 @@ public class VelocityPlatform extends ProxyPlatform {
      * @param   plugin
      *          Plugin instance
      */
-    public VelocityPlatform(VelocityTAB plugin) {
+    public VelocityPlatform(@NotNull VelocityTAB plugin) {
         this.plugin = plugin;
         if (plugin.getServer().getPluginManager().isLoaded("velocity-scoreboard-api")) {
             try {
