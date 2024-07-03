@@ -291,7 +291,13 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         @Override
         public void process(@NotNull RedisSupport redisSupport) {
             RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
-            if (target == null) return; // Print warn?
+            if (target == null) {
+                TAB.getInstance().getErrorManager().printError("Unable to process Playerlist objective update of redis player " + playerId + ", because no such player exists", null);
+                return;
+            }
+            if (target.getPlayerlistFancy() == null) {
+                TAB.getInstance().debug("Processing playerlist objective join of redis player " + target.getName());
+            }
             target.setPlayerlistNumber(value);
             target.setPlayerlistFancy(cache.get(fancyValue));
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {

@@ -434,7 +434,13 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         @Override
         public void process(@NotNull RedisSupport redisSupport) {
             RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
-            if (target == null) return; // Print warn?
+            if (target == null) {
+                TAB.getInstance().getErrorManager().printError("Unable to process tablist format update of redis player " + playerId + ", because no such player exists", null);
+                return;
+            }
+            if (target.getTabFormat() == null) {
+                TAB.getInstance().debug("Processing tablist formatting join of redis player " + target.getName());
+            }
             target.setTabFormat(cache.get(format));
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer.getVersion().getMinorVersion() < 8) continue;

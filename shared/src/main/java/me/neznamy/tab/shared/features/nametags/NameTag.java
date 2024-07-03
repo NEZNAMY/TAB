@@ -738,7 +738,13 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         @Override
         public void process(@NotNull RedisSupport redisSupport) {
             RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
-            if (target == null) return; // Print warn?
+            if (target == null) {
+                TAB.getInstance().getErrorManager().printError("Unable to process nametag update of redis player " + playerId + ", because no such player exists", null);
+                return;
+            }
+            if (target.getTeamName() == null) {
+                TAB.getInstance().debug("Processing nametag join of redis player " + target.getName());
+            }
             String oldTeamName = target.getTeamName();
             String newTeamName = checkTeamName(target, teamName.substring(0, teamName.length()-1), 65);
             target.setTeamName(newTeamName);

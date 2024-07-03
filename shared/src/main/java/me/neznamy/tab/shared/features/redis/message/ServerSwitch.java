@@ -33,7 +33,11 @@ public class ServerSwitch extends RedisMessage {
     @Override
     public void process(@NotNull RedisSupport redisSupport) {
         RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
-        if (target == null) return; // Print warn?
+        if (target == null) {
+            TAB.getInstance().getErrorManager().printError("Unable to process server switch of redis player " + playerId + ", because no such player exists", null);
+            return;
+        }
+        TAB.getInstance().debug("Processing server switch of redis player " + target.getName());
         target.setServer(newServer);
         TAB.getInstance().getFeatureManager().onServerSwitch(target);
     }

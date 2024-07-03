@@ -355,7 +355,13 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         @Override
         public void process(@NotNull RedisSupport redisSupport) {
             RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
-            if (target == null) return; // Print warn?
+            if (target == null) {
+                TAB.getInstance().getErrorManager().printError("Unable to process Belowname objective update of redis player " + playerId + ", because no such player exists", null);
+                return;
+            }
+            if (target.getBelowNameFancy() == null) {
+                TAB.getInstance().debug("Processing belowname objective join of redis player " + target.getName());
+            }
             target.setBelowNameNumber(value);
             target.setBelowNameFancy(cache.get(fancyValue));
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
