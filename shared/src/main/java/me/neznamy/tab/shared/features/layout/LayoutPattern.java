@@ -27,7 +27,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
         super(manager.getFeatureName(), "Updating player groups");
         this.manager = manager;
         this.name = name;
-        TAB.getInstance().getConfigHelper().startup().checkLayoutMap(name, map);
+        TAB.getInstance().getConfigHelper().startup().checkForInvalidObjectProperties("layout", name, map, Arrays.asList("condition", "fixed-slots", "groups"));
         condition = Condition.getCondition((String) map.get("condition"));
         if (condition != null) manager.addUsedPlaceholder(TabConstants.Placeholder.condition(condition.getName()));
         for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
@@ -38,7 +38,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
             for (Map.Entry<String, Map<String, Object>> group : groups.entrySet()) {
                 String groupName = group.getKey();
                 Map<String, Object> groupData = group.getValue();
-                TAB.getInstance().getConfigHelper().startup().checkLayoutGroupMap(name, groupName, groupData);
+                TAB.getInstance().getConfigHelper().startup().checkForInvalidObjectProperties("layout", name + "\"'s group \"" + groupName, groupData, Arrays.asList("condition", "slots"));
                 List<Integer> positions = new ArrayList<>();
                 for (String line : (List<String>) groupData.get("slots")) {
                     String[] arr = line.split("-");

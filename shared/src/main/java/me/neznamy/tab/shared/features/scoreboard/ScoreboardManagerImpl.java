@@ -66,25 +66,27 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         boolean noConditionScoreboardFound = false;
         String noConditionScoreboard = null;
         for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
+            String scoreboardName = entry.getKey();
             if (entry.getValue() == null) {
-                TAB.getInstance().getConfigHelper().startup().invalidScoreboardSection(entry.getKey());
+                TAB.getInstance().getConfigHelper().startup().invalidScoreboardSection(scoreboardName);
                 continue;
             }
+            TAB.getInstance().getConfigHelper().startup().checkForInvalidObjectProperties("scoreboard", scoreboardName, entry.getValue(), Arrays.asList("title", "lines", "display-condition"));
             String condition = (String) entry.getValue().get("display-condition");
             if (condition == null || condition.isEmpty()) {
                 noConditionScoreboardFound = true;
-                noConditionScoreboard = entry.getKey();
+                noConditionScoreboard = scoreboardName;
             } else if (noConditionScoreboardFound) {
-                TAB.getInstance().getConfigHelper().startup().nonLastNoConditionScoreboard(noConditionScoreboard, entry.getKey());
+                TAB.getInstance().getConfigHelper().startup().nonLastNoConditionScoreboard(noConditionScoreboard, scoreboardName);
             }
             String title = TAB.getInstance().getConfigHelper().startup().fromMapOrElse(entry.getValue(), "title", "<Title not defined>",
-                    "Scoreboard \"" + entry.getKey() + "\" is missing title!");
+                    "Scoreboard \"" + scoreboardName + "\" is missing title!");
             List<String> lines = TAB.getInstance().getConfigHelper().startup().fromMapOrElse(entry.getValue(), "lines",
-                    Arrays.asList("scoreboard \"" + entry.getKey() +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?"),
-                    "Scoreboard \"" + entry.getKey() + "\" is missing lines!");
-            ScoreboardImpl sb = new ScoreboardImpl(this, entry.getKey(), title, lines, condition);
-            registeredScoreboards.put(entry.getKey(), sb);
-            TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(entry.getKey()), sb);
+                    Arrays.asList("scoreboard \"" + scoreboardName +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?"),
+                    "Scoreboard \"" + scoreboardName + "\" is missing lines!");
+            ScoreboardImpl sb = new ScoreboardImpl(this, scoreboardName, title, lines, condition);
+            registeredScoreboards.put(scoreboardName, sb);
+            TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(scoreboardName), sb);
         }
         definedScoreboards = registeredScoreboards.values().toArray(new me.neznamy.tab.api.scoreboard.Scoreboard[0]);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {

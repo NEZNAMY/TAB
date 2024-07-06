@@ -76,6 +76,8 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
      */
     private @NotNull BossBarLine loadFromConfig(@NonNull String bar) {
         Map<String, Object> bossBar = config().getConfigurationSection("bossbar.bars." + bar);
+        TAB.getInstance().getConfigHelper().startup().checkForInvalidObjectProperties("bossbar", bar, bossBar,
+                Arrays.asList("style", "color", "progress", "text", "announcement-bar", "display-condition"));
         TAB.getInstance().getConfigHelper().startup().checkBossBarProperties(bossBar, bar);
         return new BossBarLine(
                 this,

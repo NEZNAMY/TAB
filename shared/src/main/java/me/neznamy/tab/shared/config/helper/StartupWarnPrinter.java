@@ -204,20 +204,23 @@ public class StartupWarnPrinter {
                 "Disable per world playerlist for the same result, but with better performance.");
     }
 
-    public void checkLayoutMap(@NotNull String layoutName, @NotNull Map<String, Object> map) {
-        List<String> expectedKeys = Arrays.asList("condition", "fixed-slots", "groups");
+    /**
+     * Prints a warning if an object of a feature contains an unknown property.
+     *
+     * @param   feature
+     *          Feature where the object is located
+     * @param   objectName
+     *          Name of the configured object
+     * @param   map
+     *          Map of properties of the object
+     * @param   validProperties
+     *          Valid properties of the object
+     */
+    public void checkForInvalidObjectProperties(@NotNull String feature, @NotNull String objectName,
+                                                @NotNull Map<String, Object> map, @NotNull List<String> validProperties) {
         for (String mapKey : map.keySet()) {
-            if (!expectedKeys.contains(mapKey)) {
-                startupWarn("Unknown property \"" + mapKey + "\" in layout \"" + layoutName + "\". Valid properties: " + expectedKeys);
-            }
-        }
-    }
-
-    public void checkLayoutGroupMap(@NotNull String layoutName, @NotNull String groupName, @NotNull Map<String, Object> map) {
-        List<String> expectedKeys = Arrays.asList("condition", "slots");
-        for (String mapKey : map.keySet()) {
-            if (!expectedKeys.contains(mapKey)) {
-                startupWarn("Unknown property \"" + mapKey + "\" in layout \"" + layoutName + "\"'s group \"" + groupName + "\". Valid properties: " + expectedKeys);
+            if (!validProperties.contains(mapKey)) {
+                startupWarn(String.format("Unknown property \"%s\" in %s \"%s\". Valid properties: %s", mapKey, feature, objectName, validProperties));
             }
         }
     }
@@ -234,7 +237,6 @@ public class StartupWarnPrinter {
 
     /**
      * Checks bossbar section configuration for: <p>
-     * - Unknown keys, to let people know if they made a typo <p>
      * - Missing required properties (text, color, style, progress) and adding them with some default values <p>
      * - Evaluating static values of color, style and progress if they can represent the required data type
      *
@@ -244,13 +246,6 @@ public class StartupWarnPrinter {
      *          Name of the bossbar defined in config
      */
     public void checkBossBarProperties(Map<String, Object> bossbarSection, String name) {
-        // Unknown properties
-        List<String> validProperties = Arrays.asList("style", "color", "progress", "text", "announcement-bar", "display-condition");
-        for (String mapKey : bossbarSection.keySet()) {
-            if (!validProperties.contains(mapKey)) {
-                startupWarn("Unknown property \"" + mapKey + "\" in bossbar \"" + name + "\". Valid properties: " + validProperties);
-            }
-        }
         // Text
         if (!bossbarSection.containsKey("text")) {
             startupWarn("Bossbar \"" + name + "\" is missing \"text\" property.");
