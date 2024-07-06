@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
+import me.neznamy.tab.shared.task.PluginMessageDecodeTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -62,9 +62,8 @@ public interface EventListener<T> {
      *          The message
      */
     default void pluginMessage(@NotNull UUID player, byte[] message) {
-        TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
-                TabConstants.CpuUsageCategory.PLUGIN_MESSAGE_RECEIVE, () ->
-                    ((ProxyPlatform)TAB.getInstance().getPlatform()).onPluginMessage(player, message));
+        TAB.getInstance().getCpu().getPluginMessageDecodeThread().execute(new PluginMessageDecodeTask(player, message),
+                "Plugin message handling", CpuUsageCategory.PLUGIN_MESSAGE_DECODE);
     }
 
     /**

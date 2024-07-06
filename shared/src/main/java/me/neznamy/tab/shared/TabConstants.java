@@ -48,7 +48,8 @@ public class TabConstants {
         public static final String COMMAND_PREPROCESS = "Command Preprocess";
         public static final String REDIS_BUNGEE_MESSAGE = "Redis Message processing";
 
-        public static final String PLUGIN_MESSAGE_RECEIVE = "Processing incoming message";
+        public static final String PLUGIN_MESSAGE_DECODE = "Decoding message";
+        public static final String PLUGIN_MESSAGE_PROCESS = "Processing message";
         public static final String PLUGIN_MESSAGE_ENCODE = "Encoding message";
         public static final String PLUGIN_MESSAGE_SEND = "Sending message";
 
