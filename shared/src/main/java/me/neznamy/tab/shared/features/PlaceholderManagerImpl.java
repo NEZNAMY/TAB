@@ -220,7 +220,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      * @param   <T>
      *          Specific placeholder class
      */
-    public <T extends Placeholder> T registerPlaceholder(@NotNull T placeholder) {
+    public synchronized <T extends Placeholder> T registerPlaceholder(@NotNull T placeholder) {
         boolean override = registeredPlaceholders.containsKey(placeholder.getIdentifier());
         registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
         recalculateUsedPlaceholders();
@@ -288,7 +288,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      * @param   feature
      *          Feature using the placeholder
      */
-    public void addUsedPlaceholder(@NonNull String identifier, @NonNull RefreshableFeature feature) {
+    public synchronized void addUsedPlaceholder(@NonNull String identifier, @NonNull RefreshableFeature feature) {
         if (placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature)) {
             recalculateUsedPlaceholders();
             TabPlaceholder p = getPlaceholder(identifier);
