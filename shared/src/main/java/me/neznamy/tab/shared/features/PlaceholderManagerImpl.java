@@ -388,7 +388,8 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     }
 
     @Override
-    public @NotNull TabPlaceholder getPlaceholder(@NonNull String identifier) {
+    @NotNull
+    public synchronized TabPlaceholder getPlaceholder(@NonNull String identifier) {
         TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
         if (p == null) {
             TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
