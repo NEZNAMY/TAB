@@ -58,6 +58,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.teamData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         if (!antiOverride) TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
     }
 
     @Override
@@ -68,7 +69,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         collisionManager.load();
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             ((SafeScoreboard<?>)all.getScoreboard()).setAntiOverrideTeams(antiOverride);
             loadProperties(all);
