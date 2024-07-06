@@ -171,8 +171,11 @@ public class Condition {
         if (string == null || string.isEmpty()) return null;
         if (string.equals("true")) return TrueCondition.INSTANCE;
         if (string.equals("false")) return FalseCondition.INSTANCE;
+        String anonVersion = "AnonymousCondition[" + string + "]";
         if (registeredConditions.containsKey(string)) {
             return registeredConditions.get(string);
+        } else if (registeredConditions.containsKey(anonVersion)) {
+            return registeredConditions.get(anonVersion);
         } else {
             boolean type;
             List<String> conditions;
@@ -183,7 +186,7 @@ public class Condition {
                 type = false;
                 conditions = splitString(string);
             }
-            Condition c = new Condition(type, "AnonymousCondition[" + string + "]", conditions, "true", "false");
+            Condition c = new Condition(type, anonVersion, conditions, "true", "false");
             c.finishSetup();
             TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.name), c.refresh,
                     p -> c.getText((TabPlayer) p));
