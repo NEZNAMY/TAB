@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.chat.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.chat.rgb.format.HtmlFormat;
 import me.neznamy.tab.shared.chat.rgb.format.KyoriFormat;
@@ -97,18 +96,5 @@ public class RGBUtils {
             replaced = pattern.applyPattern(replaced, true);
         }
         return replaced;
-    }
-
-    /**
-     * Converts all hex codes in given string to legacy codes.
-     * Also removes redundant color codes caused by this operation
-     * to properly fit in limits.
-     *
-     * @param   text
-     *          text to convert
-     * @return  translated text
-     */
-    public @NotNull String convertRGBtoLegacy(@NotNull String text) {
-        return TabComponent.fromColoredText(text).toLegacyText();
     }
 }

@@ -4,7 +4,6 @@ import lombok.*;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -264,16 +263,11 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
      */
     public static String cutTo(@Nullable String string, int length) {
         if (string == null) return "";
-        String legacyText = string;
-        if (string.contains("#")) {
-            //converting RGB to legacy colors
-            legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
-        }
-        if (legacyText.length() <= length) return legacyText;
-        if (legacyText.charAt(length-1) == EnumChatFormat.COLOR_CHAR) {
-            return legacyText.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
+        if (string.length() <= length) return string;
+        if (string.charAt(length-1) == EnumChatFormat.COLOR_CHAR) {
+            return string.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
         } else {
-            return legacyText.substring(0, length);
+            return string.substring(0, length);
         }
     }
 

@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +42,7 @@ public class LongLine extends ScoreboardLine {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());
                 String[] values = splitText(
                         getPlayerName(lineNumber),
-                        RGBUtils.getInstance().convertRGBtoLegacy(refreshed.getProperty(textProperty).get()),
+                        parent.getManager().getCache().get(refreshed.getProperty(textProperty).get()).toLegacyText(),
                         refreshed.getVersion().getMinorVersion() >= 8 ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
                 );
                 addLine(refreshed, values[1], values[0], values[2]);
@@ -63,7 +62,7 @@ public class LongLine extends ScoreboardLine {
         } else {
             String[] values = splitText(
                     playerName,
-                    RGBUtils.getInstance().convertRGBtoLegacy(value),
+                    parent.getManager().getCache().get(value).toLegacyText(),
                     p.getVersion().getMinorVersion() >= 8 ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
             );
             addLine(p, values[1], values[0], values[2]);
