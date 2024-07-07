@@ -60,18 +60,18 @@ public class PlayerJoinResponse implements IncomingMessage {
         player.setInvisibilityPotion(false);
         for (Map.Entry<String, Object> entry : placeholders.entrySet()) {
             String identifier = entry.getKey();
-            if (!TAB.getInstance().getPlaceholderManager().isPlaceholderRegistered(identifier)) continue;
+            Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholderRaw(identifier);
+            if (pl == null) continue;
             if (identifier.startsWith("%rel_")) {
+                RelationalPlaceholder rel = (RelationalPlaceholder) pl;
                 Map<String, String> map = (Map<String, String>) entry.getValue();
                 for (Map.Entry<String, String> entry2 : map.entrySet()) {
                     TabPlayer other = TAB.getInstance().getPlayer(entry2.getKey());
                     if (other != null) { // Backend player did not connect via this proxy if null
-                        ((RelationalPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier))
-                                .updateValue(player, other, entry2.getValue());
+                        rel.updateValue(player, other, entry2.getValue());
                     }
                 }
             } else {
-                Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
                 if (pl instanceof PlayerPlaceholder) {
                     ((PlayerPlaceholder) pl).updateValue(player, (String) entry.getValue());
                 } else {

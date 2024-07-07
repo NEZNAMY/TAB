@@ -24,8 +24,8 @@ public class UpdatePlaceholder implements IncomingMessage {
 
     @Override
     public void process(@NotNull ProxyTabPlayer player) {
-        if (!TAB.getInstance().getPlaceholderManager().isPlaceholderRegistered(identifier)) return;
-        Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
+        Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholderRaw(identifier);
+        if (placeholder == null) return;
         if (placeholder instanceof RelationalPlaceholder) {
             TabPlayer other = TAB.getInstance().getPlayer(target);
             if (other != null) { // Backend player did not connect via this proxy if null

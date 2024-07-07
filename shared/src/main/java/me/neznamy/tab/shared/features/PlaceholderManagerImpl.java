@@ -353,14 +353,16 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     }
 
     /**
-     * Returns {@code true} if placeholder is registered, {@code false} if not.
+     * Returns placeholder with given identifier. If no such placeholder is registered,
+     * returns {@code null}.
      *
      * @param   identifier
-     *          Placeholder to check
-     * @return  {@code true} if placeholder is registered, {@code false} if not
+     *          Placeholder identifier
+     * @return  Registered placeholder with given identifier, if present
      */
-    public boolean isPlaceholderRegistered(@NotNull String identifier) {
-        return registeredPlaceholders.containsKey(identifier);
+    @Nullable
+    public Placeholder getPlaceholderRaw(@NotNull String identifier) {
+        return registeredPlaceholders.get(identifier);
     }
 
     // ------------------
