@@ -148,7 +148,24 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         } else {
-            onJoin(p);
+            register(p);
+            for (TabPlayer all : onlinePlayers.getPlayers()) {
+                if (!sameServerAndWorld(p, all)) continue;
+                setScore(p, all, getValue(all), all.belowNameData.numberFormat.getFormat(p));
+            }
+            if (redis != null) {
+                redis.sendMessage(new UpdateRedisPlayer(p.getTablistId(), getValue(p), p.belowNameData.numberFormat.get()));
+                for (RedisPlayer redisPlayer : redis.getRedisPlayers().values()) {
+                    if (redisPlayer.getBelowNameFancy() == null) continue; // This redis player is not loaded yet
+                    p.getScoreboard().setScore(
+                            OBJECTIVE_NAME,
+                            redisPlayer.getNickname(),
+                            redisPlayer.getBelowNameNumber(),
+                            null, // Unused by this objective slot
+                            redisPlayer.getBelowNameFancy()
+                    );
+                }
+            }
         }
     }
 
