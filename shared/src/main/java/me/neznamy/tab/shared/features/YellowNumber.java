@@ -173,7 +173,24 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         } else {
-            onJoin(p);
+            register(p);
+            for (TabPlayer all : onlinePlayers.getPlayers()) {
+                setScore(p, all, getValueNumber(all), all.playerlistObjectiveData.valueModern.getFormat(p));
+            }
+            if (redis != null) {
+                redis.sendMessage(new UpdateRedisPlayer(p.getTablistId(), getValueNumber(p), p.playerlistObjectiveData.valueModern.get()));
+                if (p.isBedrockPlayer()) return;
+                for (RedisPlayer redis : redis.getRedisPlayers().values()) {
+                    if (redis.getPlayerlistFancy() == null) continue; // This redis player is not loaded yet
+                    p.getScoreboard().setScore(
+                            OBJECTIVE_NAME,
+                            redis.getNickname(),
+                            redis.getPlayerlistNumber(),
+                            null, // Unused by this objective slot
+                            redis.getPlayerlistFancy()
+                    );
+                }
+            }
         }
     }
 
