@@ -60,19 +60,11 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Override
     public synchronized void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull TabComponent title,
                                         @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {
-        if (objectives.containsKey(objectiveName)) {
+        Objective objective = new Objective(displaySlot, objectiveName, title, display, numberFormat, null);
+        if (objectives.put(objectiveName, objective) != null) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
         }
-        Objective objective = new Objective(
-                displaySlot,
-                objectiveName,
-                title,
-                display,
-                numberFormat,
-                null
-        );
-        objectives.put(objectiveName, objective);
         if (frozen) return;
         registerObjective(objective);
     }
@@ -137,12 +129,11 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     public synchronized void registerTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                                    @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
                                    @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
-        if (teams.containsKey(name)) {
+        Team team = new Team(createTeam(name), name, prefix, suffix, visibility, collision, players, options, color);
+        if (teams.put(name, team) != null) {
             error("Tried to register duplicated team %s to player ", name);
             return;
         }
-        Team team = new Team(createTeam(name), name, prefix, suffix, visibility, collision, players, options, color);
-        teams.put(name, team);
         if (frozen) return;
         registerTeam(team);
     }
