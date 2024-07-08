@@ -60,6 +60,11 @@ public class ThreadExecutor {
         executor.execute(new CaughtTask(task));
     }
 
+    public void execute(@NotNull TimedCaughtTask task) {
+        if (executor.isShutdown()) return;
+        executor.execute(task);
+    }
+
     public void executeLater(@NotNull Runnable task, @NotNull String feature, @NotNull String type, int delayMillis) {
         if (executor.isShutdown()) return;
         if (!getCpu().isTrackUsage()) {

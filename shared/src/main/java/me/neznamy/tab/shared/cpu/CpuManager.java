@@ -158,7 +158,11 @@ public class CpuManager {
      *          Task to run
      */
     public void runMeasuredTask(@NotNull String feature, @NotNull String type, @NotNull Runnable task) {
-        submit(new TimedCaughtTask(this, task, feature, type));
+        if (!enabled) {
+            taskQueue.add(task);
+            return;
+        }
+        processingThread.execute(new TimedCaughtTask(this, task, feature, type));
     }
 
     /**
