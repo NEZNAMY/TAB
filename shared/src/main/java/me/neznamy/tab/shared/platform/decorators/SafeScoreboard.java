@@ -165,10 +165,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Override
     public synchronized void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull EnumChatFormat color) {
         Team team = teams.get(name);
-        if (team == null) {
-            error("Tried to modify non-existing team %s for player ", name);
-            return;
-        }
+        if (team == null) return;
         team.update(prefix, suffix, color);
         if (frozen) return;
         updateTeam(team);
@@ -177,10 +174,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Override
     public synchronized void updateTeam(@NonNull String name, @NonNull CollisionRule collision) {
         Team team = teams.get(name);
-        if (team == null) {
-            error("Tried to modify non-existing team %s for player ", name);
-            return;
-        }
+        if (team == null) return;
         team.collision = collision;
         if (frozen) return;
         updateTeam(team);
@@ -189,10 +183,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Override
     public synchronized void updateTeam(@NonNull String name, @NonNull NameVisibility visibility) {
         Team team = teams.get(name);
-        if (team == null) {
-            error("Tried to modify non-existing team %s for player ", name);
-            return;
-        }
+        if (team == null) return;
         team.visibility = visibility;
         if (frozen) return;
         updateTeam(team);
@@ -206,10 +197,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Override
     public synchronized void renameTeam(@NonNull String oldName, @NonNull String newName) {
         Team team = teams.get(oldName);
-        if (team == null) {
-            error("Tried to rename non-existing team %s to %s", oldName, newName);
-            return;
-        }
+        if (team == null) return;
         unregisterTeam(oldName);
         registerTeam(newName, team.prefix, team.suffix, team.visibility, team.collision, team.players, team.options, team.color);
     }
