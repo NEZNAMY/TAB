@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.message.RedisMessage;
@@ -240,12 +241,12 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
      *          Player to process nickname change of
      */
     public void processNicknameChange(@NotNull TabPlayer player) {
-        customThread.execute(() -> {
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             int value = getValueNumber(player);
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 setScore(viewer, player, value, player.playerlistObjectiveData.valueModern.get());
             }
-        }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS);
+        }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS));
     }
 
     @Override

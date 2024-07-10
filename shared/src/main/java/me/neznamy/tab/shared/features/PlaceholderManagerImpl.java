@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.CpuManager;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshTask;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -27,7 +28,6 @@ import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
-import me.neznamy.tab.shared.task.FeatureTasks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,7 +69,6 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     }
 
     private void refresh() {
-        long time = System.nanoTime();
         loopTime += TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
         List<Placeholder> placeholders = new ArrayList<>();
         for (Placeholder placeholder : usedPlaceholders) {
@@ -78,16 +77,13 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         }
         if (placeholders.isEmpty()) return;
         PlaceholderRefreshTask task = new PlaceholderRefreshTask(placeholders);
-        cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_REFRESH_INIT, System.nanoTime() - time);
-        cpu.getPlaceholderThread().execute(() -> {
+        cpu.getPlaceholderThread().execute(new TimedCaughtTask(cpu, () -> {
             // Run in placeholder refreshing thread
-            long time2 = System.nanoTime();
             task.run();
-            cpu.addTime(getFeatureName(), CpuUsageCategory.PLACEHOLDER_REQUEST, System.nanoTime() - time2);
 
             // Back to main thread
-            cpu.runTask(() -> processRefreshResults(task));
-        });
+            cpu.getProcessingThread().execute(() -> processRefreshResults(task));
+        }, getFeatureName(), CpuUsageCategory.PLACEHOLDER_REQUEST));
     }
 
     private void processRefreshResults(@NotNull PlaceholderRefreshTask task) {
@@ -106,7 +102,11 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     
     private void refreshFeatures(@NotNull Map<RefreshableFeature, Collection<TabPlayer>> forceUpdate, @NotNull Map<RefreshableFeature, Collection<TabPlayer>> update) {
         for (Entry<RefreshableFeature, Collection<TabPlayer>> entry : update.entrySet()) {
-            FeatureTasks.BulkRefresh task = new FeatureTasks.BulkRefresh(entry.getKey(), entry.getValue(), false);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                for (TabPlayer player : entry.getValue()) {
+                    entry.getKey().refresh(player, false);
+                }
+            }, entry.getKey().getFeatureName(), entry.getKey().getRefreshDisplayName());
             if (entry.getKey() instanceof CustomThreaded) {
                 ((CustomThreaded) entry.getKey()).getCustomThread().execute(task);
             } else {
@@ -114,7 +114,11 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             }
         }
         for (Entry<RefreshableFeature, Collection<TabPlayer>> entry : forceUpdate.entrySet()) {
-            FeatureTasks.BulkRefresh task = new FeatureTasks.BulkRefresh(entry.getKey(), entry.getValue(), true);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                for (TabPlayer player : entry.getValue()) {
+                    entry.getKey().refresh(player, true);
+                }
+            }, entry.getKey().getFeatureName(), entry.getKey().getRefreshDisplayName());
             if (entry.getKey() instanceof CustomThreaded) {
                 ((CustomThreaded) entry.getKey()).getCustomThread().execute(task);
             } else {
@@ -228,7 +232,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (!p.isLoaded()) continue;
                 for (RefreshableFeature f : placeholderUsage.get(placeholder.getIdentifier())) {
-                    FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, p, true);
+                    TimedCaughtTask task = new TimedCaughtTask(cpu, () -> f.refresh(p, true), f.getFeatureName(), f.getRefreshDisplayName());
                     if (f instanceof CustomThreaded) {
                         ((CustomThreaded) f).getCustomThread().execute(task);
                     } else {
@@ -242,7 +246,8 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
 
     @Override
     public void load() {
-        cpu.getProcessingThread().repeatTask(this::refresh, TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
+        cpu.getProcessingThread().repeatTask(new TimedCaughtTask(cpu, this::refresh, getFeatureName(), CpuUsageCategory.PLACEHOLDER_REFRESH_INIT),
+                TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
         for (Placeholder pl : usedPlaceholders) {
             if (pl instanceof ServerPlaceholderImpl) {
                 ((ServerPlaceholderImpl)pl).update();

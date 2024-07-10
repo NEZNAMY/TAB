@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.features.types;
 
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +62,8 @@ public class DisableChecker extends RefreshableFeature {
             action.accept(refreshed, disabledNow);
         };
         if (feature instanceof CustomThreaded) {
-            ((CustomThreaded) feature).getCustomThread().execute(r, feature.getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
+            ((CustomThreaded) feature).getCustomThread().execute(new TimedCaughtTask(TAB.getInstance().getCpu(), r,
+                    feature.getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE));
         } else {
             r.run();
         }

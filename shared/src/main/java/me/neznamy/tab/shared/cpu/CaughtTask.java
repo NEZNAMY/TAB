@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * Runnable try/catches the task.
+ * Runnable wrapper that try/catches the task.
  */
 @RequiredArgsConstructor
 public class CaughtTask implements Runnable {

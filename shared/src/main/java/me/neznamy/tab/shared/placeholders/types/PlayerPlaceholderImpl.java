@@ -4,10 +4,10 @@ import lombok.NonNull;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.task.FeatureTasks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +48,8 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (hasValueChanged((TabPlayer) player, value, true)) {
             if (!player.isLoaded()) return; // Updated on join
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
-                FeatureTasks.Refresh task = new FeatureTasks.Refresh(r, (TabPlayer) player, false);
+                TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh((TabPlayer) player, true),
+                        r.getFeatureName(), r.getRefreshDisplayName());
                 if (r instanceof CustomThreaded) {
                     ((CustomThreaded) r).getCustomThread().execute(task);
                 } else {

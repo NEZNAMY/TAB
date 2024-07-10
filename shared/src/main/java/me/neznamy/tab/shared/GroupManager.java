@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.task.GroupRefreshTask;
 import org.jetbrains.annotations.NotNull;
@@ -41,12 +42,8 @@ public class GroupManager {
     public GroupManager(@NotNull String permissionPlugin, @NotNull Function<TabPlayer, String> groupFunction) {
         this.permissionPlugin = permissionPlugin;
         this.groupFunction = groupFunction;
-        TAB.getInstance().getCpu().getGroupRefreshingThread().repeatTask(
-                new GroupRefreshTask(detectGroup),
-                "Permission group refreshing",
-                "Periodic task",
-                TAB.getInstance().getConfiguration().getPermissionRefreshInterval()
-        );
+        TAB.getInstance().getCpu().getGroupRefreshingThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), new GroupRefreshTask(detectGroup),
+                "Permission group refreshing", "Periodic task"), TAB.getInstance().getConfiguration().getPermissionRefreshInterval());
     }
 
     /**

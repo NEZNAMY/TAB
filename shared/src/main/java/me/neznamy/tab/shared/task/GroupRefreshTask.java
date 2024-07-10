@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.task;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.CpuManager;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +26,8 @@ public class GroupRefreshTask implements Runnable {
             String newGroup = detectGroup.apply(all);
             if (!oldGroup.equals(newGroup)) {
                 // Back to main thread to avoid concurrency issues
-                TAB.getInstance().getCpu().runMeasuredTask("Permission group refreshing", "Applying changes", () -> all.setGroup(newGroup));
+                CpuManager cpu = TAB.getInstance().getCpu();
+                cpu.getProcessingThread().execute(new TimedCaughtTask(cpu, () -> all.setGroup(newGroup), "Permission group refreshing", "Applying changes"));
             }
         }
     }

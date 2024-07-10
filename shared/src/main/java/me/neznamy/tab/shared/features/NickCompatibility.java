@@ -2,7 +2,10 @@ package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.cpu.CpuManager;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -67,7 +70,8 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
      *          Player to update in all features
      */
     public void processNameChange(@NotNull TabPlayer player) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
+        CpuManager cpu = TAB.getInstance().getCpu();
+        cpu.getProcessingThread().execute(new TimedCaughtTask(cpu, () -> {
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player))
                 for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
                     TabComponent prefix = nameTags.getCache().get(player.teamData.prefix.getFormat(viewer));
@@ -85,11 +89,12 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             if (belowname != null) belowname.processNicknameChange(player);
             if (yellownumber != null) yellownumber.processNicknameChange(player);
-        });
+        }, getFeatureName(), CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY));
     }
 
     private void processNameChange(RedisPlayer player) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, () -> {
+        CpuManager cpu = TAB.getInstance().getCpu();
+        cpu.getProcessingThread().execute(new TimedCaughtTask(cpu, () -> {
             if (nameTags != null) {
                 String teamName = player.getTeamName();
                 for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
@@ -129,6 +134,6 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                     );
                 }
             }
-        });
+        }, getFeatureName(), CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY));
     }
 }

@@ -8,6 +8,7 @@ import me.neznamy.tab.api.event.EventHandler;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.features.redis.message.*;
 import me.neznamy.tab.shared.features.types.*;
@@ -56,7 +57,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      *          json message to process
      */
     public void processMessage(@NotNull String msg) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(getFeatureName(), CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
+        TAB.getInstance().getCpu().getProcessingThread().execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
             String proxy = in.readUTF();
             if (proxy.equals(this.proxy.toString())) return; // Message coming from current proxy
@@ -69,11 +70,11 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             RedisMessage redisMessage = supplier.get();
             redisMessage.read(in);
             if (redisMessage.getCustomThread() != null) {
-                redisMessage.getCustomThread().execute(() -> redisMessage.process(this), getFeatureName(), CpuUsageCategory.REDIS_BUNGEE_MESSAGE);
+                redisMessage.getCustomThread().execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> redisMessage.process(this), getFeatureName(), CpuUsageCategory.REDIS_BUNGEE_MESSAGE));
             } else {
                 redisMessage.process(this);
             }
-        });
+        }, getFeatureName(), CpuUsageCategory.REDIS_BUNGEE_MESSAGE));
     }
 
     /**

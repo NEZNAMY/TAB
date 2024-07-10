@@ -7,6 +7,7 @@ import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -193,7 +194,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         changed.globalPlayerListData.onSpyServer = spyServers.contains(changed.server.toLowerCase());
         // TODO fix players potentially not appearing on rapid server switching (if anyone reports it)
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
-        customThread.executeLater(() -> {
+        customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer all : onlinePlayers.getPlayers()) {
                 // Remove for everyone and add back if visible, easy solution to display-others-as-spectators option
                 // Also do not remove/add players from the same server, let backend handle it
@@ -204,7 +205,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                     }
                 }
             }
-        }, getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, 200);
+        }, getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH), 200);
     }
 
     @Override

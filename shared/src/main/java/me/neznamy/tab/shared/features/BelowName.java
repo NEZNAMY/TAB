@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.message.RedisMessage;
@@ -280,12 +281,12 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      *          Player to process nickname change of
      */
     public void processNicknameChange(@NotNull TabPlayer player) {
-        customThread.execute(() -> {
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             int value = getValue(player);
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 setScore(viewer, player, value, player.belowNameData.numberFormat.get());
             }
-        }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS);
+        }, getFeatureName(), TabConstants.CpuUsageCategory.NICKNAME_CHANGE_PROCESS));
     }
 
     @Override

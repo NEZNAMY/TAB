@@ -7,6 +7,7 @@ import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -14,7 +15,6 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.task.FeatureTasks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +53,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target, @Nullable String value) {
         if (hasValueChanged((TabPlayer) viewer, (TabPlayer) target, value)) {
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
-                FeatureTasks.Refresh task = new FeatureTasks.Refresh(r, (TabPlayer) target, true);
+                TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh((TabPlayer) target, true),
+                        r.getFeatureName(), r.getRefreshDisplayName());
                 if (r instanceof CustomThreaded) {
                     ((CustomThreaded) r).getCustomThread().execute(task);
                 } else {
@@ -96,7 +97,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
             viewer.lastRelationalValues.computeIfAbsent(this, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
             if (!target.isLoaded()) return; // Updated on join
             for (RefreshableFeature f : usage) {
-                FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, target, true);
+                TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(target, true),
+                        f.getFeatureName(), f.getRefreshDisplayName());
                 if (f instanceof CustomThreaded) {
                     ((CustomThreaded) f).getCustomThread().execute(task);
                 } else {
@@ -107,7 +109,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         }
         if (!viewer.isLoaded()) return; // Updated on join
         for (RefreshableFeature f : usage) {
-            FeatureTasks.Refresh task = new FeatureTasks.Refresh(f, viewer, true);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(viewer, true),
+                    f.getFeatureName(), f.getRefreshDisplayName());
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {

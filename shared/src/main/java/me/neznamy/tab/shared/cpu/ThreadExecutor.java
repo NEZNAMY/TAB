@@ -46,15 +46,6 @@ public class ThreadExecutor {
         return TAB.getInstance().getCpu();
     }
 
-    public void execute(@NotNull Runnable task, @NotNull String feature, @NotNull String type) {
-        if (executor.isShutdown()) return;
-        if (!getCpu().isTrackUsage()) {
-            executor.execute(new CaughtTask(task));
-            return;
-        }
-        executor.execute(new TimedCaughtTask(getCpu(), task, feature, type));
-    }
-
     public void execute(@NotNull Runnable task) {
         if (executor.isShutdown()) return;
         executor.execute(new CaughtTask(task));
@@ -65,39 +56,9 @@ public class ThreadExecutor {
         executor.execute(task);
     }
 
-    public void executeLater(@NotNull Runnable task, @NotNull String feature, @NotNull String type, int delayMillis) {
+    public void executeLater(@NotNull TimedCaughtTask task, int delayMillis) {
         if (executor.isShutdown()) return;
-        if (!getCpu().isTrackUsage()) {
-            executor.schedule(new CaughtTask(task), delayMillis, TimeUnit.MILLISECONDS);
-            return;
-        }
-        executor.schedule(new TimedCaughtTask(getCpu(), task, feature, type), delayMillis, TimeUnit.MILLISECONDS);
-    }
-
-    public void executeLater(@NotNull Runnable task, int delayMillis) {
-        if (executor.isShutdown()) return;
-        executor.schedule(new CaughtTask(task), delayMillis, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Starts a repeating task that measures how long it takes.
-     *
-     * @param   task
-     *          Task to run periodically
-     * @param   feature
-     *          Feature executing the task
-     * @param   type
-     *          Usage the of the feature
-     * @param   intervalMilliseconds
-     *          How often should the task run
-     */
-    public void repeatTask(@NotNull Runnable task, @NotNull String feature, @NotNull String type, int intervalMilliseconds) {
-        if (executor.isShutdown()) return;
-        if (!getCpu().isTrackUsage()) {
-            executor.scheduleAtFixedRate(new CaughtTask(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
-            return;
-        }
-        executor.scheduleAtFixedRate(new TimedCaughtTask(getCpu(), task, feature, type), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        executor.schedule(task, delayMillis, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -108,8 +69,8 @@ public class ThreadExecutor {
      * @param   intervalMilliseconds
      *          How often should the task run
      */
-    public void repeatTask(@NotNull Runnable task, int intervalMilliseconds) {
+    public void repeatTask(@NotNull TimedCaughtTask task, int intervalMilliseconds) {
         if (executor.isShutdown()) return;
-        executor.scheduleAtFixedRate(new CaughtTask(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(task, intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 }

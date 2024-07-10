@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
  */
+@Getter
 public class CpuManager {
 
     private final int UPDATE_RATE_SECONDS = 10;
@@ -22,22 +23,18 @@ public class CpuManager {
     private volatile Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
 
     /** Last CPU report */
-    @Nullable @Getter private CpuReport lastReport;
+    @Nullable private CpuReport lastReport;
 
     /** Scheduler for scheduling delayed and repeating tasks */
-    @Getter
     private final ThreadExecutor processingThread = new ThreadExecutor("TAB Processing Thread");
 
     /** Scheduler for placeholder refreshing task to prevent inefficient placeholders from lagging the entire plugin */
-    @Getter
     private final ThreadExecutor placeholderThread = new ThreadExecutor("TAB Placeholder Refreshing Thread");
 
     /** Scheduler for refreshing permission groups */
-    @Getter
     private final ThreadExecutor groupRefreshingThread = new ThreadExecutor("TAB Permission Group Refreshing Thread");
 
     /** Scheduler for checking for tablist entry values */
-    @Getter
     private final ThreadExecutor tablistEntryCheckThread = new ThreadExecutor("TAB TabList Entry Checker Thread");
 
     /** Scheduler for encoding and sending plugin messages */
@@ -45,7 +42,6 @@ public class CpuManager {
     private static final ThreadExecutor pluginMessageEncodeThread = new ThreadExecutor("TAB Plugin Message Encoding Thread");
 
     /** Scheduler for decoding plugin messages */
-    @Getter
     private final ThreadExecutor pluginMessageDecodeThread = new ThreadExecutor("TAB Plugin Message Decoding Thread");
 
     /** Tasks submitted to main thread before plugin was fully enabled */
@@ -55,7 +51,7 @@ public class CpuManager {
     private volatile boolean enabled;
 
     /** Boolean tracking whether CPU usage should be tracked or not */
-    @Getter private boolean trackUsage;
+    private boolean trackUsage;
 
     /**
      * Enables CPU usage tracking and returns {@code true} if it was not enabled previously.
@@ -66,11 +62,11 @@ public class CpuManager {
     public boolean enableTracking() {
         if (trackUsage) return false;
         trackUsage = true;
-        processingThread.repeatTask(() -> {
+        processingThread.repeatTask(new TimedCaughtTask(this, () -> {
             lastReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
-        }, ((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS)));
+        }, "CPU Tracking", "Resetting values"), ((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS)));
         return true;
     }
 
@@ -173,21 +169,5 @@ public class CpuManager {
      */
     public void runTask(@NotNull Runnable task) {
         submit(task);
-    }
-
-    /**
-     * Runs a task with a delay.
-     *
-     * @param   delayMilliseconds
-     *          How long to wait until task is executed
-     * @param   feature
-     *          Feature executing the task
-     * @param   type
-     *          Usage the of the feature
-     * @param   task
-     *          Task to run after a delay
-     */
-    public void runTaskLater(int delayMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
-        processingThread.executeLater(task, feature, type, delayMilliseconds);
     }
 }

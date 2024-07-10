@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.task.PluginMessageDecodeTask;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,8 +63,8 @@ public interface EventListener<T> {
      *          The message
      */
     default void pluginMessage(@NotNull UUID player, byte[] message) {
-        TAB.getInstance().getCpu().getPluginMessageDecodeThread().execute(new PluginMessageDecodeTask(player, message),
-                "Plugin message handling", CpuUsageCategory.PLUGIN_MESSAGE_DECODE);
+        TAB.getInstance().getCpu().getPluginMessageDecodeThread().execute(new TimedCaughtTask(TAB.getInstance().getCpu(), new PluginMessageDecodeTask(player, message),
+                "Plugin message handling", CpuUsageCategory.PLUGIN_MESSAGE_DECODE));
     }
 
     /**

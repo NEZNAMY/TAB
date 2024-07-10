@@ -5,6 +5,8 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.cpu.CpuManager;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector.TabChannelDuplexHandler;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
@@ -31,7 +33,8 @@ public class BungeeChannelDuplexHandler extends TabChannelDuplexHandler {
     public void write(@NotNull ChannelHandlerContext context, @NotNull Object packet, @NotNull ChannelPromise channelPromise) {
         if (packet instanceof Login) {
             ((SafeScoreboard<?>)player.getScoreboard()).setFrozen(true);
-            TAB.getInstance().getCPUManager().runTaskLater(200, "Pipeline injection", TabConstants.CpuUsageCategory.PACKET_LOGIN, () -> {
+            CpuManager cpu = TAB.getInstance().getCpu();
+            cpu.getProcessingThread().executeLater(new TimedCaughtTask(cpu, () -> {
                 ((SafeScoreboard<?>)player.getScoreboard()).setFrozen(false);
                 player.getScoreboard().resend();
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
@@ -39,7 +42,7 @@ public class BungeeChannelDuplexHandler extends TabChannelDuplexHandler {
                     TAB.getInstance().getFeatureManager().onTabListClear(player);
                     ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
                 }
-            });
+            }, "Pipeline injection", TabConstants.CpuUsageCategory.PACKET_LOGIN), 200);
         }
         super.write(context, packet, channelPromise);
     }

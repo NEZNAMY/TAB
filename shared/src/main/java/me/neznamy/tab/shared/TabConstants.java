@@ -41,6 +41,7 @@ public class TabConstants {
     public static class CpuUsageCategory {
 
         // Events
+        public static final String PLUGIN_LOAD = "Load";
         public static final String PLAYER_JOIN = "Player Join";
         public static final String PLAYER_QUIT = "Player Quit";
         public static final String WORLD_SWITCH = "World Switch";

@@ -6,6 +6,7 @@ import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.bukkit.entity.Entity;
@@ -41,7 +42,7 @@ public class FoliaPlatform extends BukkitPlatform {
                 "%mspt% and %tps% return the default values (0 and 20)."));
 
         // Folia never calls PlayerChangedWorldEvent, this is a workaround
-        TAB.getInstance().getCpu().getProcessingThread().repeatTask(()  -> {
+        TAB.getInstance().getCpu().getProcessingThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), ()  -> {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 String bukkitWorld = ((Player)player.getPlayer()).getWorld().getName();
                 if (!player.world.equals(bukkitWorld)) {
@@ -52,7 +53,7 @@ public class FoliaPlatform extends BukkitPlatform {
                     }
                 }
             }
-        }, "Folia compatibility", "Refreshing world", 100);
+        }, "Folia compatibility", "Refreshing world"), 100);
     }
 
     @Override

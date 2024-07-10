@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -63,11 +64,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.tablistData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
         if (antiOverrideTabList) {
-            TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(() -> {
+            TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
                         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                             ((TrackedTabList<?, ?>)p.getTabList()).checkDisplayNames();
                         }
-                    }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC, 500
+                    }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC), 500
             );
         } else {
             TAB.getInstance().getConfigHelper().startup().tablistAntiOverrideDisabled();
@@ -204,7 +205,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         if (updateProperties(p) && !p.tablistData.disabled.get()) updatePlayer(p, true);
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
-        TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), CpuUsageCategory.PLAYER_JOIN, () -> {
+        TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!all.tablistData.disabled.get() && p.getVersion().getMinorVersion() >= 8
                         //&& p.getTabList().containsEntry(all.getTablistId())
@@ -220,7 +221,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                     p.getTabList().updateDisplayName(redis.getUniqueId(), redis.getTabFormat());
                 }
             }
-        });
+        }, getFeatureName(), CpuUsageCategory.PLAYER_JOIN), 300);
     }
 
     @Override
@@ -289,7 +290,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         };
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
         if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) {
-            TAB.getInstance().getCPUManager().runTaskLater(300, getFeatureName(), CpuUsageCategory.PLAYER_JOIN, r);
+            TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    r, getFeatureName(), CpuUsageCategory.PLAYER_JOIN), 300);
         } else {
             r.run();
         }

@@ -1,8 +1,10 @@
 package me.neznamy.tab.shared;
 
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
@@ -19,7 +21,6 @@ import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.Unload;
-import me.neznamy.tab.shared.task.FeatureTasks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +55,11 @@ public class FeatureManager {
     public void load() {
         for (TabFeature f : values) {
             if (!(f instanceof Loadable)) continue;
-            FeatureTasks.Load task = new FeatureTasks.Load((Loadable) f);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                long time = System.currentTimeMillis();
+                ((Loadable) f).load();
+                TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed load in " + (System.currentTimeMillis()-time) + "ms");
+            }, f.getFeatureName(), CpuUsageCategory.PLUGIN_LOAD);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -109,7 +114,8 @@ public class FeatureManager {
     public void onGroupChange(@NotNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof GroupListener)) continue;
-            FeatureTasks.GroupChange task = new FeatureTasks.GroupChange((GroupListener) f, player);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((GroupListener) f).onGroupChange(player), f.getFeatureName(), CpuUsageCategory.GROUP_CHANGE);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -127,7 +133,8 @@ public class FeatureManager {
     public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof GameModeListener)) continue;
-            FeatureTasks.GameModeChange task = new FeatureTasks.GameModeChange((GameModeListener) f, player);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((GameModeListener) f).onGameModeChange(player), f.getFeatureName(), CpuUsageCategory.GAMEMODE_CHANGE);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -148,7 +155,8 @@ public class FeatureManager {
         long millis = System.currentTimeMillis();
         for (TabFeature f : values) {
             if (!(f instanceof QuitListener)) continue;
-            FeatureTasks.Quit task = new FeatureTasks.Quit((QuitListener) f, disconnectedPlayer);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((QuitListener) f).onQuit(disconnectedPlayer), f.getFeatureName(), CpuUsageCategory.PLAYER_QUIT);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -173,7 +181,11 @@ public class FeatureManager {
         TAB.getInstance().addPlayer(connectedPlayer);
         for (TabFeature f : values) {
             if (!(f instanceof JoinListener)) continue;
-            FeatureTasks.Join task = new FeatureTasks.Join((JoinListener) f, connectedPlayer);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                long time = System.nanoTime();
+                ((JoinListener) f).onJoin(connectedPlayer);
+                TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed player join in " + (System.nanoTime()-time)/1000000 + "ms");
+            }, f.getFeatureName(), CpuUsageCategory.PLAYER_JOIN);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -203,11 +215,12 @@ public class FeatureManager {
         changed.world = to;
         for (TabFeature f : values) {
             if (!(f instanceof WorldSwitchListener)) continue;
-            FeatureTasks.WorldSwitch change = new FeatureTasks.WorldSwitch((WorldSwitchListener) f, changed, from, to);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((WorldSwitchListener) f).onWorldChange(changed, from, to), f.getFeatureName(), CpuUsageCategory.WORLD_SWITCH);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().execute(change);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
-                change.run();
+                task.run();
             }
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
@@ -229,11 +242,12 @@ public class FeatureManager {
         ((ProxyTabPlayer)changed).sendJoinPluginMessage();
         for (TabFeature f : values) {
             if (!(f instanceof ServerSwitchListener)) continue;
-            FeatureTasks.ServerSwitch change = new FeatureTasks.ServerSwitch((ServerSwitchListener) f, changed, from, to);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((ServerSwitchListener) f).onServerChange(changed, from, to), f.getFeatureName(), CpuUsageCategory.SERVER_SWITCH);
             if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().execute(change);
+                ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
-                change.run();
+                task.run();
             }
         }
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
@@ -257,7 +271,7 @@ public class FeatureManager {
             if (!(f instanceof CommandListener)) continue;
             long time = System.nanoTime();
             if (((CommandListener)f).onCommand(sender, command)) cancel = true;
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.COMMAND_PREPROCESS, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), CpuUsageCategory.COMMAND_PREPROCESS, System.nanoTime()-time);
         }
         return cancel;
     }
@@ -275,7 +289,8 @@ public class FeatureManager {
     public void onDisplayObjective(@NotNull TabPlayer packetReceiver, int slot, @NotNull String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof DisplayObjectiveListener)) continue;
-            FeatureTasks.OnDisplayObjective task = new FeatureTasks.OnDisplayObjective((DisplayObjectiveListener) f, packetReceiver, slot, objective);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((DisplayObjectiveListener) f).onDisplayObjective(packetReceiver, slot, objective), f.getFeatureName(), CpuUsageCategory.SCOREBOARD_PACKET_CHECK);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -297,7 +312,8 @@ public class FeatureManager {
     public void onObjective(@NotNull TabPlayer packetReceiver, int action, @NotNull String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof ObjectiveListener)) continue;
-            FeatureTasks.OnObjective task = new FeatureTasks.OnObjective((ObjectiveListener) f, packetReceiver, action, objective);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((ObjectiveListener) f).onObjective(packetReceiver, action, objective), f.getFeatureName(), CpuUsageCategory.SCOREBOARD_PACKET_CHECK);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -315,7 +331,8 @@ public class FeatureManager {
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof VanishListener)) continue;
-            FeatureTasks.VanishStatus task = new FeatureTasks.VanishStatus((VanishListener) f, player);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((VanishListener) f).onVanishStatusChange(player), f.getFeatureName(), CpuUsageCategory.VANISH_CHANGE);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -339,7 +356,7 @@ public class FeatureManager {
             if (!(f instanceof EntryAddListener)) continue;
             long time = System.nanoTime();
             ((EntryAddListener)f).onEntryAdd(packetReceiver, id, name);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY, System.nanoTime() - time);
         }
     }
 
@@ -361,7 +378,7 @@ public class FeatureManager {
             if (!(f instanceof LatencyListener)) continue;
             long time = System.nanoTime();
             newLatency = ((LatencyListener)f).onLatencyChange(packetReceiver, id, newLatency);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), TabConstants.CpuUsageCategory.PING_CHANGE, System.nanoTime() - time);
+            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), CpuUsageCategory.PING_CHANGE, System.nanoTime() - time);
         }
         return newLatency;
     }
@@ -375,7 +392,8 @@ public class FeatureManager {
     public void onTabListClear(TabPlayer packetReceiver) {
         for (TabFeature f : values) {
             if (!(f instanceof TabListClearListener)) continue;
-            FeatureTasks.TabListClear task = new FeatureTasks.TabListClear((TabListClearListener) f, packetReceiver);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((TabListClearListener) f).onTabListClear(packetReceiver), f.getFeatureName(), CpuUsageCategory.TABLIST_CLEAR);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -390,7 +408,8 @@ public class FeatureManager {
     public void onRedisLoadRequest() {
         for (TabFeature f : values) {
             if (!(f instanceof RedisFeature)) continue;
-            FeatureTasks.RedisReload task = new FeatureTasks.RedisReload((RedisFeature) f);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((RedisFeature) f).onRedisLoadRequest(), f.getFeatureName(), CpuUsageCategory.REDIS_RELOAD);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -408,7 +427,8 @@ public class FeatureManager {
     public void onJoin(@NotNull RedisPlayer connectedPlayer) {
         for (TabFeature f : values) {
             if (!(f instanceof RedisFeature)) continue;
-            FeatureTasks.RedisJoin task = new FeatureTasks.RedisJoin((RedisFeature) f, connectedPlayer);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((RedisFeature) f).onJoin(connectedPlayer), f.getFeatureName(), CpuUsageCategory.PLAYER_JOIN);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -420,13 +440,14 @@ public class FeatureManager {
     /**
      * Handles redis player server switch and forwards it to all features.
      *
-     * @param   connectedPlayer
+     * @param   player
      *          Player who joined
      */
-    public void onServerSwitch(@NotNull RedisPlayer connectedPlayer) {
+    public void onServerSwitch(@NotNull RedisPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof RedisFeature)) continue;
-            FeatureTasks.RedisJoin task = new FeatureTasks.RedisJoin((RedisFeature) f, connectedPlayer);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((RedisFeature) f).onServerSwitch(player), f.getFeatureName(), CpuUsageCategory.SERVER_SWITCH);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -444,7 +465,8 @@ public class FeatureManager {
     public void onQuit(@NotNull RedisPlayer disconnectedPlayer) {
         for (TabFeature f : values) {
             if (!(f instanceof RedisFeature)) continue;
-            FeatureTasks.RedisQuit task = new FeatureTasks.RedisQuit((RedisFeature) f, disconnectedPlayer);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((RedisFeature) f).onQuit(disconnectedPlayer), f.getFeatureName(), CpuUsageCategory.PLAYER_QUIT);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -462,7 +484,8 @@ public class FeatureManager {
     public void onVanishStatusChange(@NotNull RedisPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof RedisFeature)) continue;
-            FeatureTasks.RedisVanishStatus task = new FeatureTasks.RedisVanishStatus((RedisFeature) f, player);
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((RedisFeature) f).onVanishStatusChange(player), f.getFeatureName(), CpuUsageCategory.VANISH_CHANGE);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {

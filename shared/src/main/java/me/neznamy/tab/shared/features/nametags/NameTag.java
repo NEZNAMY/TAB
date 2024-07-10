@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.message.RedisMessage;
@@ -283,14 +284,14 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      */
     public void updateCollision(@NonNull TabPlayer player, boolean moveToThread) {
         if (moveToThread) {
-            customThread.execute(() -> {
+            customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
                 for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                     viewer.getScoreboard().updateTeam(
                             player.teamData.teamName,
                             player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
                     );
                 }
-            }, getFeatureName(), "Updating collision");
+            }, getFeatureName(), "Updating collision"));
         } else {
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 viewer.getScoreboard().updateTeam(
@@ -308,7 +309,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          Player to update visibility of
      */
     public void updateVisibility(@NonNull TabPlayer player) {
-        customThread.execute(() -> {
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 viewer.getScoreboard().updateTeam(
                         player.teamData.teamName,
@@ -320,7 +321,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     player.teamData.suffix.get(),
                     getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
             ));
-        }, getFeatureName(), "Updating visibility");
+        }, getFeatureName(), "Updating visibility"));
     }
 
     /**
@@ -383,7 +384,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          New team name to use
      */
     public void updateTeamName(@NonNull TabPlayer player, @NonNull String newTeamName) {
-        customThread.execute(() -> {
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             if (hasTeamHandlingPaused(player) || player.teamData.disabled.get()) {
                 player.teamData.teamName = newTeamName;
                 return;
@@ -399,7 +400,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     player.teamData.suffix.get(),
                     getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
             ));
-        }, getFeatureName(), "Updating team name");
+        }, getFeatureName(), "Updating team name"));
     }
 
     @Override
@@ -532,10 +533,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        customThread.execute(() -> {
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             p.teamData.prefix.setTemporaryValue(prefix);
             updatePrefixSuffix(p);
-        }, getFeatureName(), "Updating prefix");
+        }, getFeatureName(), "Updating prefix"));
     }
 
     @Override
@@ -543,10 +544,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
-        customThread.execute(() -> {
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             p.teamData.suffix.setTemporaryValue(suffix);
             updatePrefixSuffix(p);
-        }, getFeatureName(), "Updating suffix");
+        }, getFeatureName(), "Updating suffix"));
     }
 
     @Override
