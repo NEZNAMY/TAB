@@ -48,7 +48,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (hasValueChanged((TabPlayer) player, value, true)) {
             if (!player.isLoaded()) return; // Updated on join
             for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
-                TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh((TabPlayer) player, true),
+                TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh((TabPlayer) player, false),
                         r.getFeatureName(), r.getRefreshDisplayName());
                 if (r instanceof CustomThreaded) {
                     ((CustomThreaded) r).getCustomThread().execute(task);
