@@ -74,9 +74,8 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (value == null) return false; //bridge placeholders, they are updated using updateValue method
         if (ERROR_VALUE.equals(value)) return false;
         String newValue = replacements.findReplacement(setPlaceholders(value, p));
-        String lastValue = p.lastPlaceholderValues.get(this);
+        String lastValue = p.lastPlaceholderValues.put(this, newValue);
         if (lastValue == null || (!identifier.equals(newValue) && !newValue.equals(lastValue))) {
-            p.lastPlaceholderValues.put(this, newValue);
             if (updateParents) updateParents(p);
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
             return true;
