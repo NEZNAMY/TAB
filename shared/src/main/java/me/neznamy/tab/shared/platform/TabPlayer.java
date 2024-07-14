@@ -121,10 +121,10 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @Nullable public User luckPermsUser;
 
     /** Last known values for each player placeholder after applying replacements and nested placeholders */
-    public final Map<PlayerPlaceholder, String> lastPlaceholderValues = Collections.synchronizedMap(new IdentityHashMap<>());
+    public final Map<PlayerPlaceholder, String> lastPlaceholderValues = new ConcurrentHashMap<>();
 
     /** Last known values for each relational placeholder after applying replacements and nested placeholders */
-    public final Map<RelationalPlaceholder, Map<TabPlayer, String>> lastRelationalValues = Collections.synchronizedMap(new IdentityHashMap<>());
+    public final Map<RelationalPlaceholder, Map<TabPlayer, String>> lastRelationalValues = new ConcurrentHashMap<>();
 
     /**
      * Constructs new instance with given parameters
