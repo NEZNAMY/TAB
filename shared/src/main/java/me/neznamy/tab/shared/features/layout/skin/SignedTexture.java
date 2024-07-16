@@ -21,7 +21,7 @@ public class SignedTexture extends SkinSource {
     public List<String> download(@NotNull String textureBase64) {
         String[] parts = textureBase64.split(";");
         String base64 = parts[0];
-        String signature = parts[1];
+        String signature = parts.length > 1 ? parts[1] : "";
         return Arrays.asList(base64, signature);
     }
 }
