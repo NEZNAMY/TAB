@@ -71,7 +71,7 @@ public class ComponentConverter {
             Class<?> chatClickable = BukkitReflection.getClass("network.chat.ClickEvent", "network.chat.ChatClickable", "ChatClickable");
             Class<?> chatHoverable = BukkitReflection.getClass("network.chat.HoverEvent", "network.chat.ChatHoverable", "ChatHoverable");
             ResourceLocation_tryParse = ReflectionUtils.getMethod(ResourceLocation, new String[]{"tryParse", "m_135820_", "a"}, String.class);
-            ChatHexColor_fromRGB = ReflectionUtils.getOnlyMethod(chatHexColor, chatHexColor, int.class);
+            ChatHexColor_fromRGB = ReflectionUtils.getMethods(chatHexColor, chatHexColor, int.class).get(0); // There should only be 1, but some mods add more
             newChatModifier = ReflectionUtils.setAccessible(ChatModifier.getDeclaredConstructor(chatHexColor, Boolean.class, Boolean.class, Boolean.class,
                     Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
             convertModifier = this::createModifierModern;
