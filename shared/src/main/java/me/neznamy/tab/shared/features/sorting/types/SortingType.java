@@ -28,7 +28,7 @@ public abstract class SortingType {
     protected final int DEFAULT_NUMBER = Integer.MAX_VALUE / 2;
     
     /** Placeholder to sort by, if sorting type uses it */
-    protected TabPlaceholder sortingPlaceholder;
+    protected String sortingPlaceholder;
 
     /**
      * Constructs new instance with given parameter
@@ -43,7 +43,7 @@ public abstract class SortingType {
             TAB.getInstance().getConfigHelper().startup().invalidSortingPlaceholder(sortingPlaceholder, this);
         } else {
             sorting.addUsedPlaceholder(sortingPlaceholder);
-            this.sortingPlaceholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(sortingPlaceholder);
+            this.sortingPlaceholder = sortingPlaceholder;
         }
     }
     
@@ -56,7 +56,8 @@ public abstract class SortingType {
      */
     protected String setPlaceholders(TabPlayer player) {
         if (sortingPlaceholder == null) return "";
-        return sortingPlaceholder.set(sortingPlaceholder.getIdentifier(), player);
+        TabPlaceholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(sortingPlaceholder);
+        return placeholder.set(placeholder.getIdentifier(), player);
     }
 
     /**
