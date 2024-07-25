@@ -71,7 +71,20 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        getPlayer().sendMessage((BaseComponent) message.convert(getVersion()));
+        try {
+            getPlayer().sendMessage((BaseComponent) message.convert(getVersion()));
+        } catch (NullPointerException BungeeCordBug) {
+            // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
+            //	at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
+            //	at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:198)
+            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:565)
+            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:520)
+            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:508)
+            if (TAB.getInstance().getConfiguration().isDebugMode()) {
+                TAB.getInstance().getErrorManager().printError("Failed to send message to player " + getName() +
+                        " (online = " + getPlayer().isConnected() + "): " + message.convert(getVersion()), BungeeCordBug);
+            }
+        }
     }
 
     @Override
