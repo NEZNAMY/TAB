@@ -387,6 +387,22 @@ public class StartupWarnPrinter {
     }
 
     /**
+     * Prints a warning that a scoreboard has too many defined lines while the client
+     * can only display up to 15.
+     *
+     * @param   scoreboard
+     *          Name of configured scoreboard
+     * @param   lineCount
+     *          Amount of configured lines in scoreboard
+     * @param   permanentLineCount
+     *          Minimum amount of permanently visible lines
+     */
+    public void tooManyScoreboardLines(String scoreboard, int lineCount, int permanentLineCount) {
+        startupWarn(String.format("Scoreboard \"%s\" has %d defined lines, at least %d of which are permanently visible. " +
+                "However, the client only displays up to 15 lines, with any lines below them not being displayed.", scoreboard, lineCount, permanentLineCount));
+    }
+
+    /**
      * Sends a startup warn message into console
      *
      * @param   messages

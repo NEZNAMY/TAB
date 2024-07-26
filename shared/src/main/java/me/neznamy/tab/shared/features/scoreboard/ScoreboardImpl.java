@@ -90,15 +90,25 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         this.manager = manager;
         this.name = name;
         this.title = title;
+        int alwaysVisibleLines = 0;
         for (int i=0; i<lines.size(); i++) {
+            String line = lines.get(i);
             ScoreboardLine score;
             if (dynamicLinesOnly) {
-                score = new StableDynamicLine(this, i+1, lines.get(i));
+                score = new StableDynamicLine(this, i+1, line);
             } else {
-                score = registerLine(i+1, lines.get(i));
+                score = registerLine(i+1, line);
             }
             this.lines.add(score);
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(name, i), score);
+            String withoutPlaceholders = line;
+            for (String placeholder : TAB.getInstance().getPlaceholderManager().detectPlaceholders(line)) {
+                withoutPlaceholders = withoutPlaceholders.replace(placeholder, "");
+            }
+            if (!withoutPlaceholders.isEmpty()) alwaysVisibleLines++;
+        }
+        if (alwaysVisibleLines > 15) {
+            TAB.getInstance().getConfigHelper().startup().tooManyScoreboardLines(name, lines.size(), alwaysVisibleLines);
         }
     }
 
