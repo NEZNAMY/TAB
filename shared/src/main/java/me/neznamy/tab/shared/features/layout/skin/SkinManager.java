@@ -49,6 +49,7 @@ public class SkinManager {
                 sources.put("player", new PlayerSkin(cache));
                 sources.put("mineskin", new MineSkin(cache));
                 sources.put("texture", new Texture(cache));
+                sources.put("signed_texture", new SignedTexture(cache));
                 this.defaultSkin = getSkin(defaultSkin);
                 for (Map.Entry<Integer, String> entry : defaultSkinHashMap.entrySet()) {
                     Skin skin = getSkin(entry.getValue());
@@ -87,10 +88,13 @@ public class SkinManager {
         if (invalidSkins.contains(skin)) return defaultSkin;
         for (Entry<String, SkinSource> entry : sources.entrySet()) {
             if (skin.startsWith(entry.getKey() + ":")) {
-                List<String> value = entry.getValue().getSkin(skin.substring(entry.getKey().length()+1));
+                List<String> value = entry.getValue().getSkin(skin.substring(entry.getKey().length() + 1));
                 if (value.isEmpty()) {
                     invalidSkins.add(skin);
                     return defaultSkin;
+                }
+                if (value.size() == 1) {
+                    return new Skin(value.get(0), null);
                 }
                 return new Skin(value.get(0), value.get(1));
             }
