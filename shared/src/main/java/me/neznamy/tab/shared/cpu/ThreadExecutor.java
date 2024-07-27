@@ -40,11 +40,6 @@ public class ThreadExecutor {
             executor.shutdownNow();
         }
     }
-    
-    @NotNull
-    private CpuManager getCpu() {
-        return TAB.getInstance().getCpu();
-    }
 
     public void execute(@NotNull Runnable task) {
         if (executor.isShutdown()) return;
