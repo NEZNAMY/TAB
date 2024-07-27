@@ -43,16 +43,13 @@ Here is the full list of potential services and their status:
 |-------------------------------|--------------|
 | Updates for new MC versions   | ✔            |
 | Bug fixes                     | ✔            |
-| Wiki updates<sup>1</sup>      | ✔            |
+| Wiki improvements             | ✔            |
+| Performance optimizations     | ✔            |
 | Feature requests              | ❌            |
-| Customer support<sup>2</sup>  | ✔            |
-| Free user support<sup>3</sup> | ❌*           |
-| Optimization<sup>4</sup>      | ✔            |
+| Customer support<sup>1</sup>  | ✔            |
+| Free user support<sup>2</sup> | ❌*           |
 
-<sup>1</sup> - Adding new examples, guides and other kind of useful information people ask about.  
-<sup>2</sup> - Unrestricted assistance with the plugin for those, who bought a copy of the plugin when it was purchasable.  
-<sup>3</sup> - Unlimited access to my free time for everyone in the world.  
-<sup>4</sup> - Improving plugin's performance while not losing out on any features. This was done 
-proactively a lot in the past, so there isn't much to do anymore, only if someone actually finds and reports something.  
+<sup>1</sup> - Unrestricted assistance with the plugin for those, who bought a copy of the plugin when it was purchasable.  
+<sup>2</sup> - Unlimited access to my free time for everyone in the world.  
   
 *Instead, you can use [this fresh new community discord](https://discord.gg/YPqXt63YQj) made by a nice person who will provide this service.  
