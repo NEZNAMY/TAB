@@ -88,15 +88,12 @@ public class SkinManager {
         if (invalidSkins.contains(skin)) return defaultSkin;
         for (Entry<String, SkinSource> entry : sources.entrySet()) {
             if (skin.startsWith(entry.getKey() + ":")) {
-                List<String> value = entry.getValue().getSkin(skin.substring(entry.getKey().length() + 1));
-                if (value.isEmpty()) {
+                Skin value = entry.getValue().getSkin(skin.substring(entry.getKey().length() + 1));
+                if (value == null) {
                     invalidSkins.add(skin);
                     return defaultSkin;
                 }
-                if (value.size() == 1) {
-                    return new Skin(value.get(0), null);
-                }
-                return new Skin(value.get(0), value.get(1));
+                return value;
             }
         }
         TAB.getInstance().getConfigHelper().startup().invalidLayoutSkinDefinition(skin);

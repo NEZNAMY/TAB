@@ -1,22 +1,20 @@
 package me.neznamy.tab.shared.features.layout.skin;
 
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.platform.TabList.Skin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import me.neznamy.tab.shared.config.file.ConfigurationFile;
-import me.neznamy.tab.shared.TAB;
 
 /**
  * Skin source using raw texture.
@@ -28,8 +26,8 @@ public class Texture extends SkinSource {
     }
 
     @Override
-    @NotNull
-    public List<String> download(@NotNull String texture) {
+    @Nullable
+    public Skin download(@NotNull String texture) {
         try {
             InputStreamReader reader = getInputStreamReader(texture);
             JSONObject json = (JSONObject) new JSONParser().parse(reader);
@@ -37,10 +35,10 @@ public class Texture extends SkinSource {
             JSONObject texture2 = (JSONObject) data.get("texture");
             String value = (String) texture2.get("value");
             String signature = (String) texture2.get("signature");
-            return Arrays.asList(value, signature);
+            return new Skin(value, signature);
         } catch (IOException | ParseException e) {
             TAB.getInstance().getErrorManager().textureSkinDownloadError(texture, e);
-            return Collections.emptyList();
+            return null;
         }
     }
 

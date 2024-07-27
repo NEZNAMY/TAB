@@ -3,10 +3,14 @@ package me.neznamy.tab.shared.features.layout.skin;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.neznamy.tab.shared.platform.TabList.Skin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -27,10 +31,16 @@ public abstract class SkinSource {
     /** Current cache of this source */
     @NotNull private final Map<String, List<String>> cache;
 
+    /** Cached skins as skin objects */
+    @NotNull private final Map<String, Skin> skins = new HashMap<>();
+
     protected SkinSource(@NotNull ConfigurationFile file, @NotNull String path) {
         this.file = file;
         this.path = path;
         cache = file.getConfigurationSection(path);
+        for (Map.Entry<String, List<String>> entry : cache.entrySet()) {
+            skins.put(entry.getKey(), new Skin(entry.getValue().get(0), entry.getValue().get(1)));
+        }
     }
 
     /**
@@ -38,20 +48,19 @@ public abstract class SkinSource {
      *
      * @param   skin
      *          Skin definition
-     * @return  Skin from definition or empty list if invalid
+     * @return  Skin from definition or null if invalid
      */
-    @NotNull
-    public List<String> getSkin(@NotNull String skin) {
-        if (cache.containsKey(skin)) {
-            return cache.get(skin);
+    @Nullable
+    public Skin getSkin(@NotNull String skin) {
+        if (skins.containsKey(skin)) {
+            return skins.get(skin);
         }
-        List<String> properties = download(skin);
-        if (!properties.isEmpty()) {
-            cache.put(skin, properties);
+        Skin downloaded = download(skin);
+        if (downloaded != null) {
+            cache.put(skin, Arrays.asList(downloaded.getValue(), downloaded.getSignature()));
             file.set(path, cache);
-            return properties;
         }
-        return properties;
+        return downloaded;
     }
 
     /**
@@ -59,10 +68,10 @@ public abstract class SkinSource {
      *
      * @param   input
      *          Skin definition
-     * @return  Downloaded skin or empty list if invalid
+     * @return  Downloaded skin or null if invalid
      */
-    @NotNull
-    public abstract List<String> download(@NotNull String input);
+    @Nullable
+    public abstract Skin download(@NotNull String input);
 
     @NotNull
     protected JSONObject getResponse(@NotNull String url) throws IOException, ParseException {
