@@ -86,9 +86,6 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        if (force) {
-            updateProperties(p);
-        }
         sendHeaderFooter(p, p.headerFooterData.header.updateAndGet(), p.headerFooterData.footer.updateAndGet());
     }
 
