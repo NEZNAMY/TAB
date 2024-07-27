@@ -294,19 +294,17 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @param   property
      *          property to update
-     * @param   propertyName
-     *          Name of property to load from configuration
      * @param   ifNotSet
      *          value to use if property is not defined in config
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
-    public boolean updatePropertyFromConfig(@NotNull Property property, @NotNull String propertyName, @NotNull String ifNotSet) {
-        String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(name, propertyName, server, world);
+    public boolean updatePropertyFromConfig(@NotNull Property property, @NotNull String ifNotSet) {
+        String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(name, property.getName(), server, world);
         if (value.length == 0) {
-            value = TAB.getInstance().getConfiguration().getUsers().getProperty(uniqueId.toString(), propertyName, server, world);
+            value = TAB.getInstance().getConfiguration().getUsers().getProperty(uniqueId.toString(), property.getName(), server, world);
         }
         if (value.length == 0) {
-            value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), propertyName, server, world);
+            value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), property.getName(), server, world);
         }
         if (value.length > 0) {
             return property.changeRawValue(value[0], value[1]);

@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.PlayerList;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,13 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class PropertyCommand extends SubCommand {
 
     /** All properties assignable with a command */
-    private static final List<String> allProperties = Arrays.asList(
-            PlayerList.TABPREFIX,
-            PlayerList.CUSTOMTABNAME,
-            PlayerList.TABSUFFIX,
-            NameTag.TAGPREFIX,
-            NameTag.TAGSUFFIX
-    );
+    private static final List<String> allProperties = Arrays.asList("tabprefix", "customtabname", "tabsuffix", "tagprefix", "tagsuffix");
 
     protected PropertyCommand(String name) {
         super(name, null);
@@ -35,8 +27,8 @@ public abstract class PropertyCommand extends SubCommand {
     protected void help(@Nullable TabPlayer sender) {
         sendMessage(sender, "&cSyntax&8: &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>");
         sendMessage(sender, "&7Valid Properties are:");
-        sendMessage(sender, " - &9" + PlayerList.TABPREFIX + "&3/&9" + PlayerList.CUSTOMTABNAME + "&3/&9" + PlayerList.TABSUFFIX);
-        sendMessage(sender, " - &9" + NameTag.TAGPREFIX + "&3/&9" + NameTag.TAGSUFFIX);
+        sendMessage(sender, " - &9tabprefix&3/&9customtabname&3/&9tabsuffix");
+        sendMessage(sender, " - &9tagprefix&3/&9tagsuffix");
     }
 
     protected void trySaveEntity(@Nullable TabPlayer sender, @NotNull String[] args) {

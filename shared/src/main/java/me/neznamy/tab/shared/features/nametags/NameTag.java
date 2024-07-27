@@ -33,12 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
         Loadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, RedisFeature, GroupListener {
 
-    /** Name of the property used in configuration */
-    public static final String TAGPREFIX = "tagprefix";
-
-    /** Name of the property used in configuration */
-    public static final String TAGSUFFIX = "tagsuffix";
-
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB NameTag Thread");
 
     @Getter private OnlinePlayers onlinePlayers;
@@ -223,8 +217,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          Player to load properties for
      */
     private void loadProperties(@NotNull TabPlayer player) {
-        player.teamData.prefix = player.loadPropertyFromConfig(this, TAGPREFIX, "");
-        player.teamData.suffix = player.loadPropertyFromConfig(this, TAGSUFFIX, "");
+        player.teamData.prefix = player.loadPropertyFromConfig(this, "tagprefix", "");
+        player.teamData.suffix = player.loadPropertyFromConfig(this, "tagsuffix", "");
     }
 
     /**
@@ -236,8 +230,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      * @return  {@code true} if at least one property changed, {@code false} if not
      */
     private boolean updateProperties(@NotNull TabPlayer p) {
-        boolean changed = p.updatePropertyFromConfig(p.teamData.prefix, TAGPREFIX, "");
-        if (p.updatePropertyFromConfig(p.teamData.suffix, TAGSUFFIX, "")) changed = true;
+        boolean changed = p.updatePropertyFromConfig(p.teamData.prefix, "");
+        if (p.updatePropertyFromConfig(p.teamData.suffix, "")) changed = true;
         return changed;
     }
 
