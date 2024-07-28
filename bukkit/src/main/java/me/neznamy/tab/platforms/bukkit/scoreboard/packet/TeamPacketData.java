@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -248,6 +249,7 @@ public class TeamPacketData {
      * @return  Team with specified name
      */
     @SneakyThrows
+    @NotNull
     public Object createTeam(@NonNull String name) {
         return newScoreboardTeam.newInstance(emptyScoreboard, name);
     }
@@ -266,7 +268,9 @@ public class TeamPacketData {
         if (!TeamPacketClass.isInstance(packet)) return;
         int action = TeamPacket_ACTION.getInt(packet);
         if (action == TeamAction.UPDATE) return;
+        Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
+        if (players == null) players = Collections.emptyList();
         TeamPacket_PLAYERS.set(packet, ((SafeScoreboard<?>)player.getScoreboard()).onTeamPacket(
-                action, (String) TeamPacket_NAME.get(packet), (Collection<String>) TeamPacket_PLAYERS.get(packet)));
+                action, (String) TeamPacket_NAME.get(packet), players));
     }
 }

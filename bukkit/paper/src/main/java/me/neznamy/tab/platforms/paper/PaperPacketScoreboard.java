@@ -17,6 +17,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -147,7 +148,7 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         if (isAntiOverrideTeams() && packet instanceof ClientboundSetPlayerTeamPacket team) {
             int action = method.getInt(team);
             if (action == TeamAction.UPDATE) return;
-            players.set(team, onTeamPacket(action, team.getName(), team.getPlayers()));
+            players.set(team, onTeamPacket(action, team.getName(), team.getPlayers() == null ? Collections.emptyList() : team.getPlayers()));
         }
     }
     
