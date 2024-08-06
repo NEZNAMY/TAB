@@ -99,7 +99,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping) {
         ensureActive();
         fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text,
-                "Layout-" + text + "-SLOT-" + slot, skin, "Layout-" + text + "-SLOT-" + slot+ "-skin", ping));
+                "Layout-" + name + "-SLOT-" + slot, skin, "Layout-" + name + "-SLOT-" + slot+ "-skin", ping));
     }
 
     @Override
