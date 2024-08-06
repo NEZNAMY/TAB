@@ -143,12 +143,13 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         LayoutView current = p.layoutData.view;
         String currentName = current == null ? null : current.getPattern().getName();
         if (!Objects.equals(highestName, currentName)) {
-            if (current != null) current.destroy();
-            p.layoutData.view = null;
+            // if (current != null) current.destroy();
             if (highest != null) {
                 LayoutView view = new LayoutView(this, highest, p);
-                view.send();
+                view.send(current);
                 p.layoutData.view = view;
+            } else {
+                p.layoutData.view = null;
             }
         }
     }

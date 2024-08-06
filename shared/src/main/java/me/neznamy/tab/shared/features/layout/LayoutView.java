@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
-
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -40,14 +40,36 @@ public class LayoutView {
     }
 
     public void send() {
+        send(null);
+    }
+
+    public void send(@Nullable LayoutView previous) {
         if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) return;
         for (ParentGroup group : groups) {
             group.sendSlots();
         }
+        final Collection<FixedSlot> previousSlots = previous == null ? null : previous.getFixedSlots();
+        final List<UUID> previousSlotsUUIDS = previousSlots == null ? Collections.emptyList() : previousSlots.stream().map(x -> x.getId()).collect(Collectors.toList());
         for (FixedSlot slot : fixedSlots) {
+            if (previousSlotsUUIDS.contains(slot.getId()) && viewer.getTabList().containsEntry(slot.getId())) {
+                // only use updateEntry if the previous skin was the same
+                FixedSlot previousSlot = previousSlots.stream().filter(x -> x.getId() == slot.getId()).findAny().orElse(null);
+                if (previousSlot != null && slot.getSkinProperty().equals(previousSlot.getSkinProperty())) {
+                    slot.updateEntry(viewer);
+                    continue;
+                }
+            }
+            viewer.getTabList().removeEntry(slot.getId());
             viewer.getTabList().addEntry(slot.createEntry(viewer));
         }
+        // immutable
+        final List<Integer> previousEmptySlots = previous == null ? Collections.emptyList() : previous.getEmptySlots();
         for (int slot : emptySlots) {
+            // ignore if previous slot was an empty slot as well
+            if (previousEmptySlots.contains(slot) && viewer.getTabList().containsEntry(manager.getUUID(slot))) {
+                continue;
+            }
+            viewer.getTabList().removeEntry(manager.getUUID(slot));
             viewer.getTabList().addEntry(new TabList.Entry(
                     manager.getUUID(slot),
                     manager.getDirection().getEntryName(viewer, slot),
