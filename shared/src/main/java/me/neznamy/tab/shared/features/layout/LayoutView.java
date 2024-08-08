@@ -48,16 +48,9 @@ public class LayoutView {
         for (ParentGroup group : groups) {
             group.sendSlots();
         }
-        final Collection<FixedSlot> previousSlots = previous == null ? null : previous.getFixedSlots();
-        final List<UUID> previousSlotsUUIDS = previousSlots == null ? Collections.emptyList() : previousSlots.stream().map(x -> x.getId()).collect(Collectors.toList());
         for (FixedSlot slot : fixedSlots) {
-            if (previousSlotsUUIDS.contains(slot.getId()) && viewer.getTabList().containsEntry(slot.getId())) {
-                // only use updateEntry if the previous skin was the same
-                FixedSlot previousSlot = previousSlots.stream().filter(x -> x.getId() == slot.getId()).findAny().orElse(null);
-                if (previousSlot != null && slot.getSkinProperty().equals(previousSlot.getSkinProperty())) {
-                    slot.updateEntry(viewer);
-                    continue;
-                }
+            if (slot.updateEntry(viewer, previous)) {
+                continue;
             }
             viewer.getTabList().removeEntry(slot.getId());
             viewer.getTabList().addEntry(slot.createEntry(viewer));
@@ -91,6 +84,9 @@ public class LayoutView {
     }
 
     public void tick() {
+        if (groups.isEmpty()) {
+            return;
+        }
         Stream<TabPlayer> str = manager.getSortedPlayers().keySet().stream().filter(
                 player -> TAB.getInstance().getPlatform().canSee(viewer, player));
         List<TabPlayer> players = str.collect(Collectors.toList());

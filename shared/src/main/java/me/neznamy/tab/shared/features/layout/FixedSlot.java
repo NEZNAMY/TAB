@@ -80,14 +80,24 @@ public class FixedSlot extends RefreshableFeature {
     /**
      * Update an existing entry from this slot for given viewer. This doesn't work for skins!
      *
-     * @param viewer
-     * Player viewing the slot
+     * @param   viewer
+     *          Player viewing the slot
+     * @return  returns false if update unsuccessful, otherwise returns true
      */
-    public void updateEntry(@NotNull TabPlayer viewer) {
+    public boolean updateEntry(@NotNull TabPlayer viewer, LayoutView previousLayout) {
+        if (previousLayout == null || !viewer.getTabList().containsEntry(id)) {
+            return false;
+        }
+        FixedSlot previousSlot = previousLayout.getFixedSlots().stream().filter(x -> x.getId() == id).findAny().orElse(null);
+        // Fail if previousSlot skin doesn't equal new skin
+        if (previousSlot == null || !previousSlot.skinProperty.equals(skinProperty)) {
+            return false;
+        }
         viewer.setProperty(this, propertyName, text);
         viewer.setProperty(this, skinProperty, skin);
         viewer.getTabList().updateDisplayName(id, cache.get(viewer.getProperty(propertyName).updateAndGet()));
         viewer.getTabList().updateLatency(id, ping);
+        return true;
     }
 
     /**
