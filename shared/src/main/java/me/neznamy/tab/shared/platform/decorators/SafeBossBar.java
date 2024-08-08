@@ -7,9 +7,9 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.BossBar;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An abstract class implementing BossBar interface that contains
@@ -24,7 +24,7 @@ import java.util.UUID;
 public abstract class SafeBossBar<T> implements BossBar {
 
     /** BossBars currently visible to the player */
-    private final Map<UUID, BossBarInfo> bossBars = new HashMap<>();
+    private final Map<UUID, BossBarInfo> bossBars = new ConcurrentHashMap<>();
 
     /** Flag tracking whether boss bars should be frozen or not */
     private boolean frozen;
