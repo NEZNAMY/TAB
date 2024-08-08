@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
-
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -40,14 +40,29 @@ public class LayoutView {
     }
 
     public void send() {
+        send(null);
+    }
+
+    public void send(@Nullable LayoutView previous) {
         if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) return;
         for (ParentGroup group : groups) {
             group.sendSlots();
         }
         for (FixedSlot slot : fixedSlots) {
+            if (slot.updateEntry(viewer, previous)) {
+                continue;
+            }
+            viewer.getTabList().removeEntry(slot.getId());
             viewer.getTabList().addEntry(slot.createEntry(viewer));
         }
+        // immutable
+        final List<Integer> previousEmptySlots = previous == null ? Collections.emptyList() : previous.getEmptySlots();
         for (int slot : emptySlots) {
+            // ignore if previous slot was an empty slot as well
+            if (previousEmptySlots.contains(slot) && viewer.getTabList().containsEntry(manager.getUUID(slot))) {
+                continue;
+            }
+            viewer.getTabList().removeEntry(manager.getUUID(slot));
             viewer.getTabList().addEntry(new TabList.Entry(
                     manager.getUUID(slot),
                     manager.getDirection().getEntryName(viewer, slot),
@@ -69,6 +84,9 @@ public class LayoutView {
     }
 
     public void tick() {
+        if (groups.isEmpty()) {
+            return;
+        }
         Stream<TabPlayer> str = manager.getSortedPlayers().keySet().stream().filter(
                 player -> TAB.getInstance().getPlatform().canSee(viewer, player));
         List<TabPlayer> players = str.collect(Collectors.toList());
