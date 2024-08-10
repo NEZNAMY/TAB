@@ -82,7 +82,8 @@ public class BukkitPlatform implements BackendPlatform {
             EnumSet.of(
                     ProtocolVersion.V1_20_5,
                     ProtocolVersion.V1_20_6,
-                    ProtocolVersion.V1_21
+                    ProtocolVersion.V1_21,
+                    ProtocolVersion.V1_21_1
             ).contains(serverVersion);
 
     /**
