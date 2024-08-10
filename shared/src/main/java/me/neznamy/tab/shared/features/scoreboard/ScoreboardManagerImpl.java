@@ -57,7 +57,6 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
      *          Feature configuration
      */
     public ScoreboardManagerImpl(@NotNull ScoreboardConfiguration configuration) {
-        super("Scoreboard", "Switching scoreboards");
         this.configuration = configuration;
         sbOffPlayers = configuration.rememberToggleChoice ? TAB.getInstance().getConfiguration().getPlayerDataFile()
                 .getStringList("scoreboard-off", new ArrayList<>()) : Collections.emptyList();
@@ -75,6 +74,12 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Switching scoreboards";
     }
 
     @Override
@@ -342,6 +347,12 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public ScoreboardImpl getActiveScoreboard(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         return ((TabPlayer)player).scoreboardData.activeScoreboard;
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Scoreboard";
     }
 
     /**

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Feature refreshing NumberFormat in scoreboard for players.
  */
+@RequiredArgsConstructor
 public class ScoreRefresher extends RefreshableFeature implements CustomThreaded {
 
     private static final StringToComponentCache cache = new StringToComponentCache("Scoreboard NumberFormat", 1000);
@@ -22,23 +24,15 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
     private final String NUMBER_FORMAT_PROPERTY = Property.randomName();
 
     /** Line this score belongs to */
-    private final ScoreboardLine line;
+    @NonNull private final ScoreboardLine line;
 
     /** Configured number format */
-    private final String numberFormat;
+    @NonNull private final String numberFormat;
 
-    /**
-     * Constructs new instance with given parameters.
-     *
-     * @param   line
-     *          Line this NumberFormat belongs to
-     * @param   numberFormat
-     *          Configured number format
-     */
-    public ScoreRefresher(@NonNull ScoreboardLine line, @NonNull String numberFormat) {
-        super(line.getFeatureName(), "Updating NumberFormat");
-        this.line = line;
-        this.numberFormat = numberFormat;
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating NumberFormat";
     }
 
     @Override
@@ -80,5 +74,11 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
     @NotNull
     public ThreadExecutor getCustomThread() {
         return line.getCustomThread();
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return line.getFeatureName();
     }
 }

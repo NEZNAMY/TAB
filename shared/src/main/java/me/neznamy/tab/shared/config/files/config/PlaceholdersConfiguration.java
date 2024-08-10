@@ -1,12 +1,9 @@
 package me.neznamy.tab.shared.config.files.config;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.files.ConfigurationSection;
-import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

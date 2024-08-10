@@ -21,13 +21,6 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Spectator Fix Thread");
 
     /**
-     * Constructs new instance.
-     */
-    public SpectatorFix() {
-        super("Spectator fix");
-    }
-
-    /**
      * Sends GameMode update of all players to either their real GameMode if
      * {@code realGameMode} is {@code true} or fake value if it's {@code false}.
      *
@@ -108,5 +101,11 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
             if (viewer == player || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
             viewer.getTabList().updateGameMode(player.getTablistId(), 0);
         }
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Spectator fix";
     }
 }

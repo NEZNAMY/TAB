@@ -39,7 +39,6 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
      *          Feature configuration
      */
     public LayoutManagerImpl(@NotNull LayoutConfiguration configuration) {
-        super("Layout", "Switching layouts");
         this.configuration = configuration;
         skinManager = new SkinManager(configuration.defaultSkin, configuration.defaultSkinHashMap);
         for (int slot=1; slot<=80; slot++) {
@@ -89,6 +88,12 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
             if (all == p) continue;
             if (all.layoutData.view != null) all.layoutData.view.tick();
         }
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Switching layouts";
     }
 
     @Override
@@ -182,6 +187,12 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         p.ensureLoaded();
         p.layoutData.forcedLayout = null;
         refresh(p, false);
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Layout";
     }
 
     /**

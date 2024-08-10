@@ -79,7 +79,6 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Whether this scoreboard should only use dynamic lines or not
      */
     public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull ScoreboardDefinition definition, boolean dynamicLinesOnly) {
-        super(manager.getFeatureName(), "Updating Scoreboard title");
         this.manager = manager;
         this.name = name;
         title = definition.title;
@@ -170,6 +169,12 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, "");
     }
 
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating Scoreboard title";
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (refreshed.scoreboardData.activeScoreboard != this) return; //player has different scoreboard displayed
@@ -215,6 +220,12 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      */
     public void removePlayerFromSet(@NonNull TabPlayer player) {
         players.remove(player);
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return manager.getFeatureName();
     }
 
     // ------------------

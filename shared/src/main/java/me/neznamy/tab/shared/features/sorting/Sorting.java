@@ -56,7 +56,6 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
      *          Feature configuration
      */
     public Sorting(@NotNull SortingConfiguration configuration) {
-        super("Sorting", "Updating team names");
         this.configuration = configuration;
         types.put("GROUPS", Groups::new);
         types.put("PERMISSIONS", Permissions::new);
@@ -67,7 +66,13 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
         usedSortingTypes = compile(configuration.sortingTypes);
     }
-    
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating team names";
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         String previousShortName = p.sortingData.shortTeamName;
@@ -178,8 +183,15 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
      *
      * @return  user-friendly representation of sorting types
      */
-    public @NotNull String typesToString() {
+    @NotNull
+    public String typesToString() {
         return Arrays.stream(usedSortingTypes).map(SortingType::getDisplayName).collect(Collectors.joining(" -> "));
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Sorting";
     }
 
     // ------------------

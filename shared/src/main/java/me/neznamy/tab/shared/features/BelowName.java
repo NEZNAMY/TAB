@@ -61,7 +61,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      *          Feature configuration
      */
     public BelowName(@NotNull BelownameConfiguration configuration) {
-        super("BelowName", "Updating BelowName number");
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.belowNameData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
@@ -196,6 +195,12 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         }
     }
 
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating BelowName number";
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (refreshed.belowNameData.score == null) return; // Player not loaded yet (refresh called before onJoin)
@@ -301,10 +306,24 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         }
     }
 
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "BelowName";
+    }
+
     private class TextRefresher extends RefreshableFeature {
 
-        private TextRefresher() {
-            super("BelowName", "Updating BelowName text");
+        @NotNull
+        @Override
+        public String getFeatureName() {
+            return "BelowName";
+        }
+
+        @NotNull
+        @Override
+        public String getRefreshDisplayName() {
+            return "Updating BelowName text";
         }
 
         @Override

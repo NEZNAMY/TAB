@@ -15,6 +15,7 @@ import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import net.md_5.bungee.tab.ServerUnique;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -54,7 +55,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
      *          UUID to use
      * @return  New {@link Item} with given UUID.
      */
-    @NonNull
+    @NotNull
     public Item item(@NonNull UUID id) {
         Item item = new Item();
         item.setUuid(id);
@@ -80,7 +81,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
      *          Entry display name
      * @return  Converted item from parameters
      */
-    @NonNull
+    @NotNull
     public Item entryToItem(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable BaseComponent displayName) {
         Item item = item(id);
         item.setUsername(name);

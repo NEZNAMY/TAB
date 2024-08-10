@@ -3,6 +3,7 @@ package me.neznamy.tab.api.nametag;
 import lombok.NonNull;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -184,7 +185,7 @@ public interface NameTagManager {
      * @return  Original prefix assigned by the plugin's internal logic.
      * @see     #getCustomPrefix(TabPlayer)
      */
-    @NonNull
+    @NotNull
     String getOriginalPrefix(@NonNull TabPlayer player);
 
     /**
@@ -194,7 +195,7 @@ public interface NameTagManager {
      * @return  Original suffix assigned by the plugin's internal logic.
      * @see     #getCustomSuffix(TabPlayer)
      */
-    @NonNull
+    @NotNull
     String getOriginalSuffix(@NonNull TabPlayer player);
 
     /**

@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.layout;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.config.files.config.LayoutConfiguration;
 import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.GroupPattern;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabList;

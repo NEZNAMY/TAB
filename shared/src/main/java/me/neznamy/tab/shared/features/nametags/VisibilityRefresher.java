@@ -24,12 +24,17 @@ public class VisibilityRefresher extends RefreshableFeature implements CustomThr
      *          Parent feature
      */
     public VisibilityRefresher(@NotNull NameTag nameTags) {
-        super(nameTags.getFeatureName(), "Updating NameTag visibility");
         this.nameTags = nameTags;
         int refresh = TAB.getInstance().getPlatform().isProxy() ? -1 : 500;
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, refresh,
                 p -> Boolean.toString(((TabPlayer)p).hasInvisibilityPotion()));
         addUsedPlaceholder(TabConstants.Placeholder.INVISIBLE);
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating NameTag visibility";
     }
 
     @Override
@@ -44,5 +49,11 @@ public class VisibilityRefresher extends RefreshableFeature implements CustomThr
     @NotNull
     public ThreadExecutor getCustomThread() {
         return nameTags.getCustomThread();
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return nameTags.getFeatureName();
     }
 }

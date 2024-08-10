@@ -41,7 +41,6 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
      *          Feature configuration
      */
     public GlobalPlayerList(@NotNull GlobalPlayerListConfiguration configuration) {
-        super("Global PlayerList", "Updating latency");
         this.configuration = configuration;
         for (Map.Entry<String, List<String>> entry : configuration.sharedServers.entrySet()) {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
@@ -272,6 +271,12 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         }
     }
 
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating latency";
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         //player ping changed, must manually update latency for players on other servers
@@ -344,6 +349,12 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 }
             }
         }
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Global PlayerList";
     }
 
     /**

@@ -31,13 +31,6 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     @Nullable private final YellowNumber yellownumber = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.YELLOW_NUMBER);
     @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
-    /**
-     * Constructs new instance.
-     */
-    public NickCompatibility() {
-        super("Nick compatibility");
-    }
-
     public synchronized void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
         TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
         // Using "packetPlayer == packetReceiver" for now, as this should technically not matter, but it does
@@ -135,5 +128,11 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 }
             }
         }, getFeatureName(), CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY));
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Nick compatibility";
     }
 }

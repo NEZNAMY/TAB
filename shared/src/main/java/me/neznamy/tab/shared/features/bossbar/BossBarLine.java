@@ -298,10 +298,6 @@ public class BossBarLine implements BossBar {
 
     private class TextRefresher extends RefreshableFeature implements CustomThreaded {
 
-        private TextRefresher() {
-            super("BossBar", "Updating text");
-        }
-
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
@@ -313,13 +309,21 @@ public class BossBarLine implements BossBar {
         public ThreadExecutor getCustomThread() {
             return manager.getCustomThread();
         }
+
+        @NotNull
+        @Override
+        public String getFeatureName() {
+            return "BossBar";
+        }
+
+        @NotNull
+        @Override
+        public String getRefreshDisplayName() {
+            return "Updating text";
+        }
     }
 
     private class ProgressRefresher extends RefreshableFeature implements CustomThreaded {
-
-        private ProgressRefresher() {
-            super( "BossBar", "Updating progress");
-        }
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
@@ -332,13 +336,21 @@ public class BossBarLine implements BossBar {
         public ThreadExecutor getCustomThread() {
             return manager.getCustomThread();
         }
+
+        @NotNull
+        @Override
+        public String getFeatureName() {
+            return "BossBar";
+        }
+
+        @NotNull
+        @Override
+        public String getRefreshDisplayName() {
+            return "Updating progress";
+        }
     }
 
     private class ColorRefresher extends RefreshableFeature implements CustomThreaded {
-
-        private ColorRefresher() {
-            super( "BossBar", "Updating color");
-        }
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
@@ -351,13 +363,21 @@ public class BossBarLine implements BossBar {
         public ThreadExecutor getCustomThread() {
             return manager.getCustomThread();
         }
+
+        @NotNull
+        @Override
+        public String getFeatureName() {
+            return "BossBar";
+        }
+
+        @NotNull
+        @Override
+        public String getRefreshDisplayName() {
+            return "Updating color";
+        }
     }
 
     private class StyleRefresher extends RefreshableFeature implements CustomThreaded {
-
-        private StyleRefresher() {
-            super("BossBar", "Updating style");
-        }
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
@@ -369,6 +389,18 @@ public class BossBarLine implements BossBar {
         @NotNull
         public ThreadExecutor getCustomThread() {
             return manager.getCustomThread();
+        }
+
+        @NotNull
+        @Override
+        public String getFeatureName() {
+            return "BossBar";
+        }
+
+        @NotNull
+        @Override
+        public String getRefreshDisplayName() {
+            return "Updating style";
         }
     }
 }

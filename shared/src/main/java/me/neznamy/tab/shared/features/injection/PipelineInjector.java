@@ -18,11 +18,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class PipelineInjector extends TabFeature implements JoinListener, Loadable, UnLoadable {
 
-    /**
-     * Constructs new instance.
-     */
-    protected PipelineInjector() {
-        super("Pipeline injection");
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Pipeline injection";
     }
 
     /**

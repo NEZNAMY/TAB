@@ -2,9 +2,7 @@ package me.neznamy.tab.shared.config.files.config;
 
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.files.ConfigurationSection;
-import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 

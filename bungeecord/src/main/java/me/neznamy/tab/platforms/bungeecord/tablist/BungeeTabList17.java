@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -25,10 +26,10 @@ import java.util.UUID;
 public class BungeeTabList17 extends BungeeTabList {
 
     /** Because entries are identified by names and not uuids on 1.7 */
-    @NonNull
+    @NotNull
     private final Map<UUID, String> userNames = new HashMap<>();
 
-    @NonNull
+    @NotNull
     private final Map<UUID, BaseComponent> displayNames = new HashMap<>();
 
     /**

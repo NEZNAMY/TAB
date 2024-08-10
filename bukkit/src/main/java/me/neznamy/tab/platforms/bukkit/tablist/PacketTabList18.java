@@ -13,6 +13,7 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -165,7 +166,7 @@ public class PacketTabList18 extends TabListBase<Object> {
      * @return  Packet from given parameters
      */
     @SneakyThrows
-    @NonNull
+    @NotNull
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                                boolean listed, int latency, int gameMode, @Nullable Object displayName) {
         Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Collections.emptyList());
@@ -193,7 +194,7 @@ public class PacketTabList18 extends TabListBase<Object> {
      *          Player skin
      * @return  GameProfile from given parameters
      */
-    @NonNull
+    @NotNull
     public GameProfile createProfile(@NonNull UUID id, @NonNull String name, @Nullable Skin skin) {
         GameProfile profile = new GameProfile(id, name);
         if (skin != null) {

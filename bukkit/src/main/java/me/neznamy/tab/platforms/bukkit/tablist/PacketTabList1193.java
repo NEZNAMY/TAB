@@ -7,6 +7,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -101,7 +102,7 @@ public class PacketTabList1193 extends PacketTabList18 {
     }
 
     @SneakyThrows
-    @NonNull
+    @NotNull
     @Override
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                                boolean listed, int latency, int gameMode, @Nullable Object displayName) {

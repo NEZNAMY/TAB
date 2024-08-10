@@ -270,7 +270,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      *          Maximum text length defined by bukkit API on 1.12-
      * @return  Converted text
      */
-    @NonNull
+    @NotNull
     private String transform(@NonNull TabComponent text, int maxLengthModern, int maxLengthLegacy) {
         String transformed = player.getPlatform().toBukkitFormat(text, player.getVersion().supportsRGB());
         if (player.getPlatform().getServerVersion().supportsRGB() && maxLengthModern < TITLE_LIMIT_MODERN) { // Scoreboard title is not stripping colors

@@ -57,7 +57,6 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
      *          Feature configuration
      */
     public BossBarManagerImpl(@NonNull BossBarConfiguration configuration) {
-        super("BossBar", "Updating display conditions");
         this.configuration = configuration;
         bossBarOffPlayers = configuration.rememberToggleChoice ? TAB.getInstance().getConfiguration().getPlayerDataFile()
                 .getStringList("bossbar-off", new ArrayList<>()) : Collections.emptyList();
@@ -79,6 +78,12 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating display conditions";
     }
 
     @Override
@@ -154,6 +159,12 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         for (BossBar line : lineValues) {
             ((BossBarLine)line).removePlayerRaw(disconnectedPlayer);
         }
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "BossBar";
     }
 
     // ------------------

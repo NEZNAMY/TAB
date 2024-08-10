@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.TriFunctionWithException;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -26,10 +27,10 @@ public class PacketTabList17 extends TabListBase<String> {
     private static PacketSender packetSender;
 
     /** Because entries are identified by names and not uuids on 1.7- */
-    @NonNull
+    @NotNull
     private final Map<UUID, String> userNames = new HashMap<>();
 
-    @NonNull
+    @NotNull
     private final Map<UUID, String> displayNames = new HashMap<>();
 
     /**

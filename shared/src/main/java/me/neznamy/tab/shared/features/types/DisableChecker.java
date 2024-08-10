@@ -43,12 +43,17 @@ public class DisableChecker extends RefreshableFeature {
      */
     public DisableChecker(@NotNull TabFeature feature, @Nullable Condition disableCondition,
                           @NotNull BiConsumer<TabPlayer, Boolean> action, @NotNull Function<TabPlayer, AtomicBoolean> field) {
-        super(feature.getFeatureName(), TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE);
         this.feature = feature;
         this.disableCondition = disableCondition;
         this.action = action;
         this.field = field;
         if (disableCondition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(disableCondition.getName()));
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return TabConstants.CpuUsageCategory.DISABLE_CONDITION_CHANGE;
     }
 
     @Override
@@ -79,5 +84,11 @@ public class DisableChecker extends RefreshableFeature {
      */
     public boolean isDisableConditionMet(TabPlayer p) {
         return disableCondition != null && disableCondition.isMet(p);
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return feature.getFeatureName();
     }
 }

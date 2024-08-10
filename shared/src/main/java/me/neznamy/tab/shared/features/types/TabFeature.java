@@ -1,22 +1,22 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Abstract class representing a core feature of the plugin.
  */
-@RequiredArgsConstructor
-public class TabFeature {
+public abstract class TabFeature {
 
     /** Flag tracking whether this instance is active or not */
     private boolean active = true;
 
-    /** Name of this feature display in /tab cpu */
-    @Getter
-    @NonNull
-    private final String featureName;
+    /**
+     * Returns name of this feature display in /tab cpu.
+     *
+     * @return  name of this feature display in /tab cpu
+     */
+    @NotNull
+    public abstract String getFeatureName();
 
     /**
      * Marks this instance as no longer active.

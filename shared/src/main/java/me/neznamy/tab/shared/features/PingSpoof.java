@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.files.config.PingSpoofConfiguration;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
@@ -15,28 +16,18 @@ import java.util.UUID;
  * replaces it with a custom fake value.
  */
 @Getter
+@RequiredArgsConstructor
 public class PingSpoof extends TabFeature implements JoinListener, LatencyListener, Loadable, UnLoadable, CustomThreaded {
 
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Ping Spoof Thread");
 
     /** Value to display as ping instead of real ping */
-    private final int value;
-
-    /**
-     * Constructs new instance.
-     *
-     * @param   configuration
-     *          Feature configuration
-     */
-    public PingSpoof(@NotNull PingSpoofConfiguration configuration) {
-        super("Ping spoof");
-        value = configuration.value;
-    }
+    private final PingSpoofConfiguration configuration;
 
     @Override
     public int onLatencyChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id, int latency) {
-        if (TAB.getInstance().getPlayerByTabListUUID(id) != null) return value;
+        if (TAB.getInstance().getPlayerByTabListUUID(id) != null) return configuration.value;
         return latency;
     }
 
@@ -53,16 +44,22 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            connectedPlayer.getTabList().updateLatency(all.getTablistId(), value);
-            all.getTabList().updateLatency(connectedPlayer.getTablistId(), value);
+            connectedPlayer.getTabList().updateLatency(all.getTablistId(), configuration.value);
+            all.getTabList().updateLatency(connectedPlayer.getTablistId(), configuration.value);
         }
     }
 
     private void updateAll(boolean realPing) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                viewer.getTabList().updateLatency(target.getTablistId(), realPing ? target.getPing() : value);
+                viewer.getTabList().updateLatency(target.getTablistId(), realPing ? target.getPing() : configuration.value);
             }
         }
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Ping spoof";
     }
 }

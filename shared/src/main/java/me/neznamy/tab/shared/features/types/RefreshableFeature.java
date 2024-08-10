@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -11,25 +9,15 @@ import java.util.Collection;
 /**
  * Interface for features periodically refreshing visuals
  */
-@Getter
 public abstract class RefreshableFeature extends TabFeature {
 
-    /** Display name of {@link #refresh(TabPlayer, boolean)} called for this feature in /tab cpu */
-    @NonNull
-    private final String refreshDisplayName;
-
     /**
-     * Constructs new instance with given parameters.
+     * Returns display name of {@link #refresh(TabPlayer, boolean)} called for this feature in /tab cpu.
      *
-     * @param   featureName
-     *          Name of this feature display in /tab cpu
-     * @param   refreshDisplayName
-     *          Display name of {@link #refresh(TabPlayer, boolean)} called for this feature in /tab cpu
+     * @return  Display name of {@link #refresh(TabPlayer, boolean)} called for this feature in /tab cpu
      */
-    protected RefreshableFeature(@NonNull String featureName, @NonNull String refreshDisplayName) {
-        super(featureName);
-        this.refreshDisplayName = refreshDisplayName;
-    }
+    @NotNull
+    public abstract String getRefreshDisplayName();
 
     /**
      * Called when a placeholder used by this feature changes value

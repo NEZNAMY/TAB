@@ -51,7 +51,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          Feature configuration
      */
     public NameTag(@NotNull TeamConfiguration configuration) {
-        super("NameTags", "Updating prefix/suffix");
         this.configuration = configuration;
         teamOptions = configuration.canSeeFriendlyInvisibles ? 2 : 0;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.teamData.disabled);
@@ -95,6 +94,12 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 if (!target.teamData.disabled.get()) registerTeam(target, viewer);
             }
         }
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating prefix/suffix";
     }
 
     @Override
@@ -565,7 +570,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     @Override
-    @NonNull
+    @NotNull
     public String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
@@ -574,7 +579,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     @Override
-    @NonNull
+    @NotNull
     public String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
@@ -603,6 +608,12 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public boolean hasHiddenNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         return ((TabPlayer)player).teamData.invisibleNameTagView;
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "NameTags";
     }
 
     /**

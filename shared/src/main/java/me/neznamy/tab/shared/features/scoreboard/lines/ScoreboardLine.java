@@ -59,7 +59,6 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
      *          ID of this line
      */
     protected ScoreboardLine(@NonNull ScoreboardImpl parent, int lineNumber, String text) {
-        super(parent.getFeatureName(), "Updating Scoreboard lines");
         initializeText(text);
         this.parent = parent;
         this.lineNumber = lineNumber;
@@ -268,5 +267,17 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
     @NotNull
     public ThreadExecutor getCustomThread() {
         return parent.getCustomThread();
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return parent.getFeatureName();
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating Scoreboard lines";
     }
 }

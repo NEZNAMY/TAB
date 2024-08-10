@@ -62,7 +62,6 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      *          Placeholder refreshing configuration
      */
     public PlaceholderManagerImpl(@NotNull CpuManager cpu, @NotNull PlaceholderRefreshConfiguration configuration) {
-        super("Refreshing placeholders", "Other");
         this.cpu = cpu;
         this.configuration = configuration;
         tabExpansion = TAB.getInstance().getConfiguration().getConfig().getPlaceholders().registerTabExpansion ?
@@ -354,6 +353,12 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         ((PlayerPlaceholderImpl)registeredPlaceholders.get(TabConstants.Placeholder.VANISHED)).update(connectedPlayer);
     }
 
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Other";
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         // Condition or placeholder only used in tab expansion, do nothing for now
@@ -434,5 +439,11 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         registeredPlaceholders.remove(identifier);
         placeholderUsage.remove(identifier);
         recalculateUsedPlaceholders();
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Refreshing placeholders";
     }
 }

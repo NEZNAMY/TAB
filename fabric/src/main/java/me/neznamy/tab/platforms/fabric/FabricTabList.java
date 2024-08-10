@@ -104,7 +104,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
          *
          * @return  Profile of this entry
          */
-        @NonNull
+        @NotNull
         public GameProfile createProfile() {
             GameProfile profile = new GameProfile(id, name);
             if (skin != null) {

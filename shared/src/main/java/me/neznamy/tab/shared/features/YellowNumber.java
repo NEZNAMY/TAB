@@ -66,7 +66,6 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
      *          Feature configuration
      */
     public YellowNumber(@NotNull PlayerListObjectiveConfiguration configuration) {
-        super("Playerlist Objective", "Updating value");
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.playerlistObjectiveData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
@@ -193,6 +192,12 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         }
     }
 
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating value";
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (refreshed.playerlistObjectiveData.valueLegacy == null) return; // Player not loaded yet (refresh called before onJoin)
@@ -257,6 +262,12 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             redis.sendMessage(new UpdateRedisPlayer(all.getTablistId(), getValueNumber(all), all.playerlistObjectiveData.valueModern.get()));
         }
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Playerlist Objective";
     }
 
     /**

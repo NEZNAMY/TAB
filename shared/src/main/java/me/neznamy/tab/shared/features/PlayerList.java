@@ -49,7 +49,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
      *          Feature configuration
      */
     public PlayerList(@NotNull TablistFormattingConfiguration configuration) {
-        super("Tablist name formatting", "Updating TabList format");
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.tablistData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
@@ -230,6 +229,12 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         updatePlayer(p, !disabledNow);
     }
 
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating TabList format";
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (refreshed.tablistData.prefix == null) return; // Placeholder in condition on join
@@ -380,6 +385,12 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             viewer.getTabList().updateDisplayName(player.getUniqueId(), player.getTabFormat());
         }
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Tablist name formatting";
     }
 
     /**

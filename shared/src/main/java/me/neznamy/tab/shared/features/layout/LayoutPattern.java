@@ -26,7 +26,6 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
 
     @SuppressWarnings("unchecked")
     public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull LayoutDefinition def) {
-        super(manager.getFeatureName(), "Updating player groups");
         this.manager = manager;
         this.name = name;
         condition = Condition.getCondition(def.condition);
@@ -51,6 +50,12 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
 
     public boolean isConditionMet(@NotNull TabPlayer p) {
         return condition == null || condition.isMet(p);
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating player groups";
     }
 
     @Override
@@ -91,5 +96,11 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     public void addGroup(@Nullable String condition, int[] slots) {
         ensureActive();
         addGroup(UUID.randomUUID().toString(), condition, slots);
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return manager.getFeatureName();
     }
 }

@@ -42,7 +42,7 @@ public class PlayerSlot {
                     layout.getManager().getConfiguration().direction.getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
                     player.getSkin(),
                     true,
-                    layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getValue() : player.getPing(),
+                    layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getConfiguration().value : player.getPing(),
                     0,
                     playerList == null || player.tablistData.disabled.get() ? new SimpleComponent(player.getName()) : playerList.getTabFormat(player, viewer)
             );

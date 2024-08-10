@@ -37,7 +37,6 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      *          Feature configuration
      */
     public HeaderFooter(@NotNull HeaderFooterConfiguration configuration) {
-        super("Header/Footer", "Updating header/footer");
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.headerFooterData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
@@ -81,6 +80,12 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         if (updateProperties(p)) {
             sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
         }
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating header/footer";
     }
 
     @Override
@@ -194,6 +199,12 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
             player.headerFooterData.footer.setTemporaryValue(footer);
             sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
         });
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Header/Footer";
     }
 
     /**

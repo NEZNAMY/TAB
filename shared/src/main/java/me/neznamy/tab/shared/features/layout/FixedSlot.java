@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
@@ -16,6 +17,7 @@ import java.util.UUID;
 /**
  * A fixed layout slot with defined slot, text and maybe also ping and skin.
  */
+@RequiredArgsConstructor
 public class FixedSlot extends RefreshableFeature {
 
     private static final StringToComponentCache cache = new StringToComponentCache("LayoutFixedSlot", 1000);
@@ -30,18 +32,16 @@ public class FixedSlot extends RefreshableFeature {
     @NonNull private final String skinProperty;
     private final int ping;
 
-    public FixedSlot(@NonNull LayoutManagerImpl manager, int slot, @NonNull LayoutPattern pattern, @NonNull UUID id,
-                     @NonNull String text, @NonNull String propertyName, @NonNull String skin, @NonNull String skinProperty, int ping) {
-        super(manager.getFeatureName(), "Updating fixed slots");
-        this.manager = manager;
-        this.slot = slot;
-        this.pattern = pattern;
-        this.id = id;
-        this.text = text;
-        this.propertyName = propertyName;
-        this.skin = skin;
-        this.skinProperty = skinProperty;
-        this.ping = ping;
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return manager.getFeatureName();
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating fixed slots";
     }
 
     @Override

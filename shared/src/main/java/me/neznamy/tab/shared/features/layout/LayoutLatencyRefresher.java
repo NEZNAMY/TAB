@@ -15,8 +15,19 @@ public class LayoutLatencyRefresher extends RefreshableFeature {
      * Constructs new instance.
      */
     public LayoutLatencyRefresher() {
-        super("Layout", "Updating latency");
         addUsedPlaceholder(TabConstants.Placeholder.PING);
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Layout";
+    }
+
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating latency";
     }
 
     @Override

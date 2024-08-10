@@ -26,7 +26,6 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
      *          Parent feature
      */
     public CollisionManager(@NotNull NameTag nameTags) {
-        super(nameTags.getFeatureName(), "Updating collision");
         this.nameTags = nameTags;
         enableCollision = Condition.getCondition(nameTags.getConfiguration().enableCollision);
     }
@@ -51,6 +50,12 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
         connectedPlayer.teamData.collisionRule = enableCollision.isMet(connectedPlayer);
     }
 
+    @NotNull
+    @Override
+    public String getRefreshDisplayName() {
+        return "Updating collision";
+    }
+
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.disabled.get()) return;
@@ -61,5 +66,11 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
     @NotNull
     public ThreadExecutor getCustomThread() {
         return nameTags.getCustomThread();
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return nameTags.getFeatureName();
     }
 }
