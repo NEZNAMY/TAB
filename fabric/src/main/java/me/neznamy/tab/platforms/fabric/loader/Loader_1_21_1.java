@@ -42,14 +42,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * Method loader compiled using Minecraft 1.21.
+ * Method loader compiled using Minecraft 1.21.1.
  */
 @SuppressWarnings({
         "unchecked", // Java generic types
-        "DataFlowIssue", // Profile is not null on add action
-        "unused" // Actually used, just via reflection
+        "DataFlowIssue" // Profile is not null on add action
 })
-public class Loader_1_21 implements Loader {
+public class Loader_1_21_1 implements Loader {
 
     @Override
     @NotNull
@@ -360,10 +359,6 @@ public class Loader_1_21 implements Loader {
     private static class Register1_19_3 {
 
         static final Map<TabList.Action, EnumSet<ClientboundPlayerInfoUpdatePacket.Action>> actionMap = createActionMap();
-
-        public static EnumSet<ClientboundPlayerInfoUpdatePacket.Action> convertAction(TabList.Action action) {
-            return EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.valueOf(action.name()));
-        }
 
         private static Map<TabList.Action, EnumSet<ClientboundPlayerInfoUpdatePacket.Action>> createActionMap() {
             Map<TabList.Action, EnumSet<ClientboundPlayerInfoUpdatePacket.Action>> actions = new EnumMap<>(TabList.Action.class);
