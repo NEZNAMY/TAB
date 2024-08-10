@@ -21,9 +21,9 @@ public class GlobalPlayerListConfiguration extends ConfigurationSection {
     public GlobalPlayerListConfiguration(@NotNull ConfigurationFile config) {
         super(config);
         checkForUnknownKey(SECTION, Arrays.asList("enabled", "display-others-as-spectators", "display-vanished-players-as-spectators",
-                "isolate-unlisted-servers", "update-latency", "spy-servers", "shared-playerlist-world-groups"));
-        for (Object worldGroup : getMap(SECTION + ".server-groups", Collections.emptyMap()).keySet()) {
-            sharedServers.put(worldGroup.toString(), getStringList(SECTION + ".server-groups", Collections.emptyList()));
+                "isolate-unlisted-servers", "update-latency", "spy-servers", "server-groups"));
+        for (Object serverGroup : getMap(SECTION + ".server-groups", Collections.emptyMap()).keySet()) {
+            sharedServers.put(serverGroup.toString(), getStringList(SECTION + ".server-groups." + serverGroup, Collections.emptyList()));
         }
     }
 }
