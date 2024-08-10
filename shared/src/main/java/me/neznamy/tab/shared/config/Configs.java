@@ -7,9 +7,11 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
+import me.neznamy.tab.shared.config.files.config.Config;
 import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import me.neznamy.tab.shared.config.section.AnimationConfiguration;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,8 +20,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Core of loading configuration files
@@ -27,17 +28,8 @@ import java.util.Map;
 @Getter
 public class Configs {
 
-    //config.yml file
-    private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/config.yml"),
-            new File(TAB.getInstance().getDataFolder(), "config.yml"));
-
-    private final boolean bukkitPermissions = TAB.getInstance().getPlatform().isProxy() && config.getBoolean("use-bukkit-permissions-manager", false);
-    private final boolean debugMode = config.getBoolean("debug", false);
-    private final boolean onlineUuidInTabList = config.getBoolean("use-online-uuid-in-tablist", true);
-    private final boolean pipelineInjection = getSecretOption("pipeline-injection", true);
-    private final String serverName = getSecretOption("server-name", "N/A");
-    private final int permissionRefreshInterval = config.getInt("permission-refresh-interval", 1000);
-    private final boolean enableRedisHook = config.getBoolean("enable-redisbungee-support", true);
+    /** config.yml file */
+    private final Config config = new Config();
 
     //animations.yml file
     private final ConfigurationFile animationFile = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/animations.yml"),
@@ -55,6 +47,8 @@ public class Configs {
 
     private MySQL mysql;
 
+    @NotNull private final AnimationConfiguration animations = new AnimationConfiguration(animationFile);
+
     /**
      * Constructs new instance and loads configuration files.
      * If needed, converts old configuration files as well.
@@ -67,57 +61,24 @@ public class Configs {
     public Configs() throws IOException {
         Converter converter = new Converter();
         converter.convert2810to290(animationFile);
-        converter.convert292to300(config);
-        converter.convert301to302(config);
-        converter.convert332to400(config);
-        converter.convert409to410(config);
-        converter.convert415to500(config);
-        if (config.getBoolean("mysql.enabled", false)) {
+        converter.convert292to300(config.getConfig());
+        converter.convert301to302(config.getConfig());
+        converter.convert332to400(config.getConfig());
+        converter.convert409to410(config.getConfig());
+        converter.convert415to500(config.getConfig());
+        if (config.getMysql() != null) {
             try {
-                // Initialization to try to avoid java.sql.SQLException: No suitable driver found
-                try {
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                } catch (ClassNotFoundException e) {
-                    Class.forName("com.mysql.jdbc.Driver");
-                }
-                mysql = new MySQL(
-                        config.getString("mysql.host", "127.0.0.1"),
-                        config.getInt("mysql.port", 3306),
-                        config.getString("mysql.database", "tab"),
-                        config.getString("mysql.username", "user"),
-                        config.getString("mysql.password", "password"),
-                        config.getBoolean("mysql.useSSL", true)
-                );
+                mysql = new MySQL(config.getMysql());
                 mysql.openConnection();
                 groups = new MySQLGroupConfiguration(mysql);
                 users = new MySQLUserConfiguration(mysql);
                 return;
-            } catch (SQLException | ClassNotFoundException e) {
+            } catch (SQLException e) {
                 TAB.getInstance().getErrorManager().mysqlConnectionFailed(e);
             }
         }
         groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
         users = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
-        Map<Object, Object> replacements = config.getConfigurationSection("placeholder-output-replacements");
-        TAB.getInstance().getConfigHelper().hint().checkForRedundantElseReplacement(replacements);
-        TAB.getInstance().getConfigHelper().startup().checkReplacementKeys(replacements.keySet());
-    }
-
-    /**
-     * Returns value of hidden config option with specified path if it exists, defaultValue otherwise
-     *
-     * @param   path
-     *          path to value
-     * @param   defaultValue
-     *          value to return if option is not present in file
-     * @return  value with specified path or default value if not present
-     * @param   <T>
-     *          Class type of the config option
-     */
-    @SuppressWarnings("unchecked")
-    public @NotNull <T> T getSecretOption(@NotNull String path, @NotNull T defaultValue) {
-        Object value = config.getObject(path);
-        return value == null ? defaultValue : (T) value;
     }
 
     /**
@@ -149,7 +110,7 @@ public class Configs {
      *          Element to find
      * @return  Group containing the element or element itself if not found
      */
-    public String getGroup(@NotNull List<Object> serverGroups, @Nullable String element) {
+    public String getGroup(@NotNull Collection<String> serverGroups, @Nullable String element) {
         if (serverGroups.isEmpty() || element == null) return element;
         for (Object worldGroup : serverGroups) {
             for (String definedWorld : worldGroup.toString().split(";")) {
@@ -176,7 +137,7 @@ public class Configs {
      *          Server to find
      * @return  Group containing the element or element itself if not found
      */
-    public String getServerGroup(@NotNull List<Object> serverGroups, @Nullable String server) {
+    public String getServerGroup(@NotNull Collection<String> serverGroups, @Nullable String server) {
         String globalGroup = tryServerGroup(serverGroups, server);
         if (globalGroup != null) return globalGroup;
 
@@ -184,7 +145,7 @@ public class Configs {
         return getGroup(serverGroups, server);
     }
 
-    private @Nullable String tryServerGroup(@NotNull List<Object> serverGroups, @Nullable String server) {
+    private @Nullable String tryServerGroup(@NotNull Collection<String> serverGroups, @Nullable String server) {
         if (serverGroups.isEmpty() || server == null) return null;
 
         // Check global-playerlist server-groups for this server

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.tablist.SortingManager;
 import me.neznamy.tab.shared.Limitations;
+import me.neznamy.tab.shared.config.files.config.SortingConfiguration;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -40,18 +41,23 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
     
     //map of all registered sorting types
     private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
-    
-    //if sorting is case-sensitive or not
-    @Getter private final boolean caseSensitiveSorting = config().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
+
+    @Getter
+    @NotNull
+    private final SortingConfiguration configuration;
     
     //active sorting types
     private final SortingType[] usedSortingTypes;
     
     /**
-     * Constructs new instance and loads config options
+     * Constructs new instance.
+     *
+     * @param   configuration
+     *          Feature configuration
      */
-    public Sorting() {
+    public Sorting(@NotNull SortingConfiguration configuration) {
         super("Sorting", "Updating team names");
+        this.configuration = configuration;
         types.put("GROUPS", Groups::new);
         types.put("PERMISSIONS", Permissions::new);
         types.put("PLACEHOLDER", Placeholder::new);
@@ -59,7 +65,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         types.put("PLACEHOLDER_Z_TO_A", PlaceholderZtoA::new);
         types.put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
         types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
-        usedSortingTypes = compile(config().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
+        usedSortingTypes = compile(configuration.sortingTypes);
     }
     
     @Override

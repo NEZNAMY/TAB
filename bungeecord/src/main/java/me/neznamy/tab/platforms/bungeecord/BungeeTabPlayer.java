@@ -81,7 +81,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
             //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:565)
             //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:520)
             //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:508)
-            if (TAB.getInstance().getConfiguration().isDebugMode()) {
+            if (TAB.getInstance().getConfiguration().getConfig().isDebugMode()) {
                 TAB.getInstance().getErrorManager().printError("Failed to send message to player " + getName() +
                         " (online = " + getPlayer().isConnected() + "): " + message.convert(getVersion()), BungeeCordBug);
             }
@@ -119,7 +119,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
             //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
             //        at net.md_5.bungee.ServerConnection.sendPacketQueued(ServerConnection.java:48)
             //        at net.md_5.bungee.ServerConnection.sendData(ServerConnection.java:70)
-            if (TAB.getInstance().getConfiguration().isDebugMode()) {
+            if (TAB.getInstance().getConfiguration().getConfig().isDebugMode()) {
                 TAB.getInstance().getErrorManager().printError("Failed to deliver plugin message to player " + getName() +
                         " (online = " + getPlayer().isConnected() + ")", BungeeCordBug);
             }
@@ -156,7 +156,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
             // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
             //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
             //        at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:194)
-            if (TAB.getInstance().getConfiguration().isDebugMode()) {
+            if (TAB.getInstance().getConfiguration().getConfig().isDebugMode()) {
                 TAB.getInstance().getErrorManager().printError("Failed to deliver packet to player " + getName() +
                         " (online = " + getPlayer().isConnected() + "): " + packet, BungeeCordBug);
             }

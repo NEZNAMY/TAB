@@ -24,7 +24,7 @@ public class PlayerJoinResponse implements IncomingMessage {
     public void read(@NotNull ByteArrayDataInput in) {
         world = in.readUTF();
         if (TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
-                !TAB.getInstance().getGroupManager().isGroupsByPermissions()) group = in.readUTF();
+                !TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions()) group = in.readUTF();
         placeholders = new HashMap<>();
         int placeholderCount = in.readInt();
         for (int i=0; i<placeholderCount; i++) {

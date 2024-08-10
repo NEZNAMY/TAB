@@ -79,7 +79,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             String textBefore;
             do {
                 textBefore = text;
-                for (String placeholder : TAB.getInstance().getPlaceholderManager().detectPlaceholders(text)) {
+                for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(text)) {
                     text = text.replace(placeholder, TAB.getInstance().getPlaceholderManager().findReplacement(placeholder,
                             PlaceholderAPI.setPlaceholders(player, placeholder)));
                 }

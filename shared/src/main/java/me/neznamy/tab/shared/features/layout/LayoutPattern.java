@@ -3,8 +3,10 @@ package me.neznamy.tab.shared.features.layout;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.tablist.layout.Layout;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition;
+import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
+import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.GroupPattern;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -23,45 +25,28 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     private final List<GroupPattern> groups = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
-    public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull Map<String, Object> map) {
+    public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull LayoutDefinition def) {
         super(manager.getFeatureName(), "Updating player groups");
         this.manager = manager;
         this.name = name;
-        TAB.getInstance().getConfigHelper().startup().checkForInvalidObjectProperties("layout", name, map, Arrays.asList("condition", "fixed-slots", "groups"));
-        condition = Condition.getCondition((String) map.get("condition"));
+        condition = Condition.getCondition(def.condition);
         if (condition != null) manager.addUsedPlaceholder(TabConstants.Placeholder.condition(condition.getName()));
-        for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
-            addFixedSlot(fixedSlot);
+        for (FixedSlotDefinition fixed : def.fixedSlots) {
+            addFixedSlot(fixed);
         }
-        Map<String, Map<String, Object>> groups = (Map<String, Map<String, Object>>) map.getOrDefault("groups", Collections.emptyMap());
-        if (groups != null) {
-            for (Map.Entry<String, Map<String, Object>> group : groups.entrySet()) {
-                String groupName = group.getKey();
-                Map<String, Object> groupData = group.getValue();
-                TAB.getInstance().getConfigHelper().startup().checkForInvalidObjectProperties("layout", name + "\"'s group \"" + groupName, groupData, Arrays.asList("condition", "slots"));
-                List<Integer> positions = new ArrayList<>();
-                for (String line : (List<String>) groupData.get("slots")) {
-                    String[] arr = line.split("-");
-                    int from = Integer.parseInt(arr[0]);
-                    int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
-                    for (int i = from; i<= to; i++) {
-                        positions.add(i);
-                    }
-                }
-                addGroup(groupName, Condition.getCondition((String) groupData.get("condition")), positions.stream().mapToInt(i->i).toArray());
-            }
+        for (Map.Entry<String, GroupPattern> entry : def.groups.entrySet()) {
+            addGroup(entry.getKey(), entry.getValue().condition, entry.getValue().slots);
         }
-        TAB.getInstance().getConfigHelper().startup().checkLayoutGroups(name, this.groups);
     }
 
-    public void addFixedSlot(@NotNull String lineDefinition) {
-        FixedSlot slot = FixedSlot.fromLine(lineDefinition, this, manager);
-        if (slot != null) fixedSlots.put(slot.getSlot(), slot);
+    public void addFixedSlot(@NotNull FixedSlotDefinition def) {
+        FixedSlot slot = FixedSlot.fromDefinition(def, this, manager);
+        fixedSlots.put(slot.getSlot(), slot);
     }
 
-    public void addGroup(@NotNull String name, @Nullable Condition condition, int[] slots) {
+    public void addGroup(@NotNull String name, @Nullable String condition, int[] slots) {
         groups.add(new GroupPattern(name, condition, Arrays.stream(slots).filter(slot -> !fixedSlots.containsKey(slot)).toArray()));
-        if (condition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(condition.getName()));
+        if (condition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(condition));
     }
 
     public boolean isConditionMet(@NotNull TabPlayer p) {
@@ -80,19 +65,19 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     @Override
     public void addFixedSlot(int slot, @NonNull String text) {
         ensureActive();
-        addFixedSlot(slot, text, manager.getDefaultSkin(slot), manager.getEmptySlotPing());
+        addFixedSlot(slot, text, manager.getConfiguration().getDefaultSkin(slot), manager.getConfiguration().emptySlotPing);
     }
 
     @Override
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin) {
         ensureActive();
-        addFixedSlot(slot, text, skin, manager.getEmptySlotPing());
+        addFixedSlot(slot, text, skin, manager.getConfiguration().emptySlotPing);
     }
 
     @Override
     public void addFixedSlot(int slot, @NonNull String text, int ping) {
         ensureActive();
-        addFixedSlot(slot, text, manager.getDefaultSkin(slot), ping);
+        addFixedSlot(slot, text, manager.getConfiguration().getDefaultSkin(slot), ping);
     }
 
     @Override
@@ -105,6 +90,6 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     @Override
     public void addGroup(@Nullable String condition, int[] slots) {
         ensureActive();
-        addGroup(UUID.randomUUID().toString(), Condition.getCondition(condition), slots);
+        addGroup(UUID.randomUUID().toString(), condition, slots);
     }
 }

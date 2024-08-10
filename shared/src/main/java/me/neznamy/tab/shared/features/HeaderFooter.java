@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.config.files.config.HeaderFooterConfiguration;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -14,7 +15,6 @@ import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,21 +27,20 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     private final StringToComponentCache headerCache = new StringToComponentCache("Header", 1000);
     private final StringToComponentCache footerCache = new StringToComponentCache("Footer", 1000);
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB Header/Footer Thread");
-    private final String HEADER = "header";
-    private final String FOOTER = "footer";
-    private final List<Object> worldGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-world").keySet());
-    private final List<Object> serverGroups = new ArrayList<>(config().getConfigurationSection("header-footer.per-server").keySet());
+    private final HeaderFooterConfiguration configuration;
     private final DisableChecker disableChecker;
 
     /**
      * Constructs new instance and registers disable condition checker to feature manager.
+     *
+     * @param   configuration
+     *          Feature configuration
      */
-    public HeaderFooter() {
+    public HeaderFooter(@NotNull HeaderFooterConfiguration configuration) {
         super("Header/Footer", "Updating header/footer");
-        Condition disableCondition = Condition.getCondition(config().getString("header-footer.disable-condition"));
-        disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.headerFooterData.disabled);
+        this.configuration = configuration;
+        disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.headerFooterData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
-        TAB.getInstance().getConfigHelper().hint().checkHeaderFooterForRedundancy(config().getConfigurationSection("header-footer"));
     }
 
     @Override
@@ -61,8 +60,8 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.headerFooterData.header = new Property(this, connectedPlayer, getProperty(connectedPlayer, HEADER));
-        connectedPlayer.headerFooterData.footer = new Property(this, connectedPlayer, getProperty(connectedPlayer, FOOTER));
+        connectedPlayer.headerFooterData.header = new Property(this, connectedPlayer, getFromConfig(connectedPlayer, "header"));
+        connectedPlayer.headerFooterData.footer = new Property(this, connectedPlayer, getFromConfig(connectedPlayer, "footer"));
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.headerFooterData.disabled.set(true);
         } else {
@@ -105,8 +104,8 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      * @return  {@code true} if at least one property changed, {@code false} if not
      */
     private boolean updateProperties(@NotNull TabPlayer player) {
-        boolean changed = player.headerFooterData.header.changeRawValue(getProperty(player, HEADER), null);
-        if (player.headerFooterData.footer.changeRawValue(getProperty(player, FOOTER), null)) changed = true;
+        boolean changed = player.headerFooterData.header.changeRawValue(getFromConfig(player, "header"), null);
+        if (player.headerFooterData.footer.changeRawValue(getFromConfig(player, "footer"), null)) changed = true;
         return changed;
     }
 
@@ -126,12 +125,6 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         }
     }
 
-    private String getProperty(TabPlayer p, String property) {
-        String append = getFromConfig(p, property + "append");
-        if (!append.isEmpty()) append = "\n" + append;
-        return getFromConfig(p, property) + append;
-    }
-
     private String getFromConfig(TabPlayer p, String property) {
         String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getName(), property, p.server, p.world);
         if (value.length > 0) {
@@ -145,14 +138,21 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         if (value.length > 0) {
             return value[0];
         }
-        List<String> lines = config().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.world) + "." + property);
-        if (lines == null) {
-            lines = config().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getServerGroup(serverGroups, p.server) + "." + property);
+        List<String> lines = null;
+        HeaderFooterConfiguration.HeaderFooterPair pair = configuration.perWorld.get(TAB.getInstance().getConfiguration().getGroup(configuration.perWorld.keySet(), p.world));
+        if (pair != null) {
+            lines = property.equals("header") ? pair.header : pair.footer;
         }
         if (lines == null) {
-            lines = config().getStringList("header-footer." + property);
+            pair = configuration.perServer.get(TAB.getInstance().getConfiguration().getGroup(configuration.perServer.keySet(), p.server));
+            if (pair != null) {
+                lines = property.equals("header") ? pair.header : pair.footer;
+            }
         }
-        if (lines == null) lines = new ArrayList<>();
+
+        if (lines == null) {
+            lines = property.equals("header") ? configuration.header : configuration.footer;
+        }
         return String.join("\n", lines);
     }
 

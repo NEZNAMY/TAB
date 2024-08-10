@@ -65,7 +65,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      */
     protected ProxyTabPlayer(@NotNull ProxyPlatform platform, @NotNull Object player, @NotNull UUID uniqueId,
                              @NotNull String name, @NotNull String server, int protocolVersion) {
-        super(platform, player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().isOnlineUuidInTabList());
+        super(platform, player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().getConfig().isOnlineUuidInTabList());
         sendJoinPluginMessage();
     }
 
@@ -78,9 +78,9 @@ public abstract class ProxyTabPlayer extends TabPlayer {
         sendPluginMessage(new PlayerJoin(
                 getVersion().getNetworkId(),
                 TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
-                    !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
+                    !TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions(),
                 ((ProxyPlatform) getPlatform()).getBridgePlaceholders(),
-                TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements")
+                TAB.getInstance().getConfiguration().getConfig().getReplacements().raw
         ));
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         if (expansion instanceof ProxyTabExpansion) {
@@ -149,7 +149,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
+        if (TAB.getInstance().getConfiguration().getConfig().isBukkitPermissions()) {
             sendPluginMessage(new PermissionRequest(permission));
             return permissions != null && permissions.getOrDefault(permission, false);
         }

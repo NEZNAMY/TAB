@@ -71,6 +71,7 @@ public abstract class ConfigurationFile {
      * @return  value from configuration file
      */
     public Object getObject(@NonNull String path, @Nullable Object defaultValue) {
+        if (path.isEmpty()) return values;
         Object value = values;
         for (String section : path.contains(".") ? path.split("\\.") : new String[] {path}) {
             if (!(value instanceof Map)) {
@@ -95,6 +96,7 @@ public abstract class ConfigurationFile {
      *          Path to the option with sections separated with "{@code .}"
      * @return  value from configuration file or null if not present
      */
+    @Nullable
     public Object getObject(@NonNull String path) {
         return getObject(path, null);
     }
@@ -177,6 +179,7 @@ public abstract class ConfigurationFile {
      *          Path to the option with sections separated with "{@code .}"
      * @return  value from file or null if not present
      */
+    @Nullable
     public List<String> getStringList(@NonNull String path) {
         return getStringList(path, null);
     }

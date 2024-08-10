@@ -5,6 +5,7 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
@@ -33,7 +34,7 @@ public abstract class ProxyPlatform implements Platform {
     @Override
     public @NotNull GroupManager detectPermissionPlugin() {
         if (LuckPermsHook.getInstance().isInstalled() &&
-                !TAB.getInstance().getConfiguration().isBukkitPermissions()) {
+                !TAB.getInstance().getConfiguration().getConfig().isBukkitPermissions()) {
             return new GroupManager("LuckPerms", LuckPermsHook.getInstance().getGroupFunction());
         }
         return new GroupManager("Vault through Bridge", TabPlayer::getGroup);
@@ -76,7 +77,7 @@ public abstract class ProxyPlatform implements Platform {
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerList() { return null; }
+    public @Nullable TabFeature getPerWorldPlayerList(@NotNull PerWorldPlayerListConfiguration configuration) { return null; }
 
     public @NotNull TabExpansion createTabExpansion() {
         return new ProxyTabExpansion();

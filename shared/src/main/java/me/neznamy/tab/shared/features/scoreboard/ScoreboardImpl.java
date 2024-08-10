@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.config.files.config.ScoreboardConfiguration.ScoreboardDefinition;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
@@ -54,19 +55,14 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          scoreboard manager
      * @param   name
      *          name of this scoreboard
-     * @param   title
-     *          scoreboard title
-     * @param   lines
-     *          lines of scoreboard
-     * @param   displayCondition
-     *          display condition
+     * @param   definition
+     *          Scoreboard properties
      */
-    public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull String title,
-                          @NonNull List<String> lines, @Nullable String displayCondition) {
-        this(manager, name, title, lines, false);
-        this.displayCondition = Condition.getCondition(displayCondition);
-        if (this.displayCondition != null) {
-            manager.addUsedPlaceholder(TabConstants.Placeholder.condition(this.displayCondition.getName()));
+    public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull ScoreboardDefinition definition) {
+        this(manager, name, definition, false);
+        displayCondition = Condition.getCondition(definition.displayCondition);
+        if (displayCondition != null) {
+            manager.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
         }
     }
 
@@ -77,38 +73,26 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          scoreboard manager
      * @param   name
      *          name of this scoreboard
-     * @param   title
-     *          scoreboard title
-     * @param   lines
-     *          lines of scoreboard
+     * @param   definition
+     *          Scoreboard properties
      * @param   dynamicLinesOnly
      *          Whether this scoreboard should only use dynamic lines or not
      */
-    public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull String title,
-                          @NonNull List<String> lines, boolean dynamicLinesOnly) {
+    public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull ScoreboardDefinition definition, boolean dynamicLinesOnly) {
         super(manager.getFeatureName(), "Updating Scoreboard title");
         this.manager = manager;
         this.name = name;
-        this.title = title;
-        int alwaysVisibleLines = 0;
-        for (int i=0; i<lines.size(); i++) {
-            String line = lines.get(i);
+        title = definition.title;
+        for (int i=0; i<definition.lines.size(); i++) {
+            String line = definition.lines.get(i);
             ScoreboardLine score;
             if (dynamicLinesOnly) {
                 score = new StableDynamicLine(this, i+1, line);
             } else {
                 score = registerLine(i+1, line);
             }
-            this.lines.add(score);
+            lines.add(score);
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(name, i), score);
-            String withoutPlaceholders = line;
-            for (String placeholder : TAB.getInstance().getPlaceholderManager().detectPlaceholders(line)) {
-                withoutPlaceholders = withoutPlaceholders.replace(placeholder, "");
-            }
-            if (!withoutPlaceholders.isEmpty()) alwaysVisibleLines++;
-        }
-        if (alwaysVisibleLines > 15) {
-            TAB.getInstance().getConfigHelper().startup().tooManyScoreboardLines(name, lines.size(), alwaysVisibleLines);
         }
     }
 
@@ -205,10 +189,10 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Player to recalculate scores for
      */
     public void recalculateScores(@NonNull TabPlayer p) {
-        if (!manager.isUsingNumbers()) return;
+        if (!manager.getConfiguration().useNumbers) return;
         List<Line> linesReversed = new ArrayList<>(lines);
         Collections.reverse(linesReversed);
-        int score = manager.getStaticNumber();
+        int score = manager.getConfiguration().staticNumber;
         for (Line line : linesReversed) {
             Property pr = p.getProperty(((ScoreboardLine) line).getTextProperty());
             if (pr.getCurrentRawValue().isEmpty() || (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {

@@ -39,7 +39,7 @@ public class PlayerSlot {
             PlayerList playerList = layout.getManager().getPlayerList();
             data = new TabList.Entry(
                     uniqueId,
-                    layout.getManager().getDirection().getEntryName(viewer, slot),
+                    layout.getManager().getConfiguration().direction.getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
                     player.getSkin(),
                     true,
                     layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getValue() : player.getPing(),
@@ -49,10 +49,10 @@ public class PlayerSlot {
         } else {
             data = new TabList.Entry(
                     uniqueId,
-                    layout.getManager().getDirection().getEntryName(viewer, slot),
+                    layout.getManager().getConfiguration().direction.getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
                     layout.getManager().getSkinManager().getDefaultSkin(slot),
                     true,
-                    layout.getManager().getEmptySlotPing(),
+                    layout.getManager().getConfiguration().emptySlotPing,
                     0,
                     new SimpleComponent(text)
             );

@@ -6,8 +6,6 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.task.GroupRefreshTask;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -22,14 +20,8 @@ public class GroupManager {
     /** Group retrieve function */
     @NotNull private final Function<TabPlayer, String> groupFunction;
 
-    /** If enabled, groups are assigned via permissions instead of permission plugin */
-    private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
-
-    /** List of group permissions to iterate through if {@link #groupsByPermissions} is {@code true} */
-    private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
-
     /** Function for retrieving player's group */
-    private final Function<TabPlayer, String> detectGroup = groupsByPermissions ? this::getByPermission : this::getByPrimary;
+    private final Function<TabPlayer, String> detectGroup = TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions() ? this::getByPermission : this::getByPrimary;
 
     /**
      * Constructs new instance with given permission plugin and registers group placeholder.
@@ -43,7 +35,7 @@ public class GroupManager {
         this.permissionPlugin = permissionPlugin;
         this.groupFunction = groupFunction;
         TAB.getInstance().getCpu().getGroupRefreshingThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), new GroupRefreshTask(detectGroup),
-                "Permission group refreshing", "Periodic task"), TAB.getInstance().getConfiguration().getPermissionRefreshInterval());
+                "Permission group refreshing", "Periodic task"), TAB.getInstance().getConfiguration().getConfig().getPermissionRefreshInterval());
     }
 
     /**
@@ -88,7 +80,7 @@ public class GroupManager {
      */
     @NotNull
     private String getByPermission(@NotNull TabPlayer player) {
-        for (String group : primaryGroupFindingList) {
+        for (String group : TAB.getInstance().getConfiguration().getConfig().getPrimaryGroupFindingList()) {
             if (player.hasPermission(TabConstants.Permission.GROUP_PREFIX + group)) {
                 return group;
             }

@@ -16,6 +16,7 @@ import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
+import me.neznamy.tab.shared.config.files.config.PlaceholderRefreshConfiguration;
 import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshTask;
@@ -36,11 +37,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PlaceholderManagerImpl extends RefreshableFeature implements PlaceholderManager, JoinListener, Loadable {
 
-    private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
+    private static final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
-    private final boolean registerExpansion = config().getBoolean("placeholders.register-tab-expansion", true);
-    private final Map<String, Integer> refreshIntervals = config().getConfigurationSection("placeholderapi-refresh-intervals");
-    private final int defaultRefresh;
+    @NotNull private final PlaceholderRefreshConfiguration configuration;
 
     private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
@@ -50,22 +49,24 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
 
     @Getter private int loopTime;
 
-    @NotNull @Getter private final TabExpansion tabExpansion = registerExpansion ?
-            TAB.getInstance().getPlatform().createTabExpansion() : new EmptyTabExpansion();
+    @NotNull @Getter private final TabExpansion tabExpansion;
 
     private final CpuManager cpu;
 
     /**
-     * Constructs new instance and loads refresh intervals from config.
+     * Constructs new instance.
      *
      * @param   cpu
      *          CPU manager for submitting tasks
+     * @param   configuration
+     *          Placeholder refreshing configuration
      */
-    public PlaceholderManagerImpl(@NotNull CpuManager cpu) {
+    public PlaceholderManagerImpl(@NotNull CpuManager cpu, @NotNull PlaceholderRefreshConfiguration configuration) {
         super("Refreshing placeholders", "Other");
         this.cpu = cpu;
-        TAB.getInstance().getConfigHelper().startup().fixRefreshIntervals(refreshIntervals);
-        defaultRefresh = refreshIntervals.getOrDefault("default-refresh-interval", 500);
+        this.configuration = configuration;
+        tabExpansion = TAB.getInstance().getConfiguration().getConfig().getPlaceholders().registerTabExpansion ?
+                TAB.getInstance().getPlatform().createTabExpansion() : new EmptyTabExpansion();
     }
 
     private void refresh() {
@@ -202,7 +203,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      * @return  Configured refresh interval for placeholder
      */
     public int getRefreshInterval(@NotNull String identifier) {
-        return refreshIntervals.getOrDefault(identifier, defaultRefresh);
+        return configuration.refreshIntervals.getOrDefault(identifier, configuration.defaultInterval);
     }
 
     /**
@@ -265,7 +266,8 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      *          text to detect placeholders in
      * @return  list of detected identifiers
      */
-    public @NotNull List<String> detectPlaceholders(@NonNull String text) {
+    @NotNull
+    public static List<String> detectPlaceholders(@NonNull String text) {
         if (!text.contains("%")) return Collections.emptyList();
         if (text.charAt(0) == '%' && text.charAt(text.length()-1) == '%') {
             int count = 0;

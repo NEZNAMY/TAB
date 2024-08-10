@@ -18,8 +18,8 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     private final String PER_WORLD = "per-world";
     
     private final String category;
-    private final List<Object> worldGroups = new ArrayList<>(getConfigurationSection(PER_WORLD).keySet());
-    private final List<Object> serverGroups = new ArrayList<>(getConfigurationSection(PER_SERVER).keySet());
+    private final Collection<String> worldGroups = new ArrayList<>(this.<String, Object>getConfigurationSection(PER_WORLD).keySet());
+    private final Collection<String> serverGroups = new ArrayList<>(this.<String, Object>getConfigurationSection(PER_SERVER).keySet());
     
     public YamlPropertyConfigurationFile(@Nullable InputStream source, @NotNull File destination) throws IOException {
         super(source, destination);

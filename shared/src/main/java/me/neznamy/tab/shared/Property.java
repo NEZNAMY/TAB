@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -118,7 +119,7 @@ public class Property {
         // Identify placeholders used directly
         List<String> placeholders0 = new ArrayList<>();
         List<String> relPlaceholders0 = new ArrayList<>();
-        for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(value)) {
+        for (String identifier : PlaceholderManagerImpl.detectPlaceholders(value)) {
             placeholders0.add(identifier);
             if (identifier.startsWith("%rel_")) {
                 relPlaceholders0.add(identifier);
@@ -294,7 +295,7 @@ public class Property {
         }
 
         // Nested placeholders
-        for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(format)) {
+        for (String identifier : PlaceholderManagerImpl.detectPlaceholders(format)) {
             if (!identifier.startsWith("%rel_")) continue;
             RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
             format = format.replace(pl.getIdentifier(), EnumChatFormat.color(pl.getLastValue(viewer, owner)));

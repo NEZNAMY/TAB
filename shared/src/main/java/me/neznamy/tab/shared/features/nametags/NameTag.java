@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.config.files.config.TeamConfiguration;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -30,29 +31,32 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Getter
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
         Loadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, RedisFeature, GroupListener {
 
-    @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB NameTag Thread");
-
-    @Getter private OnlinePlayers onlinePlayers;
-    
-    protected final boolean invisibleNameTags = config().getBoolean("scoreboard-teams.invisible-nametags", false);
-    private final boolean canSeeFriendlyInvisibles = config().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
-    private final boolean antiOverride = config().getBoolean("scoreboard-teams.anti-override", true);
-
-    @Getter private final StringToComponentCache cache = new StringToComponentCache("NameTags", 1000);
-    @Getter private final CollisionManager collisionManager = new CollisionManager(this);
-    @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
-    @Getter private final DisableChecker disableChecker;
+    private final ThreadExecutor customThread = new ThreadExecutor("TAB NameTag Thread");
+    private OnlinePlayers onlinePlayers;
+    private final TeamConfiguration configuration;
+    private final StringToComponentCache cache = new StringToComponentCache("NameTags", 1000);
+    private final CollisionManager collisionManager;
+    private final int teamOptions;
+    private final DisableChecker disableChecker;
     @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
-    public NameTag() {
+    /**
+     * Constructs new instance and registers sub-features.
+     *
+     * @param   configuration
+     *          Feature configuration
+     */
+    public NameTag(@NotNull TeamConfiguration configuration) {
         super("NameTags", "Updating prefix/suffix");
-        Condition disableCondition = Condition.getCondition(config().getString("scoreboard-teams.disable-condition"));
-        disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.teamData.disabled);
+        this.configuration = configuration;
+        teamOptions = configuration.canSeeFriendlyInvisibles ? 2 : 0;
+        disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.teamData.disabled);
+        collisionManager = new CollisionManager(this);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
-        if (!antiOverride) TAB.getInstance().getConfigHelper().startup().teamAntiOverrideDisabled();
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
     }
 
@@ -65,7 +69,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         collisionManager.load();
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            ((SafeScoreboard<?>)all.getScoreboard()).setAntiOverrideTeams(antiOverride);
+            ((SafeScoreboard<?>)all.getScoreboard()).setAntiOverrideTeams(configuration.antiOverride);
             loadProperties(all);
             all.teamData.teamName = all.sortingData.shortTeamName; // Sorting is loaded sync before nametags
             if (disableChecker.isDisableConditionMet(all)) {
@@ -118,7 +122,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
-        ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideTeams(antiOverride);
+        ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideTeams(configuration.antiOverride);
         loadProperties(connectedPlayer);
         connectedPlayer.teamData.teamName = connectedPlayer.sortingData.shortTeamName; // Sorting is loaded sync before nametags
         for (TabPlayer all : onlinePlayers.getPlayers()) {
@@ -366,7 +370,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (viewer.getVersion().getMinorVersion() == 8 && p.hasInvisibilityPotion()) return false;
-        return !hasHiddenNameTag(p) && !hasHiddenNameTag(p, viewer) && !invisibleNameTags && !viewer.teamData.invisibleNameTagView;
+        return !hasHiddenNameTag(p) && !hasHiddenNameTag(p, viewer) && !configuration.invisibleNameTags && !viewer.teamData.invisibleNameTagView;
     }
 
     /**

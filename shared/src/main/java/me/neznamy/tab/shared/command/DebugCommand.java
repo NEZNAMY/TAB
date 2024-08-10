@@ -103,7 +103,7 @@ public class DebugCommand extends SubCommand {
      * @return  group choice logic
      */
     private @NotNull String getGroupChoiceLogic() {
-        if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
+        if (TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions()) {
             return "Permissions";
         }
         return "Primary group";
@@ -132,7 +132,7 @@ public class DebugCommand extends SubCommand {
      * @return  all info about player's group
      */
     private @NotNull String getGroup(@NotNull TabPlayer analyzed) {
-        if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
+        if (TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions()) {
             return "&eHighest group permission: &8tab.group.&a" + analyzed.getGroup();
         }
         return "&ePrimary permission group: &a" + analyzed.getGroup();

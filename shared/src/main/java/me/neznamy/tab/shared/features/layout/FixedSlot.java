@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -68,7 +68,7 @@ public class FixedSlot extends RefreshableFeature {
         viewer.setProperty(this, skinProperty, skin);
         return new TabList.Entry(
                 id,
-                manager.getDirection().getEntryName(viewer, slot),
+                manager.getConfiguration().direction.getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
                 manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).updateAndGet()),
                 true,
                 ping,
@@ -78,51 +78,30 @@ public class FixedSlot extends RefreshableFeature {
     }
 
     /**
-     * Creates a new instance with given parameters. It may return {@code null} if pattern is invalid.
+     * Creates a new instance with given parameters.
      *
-     * @param   line
-     *          Line definition
+     * @param   def
+     *          Fixed slot definition
      * @param   pattern
      *          Layout this slot belongs to
      * @param   manager
      *          Layout manager
      * @return  New slot using given line or {@code null} if invalid
      */
-    public static @Nullable FixedSlot fromLine(@NotNull String line, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
-        String[] array = line.split("\\|");
-        if (array.length < 1) {
-            TAB.getInstance().getConfigHelper().startup().invalidFixedSlotDefinition(pattern.getName(), line);
-            return null;
-        }
-        int slot;
-        try {
-            slot = Integer.parseInt(array[0]);
-        } catch (NumberFormatException e) {
-            TAB.getInstance().getConfigHelper().startup().invalidFixedSlotDefinition(pattern.getName(), line);
-            return null;
-        }
-        String text = array.length > 1 ? array[1] : "";
-        String skin = array.length > 2 ? array[2] : "";
-        int ping = manager.getEmptySlotPing();
-        if (array.length > 3) {
-            try {
-                ping = (int) Math.round(Double.parseDouble(array[3]));
-            } catch (NumberFormatException ignored) {
-                // Maybe a warning?
-            }
-        }
+    @NotNull
+    public static FixedSlot fromDefinition(@NotNull FixedSlotDefinition def, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
         FixedSlot f = new FixedSlot(
                 manager,
-                slot,
+                def.slot,
                 pattern,
-                manager.getUUID(slot),
-                text,
-                "Layout-" + pattern.getName() + "-SLOT-" + slot,
-                skin.isEmpty() ? manager.getDefaultSkin(slot) : skin,
-                "Layout-" + pattern.getName() + "-SLOT-" + slot + "-skin",
-                ping
+                manager.getUUID(def.slot),
+                def.text,
+                "Layout-" + pattern.getName() + "-SLOT-" + def.slot,
+                def.skin == null || def.skin.isEmpty() ? manager.getConfiguration().getDefaultSkin(def.slot) : def.skin,
+                "Layout-" + pattern.getName() + "-SLOT-" + def.slot + "-skin",
+                def.ping == null ? manager.getConfiguration().emptySlotPing : def.ping
         );
-        if (!text.isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), slot), f);
+        if (!def.text.isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), def.slot), f);
         return f;
     }
 }

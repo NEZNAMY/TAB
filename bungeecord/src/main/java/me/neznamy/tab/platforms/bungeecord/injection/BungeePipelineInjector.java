@@ -3,6 +3,8 @@ package me.neznamy.tab.platforms.bungeecord.injection;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.files.config.Config;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -25,9 +27,8 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
      */
     public BungeePipelineInjector() {
         super("inbound-boss");
-        boolean antiOverrideTeams = config().getBoolean("scoreboard-teams.enabled", true) &&
-                config().getBoolean("scoreboard-teams.anti-override", true);
-        byteBufDeserialization = antiOverrideTeams || config().getBoolean("scoreboard.enabled", false);
+        Config config = TAB.getInstance().getConfiguration().getConfig();
+        byteBufDeserialization = (config.getTeams() != null && config.getTeams().antiOverride) || config.getScoreboard() != null;
     }
 
     @Override

@@ -8,13 +8,13 @@ import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.files.config.BossBarConfiguration.BossBarDefinition;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -70,32 +70,21 @@ public class BossBarLine implements BossBar {
      *          BossBar manager to count sent packets for
      * @param   name
      *          name of BossBar
-     * @param   displayCondition
-     *          display condition
-     * @param   color
-     *          BossBar color
-     * @param   style
-     *          BossBar style
-     * @param   title
-     *          BossBar title
-     * @param   progress
-     *          BossBar progress
-     * @param   announcementOnly
-     *          Whether this bossbar is for announcements only
+     * @param   configuration
+     *          Boss bar configuration
      */
-    public BossBarLine(@NonNull BossBarManagerImpl manager, @NonNull String name, @Nullable String displayCondition,
-                       @NonNull String color, @NonNull String style, @NonNull String title, @NonNull String progress, boolean announcementOnly) {
+    public BossBarLine(@NonNull BossBarManagerImpl manager, @NonNull String name, @NonNull BossBarDefinition configuration) {
         this.manager = manager;
         this.name = name;
-        this.displayCondition = Condition.getCondition(displayCondition);
-        if (this.displayCondition != null) {
-            manager.addUsedPlaceholder(TabConstants.Placeholder.condition(this.displayCondition.getName()));
+        displayCondition = Condition.getCondition(configuration.displayCondition);
+        if (displayCondition != null) {
+            manager.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
         }
-        this.color = color;
-        this.style = style;
-        this.title = title;
-        this.progress = progress;
-        announcementBar = announcementOnly;
+        color = configuration.color;
+        style = configuration.style;
+        title = configuration.text;
+        progress = configuration.progress;
+        announcementBar = configuration.announcementOnly;
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarTitle(name),
                 textRefresher = new TextRefresher());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarProgress(name),

@@ -2,7 +2,7 @@ package me.neznamy.tab.shared;
 
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.config.files.config.Config;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.*;
@@ -560,61 +560,72 @@ public class FeatureManager {
      * Loads features from config
      */
     public void loadFeaturesFromConfig() {
-        Configs configuration = TAB.getInstance().getConfiguration();
+        Config config = TAB.getInstance().getConfiguration().getConfig();
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
 
-        boolean pingSpoof          = configuration.getConfig().getBoolean("ping-spoof.enabled", false);
-        boolean bossbar            = configuration.getConfig().getBoolean("bossbar.enabled", false);
-        boolean headerFooter       = configuration.getConfig().getBoolean("header-footer.enabled", true);
-        boolean spectatorFix       = configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false);
-        boolean scoreboard         = configuration.getConfig().getBoolean("scoreboard.enabled", false);
-        boolean perWorldPlayerList = configuration.getConfig().getBoolean("per-world-playerlist.enabled", false);
-        boolean layout             = configuration.getConfig().getBoolean("layout.enabled", false);
-        boolean yellowNumber       = configuration.getConfig().getBoolean("playerlist-objective.enabled", true);
-        boolean belowName          = configuration.getConfig().getBoolean("belowname-objective.enabled", false);
-        boolean teams              = configuration.getConfig().getBoolean("scoreboard-teams.enabled", true);
-        boolean globalPlayerList   = configuration.getConfig().getBoolean("global-playerlist.enabled", false);
-        boolean tablistFormatting  = configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true);
-
-        if (perWorldPlayerList && layout) TAB.getInstance().getConfigHelper().startup().bothPerWorldPlayerListAndLayoutEnabled();
-        if (yellowNumber && layout)       TAB.getInstance().getConfigHelper().startup().layoutBreaksYellowNumber();
-        if (spectatorFix && layout)       TAB.getInstance().getConfigHelper().hint().layoutIncludesPreventSpectatorEffect();
-        if (globalPlayerList && layout)   TAB.getInstance().getConfigHelper().startup().bothGlobalPlayerListAndLayoutEnabled();
+        if (config.getLayout() != null) {
+            if (config.getPerWorldPlayerList() != null) TAB.getInstance().getConfigHelper().startup().bothPerWorldPlayerListAndLayoutEnabled();
+            if (config.getPlayerlistObjective() != null) TAB.getInstance().getConfigHelper().startup().layoutBreaksYellowNumber();
+            if (config.isPreventSpectatorEffect()) TAB.getInstance().getConfigHelper().hint().layoutIncludesPreventSpectatorEffect();
+            if (config.getGlobalPlayerList() != null) TAB.getInstance().getConfigHelper().startup().bothGlobalPlayerListAndLayoutEnabled();
+        }
 
         // Load the feature first, because it will be processed in main thread (to make it run before feature threads)
-        if (configuration.isEnableRedisHook()) {
+        if (config.isEnableRedisHook()) {
             RedisSupport redis = TAB.getInstance().getPlatform().getRedisSupport();
             if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
         }
 
-        if (configuration.isPipelineInjection()) {
+        if (config.isPipelineInjection()) {
             PipelineInjector inj = TAB.getInstance().getPlatform().createPipelineInjector();
             if (inj != null) featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, inj);
         }
 
-        if (perWorldPlayerList) {
-            TabFeature pwp = TAB.getInstance().getPlatform().getPerWorldPlayerList();
+        if (config.getPerWorldPlayerList() != null) {
+            TabFeature pwp = TAB.getInstance().getPlatform().getPerWorldPlayerList(config.getPerWorldPlayerList());
             if (pwp != null) featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, pwp);
         }
-        if (bossbar)      featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
-        if (pingSpoof)    featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
-        if (headerFooter) featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
-        if (spectatorFix) featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
-        if (scoreboard)   featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
-        if (yellowNumber) featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
-        if (belowName)    featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
-        if (teams || layout) featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
-        if (tablistFormatting) featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
+        if (config.getBossbar() != null) {
+            featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl(config.getBossbar()));
+        }
+        if (config.getPingSpoof() != null) {
+            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof(config.getPingSpoof()));
+        }
+        if (config.getHeaderFooter() != null) {
+            featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter(config.getHeaderFooter()));
+        }
+        if (config.isPreventSpectatorEffect()) {
+            featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
+        }
+        if (config.getScoreboard() != null) {
+            featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl(config.getScoreboard()));
+        }
+        if (config.getPlayerlistObjective() != null) {
+            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber(config.getPlayerlistObjective()));
+        }
+        if (config.getBelowname() != null) {
+            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName(config.getBelowname()));
+        }
+        if (config.getSorting() != null) {
+            featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting(config.getSorting()));
+        }
+        if (config.getTablistFormatting() != null) {
+            featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList(config.getTablistFormatting()));
+        }
 
         // Must be loaded after: Sorting
-        if (teams) featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
+        if (config.getTeams() != null) {
+            featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag(config.getTeams()));
+        }
 
         // Must be loaded after: Sorting, PlayerList
-        if (layout) featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl());
+        if (config.getLayout() != null) {
+            featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl(config.getLayout()));
+        }
 
         // Must be loaded after: PlayerList
-        if (globalPlayerList && TAB.getInstance().getPlatform().isProxy()) {
-            featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
+        if (config.getGlobalPlayerList() != null && TAB.getInstance().getPlatform().isProxy()) {
+            featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList(config.getGlobalPlayerList()));
         }
 
         featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());

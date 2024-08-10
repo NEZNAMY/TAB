@@ -117,13 +117,13 @@ public class ErrorManager {
                 if (message != null) {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
                         buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + EnumChatFormat.decolor(message) + System.lineSeparator());
-                    if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
+                    if (intoConsoleToo || TAB.getInstance().getConfiguration().getConfig().isDebugMode())
                         TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(message));
                 }
                 for (String line : error) {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
                         buf.write(dateFormat.format(new Date()) + line + System.lineSeparator());
-                    if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
+                    if (intoConsoleToo || TAB.getInstance().getConfiguration().getConfig().isDebugMode())
                         TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(line));
                 }
             }

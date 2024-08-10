@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.files.config.PingSpoofConfiguration;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -20,13 +21,17 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Ping Spoof Thread");
 
     /** Value to display as ping instead of real ping */
-    private final int value = config().getInt("ping-spoof.value", 0);
+    private final int value;
 
     /**
      * Constructs new instance.
+     *
+     * @param   configuration
+     *          Feature configuration
      */
-    public PingSpoof() {
+    public PingSpoof(@NotNull PingSpoofConfiguration configuration) {
         super("Ping spoof");
+        value = configuration.value;
     }
 
     @Override

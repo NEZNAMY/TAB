@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlaceholderReplacementPattern {
 
     /** Instance for empty map to only have a single instance */
-    private static final PlaceholderReplacementPattern EMPTY = new PlaceholderReplacementPattern("", Collections.emptyMap());
+    public static final PlaceholderReplacementPattern EMPTY = new PlaceholderReplacementPattern("", Collections.emptyMap());
 
     /**
      * Full replacement map with values colored and keys being duplicated,
@@ -51,7 +51,7 @@ public class PlaceholderReplacementPattern {
             String value = String.valueOf(entry.getValue()).replace(identifier, "%value%");
             replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
             replacements.put(key, EnumChatFormat.color(value));
-            nestedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(value));
+            nestedPlaceholders.addAll(PlaceholderManagerImpl.detectPlaceholders(value));
             nestedPlaceholders.remove("%value%"); //not a real placeholder
             //snakeyaml converts yes & no to booleans, making them not work when used without "
             if ("true".equals(key)) {

@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CollisionManager extends RefreshableFeature implements JoinListener, Loadable, CustomThreaded {
 
-    private final NameTag nameTags;
-    private final Condition refreshCondition = Condition.getCondition(config().getString("scoreboard-teams.enable-collision", "true"));
+    @NotNull private final NameTag nameTags;
+    @NotNull private final Condition enableCollision;
 
     /**
      * Constructs new instance.
@@ -28,6 +28,7 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
     public CollisionManager(@NotNull NameTag nameTags) {
         super(nameTags.getFeatureName(), "Updating collision");
         this.nameTags = nameTags;
+        enableCollision = Condition.getCondition(nameTags.getConfiguration().enableCollision);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
             TabPlayer player = (TabPlayer) p;
             if (player.teamData.forcedCollision != null) return Boolean.toString(player.teamData.forcedCollision);
-            boolean newCollision = !((TabPlayer)p).isDisguised() && refreshCondition.isMet((TabPlayer) p);
+            boolean newCollision = !((TabPlayer)p).isDisguised() && enableCollision.isMet((TabPlayer) p);
             player.teamData.collisionRule = newCollision;
             return Boolean.toString(newCollision);
         });
@@ -47,7 +48,7 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
     
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.teamData.collisionRule = refreshCondition.isMet(connectedPlayer);
+        connectedPlayer.teamData.collisionRule = enableCollision.isMet(connectedPlayer);
     }
 
     @Override

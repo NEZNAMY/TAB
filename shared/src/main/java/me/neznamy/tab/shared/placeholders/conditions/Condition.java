@@ -98,17 +98,16 @@ public class Condition {
                 TAB.getInstance().getConfigHelper().startup().invalidConditionPattern(name, line);
             }
         }
-        PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
         for (String subCondition : conditions) {
             if (subCondition.startsWith("permission:")) {
-                int permissionRefresh = TAB.getInstance().getConfiguration().getPermissionRefreshInterval();
+                int permissionRefresh = TAB.getInstance().getConfiguration().getConfig().getPermissionRefreshInterval();
                 if (refresh > permissionRefresh || refresh == -1) refresh = permissionRefresh;
             } else {
-                placeholdersInConditions.addAll(pm.detectPlaceholders(subCondition));
+                placeholdersInConditions.addAll(PlaceholderManagerImpl.detectPlaceholders(subCondition));
             }
         }
-        if (yes != null) placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
-        if (no != null) placeholdersInConditions.addAll(pm.detectPlaceholders(no));
+        if (yes != null) placeholdersInConditions.addAll(PlaceholderManagerImpl.detectPlaceholders(yes));
+        if (no != null) placeholdersInConditions.addAll(PlaceholderManagerImpl.detectPlaceholders(no));
         registeredConditions.put(name, this);
     }
 

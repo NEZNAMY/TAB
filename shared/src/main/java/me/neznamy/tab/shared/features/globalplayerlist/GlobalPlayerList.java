@@ -1,11 +1,11 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.config.files.config.GlobalPlayerListConfiguration;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.PlayerList;
@@ -26,33 +26,24 @@ import org.jetbrains.annotations.Nullable;
 public class GlobalPlayerList extends RefreshableFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
         Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, CustomThreaded, RedisFeature {
 
-    @Getter
-    private final ThreadExecutor customThread = new ThreadExecutor("TAB Global PlayerList Thread");
-
-    @Getter
-    private OnlinePlayers onlinePlayers;
-
-    @Nullable
-    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-
-    // config options
-    private final List<String> spyServers = config().getStringList("global-playerlist.spy-servers",
-            Collections.singletonList("spyserver1")).stream().map(String::toLowerCase).collect(Collectors.toList());
-    private final Map<String, List<String>> sharedServers = config().getConfigurationSection("global-playerlist.server-groups");
-    private final boolean othersAsSpectators = config().getBoolean("global-playerlist.display-others-as-spectators", false);
-    private final boolean vanishedAsSpectators = config().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
-    private final boolean isolateUnlistedServers = config().getBoolean("global-playerlist.isolate-unlisted-servers", false);
-    private final boolean updateLatency = config().getBoolean("global-playerlist.update-latency", false);
-    private final Map<String, String> serverToGroupName = new HashMap<>();
-    private final Map<String, Object> groupNameToGroup = new HashMap<>();
-    private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+    @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB Global PlayerList Thread");
+    @Getter private OnlinePlayers onlinePlayers;
+    @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    @NotNull private final GlobalPlayerListConfiguration configuration;
+    @NotNull  private final Map<String, String> serverToGroupName = new HashMap<>();
+    @NotNull private final Map<String, Object> groupNameToGroup = new HashMap<>();
+    @Nullable private final PlayerList playerlist = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 
     /**
      * Constructs new instance and registers new placeholders.
+     *
+     * @param   configuration
+     *          Feature configuration
      */
-    public GlobalPlayerList() {
+    public GlobalPlayerList(@NotNull GlobalPlayerListConfiguration configuration) {
         super("Global PlayerList", "Updating latency");
-        for (Map.Entry<String, List<String>> entry : sharedServers.entrySet()) {
+        this.configuration = configuration;
+        for (Map.Entry<String, List<String>> entry : configuration.sharedServers.entrySet()) {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
                 if (onlinePlayers == null) return "0"; // Not loaded yet
                 int count = 0;
@@ -72,10 +63,10 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void load() {
         onlinePlayers =  new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
-        if (updateLatency) addUsedPlaceholder(TabConstants.Placeholder.PING);
+        if (configuration.updateLatency) addUsedPlaceholder(TabConstants.Placeholder.PING);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             all.globalPlayerListData.serverGroup = getServerGroup(all.server);
-            all.globalPlayerListData.onSpyServer = spyServers.contains(all.server.toLowerCase());
+            all.globalPlayerListData.onSpyServer = configuration.spyServers.contains(all.server.toLowerCase());
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (TabPlayer displayed : onlinePlayers.getPlayers()) {
@@ -131,7 +122,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
 
     @NotNull
     private String computeServerGroup(@NotNull String server) {
-        for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
+        for (Map.Entry<String, List<String>> group : configuration.sharedServers.entrySet()) {
             for (String serverDefinition : group.getValue()) {
                 if (serverDefinition.endsWith("*")) {
                     if (server.toLowerCase().startsWith(serverDefinition.substring(0, serverDefinition.length()-1).toLowerCase()))
@@ -145,7 +136,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 }
             }
         }
-        return isolateUnlistedServers ? "isolated:" + server : "DEFAULT";
+        return configuration.isolateUnlistedServers ? "isolated:" + server : "DEFAULT";
     }
 
     @Override
@@ -161,7 +152,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
         connectedPlayer.globalPlayerListData.serverGroup = getServerGroup(connectedPlayer.server);
-        connectedPlayer.globalPlayerListData.onSpyServer = spyServers.contains(connectedPlayer.server.toLowerCase());
+        connectedPlayer.globalPlayerListData.onSpyServer = configuration.spyServers.contains(connectedPlayer.server.toLowerCase());
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (connectedPlayer.server.equals(all.server)) continue;
             if (shouldSee(all, connectedPlayer)) {
@@ -191,7 +182,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         changed.globalPlayerListData.serverGroup = getServerGroup(changed.server);
-        changed.globalPlayerListData.onSpyServer = spyServers.contains(changed.server.toLowerCase());
+        changed.globalPlayerListData.onSpyServer = configuration.spyServers.contains(changed.server.toLowerCase());
         // TODO fix players potentially not appearing on rapid server switching (if anyone reports it)
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
@@ -240,14 +231,14 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         if (playerlist != null && !p.tablistData.disabled.get()) {
             format = playerlist.getTabFormat(p, viewer);
         }
-        int gameMode = (othersAsSpectators && !p.server.equals(viewer.server)) ||
-                (vanishedAsSpectators && p.isVanished()) ? 3 : p.getGamemode();
+        int gameMode = (configuration.othersAsSpectators && !p.server.equals(viewer.server)) ||
+                (configuration.vanishedAsSpectators && p.isVanished()) ? 3 : p.getGamemode();
         return new TabList.Entry(
                 p.getTablistId(),
                 p.getNickname(),
                 p.getSkin(),
                 true,
-                updateLatency ? p.getPing() : 0,
+                configuration.updateLatency ? p.getPing() : 0,
                 gameMode,
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null
         );
@@ -257,7 +248,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (!player.server.equals(viewer.server)) {
-                viewer.getTabList().updateGameMode(player.getTablistId(), othersAsSpectators ? 3 : player.getGamemode());
+                viewer.getTabList().updateGameMode(player.getTablistId(), configuration.othersAsSpectators ? 3 : player.getGamemode());
             }
         }
     }

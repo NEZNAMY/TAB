@@ -19,6 +19,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
@@ -135,7 +136,7 @@ public class BukkitPlatform implements BackendPlatform {
             RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
             if (rspChat != null) {
                 Chat chat = rspChat.getProvider();
-                int refresh = TAB.getInstance().getConfiguration().getPermissionRefreshInterval();
+                int refresh = TAB.getInstance().getConfiguration().getConfig().getPermissionRefreshInterval();
                 manager.registerPlayerPlaceholder("%vault-prefix%", refresh, p -> chat.getPlayerPrefix((Player) p.getPlayer()));
                 manager.registerPlayerPlaceholder("%vault-suffix%", refresh, p -> chat.getPlayerSuffix((Player) p.getPlayer()));
             }
@@ -165,8 +166,8 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     @Nullable
-    public TabFeature getPerWorldPlayerList() {
-        return new PerWorldPlayerList(plugin);
+    public TabFeature getPerWorldPlayerList(@NotNull PerWorldPlayerListConfiguration configuration) {
+        return new PerWorldPlayerList(plugin, configuration);
     }
 
     @Override

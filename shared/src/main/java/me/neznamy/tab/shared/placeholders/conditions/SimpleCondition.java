@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.placeholders.conditions;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,9 +25,9 @@ public abstract class SimpleCondition {
 
     protected SimpleCondition(@NotNull String[] arr) {
         leftSide = arr.length < 1 ? "" : arr[0];
-        leftSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(leftSide).toArray(new String[0]);
+        leftSidePlaceholders = PlaceholderManagerImpl.detectPlaceholders(leftSide).toArray(new String[0]);
         rightSide = arr.length < 2 ? "" : arr[1];
-        rightSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(rightSide).toArray(new String[0]);
+        rightSidePlaceholders = PlaceholderManagerImpl.detectPlaceholders(rightSide).toArray(new String[0]);
     }
 
     /**

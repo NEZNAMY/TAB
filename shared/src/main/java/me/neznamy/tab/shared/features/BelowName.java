@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.files.config.BelownameConfiguration;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -45,10 +46,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     @Getter
     private OnlinePlayers onlinePlayers;
 
-    private final String rawNumber = config().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
-    private final String rawText = config().getString("belowname-objective.text", "Health");
-    private final String fancyDisplayDefault = config().getString("belowname-objective.fancy-display-default", "NPC");
-    private final String fancyDisplayPlayers = config().getString("belowname-objective.fancy-display-players", "&c" + TabConstants.Placeholder.HEALTH);
+    private final BelownameConfiguration configuration;
 
     private final TextRefresher textRefresher = new TextRefresher();
     private final DisableChecker disableChecker;
@@ -58,14 +56,16 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
 
     /**
      * Constructs new instance and registers disable condition checker and text refresher to feature manager.
+     *
+     * @param   configuration
+     *          Feature configuration
      */
-    public BelowName() {
+    public BelowName(@NotNull BelownameConfiguration configuration) {
         super("BelowName", "Updating BelowName number");
-        Condition disableCondition = Condition.getCondition(config().getString("belowname-objective.disable-condition"));
-        disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange, p -> p.belowNameData.disabled);
+        this.configuration = configuration;
+        disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.belowNameData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
-        TAB.getInstance().getConfigHelper().startup().checkBelowNameText(rawText);
     }
 
     @Override
@@ -97,10 +97,10 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     }
 
     private void loadProperties(@NotNull TabPlayer player) {
-        player.belowNameData.score = new Property(this, player, rawNumber);
-        player.belowNameData.numberFormat = new Property(this, player, fancyDisplayPlayers);
-        player.belowNameData.text = new Property(textRefresher, player, rawText);
-        player.belowNameData.defaultNumberFormat = new Property(textRefresher, player, fancyDisplayDefault);
+        player.belowNameData.score = new Property(this, player, configuration.number);
+        player.belowNameData.numberFormat = new Property(this, player, configuration.fancyDisplayPlayers);
+        player.belowNameData.text = new Property(textRefresher, player, configuration.text);
+        player.belowNameData.defaultNumberFormat = new Property(textRefresher, player, configuration.fancyDisplayDefault);
     }
 
     @Override
@@ -186,11 +186,11 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
             try {
                 int value = (int) Math.round(Double.parseDouble(string));
                 // Float
-                TAB.getInstance().getConfigHelper().runtime().floatInBelowName(p, rawNumber, string);
+                TAB.getInstance().getConfigHelper().runtime().floatInBelowName(p, configuration.number, string);
                 return value;
             } catch (NumberFormatException e2) {
                 // Not a float (invalid)
-                TAB.getInstance().getConfigHelper().runtime().invalidNumberForBelowName(p, rawNumber, string);
+                TAB.getInstance().getConfigHelper().runtime().invalidNumberForBelowName(p, configuration.number, string);
                 return 0;
             }
         }

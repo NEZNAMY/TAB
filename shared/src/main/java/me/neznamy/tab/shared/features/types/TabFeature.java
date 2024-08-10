@@ -3,9 +3,6 @@ package me.neznamy.tab.shared.features.types;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.file.ConfigurationFile;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Abstract class representing a core feature of the plugin.
@@ -33,15 +30,5 @@ public class TabFeature {
      */
     public void ensureActive() {
         if (!active) throw new IllegalStateException("This instance got discarded because plugin was reloaded. Obtain a new instance.");
-    }
-
-    /**
-     * Returns config file.
-     *
-     * @return  config file
-     */
-    @NotNull
-    public ConfigurationFile config() {
-        return TAB.getInstance().getConfiguration().getConfig();
     }
 }

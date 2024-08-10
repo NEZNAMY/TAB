@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders.types;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.PlaceholderReplacementPattern;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
@@ -11,9 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * General collection of variables and functions shared between all placeholder types
@@ -59,8 +58,7 @@ public abstract class TabPlaceholder implements Placeholder {
             throw new IllegalArgumentException("Identifier must start and end with % (attempted to use \"" + identifier + "\")");
         this.identifier = identifier;
         this.refresh = refresh;
-        Map<String, Map<Object, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements");
-        replacements = PlaceholderReplacementPattern.create(identifier, map.getOrDefault(identifier, Collections.emptyMap()));
+        replacements = TAB.getInstance().getConfiguration().getConfig().getReplacements().compiled.getOrDefault(identifier, PlaceholderReplacementPattern.EMPTY);
         for (String nested : getNestedPlaceholders("")) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
         }
@@ -94,7 +92,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @return  List of nested placeholders in provided output
      */
     public List<String> getNestedPlaceholders(@NonNull String output) {
-        return TAB.getInstance().getPlaceholderManager().detectPlaceholders(output);
+        return PlaceholderManagerImpl.detectPlaceholders(output);
     }
 
     /**
