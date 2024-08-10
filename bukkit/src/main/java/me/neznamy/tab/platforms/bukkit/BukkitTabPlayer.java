@@ -1,17 +1,12 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import lombok.Getter;
-import me.neznamy.tab.platforms.bukkit.bossbar.BossBarLoader;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
-import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
 import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
-import me.neznamy.tab.shared.platform.BossBar;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -22,12 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * TabPlayer implementation for Bukkit platform
  */
 @SuppressWarnings("deprecation")
-@Getter
 public class BukkitTabPlayer extends BackendTabPlayer {
-
-    @NotNull private final Scoreboard scoreboard = ScoreboardLoader.getInstance().apply(this);
-    @NotNull private final TabListBase<?> tabList = TabListBase.getInstance().apply(this);
-    @NotNull private final BossBar bossBar = BossBarLoader.findInstance(this);
 
     /** Player's connection for sending packets */
     @Nullable
@@ -73,7 +63,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     @Nullable
     public TabList.Skin getSkin() {
-        return tabList.getSkin();
+        return ((TabListBase<?>)getTabList()).getSkin();
     }
 
     @Override

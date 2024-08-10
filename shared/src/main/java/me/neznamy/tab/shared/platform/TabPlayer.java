@@ -126,6 +126,21 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Last known values for each relational placeholder after applying replacements and nested placeholders */
     public final Map<RelationalPlaceholder, Map<TabPlayer, String>> lastRelationalValues = new ConcurrentHashMap<>();
 
+    /** Player's scoreboard */
+    @Getter
+    @NotNull
+    private final Scoreboard scoreboard;
+
+    /** Player's bossbar view */
+    @Getter
+    @NotNull
+    private final BossBar bossBar;
+
+    /** Player's tablist view */
+    @Getter
+    @NotNull
+    private final TabList tabList;
+
     /**
      * Constructs new instance with given parameters
      *
@@ -157,6 +172,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         bedrockPlayer = FloodgateHook.getInstance().isFloodgatePlayer(uniqueId, name);
         permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
         tablistId = useRealId ? uniqueId : UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        scoreboard = platform.createScoreboard(this);
+        bossBar = platform.createBossBar(this);
+        tabList = platform.createTabList(this);
     }
 
     /**
@@ -330,20 +348,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     }
 
     /**
-     * Returns scoreboard interface for calling scoreboard-related methods
-     *
-     * @return  scoreboard interface for calling scoreboard-related methods
-     */
-    public abstract @NotNull Scoreboard getScoreboard();
-
-    /**
-     * Returns handler for calling bossbar-related methods
-     *
-     * @return  handler for calling bossbar-related methods
-     */
-    public abstract @NotNull BossBar getBossBar();
-
-    /**
      * Returns {@code true} if player is disguised using LibsDisguises, {@code false} if not
      *
      * @return  {@code true} if player is disguised, {@code false} if not
@@ -385,13 +389,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  player's skin
      */
     public abstract @Nullable TabList.Skin getSkin();
-
-    /**
-     * Returns TabList interface for calling tablist-related methods
-     *
-     * @return  TabList interface for calling tablist-related methods
-     */
-    public abstract @NotNull TabList getTabList();
 
     /**
      * Sends specified component as a chat message

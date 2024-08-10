@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
+import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
+import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
@@ -32,7 +34,12 @@ import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.platform.BossBar;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
+import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.milkbowl.vault.chat.Chat;
@@ -271,6 +278,33 @@ public class BukkitPlatform implements BackendPlatform {
         } else {
             return component;
         }
+    }
+
+    @Override
+    @NotNull
+    public Scoreboard createScoreboard(@NotNull TabPlayer player) {
+        return ScoreboardLoader.getInstance().apply((BukkitTabPlayer) player);
+    }
+
+    @Override
+    @NotNull
+    public BossBar createBossBar(@NotNull TabPlayer player) {
+        if (AdventureBossBar.isAvailable()) return new AdventureBossBar(player);
+
+        // 1.9+ server, handle using API, potential 1.8 players are handled by ViaVersion
+        if (BukkitReflection.getMinorVersion() >= 9) return new BukkitBossBar((BukkitTabPlayer) player);
+
+        // 1.9+ player on 1.8 server, handle using ViaVersion API
+        if (player.getVersion().getMinorVersion() >= 9) return new ViaBossBar((BukkitTabPlayer) player);
+
+        // 1.8- server and player, no implementation
+        return new DummyBossBar();
+    }
+
+    @Override
+    @NotNull
+    public TabList createTabList(@NotNull TabPlayer player) {
+        return TabListBase.getInstance().apply((BukkitTabPlayer) player);
     }
 
     @Override

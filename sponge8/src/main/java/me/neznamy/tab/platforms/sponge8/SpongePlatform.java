@@ -13,6 +13,11 @@ import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.platform.BossBar;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import net.kyori.adventure.text.Component;
 import org.bstats.charts.SimplePie;
 import org.bstats.sponge.Metrics;
@@ -24,7 +29,7 @@ import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import java.io.File;
 
 /**
- * Platform implementation for Sponge 8 and up
+ * Platform implementation for Sponge 8 and up.
  */
 @RequiredArgsConstructor
 public class SpongePlatform implements BackendPlatform {
@@ -110,6 +115,24 @@ public class SpongePlatform implements BackendPlatform {
     @NotNull
     public Component convertComponent(@NotNull TabComponent component, boolean modern) {
         return AdventureHook.toAdventureComponent(component, modern);
+    }
+
+    @Override
+    @NotNull
+    public Scoreboard createScoreboard(@NotNull TabPlayer player) {
+        return new SpongeScoreboard((SpongeTabPlayer) player);
+    }
+
+    @Override
+    @NotNull
+    public BossBar createBossBar(@NotNull TabPlayer player) {
+        return new AdventureBossBar(player);
+    }
+
+    @Override
+    @NotNull
+    public TabList createTabList(@NotNull TabPlayer player) {
+        return new SpongeTabList((SpongeTabPlayer) player);
     }
 
     @Override

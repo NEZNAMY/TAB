@@ -144,6 +144,36 @@ public interface Platform {
     Object convertComponent(@NotNull TabComponent component, boolean modern);
 
     /**
+     * Creates new scoreboard instance for given player.
+     *
+     * @param   player
+     *          Player to create scoreboard for
+     * @return  Scoreboard implementation for given player
+     */
+    @NotNull
+    Scoreboard createScoreboard(@NotNull TabPlayer player);
+
+    /**
+     * Creates new bossbar instance for given player.
+     *
+     * @param   player
+     *          Player to create bossbar for
+     * @return  Bossbar implementation for given player
+     */
+    @NotNull
+    BossBar createBossBar(@NotNull TabPlayer player);
+
+    /**
+     * Creates new tablist instance for given player.
+     *
+     * @param   player
+     *          Player to create tablist for
+     * @return  TabList implementation for given player
+     */
+    @NotNull
+    TabList createTabList(@NotNull TabPlayer player);
+
+    /**
      * Returns {@code true} if the viewer can see the target, {@code false} otherwise.
      * This includes all vanish, permission & plugin API checks.
      *

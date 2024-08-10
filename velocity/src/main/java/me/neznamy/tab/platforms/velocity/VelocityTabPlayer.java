@@ -2,13 +2,8 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.util.GameProfile;
-import lombok.Getter;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
-import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.impl.BridgeScoreboard;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,22 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * TabPlayer implementation for Velocity
+ * TabPlayer implementation for Velocity.
  */
-@Getter
 public class VelocityTabPlayer extends ProxyTabPlayer {
-
-    /** Player's scoreboard */
-    @NotNull
-    private final Scoreboard scoreboard;
-
-    /** Player's tab list */
-    @NotNull
-    private final VelocityTabList tabList = new VelocityTabList(this);
-
-    /** Player's boss bar view */
-    @NotNull
-    private final BossBar bossBar = new AdventureBossBar(this);
 
     /**
      * Constructs new instance for given player
@@ -44,11 +26,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     public VelocityTabPlayer(@NotNull VelocityPlatform platform, @NotNull Player p) {
         super(platform, p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().map(s ->
                 s.getServerInfo().getName()).orElse("null"), p.getProtocolVersion().getProtocol());
-        if (platform.isScoreboardAPI()) {
-            scoreboard = new VelocityScoreboard(this);
-        } else {
-            scoreboard = new BridgeScoreboard(this);
-        }
     }
     
     @Override

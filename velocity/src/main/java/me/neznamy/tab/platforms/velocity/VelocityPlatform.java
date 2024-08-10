@@ -18,8 +18,12 @@ import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
+import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
+import me.neznamy.tab.shared.platform.impl.BridgeScoreboard;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
@@ -154,6 +158,28 @@ public class VelocityPlatform extends ProxyPlatform {
     @NotNull
     public Component convertComponent(@NotNull TabComponent component, boolean modern) {
         return AdventureHook.toAdventureComponent(component, modern);
+    }
+
+    @Override
+    @NotNull
+    public Scoreboard createScoreboard(@NotNull TabPlayer player) {
+        if (scoreboardAPI) {
+            return new VelocityScoreboard((VelocityTabPlayer) player);
+        } else {
+            return new BridgeScoreboard((VelocityTabPlayer) player);
+        }
+    }
+
+    @Override
+    @NotNull
+    public BossBar createBossBar(@NotNull TabPlayer player) {
+        return new AdventureBossBar(player);
+    }
+
+    @Override
+    @NotNull
+    public TabList createTabList(@NotNull TabPlayer player) {
+        return new VelocityTabList((VelocityTabPlayer) player);
     }
 
     @Override

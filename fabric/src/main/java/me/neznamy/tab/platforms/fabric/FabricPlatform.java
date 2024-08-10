@@ -15,6 +15,10 @@ import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.platform.BossBar;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -128,6 +132,24 @@ public class FabricPlatform implements BackendPlatform {
             FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra, modern));
         }
         return nmsComponent;
+    }
+
+    @Override
+    @NotNull
+    public Scoreboard createScoreboard(@NotNull TabPlayer player) {
+        return new FabricScoreboard((FabricTabPlayer) player);
+    }
+
+    @Override
+    @NotNull
+    public BossBar createBossBar(@NotNull TabPlayer player) {
+        return new FabricBossBar((FabricTabPlayer) player);
+    }
+
+    @Override
+    @NotNull
+    public TabList createTabList(@NotNull TabPlayer player) {
+        return new FabricTabList((FabricTabPlayer) player);
     }
 
     @Override

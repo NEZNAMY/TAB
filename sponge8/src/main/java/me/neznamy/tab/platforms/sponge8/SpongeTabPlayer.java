@@ -1,12 +1,9 @@
 package me.neznamy.tab.platforms.sponge8;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.BossBar;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,19 +18,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * TabPlayer implementation for Sponge 8.
+ * TabPlayer implementation for Sponge 8+.
  */
-@Getter
 public class SpongeTabPlayer extends BackendTabPlayer {
-
-    @NotNull
-    private final SpongeScoreboard scoreboard = new SpongeScoreboard(this);
-
-    @NotNull
-    private final SpongeTabList tabList = new SpongeTabList(this);
-
-    @NotNull
-    private final BossBar bossBar = new AdventureBossBar(this);
 
     /**
      * Constructs new instance with given parameters.

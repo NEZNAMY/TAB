@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
-import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.ChatModifier;
@@ -85,7 +84,7 @@ public class Loader_1_18_2 implements Loader {
             Field displayNameField = ReflectionUtils.getFields(PlayerUpdate.class, Component.class).get(0);
             Field latencyField = ReflectionUtils.getFields(PlayerUpdate.class, int.class).get(0);
             if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
-                Object expectedName = ((FabricTabPlayer)receiver).getTabList().getExpectedDisplayName(profile.getId());
+                Object expectedName = ((FabricTabList)receiver.getTabList()).getExpectedDisplayName(profile.getId());
                 if (expectedName != null) displayNameField.set(nmsData, expectedName);
             }
             if (action.name().equals(TabList.Action.UPDATE_LATENCY.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
