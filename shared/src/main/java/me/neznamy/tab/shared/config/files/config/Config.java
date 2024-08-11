@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.config.files.config;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.Converter;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import org.jetbrains.annotations.NotNull;
@@ -20,16 +21,16 @@ public class Config {
 
     @Nullable private BelownameConfiguration belowname;
     @Nullable private BossBarConfiguration bossbar;
-    @NotNull private final ConditionsSection conditions = new ConditionsSection(config);
+    @NotNull private final ConditionsSection conditions;
     @Nullable private GlobalPlayerListConfiguration globalPlayerList;
     @Nullable private HeaderFooterConfiguration headerFooter;
     @Nullable private LayoutConfiguration layout;
     @Nullable private MySQLConfiguration mysql;
     @Nullable private PerWorldPlayerListConfiguration perWorldPlayerList;
     @Nullable private PingSpoofConfiguration pingSpoof;
-    @NotNull private final PlaceholderRefreshConfiguration refresh = new PlaceholderRefreshConfiguration(config);
-    @NotNull private final PlaceholderReplacementsConfiguration replacements = new PlaceholderReplacementsConfiguration(config);
-    @NotNull private final PlaceholdersConfiguration placeholders = new PlaceholdersConfiguration(config);
+    @NotNull private final PlaceholderRefreshConfiguration refresh;
+    @NotNull private final PlaceholderReplacementsConfiguration replacements;
+    @NotNull private final PlaceholdersConfiguration placeholders;
     @Nullable private PlayerListObjectiveConfiguration playerlistObjective;
     @Nullable private ScoreboardConfiguration scoreboard;
     @Nullable private SortingConfiguration sorting;
@@ -52,6 +53,17 @@ public class Config {
     @NotNull private final List<String> primaryGroupFindingList = config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
     public Config() throws IOException {
+        Converter converter = new Converter();
+        converter.convert292to300(config);
+        converter.convert301to302(config);
+        converter.convert332to400(config);
+        converter.convert409to410(config);
+        converter.convert415to500(config);
+
+        conditions = new ConditionsSection(config);
+        refresh = new PlaceholderRefreshConfiguration(config);
+        replacements = new PlaceholderReplacementsConfiguration(config);
+        placeholders = new PlaceholdersConfiguration(config);
         if (config.getBoolean("belowname-objective.enabled", false)) belowname = new BelownameConfiguration(config);
         if (config.getBoolean("bossbar.enabled", false)) bossbar = new BossBarConfiguration(config);
         if (config.getBoolean("global-playerlist.enabled", false)) globalPlayerList = new GlobalPlayerListConfiguration(config);

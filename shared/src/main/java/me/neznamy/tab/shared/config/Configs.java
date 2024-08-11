@@ -59,13 +59,7 @@ public class Configs {
      *          if files contain syntax errors
      */
     public Configs() throws IOException {
-        Converter converter = new Converter();
-        converter.convert2810to290(animationFile);
-        converter.convert292to300(config.getConfig());
-        converter.convert301to302(config.getConfig());
-        converter.convert332to400(config.getConfig());
-        converter.convert409to410(config.getConfig());
-        converter.convert415to500(config.getConfig());
+        new Converter().convert2810to290(animationFile);
         if (config.getMysql() != null) {
             try {
                 mysql = new MySQL(config.getMysql());
