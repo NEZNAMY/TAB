@@ -27,7 +27,7 @@ public class BossBarConfiguration extends ConfigurationSection {
             BossBarDefinition def = new BossBarDefinition(
                     getString(SECTION + ".bars." + bossbar + ".style", "PROGRESS"),
                     getString(SECTION + ".bars." + bossbar + ".color", "PURPLE"),
-                    getString(SECTION + ".bars." + bossbar + ".progress", "100"),
+                    getObject(SECTION + ".bars." + bossbar + ".progress", "100").toString(),
                     getString(SECTION + ".bars." + bossbar + ".text", "\"text\" is not defined!"),
                     getBoolean(SECTION + ".bars." + bossbar + ".announcement-bar") == Boolean.TRUE,
                     getString(SECTION + ".bars." + bossbar + ".display-condition")
