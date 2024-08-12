@@ -33,7 +33,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     private final List<String> defaultBars = new ArrayList<>();
 
     //registered BossBars
-    @Getter private final Map<String, BossBar> registeredBossBars = new HashMap<>();
+    @Getter private final Map<String, BossBar> registeredBossBars = new LinkedHashMap<>();
     protected BossBar[] lineValues;
 
     //config options

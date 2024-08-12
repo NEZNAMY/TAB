@@ -17,7 +17,7 @@ public class BossBarConfiguration extends ConfigurationSection {
     @NotNull public final String toggleCommand = getString(SECTION + ".toggle-command", "/bossbar");
     public final boolean rememberToggleChoice = getBoolean(SECTION + ".remember-toggle-choice", false);
     public final boolean hiddenByDefault = getBoolean(SECTION + ".hidden-by-default", false);
-    @NotNull public final Map<String, BossBarDefinition> bars = new HashMap<>();
+    @NotNull public final Map<String, BossBarDefinition> bars = new LinkedHashMap<>();
 
     public BossBarConfiguration(@NotNull ConfigurationFile config) {
         super(config);
