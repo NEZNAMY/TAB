@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.config.section;
+package me.neznamy.tab.shared.config.files.animations;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;

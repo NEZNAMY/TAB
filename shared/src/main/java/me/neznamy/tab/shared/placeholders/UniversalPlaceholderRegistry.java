@@ -6,7 +6,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.files.config.ConditionsSection.ConditionDefinition;
 import me.neznamy.tab.shared.config.files.config.PlaceholdersConfiguration;
-import me.neznamy.tab.shared.config.section.AnimationConfiguration.AnimationDefinition;
+import me.neznamy.tab.shared.config.files.animations.AnimationConfiguration.AnimationDefinition;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -125,7 +125,7 @@ public class UniversalPlaceholderRegistry {
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, refresh,
                     p -> LuckPermsHook.getInstance().getSuffix((TabPlayer) p));
         }
-        for (Entry<String, AnimationDefinition> entry : TAB.getInstance().getConfiguration().getAnimations().animations.entrySet()) {
+        for (Entry<String, AnimationDefinition> entry : TAB.getInstance().getConfiguration().getAnimations().getAnimations().animations.entrySet()) {
             Animation a = new Animation((PlaceholderManagerImpl) manager, entry.getKey(), entry.getValue());
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.animation(a.getName()), a.getRefresh(), p -> a.getMessage());
         }

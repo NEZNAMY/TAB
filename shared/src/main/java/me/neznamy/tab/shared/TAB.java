@@ -182,7 +182,6 @@ public class TAB extends TabAPI {
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
             cpu.enable();
-            configHelper.startup().checkErrorLog();
             configHelper.startup().printWarnCount();
             platform.logInfo(TabComponent.fromColoredText(EnumChatFormat.GREEN + "Enabled in " + (System.currentTimeMillis()-time) + "ms"));
             return configuration.getMessages().getReloadSuccess();

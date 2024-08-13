@@ -9,7 +9,8 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.config.section.AnimationConfiguration.AnimationDefinition;
+import me.neznamy.tab.shared.config.files.animations.AnimationConfiguration;
+import me.neznamy.tab.shared.config.files.animations.AnimationConfiguration.AnimationDefinition;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,10 +65,8 @@ public class Animation {
         for (String placeholder : nestedPlaceholders) {
             int localRefresh;
             if (placeholder.startsWith("%animation:")) {
-                //nested animations may not be loaded into the system yet due to load order, manually getting the refresh interval
-                String nestedAnimation = placeholder.substring("%animation:".length(), placeholder.length()-1);
-                localRefresh = TAB.getInstance().getConfiguration().getAnimationFile().hasConfigOption(nestedAnimation + ".change-interval") ?
-                        TAB.getInstance().getConfiguration().getAnimationFile().getInt(nestedAnimation + ".change-interval") : interval;
+                AnimationConfiguration cfg = TAB.getInstance().getConfiguration().getAnimations().getAnimations();
+                localRefresh = cfg.animations.containsKey(placeholder) ? cfg.animations.get(placeholder).changeInterval : interval;
             } else {
                 localRefresh = placeholderManager.getPlaceholder(placeholder).getRefresh();
             }

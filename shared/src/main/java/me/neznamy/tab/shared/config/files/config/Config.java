@@ -77,6 +77,30 @@ public class Config {
         if (config.getBoolean("scoreboard-teams.enabled", true) || config.getBoolean("layout.enabled", false)) sorting = new SortingConfiguration(config);
         if (config.getBoolean("tablist-name-formatting.enabled", false)) tablistFormatting = new TablistFormattingConfiguration(config);
         if (config.getBoolean("scoreboard-teams.enabled", false)) teams = new TeamConfiguration(config);
+
+        if (layout != null) {
+            if (perWorldPlayerList != null) {
+                TAB.getInstance().getConfigHelper().startup().startupWarn(config.getFile(), "Both per world playerlist and layout features are enabled, but layout makes per world playerlist redundant. " +
+                        "Layout automatically works with all connected players and replaces real player entries with" +
+                                " fake players, making per world playerlist completely useless as real players are pushed out of the playerlist. " +
+                        "Disable per world playerlist for the same result, but with better performance.");
+            }
+            if (playerlistObjective != null) {
+                TAB.getInstance().getConfigHelper().startup().startupWarn(config.getFile(), "Layout feature breaks playerlist-objective feature, because it replaces real player with fake slots " +
+                        "with different usernames for more reliable functionality. Disable playerlist-objective feature, as it will only look bad " +
+                        "and consume resources.");
+            }
+            if (preventSpectatorEffect) {
+                TAB.getInstance().getConfigHelper().hint(config.getFile(), "Layout feature automatically includes prevent-spectator-effect, therefore the feature can be disabled " +
+                        "for better performance, as it is not needed at all (assuming it is configured to always display some layout).");
+            }
+            if (globalPlayerList != null) {
+                TAB.getInstance().getConfigHelper().startup().startupWarn(config.getFile(), "Both global playerlist and layout features are enabled, but layout makes global playerlist redundant. " +
+                        "Layout automatically works with all connected players on the proxy and replaces real player entries with" +
+                                " fake players, making global playerlist completely useless. " +
+                        "Disable global playerlist for the same result, but with better performance.");
+            }
+        }
     }
 
     /**

@@ -7,11 +7,11 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
+import me.neznamy.tab.shared.config.files.animations.Animations;
 import me.neznamy.tab.shared.config.files.config.Config;
 import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
-import me.neznamy.tab.shared.config.section.AnimationConfiguration;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,9 +31,8 @@ public class Configs {
     /** config.yml file */
     private final Config config = new Config();
 
-    //animations.yml file
-    private final ConfigurationFile animationFile = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/animations.yml"),
-            new File(TAB.getInstance().getDataFolder(), "animations.yml"));
+    /** animations.yml file */
+    private final Animations animations = new Animations();
 
     //messages.yml file
     private final MessageFile messages = new MessageFile();
@@ -47,8 +46,6 @@ public class Configs {
 
     private MySQL mysql;
 
-    @NotNull private final AnimationConfiguration animations = new AnimationConfiguration(animationFile);
-
     /**
      * Constructs new instance and loads configuration files.
      * If needed, converts old configuration files as well.
@@ -59,7 +56,13 @@ public class Configs {
      *          if files contain syntax errors
      */
     public Configs() throws IOException {
-        new Converter().convert2810to290(animationFile);
+        File errorLog = TAB.getInstance().getErrorManager().getErrorLog();
+        if (errorLog.length() > TabConstants.MAX_LOG_SIZE) {
+            TAB.getInstance().getConfigHelper().startup().startupWarn(errorLog, "The file has reached its size limit (1MB). No new errors will be logged. " +
+                    "Take a look at the existing logged errors, as they may have caused the plugin to not work properly " +
+                    "in the past and if not fixed, will most likely cause problems in the future as well. If you are using latest version " +
+                    "of the plugin, consider reporting them.");
+        }
         if (config.getMysql() != null) {
             try {
                 mysql = new MySQL(config.getMysql());

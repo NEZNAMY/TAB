@@ -2,8 +2,6 @@ package me.neznamy.tab.shared.config.files;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,11 +37,11 @@ public class ConfigurationSection {
     }
 
     protected void startupWarn(@NotNull String message) {
-        TAB.getInstance().getConfigHelper().startup().startupWarn("[" + file.getFile().getName() + "] " + message);
+        TAB.getInstance().getConfigHelper().startup().startupWarn(file.getFile(), message);
     }
     
     protected void hint(@NotNull String message) {
-        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GOLD + "[Hint] " + message));
+        TAB.getInstance().getConfigHelper().hint(file.getFile(), message);
     }
 
     @Nullable

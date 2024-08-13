@@ -563,13 +563,6 @@ public class FeatureManager {
         Config config = TAB.getInstance().getConfiguration().getConfig();
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
 
-        if (config.getLayout() != null) {
-            if (config.getPerWorldPlayerList() != null) TAB.getInstance().getConfigHelper().startup().bothPerWorldPlayerListAndLayoutEnabled();
-            if (config.getPlayerlistObjective() != null) TAB.getInstance().getConfigHelper().startup().layoutBreaksYellowNumber();
-            if (config.isPreventSpectatorEffect()) TAB.getInstance().getConfigHelper().hint().layoutIncludesPreventSpectatorEffect();
-            if (config.getGlobalPlayerList() != null) TAB.getInstance().getConfigHelper().startup().bothGlobalPlayerListAndLayoutEnabled();
-        }
-
         // Load the feature first, because it will be processed in main thread (to make it run before feature threads)
         if (config.isEnableRedisHook()) {
             RedisSupport redis = TAB.getInstance().getPlatform().getRedisSupport();
