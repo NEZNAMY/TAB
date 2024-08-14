@@ -20,7 +20,7 @@ public interface RedisFeature {
      * @param   player
      *          Player who joined
      */
-    default void onJoin(@NotNull RedisPlayer player) {};
+    default void onJoin(@NotNull RedisPlayer player) {}
 
     /**
      * Called when a player quits another proxy.
