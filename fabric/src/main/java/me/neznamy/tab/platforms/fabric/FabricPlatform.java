@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.fabric;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -20,7 +19,6 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,9 +38,6 @@ public class FabricPlatform implements BackendPlatform {
 
     /** Minecraft server reference */
     private final MinecraftServer server;
-
-    /** Flag tracking presence of permission API */
-    private final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
 
     /** Server version */
     private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion);
@@ -160,19 +155,5 @@ public class FabricPlatform implements BackendPlatform {
     @Override
     public double getMSPT() {
         return FabricMultiVersion.getMSPT(server);
-    }
-
-    /**
-     * Checks for permission and returns the result.
-     *
-     * @param   source
-     *          Source to check permission of
-     * @param   permission
-     *          Permission node to check
-     * @return  {@code true} if has permission, {@code false} if not
-     */
-    public boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {
-        if (source.hasPermission(4)) return true;
-        return fabricPermissionsApi && Permissions.check(source, permission);
     }
 }

@@ -7,6 +7,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import me.neznamy.tab.platforms.fabric.hook.PermissionsAPIHook;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -57,12 +58,11 @@ public class FabricTabCommand {
 
     @SuppressWarnings("SameReturnValue") // Unused by plugin
     private int executeCommand(@NotNull CommandSourceStack source, @NotNull String[] args) {
-        FabricPlatform platform = (FabricPlatform) TAB.getInstance().getPlatform();
         if (TAB.getInstance().isPluginDisabled()) {
-            boolean hasReloadPermission = platform.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
-            boolean hasAdminPermission = platform.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
+            boolean hasReloadPermission = PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
+            boolean hasAdminPermission = PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
-                FabricMultiVersion.sendMessage(source, TabComponent.fromColoredText(message).convert(platform.getServerVersion()));
+                FabricMultiVersion.sendMessage(source, TabComponent.fromColoredText(message).convert(((FabricPlatform) TAB.getInstance().getPlatform()).getServerVersion()));
             }
         } else {
             if (source.getEntity() == null) {

@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.properties.Property;
+import me.neznamy.tab.platforms.fabric.hook.PermissionsAPIHook;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -31,7 +32,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return getPlatform().hasPermission(getPlayer().createCommandSourceStack(), permission);
+        return PermissionsAPIHook.hasPermission(getPlayer().createCommandSourceStack(), permission);
     }
 
     @Override
