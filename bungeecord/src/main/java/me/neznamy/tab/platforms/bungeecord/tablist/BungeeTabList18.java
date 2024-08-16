@@ -26,7 +26,7 @@ public class BungeeTabList18 extends BungeeTabList {
     }
 
     @Override
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         removeUuid(entry);
         sendPacket(PlayerListItem.Action.REMOVE_PLAYER, item(entry));
     }

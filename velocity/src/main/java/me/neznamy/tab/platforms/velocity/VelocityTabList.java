@@ -29,7 +29,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
     }
 
     @Override
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
@@ -84,7 +84,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
     @Override
     public void checkDisplayNames() {
         for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            Component expectedComponent = getExpectedDisplayName(entry.getProfile().getId());
+            Component expectedComponent = getExpectedDisplayNames().get(entry.getProfile().getId());
             if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
                 entry.setDisplayName(expectedComponent);
             }

@@ -35,7 +35,7 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Component> {
     }
 
     @Override
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         player.getPlayer().tabList().removeEntry(entry);
     }
 
@@ -88,7 +88,7 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Component> {
     @Override
     public void checkDisplayNames() {
         for (TabListEntry entry : player.getPlayer().tabList().entries()) {
-            Component expectedComponent = getExpectedDisplayName(entry.profile().uniqueId());
+            Component expectedComponent = getExpectedDisplayNames().get(entry.profile().uniqueId());
             if (expectedComponent != null && entry.displayName().orElse(null) != expectedComponent) {
                 entry.setDisplayName(expectedComponent);
             }

@@ -4,7 +4,6 @@ import lombok.*;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -29,13 +28,8 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
     private boolean antiOverride;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    @Getter
     private final Map<UUID, C> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
-
-    @Override
-    public void removeEntry(@NonNull UUID entry) {
-        expectedDisplayNames.remove(entry);
-        removeEntry0(entry);
-    }
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
@@ -53,29 +47,6 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
             // Compensation for 1.8.0 client sided bug
             updateDisplayName(entry.getUniqueId(), component);
         }
-    }
-
-    /**
-     * Returns expected display name for specified UUID. If nothing is found or anti-override is disabled,
-     * {@code null} is returned.
-     *
-     * @param   id
-     *          UUID of tablist entry
-     * @return  Expected display name or {@code null} if not found or anti-override is disabled
-     */
-    @Nullable
-    public C getExpectedDisplayName(@NotNull UUID id) {
-        return expectedDisplayNames.get(id);
-    }
-
-    /**
-     * Removes UUID from expected display names (to prevent memory leak).
-     *
-     * @param   id
-     *          UUID to remove
-     */
-    public void removeExpectedDisplayName(@NotNull UUID id) {
-        expectedDisplayNames.remove(id);
     }
 
     /**
@@ -107,14 +78,6 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
     public C toComponent(@NonNull TabComponent component) {
         return component.convert(player.getVersion());
     }
-
-    /**
-     * Removes entry from the TabList.
-     *
-     * @param   entry
-     *          Entry to remove
-     */
-    public abstract void removeEntry0(@NonNull UUID entry);
 
     /**
      * Updates display name of an entry. Using {@code null} makes it undefined and

@@ -110,7 +110,7 @@ public class PacketTabList18 extends TabListBase<Object> {
     }
 
     @Override
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         packetSender.sendPacket(player,
                 createPacket(Action.REMOVE_PLAYER, entry, "", null, false, 0, 0, null));
     }
@@ -213,7 +213,7 @@ public class PacketTabList18 extends TabListBase<Object> {
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
             UUID id = profile.getId();
             if (action.equals(Action.UPDATE_DISPLAY_NAME.name()) || action.equals(Action.ADD_PLAYER.name())) {
-                Object expectedName = getExpectedDisplayName(id);
+                Object expectedName = getExpectedDisplayNames().get(id);
                 if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName);
             }
             if (action.equals(Action.UPDATE_LATENCY.name()) || action.equals(Action.ADD_PLAYER.name())) {

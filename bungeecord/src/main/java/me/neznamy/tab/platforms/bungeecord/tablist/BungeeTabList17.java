@@ -43,7 +43,7 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         removeUuid(entry);
         update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));

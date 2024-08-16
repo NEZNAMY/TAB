@@ -30,7 +30,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.REMOVE_PLAYER,
                 new Builder(entry, "", null, false, 0, 0, null)));
     }

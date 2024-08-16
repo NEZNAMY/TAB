@@ -165,7 +165,7 @@ public class FeatureManager {
         }
         TAB.getInstance().removePlayer(disconnectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            ((TrackedTabList<?, ?>)all.getTabList()).removeExpectedDisplayName(disconnectedPlayer.getTablistId());
+            ((TrackedTabList<?, ?>)all.getTabList()).getExpectedDisplayNames().remove(disconnectedPlayer.getTablistId());
         }
         TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
     }
@@ -472,6 +472,9 @@ public class FeatureManager {
             } else {
                 task.run();
             }
+        }
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            ((TrackedTabList<?, ?>)all.getTabList()).getExpectedDisplayNames().remove(disconnectedPlayer.getUniqueId());
         }
     }
 

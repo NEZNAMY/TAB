@@ -55,7 +55,7 @@ public class PaperPacketTabList extends TabListBase<Component> {
     }
 
     @Override
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         sendPacket(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry)));
     }
 
@@ -111,7 +111,7 @@ public class PaperPacketTabList extends TabListBase<Component> {
                 Component displayName = nmsData.displayName();
                 int latency = nmsData.latency();
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                    Component expectedDisplayName = getExpectedDisplayName(nmsData.profileId());
+                    Component expectedDisplayName = getExpectedDisplayNames().get(nmsData.profileId());
                     if (expectedDisplayName != null) {
                         displayName = expectedDisplayName;
                         rewriteEntry = rewritePacket = true;

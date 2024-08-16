@@ -91,7 +91,7 @@ public class PacketTabList1193 extends PacketTabList18 {
 
     @Override
     @SneakyThrows
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         packetSender.sendPacket(player, newRemovePacket.newInstance(Collections.singletonList(entry)));
     }
 
@@ -133,7 +133,7 @@ public class PacketTabList1193 extends PacketTabList18 {
             Object displayName = PlayerInfoData_DisplayName.get(nmsData);
             int latency = PlayerInfoData_Latency.getInt(nmsData);
             if (actions.contains(actionUpdateDisplayName)) {
-                Object expectedName = getExpectedDisplayName(id);
+                Object expectedName = getExpectedDisplayNames().get(id);
                 if (expectedName != null && expectedName != displayName) {
                     displayName = expectedName;
                     rewriteEntry = rewritePacket = true;

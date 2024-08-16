@@ -38,7 +38,7 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void removeEntry0(@NonNull UUID entry) {
+    public void removeEntry(@NonNull UUID entry) {
         removeUuid(entry);
         PlayerListItemRemove remove = new PlayerListItemRemove();
         remove.setUuids(new UUID[]{entry});

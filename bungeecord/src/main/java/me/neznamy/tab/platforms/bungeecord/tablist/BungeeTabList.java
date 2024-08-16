@@ -123,7 +123,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    BaseComponent expectedDisplayName = getExpectedDisplayName(item.getUuid());
+                    BaseComponent expectedDisplayName = getExpectedDisplayNames().get(item.getUuid());
                     if (expectedDisplayName != null) item.setDisplayName(expectedDisplayName);
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
@@ -137,7 +137,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    BaseComponent expectedDisplayName = getExpectedDisplayName(item.getUuid());
+                    BaseComponent expectedDisplayName = getExpectedDisplayNames().get(item.getUuid());
                     if (expectedDisplayName != null) item.setDisplayName(expectedDisplayName);
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
