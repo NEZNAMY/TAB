@@ -139,7 +139,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         if (shortName.length() >= Limitations.TEAM_NAME_LENGTH) {
             shortName.setLength(Limitations.TEAM_NAME_LENGTH-1);
         }
-        String finalShortName = checkTeamName(p, shortName, 'A');
+        String finalShortName = checkTeamName(p, shortName);
         p.sortingData.shortTeamName = finalShortName;
         p.sortingData.fullTeamName = fullName.append(finalShortName.charAt(finalShortName.length() - 1)).toString();
 
@@ -156,26 +156,34 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
      *          player to build team name for
      * @param   currentName
      *          current up to 15 character long team name start
-     * @param   id
-     *          current character to check as 16th character
      * @return  first available full team name
      */
-    private @NotNull String checkTeamName(@NotNull TabPlayer p, @NotNull StringBuilder currentName, int id) {
-        String potentialTeamName = currentName.toString() + (char)id;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all == p) continue;
-            if (potentialTeamName.equals(all.sortingData.shortTeamName)) {
-                return checkTeamName(p, currentName, id+1);
-            }
-        }
-        if (redis != null && nameTags != null) {
-            for (RedisPlayer all : redis.getRedisPlayers().values()) {
-                if (potentialTeamName.equals(all.getTeamName())) {
-                    return checkTeamName(p, currentName, id+1);
+    @NotNull
+    private String checkTeamName(@NotNull TabPlayer p, @NotNull StringBuilder currentName) {
+        char id = 'A';
+        while (true) {
+            String potentialTeamName = currentName.toString() + id;
+            boolean nameTaken = false;
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (all == p) continue;
+                if (potentialTeamName.equals(all.sortingData.shortTeamName)) {
+                    nameTaken = true;
+                    break;
                 }
             }
+            if (!nameTaken && redis != null && nameTags != null) {
+                for (RedisPlayer all : redis.getRedisPlayers().values()) {
+                    if (potentialTeamName.equals(all.getTeamName())) {
+                        nameTaken = true;
+                        break;
+                    }
+                }
+            }
+            if (!nameTaken) {
+                return potentialTeamName;
+            }
+            id++;
         }
-        return potentialTeamName;
     }
     
     /**

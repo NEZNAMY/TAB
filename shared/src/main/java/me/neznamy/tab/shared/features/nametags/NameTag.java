@@ -750,7 +750,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 TAB.getInstance().debug("Processing nametag join of redis player " + target.getName());
             }
             String oldTeamName = target.getTeamName();
-            String newTeamName = checkTeamName(target, teamName.substring(0, teamName.length()-1), 65);
+            String newTeamName = checkTeamName(target, teamName.substring(0, teamName.length()-1));
             target.setTeamName(newTeamName);
             target.setTagPrefix(prefix);
             target.setTagSuffix(suffix);
@@ -785,20 +785,32 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             }
         }
 
-        private @NotNull String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15, int id) {
-            String potentialTeamName = currentName15 + (char)id;
-            for (TabPlayer all : onlinePlayers.getPlayers()) {
-                if (all.teamData.teamName.equals(potentialTeamName)) {
-                    return checkTeamName(player, currentName15, id+1);
+        @NotNull
+        private String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15) {
+            char id = 'A';
+            while (true) {
+                String potentialTeamName = currentName15 + id;
+                boolean nameTaken = false;
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                    if (potentialTeamName.equals(all.sortingData.shortTeamName)) {
+                        nameTaken = true;
+                        break;
+                    }
                 }
-            }
-            for (RedisPlayer all : redis.getRedisPlayers().values()) {
-                if (all == player) continue;
-                if (potentialTeamName.equals(all.getTeamName())) {
-                    return checkTeamName(player, currentName15, id+1);
+                if (!nameTaken && redis != null) {
+                    for (RedisPlayer all : redis.getRedisPlayers().values()) {
+                        if (all == player) continue;
+                        if (potentialTeamName.equals(all.getTeamName())) {
+                            nameTaken = true;
+                            break;
+                        }
+                    }
                 }
+                if (!nameTaken) {
+                    return potentialTeamName;
+                }
+                id++;
             }
-            return potentialTeamName;
         }
     }
 }
