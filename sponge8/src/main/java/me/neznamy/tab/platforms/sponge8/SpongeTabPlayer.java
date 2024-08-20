@@ -68,7 +68,12 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     public TabList.Skin getSkin() {
         List<ProfileProperty> list = getPlayer().profile().properties();
         if (list.isEmpty()) return null; // Offline mode
-        return new TabList.Skin(list.get(0).value(), list.get(0).signature().orElse(null));
+        for (ProfileProperty property : list) {
+            if (property.name().equals(TabList.TEXTURES_PROPERTY)) {
+                return new TabList.Skin(property.value(), property.signature().orElse(null));
+            }
+        }
+        return null;
     }
 
     @Override
