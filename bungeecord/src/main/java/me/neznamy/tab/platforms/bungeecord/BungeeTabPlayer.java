@@ -93,8 +93,13 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
         if (loginResult == null) return null;
         Property[] properties = loginResult.getProperties();
-        if (properties == null || properties.length == 0) return null; //Offline mode
-        return new TabList.Skin(properties[0].getValue(), properties[0].getSignature());
+        if (properties == null) return null; //Offline mode
+        for (Property property : properties) {
+            if (property.getName().equals(TabList.TEXTURES_PROPERTY)) {
+                return new TabList.Skin(property.getValue(), property.getSignature());
+            }
+        }
+        return null;
     }
 
     @Override
