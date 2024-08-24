@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -27,7 +28,11 @@ import java.nio.file.Path;
         version = TabConstants.PLUGIN_VERSION,
         description = TabConstants.PLUGIN_DESCRIPTION,
         url = TabConstants.PLUGIN_WEBSITE,
-        authors = TabConstants.PLUGIN_AUTHOR
+        authors = TabConstants.PLUGIN_AUTHOR,
+        dependencies = {
+                @Dependency(id = "premiumvanish", optional = true),
+                @Dependency(id = "sayanvanish", optional = true),
+        }
 )
 @Getter
 public class VelocityTAB {
