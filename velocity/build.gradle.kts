@@ -5,6 +5,7 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.2.0-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:3.2.0-SNAPSHOT")
     compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.9.0-4")
+    compileOnly("org.sayandev:sayanvanish-proxy-velocity:1.5.0-SNAPSHOT")
 }
 
 tasks.compileJava {

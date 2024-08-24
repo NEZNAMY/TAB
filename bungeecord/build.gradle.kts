@@ -4,4 +4,5 @@ dependencies {
     compileOnly("net.md-5:bungeecord-proxy:1.20-R0.3-SNAPSHOT")
     compileOnly("com.github.limework.redisbungee:RedisBungee-Bungee:0.11.0")
     compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.8.8")
+    compileOnly("org.sayandev:sayanvanish-proxy-bungeecord:1.5.0-SNAPSHOT")
 }

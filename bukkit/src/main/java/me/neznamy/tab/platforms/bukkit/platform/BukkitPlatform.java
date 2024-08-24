@@ -5,6 +5,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.platforms.bukkit.entity.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
+import me.neznamy.tab.platforms.bukkit.hook.BukkitSayanVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
@@ -30,6 +31,7 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
+import me.neznamy.tab.shared.hook.SayanVanishHook;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
@@ -93,6 +95,9 @@ public class BukkitPlatform implements BackendPlatform {
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("SayanVanish")) {
+            SayanVanishHook.setInstance(new BukkitSayanVanishHook());
         }
         ComponentConverter.tryLoad();
         PacketEntityView.tryLoad();

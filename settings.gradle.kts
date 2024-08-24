@@ -10,6 +10,7 @@ dependencyResolutionManagement {
         maven("https://repo.purpurmc.org/snapshots") // Purpur
         maven("https://repo.spongepowered.org/repository/maven-public/") // Sponge
         maven("https://jitpack.io") // PremiumVanish, Vault, YamlAssist, RedisBungee
+        maven("https://repo.sayandev.org/snapshots") // SayanVanish
         maven("https://repo.md-5.net/content/groups/public/") // LibsDisguises
         maven("https://nexus.codecrafter47.dyndns.eu/content/repositories/public/") // BungeeCord-proxy // I feel bad for doing this
     }

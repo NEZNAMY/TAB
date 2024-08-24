@@ -3,12 +3,14 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
 import me.neznamy.tab.platforms.bungeecord.hook.BungeePremiumVanishHook;
+import me.neznamy.tab.platforms.bungeecord.hook.BungeeSayanVanishHook;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.*;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
+import me.neznamy.tab.shared.hook.SayanVanishHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -44,6 +46,9 @@ public class BungeePlatform extends ProxyPlatform {
         this.plugin = plugin;
         if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {
             PremiumVanishHook.setInstance(new BungeePremiumVanishHook(this));
+        }
+        if (ProxyServer.getInstance().getPluginManager().getPlugin("SayanVanish") != null) {
+            SayanVanishHook.setInstance(new BungeeSayanVanishHook());
         }
     }
 

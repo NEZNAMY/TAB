@@ -4,4 +4,4 @@ version: @version@
 author: @author@
 description: @description@
 depends: []
-softDepends: [RedisBungee, LuckPerms, PremiumVanish]
+softDepends: [RedisBungee, LuckPerms, PremiumVanish, SayanVanish]

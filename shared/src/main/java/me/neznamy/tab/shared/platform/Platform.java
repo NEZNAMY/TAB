@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
+import me.neznamy.tab.shared.hook.SayanVanishHook;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -169,6 +170,7 @@ public interface Platform {
      */
     default boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         if (PremiumVanishHook.getInstance() != null && PremiumVanishHook.getInstance().canSee(viewer, target)) return true;
+        if (SayanVanishHook.getInstance() != null && SayanVanishHook.getInstance().canSee(viewer, target)) return true;
         return !target.isVanished() || viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
     }
 }

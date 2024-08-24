@@ -15,4 +15,5 @@ dependencies {
         exclude("net.md-5", "bungeecord-chat")
     }
     compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.8.8")
+    compileOnly("org.sayandev:sayanvanish-bukkit:1.5.0-SNAPSHOT")
 }
