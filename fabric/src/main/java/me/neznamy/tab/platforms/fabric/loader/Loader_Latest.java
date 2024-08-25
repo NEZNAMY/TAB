@@ -35,10 +35,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * Method loader compiled using Minecraft 1.21.1.
+ * Implementation containing methods in the state of the latest supported
+ * Minecraft version by the mod.
  */
 @SuppressWarnings("DataFlowIssue") // Profile is not null on add action
-public class Loader_1_21_1 implements Loader {
+public class Loader_Latest implements Loader {
 
     @Override
     @NotNull
@@ -160,7 +161,8 @@ public class Loader_1_21_1 implements Loader {
             if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, nmsData.profileId(), profile.getName());
             }
-            updatedList.add(new ClientboundPlayerInfoUpdatePacket.Entry(nmsData.profileId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
+            updatedList.add(new ClientboundPlayerInfoUpdatePacket.Entry(nmsData.profileId(), profile, nmsData.listed(),
+                    latency, nmsData.gameMode(), displayName, nmsData.listOrder(), nmsData.chatSession()));
         }
         packet.entries = updatedList;
     }
@@ -179,6 +181,7 @@ public class Loader_1_21_1 implements Loader {
                 entry.getLatency(),
                 GameType.byId(entry.getGameMode()),
                 entry.getDisplayName(),
+                entry.getListOrder(),
                 null
         ));
         return packet;
@@ -295,6 +298,7 @@ public class Loader_1_21_1 implements Loader {
             actions.put(TabList.Action.UPDATE_DISPLAY_NAME, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME));
             actions.put(TabList.Action.UPDATE_LATENCY, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY));
             actions.put(TabList.Action.UPDATE_LISTED, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED));
+            actions.put(TabList.Action.UPDATE_LIST_ORDER, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LIST_ORDER));
             return actions;
         }
     }

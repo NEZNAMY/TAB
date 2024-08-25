@@ -88,10 +88,17 @@ public class PaperPacketTabList extends TabListBase<Component> {
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Component displayName) {
+    public void updateListOrder(@NonNull UUID entry, int listOrder) {
+        // TODO update module to 1.21.2 when it comes out
+    }
+
+    @Override
+    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
+                         int gameMode, @Nullable Component displayName, int listOrder) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(addPlayer, new ClientboundPlayerInfoUpdatePacket.Entry(
                 id, createProfile(id, name, skin), listed, latency, GameType.byId(gameMode), displayName, null
         )));
+        // TODO update module to 1.21.2 when it comes out
     }
 
     @Override

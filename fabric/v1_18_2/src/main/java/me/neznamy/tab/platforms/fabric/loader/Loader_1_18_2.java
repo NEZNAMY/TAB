@@ -1,36 +1,23 @@
 package me.neznamy.tab.platforms.fabric.loader;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import io.netty.channel.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket.PlayerUpdate;
-import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -38,7 +25,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Method loader compiled using Minecraft containing method implementations from 1.17 - 1.18.2.
+ * Implementation containing some methods that have changed multiple times
+ * throughout the versions and need a separate module. This module implements
+ * a few methods in the state of Minecraft 1.17 - 1.18.2.
  */
 @SuppressWarnings("unused") // Actually used, just via reflection
 @RequiredArgsConstructor
@@ -94,134 +83,5 @@ public class Loader_1_18_2 implements Loader {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
             }
         }
-    }
-
-    @Override
-    @NotNull
-    public String getLevelName(@NotNull Level level) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @NotNull
-    @Override
-    public TabList.Skin propertyToSkin(@NotNull Property property) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Component newTextComponent(@NotNull String text) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public void addSibling(@NotNull Component parent, @NotNull Component child) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Packet<?> registerTeam(@NotNull PlayerTeam team) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Packet<?> unregisterTeam(@NotNull PlayerTeam team) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Packet<?> updateTeam(@NotNull PlayerTeam team) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public void sendMessage(@NotNull CommandSourceStack source, @NotNull Component message) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Packet<?> newHeaderFooter(@NotNull Component header, @NotNull Component footer) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public void checkTeamPacket(@NotNull Packet<?> packet, @NotNull FabricScoreboard scoreboard) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public boolean isPlayerInfo(@NotNull Packet<?> packet) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Level getLevel(@NotNull ServerPlayer player) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public int getPing(@NotNull ServerPlayer player) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public int getDisplaySlot(@NotNull ClientboundSetDisplayObjectivePacket packet) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Packet<?> setDisplaySlot(int slot, @NotNull Objective objective) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Channel getChannel(@NotNull ServerPlayer player) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public float getMSPT(@NotNull MinecraftServer server) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Packet<?> removeScore(@NotNull String objective, @NotNull String holder) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Objective newObjective(@NotNull String name, @NotNull Component displayName, ObjectiveCriteria.@NotNull RenderType renderType, @Nullable TabComponent numberFormat) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    @NotNull
-    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public void logInfo(@NotNull TabComponent message) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
-    }
-
-    @Override
-    public void logWarn(@NotNull TabComponent message) {
-        throw new UnsupportedOperationException("Not implemented in this submodule");
     }
 }

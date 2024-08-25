@@ -73,7 +73,8 @@ public class FixedSlot extends RefreshableFeature {
                 true,
                 ping,
                 0,
-                cache.get(viewer.getProperty(propertyName).updateAndGet())
+                cache.get(viewer.getProperty(propertyName).updateAndGet()),
+                0
         );
     }
 

@@ -91,7 +91,7 @@ public class PacketTabList18 extends TabListBase<Object> {
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         PlayerInfoData_Profile = ReflectionUtils.getOnlyField(infoData, GameProfile.class);
-        PlayerInfoData_Latency = ReflectionUtils.getOnlyField(infoData, int.class);
+        PlayerInfoData_Latency = ReflectionUtils.getFields(infoData, int.class).get(0);
         PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(infoData, IChatBaseComponent);
         gameModes = new Object[] {
                 Enum.valueOf(gameMode, "SURVIVAL"),
@@ -112,25 +112,25 @@ public class PacketTabList18 extends TabListBase<Object> {
     @Override
     public void removeEntry(@NonNull UUID entry) {
         packetSender.sendPacket(player,
-                createPacket(Action.REMOVE_PLAYER, entry, "", null, false, 0, 0, null));
+                createPacket(Action.REMOVE_PLAYER, entry, "", null, false, 0, 0, null, 0));
     }
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable Object displayName) {
         packetSender.sendPacket(player,
-                createPacket(Action.UPDATE_DISPLAY_NAME, entry, "", null, false, 0, 0, displayName));
+                createPacket(Action.UPDATE_DISPLAY_NAME, entry, "", null, false, 0, 0, displayName, 0));
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
         packetSender.sendPacket(player,
-                createPacket(Action.UPDATE_LATENCY, entry, "", null, false, latency, 0, null));
+                createPacket(Action.UPDATE_LATENCY, entry, "", null, false, latency, 0, null, 0));
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
         packetSender.sendPacket(player,
-                createPacket(Action.UPDATE_GAME_MODE, entry, "", null, false, 0, gameMode, null));
+                createPacket(Action.UPDATE_GAME_MODE, entry, "", null, false, 0, gameMode, null, 0));
     }
 
     @Override
@@ -139,9 +139,15 @@ public class PacketTabList18 extends TabListBase<Object> {
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable Object displayName) {
+    public void updateListOrder(@NonNull UUID entry, int listOrder) {
+        // Added in 1.21.2
+    }
+
+    @Override
+    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
+                         int gameMode, @Nullable Object displayName, int listOrder) {
         packetSender.sendPacket(player,
-                createPacket(Action.ADD_PLAYER, id, name, skin, listed, latency, gameMode, displayName));
+                createPacket(Action.ADD_PLAYER, id, name, skin, listed, latency, gameMode, displayName, listOrder));
     }
 
     /**
@@ -163,12 +169,14 @@ public class PacketTabList18 extends TabListBase<Object> {
      *          Entry game mode
      * @param   displayName
      *          Entry display name
+     * @param   listOrder
+     *          Entry list order
      * @return  Packet from given parameters
      */
     @SneakyThrows
     @NotNull
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                               boolean listed, int latency, int gameMode, @Nullable Object displayName) {
+                               boolean listed, int latency, int gameMode, @Nullable Object displayName, int listOrder) {
         Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Collections.emptyList());
         List<Object> parameters = new ArrayList<>();
         if (newPlayerInfoData.getParameterTypes()[0] == PlayerInfoClass) {

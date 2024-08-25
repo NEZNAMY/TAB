@@ -41,7 +41,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * Method loader compiled using Minecraft 1.14.4.
+ * Implementation containing methods in the state of the oldest supported
+ * Minecraft version by the mod - 1.14.4.
  */
 @SuppressWarnings({
         "unchecked", // Java generic types

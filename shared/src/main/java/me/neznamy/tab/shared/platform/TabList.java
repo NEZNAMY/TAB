@@ -64,6 +64,16 @@ public interface TabList {
     void updateListed(@NonNull UUID entry, boolean listed);
 
     /**
+     * Updates list order of specified entry (1.21.2+).
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   listOrder
+     *          New list order
+     */
+    void updateListOrder(@NonNull UUID entry, int listOrder);
+
+    /**
      * Adds specified entry into the TabList.
      *
      * @param   entry
@@ -104,14 +114,17 @@ public interface TabList {
         /** Updates game mode*/
         UPDATE_GAME_MODE,
 
-        /** Updates listed flag */
+        /** Updates listed flag (1.19.3+) */
         UPDATE_LISTED,
 
         /** Updates latency */
         UPDATE_LATENCY,
 
         /** Updates display name */
-        UPDATE_DISPLAY_NAME
+        UPDATE_DISPLAY_NAME,
+
+        /** Updates list order (1.21.2+) */
+        UPDATE_LIST_ORDER
     }
 
     /**
@@ -145,6 +158,9 @@ public interface TabList {
          * and scoreboard team prefix/suffix being visible in TabList instead.
          */
         @Nullable private TabComponent displayName;
+
+        /** Player list weight */
+        private int listOrder;
     }
 
     /**

@@ -79,10 +79,13 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
      *          Entry game mode
      * @param   displayName
      *          Entry display name
+     * @param   listOrder
+     *          Entry list order
      * @return  Converted item from parameters
      */
     @NotNull
-    public Item entryToItem(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency, int gameMode, @Nullable BaseComponent displayName) {
+    public Item entryToItem(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
+                            int gameMode, @Nullable BaseComponent displayName, int listOrder) {
         Item item = item(id);
         item.setUsername(name);
         item.setDisplayName(displayName);
@@ -94,6 +97,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
         } else {
             item.setProperties(new Property[0]);
         }
+        // TODO listOrder
         return item;
     }
 

@@ -56,7 +56,8 @@ public class LayoutView {
                     true,
                     manager.getConfiguration().emptySlotPing,
                     0,
-                    new SimpleComponent("")
+                    new SimpleComponent(""),
+                    0
             ));
         }
         tick();
