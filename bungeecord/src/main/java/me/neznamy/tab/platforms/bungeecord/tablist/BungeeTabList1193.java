@@ -20,7 +20,15 @@ public class BungeeTabList1193 extends BungeeTabList {
     private static final Map<Action, EnumSet<PlayerListItemUpdate.Action>> actions = new EnumMap<>(Action.class);
 
     static {
-        actions.put(Action.ADD_PLAYER, EnumSet.allOf(PlayerListItemUpdate.Action.class));
+        // Do not use allOf because <1.21.2 does not support UPDATE_LIST_ORDER
+        // TODO Once bungeecord dependency is updated, support it properly
+        actions.put(Action.ADD_PLAYER, EnumSet.of(
+                PlayerListItemUpdate.Action.ADD_PLAYER,
+                PlayerListItemUpdate.Action.UPDATE_GAMEMODE,
+                PlayerListItemUpdate.Action.UPDATE_LISTED,
+                PlayerListItemUpdate.Action.UPDATE_LATENCY,
+                PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME
+        ));
         actions.put(Action.UPDATE_GAME_MODE, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE));
         actions.put(Action.UPDATE_DISPLAY_NAME, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME));
         actions.put(Action.UPDATE_LATENCY, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY));
