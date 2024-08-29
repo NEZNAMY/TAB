@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric.loader;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
-import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.shared.TAB;
@@ -15,7 +14,6 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.numbers.FixedFormat;
-import net.minecraft.network.chat.numbers.NumberFormat;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceLocation;
@@ -259,7 +257,7 @@ public class Loader_Latest implements Loader {
      * not existing despite the code never running.
      * Why? Nobody knows.
      */
-    private static class Register1_20_3 {
+    public static class Register1_20_3 {
 
         @NotNull
         public static Objective newObjective(@NotNull String name, @NotNull Component displayName,
@@ -268,20 +266,12 @@ public class Loader_Latest implements Loader {
         }
 
         @NotNull
-        @SneakyThrows
         public static Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat) {
-            try {
-                // 1.20.5+
-                return new ClientboundSetScorePacket(holder, objective, score, Optional.ofNullable(displayName), Optional.ofNullable(toFixedFormat(numberFormat)));
-            } catch (Throwable t) {
-                // 1.20.3 / 1.20.4
-                return ClientboundSetScorePacket.class.getConstructor(String.class, String.class, int.class, Component.class, NumberFormat.class)
-                        .newInstance(holder, objective, score, displayName, toFixedFormat(numberFormat));
-            }
+            return new ClientboundSetScorePacket(holder, objective, score, Optional.ofNullable(displayName), Optional.ofNullable(toFixedFormat(numberFormat)));
         }
 
         @Nullable
-        private static FixedFormat toFixedFormat(@Nullable TabComponent component) {
+        public static FixedFormat toFixedFormat(@Nullable TabComponent component) {
             if (component == null) return null;
             return component.toFixedFormat(FixedFormat::new);
         }

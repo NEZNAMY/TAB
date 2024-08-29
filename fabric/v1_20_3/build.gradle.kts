@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     implementation(projects.fabric)
-    minecraft("com.mojang:minecraft:1.19.3")
+    minecraft("com.mojang:minecraft:1.20.3")
     mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:0.15.9") // Not required, but causes warn if not present
 }

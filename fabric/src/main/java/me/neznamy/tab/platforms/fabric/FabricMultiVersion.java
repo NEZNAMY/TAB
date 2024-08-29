@@ -35,8 +35,8 @@ public class FabricMultiVersion {
     /** Method loader using latest supported MC version */
     private static final Loader loaderLatest = new Loader_Latest();
 
-    /** Method loader using 1.19.3 - 1.21.1 */
-    private static final Loader loader1_19_3 = createLoader("1_19_3");
+    /** Method loader using 1.20.3 - 1.21.1 */
+    private static final Loader loader1_20_3 = createLoader("1_20_3");
 
     /** Method loader using 1.17 - 1.18.2 */
     private static final Loader loader1_18_2 = createLoader("1_18_2");
@@ -258,7 +258,7 @@ public class FabricMultiVersion {
      */
     public static void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) loaderLatest.onPlayerInfo(receiver, packet);
-        else if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) loader1_19_3.onPlayerInfo(receiver, packet);
+        else if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) loader1_20_3.onPlayerInfo(receiver, packet);
         else if (serverVersion.getMinorVersion() >= 17) loader1_18_2.onPlayerInfo(receiver, packet);
         else loader1_14_4.onPlayerInfo(receiver, packet);
     }
@@ -275,7 +275,7 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> buildTabListPacket(@NotNull TabList.Action action, @NotNull FabricTabList.Builder builder) {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) return loaderLatest.buildTabListPacket(action, builder);
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loader1_19_3.buildTabListPacket(action, builder);
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loader1_20_3.buildTabListPacket(action, builder);
         if (serverVersion.getMinorVersion() >= 17) return loader1_18_2.buildTabListPacket(action, builder);
         return loader1_14_4.buildTabListPacket(action, builder);
     }
@@ -423,7 +423,8 @@ public class FabricMultiVersion {
     @NotNull
     public static Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score,
                                      @Nullable Component displayName, @Nullable TabComponent numberFormat) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loaderLatest.setScore(objective, holder, score, displayName, numberFormat);
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_5.getNetworkId()) return loaderLatest.setScore(objective, holder, score, displayName, numberFormat);
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loader1_20_3.setScore(objective, holder, score, displayName, numberFormat);
         return loader1_14_4.setScore(objective, holder, score, displayName, numberFormat);
     }
 }

@@ -5,25 +5,28 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 /**
  * Implementation containing some methods that have changed multiple times
  * throughout the versions and need a separate module. This module implements
- * a few methods in the state of Minecraft 1.19.3 - 1.21.1.
+ * a few methods in the state of Minecraft 1.20.3 - 1.20.4.
  */
 @SuppressWarnings("unused") // Actually used, just via reflection
 @RequiredArgsConstructor
-public class Loader_1_19_3 implements Loader {
+public class Loader_1_20_3 implements Loader {
 
     private final ProtocolVersion serverVersion;
 
@@ -82,6 +85,20 @@ public class Loader_1_19_3 implements Loader {
             actions.put(TabList.Action.UPDATE_LATENCY, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY));
             actions.put(TabList.Action.UPDATE_LISTED, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED));
             return actions;
+        }
+    }
+
+    @Override
+    @NotNull
+    public Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat) {
+        return Register1_20_3.setScore(objective, holder, score, displayName, numberFormat);
+    }
+
+    private static class Register1_20_3 {
+
+        @NotNull
+        public static Packet<?> setScore(@NotNull String objective, @NotNull String holder, int score, @Nullable Component displayName, @Nullable TabComponent numberFormat) {
+            return new ClientboundSetScorePacket(holder, objective, score, displayName, Loader_Latest.Register1_20_3.toFixedFormat(numberFormat));
         }
     }
 }

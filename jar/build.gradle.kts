@@ -17,7 +17,7 @@ val fabrics = setOf(
     rootProject.projects.fabric,
     rootProject.projects.fabric.v1144,
     rootProject.projects.fabric.v1182,
-    rootProject.projects.fabric.v1193
+    rootProject.projects.fabric.v1203
 ).map { it.dependencyProject }
 
 tasks {
