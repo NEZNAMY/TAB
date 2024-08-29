@@ -214,7 +214,6 @@ public class FabricMultiVersion {
      * @param   style
      *          Style to use
      */
-    @SneakyThrows
     public static void setStyle(@NotNull Component component, @NotNull Style style) {
         if (serverVersion.getMinorVersion() >= 19) loaderLatest.setStyle(component, style);
         else if (serverVersion.getMinorVersion() >= 16) loader1_18_2.setStyle(component, style);
@@ -229,7 +228,6 @@ public class FabricMultiVersion {
      * @param   message
      *          Message to send
      */
-    @SneakyThrows
     public static void sendMessage(@NotNull ServerPlayer player, @NotNull Component message) {
         if (serverVersion.getMinorVersion() >= 19) loaderLatest.sendMessage(player, message);
         else if (serverVersion.getMinorVersion() >= 16) loader1_18_2.sendMessage(player, message);
