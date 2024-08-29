@@ -97,7 +97,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
         } else {
             item.setProperties(new Property[0]);
         }
-        // TODO listOrder
+        item.setListOrder(listOrder);
         return item;
     }
 

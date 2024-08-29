@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
@@ -19,9 +20,10 @@ public class BungeeTabList1193 extends BungeeTabList {
     /** Map of actions to prevent creating new EnumSet on each packet send */
     private static final Map<Action, EnumSet<PlayerListItemUpdate.Action>> actions = new EnumMap<>(Action.class);
 
+    private static final EnumSet<PlayerListItemUpdate.Action> allActions = EnumSet.allOf(PlayerListItemUpdate.Action.class);
+
     static {
         // Do not use allOf because <1.21.2 does not support UPDATE_LIST_ORDER
-        // TODO Once bungeecord dependency is updated, support it properly
         actions.put(Action.ADD_PLAYER, EnumSet.of(
                 PlayerListItemUpdate.Action.ADD_PLAYER,
                 PlayerListItemUpdate.Action.UPDATE_GAMEMODE,
@@ -83,7 +85,10 @@ public class BungeeTabList1193 extends BungeeTabList {
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        // TODO
+        if (player.getVersion().getNetworkId() < ProtocolVersion.V1_21_2.getNetworkId()) return;
+        Item item = item(entry);
+        item.setListOrder(listOrder);
+        sendPacket(Action.UPDATE_LIST_ORDER, item);
     }
 
     @Override
@@ -95,7 +100,11 @@ public class BungeeTabList1193 extends BungeeTabList {
 
     private void sendPacket(@NonNull Action action, @NonNull Item item) {
         PlayerListItemUpdate packet = new PlayerListItemUpdate();
-        packet.setActions(actions.get(action));
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() && action == Action.ADD_PLAYER) {
+            packet.setActions(allActions);
+        } else {
+            packet.setActions(actions.get(action));
+        }
         packet.setItems(new Item[]{item});
         player.sendPacket(packet);
     }
