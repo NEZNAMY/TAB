@@ -63,7 +63,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        if (player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_21_1.getNetworkId()) {
+        if (player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) {
             player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_LIST_ORDER,
                     new Builder(entry, "", null, false, 0, 0, null, listOrder)));
         }
