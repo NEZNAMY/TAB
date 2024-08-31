@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -91,7 +93,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         if (!hasBossBarVisible(p)) return;
         boolean conditionResultChange = false;
         for (BossBar line : lineValues) {
-            if (((BossBarLine)line).isConditionMet(p) != p.bossbarData.visibleBossBars.contains(line))
+            if (((BossBarLine)line).isConditionMet(p) != p.bossbarData.visibleBossBars.containsKey(line))
                 conditionResultChange = true;
         }
         if (conditionResultChange) {
@@ -142,13 +144,13 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     private void showBossBars(@NonNull TabPlayer p) {
         for (String defaultBar : defaultBars) {
             BossBarLine bar = (BossBarLine) registeredBossBars.get(defaultBar);
-            if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.contains(bar)) {
+            if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.containsKey(bar)) {
                 bar.addPlayer(p);
             }
         }
         for (BossBar announced : announcedBossBars) {
             BossBarLine bar = (BossBarLine) announced;
-            if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.contains(bar)) {
+            if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.containsKey(bar)) {
                 bar.addPlayer(p);
             }
         }
@@ -297,6 +299,25 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         public boolean visible;
 
         /** Boss bars this player can currently see */
-        public Set<BossBarLine> visibleBossBars = Collections.newSetFromMap(new IdentityHashMap<>());
+        public Map<BossBarLine, BossBarProperties> visibleBossBars = new IdentityHashMap<>();
+    }
+
+    /**
+     * Class storing properties of a bossbar for player.
+     */
+    @RequiredArgsConstructor
+    public static class BossBarProperties {
+
+        /** Property holding BossBar title */
+        @NonNull public final Property textProperty;
+
+        /** Property holding BossBar progress */
+        @NonNull public final Property progressProperty;
+
+        /** Property holding BossBar color */
+        @NonNull public final Property colorProperty;
+
+        /** Property holding BossBar style */
+        @NonNull public final Property styleProperty;
     }
 }

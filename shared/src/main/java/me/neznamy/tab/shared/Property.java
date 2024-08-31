@@ -179,6 +179,18 @@ public class Property {
 
     /**
      * Changes raw value to new provided value and performs all
+     * operations related to it.
+     *
+     * @param   newValue
+     *          new raw value to use
+     * @return  Whether raw value changed or not
+     */
+    public boolean changeRawValue(@NotNull String newValue) {
+        return changeRawValue(newValue, null);
+    }
+
+    /**
+     * Changes raw value to new provided value and performs all
      * operations related to it. Changes source as well.
      *
      * @param   newValue

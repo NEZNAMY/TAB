@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.files.config.BossBarConfiguration.BossBarDefinition;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl.BossBarProperties;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -56,12 +57,6 @@ public class BossBarLine implements BossBar {
     private final ProgressRefresher progressRefresher;
     private final ColorRefresher colorRefresher;
     private final StyleRefresher styleRefresher;
-
-    //property names
-    private final String propertyTitle = Property.randomName();
-    private final String propertyProgress = Property.randomName();
-    private final String propertyColor = Property.randomName();
-    private final String propertyStyle = Property.randomName();
 
     /**
      * Constructs new instance with given parameters
@@ -124,7 +119,7 @@ public class BossBarLine implements BossBar {
             TAB.getInstance().getConfigHelper().runtime().invalidBossBarProperty(
                     this,
                     color,
-                    player.getProperty(propertyColor).getCurrentRawValue(),
+                    player.bossbarData.visibleBossBars.get(this).colorProperty.getCurrentRawValue(),
                     player,
                     "color",
                     "one of the pre-defined values " + Arrays.toString(BarColor.values())
@@ -150,7 +145,7 @@ public class BossBarLine implements BossBar {
             TAB.getInstance().getConfigHelper().runtime().invalidBossBarProperty(
                     this,
                     style,
-                    player.getProperty(propertyStyle).getCurrentRawValue(),
+                    player.bossbarData.visibleBossBars.get(this).styleProperty.getCurrentRawValue(),
                     player,
                     "style",
                     "one of the pre-defined values " + Arrays.toString(BarStyle.values())
@@ -179,7 +174,7 @@ public class BossBarLine implements BossBar {
             TAB.getInstance().getConfigHelper().runtime().invalidBossBarProperty(
                     this,
                     progress,
-                    player.getProperty(propertyProgress).getCurrentRawValue(),
+                    player.bossbarData.visibleBossBars.get(this).progressProperty.getCurrentRawValue(),
                     player,
                     "progress",
                     "a number between 0 and 100"
@@ -207,8 +202,8 @@ public class BossBarLine implements BossBar {
         if (this.title.equals(title)) return;
         this.title = title;
         for (TabPlayer p : players) {
-            p.setProperty(textRefresher, propertyTitle, title);
-            p.getBossBar().update(uniqueId, manager.getCache().get(p.getProperty(propertyTitle).get()));
+            p.bossbarData.visibleBossBars.get(this).textProperty.changeRawValue(title);
+            p.getBossBar().update(uniqueId, manager.getCache().get(p.bossbarData.visibleBossBars.get(this).textProperty.get()));
         }
     }
 
@@ -217,8 +212,8 @@ public class BossBarLine implements BossBar {
         if (this.progress.equals(progress)) return;
         this.progress = progress;
         for (TabPlayer p : players) {
-            p.setProperty(progressRefresher, propertyProgress, progress);
-            p.getBossBar().update(uniqueId, parseProgress(p, p.getProperty(propertyProgress).get())/100);
+            p.bossbarData.visibleBossBars.get(this).progressProperty.changeRawValue(progress);
+            p.getBossBar().update(uniqueId, parseProgress(p, p.bossbarData.visibleBossBars.get(this).progressProperty.get())/100);
         }
     }
 
@@ -232,8 +227,8 @@ public class BossBarLine implements BossBar {
         if (this.color.equals(color)) return;
         this.color = color;
         for (TabPlayer p : players) {
-            p.setProperty(colorRefresher, propertyColor, color);
-            p.getBossBar().update(uniqueId, parseColor(p, p.getProperty(propertyColor).get()));
+            p.bossbarData.visibleBossBars.get(this).colorProperty.changeRawValue(color);
+            p.getBossBar().update(uniqueId, parseColor(p, p.bossbarData.visibleBossBars.get(this).colorProperty.get()));
         }
     }
 
@@ -247,8 +242,8 @@ public class BossBarLine implements BossBar {
         if (this.style.equals(style)) return;
         this.style = style;
         for (TabPlayer p : players) {
-            p.setProperty(styleRefresher, propertyColor, style);
-            p.getBossBar().update(uniqueId, parseStyle(p, p.getProperty(propertyStyle).get()));
+            p.bossbarData.visibleBossBars.get(this).styleProperty.changeRawValue(style);
+            p.getBossBar().update(uniqueId, parseStyle(p, p.bossbarData.visibleBossBars.get(this).styleProperty.get()));
         }
     }
 
@@ -260,26 +255,28 @@ public class BossBarLine implements BossBar {
     @Override
     public void addPlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
-        if (player.bossbarData.visibleBossBars.contains(this)) return;
-        player.setProperty(textRefresher, propertyTitle, title);
-        player.setProperty(progressRefresher, propertyProgress, progress);
-        player.setProperty(colorRefresher, propertyColor, color);
-        player.setProperty(styleRefresher, propertyStyle, style);
+        if (player.bossbarData.visibleBossBars.containsKey(this)) return;
+        BossBarProperties properties = new BossBarProperties(
+                new Property(textRefresher, player, title),
+                new Property(progressRefresher, player, progress),
+                new Property(colorRefresher, player, color),
+                new Property(styleRefresher, player, style)
+        );
+        player.bossbarData.visibleBossBars.put(this, properties);
         player.getBossBar().create(
                 uniqueId,
-                manager.getCache().get(player.getProperty(propertyTitle).updateAndGet()),
-                parseProgress(player, player.getProperty(propertyProgress).updateAndGet())/100,
-                parseColor(player, player.getProperty(propertyColor).updateAndGet()),
-                parseStyle(player, player.getProperty(propertyStyle).updateAndGet())
+                manager.getCache().get(properties.textProperty.get()),
+                parseProgress(player, properties.progressProperty.get())/100,
+                parseColor(player, properties.colorProperty.get()),
+                parseStyle(player, properties.styleProperty.get())
         );
         players.add(player);
-        player.bossbarData.visibleBossBars.add(this);
     }
 
     @Override
     public void removePlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
-        if (!player.bossbarData.visibleBossBars.contains(this)) return;
+        if (!player.bossbarData.visibleBossBars.containsKey(this)) return;
         players.remove(player);
         player.bossbarData.visibleBossBars.remove(this);
         player.getBossBar().remove(uniqueId);
@@ -293,15 +290,15 @@ public class BossBarLine implements BossBar {
 
     @Override
     public boolean containsPlayer(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        return ((TabPlayer)player).bossbarData.visibleBossBars.contains(this);
+        return ((TabPlayer)player).bossbarData.visibleBossBars.containsKey(this);
     }
 
     private class TextRefresher extends RefreshableFeature implements CustomThreaded {
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
-            refreshed.getBossBar().update(uniqueId, manager.getCache().get(refreshed.getProperty(propertyTitle).updateAndGet()));
+            if (!refreshed.bossbarData.visibleBossBars.containsKey(BossBarLine.this)) return;
+            refreshed.getBossBar().update(uniqueId, manager.getCache().get(refreshed.bossbarData.visibleBossBars.get(BossBarLine.this).textProperty.updateAndGet()));
         }
 
         @Override
@@ -327,8 +324,8 @@ public class BossBarLine implements BossBar {
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
-            refreshed.getBossBar().update(uniqueId, parseProgress(refreshed, refreshed.getProperty(propertyProgress).updateAndGet())/100);
+            if (!refreshed.bossbarData.visibleBossBars.containsKey(BossBarLine.this)) return;
+            refreshed.getBossBar().update(uniqueId, parseProgress(refreshed, refreshed.bossbarData.visibleBossBars.get(BossBarLine.this).progressProperty.updateAndGet())/100);
         }
 
         @Override
@@ -354,8 +351,8 @@ public class BossBarLine implements BossBar {
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
-            refreshed.getBossBar().update(uniqueId, parseColor(refreshed, refreshed.getProperty(propertyColor).updateAndGet()));
+            if (!refreshed.bossbarData.visibleBossBars.containsKey(BossBarLine.this)) return;
+            refreshed.getBossBar().update(uniqueId, parseColor(refreshed, refreshed.bossbarData.visibleBossBars.get(BossBarLine.this).colorProperty.updateAndGet()));
         }
 
         @Override
@@ -381,8 +378,8 @@ public class BossBarLine implements BossBar {
 
         @Override
         public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-            if (!refreshed.bossbarData.visibleBossBars.contains(BossBarLine.this)) return;
-            refreshed.getBossBar().update(uniqueId, parseStyle(refreshed, refreshed.getProperty(propertyStyle).updateAndGet()));
+            if (!refreshed.bossbarData.visibleBossBars.containsKey(BossBarLine.this)) return;
+            refreshed.getBossBar().update(uniqueId, parseStyle(refreshed, refreshed.bossbarData.visibleBossBars.get(BossBarLine.this).styleProperty.updateAndGet()));
         }
 
         @Override
