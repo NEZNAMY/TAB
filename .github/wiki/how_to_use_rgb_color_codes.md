@@ -1,13 +1,13 @@
 # Content
 * [Introduction](#introduction)
 * [Usage](#usage)
-    * [Magic codes](#magic-codes)
+  * [Magic codes](#magic-codes)
 * [Invalid code handling](#invalid-code-handling)
 * [Compatibility with <1.16](#compatibility-with-116)
-    * [Manually defining legacy color](#manually-defining-legacy-color)
+  * [Manually defining legacy color](#manually-defining-legacy-color)
 * [Fonts](#fonts)
-    * [Usage](#usage-1)
-    * [Compatibility with RGB and gradients](#compatibility-with-rgb-and-gradients)
+  * [Usage](#usage-1)
+  * [Compatibility with RGB and gradients](#compatibility-with-rgb-and-gradients)
 
 # Introduction
 As of 1.16 mojang introduced RGB color support. This allows us to use 256^3 different colors instead of the original 16 ones. This is not supported on <1.16 in any way.

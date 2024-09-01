@@ -1,6 +1,7 @@
 # Page content
 * [Adding the dependency](#adding-the-dependency)
 * [Getting started](#getting-started)
+* [Lifespan of API calls](#lifespan-of-api-calls)
 * [Events](#Events)
 
 # External Content
@@ -26,7 +27,7 @@ For Maven users, you can add the API dependency like this:
 <dependency>
     <groupId>com.github.NEZNAMY</groupId>
     <artifactId>TAB-API</artifactId>
-    <version>4.1.6</version>
+    <version>4.1.8</version>
     <scope>provided</scope>
 </dependency>
  ```
@@ -40,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.NEZNAMY:TAB-API:4.1.6'
+    compileOnly 'com.github.NEZNAMY:TAB-API:4.1.8'
 }
 ```
 
@@ -51,7 +52,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.NEZNAMY", "TAB-API", "4.1.6")
+    compileOnly("com.github.NEZNAMY", "TAB-API", "4.1.8")
 }
 ```
 
@@ -68,6 +69,9 @@ Now you have the instance, you can get a `TabPlayer` with the methods `getPlayer
 If no player was found with the UUID or the name that you gave, these methods will return `null`. It is important that you catch this, to avoid running in to a `NullPointerException`. You should **NOT** assume that just because a player has logged in that TAB will already have a player for them, as players are processed asynchronously. This will be especially true for join events like `PlayerJoinEvent`.
 
 If you want to be 100% sure that the player you want is loaded when you want to process them, use `PlayerLoadEvent`. This will give you the `TabPlayer` that has been loaded, so that you can process that `TabPlayer`. See below for more details how to use the event.
+
+# Lifespan of API calls
+All API calls result in temporary changes to the plugin's logic. When the plugin is reloaded or server restarted, all previous API calls will lose effect. This also applies for players after they reconnect - they are reset back. If you want to perform long-term changes to player's prefix or suffix, call TAB's [commands](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions) from your plugin.
 
 # Events
 TAB is using a custom platform-independent event API. As such, the same event listener code will work on all supported platforms. Usage is also different, let's take a look at an example:

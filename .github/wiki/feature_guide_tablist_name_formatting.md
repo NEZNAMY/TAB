@@ -1,12 +1,12 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-    * [Introduction](#introduction)
-    * [Groups and users](#groups-and-users)
-    * [Per-world / per-server](#per-world--per-server)
-    * [Priority system](#priority-system)
-    * [Placeholder support](#placeholder-support)
-    * [Additional settings](#additional-settings)
+  * [Introduction](#introduction)
+  * [Groups and users](#groups-and-users)
+  * [Per-world / per-server](#per-world--per-server)
+  * [Priority system](#priority-system)
+  * [Placeholder support](#placeholder-support)
+  * [Additional settings](#additional-settings)
 * [Tips & Tricks](#tips--tricks)
 * [API](#api)
 

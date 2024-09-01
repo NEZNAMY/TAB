@@ -3,15 +3,15 @@ This is a collection of random information about the plugin not necessarily limi
 
 # Content
 * [Bedrock compatibility](#bedrock-compatibility)
-    * [Detection](#detection)
-    * [Differences](#differences)
-    * [Issues with `.` in name](#issues-with--in-name)
+  * [Detection](#detection)
+  * [Differences](#differences)
+  * [Issues with `.` in name](#issues-with--in-name)
 * [Vanish detection](#vanish-detection)
 * [Async player loading](#async-player-loading)
 * [Scoreboard objective and team naming](#scoreboard-objective-and-team-naming)
 * [Per-version experience](#per-version-experience)
-    * [Detection](#detection-1)
-    * [Differences](#differences-1)
+  * [Detection](#detection-1)
+  * [Differences](#differences-1)
 * [Debug config option](#debug-config-option)
 
 # Bedrock compatibility
@@ -68,12 +68,12 @@ There's a well known BungeeCord bug that kicks players if a duplicate team or ob
 
 TAB's objective and team naming:
 * Objectives ("Objective ... already exists in this scoreboard")
-    * `TAB-BelowName` for [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)
-    * `TAB-Scoreboard` for [Scoreboard](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard)
-    * `TAB-PlayerList` for [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)
+  * `TAB-BelowName` for [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)
+  * `TAB-Scoreboard` for [Scoreboard](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard)
+  * `TAB-PlayerList` for [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)
 * Teams ("Team ... already exists in this scoreboard")
-    * For sidebar scoreboard: `TAB-SB-TM-x` where `x` is a number from 1 to 15+ (for each line)
-    * For players: This is more complicated to use the 16 character limit to the max and heavily depends on configuration. If you are sorting by player names, part of player name will be there. It also often contains random non-alphanumeric symbols. The most reliable way is the team name (almost) always ending with `A` (or `B`, `C` etc if you tried to sort several players into the same slot).
+  * For sidebar scoreboard: `TAB-SB-TM-x` where `x` is a number from 1 to 15+ (for each line)
+  * For players: This is more complicated to use the 16 character limit to the max and heavily depends on configuration. If you are sorting by player names, part of player name will be there. It also often contains random non-alphanumeric symbols. The most reliable way is the team name (almost) always ending with `A` (or `B`, `C` etc if you tried to sort several players into the same slot).
 
 # Per-version experience
 Minecraft has changed over the years - it had some limits removed, some added, some bugs fixed, but also some bugs added. TAB adapts code based on player's version for best possible experience on each minecraft version.
@@ -89,8 +89,8 @@ You can check what version the plugin thinks player has using any of the followi
 
 Player game version detection may fail. Here are a few possible scenarios why:
 * ViaVersion is installed on BungeeCord
-    * And TAB on BungeeCord as well - ViaVersion makes BungeeCord API return version of the backend server player is connected to instead of player's actual version
-    * And TAB is on backend servers - There is no ViaVersion to hook into, therefore there is no suspicion of player not using server's version and not having a way to verify it
+  * And TAB on BungeeCord as well - ViaVersion makes BungeeCord API return version of the backend server player is connected to instead of player's actual version
+  * And TAB is on backend servers - There is no ViaVersion to hook into, therefore there is no suspicion of player not using server's version and not having a way to verify it
 * ViaVersion API returns `-1` - There is currently no known cause when or why this happens. However, when this happens, TAB prints a console warn notifying this has happened. Plugin will assume player is using same version as the server in such cases.
 
 When game version is not detected correctly, player's experience will be very limited, see below.
@@ -98,8 +98,8 @@ When game version is not detected correctly, player's experience will be very li
 ## Differences
 To ensure the best possible experience, TAB is currently checking for player's version to:
 * [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout):
-    * Disable for 1.7 and lower due to massive tablist differences and plugin not being adapted to those
-    * Use alternate method of sorting the entries for 1.19.3+ using entry names, as the previous, better option was removed
+  * Disable for 1.7 and lower due to massive tablist differences and plugin not being adapted to those
+  * Use alternate method of sorting the entries for 1.19.3+ using entry names, as the previous, better option was removed
 * Use RGB color codes for 1.16+ and use closest (or forced) legacy color for 1.15-
 * Use 1.9+ bossbar on 1.8 servers for 1.9+ players using ViaVersion API
 * Disable [Tablist name formatting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting) for 1.7 and lower due to a 16 character limit total to take advantage of the mechanic where nametags are displayed in tablist, which extends the limit to up to 48 characters (16 prefix, 16 name, 16 suffix)

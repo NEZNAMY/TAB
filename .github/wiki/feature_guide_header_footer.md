@@ -1,13 +1,13 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-    * [Global settings](#global-settings)
-    * [Per-world / per-server](#per-world--per-server)
-    * [Per-group / per-player](#per-group--per-player)
+  * [Global settings](#global-settings)
+  * [Per-world / per-server](#per-world--per-server)
+  * [Per-group / per-player](#per-group--per-player)
 * [Additional info](#additional-info)
-    * [Additional note 1 - Not resetting on server switch](#additional-note-1---not-resetting-on-server-switch)
+  * [Additional note 1 - Not resetting on server switch](#additional-note-1---not-resetting-on-server-switch)
 * [Tips & Tricks](#tips--tricks)
-    * [Tip 1 - Dynamic line count](#tip-1---dynamic-line-count)
+  * [Tip 1 - Dynamic line count](#tip-1---dynamic-line-count)
 * [API](#api)
 
 # About

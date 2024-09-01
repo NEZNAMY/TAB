@@ -2,8 +2,8 @@
 * [Tablist](#tablist)
 * [Nametag](#nametag)
 * [Tips & Tricks](#tips--tricks)
-    * [Tip 1 - Nickname prefix](#tip-1---nickname-prefix)
-    * [Tip 2 - Sorting nicked players with lowest priority](#tip-2---sorting-nicked-players-with-lowest-priority)
+  * [Tip 1 - Nickname prefix](#tip-1---nickname-prefix)
+  * [Tip 2 - Sorting nicked players with lowest priority](#tip-2---sorting-nicked-players-with-lowest-priority)
 
 # Tablist
 This one is easy. The tablist format of players is one text that's split into 3 parts in the plugin for convenience (tabprefix, customtabname, tabsuffix). Using `customtabname` you can configure name part into any placeholder you want, including one from your nickname plugin. All you need is a working PlaceholderAPI placeholder from your nickname plugin. Example:  

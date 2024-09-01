@@ -8,7 +8,7 @@
 
 # About
 This feature allows you to see players from other servers under a bungeecord network, instead of only seeing players on the same server.  
-To use this feature, you need [TAB installed on bungeecord](https://github.com/NEZNAMY/TAB/wiki/Installation#bungeecord). This option is not available on bukkit and will not be added.  
+To use this feature, you need [TAB installed on bungeecord](https://github.com/NEZNAMY/TAB/wiki/Installation#bungeecord). This option is not available on bukkit and will not be added.
 
 # Configuration
 | Option name | Default value | Description |
@@ -32,17 +32,17 @@ global-playerlist:
       - server1
       - server2
 ```
-contains 2 groups, each of them consisting of 2 servers. Server group name can be anything (in our case they're called "lobbies" and "group2"). Under group name, list the actual server names defined in config.yml of bungeecord.  
+contains 2 groups, each of them consisting of 2 servers. Server group name can be anything (in our case they're called "lobbies" and "group2"). Under group name, list the actual server names defined in config.yml of bungeecord.
 
-With this setup, "lobby1" and "lobby2" will share playerlist, as well as "server1" with "server2". All unlisted servers are automatically put into a hidden default group and share playerlist. This means that all other servers except these 4 will share playerlist.  
+With this setup, "lobby1" and "lobby2" will share playerlist, as well as "server1" with "server2". All unlisted servers are automatically put into a hidden default group and share playerlist. This means that all other servers except these 4 will share playerlist.
 
-To make all servers share playerlist, simply clear server groups and set  
+To make all servers share playerlist, simply clear server groups and set
 ```
   server-groups: {}
 ```
 
 ## Configuring isolated servers
-If you want servers which are isolated (no one will see these players and they will not see anyone on other servers), simply create a new group and only put that 1 server there. For example:  
+If you want servers which are isolated (no one will see these players and they will not see anyone on other servers), simply create a new group and only put that 1 server there. For example:
 ```
 global-playerlist:
   server-groups:
@@ -60,7 +60,7 @@ global-playerlist:
     - spyserver1
     - spyserver2
 ```
-Now, players connected to "spyserver1" or "spyserver2" will see everyone on the network in tablist, but no one else (unless on another spy server / in the same server group) will see them.  
+Now, players connected to "spyserver1" or "spyserver2" will see everyone on the network in tablist, but no one else (unless on another spy server / in the same server group) will see them.
 
 # Compatibility with vanish plugins
 For compatibility with vanish plugins, vanish status must be detected correctly. See [Additional information - Vanish detection](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection) for more info.

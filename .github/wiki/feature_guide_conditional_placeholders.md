@@ -1,20 +1,20 @@
 # Content
 * [About](#about)
 * [Condition types](#condition-types)
-    * [Number comparations](#number-comparations)
-    * [Text operations](#text-operations)
-    * [Permission](#permission)
+  * [Number comparations](#number-comparations)
+  * [Text operations](#text-operations)
+  * [Permission](#permission)
 * [Multiple condition requirements](#multiple-condition-requirements)
 * [Condition output](#condition-output)
 * [Configuration](#configuration)
 * [Usage](#usage)
-    * [Displaying text](#displaying-text)
-    * [Display condition of a feature](#display-condition-of-a-feature)
-        * [Short format](#short-format)
+  * [Displaying text](#displaying-text)
+  * [Display condition of a feature](#display-condition-of-a-feature)
+    * [Short format](#short-format)
 * [Refresh interval](#refresh-interval)
 * [Examples](#examples)
-    * [Example 1 - Chaining conditional placeholders](#example-1---chaining-conditional-placeholders)
-    * [Example 2 - Conditions in conditions](#example-2---conditions-in-conditions)
+  * [Example 1 - Chaining conditional placeholders](#example-1---chaining-conditional-placeholders)
+  * [Example 2 - Conditions in conditions](#example-2---conditions-in-conditions)
 
 # About
 Conditions / conditional placeholders allow you to create output which depends on output of other placeholders or permission requirement.  

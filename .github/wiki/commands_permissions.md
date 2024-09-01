@@ -79,13 +79,13 @@ This page lists all of the commands and permissions that are available with TAB.
 
 # Scoreboard
 ## /tab scoreboard show \<name\> \[player\]
-* **Permission:** `tab.scoreboard.show` for showing to yourself, `tab.scoreboard.show.other` for showing to others.  
+* **Permission:** `tab.scoreboard.show` for showing to yourself, `tab.scoreboard.show.other` for showing to others.
 * **Description:** Shows the scoreboard with the given `name`, either to yourself if no `player` was given, or to the given `player`.
 
 ## /tab scoreboard [on/off/toggle] [player] [options]
-* **Permission:** `tab.scoreboard.toggle` for toggling for yourself, `tab.scoreboard.toggle.other` for toggling for others.  
-* **Description:** Shows / hides / toggles scoreboard of specified player. If no player was given, command affects the sender.  
-* **Options:**  
+* **Permission:** `tab.scoreboard.toggle` for toggling for yourself, `tab.scoreboard.toggle.other` for toggling for others.
+* **Description:** Shows / hides / toggles scoreboard of specified player. If no player was given, command affects the sender.
+* **Options:**
   * `-s` for silent toggling (no chat message for affected player)
 
 ## /tab scoreboard announce \<name\> \<duration\>
@@ -94,13 +94,13 @@ This page lists all of the commands and permissions that are available with TAB.
 
 # Bossbar
 ## /tab bossbar show \<name\> \[player\]
-* **Permission:** `tab.bossbar.show` for showing to yourself, `tab.bossbar.show.other` for showing to others.  
+* **Permission:** `tab.bossbar.show` for showing to yourself, `tab.bossbar.show.other` for showing to others.
 * **Description:** Shows the bossbar with the given `name`, either to yourself if no `player` was given, or to the given `player`.
 
 ## /tab bossbar [on/off/toggle] [player] [options]
-* **Permission:** `tab.bossbar.toggle` for toggling for yourself, `tab.bossbar.toggle.other` for toggling for others.  
-* **Description:** Shows / hides / toggles bossbar of specified player. If no player was given, command affects the sender.  
-* **Options:**  
+* **Permission:** `tab.bossbar.toggle` for toggling for yourself, `tab.bossbar.toggle.other` for toggling for others.
+* **Description:** Shows / hides / toggles bossbar of specified player. If no player was given, command affects the sender.
+* **Options:**
   * `-s` for silent toggling (no chat message for affected player)
 
 ## /tab bossbar announce \<name\> \<duration\>

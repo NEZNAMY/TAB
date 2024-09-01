@@ -3,7 +3,7 @@
 * [Enabling](#enabling)
 * [Permissions](#permissions)
 * [Additional info](#additional-info)
-    * [Additional note 1 - Seeing yourself still as spectator](#additional-note-1---seeing-yourself-still-as-spectator)
+  * [Additional note 1 - Seeing yourself still as spectator](#additional-note-1---seeing-yourself-still-as-spectator)
 
 # About
 With the introduction of spectator gamemode in 1.8, players having it automatically appear on the bottom of tablist with transparent name and missing [Yellow number](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Yellow-number). This feature cancels gamemode change packets to spectator gamemode, cancelling this minecraft feature.

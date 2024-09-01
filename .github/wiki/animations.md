@@ -4,9 +4,9 @@
 * [Tips & Tricks](#tips--tricks)
 * [External tools](#external-tools)
 * [Additional info](#additional-info)
-    * [Additional note 1 - Frame synchronization](#additional-note-1---frame-synchronization)
+  * [Additional note 1 - Frame synchronization](#additional-note-1---frame-synchronization)
 * [Examples](#examples)
-    * [Example 1](#example-1)
+  * [Example 1](#example-1)
 
 # Creating an animation
 Animations can be created in **animations.yml** file.  

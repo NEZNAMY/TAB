@@ -25,8 +25,8 @@ See [Citizens FAQ](https://wiki.citizensnpcs.co/Frequently_Asked_Questions#Why_a
 * If you want to take prefixes/suffixes, check [this guide](https://github.com/NEZNAMY/TAB/wiki/Mini-guides-collection#taking-prefixessuffixes-from-permission-plugin) and use `%luckperms-prefix%` & `%luckperms-suffix%`.
 * Sorting:
   First, [Configure weights correctly in LuckPerms](https://github.com/NEZNAMY/TAB/wiki/How-to-setup-weights-priorities#luckperms). Then, you have 2 options:
-    * Configure [sorting by groups](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#groups) (recommended).
-    * Sorting by weights directly: `PLACEHOLDER_HIGH_TO_LOW:%luckperms_highest_group_weight%`.
+  * Configure [sorting by groups](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#groups) (recommended).
+  * Sorting by weights directly: `PLACEHOLDER_HIGH_TO_LOW:%luckperms_highest_group_weight%`.
 
 ## #3 - How can I make belowname not affect NPCs but keep it for players?
 Make NPC plugin hide their original names (using teams) and place holograms for displaying text.
@@ -88,8 +88,8 @@ You can check out [this reddit post](https://www.reddit.com/r/admincraft/comment
 ## #17 - Is MiniMessage supported?
 Kind of. MiniMessage support **is** included, however, this doesn't mean it is guaranteed to work. Here are a few reasons why it may not work for you:
 * MiniMessage library must be included in your server software. TAB does not include this library.
-    * It **is** included in Paper 1.16.5 and higher, Velocity and Sponge 8.
-    * It **is not** included in Spigot, any server software for 1.16.4 and lower, BungeeCord (and any of its forks), Sponge 7 and Fabric.
+  * It **is** included in Paper 1.16.5 and higher, Velocity and Sponge 8.
+  * It **is not** included in Spigot, any server software for 1.16.4 and lower, BungeeCord (and any of its forks), Sponge 7 and Fabric.
 * You may not use any legacy color codes (&) in the text where you want MiniMessage support. If you use them, MiniMessage parser will throw an error. Therefore, if trying to use both legacy colors and MiniMessage syntax, MiniMessage syntax will not work.
 * A plugin/mod might be shading an outdated/incomplete version of Adventure without relocating it, and java class loader might make TAB use the wrong source of the duplicated library.
 

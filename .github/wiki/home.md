@@ -1,5 +1,5 @@
 # About the wiki
-The wiki explains functionality of the plugin as of version **4.1.7**. If your config looks different or is missing some features, you are using an old version of the plugin. To get the latest version, check [releases](https://github.com/NEZNAMY/TAB/releases/).  
+The wiki explains functionality of the plugin as of version **4.1.8**. If your config looks different or is missing some features, you are using an old version of the plugin. To get the latest version, check [releases](https://github.com/NEZNAMY/TAB/releases/).  
 Wiki for older plugin versions is not available, as there is never a reason to be outdated. Support for older MC versions is not being removed and new plugin version is simply superior to any of the previous versions, as it contains more optimizations, fixes and features.
 
 If you plan to run your server for longer than 1 week, it's a good idea to read this wiki as it explains everything about the plugin, giving you knowledge to do things you had no idea were possible, giving you an advantage over everyone else.

@@ -2,11 +2,11 @@
 * [About](#about)
 * [Configuration](#configuration)
 * [Additional info](#additional-info)
-    * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
-    * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
+  * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
+  * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
 * [Tips & Tricks](#tips--tricks)
-    * [Tip 1 - Heart symbol](#tip-1---heart-symbol)
-    * [Tip 2 - Displaying health as 0-10 or in %](#tip-2---displaying-health-as-0-10-or-in-)
+  * [Tip 1 - Heart symbol](#tip-1---heart-symbol)
+  * [Tip 2 - Displaying health as 0-10 or in %](#tip-2---displaying-health-as-0-10-or-in-)
 * [Limitations](#limitations)
 
 # About

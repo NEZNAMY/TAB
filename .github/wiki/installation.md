@@ -1,9 +1,9 @@
 # Content
 * [Bukkit/Spigot](#bukkitspigot)
 * [BungeeCord](#bungeecord)
-    * [Proxy installation](#proxy-installation)
-    * [Backend installation](#backend-installation)
-    * [Mixed installation](#mixed-installation)
+  * [Proxy installation](#proxy-installation)
+  * [Backend installation](#backend-installation)
+  * [Mixed installation](#mixed-installation)
 * [Updating the plugin](#updating-the-plugin)
 
 # Bukkit/Spigot

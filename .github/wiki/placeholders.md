@@ -1,23 +1,23 @@
 # Content
 * [About](#about)
 * [Internal placeholders](#internal-placeholders)
-    * [Universal](#universal)
-    * [Backend only](#backend-only)
-    * [BungeeCord only](#bungeecord-only)
+  * [Universal](#universal)
+  * [Backend only](#backend-only)
+  * [BungeeCord only](#bungeecord-only)
 * [PlaceholderAPI](#placeholderapi)
 * [Relational placeholders](#relational-placeholders)
-    * [About](#about-1)
-    * [Usage](#usage)
+  * [About](#about-1)
+  * [Usage](#usage)
 * [Refreshing](#refreshing)
-    * [Refresh intervals](#refresh-intervals)
-    * [Sync refreshing](#sync-refreshing)
+  * [Refresh intervals](#refresh-intervals)
+  * [Sync refreshing](#sync-refreshing)
 * [Placeholder is not working](#placeholder-is-not-working)
-    * [Internal placeholder is not working](#internal-placeholder-is-not-working)
-    * [PlaceholderAPI placeholder is not working](#placeholderapi-placeholder-is-not-working)
+  * [Internal placeholder is not working](#internal-placeholder-is-not-working)
+  * [PlaceholderAPI placeholder is not working](#placeholderapi-placeholder-is-not-working)
 * [API](#api)
-    * [Server placeholders](#server-placeholders)
-    * [Player placeholders](#player-placeholders)
-    * [Relational placeholders](#relational-placeholders-1)
+  * [Server placeholders](#server-placeholders)
+  * [Player placeholders](#player-placeholders)
+  * [Relational placeholders](#relational-placeholders-1)
 
 # About
 TAB offers various placeholders to display the most common information. It also supports [PlaceholderAPI placeholders](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders).
@@ -140,7 +140,7 @@ Keep in mind that now you should configure reasonable refresh interval for these
 When using a placeholder, you should know if it's a [TAB's internal placeholder](#internal-placeholders) or a [PlaceholderAPI placeholder](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders). If you don't, that's the problem.
 
 **Note:** Don't forget that using `%` symbol will mess up placeholder starts and ends, breaking all placeholders after it. To make the symbol display correctly without messing up placeholders, use `%%` to display the symbol.  
-**Example:** `Sale 100% OFF!` -> `Sale 100%% OFF!`.
+**Example:** `Sale 100% OFF! %some_placeholder%` -> `Sale 100%% OFF! %some_placeholder%`.
 
 ## Internal placeholder is not working
 All TAB's internal placeholders are listed above. Some of them are bukkit only (meaning they won't work on bungeecord) and some are bungee only. **Trying to use a bukkit-only placeholder on bungeecord will not work.**  
