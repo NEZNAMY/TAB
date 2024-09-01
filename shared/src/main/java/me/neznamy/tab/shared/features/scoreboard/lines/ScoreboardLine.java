@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -30,8 +29,6 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
 
     //ID of this line
     protected final int lineNumber;
-
-    protected final String textProperty = Property.randomName();
 
     //text to display
     protected String text;

@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
@@ -9,6 +10,7 @@ import me.neznamy.tab.shared.config.files.config.ScoreboardConfiguration;
 import me.neznamy.tab.shared.config.files.config.ScoreboardConfiguration.ScoreboardDefinition;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -377,5 +379,21 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         /** Scoreboard sent by another plugin (objective name) */
         @Nullable
         public String otherPluginScoreboard;
+
+        /** Property of scoreboard title of scoreboard the player can currently see */
+        @Nullable
+        public Property titleProperty;
+
+        /** Map of line text properties */
+        @NotNull
+        public final Map<ScoreboardLine, Property> lineProperties = new IdentityHashMap<>();
+
+        /** Map of line player name properties (used in long lines) */
+        @NotNull
+        public final Map<ScoreboardLine, Property> lineNameProperties = new IdentityHashMap<>();
+
+        /** Map of line NumberFormat properties */
+        @NotNull
+        public final Map<ScoreboardLine, Property> numberFormatProperties = new IdentityHashMap<>();
     }
 }

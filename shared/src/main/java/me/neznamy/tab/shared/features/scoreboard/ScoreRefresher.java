@@ -21,8 +21,6 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
 
     private static final StringToComponentCache cache = new StringToComponentCache("Scoreboard NumberFormat", 1000);
 
-    private final String NUMBER_FORMAT_PROPERTY = Property.randomName();
-
     /** Line this score belongs to */
     @NonNull private final ScoreboardLine line;
 
@@ -38,7 +36,7 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (refreshed.scoreboardData.activeScoreboard != line.getParent()) return; //player has different scoreboard displayed
-        if (refreshed.getProperty(NUMBER_FORMAT_PROPERTY) == null) return; // Shrug
+        if (refreshed.scoreboardData.numberFormatProperties.get(line) == null) return; // Shrug
         refreshed.getScoreboard().setScore(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 line.getPlayerName(refreshed),
@@ -55,7 +53,7 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
      *          Player to register properties for
      */
     public void registerProperties(@NotNull TabPlayer player) {
-        player.setProperty(this, NUMBER_FORMAT_PROPERTY, numberFormat);
+        player.scoreboardData.numberFormatProperties.put(line, new Property(this, player, numberFormat));
     }
 
     /**
@@ -67,7 +65,7 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
      */
     @Nullable
     public TabComponent getNumberFormat(@NotNull TabPlayer player) {
-        return cache.get(player.getProperty(NUMBER_FORMAT_PROPERTY).updateAndGet());
+        return cache.get(player.scoreboardData.numberFormatProperties.get(line).updateAndGet());
     }
 
     @Override

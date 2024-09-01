@@ -28,8 +28,6 @@ import java.util.*;
 @Getter
 public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab.api.scoreboard.Scoreboard, CustomThreaded {
 
-    private final String titleProperty = Property.randomName();
-
     //scoreboard manager
     private final ScoreboardManagerImpl manager;
 
@@ -135,11 +133,11 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      */
     public void addPlayer(@NonNull TabPlayer p) {
         if (p.scoreboardData.activeScoreboard == this) return; // already registered
-        p.setProperty(this, titleProperty, title);
+        p.scoreboardData.titleProperty = new Property(this, p, title);
         p.getScoreboard().registerObjective(
                 Scoreboard.DisplaySlot.SIDEBAR,
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
-                manager.getCache().get(p.getProperty(titleProperty).updateAndGet()),
+                manager.getCache().get(p.scoreboardData.titleProperty.get()),
                 Scoreboard.HealthDisplay.INTEGER,
                 new SimpleComponent("")
         );
@@ -166,6 +164,10 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
                 p.getScoreboard().unregisterTeam(((ScoreboardLine)line).getTeamName());
         }
         p.scoreboardData.activeScoreboard = null;
+        p.scoreboardData.titleProperty = null;
+        p.scoreboardData.lineProperties.clear();
+        p.scoreboardData.lineNameProperties.clear();
+        p.scoreboardData.numberFormatProperties.clear();
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, "");
     }
 
@@ -180,7 +182,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         if (refreshed.scoreboardData.activeScoreboard != this) return; //player has different scoreboard displayed
         refreshed.getScoreboard().updateObjective(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
-                manager.getCache().get(refreshed.getProperty(titleProperty).updateAndGet()),
+                manager.getCache().get(refreshed.scoreboardData.titleProperty.updateAndGet()),
                 Scoreboard.HealthDisplay.INTEGER,
                 new SimpleComponent("")
         );
@@ -199,7 +201,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         Collections.reverse(linesReversed);
         int score = manager.getConfiguration().staticNumber;
         for (Line line : linesReversed) {
-            Property pr = p.getProperty(((ScoreboardLine) line).getTextProperty());
+            Property pr = p.scoreboardData.lineProperties.get((ScoreboardLine) line);
             if (pr.getCurrentRawValue().isEmpty() || (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {
                 p.getScoreboard().setScore(
                         ScoreboardManagerImpl.OBJECTIVE_NAME,
@@ -237,10 +239,10 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         ensureActive();
         this.title = title;
         for (TabPlayer p : players) {
-            p.setProperty(this, titleProperty, title);
+            p.scoreboardData.titleProperty.changeRawValue(title);
             p.getScoreboard().updateObjective(
                     ScoreboardManagerImpl.OBJECTIVE_NAME,
-                    manager.getCache().get(p.getProperty(titleProperty).get()),
+                    manager.getCache().get(p.scoreboardData.titleProperty.get()),
                     Scoreboard.HealthDisplay.INTEGER,
                     new SimpleComponent("")
             );
