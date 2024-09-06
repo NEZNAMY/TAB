@@ -36,7 +36,7 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
                     .healthDisplay(com.velocitypowered.api.scoreboard.HealthDisplay.valueOf(objective.getHealthDisplay().name()))
                     .title(TextHolder.of(objective.getTitle().toLegacyText(), objective.getTitle().toAdventure(player.getVersion())))
                     .numberFormat(objective.getNumberFormat() == null ? null : NumberFormat.fixed(objective.getNumberFormat().toAdventure(player.getVersion())));
-            scoreboard.registerObjective(builder);
+            objective.setPlatformObjective(scoreboard.registerObjective(builder));
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().printError("Failed to register objective " + objective.getName() + " for player " + player.getName(), e);
         }
@@ -54,7 +54,7 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         try {
-            ProxyObjective obj = scoreboard.getObjective(objective.getName());
+            ProxyObjective obj = (ProxyObjective) objective.getPlatformObjective();
             obj.setHealthDisplay(com.velocitypowered.api.scoreboard.HealthDisplay.valueOf(objective.getHealthDisplay().name()));
             obj.setTitle(TextHolder.of(objective.getTitle().toLegacyText(), objective.getTitle().toAdventure(player.getVersion())));
             obj.setNumberFormat(objective.getNumberFormat() == null ? null : NumberFormat.fixed(objective.getNumberFormat().toAdventure(player.getVersion())));
@@ -93,29 +93,30 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
 
     @Override
     public void registerTeam(@NonNull Team team) {
-        ProxyTeam previous = scoreboard.getTeam(team.getName());
-        if (previous != null) {
-            TAB.getInstance().getErrorManager().printError("Team " + previous.getName() + " already existed when registering for player " + player.getName() + ", unregistering", null);
-            scoreboard.unregisterTeam(previous.getName());
+        try {
+            team.setPlatformTeam(scoreboard.registerTeam(scoreboard.teamBuilder(team.getName())
+                    .prefix(TextHolder.of(team.getPrefix().toLegacyText(), team.getPrefix().toAdventure(player.getVersion())))
+                    .suffix(TextHolder.of(team.getSuffix().toLegacyText(), team.getSuffix().toAdventure(player.getVersion())))
+                    .nameVisibility(visibilities[team.getVisibility().ordinal()])
+                    .collisionRule(collisions[team.getCollision().ordinal()])
+                    .allowFriendlyFire((team.getOptions() & 0x01) > 0)
+                    .canSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0)
+                    .color(colors[team.getColor().ordinal()])
+                    .entries(team.getPlayers())
+            ));
+        } catch (Exception e) {
+            TAB.getInstance().getErrorManager().printError("Team " + team.getName() + " already existed when registering for player " + player.getName() + ", unregistering", e);
+            unregisterTeam(team);
+            registerTeam(team);
         }
-        team.setPlatformTeam(scoreboard.registerTeam(scoreboard.teamBuilder(team.getName())
-                .prefix(TextHolder.of(team.getPrefix().toLegacyText(), team.getPrefix().toAdventure(player.getVersion())))
-                .suffix(TextHolder.of(team.getSuffix().toLegacyText(), team.getSuffix().toAdventure(player.getVersion())))
-                .nameVisibility(visibilities[team.getVisibility().ordinal()])
-                .collisionRule(collisions[team.getCollision().ordinal()])
-                .allowFriendlyFire((team.getOptions() & 0x01) > 0)
-                .canSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0)
-                .color(colors[team.getColor().ordinal()])
-                .entries(team.getPlayers())
-        ));
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        if (scoreboard.getTeam(team.getName()) != null) {
+        try {
             scoreboard.unregisterTeam(team.getName());
-        } else {
-            TAB.getInstance().getErrorManager().printError("Team " + team.getName() + " did not exist when unregistering for player " + player.getName(), null);
+        } catch (Exception e) {
+            TAB.getInstance().getErrorManager().printError("Team " + team.getName() + " did not exist when unregistering for player " + player.getName(), e);
         }
     }
 
