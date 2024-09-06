@@ -98,21 +98,22 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void registerObjective(@NonNull Objective objective) {
         checkPlayerScoreboard();
-        org.bukkit.scoreboard. Objective obj = newObjective(objective.getName(), "dummy", objective.getTitle(), objective.getHealthDisplay());
+        org.bukkit.scoreboard.Objective obj = newObjective(objective.getName(), "dummy", objective.getTitle(), objective.getHealthDisplay());
         setObjectiveNumberFormat(obj, objective.getNumberFormat());
         obj.setDisplaySlot(slots[objective.getDisplaySlot().ordinal()]);
+        objective.setPlatformObjective(obj);
     }
 
     @Override
     public void unregisterObjective(@NonNull Objective objective) {
         checkPlayerScoreboard();
-        scoreboard.getObjective(objective.getName()).unregister();
+        ((org.bukkit.scoreboard.Objective)objective.getPlatformObjective()).unregister();
     }
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
         checkPlayerScoreboard();
-        org.bukkit.scoreboard.Objective obj = scoreboard.getObjective(objective.getName());
+        org.bukkit.scoreboard.Objective obj = (org.bukkit.scoreboard.Objective) objective.getPlatformObjective();
         setDisplayName(obj, objective.getTitle());
         if (serverMinorVersion >= RENDER_TYPE_VERSION) obj.setRenderType(RenderType.values()[objective.getHealthDisplay().ordinal()]);
         setObjectiveNumberFormat(obj, objective.getNumberFormat());
@@ -123,9 +124,9 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         checkPlayerScoreboard();
         org.bukkit.scoreboard.Score s;
         if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
-            s = scoreboard.getObjective(score.getObjective()).getScore(score.getHolder());
+            s = ((org.bukkit.scoreboard.Objective)score.getObjective()).getScore(score.getHolder());
         } else {
-            s = scoreboard.getObjective(score.getObjective()).getScore(Bukkit.getOfflinePlayer(score.getHolder()));
+            s = ((org.bukkit.scoreboard.Objective)score.getObjective()).getScore(Bukkit.getOfflinePlayer(score.getHolder()));
         }
         s.setScore(score.getValue());
         setScoreDisplayName(s, score.getDisplayName());
@@ -171,18 +172,19 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         }
         t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         t.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
+        team.setPlatformTeam(t);
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
         checkPlayerScoreboard();
-        scoreboard.getTeam(team.getName()).unregister();
+        ((org.bukkit.scoreboard.Team)team.getPlatformTeam()).unregister();
     }
 
     @Override
     public void updateTeam(@NonNull Team team) {
         checkPlayerScoreboard();
-        org.bukkit.scoreboard.Team t = scoreboard.getTeam(team.getName());
+        org.bukkit.scoreboard.Team t = (org.bukkit.scoreboard.Team) team.getPlatformTeam();
         setPrefix(t, team.getPrefix());
         setSuffix(t, team.getSuffix());
         if (serverMinorVersion >= 8)

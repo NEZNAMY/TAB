@@ -66,7 +66,7 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
     @Override
     public void setScore(@NonNull Score score) {
         try {
-            scoreboard.getObjective(score.getObjective()).setScore(score.getHolder(), b -> b
+            ((ProxyObjective)score.getObjective().getPlatformObjective()).setScore(score.getHolder(), b -> b
                     .score(score.getValue())
                     .displayName(score.getDisplayName() == null ? null : score.getDisplayName().toAdventure(player.getVersion()))
                     .numberFormat(score.getNumberFormat() == null ? null : NumberFormat.fixed(score.getNumberFormat().toAdventure(player.getVersion())))
@@ -79,7 +79,7 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
     @Override
     public void removeScore(@NonNull Score score) {
         try {
-            scoreboard.getObjective(score.getObjective()).removeScore(score.getHolder());
+            ((ProxyObjective)score.getObjective().getPlatformObjective()).removeScore(score.getHolder());
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().printError("Failed to remove score " + score.getHolder() + " for player " + player.getName(), e);
         }

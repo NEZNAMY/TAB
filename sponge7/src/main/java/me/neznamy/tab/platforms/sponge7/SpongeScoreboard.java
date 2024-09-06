@@ -73,29 +73,30 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
                 .build();
         sb.addObjective(obj);
         sb.updateDisplaySlot(obj, displaySlots[objective.getDisplaySlot().ordinal()]);
+        objective.setPlatformObjective(obj);
     }
 
     @Override
     public void unregisterObjective(@NonNull Objective objective) {
-        sb.getObjective(objective.getName()).ifPresent(sb::removeObjective);
+        sb.removeObjective(((org.spongepowered.api.scoreboard.objective.Objective)objective.getPlatformObjective()));
     }
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
-        sb.getObjective(objective.getName()).ifPresent(obj -> {
-            obj.setDisplayName(Text.of(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
-            obj.setDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()]);
-        });
+        org.spongepowered.api.scoreboard.objective.Objective obj = ((org.spongepowered.api.scoreboard.objective.Objective)objective.getPlatformObjective());
+        obj.setDisplayName(Text.of(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
+        obj.setDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()]);
     }
 
     @Override
     public void setScore(@NonNull Score score) {
-        sb.getObjective(score.getObjective()).ifPresent(o -> o.getOrCreateScore(Text.of(score.getHolder())).setScore(score.getValue()));
+        ((org.spongepowered.api.scoreboard.objective.Objective)score.getObjective().getPlatformObjective())
+                .getOrCreateScore(Text.of(score.getHolder())).setScore(score.getValue());
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
-        sb.getObjective(score.getObjective()).ifPresent(o -> o.removeScore(Text.of(score.getHolder())));
+        ((org.spongepowered.api.scoreboard.objective.Objective)score.getObjective().getPlatformObjective()).removeScore(Text.of(score.getHolder()));
     }
 
     @Override
@@ -120,23 +121,23 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
             spongeTeam.addMember(Text.of(member));
         }
         sb.registerTeam(spongeTeam);
+        team.setPlatformTeam(sb);
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        sb.getTeam(team.getName()).ifPresent(org.spongepowered.api.scoreboard.Team::unregister);
+        ((org.spongepowered.api.scoreboard.Team)team.getPlatformTeam()).unregister();
     }
 
     @Override
     public void updateTeam(@NonNull Team team) {
-        sb.getTeam(team.getName()).ifPresent(spongeTeam -> {
-            spongeTeam.setDisplayName(Text.of(team.getName()));
-            spongeTeam.setPrefix(Text.of(cutTo(team.getPrefix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
-            spongeTeam.setSuffix(Text.of(cutTo(team.getSuffix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
-            spongeTeam.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
-            spongeTeam.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
-            spongeTeam.setCollisionRule(collisionRules[team.getCollision().ordinal()]);
-            spongeTeam.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
-        });
+        org.spongepowered.api.scoreboard.Team spongeTeam = (org.spongepowered.api.scoreboard.Team) team.getPlatformTeam();
+        spongeTeam.setDisplayName(Text.of(team.getName()));
+        spongeTeam.setPrefix(Text.of(cutTo(team.getPrefix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
+        spongeTeam.setSuffix(Text.of(cutTo(team.getSuffix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
+        spongeTeam.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
+        spongeTeam.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
+        spongeTeam.setCollisionRule(collisionRules[team.getCollision().ordinal()]);
+        spongeTeam.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
     }
 }

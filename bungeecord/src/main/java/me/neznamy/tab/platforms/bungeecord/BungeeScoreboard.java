@@ -80,7 +80,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         player.sendPacket(new ScoreboardScore(
                 score.getHolder(),
                 (byte) ScoreAction.CHANGE,
-                score.getObjective(),
+                score.getObjective().getName(),
                 score.getValue(),
                 score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
                 numberFormat(score.getNumberFormat())
@@ -90,9 +90,9 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     @Override
     public void removeScore(@NonNull Score score) {
         if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
-            player.sendPacket(new ScoreboardScoreReset(score.getHolder(), score.getObjective()));
+            player.sendPacket(new ScoreboardScoreReset(score.getHolder(), score.getObjective().getName()));
         } else {
-            player.sendPacket(new ScoreboardScore(score.getHolder(), (byte) ScoreAction.REMOVE, score.getObjective(), 0, null, null));
+            player.sendPacket(new ScoreboardScore(score.getHolder(), (byte) ScoreAction.REMOVE, score.getObjective().getName(), 0, null, null));
         }
     }
 

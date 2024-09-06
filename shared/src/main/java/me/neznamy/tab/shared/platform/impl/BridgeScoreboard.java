@@ -55,7 +55,7 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
     @Override
     public void setScore(@NonNull Score score) {
         player.sendPluginMessage(new SetScore(
-                score.getObjective(),
+                score.getObjective().getName(),
                 ScoreAction.CHANGE,
                 score.getHolder(),
                 score.getValue(),
@@ -66,7 +66,7 @@ public class BridgeScoreboard extends SafeScoreboard<ProxyTabPlayer> {
 
     @Override
     public void removeScore(@NonNull Score score) {
-        player.sendPluginMessage(new SetScore(score.getObjective(), score.getHolder()));
+        player.sendPluginMessage(new SetScore(score.getObjective().getName(), score.getHolder()));
     }
 
     @Override

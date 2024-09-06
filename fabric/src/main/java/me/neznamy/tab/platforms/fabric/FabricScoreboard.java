@@ -60,14 +60,14 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
 
     @Override
     public void setScore(@NonNull Score score) {
-        player.sendPacket(FabricMultiVersion.setScore(score.getObjective(), score.getHolder(), score.getValue(),
+        player.sendPacket(FabricMultiVersion.setScore(score.getObjective().getName(), score.getHolder(), score.getValue(),
                 score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
                 score.getNumberFormat()));
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
-        player.sendPacket(FabricMultiVersion.removeScore(score.getObjective(), score.getHolder()));
+        player.sendPacket(FabricMultiVersion.removeScore(score.getObjective().getName(), score.getHolder()));
     }
 
     @Override

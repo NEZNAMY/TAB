@@ -85,7 +85,7 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         sendPacket(
                 new ClientboundSetScorePacket(
                         score.getHolder(),
-                        score.getObjective(),
+                        score.getObjective().getName(),
                         score.getValue(),
                         Optional.ofNullable(score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion())), 
                         Optional.ofNullable(score.getNumberFormat() == null ? null : score.getNumberFormat().toFixedFormat(FixedFormat::new))
@@ -95,7 +95,7 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void removeScore(@NonNull Score score) {
-        sendPacket(new ClientboundResetScorePacket(score.getHolder(), score.getObjective()));
+        sendPacket(new ClientboundResetScorePacket(score.getHolder(), score.getObjective().getName()));
     }
 
     @Override

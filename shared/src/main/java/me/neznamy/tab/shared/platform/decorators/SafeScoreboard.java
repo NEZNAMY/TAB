@@ -102,7 +102,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         }
         Score score = objective.getScores().get(scoreHolder);
         if (score == null) {
-            score = new Score(objectiveName, scoreHolder, value, displayName, numberFormat);
+            score = new Score(objective, scoreHolder, value, displayName, numberFormat);
             objective.getScores().put(scoreHolder, score);
         } else {
             score.update(value, displayName, numberFormat);
@@ -461,7 +461,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Setter
     public static class Score {
 
-        @NonNull private final String objective;
+        @NonNull private final Objective objective;
         @NonNull private final String holder;
         private int value;
         @Nullable private TabComponent displayName;

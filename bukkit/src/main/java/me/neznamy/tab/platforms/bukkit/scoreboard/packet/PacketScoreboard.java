@@ -140,14 +140,14 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void setScore(@NonNull Score score) {
-        packetSender.sendPacket(player, scorePacketData.setScore(score.getObjective(), score.getHolder(), score.getValue(),
+        packetSender.sendPacket(player, scorePacketData.setScore(score.getObjective().getName(), score.getHolder(), score.getValue(),
                 score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
                 score.getNumberFormat() == null ? null : toFixedFormat(score.getNumberFormat())));
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
-        packetSender.sendPacket(player, scorePacketData.removeScore(score.getObjective(), score.getHolder()));
+        packetSender.sendPacket(player, scorePacketData.removeScore(score.getObjective().getName(), score.getHolder()));
     }
 
     @Override
