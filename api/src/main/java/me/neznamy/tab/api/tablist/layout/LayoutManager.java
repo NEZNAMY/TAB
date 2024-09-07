@@ -3,6 +3,7 @@ package me.neznamy.tab.api.tablist.layout;
 import lombok.NonNull;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -20,7 +21,19 @@ public interface LayoutManager {
      *          Unique layout name
      * @return  Created layout
      */
-    Layout createNewLayout(String name);
+    @NotNull
+    Layout createNewLayout(@NonNull String name);
+
+    /**
+     * Returns defined layout from config by name. If no such layout is defined in config,
+     * {@code null} is returned.
+     *
+     * @param   name
+     *          Name of layout defined in config
+     * @return  Layout defined in config by name or {@code null} if no such layout is defined
+     */
+    @Nullable
+    Layout getLayout(@NonNull String name);
 
     /**
      * Sends layout to player. Set to {@code null} to make player not see
