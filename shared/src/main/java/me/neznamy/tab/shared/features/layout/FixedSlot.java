@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.layout;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
@@ -20,16 +21,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FixedSlot extends RefreshableFeature {
 
-    private static final StringToComponentCache cache = new StringToComponentCache("LayoutFixedSlot", 1000);
+    @NotNull private static final StringToComponentCache cache = new StringToComponentCache("LayoutFixedSlot", 1000);
 
+    @NotNull private final String propertyName = Property.randomName();
+    @NotNull private final String skinProperty = Property.randomName();
     @NonNull private final LayoutManagerImpl manager;
     @Getter private final int slot;
     @NonNull private final LayoutPattern pattern;
     @NonNull private final UUID id;
     @NonNull private final String text;
-    @NonNull private final String propertyName;
     @NonNull private final String skin;
-    @NonNull private final String skinProperty;
     private final int ping;
 
     @NotNull
@@ -97,9 +98,7 @@ public class FixedSlot extends RefreshableFeature {
                 pattern,
                 manager.getUUID(def.slot),
                 def.text,
-                "Layout-" + pattern.getName() + "-SLOT-" + def.slot,
                 def.skin == null || def.skin.isEmpty() ? manager.getConfiguration().getDefaultSkin(def.slot) : def.skin,
-                "Layout-" + pattern.getName() + "-SLOT-" + def.slot + "-skin",
                 def.ping == null ? manager.getConfiguration().emptySlotPing : def.ping
         );
         if (!def.text.isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), def.slot), f);

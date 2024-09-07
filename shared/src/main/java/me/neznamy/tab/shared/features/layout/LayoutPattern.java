@@ -88,8 +88,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     @Override
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping) {
         ensureActive();
-        fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text,
-                "Layout-" + name + "-SLOT-" + slot, skin, "Layout-" + name + "-SLOT-" + slot+ "-skin", ping));
+        fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text, skin, ping));
     }
 
     @Override
