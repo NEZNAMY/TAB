@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.tablist;
 
-import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -191,16 +190,10 @@ public class PacketTabList1193 extends PacketTabList18 {
     @SneakyThrows
     private static Object newPlayerInfoData(@NotNull UUID id, @Nullable GameProfile profile, boolean listed, int latency,
                                             @Nullable Object gameMode, @Nullable Object displayName, int listOrder, @Nullable Object chatSession) {
-        List<Object> args = Lists.newArrayList(
-                id,
-                profile,
-                listed,
-                latency,
-                gameMode,
-                displayName
-        );
-        if (v1_21_2Plus) args.add(listOrder);
-        args.add(chatSession);
-        return newPlayerInfoData.newInstance(args.toArray());
+        if (v1_21_2Plus) {
+            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName, listOrder, chatSession);
+        } else {
+            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName,            chatSession);
+        }
     }
 }
