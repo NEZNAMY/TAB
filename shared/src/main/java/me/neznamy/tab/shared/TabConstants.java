@@ -31,7 +31,7 @@ public class TabConstants {
     public static final int BSTATS_PLUGIN_ID_SPONGE = 17732;
     public static final int BSTATS_PLUGIN_ID_VELOCITY = 10533;
 
-    public static final int MAX_LOG_SIZE = 1000000;
+    public static final int MAX_LOG_SIZE = 16 * 1024 * 1024;
 
     /**
      * Feature sub-category explaining why / when a certain feature
