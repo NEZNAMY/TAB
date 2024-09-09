@@ -124,9 +124,9 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         checkPlayerScoreboard();
         org.bukkit.scoreboard.Score s;
         if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
-            s = ((org.bukkit.scoreboard.Objective)score.getObjective()).getScore(score.getHolder());
+            s = ((org.bukkit.scoreboard.Objective)score.getObjective().getPlatformObjective()).getScore(score.getHolder());
         } else {
-            s = ((org.bukkit.scoreboard.Objective)score.getObjective()).getScore(Bukkit.getOfflinePlayer(score.getHolder()));
+            s = ((org.bukkit.scoreboard.Objective)score.getObjective().getPlatformObjective()).getScore(Bukkit.getOfflinePlayer(score.getHolder()));
         }
         s.setScore(score.getValue());
         setScoreDisplayName(s, score.getDisplayName());

@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms.converter;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.StructuredComponent;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -133,10 +135,23 @@ public class ReflectionComponentConverter extends ComponentConverter {
 
     /**
      * Attempts to load component converter.
+     *
+     * @param   serverVersion
+     *          Server version
      */
-    public static void tryLoad() {
+    public static void tryLoad(@NotNull ProtocolVersion serverVersion) {
         try {
-            INSTANCE = new ReflectionComponentConverter();
+            boolean versionCheck = EnumSet.of(
+                    ProtocolVersion.V1_20_5,
+                    ProtocolVersion.V1_20_6,
+                    ProtocolVersion.V1_21,
+                    ProtocolVersion.V1_21_1
+            ).contains(serverVersion);
+            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && versionCheck) {
+                INSTANCE = (ComponentConverter) Class.forName("me.neznamy.tab.platforms.paper.PaperComponentConverter").getConstructor().newInstance();
+            } else {
+                INSTANCE = new ReflectionComponentConverter();
+            }
         } catch (Exception ignored) {
         }
     }

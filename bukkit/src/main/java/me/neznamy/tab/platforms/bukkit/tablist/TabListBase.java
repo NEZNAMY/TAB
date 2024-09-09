@@ -7,13 +7,17 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
+import me.neznamy.tab.shared.util.FunctionWithException;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Constructor;
+import java.util.EnumSet;
 import java.util.UUID;
-import java.util.function.Function;
 
 /**
  * Base TabList class for all implementations.
@@ -26,7 +30,7 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
     /** Instance function */
     @Getter
     @Setter
-    private static Function<BukkitTabPlayer, TabListBase<?>> instance;
+    private static FunctionWithException<BukkitTabPlayer, TabListBase<?>> instance;
 
     @Nullable
     protected static SkinData skinData;
@@ -43,10 +47,22 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
 
     /**
      * Finds the best available instance for current server software.
+     *
+     * @param   serverVersion
+     *          Server version
      */
-    public static void findInstance() {
+    public static void findInstance(@NotNull ProtocolVersion serverVersion) {
         try {
-            if (BukkitReflection.is1_19_3Plus()) {
+            boolean versionCheck = EnumSet.of(
+                    ProtocolVersion.V1_20_5,
+                    ProtocolVersion.V1_20_6,
+                    ProtocolVersion.V1_21,
+                    ProtocolVersion.V1_21_1
+            ).contains(serverVersion);
+            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && versionCheck) {
+                Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketTabList").getConstructor(BukkitTabPlayer.class);
+                instance = player -> (TabListBase<?>) constructor.newInstance(player);
+            } else if (BukkitReflection.is1_19_3Plus()) {
                 PacketTabList1193.loadNew();
                 instance = PacketTabList1193::new;
             } else if (BukkitReflection.getMinorVersion() >= 8) {

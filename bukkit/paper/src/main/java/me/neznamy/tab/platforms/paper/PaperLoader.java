@@ -1,9 +1,8 @@
 package me.neznamy.tab.platforms.paper;
 
-import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
-import me.neznamy.tab.platforms.bukkit.scoreboard.ScoreboardLoader;
-import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
+import io.netty.channel.Channel;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.FunctionWithException;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 /**
@@ -12,13 +11,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 @SuppressWarnings("unused") // Via reflection
 public class PaperLoader {
 
-    /**
-     * Sets instances of all plugin components.
-     */
-    public static void load() {
-        ScoreboardLoader.setInstance(PaperPacketScoreboard::new);
-        TabListBase.setInstance(PaperPacketTabList::new);
-        ComponentConverter.INSTANCE = new PaperComponentConverter();
-        BukkitPipelineInjector.setGetChannel(player -> ((CraftPlayer)player.getPlayer()).getHandle().connection.connection.channel);
-    }
+    /** Channel getter using direct NMS code */
+    public static FunctionWithException<TabPlayer, Channel> getChannel =
+            player -> ((CraftPlayer)player.getPlayer()).getHandle().connection.connection.channel;
 }

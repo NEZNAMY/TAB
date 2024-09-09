@@ -24,8 +24,9 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * TabList implementation for 1.20.5+ Paper using direct NMS code.
+ * TabList implementation using direct mojang-mapped code for versions 1.20.5+.
  */
+@SuppressWarnings("unused") // Used via reflection
 public class PaperPacketTabList extends TabListBase<Component> {
 
     private final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateDisplayName = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);

@@ -21,8 +21,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Scoreboard implementation for 1.20.5+ Paper using direct NMS code.
+ * Scoreboard implementation using direct mojang-mapped code for versions 1.20.5+.
  */
+@SuppressWarnings("unused") // Used via reflection
 public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     private static final ChatFormatting[] formats = ChatFormatting.values();

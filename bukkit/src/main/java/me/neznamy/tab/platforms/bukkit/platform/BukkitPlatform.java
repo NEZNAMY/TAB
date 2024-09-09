@@ -56,7 +56,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.EnumSet;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -84,22 +83,12 @@ public class BukkitPlatform implements BackendPlatform {
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
-    /** Flag tracking availability of direct NMS code for 1.20.5+ paper using mojang mappings with paperweight */
-    private final boolean enhancedDirectNMS = ReflectionUtils.classExists("io.papermc.paper.util.TickThread") &&
-            EnumSet.of(
-                    ProtocolVersion.V1_20_5,
-                    ProtocolVersion.V1_20_6,
-                    ProtocolVersion.V1_21,
-                    ProtocolVersion.V1_21_1
-            ).contains(serverVersion);
-
     /**
      * Constructs new instance with given plugin.
      *
      * @param   plugin
      *          Plugin
      */
-    @SneakyThrows
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         long time = System.currentTimeMillis();
@@ -113,16 +102,12 @@ public class BukkitPlatform implements BackendPlatform {
             PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
         }
         PingRetriever.tryLoad();
-        if (enhancedDirectNMS) {
-            Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getMethod("load").invoke(null);
-        } else {
-            ReflectionComponentConverter.tryLoad();
-            ScoreboardLoader.findInstance();
-            TabListBase.findInstance();
-            if (BukkitReflection.getMinorVersion() >= 8) {
-                HeaderFooter.findInstance();
-                BukkitPipelineInjector.tryLoad();
-            }
+        ReflectionComponentConverter.tryLoad(serverVersion);
+        ScoreboardLoader.findInstance(serverVersion);
+        TabListBase.findInstance(serverVersion);
+        if (BukkitReflection.getMinorVersion() >= 8) {
+            HeaderFooter.findInstance();
+            BukkitPipelineInjector.tryLoad(serverVersion);
         }
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] " + EnumChatFormat.GRAY + "Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
@@ -282,6 +267,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     @NotNull
+    @SneakyThrows
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
         return ScoreboardLoader.getInstance().apply((BukkitTabPlayer) player);
     }
@@ -303,6 +289,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     @NotNull
+    @SneakyThrows
     public TabList createTabList(@NotNull TabPlayer player) {
         return TabListBase.getInstance().apply((BukkitTabPlayer) player);
     }

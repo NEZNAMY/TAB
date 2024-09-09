@@ -17,8 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Component converter for Paper 1.20.5+ using direct mojang-mapped code.
+ * Component converter using direct mojang-mapped code for versions 1.20.5+.
  */
+@SuppressWarnings("unused") // Used via reflection
 public class PaperComponentConverter extends ComponentConverter {
 
     @Override

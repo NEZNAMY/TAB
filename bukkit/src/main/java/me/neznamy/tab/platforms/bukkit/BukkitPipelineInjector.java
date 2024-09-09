@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.FunctionWithException;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.EnumSet;
 
 /**
  * Pipeline injection for Bukkit 1.8+.
@@ -32,9 +34,23 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     /**
      * Attempts to load required classes, fields and methods and marks class as available.
      * If something fails, error message is printed and class is not marked as available.
+     *
+     * @param   serverVersion
+     *          Server version
      */
-    public static void tryLoad() {
+    @SuppressWarnings("unchecked")
+    public static void tryLoad(@NotNull ProtocolVersion serverVersion) {
         try {
+            boolean versionCheck = EnumSet.of(
+                    ProtocolVersion.V1_20_5,
+                    ProtocolVersion.V1_20_6,
+                    ProtocolVersion.V1_21,
+                    ProtocolVersion.V1_21_1
+            ).contains(serverVersion);
+            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && versionCheck) {
+                getChannel = (FunctionWithException<TabPlayer, Channel>) Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getDeclaredField("getChannel").get(null);
+                return;
+            }
             Class<?> NetworkManager = BukkitReflection.getClass("network.Connection", "network.NetworkManager", "NetworkManager");
             Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
                     "server.network.PlayerConnection", "PlayerConnection");
