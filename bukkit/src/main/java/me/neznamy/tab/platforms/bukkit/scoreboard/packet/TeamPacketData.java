@@ -43,7 +43,6 @@ public class TeamPacketData {
     private final Field TeamPacket_NAME;
     private final Field TeamPacket_ACTION;
     private final Field TeamPacket_PLAYERS;
-    private final Method ScoreboardTeam_getPlayerNameSet;
     private final Method ScoreboardTeam_setPrefix;
     private final Method ScoreboardTeam_setSuffix;
     private Method ScoreboardTeam_setColor;
@@ -82,7 +81,6 @@ public class TeamPacketData {
             TeamPacket_ACTION = intFields.get(0);
         }
         TeamPacket_PLAYERS = ReflectionUtils.getOnlyField(TeamPacketClass, Collection.class);
-        ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getOnlyMethod(scoreboardTeam, Collection.class);
         chatFormats = (Enum<?>[]) enumChatFormatClass.getMethod("values").invoke(null);
         ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(
                 scoreboardTeam,
@@ -167,9 +165,10 @@ public class TeamPacketData {
     @SneakyThrows
     public Object registerTeam(@NonNull Team team, @NotNull ProtocolVersion clientVersion) {
         updateTeamData(team, clientVersion);
-        ((Collection<String>) ScoreboardTeam_getPlayerNameSet.invoke(team.getPlatformTeam())).addAll(team.getPlayers());
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-            return TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
+            Object packet = TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
+            TeamPacket_PLAYERS.set(packet, team.getPlayers());
+            return packet;
         } else {
             return newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.CREATE);
         }
