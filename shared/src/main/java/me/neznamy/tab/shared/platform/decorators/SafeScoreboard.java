@@ -190,11 +190,6 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public boolean containsTeam(@NonNull String teamName) {
-        return teams.containsKey(teamName);
-    }
-
-    @Override
     public synchronized void renameTeam(@NonNull String oldName, @NonNull String newName) {
         Team team = teams.get(oldName);
         if (team == null) return;
@@ -223,6 +218,18 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         for (String team : teams.keySet()) {
             unregisterTeam(team);
         }
+    }
+
+    /**
+     * Safely unregisters a team if it exists. If not, nothing happens.
+     *
+     * @param   teamName
+     *          Name of team to unregister
+     */
+    public synchronized void unregisterTeamSafe(@NonNull String teamName) {
+        Team team = teams.remove(teamName);
+        if (team == null || frozen) return;
+        unregisterTeam(team);
     }
 
     /**

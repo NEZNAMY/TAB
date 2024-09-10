@@ -176,13 +176,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         onlinePlayers.removePlayer(disconnectedPlayer);
-        if (!disconnectedPlayer.teamData.disabled.get() && !hasTeamHandlingPaused(disconnectedPlayer)) {
-            String teamName = disconnectedPlayer.teamData.teamName;
-            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (viewer.getScoreboard().containsTeam(teamName)) {
-                    viewer.getScoreboard().unregisterTeam(teamName);
-                }
-            }
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            ((SafeScoreboard<?>)viewer.getScoreboard()).unregisterTeamSafe(disconnectedPlayer.teamData.teamName);
         }
     }
 
@@ -246,7 +241,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
-            unregisterTeam(p, p.teamData.teamName);
+            unregisterTeam(p.teamData.teamName);
         } else {
             registerTeam(p);
         }
@@ -342,12 +337,9 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         );
     }
 
-    private void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
-        if (hasTeamHandlingPaused(p)) return;
+    private void unregisterTeam(@NonNull String teamName) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (viewer.getScoreboard().containsTeam(teamName)) {
-                viewer.getScoreboard().unregisterTeam(teamName);
-            }
+            ((SafeScoreboard<?>)viewer.getScoreboard()).unregisterTeamSafe(teamName);
         }
     }
 
@@ -426,9 +418,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             return;
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (viewer.getScoreboard().containsTeam(player.getTeamName())) {
-                viewer.getScoreboard().unregisterTeam(player.getTeamName());
-            }
+            ((SafeScoreboard<?>)viewer.getScoreboard()).unregisterTeamSafe(player.getTeamName());
         }
     }
 
@@ -494,7 +484,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.teamHandlingPaused) return;
-        if (!p.teamData.disabled.get()) unregisterTeam(p, p.teamData.teamName);
+        if (!p.teamData.disabled.get()) unregisterTeam(p.teamData.teamName);
         p.teamData.teamHandlingPaused = true; //setting after, so unregisterTeam method runs
     }
 

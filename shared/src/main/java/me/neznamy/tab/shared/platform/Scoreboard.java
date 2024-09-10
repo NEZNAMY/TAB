@@ -176,16 +176,6 @@ public interface Scoreboard {
     void updateTeam(@NonNull String name, @NonNull NameVisibility visibility);
 
     /**
-     * Returns {@code true} if this scoreboard contains team with specified name,
-     * {@code false} if not.
-     *
-     * @param   teamName
-     *          Name of team to check
-     * @return  {@code true} if scoreboard contains the team, {@code false} if not
-     */
-    boolean containsTeam(@NonNull String teamName);
-
-    /**
      * Renames a team.
      *
      * @param   oldName
