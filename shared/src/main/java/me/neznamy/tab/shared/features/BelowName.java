@@ -312,7 +312,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         return "BelowName";
     }
 
-    private class TextRefresher extends RefreshableFeature {
+    private class TextRefresher extends RefreshableFeature implements CustomThreaded {
 
         @NotNull
         @Override
@@ -335,6 +335,12 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                     Scoreboard.HealthDisplay.INTEGER,
                     cache.get(refreshed.belowNameData.defaultNumberFormat.updateAndGet())
             );
+        }
+
+        @Override
+        @NotNull
+        public ThreadExecutor getCustomThread() {
+            return customThread;
         }
     }
 
