@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +47,10 @@ public abstract class TabComponent {
 
     @Nullable
     private Object fixedFormat;
+
+    /** TextHolder object for Velocity */
+    @Nullable
+    private Object textHolder;
 
     /**
      * Last color of this component. Used to determine team color based on last color of prefix.
@@ -125,9 +130,27 @@ public abstract class TabComponent {
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public <F, C> F toFixedFormat(FunctionWithException<C, F> createFunction) {
+    public <F, C> F toFixedFormat(@NotNull FunctionWithException<C, F> createFunction) {
         if (fixedFormat == null) fixedFormat = createFunction.apply(convert(ProtocolVersion.LATEST_KNOWN_VERSION)); // Numbers formats are 1.20.3+, which is above 1.16
         return (F) fixedFormat;
+    }
+
+    /**
+     * Creates a text holder object using provided function if it does not exist and returns it.
+     *
+     * @param   convertFunction
+     *          Function for converting adventure Component to TextHolder
+     * @param   version
+     *          Player version
+     * @return  Converted TextHolder
+     * @param   <T>
+     *          TextHolder type
+     */
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public <T> T toTextHolder(@NotNull BiFunction<TabComponent, ProtocolVersion, T> convertFunction, @NotNull ProtocolVersion version) {
+        if (textHolder == null) textHolder = convertFunction.apply(this, version);
+        return (T) textHolder;
     }
 
     /**
