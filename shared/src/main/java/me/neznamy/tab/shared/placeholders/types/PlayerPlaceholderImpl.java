@@ -11,6 +11,9 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -55,6 +58,35 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
                 } else {
                     task.run();
                 }
+            }
+        }
+    }
+
+    /**
+     * Bulk-updates all listed placeholders for a player. The advantage of using this method is that
+     * {@link RefreshableFeature#refresh(TabPlayer, boolean)} is only called a single time instead of
+     * for every changed placeholder, causing inefficiency.
+     *
+     * @param   player
+     *          Player to update placeholders for
+     * @param   values
+     *          Map of placeholders and their new values
+     */
+    public static void bulkUpdateValues(@NotNull TabPlayer player, @NotNull Map<PlayerPlaceholderImpl, String> values) {
+        Set<RefreshableFeature> features = new HashSet<>();
+        for (Map.Entry<PlayerPlaceholderImpl, String> entry : values.entrySet()) {
+            if (entry.getKey().hasValueChanged(player, entry.getValue(), true)) {
+                features.addAll(TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(entry.getKey().identifier));
+            }
+        }
+        if (!player.isLoaded()) return;
+        for (RefreshableFeature r : features) {
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh(player, false),
+                    r.getFeatureName(), r.getRefreshDisplayName());
+            if (r instanceof CustomThreaded) {
+                ((CustomThreaded) r).getCustomThread().execute(task);
+            } else {
+                task.run();
             }
         }
     }

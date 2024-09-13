@@ -2,10 +2,10 @@ package me.neznamy.tab.shared.proxy.message.incoming;
 
 import com.google.common.io.ByteArrayDataInput;
 import me.neznamy.tab.api.placeholder.Placeholder;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +58,7 @@ public class PlayerJoinResponse implements IncomingMessage {
         }
         player.setDisguised(false);
         player.setInvisibilityPotion(false);
+        Map<PlayerPlaceholderImpl, String> playerPlaceholderUpdates = new HashMap<>();
         for (Map.Entry<String, Object> entry : placeholders.entrySet()) {
             String identifier = entry.getKey();
             Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholderRaw(identifier);
@@ -72,13 +73,14 @@ public class PlayerJoinResponse implements IncomingMessage {
                     }
                 }
             } else {
-                if (pl instanceof PlayerPlaceholder) {
-                    ((PlayerPlaceholder) pl).updateValue(player, (String) entry.getValue());
+                if (pl instanceof PlayerPlaceholderImpl) {
+                    playerPlaceholderUpdates.put((PlayerPlaceholderImpl) pl, (String) entry.getValue());
                 } else {
                     ((ServerPlaceholder) pl).updateValue((String) entry.getValue());
                 }
             }
         }
+        PlayerPlaceholderImpl.bulkUpdateValues(player, playerPlaceholderUpdates);
         player.setGamemode(gameMode);
         player.setBridgeConnected(true);
     }
