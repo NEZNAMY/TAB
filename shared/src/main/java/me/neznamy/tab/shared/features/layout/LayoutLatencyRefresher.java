@@ -34,8 +34,8 @@ public class LayoutLatencyRefresher extends RefreshableFeature {
     public void refresh(@NotNull TabPlayer p, boolean force) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.getVersion().getMinorVersion() < 8) continue;
-            if (all.layoutData.view == null) continue;
-            PlayerSlot slot = all.layoutData.view.getSlot(p);
+            if (all.layoutData.currentLayout == null) continue;
+            PlayerSlot slot = all.layoutData.currentLayout.view.getSlot(p);
             if (slot == null) continue;
             all.getTabList().updateLatency(slot.getUniqueId(), p.getPing());
         }

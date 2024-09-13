@@ -69,9 +69,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Player's game type, {@code true} for Bedrock, {@code false} for Java */
     @Getter private final boolean bedrockPlayer;
 
-    /** Player's property map where key is unique identifier and value is property object */
-    private final ConcurrentHashMap<String, Property> properties = new ConcurrentHashMap<>();
-
     /** Player's game version */
     @Getter protected final ProtocolVersion version;
 
@@ -178,26 +175,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     }
 
     /**
-     * Sets player's property with provided key to provided value. If it existed,
-     * the raw value is changed. If it did not exist, it is created.
-     *
-     * @param feature    Feature creating the property
-     * @param identifier Property's unique identifier
-     * @param rawValue   Raw value with raw placeholders
-     * @return {@code true} if property did not exist or existed with different raw value,
-     * {@code false} if property existed with the same raw value already.
-     */
-    public boolean setProperty(@Nullable RefreshableFeature feature, @NotNull String identifier, @NotNull String rawValue) {
-        Property p = getProperty(identifier);
-        if (p == null) {
-            properties.put(identifier, new Property(null, feature, this, rawValue, null));
-            return true;
-        } else {
-            return p.changeRawValue(rawValue, null);
-        }
-    }
-
-    /**
      * Marks the player as loaded and calls PlayerLoadEvent
      *
      * @param   join
@@ -262,17 +239,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         } else {
             sendMessage(new SimpleComponent(message));
         }
-    }
-
-    /**
-     * Returns property with given name.
-     *
-     * @param   name
-     *          Name of the property
-     * @return  Property with given name
-     */
-    public Property getProperty(@NotNull String name) {
-        return properties.get(name);
     }
 
     @Override

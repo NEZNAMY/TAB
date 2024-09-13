@@ -76,8 +76,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
      */
     @NotNull
     public UUID getTablistUUID(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
-        if (viewer.layoutData.view != null) {
-            PlayerSlot slot = viewer.layoutData.view.getSlot(p);
+        if (viewer.layoutData.currentLayout != null) {
+            PlayerSlot slot = viewer.layoutData.currentLayout.view.getSlot(p);
             if (slot != null) {
                 return slot.getUniqueId();
             }

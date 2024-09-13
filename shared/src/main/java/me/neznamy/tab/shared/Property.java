@@ -21,8 +21,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Property {
 
-    private static long counter;
-
     /** Internal identifier for this text for PlaceholderAPI expansion, null if it should not be exposed */
     @Getter
     @Nullable
@@ -314,14 +312,5 @@ public class Property {
             if (listener != null) listener.addUsedPlaceholder(identifier);
         }
         return format;
-    }
-
-    /**
-     * Returns a new unique property name.
-     *
-     * @return  A new unique property name.
-     */
-    public static String randomName() {
-        return String.valueOf(counter++);
     }
 }

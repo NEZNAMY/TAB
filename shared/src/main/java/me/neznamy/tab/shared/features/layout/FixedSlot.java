@@ -23,8 +23,6 @@ public class FixedSlot extends RefreshableFeature {
 
     @NotNull private static final StringToComponentCache cache = new StringToComponentCache("LayoutFixedSlot", 1000);
 
-    @NotNull private final String propertyName = Property.randomName();
-    @NotNull private final String skinProperty = Property.randomName();
     @NonNull private final LayoutManagerImpl manager;
     @Getter private final int slot;
     @NonNull private final LayoutPattern pattern;
@@ -47,13 +45,13 @@ public class FixedSlot extends RefreshableFeature {
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        if (p.layoutData.view == null || p.layoutData.view.getPattern() != pattern ||
+        if (p.layoutData.currentLayout == null || p.layoutData.currentLayout.view.getPattern() != pattern ||
                 p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return; // TODO check if / make view null for <1.8 and bedrock to skip all these checks everywhere
-        if (p.getProperty(skinProperty).update()) {
+        if (p.layoutData.currentLayout.fixedSlotSkins.get(this).update()) {
             p.getTabList().removeEntry(id);
             p.getTabList().addEntry(createEntry(p));
         } else {
-            p.getTabList().updateDisplayName(id, cache.get(p.getProperty(propertyName).updateAndGet()));
+            p.getTabList().updateDisplayName(id, cache.get(p.layoutData.currentLayout.fixedSlotTexts.get(this).updateAndGet()));
         }
     }
 
@@ -64,17 +62,18 @@ public class FixedSlot extends RefreshableFeature {
      *          Player viewing the slot
      * @return  Tablist entry from this slot
      */
-    public @NotNull TabList.Entry createEntry(@NotNull TabPlayer viewer) {
-        viewer.setProperty(this, propertyName, text);
-        viewer.setProperty(this, skinProperty, skin);
+    @NotNull
+    public TabList.Entry createEntry(@NotNull TabPlayer viewer) {
+        viewer.layoutData.currentLayout.fixedSlotTexts.put(this, new Property(this, viewer, text));
+        viewer.layoutData.currentLayout.fixedSlotSkins.put(this, new Property(this, viewer, skin));
         return new TabList.Entry(
                 id,
                 manager.getConfiguration().direction.getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
-                manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).updateAndGet()),
+                manager.getSkinManager().getSkin(viewer.layoutData.currentLayout.fixedSlotSkins.get(this).updateAndGet()),
                 true,
                 ping,
                 0,
-                cache.get(viewer.getProperty(propertyName).updateAndGet()),
+                cache.get(viewer.layoutData.currentLayout.fixedSlotTexts.get(this).updateAndGet()),
                 0
         );
     }
