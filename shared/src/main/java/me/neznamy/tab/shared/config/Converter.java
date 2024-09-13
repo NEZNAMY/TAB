@@ -475,5 +475,8 @@ public class Converter {
             config.removeOption("scoreboard-teams.unlimited-nametag-mode");
             config.removeOption("scoreboard.respect-other-plugins");
         }
+        if (!config.hasConfigOption("global-playerlist.update-latency")) {
+            config.set("global-playerlist.update-latency", false);
+        }
     }
 }
