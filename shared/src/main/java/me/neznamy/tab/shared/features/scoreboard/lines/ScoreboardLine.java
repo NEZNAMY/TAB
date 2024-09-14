@@ -253,9 +253,6 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
                 teamName,
                 parent.getManager().getCache().get(prefix),
                 parent.getManager().getCache().get(suffix),
-                Scoreboard.NameVisibility.ALWAYS,
-                Scoreboard.CollisionRule.ALWAYS,
-                0,
                 EnumChatFormat.RESET
         );
     }
