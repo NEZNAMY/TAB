@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
@@ -18,6 +19,8 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
 
     private static final BiFunction<TabComponent, ProtocolVersion, TextHolder> textHolderFunction =
             (component, version) -> TextHolder.of(component.toLegacyText(), component.toAdventure(version));
+
+    private static final StringToComponentCache displayNames = new StringToComponentCache("Team display name", 5000);
 
     private static final TeamColor[] colors = TeamColor.values();
     private static final com.velocitypowered.api.scoreboard.NameVisibility[] visibilities = com.velocitypowered.api.scoreboard.NameVisibility.values();
@@ -102,6 +105,7 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
     public void registerTeam(@NonNull Team team) {
         try {
             team.setPlatformTeam(scoreboard.registerTeam(scoreboard.teamBuilder(team.getName())
+                    .displayName(displayNames.get(team.getName()).toTextHolder(textHolderFunction, player.getVersion()))
                     .prefix(team.getPrefix().toTextHolder(textHolderFunction, player.getVersion()))
                     .suffix(team.getSuffix().toTextHolder(textHolderFunction, player.getVersion()))
                     .nameVisibility(visibilities[team.getVisibility().ordinal()])
