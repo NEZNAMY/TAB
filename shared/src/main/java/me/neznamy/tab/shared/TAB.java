@@ -45,6 +45,9 @@ public class TAB extends TabAPI {
     /** Player data storage */
     private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
 
+    /** Players by their exact username */
+    private final Map<String, TabPlayer> playersByName = new ConcurrentHashMap<>();
+
     /** Players by their TabList UUID for faster lookup */
     private final Map<UUID, TabPlayer> playersByTabListId = new ConcurrentHashMap<>();
 
@@ -220,6 +223,7 @@ public class TAB extends TabAPI {
     private void kill() {
         pluginDisabled = true;
         data.clear();
+        playersByName.clear();
         playersByTabListId.clear();
         onlinePlayers = new TabPlayer[0];
         cpu.cancelAllTasks();
@@ -233,6 +237,7 @@ public class TAB extends TabAPI {
      */
     public void addPlayer(@NotNull TabPlayer player) {
         data.put(player.getUniqueId(), player);
+        playersByName.put(player.getName(), player);
         playersByTabListId.put(player.getTablistId(), player);
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
     }
@@ -245,6 +250,7 @@ public class TAB extends TabAPI {
      */
     public void removePlayer(@NotNull TabPlayer player) {
         data.remove(player.getUniqueId());
+        playersByName.remove(player.getName());
         playersByTabListId.remove(player.getTablistId());
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
     }
@@ -275,10 +281,7 @@ public class TAB extends TabAPI {
 
     @Override
     public @Nullable TabPlayer getPlayer(@NotNull String name) {
-        for (TabPlayer p : data.values()) {
-            if (p.getName().equalsIgnoreCase(name)) return p;
-        }
-        return null;
+        return playersByName.get(name);
     }
 
     @Override
