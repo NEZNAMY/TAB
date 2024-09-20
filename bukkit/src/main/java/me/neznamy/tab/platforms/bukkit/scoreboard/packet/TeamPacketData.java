@@ -28,11 +28,11 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class TeamPacketData {
 
-    /** First version with modern team data using components */
-    private final int MODERN_TEAM_DATA_VERSION = 13;
+    /** Flag tracking if server uses modern team data using components */
+    private final boolean MODERN_TEAM_DATA_VERSION = BukkitReflection.getMinorVersion() >= 13;
 
-    /** First version with static constructor-like methods */
-    private final int STATIC_CONSTRUCTOR_VERSION = 17;
+    /** Flag tracking if server uses static constructor-like methods */
+    private final boolean STATIC_CONSTRUCTOR_VERSION = BukkitReflection.getMinorVersion() >= 17;
 
     private final Object emptyScoreboard;
     @Getter private final Class<?> TeamPacketClass;
@@ -94,7 +94,7 @@ public class TeamPacketData {
         );
         if (minorVersion >= 8) loadVisibility(scoreboardTeam);
         if (minorVersion >= 9) loadCollision(scoreboardTeam);
-        if (minorVersion >= MODERN_TEAM_DATA_VERSION) {
+        if (MODERN_TEAM_DATA_VERSION) {
             Class<?> Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
             ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, enumChatFormatClass);
             ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(
@@ -119,7 +119,7 @@ public class TeamPacketData {
                     String.class
             );
         }
-        if (minorVersion >= STATIC_CONSTRUCTOR_VERSION) {
+        if (STATIC_CONSTRUCTOR_VERSION) {
             TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam);
             TeamPacketConstructor_ofBoolean = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam, boolean.class);
         } else {
@@ -166,7 +166,7 @@ public class TeamPacketData {
     public Object registerTeam(@NonNull Team team, @NotNull ProtocolVersion clientVersion) {
         updateTeamData(team, clientVersion);
         Object packet;
-        if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
+        if (STATIC_CONSTRUCTOR_VERSION) {
             packet = TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
         } else {
             packet = newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.CREATE);
@@ -184,7 +184,7 @@ public class TeamPacketData {
      */
     @SneakyThrows
     public Object unregisterTeam(@NonNull Team team) {
-        if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
+        if (STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_of.invoke(null, team.getPlatformTeam());
         } else {
             return newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.REMOVE);
@@ -203,7 +203,7 @@ public class TeamPacketData {
     @SneakyThrows
     public Object updateTeam(@NonNull Team team, @NotNull ProtocolVersion clientVersion) {
         updateTeamData(team, clientVersion);
-        if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
+        if (STATIC_CONSTRUCTOR_VERSION) {
             return TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), false);
         } else {
             return newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.UPDATE);
@@ -223,7 +223,7 @@ public class TeamPacketData {
         Object nmsTeam = team.getPlatformTeam();
         ScoreboardTeam_setAllowFriendlyFire.invoke(nmsTeam, (team.getOptions() & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(nmsTeam, (team.getOptions() & 0x2) > 0);
-        if (BukkitReflection.getMinorVersion() >= MODERN_TEAM_DATA_VERSION) {
+        if (MODERN_TEAM_DATA_VERSION) {
             ScoreboardTeam_setPrefix.invoke(nmsTeam, (Object) team.getPrefix().convert(clientVersion));
             ScoreboardTeam_setSuffix.invoke(nmsTeam, (Object) team.getSuffix().convert(clientVersion));
             ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().ordinal()]);
