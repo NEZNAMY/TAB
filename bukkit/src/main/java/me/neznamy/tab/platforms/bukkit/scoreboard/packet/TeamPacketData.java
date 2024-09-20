@@ -165,13 +165,14 @@ public class TeamPacketData {
     @SneakyThrows
     public Object registerTeam(@NonNull Team team, @NotNull ProtocolVersion clientVersion) {
         updateTeamData(team, clientVersion);
+        Object packet;
         if (BukkitReflection.getMinorVersion() >= STATIC_CONSTRUCTOR_VERSION) {
-            Object packet = TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
-            TeamPacket_PLAYERS.set(packet, team.getPlayers());
-            return packet;
+            packet = TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
         } else {
-            return newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.CREATE);
+            packet = newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.CREATE);
         }
+        TeamPacket_PLAYERS.set(packet, team.getPlayers());
+        return packet;
     }
 
     /**
