@@ -281,22 +281,18 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      *          Whether task should be moved to feature thread or not, because it already is
      */
     public void updateCollision(@NonNull TabPlayer player, boolean moveToThread) {
-        if (moveToThread) {
-            customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-                for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                    viewer.getScoreboard().updateTeam(
-                            player.teamData.teamName,
-                            player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
-                    );
-                }
-            }, getFeatureName(), "Updating collision"));
-        } else {
+        Runnable r = () -> {
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 viewer.getScoreboard().updateTeam(
                         player.teamData.teamName,
                         player.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER
                 );
             }
+        };
+        if (moveToThread) {
+            customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), r, getFeatureName(), "Updating collision"));
+        } else {
+            r.run();
         }
     }
 
