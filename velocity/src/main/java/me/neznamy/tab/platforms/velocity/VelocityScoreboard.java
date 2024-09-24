@@ -116,7 +116,9 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
                     .entries(team.getPlayers())
             ));
         } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("Team " + team.getName() + " already existed when registering for player " + player.getName() + ", unregistering", e);
+            TAB.getInstance().getErrorManager().printError("Team " + team.getName() + " already existed with entry " +
+                    scoreboard.getTeam(team.getName()).getEntries() + " when registering for player " + player.getName()
+                    + " with new entry " + team.getPlayers() + ", unregistering", e);
             unregisterTeam(team);
             registerTeam(team);
         }

@@ -130,7 +130,8 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
                                    @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         Team team = new Team(createTeam(name), name, prefix, suffix, visibility, collision, players, options, color);
         if (teams.put(name, team) != null) {
-            error("Tried to register duplicated team %s to player ", name);
+            error("Tried to register team %s with entry %s, while this team already exists with entry %s to player ",
+                    name, players.toString(), teams.get(name).players.toString());
             return;
         }
         if (frozen) return;
