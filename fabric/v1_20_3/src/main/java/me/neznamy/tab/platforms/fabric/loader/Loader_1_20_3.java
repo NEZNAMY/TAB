@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,6 +72,11 @@ public class Loader_1_20_3 implements Loader {
                 null
         ));
         return packet;
+    }
+
+    @Override
+    public void sendMessage(@NotNull ServerPlayer player, @NotNull Component message) {
+        player.sendSystemMessage(message);
     }
 
     private static class Register1_19_3 {

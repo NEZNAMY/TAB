@@ -253,4 +253,10 @@ public class Loader_1_14_4 implements Loader {
         Object logger = ReflectionUtils.getFields(MinecraftServer.class, Class.forName("org.apache.logging.log4j.Logger")).get(0).get(null);
         logger.getClass().getMethod("warn", String.class).invoke(logger, "[TAB] " + message.toRawText());
     }
+
+    @NotNull
+    @Override
+    public CommandSourceStack createCommandSourceStack(@NotNull ServerPlayer player) {
+        return player.createCommandSourceStack();
+    }
 }

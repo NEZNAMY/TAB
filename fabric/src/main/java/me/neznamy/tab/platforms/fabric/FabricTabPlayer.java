@@ -32,7 +32,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return PermissionsAPIHook.hasPermission(getPlayer().createCommandSourceStack(), permission);
+        return PermissionsAPIHook.hasPermission(FabricMultiVersion.createCommandSourceStack(getPlayer()), permission);
     }
 
     @Override

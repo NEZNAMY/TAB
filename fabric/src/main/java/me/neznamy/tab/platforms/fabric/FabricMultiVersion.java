@@ -229,7 +229,8 @@ public class FabricMultiVersion {
      *          Message to send
      */
     public static void sendMessage(@NotNull ServerPlayer player, @NotNull Component message) {
-        if (serverVersion.getMinorVersion() >= 19) loaderLatest.sendMessage(player, message);
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) loaderLatest.sendMessage(player, message);
+        else if (serverVersion.getMinorVersion() >= 19) loader1_20_3.sendMessage(player, message);
         else if (serverVersion.getMinorVersion() >= 16) loader1_18_2.sendMessage(player, message);
         else loader1_14_4.sendMessage(player, message);
     }
@@ -424,5 +425,18 @@ public class FabricMultiVersion {
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_5.getNetworkId()) return loaderLatest.setScore(objective, holder, score, displayName, numberFormat);
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) return loader1_20_3.setScore(objective, holder, score, displayName, numberFormat);
         return loader1_14_4.setScore(objective, holder, score, displayName, numberFormat);
+    }
+
+    /**
+     * Creates command source stack from ServerPlayer.
+     *
+     * @param   player
+     *          Player to create command source stack from
+     * @return  command source stack from player
+     */
+    @NotNull
+    public static CommandSourceStack createCommandSourceStack(@NotNull ServerPlayer player) {
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) return loaderLatest.createCommandSourceStack(player);
+        return loader1_14_4.createCommandSourceStack(player);
     }
 }

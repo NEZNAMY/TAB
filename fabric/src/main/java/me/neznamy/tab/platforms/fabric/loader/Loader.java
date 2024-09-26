@@ -373,4 +373,16 @@ public interface Loader {
     default void logWarn(@NotNull TabComponent message) {
         throw new UnsupportedOperationException("Not implemented.");
     }
+
+    /**
+     * Creates command source stack from ServerPlayer.
+     *
+     * @param   player
+     *          Player to create command source stack from
+     * @return  command source stack from player
+     */
+    @NotNull
+    default CommandSourceStack createCommandSourceStack(@NotNull ServerPlayer player) {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
 }

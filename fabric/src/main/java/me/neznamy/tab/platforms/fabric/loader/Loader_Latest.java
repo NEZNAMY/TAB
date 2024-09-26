@@ -252,6 +252,12 @@ public class Loader_Latest implements Loader {
         MinecraftServer.LOGGER.warn("[TAB] " + message.toRawText());
     }
 
+    @NotNull
+    @Override
+    public CommandSourceStack createCommandSourceStack(@NotNull ServerPlayer player) {
+        return player.createCommandSourceStack();
+    }
+
     /**
      * Why is this needed? Because otherwise it throws error about a class
      * not existing despite the code never running.
