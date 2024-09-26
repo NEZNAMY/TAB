@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
@@ -172,6 +173,14 @@ public interface Platform {
      */
     @NotNull
     TabList createTabList(@NotNull TabPlayer player);
+
+    /**
+     * Returns server version. On proxies, {@link ProtocolVersion#LATEST_KNOWN_VERSION} is returned.
+     *
+     * @return  server version on backend, {@link ProtocolVersion#LATEST_KNOWN_VERSION} on proxies
+     */
+    @NotNull
+    ProtocolVersion getServerVersion();
 
     /**
      * Returns {@code true} if the viewer can see the target, {@code false} otherwise.

@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.config.files.config;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.files.ConfigurationSection;
@@ -157,7 +158,9 @@ public class LayoutConfiguration extends ConfigurationSection {
         }
 
         public String getEntryName(@NotNull TabPlayer viewer, int slot, boolean teamsEnabled) {
-            if (viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
+            boolean v1_21_2Plus = viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() &&
+                    TAB.getInstance().getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId();
+            if (viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() && !v1_21_2Plus) {
                 if (teamsEnabled) {
                     return "|slot_" + (10+slotTranslator.apply(slot));
                 } else {

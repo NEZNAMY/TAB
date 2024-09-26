@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.proxy;
 import lombok.Getter;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
@@ -86,6 +87,12 @@ public abstract class ProxyPlatform implements Platform {
     @Override
     public boolean isProxy() {
         return true;
+    }
+
+    @Override
+    @NotNull
+    public ProtocolVersion getServerVersion() {
+        return ProtocolVersion.LATEST_KNOWN_VERSION;
     }
 
     /**
