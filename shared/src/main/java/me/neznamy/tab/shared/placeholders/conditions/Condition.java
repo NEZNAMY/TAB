@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -55,19 +56,24 @@ public class Condition {
     private final List<String> placeholdersInConditions = new ArrayList<>();
 
     static {
-        conditionTypes.put(">=", line -> new NumericCondition(line.split(">="), (left, right) -> left >= right)::isMet);
-        conditionTypes.put(">", line -> new NumericCondition(line.split(">"), (left, right) -> left > right)::isMet);
-        conditionTypes.put("<=", line -> new NumericCondition(line.split("<="), (left, right) -> left <= right)::isMet);
-        conditionTypes.put("<-", line -> new StringCondition(line.split("<-"), String::contains)::isMet);
-        conditionTypes.put("<", line -> new NumericCondition(line.split("<"), (left, right) -> left < right)::isMet);
-        conditionTypes.put("|-", line -> new StringCondition(line.split("\\|-"), String::startsWith)::isMet);
-        conditionTypes.put("-|", line -> new StringCondition(line.split("-\\|"), String::endsWith)::isMet);
-        conditionTypes.put("!=", line -> new StringCondition(line.split("!="), (left, right) -> !left.equals(right))::isMet);
-        conditionTypes.put("=", line -> new StringCondition(line.split("="), String::equals)::isMet);
+        conditionTypes.put(">=", line -> new NumericCondition(splitAndTrim(line, ">="), (left, right) -> left >= right)::isMet);
+        conditionTypes.put(">", line -> new NumericCondition(splitAndTrim(line, ">"), (left, right) -> left > right)::isMet);
+        conditionTypes.put("<=", line -> new NumericCondition(splitAndTrim(line, "<="), (left, right) -> left <= right)::isMet);
+        conditionTypes.put("<-", line -> new StringCondition(splitAndTrim(line, "<-"), String::contains)::isMet);
+        conditionTypes.put("<", line -> new NumericCondition(splitAndTrim(line, "<"), (left, right) -> left < right)::isMet);
+        conditionTypes.put("|-", line -> new StringCondition(splitAndTrim(line, "\\|-"), String::startsWith)::isMet);
+        conditionTypes.put("-|", line -> new StringCondition(splitAndTrim(line, "-\\|"), String::endsWith)::isMet);
+        conditionTypes.put("!=", line -> new StringCondition(splitAndTrim(line, "!="), (left, right) -> !left.equals(right))::isMet);
+        conditionTypes.put("=", line -> new StringCondition(splitAndTrim(line, "="), String::equals)::isMet);
         conditionTypes.put("permission:", line -> {
-            String node = line.split(":")[1];
+            String node = splitAndTrim(line, ":")[1];
             return p -> p.hasPermission(node);
         });
+    }
+    
+    @NotNull
+    private static String[] splitAndTrim(@NotNull String string, @NonNull String delimiter) {
+        return Arrays.stream(string.split(delimiter)).map(String::trim).toArray(String[]::new);
     }
 
     /**
@@ -185,6 +191,7 @@ public class Condition {
                 type = false;
                 conditions = splitString(string);
             }
+            conditions = conditions.stream().map(String::trim).collect(Collectors.toList());
             Condition c = new Condition(type, anonVersion, conditions, "true", "false");
             c.finishSetup();
             TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.name), c.refresh,
