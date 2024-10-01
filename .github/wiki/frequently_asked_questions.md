@@ -3,20 +3,20 @@
 * [#2 - How to make TAB work with LuckPerms?](#2---how-to-make-tab-work-with-luckperms)
 * [#3 - How can i make belowname not affect NPCs but keep it for players?](#3---how-can-i-make-belowname-not-affect-npcs-but-keep-it-for-players)
 * [#4 - I enabled MySQL and my prefix is now gone!](#4---i-enabled-mysql-and-my-prefix-is-now-gone)
-* [#5 - Why is player sorting not working?](#6---why-is-player-sorting-not-working)
-* [#6 - How to add players to %staffonline% placeholder?](#7---how-to-add-players-to-the-staffonline-placeholder)
-* [#7 - How to make player heads visible in tablist?](#8---how-to-make-player-heads-visible-in-tablist)
+* [#5 - Why is player sorting not working?](#5---why-is-player-sorting-not-working)
+* [#6 - How to add players to %staffonline% placeholder?](#6---how-to-add-players-to-the-staffonline-placeholder)
+* [#7 - How to make player heads visible in tablist?](#7---how-to-make-player-heads-visible-in-tablist)
 * [#8 - Where can i find current default config files?](https://github.com/NEZNAMY/TAB/tree/master/shared/src/main/resources)
-* [#9 - How can I split players into multiple columns?](#10---how-can-i-split-players-into-multiple-columns)
-* [#10 - How to use space in prefix/suffix command?](#11---how-to-use-spaces-in-prefixsuffix-command)
-* [#11 - Can I change/remove the green connection bar in tablist?](#12---can-i-changeremove-the-green-connection-bar-in-tablist)
-* [#12 - Placeholder is not working](#13---placeholder-is-not-working)
-* [#13 - How can I display ItemsAdder images?](#14---how-can-i-display-itemsadder-images)
-* [#14 - How can I use UTF characters in configuration?](#15---how-can-i-use-utf-characters-in-configuration)
-* [#15 - Is there a way to remove all players from tablist?](#16---is-there-a-way-to-remove-all-players-from-tablist)
-* [#16 - How to add images to tablist?](#17---how-to-add-images-to-tablist)
-* [#17 - Is MiniMessage supported?](#18---is-minimessage-supported)
-* [#18 - Is it possible to show amount of players in a specific group, similar to staffonline placeholder?](#19---is-it-possible-to-show-amount-of-players-in-a-specific-group-similar-to-staffonline-placeholder)
+* [#9 - How can I split players into multiple columns?](#9---how-can-i-split-players-into-multiple-columns)
+* [#10 - How to use space in prefix/suffix command?](#10---how-to-use-spaces-in-prefixsuffix-command)
+* [#11 - Can I change/remove the green connection bar in tablist?](#11---can-i-changeremove-the-green-connection-bar-in-tablist)
+* [#12 - Placeholder is not working](#12---placeholder-is-not-working)
+* [#13 - How can I display ItemsAdder images?](#13---how-can-i-display-itemsadder-images)
+* [#14 - How can I use UTF characters in configuration?](#14---how-can-i-use-utf-characters-in-configuration)
+* [#15 - Is there a way to remove all players from tablist?](#15---is-there-a-way-to-remove-all-players-from-tablist)
+* [#16 - How to add images to tablist?](#16---how-to-add-images-to-tablist)
+* [#17 - Is MiniMessage supported?](#17---is-minimessage-supported)
+* [#18 - Is it possible to show amount of players in a specific group, similar to staffonline placeholder?](#18---is-it-possible-to-show-amount-of-players-in-a-specific-group-similar-to-staffonline-placeholder)
 
 ## #1 - Why are NPCs showing up in the tablist?
 See [Citizens FAQ](https://wiki.citizensnpcs.co/Frequently_Asked_Questions#Why_are_NPCs_showing_up_in_the_tablist.3F).
@@ -43,7 +43,7 @@ See [Common mistakes section on sorting page](https://github.com/NEZNAMY/TAB/wik
 Give them the `tab.staff` permission.
 
 ## #7 - How to make player heads visible in tablist?
-Player heads are displayed by the client when connection to the server is an online connection. It cannot be directly controlled by plugins. The most common way to reach this is by setting `online-mode=true` in `server.properties`.  
+Players who did not buy the game will never be able to see heads. Player heads are displayed by the client when connection to the server is an online connection authenticated through Mojang. It cannot be directly controlled by plugins. The intended way to reach this is by setting `online-mode=true` in `server.properties`.  
 If you want to allow pirates on your server, you can still display heads for players who bought the game by changing their connections to online connections. Most commonly used plugins for this are [FastLogin](https://www.spigotmc.org/resources/14153/) and [JPremium](https://www.spigotmc.org/resources/27766/), which change connections of premium players who enabled it to online connections.  
 Same goes for disabling heads - you cannot disable them if you have online mode enabled.
 

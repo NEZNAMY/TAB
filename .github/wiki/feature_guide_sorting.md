@@ -1,6 +1,5 @@
 # Content
 * [Enabling](#enabling)
-* [Sorting types](#sorting-types)
 * [Methods of sorting](#methods-of-sorting)
   * [GROUPS](#groups)
   * [PERMISSIONS](#permissions)

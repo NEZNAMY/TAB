@@ -4,8 +4,7 @@ This guide will explain how to solve the incompatibility with glow plugins.
 # Content
 * [Reason for compatibility issue](#reason-for-compatibility-issue)
 * [Solution](#Solution)
-* [Examples of compatible plugins](#examples-of-compatible-plugins)
-* [Additional info](#Additional-info)
+* [Examples of glow plugins](#examples-of-glow-plugins)
 
 ## Reason for compatibility issue
 Glow color is managed by scoreboard teams, which also handle nametag formatting and player sorting in tablist. Only one plugin can handle teams at a time. Because of that, TAB will prevent glow plugins from assigning players into teams.
@@ -33,7 +32,7 @@ _DEFAULT_:
 ```
 With this example, all players will have green visible name, despite their glow color.
 
-## Examples of glow plugins with placeholders
+## Examples of glow plugins
 - [eGlow](https://www.spigotmc.org/resources/63295/) (%eglow_glowcolor%) (Paid)
 - [CMI](https://www.spigotmc.org/resources/3742/) (%cmi_user_glow_code%) (Paid)
 - ... more ?

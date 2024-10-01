@@ -11,7 +11,7 @@
 * [Additional info](#additional-info)
   * [Additional note 1 - Playerlist objective incompatibility](#additional-note-1---playerlist-objective-incompatibility)
   * [Additional note 2 - Global playerlist incompatibility](#additional-note-2---global-playerlist-incompatibility)
-  * [Additional note 3 - Entries in chat complete](#additional-note-3---entries-in-chat-complete)
+  * [Additional note 3 - Entries in chat complete [1.19.3 - 1.21.1]](#additional-note-3---entries-in-chat-complete-1193---1211)
   * [Additional note 4 - Per world playerlist incompatibility](#additional-note-4---per-world-playerlist-incompatibility)
 * [Examples](#examples)
   * [Example 1 - Per-server columns](#example-1---per-server-columns)
@@ -135,10 +135,10 @@ Yellow: 1307755006
 | Option name | Default value | Description |
 | ------------- | ------------- | ------------- |
 | direction | COLUMNS | Defines direction of slots. Options are COLUMNS (top to bottom, left to right) and ROWS (left to right, top to bottom). This does not only change the slot numbers in configuration, but will also affect the way players are being filled into player groups. |
-| enable-remaining-players-text | true | When enabled, the last slot of player group will show how many more players there are, instead of using the last slot for one more player.
-| remaining-players-text | "... and %s more" | Text to show if option above is enabled.
-| default-skin | "mineskin:1753261242" | Default skin to display for fixed slots that do not define a skin, empty slots and fixed slots with invalid skin.
-| empty-slot-ping-value | 1000 | Ping value to use for fixed slots and empty slots. The ping intervals for bars are client sided and are as following: <br />- Negative value: ✖ <br />- 0 - 149: 5 bars <br />- 150 - 299: 4 bars <br />- 300 - 599: 3 bars <br />- 600 - 999: 2 bars <br />- 1000+: 1 bar
+| enable-remaining-players-text | true | When enabled, the last slot of player group will show how many more players there are, instead of using the last slot for one more player. |
+| remaining-players-text | "... and %s more" | Text to show if option above is enabled. |
+| default-skin | "mineskin:1753261242" | Default skin to display for fixed slots that do not define a skin, empty slots and fixed slots with invalid skin. |
+| empty-slot-ping-value | 1000 | Ping value to use for fixed slots and empty slots. The ping intervals for bars are client sided and are as following: <br />- Negative value: ✖ <br />- 0 - 149: 5 bars <br />- 150 - 299: 4 bars <br />- 300 - 599: 3 bars <br />- 600 - 999: 2 bars <br />- 1000+: 1 bar |
 
 ![image](https://user-images.githubusercontent.com/6338394/179363352-40f815d4-fc37-4ca1-8056-298488e84a60.png)
 ![image](https://user-images.githubusercontent.com/6338394/179355373-3e50b8c5-95d7-4470-b93f-deb162ccc145.png)
@@ -154,8 +154,10 @@ The way this feature works is by pushing all real players out of the tablist and
 As a result, enabling [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) feature won't make any difference, since real players aren't visible in the tablist.  
 Layout feature is capable of working with all online players connected to the server where TAB is installed, meaning it can show players from all servers when installed on BungeeCord. Because of this, if you use layout, you can just disable global playerlist to reduce resource usage.
 
-## Additional note 3 - Entries in chat complete
-Since 1.19.3, entries will also appear in chat complete. The mechanic I was using to hide them on older versions can no longer be used since 1.19.3. There is currently no way to avoid this. Not even everyone's beloved Hypixel found a solution to this.
+## Additional note 3 - Entries in chat complete [1.19.3 - 1.21.1]
+Since 1.19.3 until 1.21.1 (inclusive), entries will also appear in chat complete. The mechanic used to hide them on <1.19.3 can no longer be used since 1.19.3. 1.21.2 has added a new way of sorting players, which is being taken advantage of to restore empty chat complete.  
+**Note**: In order to hide entries from chat complete on 1.21.2+, the server also has to be 1.21.2+ so it can send new content to the players (having TAB installed on proxy counts as using latest version).  
+**Note 2**: The 1.21.2+ improvement was added in [dev builds](https://github.com/NEZNAMY/TAB/actions) (v5) and will not be added into v4.
 
 ## Additional note 4 - Per world playerlist incompatibility
 Layout works by adding 80 fake players into the tablist, pushing real player entries out of view. Because of this, when using [per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist), the feature will only hide the real players, which are outside of tablist and not visible anyway and not touch the layout entries. However, you can replicate the same effect using layout feature itself, using conditions.

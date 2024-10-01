@@ -1,6 +1,5 @@
 # Content
 * [About](#about)
-* [Enabling](#enabling)
 * [Configuration](#configuration)
   * [Groups and users](#groups-and-users)
   * [Per-world / per-server](#per-world--per-server)
@@ -132,9 +131,9 @@ _DEFAULT_:
 ```
 
 # Limitations
-* Prefix/suffix length is limited to 16 characters (including color codes) on <1.13.
+* Prefix/suffix length is limited to 16 characters (including color codes) on <1.13. There is no reachable limit on 1.13+.
 * Name cannot be effectively changed and plugin doesn't offer it.
-* Since 1.13 the name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
+* Since 1.13, the name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
 * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
 * Name color and glow color are managed by the same value, which means they cannot be different.
 

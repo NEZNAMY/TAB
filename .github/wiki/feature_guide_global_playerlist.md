@@ -16,7 +16,7 @@ To use this feature, you need [TAB installed on bungeecord](https://github.com/N
 | enabled | false | Enables / Disables the feature |
 | server-groups | *Map* | See [Grouping players only from certain servers](#grouping-players-only-from-certain-servers) |
 | spy-servers | *List* | See [Seeing all players on the network from some server](#seeing-all-players-on-the-network-from-some-server) |
-| display-others-as-spectators | false | When enabled, players on different servers will appear as having spectator gamemode in tablist.
+| display-others-as-spectators | false | When enabled, players on different servers will appear as having spectator gamemode in tablist. |
 | display-vanished-players-as-spectators | true | When enabled, vanished players will show as in spectator gamemode for those, who have permission to see vanished players (tab.seevanished) (others will obviously not see them at all). Vanished players will still see themselves in the gamemode they are actually in, since changing that would cause problems (client would think it's in spectator gamemode while it isn't). |
 | isolate-unlisted-servers | false | When enabled, servers not listed in any group will not share playerlist with any other server, instead of sharing it with other unlisted servers. |
 
