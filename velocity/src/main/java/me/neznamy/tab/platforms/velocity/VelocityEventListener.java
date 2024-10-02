@@ -33,6 +33,7 @@ public class VelocityEventListener implements EventListener<Player> {
      */
     @Subscribe
     public void onQuit(@NotNull DisconnectEvent e) {
+        if (e.getLoginStatus() != DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN) return;
         quit(e.getPlayer().getUniqueId());
     }
 
