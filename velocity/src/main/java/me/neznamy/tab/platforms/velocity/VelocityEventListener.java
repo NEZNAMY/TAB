@@ -18,11 +18,18 @@ import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * The core for Velocity forwarding events into all enabled features
  */
 @SuppressWarnings("UnstableApiUsage")
 public class VelocityEventListener implements EventListener<Player> {
+
+    /** Map for tracking online players */
+    private final Map<Player, UUID> players = new ConcurrentHashMap<>();
 
     /**
      * Listens to player disconnecting from the server.
@@ -32,8 +39,10 @@ public class VelocityEventListener implements EventListener<Player> {
      */
     @Subscribe
     public void onQuit(@NotNull DisconnectEvent e) {
-        if (e.getLoginStatus() != DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN) return;
-        quit(e.getPlayer().getUniqueId());
+        // Check if the player was actually connected to the server in the first place to avoid processing
+        // disconnect of an existing player who is still there (because players are mapped by UUID in TAB)
+        UUID id = players.remove(e.getPlayer());
+        if (id != null) quit(id);
     }
 
     /**
@@ -67,6 +76,7 @@ public class VelocityEventListener implements EventListener<Player> {
         tab.getCPUManager().runTask(() -> {
             TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
             if (player == null) {
+                players.put(e.getPlayer(), e.getPlayer().getUniqueId());
                 tab.getFeatureManager().onJoin(createPlayer(e.getPlayer()));
             } else {
                 player.getScoreboard().freeze(); // Prevent server switch listeners from sending packets before re-registering objectives in onLoginPacket
