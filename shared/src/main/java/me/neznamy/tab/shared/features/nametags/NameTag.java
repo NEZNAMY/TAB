@@ -91,7 +91,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 if (target.isVanished() && !TAB.getInstance().getPlatform().canSee(viewer, target)) {
                     target.teamData.vanishedFor.add(viewer.getUniqueId());
                 }
-                if (!target.teamData.disabled.get()) registerTeam(target, viewer);
+                if (!target.teamData.isDisabled()) registerTeam(target, viewer);
             }
         }
     }
@@ -104,7 +104,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (refreshed.teamData.disabled.get()) return;
+        if (refreshed.teamData.isDisabled()) return;
         boolean refresh;
         if (force) {
             updateProperties(refreshed);
@@ -119,7 +119,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void onGroupChange(@NotNull TabPlayer player) {
-        if (updateProperties(player) && !player.teamData.disabled.get()) {
+        if (updateProperties(player) && !player.teamData.isDisabled()) {
             updatePrefixSuffix(player);
         }
     }
@@ -138,7 +138,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             if (all.isVanished() && !TAB.getInstance().getPlatform().canSee(connectedPlayer, all)) {
                 all.teamData.vanishedFor.add(connectedPlayer.getUniqueId());
             }
-            if (!all.teamData.disabled.get()) {
+            if (!all.teamData.isDisabled()) {
                 registerTeam(all, connectedPlayer);
             }
         }
@@ -183,12 +183,12 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        if (updateProperties(p) && !p.teamData.disabled.get()) updatePrefixSuffix(p);
+        if (updateProperties(p) && !p.teamData.isDisabled()) updatePrefixSuffix(p);
     }
 
     @Override
     public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
-        if (updateProperties(changed) && !changed.teamData.disabled.get()) updatePrefixSuffix(changed);
+        if (updateProperties(changed) && !changed.teamData.isDisabled()) updatePrefixSuffix(changed);
     }
 
     @Override
@@ -198,13 +198,13 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 if (viewer == player) continue;
                 if (!TAB.getInstance().getPlatform().canSee(viewer, player)) {
                     player.teamData.vanishedFor.add(viewer.getUniqueId());
-                    if (!player.teamData.disabled.get()) {
+                    if (!player.teamData.isDisabled()) {
                         viewer.getScoreboard().unregisterTeam(player.teamData.teamName);
                     }
                 }
             }
         } else {
-            if (!player.teamData.disabled.get()) {
+            if (!player.teamData.isDisabled()) {
                 for (UUID id : player.teamData.vanishedFor) {
                     TabPlayer viewer = TAB.getInstance().getPlayer(id);
                     if (viewer != null) registerTeam(player, viewer);
@@ -346,7 +346,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        if (hasTeamHandlingPaused(p)) return;
+        if (p.teamData.isDisabled()) return;
         if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
         TabComponent prefix = cache.get(p.teamData.prefix.getFormat(viewer));
         viewer.getScoreboard().registerTeam(
@@ -376,7 +376,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      */
     public void updateTeamName(@NonNull TabPlayer player, @NonNull String newTeamName) {
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            if (hasTeamHandlingPaused(player) || player.teamData.disabled.get()) {
+            if (player.teamData.isDisabled()) {
                 player.teamData.teamName = newTeamName;
                 return;
             }
@@ -480,7 +480,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         if (p.teamData.teamHandlingPaused) return;
-        if (!p.teamData.disabled.get()) unregisterTeam(p.teamData.teamName);
+        if (!p.teamData.isDisabled()) unregisterTeam(p.teamData.teamName);
         p.teamData.teamHandlingPaused = true; //setting after, so unregisterTeam method runs
     }
 
@@ -491,7 +491,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         p.ensureLoaded();
         if (!p.teamData.teamHandlingPaused) return;
         p.teamData.teamHandlingPaused = false; //setting before, so registerTeam method runs
-        if (!p.teamData.disabled.get()) registerTeam(p);
+        if (!p.teamData.isDisabled()) registerTeam(p);
     }
 
     @Override
@@ -686,6 +686,16 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         public boolean removeHiddenNameTagFor(@NotNull TabPlayer viewer) {
             if (hiddenNameTagFor != null) return hiddenNameTagFor.remove(viewer);
             return false;
+        }
+
+        /**
+         * Returns {@code true} if teams are disabled for this player either with condition
+         * or with the API, {@code false} otherwise.
+         *
+         * @return  {@code true} if teams are disabled for the player, {@code false} if not
+         */
+        public boolean isDisabled() {
+            return disabled.get() || teamHandlingPaused;
         }
     }
 
