@@ -41,7 +41,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
 
     /** Scoreboard title which is unused in java */
-    private static final TabComponent TITLE = new SimpleComponent("PlayerListObjectiveTitle"); // Unused by this objective slot (on Java, only visible on Bedrock)
+    private static final TabComponent TITLE = new SimpleComponent("Java Edition is better"); // Unused by this objective slot (on Java, only visible on Bedrock)
 
     @Getter
     private final StringToComponentCache cache = new StringToComponentCache("Playerlist Objective", 1000);
@@ -145,7 +145,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         }
         if (redis != null) {
             redis.sendMessage(new UpdateRedisPlayer(connectedPlayer.getTablistId(), getValueNumber(connectedPlayer), connectedPlayer.playerlistObjectiveData.valueModern.get()));
-            if (connectedPlayer.isBedrockPlayer() || connectedPlayer.playerlistObjectiveData.disabled.get()) return;
+            if (connectedPlayer.playerlistObjectiveData.disabled.get()) return;
             for (RedisPlayer redis : redis.getRedisPlayers().values()) {
                 if (redis.getPlayerlistFancy() == null) continue; // This redis player is not loaded yet
                 connectedPlayer.getScoreboard().setScore(
@@ -177,7 +177,6 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             }
             if (redis != null) {
                 redis.sendMessage(new UpdateRedisPlayer(p.getTablistId(), getValueNumber(p), p.playerlistObjectiveData.valueModern.get()));
-                if (p.isBedrockPlayer()) return;
                 for (RedisPlayer redis : redis.getRedisPlayers().values()) {
                     if (redis.getPlayerlistFancy() == null) continue; // This redis player is not loaded yet
                     p.getScoreboard().setScore(
@@ -210,7 +209,6 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     }
 
     private void register(@NotNull TabPlayer player) {
-        if (player.isBedrockPlayer()) return;
         player.getScoreboard().registerObjective(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME, TITLE, configuration.healthDisplay, new SimpleComponent(""));
     }
 
@@ -227,7 +225,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
      *          NumberFormat display of the score
      */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyValue) {
-        if (viewer.isBedrockPlayer() || viewer.playerlistObjectiveData.disabled.get()) return;
+        if (viewer.playerlistObjectiveData.disabled.get()) return;
         viewer.getScoreboard().setScore(
                 OBJECTIVE_NAME,
                 scoreHolder.getNickname(),
@@ -328,7 +326,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             target.setPlayerlistNumber(value);
             target.setPlayerlistFancy(cache.get(fancyValue));
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (viewer.isBedrockPlayer() || viewer.playerlistObjectiveData.disabled.get()) continue;
+                if (viewer.playerlistObjectiveData.disabled.get()) continue;
                 viewer.getScoreboard().setScore(
                         OBJECTIVE_NAME,
                         target.getNickname(),
