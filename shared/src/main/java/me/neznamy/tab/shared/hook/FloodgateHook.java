@@ -48,8 +48,7 @@ public class FloodgateHook {
             TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText("Floodgate returned bedrock status FALSE " +
                     "for player " + name + ", however, this player appears to be a bedrock player. This means " +
                     "floodgate is not configured correctly, usually because it is also installed on proxy, but not " +
-                    "linked properly. See proxy setup on floodgate wiki for more details. This will result in visual issues for the " +
-                    "player, most notably scoreboard lines being out of order and more."));
+                    "linked properly. See proxy setup on floodgate wiki for more details. This may result in visual issues for the player."));
         }
 
         return bedrock;
