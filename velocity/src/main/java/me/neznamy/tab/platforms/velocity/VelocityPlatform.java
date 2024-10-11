@@ -23,7 +23,7 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
-import me.neznamy.tab.shared.platform.impl.BridgeScoreboard;
+import me.neznamy.tab.shared.platform.impl.DummyScoreboard;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
@@ -64,7 +64,6 @@ public class VelocityPlatform extends ProxyPlatform {
             try {
                 ScoreboardManager.getInstance();
                 scoreboardAPI = true;
-                logInfo(TabComponent.fromColoredText(EnumChatFormat.GREEN + "Detected VelocityScoreboardAPI, using it for better performance"));
                 plugin.getServer().getEventManager().register(plugin, ObjectiveEvent.Display.class, e -> {
                     TAB tab = TAB.getInstance();
                     if (tab.isPluginDisabled()) return;
@@ -85,12 +84,10 @@ public class VelocityPlatform extends ProxyPlatform {
                 // Scoreboard API failed to enable due to an error
             }
         } else {
-            logInfo(TabComponent.fromColoredText(EnumChatFormat.AQUA + "In order to speed up scoreboard packet sending and remove the need to use plugin messages, " +
-                    "a new plugin called VelocityScoreboardAPI was developed. When installed, TAB will use it as a primary solution for scoreboards instead of bridge. " +
-                    "Once TAB 5.0.0 releases, it will become mandatory for scoreboard features to work and bridge will no longer be supported as a scoreboard packet encoder. " +
-                    "If you wish to contribute back to the plugin you have been using for free, and want to accelerate its development to make the release more stable, please install this plugin on your server and report any issues you may run into. " +
-                    "In case anything bad happens, you can always uninstall it and keep using bridge for scoreboards until the issue is resolved, which will not be that easy in the future. " +
-                    "You can download the plugin from https://github.com/NEZNAMY/VelocityScoreboardAPI/releases/"));
+            logInfo(TabComponent.fromColoredText(EnumChatFormat.RED + "As of version 5.0.0, TAB no longer uses TAB-Bridge to encode scoreboard packets on Velocity. " +
+                    "Instead, it uses a custom made plugin that adds scoreboard API directly to Velocity, which offers better performance and reliability. " +
+                    "You can download the plugin from https://github.com/NEZNAMY/VelocityScoreboardAPI/releases/. " +
+                    "Until then, the following features will not work: scoreboard-teams, belowname-objective, playerlist-objective, scoreboard"));
         }
         if (plugin.getServer().getPluginManager().isLoaded("premiumvanish")) {
             PremiumVanishHook.setInstance(new VelocityPremiumVanishHook());
@@ -166,7 +163,7 @@ public class VelocityPlatform extends ProxyPlatform {
         if (scoreboardAPI) {
             return new VelocityScoreboard((VelocityTabPlayer) player);
         } else {
-            return new BridgeScoreboard((VelocityTabPlayer) player);
+            return new DummyScoreboard(player);
         }
     }
 
