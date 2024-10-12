@@ -377,6 +377,9 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      */
     public void updateTeamName(@NonNull TabPlayer player, @NonNull String newTeamName) {
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            // Function ran before onJoin did (super rare), drop action since onJoin will use new team name anyway
+            if (player.teamData.teamName == null) return;
+
             if (player.teamData.isDisabled()) {
                 player.teamData.teamName = newTeamName;
                 return;
