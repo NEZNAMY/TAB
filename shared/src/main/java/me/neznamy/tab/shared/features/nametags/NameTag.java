@@ -199,18 +199,19 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 if (!TAB.getInstance().getPlatform().canSee(viewer, player)) {
                     player.teamData.vanishedFor.add(viewer.getUniqueId());
                     if (!player.teamData.isDisabled()) {
-                        viewer.getScoreboard().unregisterTeam(player.teamData.teamName);
+                        ((SafeScoreboard<?>)viewer.getScoreboard()).unregisterTeamSafe(player.teamData.teamName);
                     }
                 }
             }
         } else {
+            Set<UUID> ids = new HashSet<>(player.teamData.vanishedFor);
+            player.teamData.vanishedFor.clear();
             if (!player.teamData.isDisabled()) {
-                for (UUID id : player.teamData.vanishedFor) {
+                for (UUID id : ids) {
                     TabPlayer viewer = TAB.getInstance().getPlayer(id);
                     if (viewer != null) registerTeam(player, viewer);
                 }
             }
-            player.teamData.vanishedFor.clear();
         }
     }
 
@@ -346,7 +347,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        if (p.teamData.isDisabled()) return;
+        if (p.teamData.isDisabled() || p.teamData.vanishedFor.contains(viewer.getUniqueId())) return;
         if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
         TabComponent prefix = cache.get(p.teamData.prefix.getFormat(viewer));
         viewer.getScoreboard().registerTeam(
