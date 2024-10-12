@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
@@ -67,14 +66,10 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
                 if (player.getVersion().getMinorVersion() >= 8) {
-                    long time = System.nanoTime();
                     ((TrackedTabList<?, ?>)player.getTabList()).onPacketSend(packet);
-                    TAB.getInstance().getCPUManager().addTime("Pipeline injection", CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PACKET, System.nanoTime()-time);
                 }
                 if (((SafeScoreboard<?>)player.getScoreboard()).isAntiOverrideTeams() || ((SafeScoreboard<?>)player.getScoreboard()).isAntiOverrideScoreboard()) {
-                    long time = System.nanoTime();
                     ((SafeScoreboard<?>)player.getScoreboard()).onPacketSend(packet);
-                    TAB.getInstance().getCPUManager().addTime("Pipeline injection", CpuUsageCategory.ANTI_OVERRIDE_SCOREBOARDS_PACKET, System.nanoTime()-time);
                 }
             } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
