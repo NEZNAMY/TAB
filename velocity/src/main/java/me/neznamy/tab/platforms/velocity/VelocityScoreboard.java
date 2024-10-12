@@ -98,7 +98,7 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
     @Override
     @NotNull
     public Object createTeam(@NonNull String name) {
-        return new Object(); // This API does not work that way
+        return this; // This API does not work that way
     }
 
     @Override
