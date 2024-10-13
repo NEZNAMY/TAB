@@ -12,7 +12,6 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.EnumSet;
 
 /**
@@ -22,7 +21,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     /** Function for getting player's channel */
     @Setter
-    private static FunctionWithException<TabPlayer, Channel> getChannel;
+    private static FunctionWithException<BukkitTabPlayer, Channel> getChannel;
 
     /**
      * Constructs new instance
@@ -48,14 +47,13 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                     ProtocolVersion.V1_21_1
             ).contains(serverVersion);
             if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && versionCheck) {
-                getChannel = (FunctionWithException<TabPlayer, Channel>) Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getDeclaredField("getChannel").get(null);
+                getChannel = (FunctionWithException<BukkitTabPlayer, Channel>) Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getDeclaredField("getChannel").get(null);
                 return;
             }
             Class<?> NetworkManager = BukkitReflection.getClass("network.Connection", "network.NetworkManager", "NetworkManager");
             Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
                     "server.network.PlayerConnection", "PlayerConnection");
             Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
-            Method getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
             Field PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
             Field NETWORK_MANAGER;
             if (BukkitReflection.is1_20_2Plus()) {
@@ -64,7 +62,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection, NetworkManager);
             }
             Field CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
-            getChannel = player -> (Channel) CHANNEL.get(NETWORK_MANAGER.get(PLAYER_CONNECTION.get(getHandle.invoke(player.getPlayer()))));
+            getChannel = player -> (Channel) CHANNEL.get(NETWORK_MANAGER.get(PLAYER_CONNECTION.get(player.getHandle())));
         } catch (Exception e) {
             BukkitUtils.compatibilityError(e, "network channel injection", null,
                     "Anti-override for tablist & nametags not working",
@@ -86,6 +84,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @NotNull
     @SneakyThrows
     protected Channel getChannel(@NotNull TabPlayer player) {
-        return getChannel.apply(player);
+        return getChannel.apply((BukkitTabPlayer) player);
     }
 }

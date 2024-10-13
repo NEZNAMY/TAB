@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.paper;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
@@ -12,6 +12,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 public class PaperLoader {
 
     /** Channel getter using direct NMS code */
-    public static FunctionWithException<TabPlayer, Channel> getChannel =
+    public static FunctionWithException<BukkitTabPlayer, Channel> getChannel =
             player -> ((CraftPlayer)player.getPlayer()).getHandle().connection.connection.channel;
 }

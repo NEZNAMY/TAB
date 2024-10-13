@@ -1,6 +1,9 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import lombok.Getter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
@@ -19,6 +22,11 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("deprecation")
 public class BukkitTabPlayer extends BackendTabPlayer {
 
+    /** NMS handle of this player */
+    @NotNull
+    @Getter
+    private final Object handle;
+
     /** Player's connection for sending packets */
     @Nullable
     public Object connection;
@@ -31,8 +39,10 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      * @param   p
      *          bukkit player
      */
+    @SneakyThrows
     public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
         super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName(), platform.getServerVersion().getNetworkId());
+        handle = BukkitReflection.CraftPlayer_getHandle.invoke(p);
     }
 
     @Override
@@ -42,7 +52,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getPing() {
-        return PingRetriever.getPing(getPlayer());
+        return PingRetriever.getPing(this);
     }
 
     @Override

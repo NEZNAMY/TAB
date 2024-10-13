@@ -3,10 +3,10 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,8 +17,6 @@ import java.util.Collection;
  * Class for getting skin of players.
  */
 public class SkinData {
-
-    private final Method getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
 
     // There is only supposed to be one, however there are exceptions:
     // #1 - CatServer adds another method
@@ -44,8 +42,8 @@ public class SkinData {
      */
     @Nullable
     @SneakyThrows
-    public TabList.Skin getSkin(@NotNull Player player) {
-        Collection<Property> col = ((GameProfile) getProfile.invoke(getHandle.invoke(player))).getProperties().get(TabList.TEXTURES_PROPERTY);
+    public TabList.Skin getSkin(@NotNull BukkitTabPlayer player) {
+        Collection<Property> col = ((GameProfile) getProfile.invoke(player.getHandle())).getProperties().get(TabList.TEXTURES_PROPERTY);
         if (col.isEmpty()) return null; //offline mode
         Property property = col.iterator().next();
         if (BukkitReflection.is1_20_2Plus()) {

@@ -62,7 +62,7 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
             if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && versionCheck) {
                 Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketTabList").getConstructor(BukkitTabPlayer.class);
                 instance = player -> (TabListBase<?>) constructor.newInstance(player);
-            } else if (BukkitReflection.is1_19_3Plus()) {
+            } else if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {
                 PacketTabList1193.loadNew();
                 instance = PacketTabList1193::new;
             } else if (BukkitReflection.getMinorVersion() >= 8) {
@@ -102,6 +102,6 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
     @Nullable
     public Skin getSkin() {
         if (skinData == null) return null;
-        return skinData.getSkin(player.getPlayer());
+        return skinData.getSkin(player);
     }
 }

@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.shared.util.ToIntFunction;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -8,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * Class for retrieving ping of players.
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 public class PingRetriever {
 
     /** Ping getter function */
-    private static ToIntFunction<Player> getPing;
+    private static ToIntFunction<BukkitTabPlayer> getPing;
 
     /**
      * Attempts to load required classes, fields and methods and marks class as available.
@@ -25,12 +25,11 @@ public class PingRetriever {
     public static void tryLoad() {
         try {
             if (ReflectionUtils.methodExists(Player.class, "getPing")) {
-                getPing = Player::getPing;
+                getPing = p -> p.getPlayer().getPing();
             } else {
-                Method getHandle = BukkitReflection.getBukkitClass("entity.CraftPlayer").getMethod("getHandle");
                 Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
                 Field PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
-                getPing = player -> PING.getInt(getHandle.invoke(player));
+                getPing = player -> PING.getInt(player.getHandle());
             }
         } catch (Exception e) {
             getPing = p -> -1;
@@ -48,7 +47,7 @@ public class PingRetriever {
      * @return  Player's ping or {@code -1} if it failed
      */
     @SneakyThrows
-    public static int getPing(@NotNull Player player) {
+    public static int getPing(@NotNull BukkitTabPlayer player) {
         return getPing.apply(player);
     }
 }
