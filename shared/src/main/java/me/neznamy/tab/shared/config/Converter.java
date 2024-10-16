@@ -463,15 +463,15 @@ public class Converter {
     }
 
     /**
-     * Converts config from 4.1.5 to 5.0.0.
+     * Converts config from 4.1.9 to 5.0.0.
      * This removes unlimited nametag mode option from config, which got removed.
      *
      * @param   config
      *          Config file
      */
-    public void convert415to500(@NotNull ConfigurationFile config) {
+    public void convert419to500(@NotNull ConfigurationFile config) {
         if (config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode")) {
-            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.1.5 to 5.0.0"));
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.1.9 to 5.0.0"));
             config.removeOption("scoreboard-teams.unlimited-nametag-mode");
             config.removeOption("scoreboard.respect-other-plugins");
         }
