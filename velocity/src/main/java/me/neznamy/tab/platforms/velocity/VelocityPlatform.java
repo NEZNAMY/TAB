@@ -180,6 +180,12 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
+    @NotNull
+    public ProtocolVersion getServerVersion() {
+        return ProtocolVersion.V1_21_1;
+    }
+
+    @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
         return null;

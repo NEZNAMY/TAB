@@ -194,4 +194,10 @@ public class BungeePlatform extends ProxyPlatform {
             return new BungeeTabList17((BungeeTabPlayer) player);
         }
     }
+
+    @Override
+    @NotNull
+    public ProtocolVersion getServerVersion() {
+        return ProtocolVersion.V1_21_2;
+    }
 }

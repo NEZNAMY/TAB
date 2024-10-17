@@ -175,9 +175,9 @@ public interface Platform {
     TabList createTabList(@NotNull TabPlayer player);
 
     /**
-     * Returns server version. On proxies, {@link ProtocolVersion#LATEST_KNOWN_VERSION} is returned.
+     * Returns server version. On proxies returns latest supported version by the version used as dependency.
      *
-     * @return  server version on backend, {@link ProtocolVersion#LATEST_KNOWN_VERSION} on proxies
+     * @return  server version on backend, latest supported version on proxies
      */
     @NotNull
     ProtocolVersion getServerVersion();
