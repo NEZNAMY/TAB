@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     api(projects.shared)
-    minecraft("com.mojang:minecraft:1.21.2-rc1")
+    minecraft("com.mojang:minecraft:1.21.2")
     mappings(loom.officialMojangMappings())
     modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
     modImplementation("net.fabricmc:fabric-loader:0.15.9")
