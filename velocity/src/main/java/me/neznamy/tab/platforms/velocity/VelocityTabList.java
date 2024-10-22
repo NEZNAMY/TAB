@@ -59,12 +59,18 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
     }
 
     @Override
-    @SuppressWarnings("deprecation") // "Internal usage"
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
                          int gameMode, @Nullable Component displayName, int listOrder) {
         GameProfile profile = new GameProfile(id, name, skin == null ? Collections.emptyList() : Collections.singletonList(
                         new GameProfile.Property(TEXTURES_PROPERTY, skin.getValue(), Objects.requireNonNull(skin.getSignature()))));
-        TabListEntry e = player.getPlayer().getTabList().buildEntry(profile, displayName, latency, gameMode, null, listed);
+        TabListEntry e = TabListEntry.builder()
+                .tabList(player.getPlayer().getTabList())
+                .profile(profile)
+                .displayName(displayName)
+                .latency(latency)
+                .gameMode(gameMode)
+                .listed(listed)
+                .build();
         // TODO listOrder
 
         // Remove entry because:
