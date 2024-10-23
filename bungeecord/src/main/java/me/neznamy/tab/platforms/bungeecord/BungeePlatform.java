@@ -196,8 +196,7 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
-    @NotNull
-    public ProtocolVersion getServerVersion() {
-        return ProtocolVersion.V1_21_2;
+    public boolean supportsListOrder() {
+        return true;
     }
 }

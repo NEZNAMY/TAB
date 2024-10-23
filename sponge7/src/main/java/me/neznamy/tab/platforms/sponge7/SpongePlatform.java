@@ -137,6 +137,11 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsListOrder() {
+        return false; // Sponge 7 only goes up to 1.12.2
+    }
+
+    @Override
     public double getTPS() {
         return Sponge.getServer().getTicksPerSecond();
     }

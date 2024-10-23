@@ -180,9 +180,8 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
-    @NotNull
-    public ProtocolVersion getServerVersion() {
-        return ProtocolVersion.V1_21_1;
+    public boolean supportsListOrder() {
+        return false; // TODO when they add API
     }
 
     @Override

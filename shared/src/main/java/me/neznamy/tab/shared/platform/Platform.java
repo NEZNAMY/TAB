@@ -175,12 +175,12 @@ public interface Platform {
     TabList createTabList(@NotNull TabPlayer player);
 
     /**
-     * Returns server version. On proxies returns latest supported version by the version used as dependency.
+     * Returns {@code true} if server is able to use {@code listOrder} field in tablist (1.21.2+). Returns {@code false}
+     * if server is running below this version (backend) or server API does not support it yet.
      *
-     * @return  server version on backend, latest supported version on proxies
+     * @return  {@code true} if server is able to use {@code listOrder} tablist field, {@code false} if not
      */
-    @NotNull
-    ProtocolVersion getServerVersion();
+    boolean supportsListOrder();
 
     /**
      * Returns {@code true} if the viewer can see the target, {@code false} otherwise.

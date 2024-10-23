@@ -295,6 +295,11 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsListOrder() {
+        return serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId();
+    }
+
+    @Override
     @NotNull
     public GroupManager detectPermissionPlugin() {
         if (LuckPermsHook.getInstance().isInstalled()) {

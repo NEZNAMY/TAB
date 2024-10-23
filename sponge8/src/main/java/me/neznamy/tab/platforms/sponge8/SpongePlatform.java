@@ -136,6 +136,11 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsListOrder() {
+        return false; // TODO when they add API
+    }
+
+    @Override
     public double getTPS() {
         return Sponge.server().ticksPerSecond();
     }

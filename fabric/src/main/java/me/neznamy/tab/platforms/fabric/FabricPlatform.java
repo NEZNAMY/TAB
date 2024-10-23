@@ -148,6 +148,11 @@ public class FabricPlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsListOrder() {
+        return serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId();
+    }
+
+    @Override
     public double getTPS() {
         return -1; // Not available
     }

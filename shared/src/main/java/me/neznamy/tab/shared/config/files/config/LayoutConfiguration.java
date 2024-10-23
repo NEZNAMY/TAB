@@ -159,7 +159,7 @@ public class LayoutConfiguration extends ConfigurationSection {
 
         public String getEntryName(@NotNull TabPlayer viewer, int slot, boolean teamsEnabled) {
             boolean v1_21_2Plus = viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() &&
-                    TAB.getInstance().getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId();
+                    TAB.getInstance().getPlatform().supportsListOrder();
             if (viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() && !v1_21_2Plus) {
                 if (teamsEnabled) {
                     return "|slot_" + (10+slotTranslator.apply(slot));
