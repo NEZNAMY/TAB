@@ -470,9 +470,8 @@ public class Converter {
      *          Config file
      */
     public void convert419to500(@NotNull ConfigurationFile config) {
-        if (config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode")) {
+        if (config.removeOption("scoreboard-teams.unlimited-nametag-mode")) {
             TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 4.1.9 to 5.0.0"));
-            config.removeOption("scoreboard-teams.unlimited-nametag-mode");
             config.removeOption("scoreboard.respect-other-plugins");
         }
         if (!config.hasConfigOption("global-playerlist.update-latency")) {
