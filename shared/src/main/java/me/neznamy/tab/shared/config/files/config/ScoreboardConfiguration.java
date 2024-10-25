@@ -43,6 +43,7 @@ public class ScoreboardConfiguration extends ConfigurationSection {
         for (Map.Entry<String, ScoreboardDefinition> entry : scoreboards.entrySet()) {
             int alwaysVisibleLines = 0;
             for (String line : entry.getValue().lines) {
+                if (line == null) continue;
                 String withoutPlaceholders = line;
                 for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(line)) {
                     withoutPlaceholders = withoutPlaceholders.replace(placeholder, "");

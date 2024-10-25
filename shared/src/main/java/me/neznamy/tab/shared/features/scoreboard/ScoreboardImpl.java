@@ -82,6 +82,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         title = definition.title;
         for (int i=0; i<definition.lines.size(); i++) {
             String line = definition.lines.get(i);
+            if (line == null) line = "";
             ScoreboardLine score;
             if (dynamicLinesOnly) {
                 score = new StableDynamicLine(this, i+1, line);
