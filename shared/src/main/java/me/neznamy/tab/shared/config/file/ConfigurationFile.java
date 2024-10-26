@@ -434,4 +434,23 @@ public abstract class ConfigurationFile {
         }
         return false;
     }
+
+    /**
+     * Renames an option from old path to new path. Returns {@code true} if option was renamed,
+     * {@code false} if the option was renamed previously already.
+     *
+     * @param   oldPath
+     *          Old path to the option
+     * @param   newPath
+     *          New path to the option
+     * @return  {@code true} if option was renamed successfully, {@code false} if not.
+     */
+    public boolean rename(@NotNull String oldPath, @NotNull String newPath) {
+        if (hasConfigOption(oldPath)) {
+            set(newPath, getObject(oldPath));
+            set(oldPath, null);
+            return true;
+        }
+        return false;
+    }
 }

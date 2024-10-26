@@ -96,10 +96,10 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     }
 
     private void loadProperties(@NotNull TabPlayer player) {
-        player.belowNameData.score = new Property(this, player, configuration.number);
-        player.belowNameData.numberFormat = new Property(this, player, configuration.fancyDisplayPlayers);
-        player.belowNameData.text = new Property(textRefresher, player, configuration.text);
-        player.belowNameData.defaultNumberFormat = new Property(textRefresher, player, configuration.fancyDisplayDefault);
+        player.belowNameData.score = new Property(this, player, configuration.value);
+        player.belowNameData.numberFormat = new Property(this, player, configuration.fancyValue);
+        player.belowNameData.text = new Property(textRefresher, player, configuration.title);
+        player.belowNameData.defaultNumberFormat = new Property(textRefresher, player, configuration.fancyValueDefault);
     }
 
     @Override
@@ -185,11 +185,11 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
             try {
                 int value = (int) Math.round(Double.parseDouble(string));
                 // Float
-                TAB.getInstance().getConfigHelper().runtime().floatInBelowName(p, configuration.number, string);
+                TAB.getInstance().getConfigHelper().runtime().floatInBelowName(p, configuration.value, string);
                 return value;
             } catch (NumberFormatException e2) {
                 // Not a float (invalid)
-                TAB.getInstance().getConfigHelper().runtime().invalidNumberForBelowName(p, configuration.number, string);
+                TAB.getInstance().getConfigHelper().runtime().invalidNumberForBelowName(p, configuration.value, string);
                 return 0;
             }
         }

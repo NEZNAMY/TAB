@@ -456,15 +456,15 @@ public class Converter {
             config.set("yellow-number-in-tablist", null);
             config.set("playerlist-objective", section);
         }
-        config.setIfMissing("belowname-objective.fancy-display-default", "NPC");
-        config.setIfMissing("belowname-objective.fancy-display-players", "&c" + TabConstants.Placeholder.HEALTH);
+        config.setIfMissing("belowname-objective.fancy-value-default", "NPC");
+        config.setIfMissing("belowname-objective.fancy-value", "&c" + TabConstants.Placeholder.HEALTH);
         config.removeOption("tablist-name-formatting.align-tabsuffix-on-the-right");
         config.removeOption("tablist-name-formatting.character-width-overrides");
     }
 
     /**
      * Converts config from 4.1.9 to 5.0.0.
-     * This removes unlimited nametag mode option from config, which got removed.
+     * This removes unlimited nametag mode option from config, which got removed and adds update-latency option to global playerlist.
      *
      * @param   config
      *          Config file
@@ -477,5 +477,21 @@ public class Converter {
         if (!config.hasConfigOption("global-playerlist.update-latency")) {
             config.set("global-playerlist.update-latency", false);
         }
+    }
+
+    /**
+     * Converts config from 5.0.1 to 5.0.2.
+     * This renames options under belowname-objective to make them more clear.
+     *
+     * @param   config
+     *          Config file
+     */
+    public void convert501to502(@NotNull ConfigurationFile config) {
+        if (config.rename("belowname-objective.number", "belowname-objective.value")) {
+            TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.YELLOW + "Performing configuration conversion from 5.0.1 to 5.0.2"));
+        }
+        config.rename("belowname-objective.text", "belowname-objective.title");
+        config.rename("belowname-objective.fancy-display-players", "belowname-objective.fancy-value");
+        config.rename("belowname-objective.fancy-display-default", "belowname-objective.fancy-value-default");
     }
 }

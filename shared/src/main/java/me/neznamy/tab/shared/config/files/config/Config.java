@@ -59,6 +59,7 @@ public class Config {
         converter.convert332to400(config);
         converter.convert409to410(config);
         converter.convert419to500(config);
+        converter.convert501to502(config);
 
         conditions = new ConditionsSection(config);
         refresh = new PlaceholderRefreshConfiguration(config);

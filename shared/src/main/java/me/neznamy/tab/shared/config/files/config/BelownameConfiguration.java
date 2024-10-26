@@ -12,18 +12,18 @@ public class BelownameConfiguration extends ConfigurationSection {
 
     private final String SECTION = "belowname-objective";
     public final boolean enabled = getBoolean(SECTION + ".enabled", false);
-    @NotNull public final String number = getString(SECTION + ".number", Placeholder.HEALTH);
-    @NotNull public final String text = getString(SECTION + ".text", "Health");
-    @NotNull public final String fancyDisplayDefault = getString(SECTION + ".fancy-display-default", "NPC");
-    @NotNull public final String fancyDisplayPlayers = getString(SECTION + ".fancy-display-players", "&c" + Placeholder.HEALTH);
+    @NotNull public final String value = getString(SECTION + ".value", Placeholder.HEALTH);
+    @NotNull public final String title = getString(SECTION + ".title", "Health");
+    @NotNull public final String fancyValue = getString(SECTION + ".fancy-value", "&c" + Placeholder.HEALTH);
+    @NotNull public final String fancyValueDefault = getString(SECTION + ".fancy-value-default", "NPC");
     @Nullable public final String disableCondition = getString(SECTION + ".disable-condition", "%world%=disabledworld");
 
     public BelownameConfiguration(@NotNull ConfigurationFile config) {
         super(config);
-        checkForUnknownKey(SECTION, Arrays.asList("enabled", "number", "text", "fancy-display-default", "fancy-display-players", "disable-condition"));
+        checkForUnknownKey(SECTION, Arrays.asList("enabled", "value", "title", "fancy-value-default", "fancy-value", "disable-condition"));
 
-        if (!text.contains("%") || text.contains("%animation") || text.contains("%condition")) return;
-        startupWarn("Belowname text is set to " + text + ", however, the feature cannot display different text on different players " +
+        if (!title.contains("%") || title.contains("%animation") || title.contains("%condition")) return;
+        startupWarn("Belowname text is set to " + title + ", however, the feature cannot display different text on different players " +
                 "due to a minecraft limitation. Placeholders will be parsed for viewing player.");
     }
 }
