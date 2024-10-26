@@ -57,8 +57,9 @@ public class FabricPlatform implements BackendPlatform {
 
                     TabPlayer player = ctx.hasPlayer() ? TAB.getInstance().getPlayer(ctx.player().getUUID()) : null;
 
-                    manager.addUsedPlaceholder(arg, manager);
-                    return PlaceholderResult.value(manager.getPlaceholder("%"+arg+"%").getLastValue(player));
+                    String placeholder = "%"+arg+"%";
+                    manager.addUsedPlaceholder(placeholder, manager);
+                    return PlaceholderResult.value(manager.getPlaceholder(placeholder).getLastValue(player));
                 }
         );
 
