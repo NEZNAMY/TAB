@@ -31,7 +31,7 @@ public class UpdatePlaceholder implements IncomingMessage {
             if (other != null) { // Backend player did not connect via this proxy if null
                 ((RelationalPlaceholder)placeholder).updateValue(player, other, value);
             }
-        } else {
+        } else if (placeholder instanceof PlayerPlaceholder) {
             ((PlayerPlaceholder)placeholder).updateValue(player, value);
         }
     }
