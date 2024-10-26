@@ -404,6 +404,9 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     @Override
     @NotNull
     public synchronized TabPlaceholder getPlaceholder(@NonNull String identifier) {
+        if (identifier.charAt(0) != '%' || identifier.charAt(identifier.length() - 1) != '%') {
+            throw new IllegalArgumentException("Placeholder identifier must start and end with %");
+        }
         TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
         if (p == null) {
             TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
