@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation(projects.shared)
-    implementation("org.bstats:bstats-sponge:3.0.1")
+    implementation("org.bstats:bstats-sponge:3.1.0")
 }
 
 sponge {
