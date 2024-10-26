@@ -53,12 +53,12 @@ public class RGBUtils {
                 //{#RRGGBB>}text{#RRGGBB<}
                 new CMIGradient(),
                 //<#RRGGBB>Text</#RRGGBB>
-                new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>"),
-                        Pattern.compile("<#[0-9a-fA-F]{6}\\|.>[^<]*</#[0-9a-fA-F]{6}>"),
+                new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>.*?</#[0-9a-fA-F]{6}>"),
+                        Pattern.compile("<#[0-9a-fA-F]{6}\\|.>.*?</#[0-9a-fA-F]{6}>"),
                         "<#", 9, 2, 9, 7),
                 //<$#RRGGBB>Text<$#RRGGBB>
-                new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>[^<]*<\\$#[0-9a-fA-F]{6}>"),
-                        Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>[^<]*<\\$#[0-9a-fA-F]{6}>"),
+                new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>.*?<\\$#[0-9a-fA-F]{6}>"),
+                        Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>.*?<\\$#[0-9a-fA-F]{6}>"),
                         "<$", 10, 3, 10, 7),
                 new NexEngineGradient()
         };
