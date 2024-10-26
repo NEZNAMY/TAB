@@ -1,5 +1,8 @@
 package me.neznamy.tab.platforms.fabric;
 
+import eu.pb4.placeholders.api.PlaceholderContext;
+import eu.pb4.placeholders.api.PlaceholderResult;
+import eu.pb4.placeholders.api.Placeholders;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -10,6 +13,7 @@ import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
@@ -20,6 +24,7 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +48,38 @@ public class FabricPlatform implements BackendPlatform {
     private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(FabricTAB.minecraftVersion);
 
     @Override
+    public void registerPlaceholders() {
+        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        Placeholders.register(
+                ResourceLocation.fromNamespaceAndPath(TabConstants.PLUGIN_ID, "placeholder"),
+                (ctx, arg) -> {
+                    if (arg == null) return PlaceholderResult.invalid("No placeholder!");
+
+                    TabPlayer player = ctx.hasPlayer() ? TAB.getInstance().getPlayer(ctx.player().getUUID()) : null;
+
+                    manager.addUsedPlaceholder(arg, manager);
+                    return PlaceholderResult.value(manager.getPlaceholder("%"+arg+"%").getLastValue(player));
+                }
+        );
+
+        BackendPlatform.super.registerPlaceholders();
+    }
+
+    @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
-        registerDummyPlaceholder(identifier);
+        if (!FabricLoader.getInstance().isModLoaded("placeholder-api")) {
+            registerDummyPlaceholder(identifier);
+            return;
+        }
+
+        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        int refresh = manager.getRefreshInterval(identifier);
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh,
+                p -> Placeholders.parseText(
+                            FabricMultiVersion.newTextComponent(identifier),
+                            PlaceholderContext.of((ServerPlayer) p.getPlayer())
+                        ).getString()
+        );
     }
 
     @Override
