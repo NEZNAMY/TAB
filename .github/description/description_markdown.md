@@ -1,6 +1,8 @@
-# About
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_About.png)
 TAB is an all-in-one plugin for displaying information in various places, which aims to outperform all similar plugins in terms of features, compatibility and performance.
-The compact configuration allows you to get the plugin to work the way you want regardless of how simple or complex you want it to be or how experienced you are. Default configuration already contains useful values and examples to give you a better understanding and get you started quickly with instant results. The extensive wiki answers any and all of your questions.
+The compact configuration allows you to get the plugin to work the way you want regardless of how simple or complex you want it to be or how experienced you are. 
+Default configuration already contains useful values and examples to give you a better understanding and get you started quickly with instant results. 
+The extensive [wiki](https://github.com/NEZNAMY/TAB/wiki) answers any and all of your questions.
 
 ![https://img.shields.io/badge/Release-5.0.1-blue.svg](https://img.shields.io/badge/Release-5.0.1-blue.svg)  
 ![https://img.shields.io/badge/Minecraft-1.5%20--%201.21.3-blue.svg](https://img.shields.io/badge/Minecraft-1.5%20--%201.21.3-blue.svg)  
@@ -9,10 +11,11 @@ The compact configuration allows you to get the plugin to work the way you want 
 [![https://img.shields.io/github/issues/neznamy/tab?label=Issues](https://img.shields.io/github/issues/neznamy/tab?label=Issues)](https://github.com/NEZNAMY/TAB/issues)  
 [![https://img.shields.io/badge/Documentation-Wiki-yellow.svg](https://img.shields.io/badge/Documentation-Wiki-yellow.svg)](https://github.com/NEZNAMY/TAB/wiki)
 
-# Support
+# Discord?
 Official support by me is no longer provided to free users due to limited time and extreme inefficiency (see [provided services]([https://github.com/NEZNAMY/TAB?tab=readme-ov-file#provided-services](https://github.com/NEZNAMY/TAB?tab=readme-ov-file#provided-services)) for more info).
-However, you can join this [fresh new community discord]([https://discord.gg/YPqXt63YQj](https://discord.gg/YPqXt63YQj)) made by a nice person who promises to help everyone with all plugins, including TAB.
-
+However, you can join this [fresh new community discord]([https://discord.gg/YPqXt63YQj](https://discord.gg/YPqXt63YQj)) made by a nice person who promises to help everyone with all plugins, including TAB.  
+  
+Before you consider requiring assistance, check out the [wiki](https://github.com/NEZNAMY/TAB/wiki) first. It will answer any questions you may have and is also constantly getting improved.
 
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Features.png)
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_HeaderFooter.png)  
@@ -23,6 +26,7 @@ However, you can join this [fresh new community discord]([https://discord.gg/YPq
 
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_NameTags.png)
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_NameTags.png)
+* Configurable prefix and suffix
 * Per-world / per-server support
 * Per-group / per-player support
 * Disable if a specified condition is met
@@ -43,21 +47,21 @@ However, you can join this [fresh new community discord]([https://discord.gg/YPq
 
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_TablistFormatting.png)  
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_TablistFormatting.png)
-* Configure prefix, name and suffix
+* Configurable prefix, name and suffix
 * Per-world / per-server support
 * Per-group / per-player support
 * Disable if a specified condition is met
 * Anti-override to prevent other plugins from overriding this one
 
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_PlayerlistObjective.png)  
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveNumber.png)  
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveHealth.png)  
-This feature allows you to display a number or hearts in the tablist.
-* Display value of any numeric placeholder
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_PlayerlistObjective.png)
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveNumber.png)
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveHealth.png)
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveFancy.png)
+* Display value of any numeric placeholder or hearts
+* Display any text on 1.20.3+
 * Disable if a specified condition is met
-* Use hearts display type if health placeholder is used
 
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Belowname.png)  
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Belowname.png)
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_BelownameComparison.png)
 * Display value of any numeric placeholder (<1.20.3) or any text (1.20.3+)
 * Configurable text
@@ -72,7 +76,7 @@ This feature allows you to display a number or hearts in the tablist.
 * Option to remember toggle choice between logins
 
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_GlobalPlayerlist.png)
-* Display players from all servers on a BungeeCord network in tablist
+* Display players from all servers on a proxy network in tablist
 * Configurable server groups to share playerlist instead of with all servers
 * Ability to create isolated servers
 * Servers where people will see everyone
@@ -81,14 +85,13 @@ This feature allows you to display a number or hearts in the tablist.
 
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Layout.png)  
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_Layout.png)
-* Customizable tablist slots
-* Static slots with any text
-* Player groups based on conditions
-* Customizable skin for fake slots
+* Customize all 80 tablist slots
+* Create static slots with any text and skin
+* Create player groups based on conditions
 * Multiple layouts based on conditions
 
 ![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Scoreboard.png)  
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_ScoreboardLegacy.png)  
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_ScoreboardComparison.png)  
 * Display up to 15 lines
 * Option to show 0 (or any other static number) in every line instead of 1-15
 * Fully configurable text on right side of lines on 1.20.3+
