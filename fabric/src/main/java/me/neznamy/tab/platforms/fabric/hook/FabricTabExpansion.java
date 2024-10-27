@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * TAB's expansion for PlaceholderAPI
+ * TAB's expansion for Text PlaceholderAPI
  */
 @Getter
 public class FabricTabExpansion implements TabExpansion {
@@ -69,16 +69,15 @@ public class FabricTabExpansion implements TabExpansion {
         });
 
         registerPlaceholder("placeholder", (ctx, arg) -> {
-                    if (arg == null) return PlaceholderResult.invalid("No placeholder!");
+            if (arg == null) return PlaceholderResult.invalid("No placeholder!");
 
-                    TabPlayer player = ctx.hasPlayer() ? TAB.getInstance().getPlayer(ctx.player().getUUID()) : null;
+            TabPlayer player = ctx.hasPlayer() ? TAB.getInstance().getPlayer(ctx.player().getUUID()) : null;
 
-                    String placeholder = "%"+arg+"%";
-                    PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
-                    manager.addUsedPlaceholder(placeholder, manager);
-                    return PlaceholderResult.value(manager.getPlaceholder(placeholder).getLastValue(player));
-                }
-        );
+            String placeholder = "%"+arg+"%";
+            PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+            manager.addUsedPlaceholder(placeholder, manager);
+            return PlaceholderResult.value(manager.getPlaceholder(placeholder).getLastValue(player));
+        });
     }
 
     private void registerPlaceholder(String identifier, PlaceholderHandler handler) {
