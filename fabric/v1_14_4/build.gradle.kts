@@ -8,6 +8,7 @@ repositories {
     maven("https://repo.opencollab.dev/maven-snapshots/")
     maven("https://repo.viaversion.com/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
+    maven("https://maven.nucleoid.xyz/")
 }
 
 dependencies {

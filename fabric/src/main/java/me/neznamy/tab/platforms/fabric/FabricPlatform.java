@@ -1,7 +1,10 @@
 package me.neznamy.tab.platforms.fabric;
 
+import eu.pb4.placeholders.api.PlaceholderContext;
+import eu.pb4.placeholders.api.Placeholders;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -10,6 +13,7 @@ import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.StructuredComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
@@ -44,7 +48,19 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
-        registerDummyPlaceholder(identifier);
+        if (!FabricLoader.getInstance().isModLoaded("placeholder-api")) {
+            registerDummyPlaceholder(identifier);
+            return;
+        }
+
+        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        int refresh = manager.getRefreshInterval(identifier);
+        manager.registerPlayerPlaceholder(identifier, refresh,
+                p -> Placeholders.parseText(
+                            FabricMultiVersion.newTextComponent(identifier),
+                            PlaceholderContext.of((ServerPlayer) p.getPlayer())
+                        ).getString()
+        );
     }
 
     @Override
@@ -68,6 +84,8 @@ public class FabricPlatform implements BackendPlatform {
     @Override
     @NotNull
     public TabExpansion createTabExpansion() {
+        if (FabricLoader.getInstance().isModLoaded("placeholder-api"))
+            return new FabricTabExpansion();
         return new EmptyTabExpansion();
     }
 
