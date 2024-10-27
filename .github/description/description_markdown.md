@@ -53,10 +53,10 @@ Before you consider requiring assistance, check out the [wiki](https://github.co
 * Disable if a specified condition is met
 * Anti-override to prevent other plugins from overriding this one
 
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_PlayerlistObjective.png)
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveNumber.png)
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveHealth.png)
-![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveFancy.png)
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_PlayerlistObjective.png)  
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveNumber.png)  
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveHealth.png)  
+![](https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveFancy.png)  
 * Display value of any numeric placeholder or hearts
 * Display any text on 1.20.3+
 * Disable if a specified condition is met
