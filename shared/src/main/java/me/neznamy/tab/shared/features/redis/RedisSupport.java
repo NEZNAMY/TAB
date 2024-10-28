@@ -62,7 +62,8 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      *          json message to process
      */
     public void processMessage(@NotNull String msg) {
-        TAB.getInstance().getCpu().getProcessingThread().execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+        // Queue the task to make sure it does not execute before load does, causing NPE
+        TAB.getInstance().getCpu().runMeasuredTask(getFeatureName(), CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
             ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
             String proxy = in.readUTF();
             if (proxy.equals(this.proxy.toString())) return; // Message coming from current proxy
@@ -79,7 +80,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             } else {
                 redisMessage.process(this);
             }
-        }, getFeatureName(), CpuUsageCategory.REDIS_BUNGEE_MESSAGE));
+        });
     }
 
     /**
