@@ -31,7 +31,7 @@ public class ConfigurationSection {
         if (map == null) return;
         for (Object mapKey : map.keySet()) {
             if (!validProperties.contains(mapKey.toString())) {
-                startupWarn(String.format("Configuration section \"%s\" has unknown key \"%s\". Valid keys: %s", Arrays.toString(section), mapKey, validProperties));
+                startupWarn(String.format("Configuration section \"%s\" has unknown key \"%s\". Valid keys: %s", String.join(".", section), mapKey, validProperties));
             }
         }
     }
@@ -147,7 +147,7 @@ public class ConfigurationSection {
     }
 
     private <T> T getNullable(@NotNull String[] path, @NotNull Class<T> clazz) {
-        return evaluateNullable(file.getObject(path), Arrays.toString(path), clazz);
+        return evaluateNullable(file.getObject(path), String.join(".", path), clazz);
     }
 
     private <T> T evaluateNullable(@Nullable Object value, @NotNull String path, @NotNull Class<T> clazz) {
@@ -164,7 +164,7 @@ public class ConfigurationSection {
     }
 
     private <T> T getRequired(@NotNull String[] path, @NotNull T defaultValue, @NotNull Class<T> clazz) {
-        return evaluateRequired(file.getObject(path), Arrays.toString(path), defaultValue, clazz);
+        return evaluateRequired(file.getObject(path), String.join(".", path), defaultValue, clazz);
     }
 
     private <T> T evaluateRequired(@Nullable Object value, @NotNull String path, @NotNull T defaultValue, @NotNull Class<T> clazz) {
