@@ -65,7 +65,7 @@ public class PlayerJoin extends RedisMessage {
 
     @Override
     public void process(@NotNull RedisSupport redisSupport) {
-        TAB.getInstance().debug("Processing join of redis player " + decodedPlayer.getName());
+        TAB.getInstance().debug("Processing join of redis player " + decodedPlayer.getName() + " (" + decodedPlayer.getUniqueId() + ")");
         redisSupport.getRedisPlayers().put(decodedPlayer.getUniqueId(), decodedPlayer);
         TAB.getInstance().getFeatureManager().onJoin(decodedPlayer);
     }
