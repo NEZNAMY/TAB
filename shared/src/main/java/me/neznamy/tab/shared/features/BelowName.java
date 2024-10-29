@@ -65,13 +65,13 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.belowNameData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
+        if (redis != null) {
+            redis.registerMessage("belowname", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        }
     }
 
     @Override
     public void load() {
-        if (redis != null) {
-            redis.registerMessage("belowname", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
-        }
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : onlinePlayers.getPlayers()) {

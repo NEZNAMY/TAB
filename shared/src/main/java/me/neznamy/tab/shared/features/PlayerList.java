@@ -60,6 +60,9 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                     }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC), 500
             );
         }
+        if (redis != null) {
+            redis.registerMessage("tabformat", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        }
     }
 
     /**
@@ -154,9 +157,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void load() {
-        if (redis != null) {
-            redis.registerMessage("tabformat", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
-        }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             ((TrackedTabList<?, ?>)all.getTabList()).setAntiOverride(configuration.antiOverride);
             loadProperties(all);

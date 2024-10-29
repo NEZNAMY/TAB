@@ -69,6 +69,9 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.disableCondition), this::onDisableConditionChange, p -> p.playerlistObjectiveData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
+        if (redis != null) {
+            redis.registerMessage("yellow-number", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        }
     }
 
     /**
@@ -99,9 +102,6 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
 
     @Override
     public void load() {
-        if (redis != null) {
-            redis.registerMessage("yellow-number", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
-        }
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : onlinePlayers.getPlayers()) {

@@ -57,13 +57,13 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         collisionManager = new CollisionManager(this);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
+        if (redis != null) {
+            redis.registerMessage("teams", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        }
     }
 
     @Override
     public void load() {
-        if (redis != null) {
-            redis.registerMessage("teams", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
-        }
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         collisionManager.load();
