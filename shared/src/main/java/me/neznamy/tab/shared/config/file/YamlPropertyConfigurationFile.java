@@ -11,7 +11,11 @@ import org.jetbrains.annotations.Nullable;
 
 import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.TAB;
+import org.yaml.snakeyaml.error.YAMLException;
 
+/**
+ * This class represents a configuration file for properties (groups.yml or users.yml).
+ */
 public class YamlPropertyConfigurationFile extends YamlConfigurationFile implements PropertyConfiguration {
 
     private final String PER_SERVER = "per-server";
@@ -20,10 +24,50 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     private final String category;
     private final Collection<String> worldGroups = new ArrayList<>(this.<String, Object>getConfigurationSection(PER_WORLD).keySet());
     private final Collection<String> serverGroups = new ArrayList<>(this.<String, Object>getConfigurationSection(PER_SERVER).keySet());
-    
+
+    /**
+     * Constructs new instance and attempts to load specified configuration file.
+     * If file does not exist, default file is copied from {@code source}.
+     *
+     * @param   source
+     *          Source to copy file from if it does not exist
+     * @param   destination
+     *          File destination to use
+     * @throws  IllegalArgumentException
+     *          if {@code destination} is null
+     * @throws  IllegalStateException
+     *          if file does not exist and source is null
+     * @throws  YAMLException
+     *          if file has invalid YAML syntax
+     * @throws  IOException
+     *          if I/O operation with the file unexpectedly fails
+     */
     public YamlPropertyConfigurationFile(@Nullable InputStream source, @NotNull File destination) throws IOException {
         super(source, destination);
         category = destination.getName().contains("groups") ? "group" : "user";
+        for (Map.Entry<String, Object> entry : getValues().entrySet()) {
+            if (entry.getKey().equals(PER_SERVER)) {
+                for (String server : serverGroups) {
+                    for (String name : this.<String, Object>getConfigurationSection(PER_SERVER + "." + server).keySet()) {
+                        for (String property : this.<String, Object>getConfigurationSection(PER_SERVER + "." + server + "." + name).keySet()) {
+                            checkProperty(destination.getName(), category, name, property, server, null, true);
+                        }
+                    }
+                }
+            } else if (entry.getKey().equals(PER_WORLD)) {
+                for (String world : worldGroups) {
+                    for (String name : this.<String, Object>getConfigurationSection(PER_WORLD + "." + world).keySet()) {
+                        for (String property : this.<String, Object>getConfigurationSection(PER_WORLD + "." + world + "." + name).keySet()) {
+                            checkProperty(destination.getName(), category, name, property, null, world, true);
+                        }
+                    }
+                }
+            } else {
+                for (String property : this.<String, Object>getConfigurationSection(entry.getKey()).keySet()) {
+                    checkProperty(destination.getName(), category, entry.getKey(), property, null, null, true);
+                }
+            }
+        }
     }
 
     @Override

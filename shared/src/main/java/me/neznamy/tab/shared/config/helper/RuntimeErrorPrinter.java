@@ -198,7 +198,7 @@ public class RuntimeErrorPrinter {
      * @param   message
      *          Message to log
      */
-    private void error(@NotNull String message) {
+    public void error(@NotNull String message) {
         TAB.getInstance().getPlatform().logWarn(new SimpleComponent(EnumChatFormat.decolor(message)));
     }
 }

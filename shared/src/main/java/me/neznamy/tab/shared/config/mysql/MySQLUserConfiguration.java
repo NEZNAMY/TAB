@@ -44,6 +44,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     private void setProperty0(@NotNull TabPlayer user, @NotNull String property, @Nullable String server, @Nullable String world, @Nullable String value) {
+        checkProperty("MySQL", "player", user.getName(), property, server, world, false);
         if (world != null) {
             perWorld.computeIfAbsent(world, w -> new WeakHashMap<>()).computeIfAbsent(user, g -> new HashMap<>()).put(property, value);
         } else if (server != null) {

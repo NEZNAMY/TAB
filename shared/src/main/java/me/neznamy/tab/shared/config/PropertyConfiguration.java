@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.config;
 
+import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +12,10 @@ import java.util.stream.Collectors;
  * Implementation is either using file or MySQL, if it's enabled.
  */
 public interface PropertyConfiguration {
+
+    /** List of all valid properties for groups and users */
+    @NotNull
+    List<String> VALID_PROPERTIES = Collections.unmodifiableList(Arrays.asList("tagprefix", "tagsuffix", "tabprefix", "customtabname", "tabsuffix", "header", "footer"));
 
     /**
      * Sets property value of group or user to specified value. If {@code world} or
@@ -146,5 +151,37 @@ public interface PropertyConfiguration {
             return Arrays.asList(string.split("\n"));
         }
         return string;
+    }
+
+    /**
+     * Checks if configured property name is valid. If not, prints a warning.
+     *
+     * @param   source
+     *          Source of the configuration (specific file or MySQL)
+     * @param   type
+     *          Entity type (group / player)
+     * @param   name
+     *          Name of the group or player
+     * @param   property
+     *          Configured property name
+     * @param   server
+     *          Server if this property is only in specified server
+     * @param   world
+     *          World if this property is only in specified world
+     * @param   startupWarn
+     *          Whether the message should be printed as startup warn and counted or not
+     */
+    default void checkProperty(@NotNull String source, @NotNull String type, @NotNull String name, @NotNull String property,
+                               @Nullable String server, @Nullable String world, boolean startupWarn) {
+        if (VALID_PROPERTIES.contains(property)) return;
+        StringBuilder msg = new StringBuilder(String.format("[%s] Unknown property \"%s\" defined for %s \"%s\"", source, property, type, name));
+        if (world != null) msg.append(" in world \"").append(world).append("\"");
+        if (server != null) msg.append(" in server \"").append(server).append("\"");
+        msg.append(". Valid properties: ").append(VALID_PROPERTIES);
+        if (startupWarn) {
+            TAB.getInstance().getConfigHelper().startup().startupWarn(msg.toString());
+        } else {
+            TAB.getInstance().getConfigHelper().runtime().error(msg.toString());
+        }
     }
 }
