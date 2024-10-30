@@ -111,10 +111,13 @@ public class LayoutConfiguration extends ConfigurationSection {
         int slot;
         try {
             slot = Integer.parseInt(array[0]);
+            if (slot < 1 || slot > 80) {
+                startupWarn("Layout " + layoutName + " has invalid fixed slot value \"" + slot + "\" defined. Slots must range between 1 - 80.");
+                return null;
+            }
         } catch (NumberFormatException e) {
             startupWarn("Layout " + layoutName + " has invalid fixed slot defined as \"" + line + "\". Supported values are " +
                     "\"SLOT|TEXT\" and \"SLOT|TEXT|SKIN\", where SLOT is a number from 1 to 80, TEXT is displayed text and SKIN is skin used for the slot");
-
             return null;
         }
         String skin = array.length > 2 ? array[2] : null;
@@ -138,6 +141,14 @@ public class LayoutConfiguration extends ConfigurationSection {
             int from = Integer.parseInt(arr[0]);
             int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
             for (int i = from; i<= to; i++) {
+                if (i < 1 || i > 80) {
+                    startupWarn("Layout " + layout + "'s player group \"" + groupName + "\" has invalid slot value \"" + i + "\" defined. Slots must range between 1 - 80.");
+                    continue;
+                }
+                if (positions.contains(i)) {
+                    startupWarn("Layout " + layout + "'s player group \"" + groupName + "\" has duplicated slot \"" + i + "\".");
+                    continue;
+                }
                 positions.add(i);
             }
         }
