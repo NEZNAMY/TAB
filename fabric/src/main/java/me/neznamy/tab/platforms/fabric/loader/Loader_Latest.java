@@ -73,19 +73,14 @@ public class Loader_Latest implements Loader {
                 color = TextColor.fromRgb(modifier.getColor().getLegacyColor().getRgb());
             }
         }
-
-        return new Style(
-                color,
-                modifier.isBold(),
-                modifier.isItalic(),
-                modifier.isUnderlined(),
-                modifier.isStrikethrough(),
-                modifier.isObfuscated(),
-                null,
-                null,
-                null,
-                modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont())
-        );
+        return Style.EMPTY
+                .withColor(color)
+                .withBold(modifier.isBold())
+                .withItalic(modifier.isItalic())
+                .withUnderlined(modifier.isUnderlined())
+                .withStrikethrough(modifier.isStrikethrough())
+                .withObfuscated(modifier.isObfuscated())
+                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
     }
 
     @Override
@@ -160,7 +155,7 @@ public class Loader_Latest implements Loader {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, nmsData.profileId(), profile.getName());
             }
             updatedList.add(new ClientboundPlayerInfoUpdatePacket.Entry(nmsData.profileId(), profile, nmsData.listed(),
-                    latency, nmsData.gameMode(), displayName, nmsData.listOrder(), nmsData.chatSession()));
+                    latency, nmsData.gameMode(), displayName, nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()));
         }
         packet.entries = updatedList;
     }
@@ -179,6 +174,7 @@ public class Loader_Latest implements Loader {
                 entry.getLatency(),
                 GameType.byId(entry.getGameMode()),
                 entry.getDisplayName(),
+                entry.isShowHat(),
                 entry.getListOrder(),
                 null
         ));
@@ -295,6 +291,7 @@ public class Loader_Latest implements Loader {
             actions.put(TabList.Action.UPDATE_LATENCY, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY));
             actions.put(TabList.Action.UPDATE_LISTED, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED));
             actions.put(TabList.Action.UPDATE_LIST_ORDER, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LIST_ORDER));
+            actions.put(TabList.Action.UPDATE_HAT, EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT));
             return actions;
         }
     }

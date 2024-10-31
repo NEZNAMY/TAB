@@ -35,6 +35,9 @@ public class FabricMultiVersion {
     /** Method loader using latest supported MC version */
     private static final Loader loaderLatest = new Loader_Latest();
 
+    /** Method loader using 1.21.2 - 1.21.3 */
+    private static final Loader loader1_21_3 = createLoader("1_21_3");
+
     /** Method loader using 1.20.3 - 1.21.1 */
     private static final Loader loader1_20_3 = createLoader("1_20_3");
 
@@ -256,7 +259,8 @@ public class FabricMultiVersion {
      *          Received packet
      */
     public static void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) loaderLatest.onPlayerInfo(receiver, packet);
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_4.getNetworkId()) loaderLatest.onPlayerInfo(receiver, packet);
+        else if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) loader1_21_3.onPlayerInfo(receiver, packet);
         else if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) loader1_20_3.onPlayerInfo(receiver, packet);
         else if (serverVersion.getMinorVersion() >= 17) loader1_18_2.onPlayerInfo(receiver, packet);
         else loader1_14_4.onPlayerInfo(receiver, packet);
@@ -273,7 +277,8 @@ public class FabricMultiVersion {
      */
     @NotNull
     public static Packet<?> buildTabListPacket(@NotNull TabList.Action action, @NotNull FabricTabList.Builder builder) {
-        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) return loaderLatest.buildTabListPacket(action, builder);
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_4.getNetworkId()) return loaderLatest.buildTabListPacket(action, builder);
+        if (serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) return loader1_21_3.buildTabListPacket(action, builder);
         if (serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) return loader1_20_3.buildTabListPacket(action, builder);
         if (serverVersion.getMinorVersion() >= 17) return loader1_18_2.buildTabListPacket(action, builder);
         return loader1_14_4.buildTabListPacket(action, builder);

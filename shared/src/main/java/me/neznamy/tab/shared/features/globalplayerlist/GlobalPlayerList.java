@@ -240,7 +240,8 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 configuration.updateLatency ? p.getPing() : 0,
                 gameMode,
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null,
-                0
+                0,
+                true
         );
     }
 
@@ -296,7 +297,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
 
     @NotNull
     private TabList.Entry getEntry(@NotNull RedisPlayer player) {
-        return new TabList.Entry(player.getUniqueId(), player.getNickname(), player.getSkin(), true, 0, 0, player.getTabFormat(), 0);
+        return new TabList.Entry(player.getUniqueId(), player.getNickname(), player.getSkin(), true, 0, 0, player.getTabFormat(), 0, true);
     }
 
     // ------------------

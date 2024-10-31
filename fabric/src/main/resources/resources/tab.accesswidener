@@ -5,9 +5,6 @@ accessible field net/minecraft/network/protocol/game/ClientboundSetObjectivePack
 accessible field net/minecraft/network/protocol/game/ClientboundSetObjectivePacket method I
 accessible field net/minecraft/network/protocol/game/ClientboundSetDisplayObjectivePacket objectiveName Ljava/lang/String;
 
-# Style constructor (1.16+)
-accessible method net/minecraft/network/chat/Style <init> (Lnet/minecraft/network/chat/TextColor;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lnet/minecraft/network/chat/ClickEvent;Lnet/minecraft/network/chat/HoverEvent;Ljava/lang/String;Lnet/minecraft/resources/ResourceLocation;)V
-
 # Team packet (1.17+)
 accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket method I
 accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;

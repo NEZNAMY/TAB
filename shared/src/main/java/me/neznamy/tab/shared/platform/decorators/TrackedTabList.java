@@ -42,7 +42,8 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
     public void addEntry(@NonNull Entry entry) {
         C component = entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName());
         if (antiOverride) expectedDisplayNames.put(entry.getUniqueId(), component);
-        addEntry(entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(), entry.getLatency(), entry.getGameMode(), component, entry.getListOrder());
+        addEntry(entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(), entry.getLatency(),
+                entry.getGameMode(), component, entry.getListOrder(), entry.isShowHat());
         if (player.getVersion().getMinorVersion() == 8) {
             // Compensation for 1.8.0 client sided bug
             updateDisplayName(entry.getUniqueId(), component);
@@ -109,7 +110,9 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
      *          Entry display name
      * @param   listOrder
      *          Entry list order
+     * @param   showHat
+     *          Show hat flag
      */
     public abstract void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                                  boolean listed, int latency, int gameMode, @Nullable C displayName, int listOrder);
+                                  boolean listed, int latency, int gameMode, @Nullable C displayName, int listOrder, boolean showHat);
 }

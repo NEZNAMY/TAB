@@ -74,7 +74,8 @@ public class FixedSlot extends RefreshableFeature {
                 ping,
                 0,
                 cache.get(viewer.layoutData.currentLayout.fixedSlotTexts.get(this).updateAndGet()),
-                Integer.MAX_VALUE - manager.getConfiguration().direction.translateSlot(slot)
+                Integer.MAX_VALUE - manager.getConfiguration().direction.translateSlot(slot),
+                true
         );
     }
 

@@ -74,6 +74,16 @@ public interface TabList {
     void updateListOrder(@NonNull UUID entry, int listOrder);
 
     /**
+     * Updates show hat flag of specified entry (1.21.4+).
+     *
+     * @param   entry
+     *          Entry to update
+     * @param   showHat
+     *          New show hat flag value
+     */
+    void updateHat(@NonNull UUID entry, boolean showHat);
+
+    /**
      * Adds specified entry into the TabList.
      *
      * @param   entry
@@ -124,7 +134,10 @@ public interface TabList {
         UPDATE_DISPLAY_NAME,
 
         /** Updates list order (1.21.2+) */
-        UPDATE_LIST_ORDER
+        UPDATE_LIST_ORDER,
+
+        /** Updates hat flag (1.21.4+) */
+        UPDATE_HAT
     }
 
     /**
@@ -161,6 +174,9 @@ public interface TabList {
 
         /** Player list weight */
         private int listOrder;
+
+        /** Show hat flag */
+        private boolean showHat;
     }
 
     /**

@@ -63,10 +63,15 @@ public class BungeeTabList18 extends BungeeTabList {
     }
 
     @Override
+    public void updateHat(@NonNull UUID entry, boolean showHat) {
+        // Added in 1.21.4
+    }
+
+    @Override
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable BaseComponent displayName, int listOrder) {
+                         int gameMode, @Nullable BaseComponent displayName, int listOrder, boolean showHat) {
         addUuid(id);
-        sendPacket(PlayerListItem.Action.ADD_PLAYER, entryToItem(id, name, skin, listed, latency, gameMode, displayName, listOrder));
+        sendPacket(PlayerListItem.Action.ADD_PLAYER, entryToItem(id, name, skin, listed, latency, gameMode, displayName, listOrder, showHat));
     }
 
     private void sendPacket(@NonNull PlayerListItem.Action action, @NonNull Item item) {

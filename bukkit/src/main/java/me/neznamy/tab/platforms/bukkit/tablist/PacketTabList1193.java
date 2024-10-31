@@ -25,6 +25,7 @@ public class PacketTabList1193 extends PacketTabList18 {
     private static final Map<Action, EnumSet<?>> actionToEnumSet = new EnumMap<>(Action.class);
 
     private static boolean v1_21_2Plus;
+    private static boolean v1_21_4Plus;
 
     private static Enum actionAddPlayer;
     private static Enum actionUpdateDisplayName;
@@ -35,6 +36,7 @@ public class PacketTabList1193 extends PacketTabList18 {
     private static Field PlayerInfoData_UUID;
     private static Field PlayerInfoData_GameMode;
     private static Field PlayerInfoData_Listed;
+    private static Field PlayerInfoData_ShowHat;
     private static Field PlayerInfoData_ListOrder;
     private static Field PlayerInfoData_RemoteChatSession;
 
@@ -74,7 +76,7 @@ public class PacketTabList1193 extends PacketTabList18 {
 
         loadSharedContent(playerInfoDataClass, EnumGamemodeClass);
 
-        PlayerInfoData_Listed = ReflectionUtils.getOnlyField(playerInfoDataClass, boolean.class);
+        PlayerInfoData_Listed = ReflectionUtils.getFields(playerInfoDataClass, boolean.class).get(0);
         PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
         PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
         PlayerInfoData_UUID = ReflectionUtils.getOnlyField(playerInfoDataClass, UUID.class);
@@ -91,10 +93,20 @@ public class PacketTabList1193 extends PacketTabList18 {
         actionToEnumSet.put(Action.UPDATE_LISTED, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_LISTED.name())));
         try {
             actionToEnumSet.put(Action.UPDATE_LIST_ORDER, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_LIST_ORDER.name())));
-            newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
-                    EnumGamemodeClass, IChatBaseComponent, int.class, RemoteChatSession$Data);
             PlayerInfoData_ListOrder = ReflectionUtils.getFields(playerInfoDataClass, int.class).get(1);
             v1_21_2Plus = true;
+            try {
+                // 1.21.4+
+                actionToEnumSet.put(Action.UPDATE_HAT, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_HAT.name())));
+                PlayerInfoData_ShowHat = ReflectionUtils.getFields(playerInfoDataClass, boolean.class).get(1);
+                newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
+                        EnumGamemodeClass, IChatBaseComponent, boolean.class, int.class, RemoteChatSession$Data);
+                v1_21_4Plus = true;
+            } catch (Exception ignored) {
+                // 1.21.2 - 1.21.3
+                newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
+                        EnumGamemodeClass, IChatBaseComponent, int.class, RemoteChatSession$Data);
+            }
         } catch (Exception ignored) {
             // 1.21.1-, should have a better check
             newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
@@ -111,14 +123,22 @@ public class PacketTabList1193 extends PacketTabList18 {
     @Override
     public void updateListed(@NonNull UUID entry, boolean listed) {
         packetSender.sendPacket(player,
-                createPacket(Action.UPDATE_LISTED, entry, "", null, listed, 0, 0, null, 0));
+                createPacket(Action.UPDATE_LISTED, entry, "", null, listed, 0, 0, null, 0, false));
     }
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
         if (player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) {
             packetSender.sendPacket(player,
-                    createPacket(Action.UPDATE_LIST_ORDER, entry, "", null, false, 0, 0, null, listOrder));
+                    createPacket(Action.UPDATE_LIST_ORDER, entry, "", null, false, 0, 0, null, listOrder, false));
+        }
+    }
+
+    @Override
+    public void updateHat(@NonNull UUID entry, boolean showHat) {
+        if (player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_21_4.getNetworkId()) {
+            packetSender.sendPacket(player,
+                    createPacket(Action.UPDATE_HAT, entry, "", null, false, 0, 0, null, 0, showHat));
         }
     }
 
@@ -126,7 +146,7 @@ public class PacketTabList1193 extends PacketTabList18 {
     @NotNull
     @Override
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                               boolean listed, int latency, int gameMode, @Nullable Object displayName, int listOrder) {
+                               boolean listed, int latency, int gameMode, @Nullable Object displayName, int listOrder, boolean showHat) {
         Object packet = newPlayerInfo.newInstance(actionToEnumSet.get(action), Collections.emptyList());
         PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData(
                 id,
@@ -135,6 +155,7 @@ public class PacketTabList1193 extends PacketTabList18 {
                 latency,
                 gameModes[gameMode],
                 displayName,
+                showHat,
                 listOrder,
                 null
         )));
@@ -155,6 +176,7 @@ public class PacketTabList1193 extends PacketTabList18 {
             Object displayName = PlayerInfoData_DisplayName.get(nmsData);
             int latency = PlayerInfoData_Latency.getInt(nmsData);
             int listOrder = v1_21_2Plus ? PlayerInfoData_ListOrder.getInt(nmsData) : 0;
+            boolean showHat = v1_21_4Plus && PlayerInfoData_ShowHat.getBoolean(nmsData);
             if (actions.contains(actionUpdateDisplayName)) {
                 Object expectedName = getExpectedDisplayNames().get(id);
                 if (expectedName != null && expectedName != displayName) {
@@ -180,6 +202,7 @@ public class PacketTabList1193 extends PacketTabList18 {
                     latency,
                     PlayerInfoData_GameMode.get(nmsData),
                     displayName,
+                    showHat,
                     listOrder,
                     PlayerInfoData_RemoteChatSession.get(nmsData)) : nmsData);
         }
@@ -189,11 +212,13 @@ public class PacketTabList1193 extends PacketTabList18 {
     @NotNull
     @SneakyThrows
     private static Object newPlayerInfoData(@NotNull UUID id, @Nullable GameProfile profile, boolean listed, int latency,
-                                            @Nullable Object gameMode, @Nullable Object displayName, int listOrder, @Nullable Object chatSession) {
-        if (v1_21_2Plus) {
-            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName, listOrder, chatSession);
+                                            @Nullable Object gameMode, @Nullable Object displayName, boolean showHat, int listOrder, @Nullable Object chatSession) {
+        if (v1_21_4Plus) {
+            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName, showHat, listOrder, chatSession);
+        } else if (v1_21_2Plus) {
+            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName,          listOrder, chatSession);
         } else {
-            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName,            chatSession);
+            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName,                     chatSession);
         }
     }
 }

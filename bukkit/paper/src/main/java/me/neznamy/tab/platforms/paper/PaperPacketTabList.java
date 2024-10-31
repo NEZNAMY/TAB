@@ -29,11 +29,11 @@ import java.util.*;
 @SuppressWarnings("unused") // Used via reflection
 public class PaperPacketTabList extends TabListBase<Component> {
 
-    private final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateDisplayName = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);
-    private final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateLatency = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY);
-    private final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateGameMode = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE);
-    private final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListed = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED);
-    private final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);
+    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateDisplayName = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);
+    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateLatency = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY);
+    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateGameMode = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE);
+    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListed = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED);
+    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);
 
     private static final Field entries;
 
@@ -94,12 +94,17 @@ public class PaperPacketTabList extends TabListBase<Component> {
     }
 
     @Override
+    public void updateHat(@NonNull UUID entry, boolean showHat) {
+        // TODO update module to 1.21.4 when it comes out
+    }
+
+    @Override
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable Component displayName, int listOrder) {
+                         int gameMode, @Nullable Component displayName, int listOrder, boolean showHat) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(addPlayer, new ClientboundPlayerInfoUpdatePacket.Entry(
                 id, createProfile(id, name, skin), listed, latency, GameType.byId(gameMode), displayName, null
         )));
-        // TODO update module to 1.21.2 when it comes out
+        // TODO update module to 1.21.4 when it comes out
     }
 
     @Override

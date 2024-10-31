@@ -65,8 +65,13 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Text> {
     }
 
     @Override
+    public void updateHat(@NonNull UUID entry, boolean showHat) {
+        // Added in 1.21.4
+    }
+
+    @Override
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable Text displayName, int listOrder) {
+                         int gameMode, @Nullable Text displayName, int listOrder, boolean showHat) {
         GameProfile profile = GameProfile.of(id, name);
         if (skin != null) profile.getPropertyMap().put(TEXTURES_PROPERTY, ProfileProperty.of(
                 TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));

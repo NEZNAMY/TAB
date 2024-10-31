@@ -17,25 +17,30 @@ import java.util.*;
  */
 public class BungeeTabList1193 extends BungeeTabList {
 
-    /** Map of actions to prevent creating new EnumSet on each packet send */
-    private static final Map<Action, EnumSet<PlayerListItemUpdate.Action>> actions = new EnumMap<>(Action.class);
+    private static final EnumSet<PlayerListItemUpdate.Action> updateDisplayName = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME);
+    private static final EnumSet<PlayerListItemUpdate.Action> updateLatency = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY);
+    private static final EnumSet<PlayerListItemUpdate.Action> updateGameMode = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE);
+    private static final EnumSet<PlayerListItemUpdate.Action> updateListed = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LISTED);
+    private static final EnumSet<PlayerListItemUpdate.Action> updateListOrder = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LIST_ORDER);
 
-    private static final EnumSet<PlayerListItemUpdate.Action> allActions = EnumSet.allOf(PlayerListItemUpdate.Action.class);
+    // All actions for 1.19.3 - 1.21.1
+    private static final EnumSet<PlayerListItemUpdate.Action> addPlayer_1_21_1 = EnumSet.of(
+            PlayerListItemUpdate.Action.ADD_PLAYER,
+            PlayerListItemUpdate.Action.UPDATE_GAMEMODE,
+            PlayerListItemUpdate.Action.UPDATE_LISTED,
+            PlayerListItemUpdate.Action.UPDATE_LATENCY,
+            PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME
+    );
 
-    static {
-        // Do not use allOf because <1.21.2 does not support UPDATE_LIST_ORDER
-        actions.put(Action.ADD_PLAYER, EnumSet.of(
-                PlayerListItemUpdate.Action.ADD_PLAYER,
-                PlayerListItemUpdate.Action.UPDATE_GAMEMODE,
-                PlayerListItemUpdate.Action.UPDATE_LISTED,
-                PlayerListItemUpdate.Action.UPDATE_LATENCY,
-                PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME
-        ));
-        actions.put(Action.UPDATE_GAME_MODE, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE));
-        actions.put(Action.UPDATE_DISPLAY_NAME, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME));
-        actions.put(Action.UPDATE_LATENCY, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY));
-        actions.put(Action.UPDATE_LISTED, EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LISTED));
-    }
+    // All actions for 1.21.2 - 1.21.3
+    private static final EnumSet<PlayerListItemUpdate.Action> addPlayer_1_21_2 = EnumSet.of(
+            PlayerListItemUpdate.Action.ADD_PLAYER,
+            PlayerListItemUpdate.Action.UPDATE_GAMEMODE,
+            PlayerListItemUpdate.Action.UPDATE_LISTED,
+            PlayerListItemUpdate.Action.UPDATE_LATENCY,
+            PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME,
+            PlayerListItemUpdate.Action.UPDATE_LIST_ORDER
+    );
 
     /**
      * Constructs new instance with given parameter.
@@ -59,28 +64,28 @@ public class BungeeTabList1193 extends BungeeTabList {
     public void updateDisplayName(@NonNull UUID entry, @Nullable BaseComponent displayName) {
         Item item = item(entry);
         item.setDisplayName(displayName);
-        sendPacket(Action.UPDATE_DISPLAY_NAME, item);
+        sendPacket(updateDisplayName, item);
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
         Item item = item(entry);
         item.setPing(latency);
-        sendPacket(Action.UPDATE_LATENCY, item);
+        sendPacket(updateLatency, item);
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
         Item item = item(entry);
         item.setGamemode(gameMode);
-        sendPacket(Action.UPDATE_GAME_MODE, item);
+        sendPacket(updateGameMode, item);
     }
 
     @Override
     public void updateListed(@NonNull UUID entry, boolean listed) {
         Item item = item(entry);
         item.setListed(listed);
-        sendPacket(Action.UPDATE_LISTED, item);
+        sendPacket(updateListed, item);
     }
 
     @Override
@@ -88,23 +93,25 @@ public class BungeeTabList1193 extends BungeeTabList {
         if (player.getVersion().getNetworkId() < ProtocolVersion.V1_21_2.getNetworkId()) return;
         Item item = item(entry);
         item.setListOrder(listOrder);
-        sendPacket(Action.UPDATE_LIST_ORDER, item);
+        sendPacket(updateListOrder, item);
+    }
+
+    @Override
+    public void updateHat(@NonNull UUID entry, boolean showHat) {
+        //TODO once BungeeCord adds it
     }
 
     @Override
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable BaseComponent displayName, int listOrder) {
+                         int gameMode, @Nullable BaseComponent displayName, int listOrder, boolean showHat) {
         addUuid(id);
-        sendPacket(Action.ADD_PLAYER, entryToItem(id, name, skin, listed, latency, gameMode, displayName, listOrder));
+        sendPacket(player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() ? addPlayer_1_21_2 : addPlayer_1_21_1,
+                entryToItem(id, name, skin, listed, latency, gameMode, displayName, listOrder, showHat));
     }
 
-    private void sendPacket(@NonNull Action action, @NonNull Item item) {
+    private void sendPacket(@NonNull EnumSet<PlayerListItemUpdate.Action> actions, @NonNull Item item) {
         PlayerListItemUpdate packet = new PlayerListItemUpdate();
-        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() && action == Action.ADD_PLAYER) {
-            packet.setActions(allActions);
-        } else {
-            packet.setActions(actions.get(action));
-        }
+        packet.setActions(actions);
         packet.setItems(new Item[]{item});
         player.sendPacket(packet);
     }

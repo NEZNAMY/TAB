@@ -45,7 +45,8 @@ public class PlayerSlot {
                     layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getConfiguration().value : player.getPing(),
                     0,
                     playerList == null || player.tablistData.disabled.get() ? new SimpleComponent(player.getName()) : playerList.getTabFormat(player, viewer),
-                    Integer.MAX_VALUE - layout.getManager().getConfiguration().direction.translateSlot(slot)
+                    Integer.MAX_VALUE - layout.getManager().getConfiguration().direction.translateSlot(slot),
+                    true
             );
         } else {
             data = new TabList.Entry(
@@ -56,7 +57,8 @@ public class PlayerSlot {
                     layout.getManager().getConfiguration().emptySlotPing,
                     0,
                     new SimpleComponent(text),
-                    Integer.MAX_VALUE - layout.getManager().getConfiguration().direction.translateSlot(slot)
+                    Integer.MAX_VALUE - layout.getManager().getConfiguration().direction.translateSlot(slot),
+                    true
             );
         }
         return data;

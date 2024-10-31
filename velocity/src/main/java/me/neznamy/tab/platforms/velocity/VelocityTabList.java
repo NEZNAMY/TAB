@@ -55,12 +55,17 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        // TODO
+        // TODO once velocity adds it
+    }
+
+    @Override
+    public void updateHat(@NonNull UUID entry, boolean showHat) {
+        // TODO once velocity adds it
     }
 
     @Override
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable Component displayName, int listOrder) {
+                         int gameMode, @Nullable Component displayName, int listOrder, boolean showHat) {
         GameProfile profile = new GameProfile(id, name, skin == null ? Collections.emptyList() : Collections.singletonList(
                         new GameProfile.Property(TEXTURES_PROPERTY, skin.getValue(), Objects.requireNonNull(skin.getSignature()))));
         TabListEntry e = TabListEntry.builder()
@@ -71,7 +76,8 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
                 .gameMode(gameMode)
                 .listed(listed)
                 .build();
-        // TODO listOrder
+        // TODO listOrder once velocity adds it
+        // TODO showHat once velocity adds it
 
         // Remove entry because:
         // #1 - If player is 1.8 - 1.19.2, KeyedVelocityTabList#addEntry will throw IllegalArgumentException
