@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * TabList implementation using direct mojang-mapped code for versions 1.20.5+.
+ * TabList implementation using direct mojang-mapped code for versions 1.21.2+.
  */
 @SuppressWarnings("unused") // Used via reflection
 public class PaperPacketTabList extends TabListBase<Component> {
@@ -33,6 +33,7 @@ public class PaperPacketTabList extends TabListBase<Component> {
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateLatency = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateGameMode = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListed = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED);
+    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListOrder = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LIST_ORDER);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);
 
     private static final Field entries;
@@ -63,34 +64,36 @@ public class PaperPacketTabList extends TabListBase<Component> {
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable Component displayName) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateDisplayName, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, null, displayName, null
+                entry, null, false, 0, null, displayName, 0, null
         )));
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateLatency, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, latency, null, null, null
+                entry, null, false, latency, null, null, 0, null
         )));
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateGameMode, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, GameType.byId(gameMode), null, null
+                entry, null, false, 0, GameType.byId(gameMode), null, 0, null
         )));
     }
 
     @Override
     public void updateListed(@NonNull UUID entry, boolean listed) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateListed, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, listed, 0, null, null, null
+                entry, null, listed, 0, null, null, 0, null
         )));
     }
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        // TODO update module to 1.21.2 when it comes out
+        sendPacket(new ClientboundPlayerInfoUpdatePacket(updateListOrder, new ClientboundPlayerInfoUpdatePacket.Entry(
+                entry, null, false, 0, null, null, listOrder, null
+        )));
     }
 
     @Override
@@ -102,7 +105,7 @@ public class PaperPacketTabList extends TabListBase<Component> {
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
                          int gameMode, @Nullable Component displayName, int listOrder, boolean showHat) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(addPlayer, new ClientboundPlayerInfoUpdatePacket.Entry(
-                id, createProfile(id, name, skin), listed, latency, GameType.byId(gameMode), displayName, null
+                id, createProfile(id, name, skin), listed, latency, GameType.byId(gameMode), displayName, listOrder, null
         )));
         // TODO update module to 1.21.4 when it comes out
     }
@@ -141,7 +144,7 @@ public class PaperPacketTabList extends TabListBase<Component> {
                     TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
-                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()
+                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.listOrder(), nmsData.chatSession()
                 ) : nmsData);
             }
             if (rewritePacket) entries.set(info, updatedList);

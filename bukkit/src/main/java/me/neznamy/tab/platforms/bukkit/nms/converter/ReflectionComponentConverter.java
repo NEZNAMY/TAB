@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.nms.converter;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.StructuredComponent;
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -47,7 +45,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
      * @throws  ReflectiveOperationException
      *          If something failed
      */
-    private ReflectionComponentConverter() throws ReflectiveOperationException {
+    public ReflectionComponentConverter() throws ReflectiveOperationException {
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         if (BukkitReflection.getMinorVersion() >= 19) {
             Method IChatBaseComponent_b = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"b", "literal"}, String.class);
@@ -131,28 +129,5 @@ public class ReflectionComponentConverter extends ComponentConverter {
         if (modifier.isUnderlined()) magicCodes.get(3).set(nmsModifier, true);
         if (modifier.isObfuscated()) magicCodes.get(4).set(nmsModifier, true);
         return nmsModifier;
-    }
-
-    /**
-     * Attempts to load component converter.
-     *
-     * @param   serverVersion
-     *          Server version
-     */
-    public static void tryLoad(@NotNull ProtocolVersion serverVersion) {
-        try {
-            boolean versionCheck = EnumSet.of(
-                    ProtocolVersion.V1_20_5,
-                    ProtocolVersion.V1_20_6,
-                    ProtocolVersion.V1_21,
-                    ProtocolVersion.V1_21_1
-            ).contains(serverVersion);
-            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && versionCheck) {
-                INSTANCE = (ComponentConverter) Class.forName("me.neznamy.tab.platforms.paper.PaperComponentConverter").getConstructor().newInstance();
-            } else {
-                INSTANCE = new ReflectionComponentConverter();
-            }
-        } catch (Exception ignored) {
-        }
     }
 }

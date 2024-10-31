@@ -9,11 +9,10 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
-val version = "1.21.1-R0.1-SNAPSHOT"
+val version = "1.21.3-R0.1-SNAPSHOT"
 
 dependencies {
     implementation(projects.bukkit)
-    implementation(projects.shared) // No idea why is this needed when Bukkit already contains it
     paperweight.paperDevBundle(version)
     compileOnly("io.papermc.paper:paper-api:${version}")
 }

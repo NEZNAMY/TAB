@@ -27,6 +27,12 @@ import java.util.UUID;
  */
 public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> {
 
+    /** Versions supported by paper module that uses direct mojang-mapped NMS for latest MC version */
+    private static final EnumSet<ProtocolVersion> paperNativeVersions = EnumSet.of(
+            ProtocolVersion.V1_21_2,
+            ProtocolVersion.V1_21_3
+    );
+
     /** Instance function */
     @Getter
     @Setter
@@ -53,13 +59,7 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
      */
     public static void findInstance(@NotNull ProtocolVersion serverVersion) {
         try {
-            boolean versionCheck = EnumSet.of(
-                    ProtocolVersion.V1_20_5,
-                    ProtocolVersion.V1_20_6,
-                    ProtocolVersion.V1_21,
-                    ProtocolVersion.V1_21_1
-            ).contains(serverVersion);
-            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && versionCheck) {
+            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && paperNativeVersions.contains(serverVersion)) {
                 Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketTabList").getConstructor(BukkitTabPlayer.class);
                 instance = player -> (TabListBase<?>) constructor.newInstance(player);
             } else if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {

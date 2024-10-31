@@ -19,6 +19,16 @@ import java.util.EnumSet;
  */
 public class BukkitPipelineInjector extends NettyPipelineInjector {
 
+    /** Versions supported by paper module that uses direct mojang-mapped NMS for latest MC version */
+    private static final EnumSet<ProtocolVersion> paperNativeVersions = EnumSet.of(
+            ProtocolVersion.V1_20_5,
+            ProtocolVersion.V1_20_6,
+            ProtocolVersion.V1_21,
+            ProtocolVersion.V1_21_1,
+            ProtocolVersion.V1_21_2,
+            ProtocolVersion.V1_21_3
+    );
+
     /** Function for getting player's channel */
     @Setter
     private static FunctionWithException<BukkitTabPlayer, Channel> getChannel;
@@ -40,13 +50,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @SuppressWarnings("unchecked")
     public static void tryLoad(@NotNull ProtocolVersion serverVersion) {
         try {
-            boolean versionCheck = EnumSet.of(
-                    ProtocolVersion.V1_20_5,
-                    ProtocolVersion.V1_20_6,
-                    ProtocolVersion.V1_21,
-                    ProtocolVersion.V1_21_1
-            ).contains(serverVersion);
-            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && versionCheck) {
+            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && paperNativeVersions.contains(serverVersion)) {
                 getChannel = (FunctionWithException<BukkitTabPlayer, Channel>) Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getDeclaredField("getChannel").get(null);
                 return;
             }
