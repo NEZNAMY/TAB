@@ -13,7 +13,6 @@ Installation is as simple as it can be. Put it into plugins folder of your backe
 * Forwarding vanish status for compatibility with global playerlist / layout features​
 * Forward player's world for %world% and per-world settings
 * Allow TAB's PlaceholderAPI expansion with TAB on BungeeCord​
-* Encodes scoreboard packets (if TAB is installed on Velocity, which doesn't offer them)​
 * Forward player's gamemode for spectator fix feature to work
 
 # Compatibility

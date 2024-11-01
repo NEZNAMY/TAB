@@ -92,17 +92,11 @@ Full list of placeholders:
 | %tab_tagprefix% | Current tagprefix with replaced placeholders |
 | %tab_tagsuffix% | Current tagsuffix with replaced placeholders |
 | %tab_customtabname% | Current customtabname with replaced placeholders |
-| %tab_customtagname% | Current customtagname with replaced placeholders |
-| %tab_belowname% | Current belowname with replaced placeholders |
-| %tab_abovename% | Current abovename with replaced placeholders |
 | %tab_tabprefix_raw% | Raw tabprefix containing unparsed placeholders |
 | %tab_tabsuffix_raw% | Raw tabsuffix containing unparsed placeholders |
 | %tab_tagprefix_raw% | Raw tagprefix containing unparsed placeholders |
 | %tab_tagsuffix_raw% | Raw tagsuffix containing unparsed placeholders |
 | %tab_customtabname_raw% | Raw customtabname containing unparsed placeholders |
-| %tab_customtagname_raw% | Raw customtagname containing unparsed placeholders |
-| %tab_belowname_raw% | Raw belowname containing unparsed placeholders |
-| %tab_abovename_raw% | Raw abovename containing unparsed placeholders |
 | %tab_scoreboard_name% | Returns name of player's currently displayed scoreboard or empty string if none is displayed due to no display condition being met |
 | %tab_scoreboard_visible% | "Enabled" if visible, "Disabled" if not |
 | %tab_bossbar_visible% | "Enabled" if visible, "Disabled" if not |

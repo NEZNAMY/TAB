@@ -138,4 +138,4 @@ placeholder-output-replacements:
     "51-100": "&e%ping%"
     "else": "&c%ping%"
 ```
-Keep in mind that now the placeholder will no longer return just a number, which breaks features like [Yellow Number](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Yellow-number), which require a numeric input. If you want that feature and ping to be displayed there, replacements won't work for you and you'll need to use [Conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) instead to achieve colored ping.
+Keep in mind that now the placeholder will no longer return just a number, which can break features like [Playerlist Objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective), which require a numeric input (for versions prior to 1.20.3). If you want that feature and ping to be displayed there, replacements won't work for you and you'll need to use [Conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) instead to achieve colored ping.

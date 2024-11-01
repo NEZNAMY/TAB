@@ -9,8 +9,9 @@ The usage can be checked at any time using [**/tab cpu**](https://github.com/NEZ
 * [#5 - [All platforms] Disable tablist name formatting](#5---all-platforms-disable-tablist-name-formatting)
 * [#6 - [All platforms] Increase permission refresh interval](#6---all-platforms-increase-permission-refresh-interval)
 * [#7 - [BungeeCord / Velocity] Disable TAB expansion](#7---bungeecord--velocity-disable-tab-expansion)
-* [#8 - [BungeeCord] Disable ByteBuf deserialization](#8---bungeecord-disable-bytebuf-deserialization)
-* [#9 - [Velocity] Disable header/footer translation](#9---velocity-disable-headerfooter-translation)
+* [#8 - [BungeeCord / Velocity] Disable update-latency option in global playerlist](#8---bungeecord--velocity-disable-update-latency-option-in-global-playerlist)
+* [#9 - [BungeeCord] Disable ByteBuf deserialization](#9---bungeecord-disable-bytebuf-deserialization)
+* [#10 - [Velocity] Disable header/footer translation](#10---velocity-disable-headerfooter-translation)
 
 # #1 - [All platforms] Static text instead of placeholders
 Static text doesn't need to be refreshed periorically, resulting in better performance. Some placeholders can be replaced with static text, such as placeholder for max player counts, since that value doesn't change at runtime. Another option is to configure prefixes per-group in config instead of using placeholders to take those values from permission plugin.
@@ -81,8 +82,10 @@ Disabling TAB's PlaceholderAPI expansion if you don't use it improves performanc
 placeholders:
   register-tab-expansion: false
 ```
+# #8 - [BungeeCord / Velocity] Disable update-latency option in global playerlist
+When [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) is enabled, you can enable / disable [update-latency](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist#:~:text=other%20unlisted%20servers.-,update%2Dlatency,-false) option (open the link for detailed description of the option). Disabling this option massively improves performance.
 
-# #8 - [BungeeCord] Disable ByteBuf deserialization
+# #9 - [BungeeCord] Disable ByteBuf deserialization
 In order for anti-override to work properly, some packets must be manually deserialized due to BungeeCord not doing it. If you don't need it, you can disable those functions, which will also disable the deserialization completely. To do so, you must disable 2 functions (only having 1 disabled is not enough):  
 #1 - Anti-override for teams
 ```
@@ -92,13 +95,9 @@ scoreboard-teams:
 Whether you need anti-override or not depends on configuration of your plugins. The easiest way is to have it enabled and see if you get `anti-override.log` file in TAB folder. If you don't, you don't need it. If you do, you'll need to do some configuring. [Here](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#additional-note-3---compatibility-issues-with-other-plugins) are a few examples of software and their team names, which you may find helpful.
 
 #2 - Scoreboard detection of other plugins
-```
-scoreboard:
-  respect-other-plugins: false
-```
-TAB checks for packets sent by other plugins and if another plugin sends a scoreboard, TAB hides its own and resends it after the other plugin removes it. If you don't use scoreboard feature, this option is naturally disabled. If you do, but don't need compatibility with other plugins, you can disable this option.
+TAB checks for packets sent by other plugins and if another plugin sends a scoreboard, TAB hides its own and resends it after the other plugin removes it. This check cannot be disabled if scoreboard is enabled.
 
-# #9 - [Velocity] Disable header/footer translation
+# #10 - [Velocity] Disable header/footer translation
 Velocity offers header/footer translation of translatable components, however, TAB does not use these. Despite that, attempts to "translate" it are still there, causing the whole feature to use up to 3x more CPU than it would without it. There is no way to disable this inside Velocit itself, however, there is a third party [fork](https://github.com/GemstoneGG/Velocity-CTD/) that offers it.  
 **Use at your own risk**.  
 After installing, default velocity.toml file will contain `translate-header-footer = true` option. If just upgrading, you will need to add it there yourself. Setting it to `false` will disable this function.

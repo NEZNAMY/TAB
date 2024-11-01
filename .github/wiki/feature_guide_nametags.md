@@ -13,6 +13,7 @@
   * [Additional note 2 - Prefix/suffix on pets](#additional-note-2---prefixsuffix-on-pets)
   * [Additional note 3 - Changing name itself](#additional-note-3---changing-name-itself)
   * [Additional note 4 - F1 view](#additional-note-4---f1-view)
+  * [Additional note 5 - Transparent players](#additional-note-5---transparent-players)
 * [API](#api)
   * [Changing prefix and suffix](#changing-prefix-and-suffix)
   * [Collision](#collision)
@@ -149,6 +150,16 @@ Teams do not allow to change the nametag name itself. Changing name is a complic
 
 ## Additional note 4 - F1 view
 Using teams causes player nametags to remain visible when using F1 view. This cannot be avoided by the plugin in any way. The only possible solution would be to modify the client.
+
+## Additional note 5 - Transparent players
+Minecraft teams have an option to show players in the same team transparent (partially invisible). This requires both players (viewer and target) to be in the same team. As such, this effect is impossible to achieve with TAB, because it puts every player into a different team to properly sort players and give them different prefix/suffix in nametag (and more, such as collision and nametag visibility).
+
+If you want this effect, the only way is to use another plugin that offers this and disable TAB's teams entirely by setting
+```
+scoreboard-teams:
+  enabled: false
+```
+in config.yml. Keep in mind you'll not be able to use any team features if you do so.
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*

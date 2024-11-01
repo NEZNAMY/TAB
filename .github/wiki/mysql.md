@@ -16,7 +16,7 @@ playerdata.yml file (for toggling scoreboard/bossbar and remembering decision) i
 All tables from TAB are prefixed with `tab_`, currently `tab_groups` for groups and `tab_users` for users.
 
 # Availability
-Before attempting to use the function, make sure your server software has an integrated MySQL driver. TAB does not contain it by itself. See compatibility matrix below for current information about compatibility:
+Before attempting to use the function, make sure your server software has an integrated MySQL driver. TAB does not contain it by itself. See compatibility table below for current information about compatibility:
 
 | Platform | Available |
 | ------------- | ------------- |

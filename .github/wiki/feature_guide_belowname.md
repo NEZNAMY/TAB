@@ -4,10 +4,14 @@
 * [Additional info](#additional-info)
   * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
   * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
+  * [Additional note 3 - Visible on NPCs](#additional-note-3---visible-on-npcs)
 * [Tips & Tricks](#tips--tricks)
   * [Tip 1 - Heart symbol](#tip-1---heart-symbol)
   * [Tip 2 - Displaying health as 0-10 or in %](#tip-2---displaying-health-as-0-10-or-in-)
 * [Limitations](#limitations)
+* [Examples](#examples)
+  * [Example 1 - Per-world values](#example-1---per-world-values)
+  * [Example 2 - Hiding `text` for 1.20.3+ players](#example-2---hiding-text-for-1203-players)
 
 # About
 The scoreboard objective with BELOW_NAME display slot that adds another line of text below nametag of players. It is only visible on players within 8 block range. This value is client sided and cannot be changed by the plugin.  
@@ -38,6 +42,17 @@ The minecraft feature is programmed to be affected by nametag visibility rule. T
 ## Additional note 2 - Hidden on sneak on 1.8
 Belowname is not visible on 1.8.x clients when player is sneaking. This is client-sided behavior and cannot be changed by the server.
 
+## Additional note 3 - Visible on NPCs
+Belowname objective is automatically attached to all entities of player type with the default value of `0` (<1.20.3) or value configured as `fancy-display-default` (1.20.3+). This includes player NPCs.
+
+There is currently only 1 way to make them not visible on NPCs. From [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule) we know that belowname is not visible if player's nametag is invisible. NPC plugin can take advantage of this by using teams to hide the original name and display a hologram instead.
+
+This is how you can achieve it using the following popular NPC plugins:
+* **Citizens**:
+  * 1 - Select the NPC (`/npc select <ID>` or `/npc select` to select the nearest NPC)
+  * 2 - Hide its original nametag (which also hides belowname) using `/npc name`
+  * 3 - Display your desired text using `/npc hologram add <text>` ([more info](https://wiki.citizensnpcs.co/Commands#:~:text=the%20NPC%20hitbox-,/npc%20hologram,-add%20%5Btext%5D%20%7C%20set))
+
 # Tips & Tricks
 ## Tip 1 - Heart symbol
 If you want to show health of players and display a heart symbol as text, you can use this one: `❤`. Make sure you [save config in UTF-8 encoding](https://github.com/NEZNAMY/TAB/wiki/How-to-save-the-config-in-UTF8-encoding) so it's loaded correctly.
@@ -55,4 +70,49 @@ If you want health to display health as 0-10 instead of 0-20, you can achieve it
 * The format is a **[score] + space + shared text**, where [score] is either a white number (1.20.2-) or any text (1.20.3+).
 * The text is same on all players, therefore cannot be personalized (such as player's faction). Only the [score] can be per-player.
 * It appears on all entites of player type. **This includes player NPCs.**
-* Text length is limited to 32 characters on <1.13  
+* Text length is limited to 32 characters on <1.13
+
+# Examples
+## Example 1 - Per-world values
+This feature doesn't directly support per-world values or similar. However, this can be achieved with conditions. Let's make `fancy-display-players` conditional based on world. Let's make an example with 3 worlds. Check if player is in world `world1`, then show one text. If not, check if player is in world `world2`, then show another text. If not, show final text. This can be achieved by chaining 2 conditions:
+```
+conditions:
+  belowname1:
+    conditions:
+    - "%world%=world1"
+    true: "Text to display in world world1" # Player is in world world1, display the text
+    false: "%condition:belowname2%" # Player is not in world world1, check another condition
+  belowname2:
+    conditions:
+    - "%world%=world2"
+    true: "Text to display in world world2" # Player is in world world2, display the text
+    false: "Text to display in other worlds" # Player is not in any of the 2 worlds
+```
+**WARNING: DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG! INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE, HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!!!**
+
+Finally, use this condition as value in `fancy-display-players`:
+```
+belowname-objective:
+  fancy-display-players: "%condition:belowname1%"
+```
+If you are under 1.20.3 and want to make `number` and `text` conditional, create 2 condition chains, one for each value and use them.
+
+*Note: This is just an example, the plugin is not limited to displaying different values only per world. If you want per server values on BungeeCord, use %server% with server names. If you want worldguard regions, use %worldguard_region_name% with region names. This works for any placeholder offered by the plugin or by PlaceholderAPI.*
+
+## Example 2 - Hiding `text` for 1.20.3+ players
+1.20.3 has replaced `number` field, which is limited to a white number with value configurable as `fancy-display-players`, which has no limits. However, `text` field is still visible on 1.20.3+. If you support both version ranges and want to make the best out of the new functionality, you might want to not show `text` to 1.20.3+ players anymore, since you can fully customize the text you want to display in `fancy-display-players`.
+
+First, let's remind outselves what `text` *actually* is. It is actually called scoreboard title. Yes, just like the one on top of sidebar, just displayed elsewhere. This is why it displays on all players and placeholders are parsed for the viewing player. With this knowledge, all we need to do is check for player's version and only show something for <1.20.3. For this, we will use `%player-version-id%` placeholder, which returns network protocol version of player's game version, which can then be compared to.
+```
+conditions:
+  version:
+    - "%player-version-id%>=765" # 1.20.3 is 765
+  true: "" # Show empty value for 1.20.3+
+  false: "Some text to display"
+```
+**WARNING: DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG! INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE, HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!!!**
+```
+belowname-objective:
+  text: "%condition:version%"
+```
+Unfortunately, due to the limitations of this feature, there is a forced space between `number`/`fancy-display-players` and `text`, even if the `text` is empty. You'll either need to live with it, or put some shared text there to avoid having a space at the end.  

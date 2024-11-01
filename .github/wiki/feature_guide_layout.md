@@ -13,6 +13,7 @@
   * [Additional note 2 - Global playerlist incompatibility](#additional-note-2---global-playerlist-incompatibility)
   * [Additional note 3 - Entries in chat complete [1.19.3 - 1.21.1]](#additional-note-3---entries-in-chat-complete-1193---1211)
   * [Additional note 4 - Per world playerlist incompatibility](#additional-note-4---per-world-playerlist-incompatibility)
+  * [Additional note 5 - Second layer of skin missing](#additional-note-5---second-layer-of-skin-missing)
 * [Examples](#examples)
   * [Example 1 - Per-server columns](#example-1---per-server-columns)
 
@@ -137,7 +138,7 @@ Yellow: 1307755006
 | direction | COLUMNS | Defines direction of slots. Options are COLUMNS (top to bottom, left to right) and ROWS (left to right, top to bottom). This does not only change the slot numbers in configuration, but will also affect the way players are being filled into player groups. |
 | enable-remaining-players-text | true | When enabled, the last slot of player group will show how many more players there are, instead of using the last slot for one more player. |
 | remaining-players-text | "... and %s more" | Text to show if option above is enabled. |
-| default-skin | "mineskin:1753261242" | Default skin to display for fixed slots that do not define a skin, empty slots and fixed slots with invalid skin. |
+| default-skin | "mineskin:383747683" | Default skin to display for fixed slots that do not define a skin, empty slots and fixed slots with invalid skin. |
 | empty-slot-ping-value | 1000 | Ping value to use for fixed slots and empty slots. The ping intervals for bars are client sided and are as following: <br />- Negative value: ✖ <br />- 0 - 149: 5 bars <br />- 150 - 299: 4 bars <br />- 300 - 599: 3 bars <br />- 600 - 999: 2 bars <br />- 1000+: 1 bar |
 
 ![image](https://user-images.githubusercontent.com/6338394/179363352-40f815d4-fc37-4ca1-8056-298488e84a60.png)
@@ -156,8 +157,7 @@ Layout feature is capable of working with all online players connected to the se
 
 ## Additional note 3 - Entries in chat complete [1.19.3 - 1.21.1]
 Since 1.19.3 until 1.21.1 (inclusive), entries will also appear in chat complete. The mechanic used to hide them on <1.19.3 can no longer be used since 1.19.3. 1.21.2 has added a new way of sorting players, which is being taken advantage of to restore empty chat complete.  
-**Note**: In order to hide entries from chat complete on 1.21.2+, the server also has to be 1.21.2+ so it can send new content to the players (having TAB installed on proxy counts as using latest version).  
-**Note 2**: The 1.21.2+ improvement was added in [dev builds](https://github.com/NEZNAMY/TAB/actions) (v5) and will not be added into v4.
+**Note**: In order to hide entries from chat complete on 1.21.2+, the server also has to be 1.21.2+ so it can send new content to the players (having TAB installed on proxy counts as using latest version).
 
 ## Additional note 4 - Per world playerlist incompatibility
 Layout works by adding 80 fake players into the tablist, pushing real player entries out of view. Because of this, when using [per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist), the feature will only hide the real players, which are outside of tablist and not visible anyway and not touch the layout entries. However, you can replicate the same effect using layout feature itself, using conditions.
@@ -210,13 +210,16 @@ You can also replicate "ignore-effect-in-worlds" by creating a layout with condi
 ```
 </details>
 
+## Additional note 5 - Second layer of skin missing
+Layout works by creating 80 fake entries, pushing real players out of the tablist. Unfortunately, players must be spawned around the player viewing the tablist in order to see second layer of their skin. Since those fake entries you see are not the actual players and aren't spawned, as a result, you won't see second layer of skin of players. This can only be fixed by actually letting the real entries display in the tablist, which would require a rework of the feature, which is not planned.
+
 # Examples
 ## Example 1 - Per-server columns
 ```
 layout:
   enabled: true
   direction: COLUMNS
-  default-skin: mineskin:1753261242
+  default-skin: mineskin:383747683
   enable-remaining-players-text: true
   remaining-players-text: '... and %s more'
   empty-slot-ping-value: 1000

@@ -28,18 +28,18 @@ It is compiled with Java 8 and therefore supports any version of 8 and above.
         <tr>
             <td rowspan=2>Vanilla</td>
             <td rowspan=1><a href="https://getbukkit.org/">Bukkit</a> (+forge hybrids)</td>
-            <td>✔ (1.5 - 1.21.1)</td>
+            <td>✔ (1.5 - 1.21.3)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>
-            <td>✔ (1.9<sup>1</sup> - 1.20.4)</td>
+            <td>✔ (1.9<sup>1</sup> - 1.21.3)</td>
         </tr>
     </tbody>
     <tbody>
         <tr>
             <td rowspan=2>Modded</td>
             <td rowspan=1><a href="https://fabricmc.net">Fabric</a></td>
-            <td>✔ (1.14.4 - 1.21.1)</td>
+            <td>✔ (1.14 - 1.21.3)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://minecraftforge.net">Forge</a></td>
@@ -68,15 +68,15 @@ It is compiled with Java 8 and therefore supports any version of 8 and above.
 # Supported features per platform
 | Feature \ Platform | Bukkit / Hybrid | Sponge | Fabric | BungeeCord | Velocity |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname) | ✔ | ✔ | ✔ | ✔ | ✔ (via [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)) |
+| [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname) | ✔ | ✔ | ✔ | ✔ | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
 | [BossBar](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar) | ✔ | ✔ | ✔ | ✔ (1.9+) | ✔ (1.9+) |
 | [Global Playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) | ❌ | ❌ | ❌ | ✔ | ✔ |
 | [Header/Footer](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer) | ✔ | ✔ | ✔ | ✔ | ✔ |
 | [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) | ✔ | ✔ | ✔ | ✔ | ✔ |
-| [Nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) & [Sorting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist) | ✔ |  ❗ | ✔ | ✔ | ✔ (via [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)) |
+| [Nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) & [Sorting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist) | ✔ |  ❗ | ✔ | ✔ | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
 | [Per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist) | ✔ | ❌ | ❌ | ❌ | ❌ |
-| [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective) | ✔ | ✔ | ✔ | ✔ | ✔ (via [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)) |
-| [Scoreboard](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard) | ✔ | ❗ | ✔ | ✔ | ❗ (via [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)) |
+| [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective) | ✔ | ✔ | ✔ | ✔ | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
+| [Scoreboard](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard) | ✔ | ❗ | ✔ | ✔ | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
 | [Spectator fix](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix) | ✔ | ✔ | ✔ | ✔ | ✔ |
 | [Tablist names](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting) | ✔ | ✔ | ✔ | ✔ | ✔ |
 
@@ -109,7 +109,8 @@ In order to enhance user experience, TAB hooks into other plugins for better exp
 
 ## Velocity
 [**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PV's vanish levels instead of using a basic vanish compatibility system.  
-[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) - Communicating with other proxies to properly display visuals on players on another proxy.
+[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) - Communicating with other proxies to properly display visuals on players on another proxy.  
+[**VelocityScoreboardAPI**](https://github.com/NEZNAMY/VelocityScoreboardAPI) - Sending scoreboard packets (scoreboard-teams, belowname-objective, playerlist-objective, scoreboard)
 
 # Compatibility issues
 * **Glow plugins** will fail to apply glow color correctly. Check [How to make the plugin compatible with glow plugins](https://github.com/NEZNAMY/TAB/wiki/How-to-make-TAB-compatible-with-glow-plugins) for more information.

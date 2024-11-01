@@ -5,7 +5,6 @@ Combine the knowledge gathered by reading the wiki to get interesting results, m
 * [Showing player version in tablist](#showing-player-version-in-tablist)
 * [Replicating Purpur's TPSBar](#replicating-purpurs-tpsbar)
 * [BedWars1058 compatibility](#bedwars1058-compatibility)
-* [Moving nametag when player wears a hat](#moving-nametag-when-player-wears-a-hat)
 * [Displaying AFK status in tablist](#displaying-afk-status-in-tablist)
 * [Showing combined online player count from multiple servers](#showing-combined-online-player-count-from-multiple-servers)
   * [Option 1 - Using global playerlist](#option-1---using-global-playerlist)
@@ -130,98 +129,6 @@ conditions:
     no: "%bw1058_player_team%"
 ```
 And then do `/tab group _DEFAULT_ tabprefix %condition:rankOrTeam%` and `/tab group _DEFAULT_ tagprefix %condition:rankOrTeam%` so it shows in your nametag and in your tablist name.
-
-# Moving nametag when player wears a hat
-Unfortunately, there is no simple solution to this problem. We are going to use conditions with [unlimited nametag mode](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Unlimited-nametag-mode) to reach our results.
-
-First, enable [unlimited nametag mode](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Unlimited-nametag-mode) by setting
-```
-scoreboard-teams:
-  enabled: true
-  unlimited-nametag-mode:
-    enabled: true
-```
-in config.yml.
-
-Second, define static lines, which will be used in case player has a hat. Let's make them 1 block higher than normal (hint: default space between lines is 0.26 blocks).
-```
-  unlimited-nametag-mode:
-    enabled: true
-    dynamic-lines:
-      - abovenameNormal
-      - nametagNormal
-      - belownameNormal
-    static-lines:
-      abovenameHat: 1.52
-      nametagHat: 1.26
-      belownameHat: 1
-```
-
-Now, we are going to assume your configuration is [taking prefixes/suffixes from permission plugin](#taking-prefixessuffixes-from-permission-plugin), because otherwise we would end up with a TON of conditions, which would take too much brain power create and maintain. Let's create 2 conditions: 1 for having a hat, 1 for not having a hat. In the example, we will use `%magicosmetics_equipped_HAT%` placeholder. It return `true` if player has a hat, `false` if not.
-```
-conditions:
-  nametagNormal:
-    conditions:
-    - '%magicosmetics_equipped_HAT%=false'
-    true: '%vault-prefix%%player%%vault-suffix%'
-    false: ""
-  nametagHat:
-    conditions:
-    - '%magicosmetics_equipped_HAT%=true'
-    true: '%vault-prefix%%player%%vault-suffix%'
-    false: ""
-```
-Let's use it in groups.yml
-```
-_DEFAULT_:
-  nametagNormal: "%condition:nametagNormal%"
-  nametagHat: "%condition:nametagHat%"
-```
-Obviously don't forget to add your tabprefix and stuff. If you are using abovename and/or belowname as well, do the same for those lines as well. We already created static lines for them, let's create conditions for them.
-```
-conditions:
-  nametagNormal:
-    conditions:
-    - '%magicosmetics_equipped_HAT%=false'
-    true: '%vault-prefix%%player%%vault-suffix%'
-    false: ""
-  nametagHat:
-    conditions:
-    - '%magicosmetics_equipped_HAT%=true'
-    true: '%vault-prefix%%player%%vault-suffix%'
-    false: ""
-  abovenameNormal:
-    conditions:
-    - '%magicosmetics_equipped_HAT%=false'
-    true: 'abovename text'
-    false: ""
-  abovenameHat:
-    conditions:
-    - '%magicosmetics_equipped_HAT%=true'
-    true: 'abovename text'
-    false: ""
-  belownameNormal:
-    conditions:
-    - '%magicosmetics_equipped_HAT%=false'
-    true: 'belownametext'
-    false: ""
-  belownameHat:
-    conditions:
-    - '%magicosmetics_equipped_HAT%=true'
-    true: 'belowname text'
-    false: ""
-```
-and use in groups.yml
-```
-_DEFAULT_:
-  nametagNormal: "%condition:nametagNormal%"
-  nametagHat: "%condition:nametagHat%"
-  abovenameNormal: "%condition:abovenameNormal%"
-  abovenameHat: "%condition:abovenameHat%"
-  belownameNormal: "%condition:belownameNormal%"
-  belownameHat: "%condition:belownameHat%"
-```
-If you are not using all 3 lines, you can also remove them from static lines. You may also need to adjust static height, since you may want different height of the prefix+name+suffix line based on if you have belowname or not, to avoid the line being too high.
 
 # Displaying AFK status in tablist
 First, you'll need to get an AFK plugin. TAB does not track player AFK status. Then, find a PlaceholderAPI placeholder for your AFK plugin in their documentation, such as

@@ -9,7 +9,7 @@ TAB logs various events in up to 3 files to keep the console clean. All of these
 
 Files are only created when something is about to get logged. This means if you have none of these files in your folder, everything is good. Also, it is safe to delete the logs any time while server is running without needing to reload the plugin or anything.
 
-All files have their sizes limited to 1MB to avoid giant files consisting of the same error repeating over and over. Don't forget these files are **logs**, therefore, after solving the problems you must delete them. These files will not delete themselves.  
+All files have their sizes limited to 16 MB to avoid giant files consisting of the same error repeating over and over. Don't forget these files are **logs**, therefore, after solving the problems you must delete them. These files will not delete themselves.  
 After deleting a file, there is no need to perform any other action. Every time an error is about to be logged, file is created if it doesn't exist.
 
 Java errors usually contain stack traces. If you got an error spamming with exception message but no stack trace, the most common cause is java not including it because too many errors were thrown already. To bypass this check, add `-XX:-OmitStackTraceInFastThrow` to your startup parameters.

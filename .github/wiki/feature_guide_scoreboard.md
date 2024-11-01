@@ -20,6 +20,7 @@
 * [Examples](#examples)
   * [Example 1 - per-world scoreboards](#example-1---per-world-scoreboards)
   * [Example 2 - Periodical scoreboard switching](#example-2---periodical-scoreboard-switching)
+  * [Example 3 - Per-version scoreboards](#example-3---per-version-scoreboards)
 
 # About
 Scoreboard objective with SIDEBAR display slot.
@@ -47,7 +48,7 @@ Since 1.20.3, you can also configure the value on the right side, which no longe
 Will give you the following:  
 ![image](https://github.com/NEZNAMY/TAB/assets/6338394/785e4e66-935c-4233-8a16-f3e34386cfd0)
 
-The right side text will not be visible on 1.20.2 and lower and numbers will be displayed instead. In order to properly see the right side not only the client has to be 1.20.3+, but the server as well, since plugin cannot send a packet that does not exist (on older versions). BungeeCord always includes new content and therefore counts as latest version. This can be used to send new content to new players while having outdated server version.
+The right side text will not be visible on 1.20.2 and lower and numbers will be displayed instead. **In order to properly see the right side not only the client has to be 1.20.3+, but the server as well, since plugin cannot send a packet that does not exist (on older versions). BungeeCord always includes new content and therefore counts as latest version.** This can be used to send new content to new players while having outdated server version.
 
 ### Alignment
 Left side of the text is automatically aligned to the left, while the right side is automatically aligned to the right. This is done by the client and is out of plugin's control. If you want to center a line, you'll need to do it manually. If dynamic placeholder output length is preventing your from doing it, you can try to bypass it by adding spaces before and after it to artificially increase and force the scoreboard width, such as `- "          Centered text          "` (or more spaces if needed).
@@ -96,7 +97,6 @@ time - amount of seconds to display the scoreboard for
 | use-numbers | false | If enabled, numbers 1-15 will be used in the scoreboard. If disabled, `static-number` is shown everywhere. |
 | static-number | 0 | If `use-numbers` is disabled, this is number to be in all lines. |
 | delay-on-join-milliseconds | 0 | Delay in milliseconds to send scoreboard after joining. |
-| respect-other-plugins | true | When enabled, TAB will hide its scoreboard if another plugin sent one and send it back once the other plugin's scoreboard is hidden. | 
 
 # Limitations
 * Title is limited to 32 characters (including color codes) on <1.13.
@@ -225,3 +225,35 @@ Then, we will use output of this animation as a display condition. If animation 
       - 'Text'
 ```
 We don't need to define display condition for second scoreboard, since if animation is not on the first frame, it has to be on the second one. If using more than 2, you will need to define display condition for all of them (except the last one).
+
+# Example 3 - Per-version scoreboards
+1.20.3 has added new features to scoreboards, which are not visible to older clients. If you want to use new features for new players while still displaying things properly for older players, you'll need to create 2 different scoreboards.  
+You'll find 2 placeholders useful for this:
+* `%player-version-id%` - Returns network ID of player's protocol version. Unlike with version names, you can perform numerical comparisons with these. You can find all version IDs [here](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/ProtocolVersion.java). For example, 1.20.3 is 765.
+* `%bedrock%` - Returns `true` if player is using bedrock edition, which does not support new functions either.
+
+We only want the first scoreboard for players with version 765 or greater and not bedrock players. This can be achieved with the following condition: `display-condition: "%player-version-id%>=765;%bedrock%=false"`.
+
+Let's go ahead and set it up (with proper spacing):
+```
+  scoreboards:
+    scoreboard-1.20.3+:
+      title: "Scoreboard for 1.20.3+ and not bedrock"
+      display-condition: "%player-version-id%>=765;%bedrock%=false" # Only display it to players using 1.20.3+ AND NOT bedrock edition
+      lines:
+        - "* &eOnline&7:||%online%"
+        - "* &eCurrent World&7:||%worldonline%"
+        - "* &eStaff&7:||%staffonline%"
+        - "* &bRank&7:||%group%"
+        - "* &bPing&7:||%ping%&8ms"
+        - "* &bWorld&7:||%world%"
+    scoreboard:
+      title: "Scoreboard for <1.20.3 and bedrock"
+      lines:
+        - "* &eOnline&7: &f%online%"
+        - "* &eCurrent World&7: &f%worldonline%"
+        - "* &eStaff&7: &f%staffonline%"
+        - "* &bRank&7: &f%group%"
+        - "* &bPing&7: &f%ping%&8ms"
+        - "* &bWorld&7: &f%world%"
+```
