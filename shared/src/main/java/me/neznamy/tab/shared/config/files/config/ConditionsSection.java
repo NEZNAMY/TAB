@@ -23,8 +23,10 @@ public class ConditionsSection extends ConfigurationSection {
                 continue;
             }
             String type = getString(SECTION + "." + conditionName + ".type");
-            String yes = getString(SECTION + "." + conditionName + ".true", "true");
-            String no = getString(SECTION + "." + conditionName + ".false", "false");
+            String yes = getString(SECTION + "." + conditionName + ".true");
+            if (yes == null) yes = "true";
+            String no = getString(SECTION + "." + conditionName + ".false");
+            if (no == null) no = "false";
             if (list.size() >= 2 && type == null) {
                 startupWarn(String.format("Condition \"%s\" has multiple conditions defined, but is missing \"type\" attribute. Using AND.", conditionName));
             }
