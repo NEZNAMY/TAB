@@ -1,15 +1,14 @@
 package me.neznamy.tab.shared.config.mysql;
 
-import java.sql.SQLException;
-import java.util.*;
-
-import javax.sql.rowset.CachedRowSet;
-
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.sql.rowset.CachedRowSet;
+import java.sql.SQLException;
+import java.util.*;
 
 public class MySQLUserConfiguration implements PropertyConfiguration {
 
@@ -121,7 +120,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     public void load(@NotNull TabPlayer player) {
-        TAB.getInstance().getCPUManager().runTask(() -> {
+        TAB.getInstance().getCPUManager().getMysqlThread().execute(() -> {
 
             try {
                 CachedRowSet crs = mysql.getCRS("select * from `tab_users` where `user` = ?", player.getName().toLowerCase());

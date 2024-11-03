@@ -60,7 +60,7 @@ public class MySQLCommand extends SubCommand {
             sendMessage(sender, getMessages().getMySQLFailNotEnabled());
             return;
         }
-        TAB.getInstance().getCPUManager().runTask(() -> {
+        TAB.getInstance().getCPUManager().getMysqlThread().execute(() -> {
             try {
                 YamlPropertyConfigurationFile groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("config/groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
                 YamlPropertyConfigurationFile userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
@@ -88,7 +88,7 @@ public class MySQLCommand extends SubCommand {
             sendMessage(sender, getMessages().getMySQLFailNotEnabled());
             return;
         }
-        TAB.getInstance().getCPUManager().runTask(() -> {
+        TAB.getInstance().getCPUManager().getMysqlThread().execute(() -> {
             try {
                 YamlPropertyConfigurationFile groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("config/groups.yml"), new File(TAB.getInstance().getDataFolder(), "config/groups.yml"));
                 YamlPropertyConfigurationFile userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "config/users.yml"));

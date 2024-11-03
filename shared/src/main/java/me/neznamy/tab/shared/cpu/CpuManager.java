@@ -1,12 +1,15 @@
 package me.neznamy.tab.shared.cpu;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
-
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
@@ -44,6 +47,9 @@ public class CpuManager {
     /** Scheduler for decoding plugin messages */
     private final ThreadExecutor pluginMessageDecodeThread = new ThreadExecutor("TAB Plugin Message Decoding Thread");
 
+    /** Scheduler for MySQL tasks */
+    private final ThreadExecutor mysqlThread = new ThreadExecutor("TAB MySQL Thread");
+
     /** Tasks submitted to main thread before plugin was fully enabled */
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
 
@@ -79,6 +85,7 @@ public class CpuManager {
         groupRefreshingThread.shutdown();
         tablistEntryCheckThread.shutdown();
         pluginMessageDecodeThread.shutdown();
+        mysqlThread.shutdown();
     }
 
     /**
