@@ -299,7 +299,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         public boolean visible;
 
         /** Boss bars this player can currently see */
-        public Map<BossBarLine, BossBarProperties> visibleBossBars = new IdentityHashMap<>();
+        public final Map<BossBarLine, BossBarProperties> visibleBossBars = new IdentityHashMap<>();
     }
 
     /**

@@ -12,6 +12,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 public class PaperLoader {
 
     /** Channel getter using direct NMS code */
-    public static FunctionWithException<BukkitTabPlayer, Channel> getChannel =
+    public static final FunctionWithException<BukkitTabPlayer, Channel> getChannel =
             player -> ((CraftPlayer)player.getPlayer()).getHandle().connection.connection.channel;
 }
