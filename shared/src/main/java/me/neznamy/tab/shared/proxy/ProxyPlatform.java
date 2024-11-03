@@ -5,7 +5,7 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
+import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.LuckPermsHook;

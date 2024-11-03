@@ -5,10 +5,9 @@ import java.util.*;
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.config.files.config.GlobalPlayerListConfiguration;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
-import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabList;
@@ -42,7 +41,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
      */
     public GlobalPlayerList(@NotNull GlobalPlayerListConfiguration configuration) {
         this.configuration = configuration;
-        for (Map.Entry<String, List<String>> entry : configuration.sharedServers.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : configuration.getSharedServers().entrySet()) {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
                 if (onlinePlayers == null) return "0"; // Not loaded yet
                 int count = 0;
@@ -62,10 +61,10 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void load() {
         onlinePlayers =  new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
-        if (configuration.updateLatency) addUsedPlaceholder(TabConstants.Placeholder.PING);
+        if (configuration.isUpdateLatency()) addUsedPlaceholder(TabConstants.Placeholder.PING);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             all.globalPlayerListData.serverGroup = getServerGroup(all.server);
-            all.globalPlayerListData.onSpyServer = configuration.spyServers.contains(all.server.toLowerCase());
+            all.globalPlayerListData.onSpyServer = configuration.getSpyServers().contains(all.server.toLowerCase());
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (TabPlayer displayed : onlinePlayers.getPlayers()) {
@@ -121,7 +120,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
 
     @NotNull
     private String computeServerGroup(@NotNull String server) {
-        for (Map.Entry<String, List<String>> group : configuration.sharedServers.entrySet()) {
+        for (Map.Entry<String, List<String>> group : configuration.getSharedServers().entrySet()) {
             for (String serverDefinition : group.getValue()) {
                 if (serverDefinition.endsWith("*")) {
                     if (server.toLowerCase().startsWith(serverDefinition.substring(0, serverDefinition.length()-1).toLowerCase()))
@@ -135,7 +134,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 }
             }
         }
-        return configuration.isolateUnlistedServers ? "isolated:" + server : "DEFAULT";
+        return configuration.isIsolateUnlistedServers() ? "isolated:" + server : "DEFAULT";
     }
 
     @Override
@@ -151,7 +150,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
         connectedPlayer.globalPlayerListData.serverGroup = getServerGroup(connectedPlayer.server);
-        connectedPlayer.globalPlayerListData.onSpyServer = configuration.spyServers.contains(connectedPlayer.server.toLowerCase());
+        connectedPlayer.globalPlayerListData.onSpyServer = configuration.getSpyServers().contains(connectedPlayer.server.toLowerCase());
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (connectedPlayer.server.equals(all.server)) continue;
             if (shouldSee(all, connectedPlayer)) {
@@ -181,7 +180,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         changed.globalPlayerListData.serverGroup = getServerGroup(changed.server);
-        changed.globalPlayerListData.onSpyServer = configuration.spyServers.contains(changed.server.toLowerCase());
+        changed.globalPlayerListData.onSpyServer = configuration.getSpyServers().contains(changed.server.toLowerCase());
         // TODO fix players potentially not appearing on rapid server switching (if anyone reports it)
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
@@ -230,14 +229,14 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         if (playerlist != null && !p.tablistData.disabled.get()) {
             format = playerlist.getTabFormat(p, viewer);
         }
-        int gameMode = (configuration.othersAsSpectators && !p.server.equals(viewer.server)) ||
-                (configuration.vanishedAsSpectators && p.isVanished()) ? 3 : p.getGamemode();
+        int gameMode = (configuration.isOthersAsSpectators() && !p.server.equals(viewer.server)) ||
+                (configuration.isVanishedAsSpectators() && p.isVanished()) ? 3 : p.getGamemode();
         return new TabList.Entry(
                 p.getTablistId(),
                 p.getNickname(),
                 p.getSkin(),
                 true,
-                configuration.updateLatency ? p.getPing() : 0,
+                configuration.isUpdateLatency() ? p.getPing() : 0,
                 gameMode,
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null,
                 0,
@@ -249,7 +248,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (!player.server.equals(viewer.server)) {
-                viewer.getTabList().updateGameMode(player.getTablistId(), configuration.othersAsSpectators ? 3 : player.getGamemode());
+                viewer.getTabList().updateGameMode(player.getTablistId(), configuration.isOthersAsSpectators() ? 3 : player.getGamemode());
             }
         }
     }

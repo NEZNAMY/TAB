@@ -46,6 +46,18 @@ public class ConfigHelper {
      *          Hint message to print
      */
     public void hint(@NotNull File file, @NotNull String message) {
-        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GOLD + "[" + file.getName() + "] [Hint] " + message));
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GOLD + "[Hint] [" + file.getName() + "] " + message));
+    }
+
+    /**
+     * Prints a configuration hint into console, typically when a redundancy is found.
+     *
+     * @param   file
+     *          File where the redundancy was found
+     * @param   message
+     *          Hint message to print
+     */
+    public void hint(@NotNull String file, @NotNull String message) {
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GOLD + "[" + file + "] [Hint] " + message));
     }
 }

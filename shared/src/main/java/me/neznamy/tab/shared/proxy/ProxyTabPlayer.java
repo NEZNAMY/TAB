@@ -80,7 +80,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
                 TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                     !TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions(),
                 ((ProxyPlatform) getPlatform()).getBridgePlaceholders(),
-                TAB.getInstance().getConfiguration().getConfig().getReplacements().raw
+                TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues()
         ));
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         if (expansion instanceof ProxyTabExpansion) {

@@ -10,9 +10,9 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.files.config.BossBarConfiguration;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.features.bossbar.BossBarConfiguration.BossBarDefinition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
@@ -60,12 +60,12 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
      */
     public BossBarManagerImpl(@NonNull BossBarConfiguration configuration) {
         this.configuration = configuration;
-        bossBarOffPlayers = configuration.rememberToggleChoice ? TAB.getInstance().getConfiguration().getPlayerDataFile()
+        bossBarOffPlayers = configuration.isRememberToggleChoice() ? TAB.getInstance().getConfiguration().getPlayerDataFile()
                 .getStringList("bossbar-off", new ArrayList<>()) : Collections.emptyList();
-        for (Map.Entry<String, BossBarConfiguration.BossBarDefinition> entry : configuration.bars.entrySet()) {
+        for (Map.Entry<String, BossBarDefinition> entry : configuration.getBars().entrySet()) {
             String name = entry.getKey();
             registeredBossBars.put(name, new BossBarLine(this, name, entry.getValue()));
-            if (!entry.getValue().announcementOnly) defaultBars.add(name);
+            if (!entry.getValue().isAnnouncementOnly()) defaultBars.add(name);
         }
         lineValues = registeredBossBars.values().toArray(new BossBar[0]);
     }
@@ -106,12 +106,12 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        setBossBarVisible(connectedPlayer, configuration.hiddenByDefault == bossBarOffPlayers.contains(connectedPlayer.getName()), false);
+        setBossBarVisible(connectedPlayer, configuration.isHiddenByDefault() == bossBarOffPlayers.contains(connectedPlayer.getName()), false);
     }
 
     @Override
     public boolean onCommand(@NotNull TabPlayer sender, @NotNull String message) {
-        if (message.equals(configuration.toggleCommand)) {
+        if (message.equals(configuration.getToggleCommand())) {
             TAB.getInstance().getCommand().execute(sender, new String[] {"bossbar"});
             return true;
         }
@@ -121,7 +121,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     @Override
     @NotNull
     public String getCommand() {
-        return configuration.toggleCommand;
+        return configuration.getToggleCommand();
     }
 
     /**
@@ -185,7 +185,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     public BossBar createBossBar(@NonNull String title, @NonNull String progress, @NonNull String color, @NonNull String style) {
         ensureActive();
         UUID id = UUID.randomUUID();
-        BossBar bar = new BossBarLine(this, id.toString(), new BossBarConfiguration.BossBarDefinition(style, color, progress, title, true, null));
+        BossBar bar = new BossBarLine(this, id.toString(), new BossBarDefinition(style, color, progress, title, true, null));
         registeredBossBars.put(id.toString(), bar);
         lineValues = registeredBossBars.values().toArray(new BossBar[0]);
         return bar;
@@ -218,8 +218,8 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
             player.bossbarData.visible = true;
             detectBossBarsAndSend(player);
             if (sendToggleMessage) player.sendMessage(toggleOnMessage, true);
-            if (configuration.rememberToggleChoice) {
-                if (configuration.hiddenByDefault) {
+            if (configuration.isRememberToggleChoice()) {
+                if (configuration.isHiddenByDefault()) {
                     if (!bossBarOffPlayers.contains(player.getName())) {
                         bossBarOffPlayers.add(player.getName());
                         savePlayers();
@@ -236,8 +236,8 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
                 l.removePlayer(player);
             }
             if (sendToggleMessage) player.sendMessage(toggleOffMessage, true);
-            if (configuration.rememberToggleChoice) {
-                if (configuration.hiddenByDefault) {
+            if (configuration.isRememberToggleChoice()) {
+                if (configuration.isHiddenByDefault()) {
                     if (bossBarOffPlayers.remove(player.getName())) {
                         savePlayers();
                     }

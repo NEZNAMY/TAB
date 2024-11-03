@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,25 +39,25 @@ public class PlayerSlot {
             PlayerList playerList = layout.getManager().getPlayerList();
             data = new TabList.Entry(
                     uniqueId,
-                    layout.getManager().getConfiguration().direction.getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
+                    layout.getManager().getConfiguration().getDirection().getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
                     player.getSkin(),
                     true,
-                    layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getConfiguration().value : player.getPing(),
+                    layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getConfiguration().getValue() : player.getPing(),
                     0,
                     playerList == null || player.tablistData.disabled.get() ? new SimpleComponent(player.getName()) : playerList.getTabFormat(player, viewer),
-                    Integer.MAX_VALUE - layout.getManager().getConfiguration().direction.translateSlot(slot),
+                    Integer.MAX_VALUE - layout.getManager().getConfiguration().getDirection().translateSlot(slot),
                     true
             );
         } else {
             data = new TabList.Entry(
                     uniqueId,
-                    layout.getManager().getConfiguration().direction.getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
+                    layout.getManager().getConfiguration().getDirection().getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
                     layout.getManager().getSkinManager().getDefaultSkin(slot),
                     true,
-                    layout.getManager().getConfiguration().emptySlotPing,
+                    layout.getManager().getConfiguration().getEmptySlotPing(),
                     0,
                     new SimpleComponent(text),
-                    Integer.MAX_VALUE - layout.getManager().getConfiguration().direction.translateSlot(slot),
+                    Integer.MAX_VALUE - layout.getManager().getConfiguration().getDirection().translateSlot(slot),
                     true
             );
         }

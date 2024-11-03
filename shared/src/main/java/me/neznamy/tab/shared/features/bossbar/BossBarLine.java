@@ -8,7 +8,6 @@ import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.config.files.config.BossBarConfiguration.BossBarDefinition;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl.BossBarProperties;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
@@ -68,18 +67,18 @@ public class BossBarLine implements BossBar {
      * @param   configuration
      *          Boss bar configuration
      */
-    public BossBarLine(@NonNull BossBarManagerImpl manager, @NonNull String name, @NonNull BossBarDefinition configuration) {
+    public BossBarLine(@NonNull BossBarManagerImpl manager, @NonNull String name, @NonNull BossBarConfiguration.BossBarDefinition configuration) {
         this.manager = manager;
         this.name = name;
-        displayCondition = Condition.getCondition(configuration.displayCondition);
+        displayCondition = Condition.getCondition(configuration.getDisplayCondition());
         if (displayCondition != null) {
             manager.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
         }
-        color = configuration.color;
-        style = configuration.style;
-        title = configuration.text;
-        progress = configuration.progress;
-        announcementBar = configuration.announcementOnly;
+        color = configuration.getColor();
+        style = configuration.getStyle();
+        title = configuration.getText();
+        progress = configuration.getProgress();
+        announcementBar = configuration.isAnnouncementOnly();
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarTitle(name),
                 textRefresher = new TextRefresher());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarProgress(name),

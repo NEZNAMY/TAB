@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.files.config.Config;
+import me.neznamy.tab.shared.config.files.Config;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -28,7 +28,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     public BungeePipelineInjector() {
         super("inbound-boss");
         Config config = TAB.getInstance().getConfiguration().getConfig();
-        byteBufDeserialization = (config.getTeams() != null && config.getTeams().antiOverride) || config.getScoreboard() != null;
+        byteBufDeserialization = (config.getTeams() != null && config.getTeams().isAntiOverride()) || config.getScoreboard() != null;
     }
 
     @Override

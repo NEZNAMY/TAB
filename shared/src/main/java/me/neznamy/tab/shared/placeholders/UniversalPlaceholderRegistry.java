@@ -4,12 +4,12 @@ import lombok.Getter;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.config.files.config.ConditionsSection.ConditionDefinition;
-import me.neznamy.tab.shared.config.files.config.PlaceholdersConfiguration;
-import me.neznamy.tab.shared.config.files.animations.AnimationConfiguration.AnimationDefinition;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
+import me.neznamy.tab.shared.placeholders.animation.Animation;
+import me.neznamy.tab.shared.placeholders.animation.AnimationConfiguration.AnimationDefinition;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import me.neznamy.tab.shared.placeholders.conditions.ConditionsSection.ConditionDefinition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
@@ -71,8 +71,8 @@ public class UniversalPlaceholderRegistry {
 
     private void registerServerPlaceholders(@NotNull PlaceholderManager manager) {
         PlaceholdersConfiguration placeholders = TAB.getInstance().getConfiguration().getConfig().getPlaceholders();
-        manager.registerServerPlaceholder(TabConstants.Placeholder.TIME, 500, () -> placeholders.timeFormat.format(new Date(System.currentTimeMillis() + (int)(placeholders.timeOffset*3600000))));
-        manager.registerServerPlaceholder(TabConstants.Placeholder.DATE, 60000, () -> placeholders.dateFormat.format(new Date(System.currentTimeMillis() + (int)(placeholders.timeOffset*3600000))));
+        manager.registerServerPlaceholder(TabConstants.Placeholder.TIME, 500, () -> placeholders.getTimeFormat().format(new Date(System.currentTimeMillis() + (int)(placeholders.getTimeOffset() *3600000))));
+        manager.registerServerPlaceholder(TabConstants.Placeholder.DATE, 60000, () -> placeholders.getDateFormat().format(new Date(System.currentTimeMillis() + (int)(placeholders.getTimeOffset() *3600000))));
         manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_USED, 200, () -> PerformanceUtil.toString((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024)));
         manager.registerServerPlaceholder(TabConstants.Placeholder.MEMORY_USED_GB, 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
         manager.registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
@@ -125,14 +125,14 @@ public class UniversalPlaceholderRegistry {
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, refresh,
                     p -> LuckPermsHook.getInstance().getSuffix((TabPlayer) p));
         }
-        for (Entry<String, AnimationDefinition> entry : TAB.getInstance().getConfiguration().getAnimations().getAnimations().animations.entrySet()) {
+        for (Entry<String, AnimationDefinition> entry : TAB.getInstance().getConfiguration().getAnimations().getAnimations().getAnimations().entrySet()) {
             Animation a = new Animation((PlaceholderManagerImpl) manager, entry.getKey(), entry.getValue());
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.animation(a.getName()), a.getRefresh(), p -> a.getMessage());
         }
         Condition.clearConditions();
-        for (Entry<String, ConditionDefinition> condition : TAB.getInstance().getConfiguration().getConfig().getConditions().conditions.entrySet()) {
+        for (Entry<String, ConditionDefinition> condition : TAB.getInstance().getConfiguration().getConfig().getConditions().getConditions().entrySet()) {
             ConditionDefinition def = condition.getValue();
-            Condition c = new Condition(def.type, condition.getKey(), def.conditions, def.yes, def.no);
+            Condition c = new Condition(def.isType(), condition.getKey(), def.getConditions(), def.getYes(), def.getNo());
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), p -> c.getText((TabPlayer)p));
         }
         Condition.finishSetups();

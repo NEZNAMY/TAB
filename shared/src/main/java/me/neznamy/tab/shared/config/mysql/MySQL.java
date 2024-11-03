@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.config.files.config.MySQLConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,11 +27,11 @@ public class MySQL {
     public void openConnection() throws SQLException {
         if (isConnected()) return;
         Properties properties = new Properties();
-        properties.setProperty("user", configuration.username);
-        properties.setProperty("password", configuration.password);
-        properties.setProperty("useSSL", String.valueOf(configuration.useSSL));
+        properties.setProperty("user", configuration.getUsername());
+        properties.setProperty("password", configuration.getPassword());
+        properties.setProperty("useSSL", String.valueOf(configuration.isUseSSL()));
         properties.setProperty("characterEncoding", "UTF-8");
-        con = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s", configuration.host, configuration.port, configuration.database), properties);
+        con = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s", configuration.getHost(), configuration.getPort(), configuration.getDatabase()), properties);
         TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GREEN + "Successfully connected to MySQL"));
     }
     

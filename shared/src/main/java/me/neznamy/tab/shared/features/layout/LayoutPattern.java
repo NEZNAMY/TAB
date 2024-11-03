@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.tablist.layout.Layout;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition;
-import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
-import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.GroupPattern;
+import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition;
+import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
+import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.GroupPattern;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -28,13 +28,13 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull LayoutDefinition def) {
         this.manager = manager;
         this.name = name;
-        condition = Condition.getCondition(def.condition);
+        condition = Condition.getCondition(def.getCondition());
         if (condition != null) manager.addUsedPlaceholder(TabConstants.Placeholder.condition(condition.getName()));
-        for (FixedSlotDefinition fixed : def.fixedSlots) {
+        for (FixedSlotDefinition fixed : def.getFixedSlots()) {
             addFixedSlot(fixed);
         }
-        for (Map.Entry<String, GroupPattern> entry : def.groups.entrySet()) {
-            addGroup(entry.getKey(), entry.getValue().condition, entry.getValue().slots);
+        for (Map.Entry<String, GroupPattern> entry : def.getGroups().entrySet()) {
+            addGroup(entry.getKey(), entry.getValue().getCondition(), entry.getValue().getSlots());
         }
     }
 
@@ -70,13 +70,13 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     @Override
     public void addFixedSlot(int slot, @NonNull String text) {
         ensureActive();
-        addFixedSlot(slot, text, manager.getConfiguration().getDefaultSkin(slot), manager.getConfiguration().emptySlotPing);
+        addFixedSlot(slot, text, manager.getConfiguration().getDefaultSkin(slot), manager.getConfiguration().getEmptySlotPing());
     }
 
     @Override
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin) {
         ensureActive();
-        addFixedSlot(slot, text, skin, manager.getConfiguration().emptySlotPing);
+        addFixedSlot(slot, text, skin, manager.getConfiguration().getEmptySlotPing());
     }
 
     @Override

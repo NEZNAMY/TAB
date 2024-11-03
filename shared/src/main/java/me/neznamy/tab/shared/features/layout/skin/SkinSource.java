@@ -37,7 +37,7 @@ public abstract class SkinSource {
     protected SkinSource(@NotNull ConfigurationFile file, @NotNull String path) {
         this.file = file;
         this.path = path;
-        cache = file.getConfigurationSection(path);
+        cache = file.getMap(path);
         for (Map.Entry<String, List<String>> entry : cache.entrySet()) {
             skins.put(entry.getKey(), new Skin(entry.getValue().get(0), entry.getValue().get(1)));
         }

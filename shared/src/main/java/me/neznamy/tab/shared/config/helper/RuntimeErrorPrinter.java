@@ -109,7 +109,7 @@ public class RuntimeErrorPrinter {
         // Placeholders are not initialized, because bridge did not respond yet (typically on join)
         if (target instanceof ProxyTabPlayer && !((ProxyTabPlayer)target).isBridgeConnected()) return;
 
-        error(String.format("Playerlist objective number is configured to show \"%s\", but returned \"%s\" for player %s, which cannot be evaluated to a number.",
+        error(String.format("Playerlist objective value is configured to show \"%s\", but returned \"%s\" for player %s, which cannot be evaluated to a number.",
                 configuredValue, output, target.getName()));
     }
 
@@ -117,7 +117,7 @@ public class RuntimeErrorPrinter {
         // Placeholders are not initialized, because bridge did not respond yet (typically on join)
         if (target instanceof ProxyTabPlayer && !((ProxyTabPlayer)target).isBridgeConnected()) return;
 
-        error(String.format("Playerlist objective number is configured to show \"%s\", but returned \"%s\" " +
+        error(String.format("Playerlist objective value is configured to show \"%s\", but returned \"%s\" " +
                         "for player %s, which is a decimal number. Truncating to an integer.",
                 configuredValue, output, target.getName()));
     }

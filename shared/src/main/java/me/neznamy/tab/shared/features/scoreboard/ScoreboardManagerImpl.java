@@ -2,19 +2,18 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.files.config.ScoreboardConfiguration;
-import me.neznamy.tab.shared.config.files.config.ScoreboardConfiguration.ScoreboardDefinition;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
-import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
+import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,13 +59,13 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
      */
     public ScoreboardManagerImpl(@NotNull ScoreboardConfiguration configuration) {
         this.configuration = configuration;
-        sbOffPlayers = configuration.rememberToggleChoice ? TAB.getInstance().getConfiguration().getPlayerDataFile()
+        sbOffPlayers = configuration.isRememberToggleChoice() ? TAB.getInstance().getConfiguration().getPlayerDataFile()
                 .getStringList("scoreboard-off", new ArrayList<>()) : Collections.emptyList();
     }
 
     @Override
     public void load() {
-        for (Entry<String, ScoreboardDefinition> entry : configuration.scoreboards.entrySet()) {
+        for (Entry<String, ScoreboardDefinition> entry : configuration.getScoreboards().entrySet()) {
             String scoreboardName = entry.getKey();
             ScoreboardImpl sb = new ScoreboardImpl(this, scoreboardName, entry.getValue());
             registeredScoreboards.put(scoreboardName, sb);
@@ -96,15 +95,15 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideScoreboard(true);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(connectedPlayer, "");
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(connectedPlayer, false);
-        if (configuration.joinDelay > 0) {
+        if (configuration.getJoinDelay() > 0) {
             connectedPlayer.scoreboardData.joinDelayed = true;
             customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
                 if (connectedPlayer.scoreboardData.otherPluginScoreboard == null)
-                    setScoreboardVisible(connectedPlayer, configuration.hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
+                    setScoreboardVisible(connectedPlayer, configuration.isHiddenByDefault() == sbOffPlayers.contains(connectedPlayer.getName()), false);
                 connectedPlayer.scoreboardData.joinDelayed = false;
-            }, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN), configuration.joinDelay);
+            }, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN), configuration.getJoinDelay());
         } else {
-            setScoreboardVisible(connectedPlayer, configuration.hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
+            setScoreboardVisible(connectedPlayer, configuration.isHiddenByDefault() == sbOffPlayers.contains(connectedPlayer.getName()), false);
         }
     }
 
@@ -158,7 +157,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
 
     @Override
     public boolean onCommand(@NotNull TabPlayer sender, @NotNull String message) {
-        if (message.equals(configuration.toggleCommand)) {
+        if (message.equals(configuration.getToggleCommand())) {
             TAB.getInstance().getCommand().execute(sender, new String[] {"scoreboard"});
             return true;
         }
@@ -168,7 +167,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     @Override
     @NotNull
     public String getCommand() {
-        return configuration.toggleCommand;
+        return configuration.getToggleCommand();
     }
 
     @Override
@@ -278,8 +277,8 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             if (sendToggleMessage) {
                 player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOn(), true);
             }
-            if (configuration.rememberToggleChoice) {
-                if (configuration.hiddenByDefault) {
+            if (configuration.isRememberToggleChoice()) {
+                if (configuration.isHiddenByDefault()) {
                     if (!sbOffPlayers.contains(player.getName())) {
                         sbOffPlayers.add(player.getName());
                         savePlayers();
@@ -296,8 +295,8 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             if (sendToggleMessage) {
                 player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOff(), true);
             }
-            if (configuration.rememberToggleChoice) {
-                if (configuration.hiddenByDefault) {
+            if (configuration.isRememberToggleChoice()) {
+                if (configuration.isHiddenByDefault()) {
                     if (sbOffPlayers.remove(player.getName())) {
                         savePlayers();
                     }

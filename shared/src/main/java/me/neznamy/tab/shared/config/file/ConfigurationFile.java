@@ -291,7 +291,7 @@ public abstract class ConfigurationFile {
      * @param   <V>
      *          Map value type
      */
-    public @NotNull <K, V> Map<K, V> getConfigurationSection(@NonNull String path) {
+    public @NotNull <K, V> Map<K, V> getMap(@NonNull String path) {
         if (path.isEmpty()) return (Map<K, V>) values;
         Object value = getObject(path, null);
         if (value instanceof Map) {
@@ -452,5 +452,17 @@ public abstract class ConfigurationFile {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Returns configuration section with given path.
+     *
+     * @param   path
+     *          Path to get configuration section from
+     * @return  Configuration section from given path
+     */
+    @NotNull
+    public ConfigurationSection getConfigurationSection(@NotNull String path) {
+        return new ConfigurationSection(file.getName(), path, getMap(path));
     }
 }

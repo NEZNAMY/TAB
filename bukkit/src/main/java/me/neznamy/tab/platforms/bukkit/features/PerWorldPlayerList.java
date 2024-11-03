@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
-import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.features.types.UnLoadable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,11 +15,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Per-world-PlayerList feature handler
@@ -115,10 +114,10 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      */
     private boolean shouldSee(@NotNull Player viewer, @NotNull Player target) {
         if (target == viewer) return true;
-        if ((configuration.allowBypassPermission && viewer.hasPermission(TabConstants.Permission.PER_WORLD_PLAYERLIST_BYPASS)) || configuration.ignoredWorlds.contains(viewer.getWorld().getName())) return true;
+        if ((configuration.isAllowBypassPermission() && viewer.hasPermission(TabConstants.Permission.PER_WORLD_PLAYERLIST_BYPASS)) || configuration.getIgnoredWorlds().contains(viewer.getWorld().getName())) return true;
         String viewerWorldGroup = viewer.getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
         String targetWorldGroup = target.getWorld().getName() + "-default";
-        for (Entry<String, List<String>> group : configuration.sharedWorlds.entrySet()) {
+        for (Entry<String, List<String>> group : configuration.getSharedWorlds().entrySet()) {
             if (group.getValue() != null) {
                 if (group.getValue().contains(viewer.getWorld().getName())) viewerWorldGroup = group.getKey();
                 if (group.getValue().contains(target.getWorld().getName())) targetWorldGroup = group.getKey();

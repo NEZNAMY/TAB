@@ -8,10 +8,14 @@ import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.*;
+import me.neznamy.tab.shared.features.belowname.BelowNamePlayerData;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
+import me.neznamy.tab.shared.features.header.HeaderFooter;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.playerlist.PlayerList;
+import me.neznamy.tab.shared.features.playerlistobjective.YellowNumber;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.hook.FloodgateHook;
@@ -103,7 +107,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final YellowNumber.PlayerData playerlistObjectiveData = new YellowNumber.PlayerData();
 
     /** Data for Belowname Objective */
-    public final BelowName.PlayerData belowNameData = new BelowName.PlayerData();
+    public final BelowNamePlayerData belowNameData = new BelowNamePlayerData();
 
     /** Data for tablist formatting */
     public final PlayerList.PlayerData tablistData = new PlayerList.PlayerData();

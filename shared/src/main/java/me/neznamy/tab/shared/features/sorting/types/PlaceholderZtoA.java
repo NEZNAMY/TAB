@@ -35,6 +35,6 @@ public class PlaceholderZtoA extends SortingType {
             }
         }
         String s = new String(chars);
-        return sorting.getConfiguration().caseSensitiveSorting ? s : s.toLowerCase();
+        return sorting.getConfiguration().isCaseSensitiveSorting() ? s : s.toLowerCase();
     }
 }

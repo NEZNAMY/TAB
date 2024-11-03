@@ -1,34 +1,26 @@
 package me.neznamy.tab.shared.features.sorting;
 
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.tablist.SortingManager;
 import me.neznamy.tab.shared.Limitations;
-import me.neznamy.tab.shared.config.files.config.SortingConfiguration;
-import me.neznamy.tab.shared.features.types.JoinListener;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.RefreshableFeature;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.sorting.types.Groups;
-import me.neznamy.tab.shared.features.sorting.types.Permissions;
-import me.neznamy.tab.shared.features.sorting.types.Placeholder;
-import me.neznamy.tab.shared.features.sorting.types.PlaceholderAtoZ;
-import me.neznamy.tab.shared.features.sorting.types.PlaceholderHighToLow;
-import me.neznamy.tab.shared.features.sorting.types.PlaceholderLowToHigh;
-import me.neznamy.tab.shared.features.sorting.types.PlaceholderZtoA;
-import me.neznamy.tab.shared.features.sorting.types.SortingType;
+import me.neznamy.tab.shared.features.sorting.types.*;
+import me.neznamy.tab.shared.features.types.JoinListener;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 /**
  * Class for handling player sorting rules
@@ -64,7 +56,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         types.put("PLACEHOLDER_Z_TO_A", PlaceholderZtoA::new);
         types.put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
         types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
-        usedSortingTypes = compile(configuration.sortingTypes);
+        usedSortingTypes = compile(configuration.getSortingTypes());
     }
 
     @NotNull

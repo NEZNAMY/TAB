@@ -8,11 +8,10 @@ import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.config.files.config.LayoutConfiguration;
-import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition;
-import me.neznamy.tab.shared.features.PingSpoof;
-import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
+import me.neznamy.tab.shared.features.pingspoof.PingSpoof;
+import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -42,11 +41,11 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
      */
     public LayoutManagerImpl(@NotNull LayoutConfiguration configuration) {
         this.configuration = configuration;
-        skinManager = new SkinManager(configuration.defaultSkin, configuration.defaultSkinHashMap);
+        skinManager = new SkinManager(configuration.getDefaultSkin(), configuration.getDefaultSkinHashMap());
         for (int slot=1; slot<=80; slot++) {
-            uuids.put(slot, new UUID(0, configuration.direction.translateSlot(slot)));
+            uuids.put(slot, new UUID(0, configuration.getDirection().translateSlot(slot)));
         }
-        for (Entry<String, LayoutDefinition> entry : configuration.layouts.entrySet()) {
+        for (Entry<String, LayoutDefinition> entry : configuration.getLayouts().entrySet()) {
             LayoutPattern pattern = new LayoutPattern(this, entry.getKey(), entry.getValue());
             layouts.put(pattern.getName(), pattern);
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layout(entry.getKey()), pattern);

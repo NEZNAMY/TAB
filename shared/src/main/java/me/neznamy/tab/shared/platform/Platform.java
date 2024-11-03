@@ -1,10 +1,9 @@
 package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.shared.GroupManager;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.config.files.config.PerWorldPlayerListConfiguration;
+import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.TabFeature;

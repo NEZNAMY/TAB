@@ -7,8 +7,8 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.config.files.config.ScoreboardConfiguration.ScoreboardDefinition;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
 import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.StableDynamicLine;
@@ -58,7 +58,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      */
     public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull ScoreboardDefinition definition) {
         this(manager, name, definition, false);
-        displayCondition = Condition.getCondition(definition.displayCondition);
+        displayCondition = Condition.getCondition(definition.getDisplayCondition());
         if (displayCondition != null) {
             manager.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
         }
@@ -79,9 +79,9 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
     public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull ScoreboardDefinition definition, boolean dynamicLinesOnly) {
         this.manager = manager;
         this.name = name;
-        title = definition.title;
-        for (int i=0; i<definition.lines.size(); i++) {
-            String line = definition.lines.get(i);
+        title = definition.getTitle();
+        for (int i = 0; i< definition.getLines().size(); i++) {
+            String line = definition.getLines().get(i);
             if (line == null) line = "";
             ScoreboardLine score;
             if (dynamicLinesOnly) {
@@ -197,10 +197,10 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Player to recalculate scores for
      */
     public void recalculateScores(@NonNull TabPlayer p) {
-        if (!manager.getConfiguration().useNumbers) return;
+        if (!manager.getConfiguration().isUseNumbers()) return;
         List<Line> linesReversed = new ArrayList<>(lines);
         Collections.reverse(linesReversed);
-        int score = manager.getConfiguration().staticNumber;
+        int score = manager.getConfiguration().getStaticNumber();
         for (Line line : linesReversed) {
             Property pr = p.scoreboardData.lineProperties.get((ScoreboardLine) line);
             if (pr.getCurrentRawValue().isEmpty() || (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {

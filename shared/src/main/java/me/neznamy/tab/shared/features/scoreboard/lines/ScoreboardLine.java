@@ -174,10 +174,10 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
      * @return  number displayed
      */
     public int getNumber(@NonNull TabPlayer p) {
-        if (parent.getManager().getConfiguration().useNumbers || p.getVersion().getMinorVersion() < 8) {
+        if (parent.getManager().getConfiguration().isUseNumbers() || p.getVersion().getMinorVersion() < 8) {
             return parent.getLines().size() + 1 - lineNumber;
         } else {
-            return parent.getManager().getConfiguration().staticNumber;
+            return parent.getManager().getConfiguration().getStaticNumber();
         }
     }
 

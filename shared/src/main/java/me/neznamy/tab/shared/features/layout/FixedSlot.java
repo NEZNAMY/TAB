@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.config.files.config.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
+import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -68,13 +68,13 @@ public class FixedSlot extends RefreshableFeature {
         viewer.layoutData.currentLayout.fixedSlotSkins.put(this, new Property(this, viewer, skin));
         return new TabList.Entry(
                 id,
-                manager.getConfiguration().direction.getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
+                manager.getConfiguration().getDirection().getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
                 manager.getSkinManager().getSkin(viewer.layoutData.currentLayout.fixedSlotSkins.get(this).updateAndGet()),
                 true,
                 ping,
                 0,
                 cache.get(viewer.layoutData.currentLayout.fixedSlotTexts.get(this).updateAndGet()),
-                Integer.MAX_VALUE - manager.getConfiguration().direction.translateSlot(slot),
+                Integer.MAX_VALUE - manager.getConfiguration().getDirection().translateSlot(slot),
                 true
         );
     }
@@ -94,14 +94,14 @@ public class FixedSlot extends RefreshableFeature {
     public static FixedSlot fromDefinition(@NotNull FixedSlotDefinition def, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
         FixedSlot f = new FixedSlot(
                 manager,
-                def.slot,
+                def.getSlot(),
                 pattern,
-                manager.getUUID(def.slot),
-                def.text,
-                def.skin == null || def.skin.isEmpty() ? manager.getConfiguration().getDefaultSkin(def.slot) : def.skin,
-                def.ping == null ? manager.getConfiguration().emptySlotPing : def.ping
+                manager.getUUID(def.getSlot()),
+                def.getText(),
+                def.getSkin() == null || def.getSkin().isEmpty() ? manager.getConfiguration().getDefaultSkin(def.getSlot()) : def.getSkin(),
+                def.getPing() == null ? manager.getConfiguration().getEmptySlotPing() : def.getPing()
         );
-        if (!def.text.isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), def.slot), f);
+        if (!def.getText().isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), def.getSlot()), f);
         return f;
     }
 }
