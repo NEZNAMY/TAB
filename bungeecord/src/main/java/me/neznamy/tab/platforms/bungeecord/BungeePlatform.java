@@ -196,6 +196,11 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
+    public boolean supportsNumberFormat() {
+        return true;
+    }
+
+    @Override
     public boolean supportsListOrder() {
         return true;
     }

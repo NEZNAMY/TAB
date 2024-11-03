@@ -137,6 +137,11 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsNumberFormat() {
+        return false; // Sponge 7 only goes up to 1.12.2
+    }
+
+    @Override
     public boolean supportsListOrder() {
         return false; // Sponge 7 only goes up to 1.12.2
     }

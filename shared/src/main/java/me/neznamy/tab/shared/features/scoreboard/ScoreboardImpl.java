@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.SimpleComponent;
@@ -42,6 +43,8 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
 
     //lines of scoreboard
     private final List<Line> lines = new ArrayList<>();
+
+    private boolean containsNumberFormat;
 
     //players currently seeing this scoreboard
     private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
@@ -83,6 +86,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         for (int i = 0; i< definition.getLines().size(); i++) {
             String line = definition.getLines().get(i);
             if (line == null) line = "";
+            if (line.contains("||")) containsNumberFormat = true;
             ScoreboardLine score;
             if (dynamicLinesOnly) {
                 score = new StableDynamicLine(this, i+1, line);
@@ -149,6 +153,11 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         p.scoreboardData.activeScoreboard = this;
         recalculateScores(p);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, name);
+        if (containsNumberFormat && p.getVersion().getNetworkId() < ProtocolVersion.V1_20_3.getNetworkId()) {
+            TAB.getInstance().getConfigHelper().runtime().error("Scoreboard \"" + name + "\" contains right-side text alignment (using ||), however, this feature " +
+                    "was added in 1.20.3, but player \"" + p.getName() + "\" is using version " + p.getVersion().getFriendlyName() + ". Right-side text " +
+                    "will not be visible for them.");
+        }
     }
 
     /**

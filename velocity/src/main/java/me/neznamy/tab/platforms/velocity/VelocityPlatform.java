@@ -180,6 +180,11 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
+    public boolean supportsNumberFormat() {
+        return true;
+    }
+
+    @Override
     public boolean supportsListOrder() {
         return false; // TODO when they add API
     }

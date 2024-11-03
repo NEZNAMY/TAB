@@ -174,6 +174,14 @@ public interface Platform {
     TabList createTabList(@NotNull TabPlayer player);
 
     /**
+     * Returns {@code true} if server is able to use {@code NumberFormat} scoreboard feature (1.20.3+). Returns {@code false}
+     * if server is running below this version (backend) or server API does not support it yet.
+     *
+     * @return  {@code true} if server is able to use {@code NumberFormat} scoreboard feature, {@code false} if not
+     */
+    boolean supportsNumberFormat();
+
+    /**
      * Returns {@code true} if server is able to use {@code listOrder} field in tablist (1.21.2+). Returns {@code false}
      * if server is running below this version (backend) or server API does not support it yet.
      *

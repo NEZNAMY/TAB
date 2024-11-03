@@ -136,6 +136,11 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsNumberFormat() {
+        return false; // TODO implement it
+    }
+
+    @Override
     public boolean supportsListOrder() {
         return false; // TODO when they add API
     }
