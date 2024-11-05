@@ -1,18 +1,16 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class PropertyCommand extends SubCommand {
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-    /** All properties assignable with a command */
-    private static final List<String> allProperties = Arrays.asList("tabprefix", "customtabname", "tabsuffix", "tagprefix", "tagsuffix");
+public abstract class PropertyCommand extends SubCommand {
 
     protected PropertyCommand(String name) {
         super(name, null);
@@ -21,7 +19,7 @@ public abstract class PropertyCommand extends SubCommand {
     @Override
     public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (arguments.length != 2) return Collections.emptyList();
-        return getStartingArgument(allProperties, arguments[1]);
+        return getStartingArgument(PropertyConfiguration.VALID_PROPERTIES, arguments[1]);
     }
 
     protected void help(@Nullable TabPlayer sender) {
@@ -47,7 +45,7 @@ public abstract class PropertyCommand extends SubCommand {
             value = value.substring(1, value.length()-1);
         }
         String property = args[1].toLowerCase();
-        if (allProperties.contains(property)) {
+        if (PropertyConfiguration.VALID_PROPERTIES.contains(property)) {
             if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
                 saveEntity(sender, args[0], property, value, server, world);
             } else {
