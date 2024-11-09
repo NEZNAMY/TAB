@@ -19,8 +19,6 @@ public class ConfigurationSection {
     @NotNull private final Map<Object, Object> map;
 
     public void checkForUnknownKey(@NotNull List<String> validProperties) {
-        Map<Object, ?> map = getMap(section);
-        if (map == null) return;
         for (Object mapKey : map.keySet()) {
             if (!validProperties.contains(mapKey.toString())) {
                 startupWarn(String.format("Configuration section \"%s\" has unknown key \"%s\". Valid keys: %s", section, mapKey, validProperties));
