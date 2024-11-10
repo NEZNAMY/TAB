@@ -8,10 +8,10 @@ import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bstats.velocity.Metrics;
 import org.jetbrains.annotations.Nullable;
@@ -54,8 +54,8 @@ public class VelocityTAB {
      */
     @Subscribe
     public void onProxyInitialization(@Nullable ProxyInitializeEvent event) {
-        if (!ReflectionUtils.classExists("net.kyori.adventure.text.logger.slf4j.ComponentLogger")) {
-            logger.warn(EnumChatFormat.RED + "The plugin requires Velocity build #274 (released on October 12th, 2023) and up to work.");
+        if (!ReflectionUtils.methodExists(TabListEntry.class, "setListOrder", int.class)) {
+            logger.warn("The plugin requires Velocity build #450 (released on November 10th, 2024) and up to work.");
             return;
         }
         TAB.create(new VelocityPlatform(this));

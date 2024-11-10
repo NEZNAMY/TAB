@@ -55,7 +55,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        // TODO once velocity adds it
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setListOrder(listOrder));
     }
 
     @Override
@@ -75,8 +75,8 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
                 .latency(latency)
                 .gameMode(gameMode)
                 .listed(listed)
+                .listOrder(listOrder)
                 .build();
-        // TODO listOrder once velocity adds it
         // TODO showHat once velocity adds it
 
         // Remove entry because:
