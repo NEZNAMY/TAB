@@ -66,14 +66,14 @@ public class ConditionsSection {
                 list = Collections.emptyList();
             }
             String type = section.getString("type");
-            String yes = section.getString("true");
+            Object yes = section.getObject("true");
             if (yes == null) yes = "true";
-            String no = section.getString("false");
+            Object no = section.getObject("false");
             if (no == null) no = "false";
             if (list.size() >= 2 && type == null) {
                 section.startupWarn(String.format("Condition \"%s\" has multiple conditions defined, but is missing \"type\" attribute. Using AND.", name));
             }
-            return new ConditionDefinition(list, !"OR".equals(type), yes, no);
+            return new ConditionDefinition(list, !"OR".equals(type), yes.toString(), no.toString());
         }
     }
 }

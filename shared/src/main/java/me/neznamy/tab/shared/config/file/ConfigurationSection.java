@@ -104,7 +104,7 @@ public class ConfigurationSection {
 
     @Nullable
     private <T> T getNullable(@NotNull String path, @NotNull Class<T> clazz) {
-        return evaluateNullable(map.get(path), path, clazz);
+        return evaluateNullable(get(path), path, clazz);
     }
 
     @Nullable
@@ -119,7 +119,7 @@ public class ConfigurationSection {
 
     @NotNull
     private <T> T getRequired(@NotNull String path, @NotNull T defaultValue, @NotNull Class<T> clazz) {
-        return evaluateRequired(map.get(path), path, defaultValue, clazz);
+        return evaluateRequired(get(path), path, defaultValue, clazz);
     }
 
     @NotNull
@@ -135,6 +135,14 @@ public class ConfigurationSection {
             return defaultValue;
         }
         return (T) value;
+    }
+
+    @Nullable
+    private Object get(@NotNull String key) {
+        for (Map.Entry<Object, Object> entry : map.entrySet()) {
+            if (key.equalsIgnoreCase(entry.getKey().toString())) return entry.getValue();
+        }
+        return null;
     }
 
     @NotNull
