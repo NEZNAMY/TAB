@@ -24,7 +24,7 @@ import java.util.Map;
  * Feature handler for BelowName feature
  */
 public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        WorldSwitchListener, ServerSwitchListener, CustomThreaded, RedisFeature {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded, RedisFeature, VanishListener {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -230,6 +230,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyDisplay) {
         if (viewer.belowNameData.disabled.get()) return;
+        if (!TAB.getInstance().getPlatform().canSee(viewer, scoreHolder)) return; // Prevent hack clients from knowing vanished players are connected
         viewer.getScoreboard().setScore(
                 OBJECTIVE_NAME,
                 scoreHolder.getNickname(),
@@ -302,5 +303,13 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     @Override
     public String getFeatureName() {
         return "BelowName";
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        if (player.isVanished()) return;
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            setScore(viewer, player, getValue(player), player.belowNameData.numberFormat.getFormat(viewer));
+        }
     }
 }
