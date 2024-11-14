@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 @RequiredArgsConstructor
@@ -74,12 +75,15 @@ public class ConfigurationSection {
 
     @Nullable
     public List<String> getStringList(@NotNull String path) {
-        return getNullable(path, List.class);
+        List<Object> list = getNullable(path, List.class);
+        if (list == null) return null;
+        return list.stream().map(Object::toString).collect(Collectors.toList());
     }
 
     @NotNull
     public List<String> getStringList(@NotNull String path, @NotNull List<String> defaultValue) {
-        return getRequired(path, defaultValue, List.class);
+        List<Object> list = getRequired(path, defaultValue, List.class);
+        return list.stream().map(Object::toString).collect(Collectors.toList());
     }
 
     @Nullable
