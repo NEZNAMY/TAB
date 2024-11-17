@@ -428,41 +428,50 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
-        if (!p.teamData.hiddenNameTag) {
-            p.teamData.hiddenNameTag = true;
-            updateVisibility(p);
-        }
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (!p.teamData.hiddenNameTag) {
+                p.teamData.hiddenNameTag = true;
+                updateVisibility(p);
+            }
+        }, getFeatureName(), "Processing API call (hideNameTag)"));
+
     }
 
     @Override
     public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
-        if (!p.teamData.addHiddenNameTagFor((TabPlayer) viewer)) return;
-        updateVisibility(p, (TabPlayer) viewer);
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (!p.teamData.addHiddenNameTagFor((TabPlayer) viewer)) return;
+            updateVisibility(p, (TabPlayer) viewer);
+        }, getFeatureName(), "Processing API call (hideNameTag)"));
     }
 
     @Override
     public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
-        if (p.teamData.hiddenNameTag) {
-            p.teamData.hiddenNameTag = false;
-            updateVisibility(p);
-        }
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (p.teamData.hiddenNameTag) {
+                p.teamData.hiddenNameTag = false;
+                updateVisibility(p);
+            }
+        }, getFeatureName(), "Processing API call (showNameTag)"));
     }
 
     @Override
     public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
-        if (!p.teamData.removeHiddenNameTagFor((TabPlayer) viewer)) return;
-        updateVisibility(p, (TabPlayer) viewer);
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (!p.teamData.removeHiddenNameTagFor((TabPlayer) viewer)) return;
+            updateVisibility(p, (TabPlayer) viewer);
+        }, getFeatureName(), "Processing API call (showNameTag)"));
     }
 
     @Override
@@ -480,21 +489,25 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void pauseTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
-        if (p.teamData.teamHandlingPaused) return;
-        if (!p.teamData.isDisabled()) unregisterTeam(p.teamData.teamName);
-        p.teamData.teamHandlingPaused = true; //setting after, so unregisterTeam method runs
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (p.teamData.teamHandlingPaused) return;
+            if (!p.teamData.isDisabled()) unregisterTeam(p.teamData.teamName);
+            p.teamData.teamHandlingPaused = true; //setting after, so unregisterTeam method runs
+        }, getFeatureName(), "Processing API call (pauseTeamHandling)"));
     }
 
     @Override
     public void resumeTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
-        if (!p.teamData.teamHandlingPaused) return;
-        p.teamData.teamHandlingPaused = false; //setting before, so registerTeam method runs
-        if (!p.teamData.isDisabled()) registerTeam(p);
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (!p.teamData.teamHandlingPaused) return;
+            p.teamData.teamHandlingPaused = false; //setting before, so registerTeam method runs
+            if (!p.teamData.isDisabled()) registerTeam(p);
+        }, getFeatureName(), "Processing API call (resumeTeamHandling)"));
     }
 
     @Override
@@ -505,11 +518,13 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void setCollisionRule(@NonNull me.neznamy.tab.api.TabPlayer player, Boolean collision) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
-        if (Objects.equals(p.teamData.forcedCollision, collision)) return;
-        p.teamData.forcedCollision = collision;
-        updateCollision(p, true);
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (Objects.equals(p.teamData.forcedCollision, collision)) return;
+            p.teamData.forcedCollision = collision;
+            updateCollision(p, true);
+        }, getFeatureName(), "Processing API call (setCollisionRule)"));
     }
 
     @Override
@@ -523,23 +538,23 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String prefix) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
             p.teamData.prefix.setTemporaryValue(prefix);
             updatePrefixSuffix(p);
-        }, getFeatureName(), "Updating prefix"));
+        }, getFeatureName(), "Processing API call (setPrefix)"));
     }
 
     @Override
     public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String suffix) {
         ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
             p.teamData.suffix.setTemporaryValue(suffix);
             updatePrefixSuffix(p);
-        }, getFeatureName(), "Updating suffix"));
+        }, getFeatureName(), "Processing API call (setSuffix)"));
     }
 
     @Override
