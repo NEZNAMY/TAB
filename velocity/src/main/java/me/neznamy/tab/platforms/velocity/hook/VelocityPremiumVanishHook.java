@@ -1,9 +1,9 @@
 package me.neznamy.tab.platforms.velocity.hook;
 
 import de.myzelyam.api.vanish.VelocityVanishAPI;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.velocity.VelocityTabPlayer;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**

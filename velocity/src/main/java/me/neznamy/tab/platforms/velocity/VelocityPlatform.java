@@ -90,7 +90,7 @@ public class VelocityPlatform extends ProxyPlatform {
                     "Until then, the following features will not work: scoreboard-teams, belowname-objective, playerlist-objective, scoreboard"));
         }
         if (plugin.getServer().getPluginManager().isLoaded("premiumvanish")) {
-            PremiumVanishHook.setInstance(new VelocityPremiumVanishHook());
+            new VelocityPremiumVanishHook().register();
         }
     }
 

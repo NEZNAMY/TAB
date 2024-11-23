@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bungeecord.hook;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.platform.Platform;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -36,13 +36,13 @@ public class BungeePremiumVanishHook extends PremiumVanishHook {
     }
 
     @Override
-    public synchronized boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+    public boolean canSee(TabPlayer viewer, TabPlayer target) {
         //noinspection ConstantValue
         return canSeeEnabled && BungeeVanishAPI.canSee(((BungeeTabPlayer)viewer).getPlayer(), ((BungeeTabPlayer)target).getPlayer());
     }
 
     @Override
-    public boolean isVanished(@NotNull TabPlayer player) {
+    public boolean isVanished(TabPlayer player) {
         try {
             return BungeeVanishAPI.isInvisible(((BungeeTabPlayer)player).getPlayer());
         } catch (IllegalStateException ignored) {

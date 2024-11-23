@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.platform;
 
+import me.neznamy.tab.api.integration.VanishIntegration;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -7,7 +8,6 @@ import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -201,7 +201,7 @@ public interface Platform {
      */
     default boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         try {
-            if (PremiumVanishHook.getInstance() != null && PremiumVanishHook.getInstance().canSee(viewer, target)) return true;
+            if (VanishIntegration.getHandlers().stream().anyMatch(integration -> !integration.canSee(viewer, target))) return false;
         } catch (ConcurrentModificationException e) {
             // PV error, try again
             return canSee(viewer, target);
