@@ -4,6 +4,7 @@ import de.myzelyam.api.vanish.VanishAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * PremiumVanish hook for Bukkit.
@@ -11,12 +12,12 @@ import me.neznamy.tab.shared.hook.PremiumVanishHook;
 public class BukkitPremiumVanishHook extends PremiumVanishHook {
 
     @Override
-    public boolean canSee(TabPlayer viewer, TabPlayer target) {
+    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         return VanishAPI.canSee(((BukkitTabPlayer)viewer).getPlayer(), ((BukkitTabPlayer)target).getPlayer());
     }
 
     @Override
-    public boolean isVanished(TabPlayer player) {
+    public boolean isVanished(@NotNull TabPlayer player) {
         return VanishAPI.isInvisible(((BukkitTabPlayer)player).getPlayer());
     }
 }

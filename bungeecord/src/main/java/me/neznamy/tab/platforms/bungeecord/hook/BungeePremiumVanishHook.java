@@ -36,13 +36,13 @@ public class BungeePremiumVanishHook extends PremiumVanishHook {
     }
 
     @Override
-    public boolean canSee(TabPlayer viewer, TabPlayer target) {
+    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         //noinspection ConstantValue
         return canSeeEnabled && BungeeVanishAPI.canSee(((BungeeTabPlayer)viewer).getPlayer(), ((BungeeTabPlayer)target).getPlayer());
     }
 
     @Override
-    public boolean isVanished(TabPlayer player) {
+    public boolean isVanished(@NotNull TabPlayer player) {
         try {
             return BungeeVanishAPI.isInvisible(((BungeeTabPlayer)player).getPlayer());
         } catch (IllegalStateException ignored) {

@@ -6,7 +6,6 @@ import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -29,7 +28,7 @@ public abstract class VanishIntegration {
      *          The player being viewed
      * @return  {@code true} if the viewer can see the target, {@code false} otherwise
      */
-    public abstract boolean canSee(TabPlayer viewer, TabPlayer target);
+    public abstract boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target);
 
     /**
      * Checks if the specified player is in a vanished state.
@@ -38,7 +37,7 @@ public abstract class VanishIntegration {
      *          The player to check
      * @return  {@code true} if the player is vanished, {@code false} otherwise
      */
-    public abstract boolean isVanished(TabPlayer player);
+    public abstract boolean isVanished(@NotNull TabPlayer player);
 
     /**
      * Registers this integration handler to the global list of handlers.
@@ -60,7 +59,7 @@ public abstract class VanishIntegration {
      * @param handler
      *        The handler to register
      */
-    public static void registerHandler(VanishIntegration handler) {
+    public static void registerHandler(@NotNull VanishIntegration handler) {
         HANDLERS.add(handler);
     }
 
@@ -70,7 +69,7 @@ public abstract class VanishIntegration {
      * @param handler
      *        The handler to unregister
      */
-    public static void unregisterHandler(VanishIntegration handler) {
+    public static void unregisterHandler(@NotNull VanishIntegration handler) {
         HANDLERS.remove(handler);
     }
 
@@ -79,7 +78,8 @@ public abstract class VanishIntegration {
      *
      * @return  A list of registered VanishIntegration handlers
      */
+    @NotNull
     public static List<VanishIntegration> getHandlers() {
-        return Collections.unmodifiableList(HANDLERS);
+        return HANDLERS;
     }
 }
