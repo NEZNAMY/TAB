@@ -1,9 +1,9 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import me.neznamy.tab.api.integration.VanishIntegration;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -106,7 +106,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public boolean isVanished() {
-        if (PremiumVanishHook.getInstance() != null && PremiumVanishHook.getInstance().isVanished(this)) return true;
+        if (VanishIntegration.getHandlers().stream().anyMatch(integration -> integration.isVanished(this))) return true;
         return super.isVanished();
     }
 

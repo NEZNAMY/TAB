@@ -53,7 +53,7 @@ public class BungeePlatform extends ProxyPlatform {
     public BungeePlatform(@NotNull BungeeTAB plugin) {
         this.plugin = plugin;
         if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {
-            PremiumVanishHook.setInstance(new BungeePremiumVanishHook(this));
+            new BungeePremiumVanishHook(this).register();
         }
     }
 

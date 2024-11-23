@@ -29,7 +29,6 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
-import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
@@ -98,7 +97,7 @@ public class BukkitPlatform implements BackendPlatform {
             //not spigot
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
-            PremiumVanishHook.setInstance(new BukkitPremiumVanishHook());
+            new BukkitPremiumVanishHook().register();
         }
         PingRetriever.tryLoad();
         ComponentConverter.tryLoad(serverVersion);
