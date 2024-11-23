@@ -1,23 +1,24 @@
 package me.neznamy.tab.api.integration;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
+@RequiredArgsConstructor
 public abstract class VanishIntegration {
 
-    // Name of the plugin this integration is associated with
-    @NotNull
-    String plugin;
+    /** List of all registered VanishIntegration handlers */
+    private static final List<VanishIntegration> HANDLERS = new ArrayList<>();
 
-    // Constructor to initialize the plugin name
-    public VanishIntegration(@NotNull String plugin) {
-        this.plugin = plugin;
-    }
+    /** Name of the plugin this integration is associated with */
+    @NotNull
+    private final String plugin;
 
     /**
      * Determines if a viewer can see a target player.
@@ -73,15 +74,12 @@ public abstract class VanishIntegration {
         HANDLERS.remove(handler);
     }
 
-    // A list of all registered VanishIntegration handlers
-    private static final List<VanishIntegration> HANDLERS = new ArrayList<>();
-
     /**
      * Retrieves the list of all registered VanishIntegration handlers.
      *
      * @return  A list of registered VanishIntegration handlers
      */
     public static List<VanishIntegration> getHandlers() {
-        return HANDLERS;
+        return Collections.unmodifiableList(HANDLERS);
     }
 }
