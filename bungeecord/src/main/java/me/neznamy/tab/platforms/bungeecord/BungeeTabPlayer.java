@@ -47,6 +47,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         try {
             getPlayer().sendMessage((BaseComponent) message.convert(getVersion()));
         } catch (NullPointerException BungeeCordBug) {
+            // TODO remove this at some point in the near future as it got fixed in build #1882 (when 1.21.4 is out and required bungee build gets bumped)
             // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
             //	at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
             //	at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:198)
@@ -92,6 +93,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         try {
             getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
         } catch (NullPointerException BungeeCordBug) {
+            // TODO remove this at some point in the near future as it got fixed in build #1882 (when 1.21.4 is out and required bungee build gets bumped)
             // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
             //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
             //        at net.md_5.bungee.ServerConnection.sendPacketQueued(ServerConnection.java:48)
@@ -115,6 +117,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         try {
             ((UserConnection)getPlayer()).sendPacketQueued(packet);
         } catch (NullPointerException BungeeCordBug) {
+            // TODO remove this at some point in the near future as it got fixed in build #1882 (when 1.21.4 is out and required bungee build gets bumped)
             // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
             //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
             //        at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:194)
