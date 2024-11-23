@@ -26,7 +26,7 @@ import java.util.Map.Entry;
  */
 public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
         CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable,
-        QuitListener, CustomThreaded {
+        QuitListener, CustomThreaded, ServerSwitchListener {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
@@ -354,6 +354,14 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     @Override
     public String getFeatureName() {
         return "Scoreboard";
+    }
+
+    @Override
+    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+        if (changed.scoreboardData.otherPluginScoreboard != null) {
+            changed.scoreboardData.otherPluginScoreboard = null;
+            sendHighestScoreboard(changed);
+        }
     }
 
     /**
