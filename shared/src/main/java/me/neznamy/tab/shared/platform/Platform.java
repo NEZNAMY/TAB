@@ -201,7 +201,9 @@ public interface Platform {
      */
     default boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         try {
-            if (VanishIntegration.getHandlers().stream().anyMatch(integration -> !integration.canSee(viewer, target))) return false;
+            if (!VanishIntegration.getHandlers().isEmpty()) {
+                return VanishIntegration.getHandlers().stream().allMatch(integration -> integration.canSee(viewer, target));
+            }
         } catch (ConcurrentModificationException e) {
             // PV error, try again
             return canSee(viewer, target);

@@ -169,8 +169,11 @@ public abstract class ProxyTabPlayer extends TabPlayer {
 
     @Override
     public boolean isVanished() {
-        for (VanishIntegration i : VanishIntegration.getHandlers()) {
-            if (i.isVanished(this)) return true;
+        if (!VanishIntegration.getHandlers().isEmpty()) {
+            for (VanishIntegration integration : VanishIntegration.getHandlers()) {
+                if (integration.isVanished(this)) return true;
+            }
+            return false;
         }
         return vanished;
     }
