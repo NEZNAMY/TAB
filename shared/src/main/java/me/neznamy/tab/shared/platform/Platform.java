@@ -200,11 +200,13 @@ public interface Platform {
      * @return  {@code true} if can see, {@code false} if not.
      */
     default boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        try {
-            if (VanishIntegration.getHandlers().stream().anyMatch(integration -> !integration.canSee(viewer, target))) return false;
-        } catch (ConcurrentModificationException e) {
-            // PV error, try again
-            return canSee(viewer, target);
+        if (!VanishIntegration.getHandlers().isEmpty()) {
+            try {
+                return VanishIntegration.getHandlers().stream().allMatch(integration -> integration.canSee(viewer, target));
+            } catch (ConcurrentModificationException e) {
+                // PV error, try again
+                return canSee(viewer, target);
+            }
         }
         return !target.isVanished() || viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
     }
