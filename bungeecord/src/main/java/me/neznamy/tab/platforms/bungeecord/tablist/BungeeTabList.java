@@ -100,7 +100,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
             item.setProperties(new Property[0]);
         }
         item.setListOrder(listOrder);
-        // TODO showHat once BungeeCord adds it
+        item.setShowHat(showHat);
         return item;
     }
 

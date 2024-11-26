@@ -22,9 +22,10 @@ public class BungeeTabList1193 extends BungeeTabList {
     private static final EnumSet<PlayerListItemUpdate.Action> updateGameMode = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE);
     private static final EnumSet<PlayerListItemUpdate.Action> updateListed = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LISTED);
     private static final EnumSet<PlayerListItemUpdate.Action> updateListOrder = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LIST_ORDER);
+    private static final EnumSet<PlayerListItemUpdate.Action> updateHat = EnumSet.of(PlayerListItemUpdate.Action.UPDATE_HAT);
 
     // All actions for 1.19.3 - 1.21.1
-    private static final EnumSet<PlayerListItemUpdate.Action> addPlayer_1_21_1 = EnumSet.of(
+    private static final EnumSet<PlayerListItemUpdate.Action> addPlayer_legacy = EnumSet.of(
             PlayerListItemUpdate.Action.ADD_PLAYER,
             PlayerListItemUpdate.Action.UPDATE_GAMEMODE,
             PlayerListItemUpdate.Action.UPDATE_LISTED,
@@ -40,6 +41,17 @@ public class BungeeTabList1193 extends BungeeTabList {
             PlayerListItemUpdate.Action.UPDATE_LATENCY,
             PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME,
             PlayerListItemUpdate.Action.UPDATE_LIST_ORDER
+    );
+
+    // All actions for 1.21.4+
+    private static final EnumSet<PlayerListItemUpdate.Action> addPlayer_1_21_4 = EnumSet.of(
+            PlayerListItemUpdate.Action.ADD_PLAYER,
+            PlayerListItemUpdate.Action.UPDATE_GAMEMODE,
+            PlayerListItemUpdate.Action.UPDATE_LISTED,
+            PlayerListItemUpdate.Action.UPDATE_LATENCY,
+            PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME,
+            PlayerListItemUpdate.Action.UPDATE_LIST_ORDER,
+            PlayerListItemUpdate.Action.UPDATE_HAT
     );
 
     /**
@@ -98,15 +110,25 @@ public class BungeeTabList1193 extends BungeeTabList {
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
-        //TODO once BungeeCord adds it
+        if (player.getVersion().getNetworkId() < ProtocolVersion.V1_21_4.getNetworkId()) return;
+        Item item = item(entry);
+        item.setShowHat(showHat);
+        sendPacket(updateHat, item);
     }
 
     @Override
     public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
                          int gameMode, @Nullable BaseComponent displayName, int listOrder, boolean showHat) {
         addUuid(id);
-        sendPacket(player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() ? addPlayer_1_21_2 : addPlayer_1_21_1,
-                entryToItem(id, name, skin, listed, latency, gameMode, displayName, listOrder, showHat));
+        EnumSet<PlayerListItemUpdate.Action> actions;
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_4.getNetworkId()) {
+            actions = addPlayer_1_21_4;
+        } else if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) {
+            actions = addPlayer_1_21_2;
+        } else {
+            actions = addPlayer_legacy;
+        }
+        sendPacket(actions, entryToItem(id, name, skin, listed, latency, gameMode, displayName, listOrder, showHat));
     }
 
     private void sendPacket(@NonNull EnumSet<PlayerListItemUpdate.Action> actions, @NonNull Item item) {

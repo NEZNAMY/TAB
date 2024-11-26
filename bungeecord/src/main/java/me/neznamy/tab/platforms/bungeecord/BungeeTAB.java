@@ -13,12 +13,12 @@ public class BungeeTAB extends Plugin {
     @Override
     public void onEnable() {
         try {
-            PlayerListItem.Item.class.getDeclaredField("listOrder");
+            PlayerListItem.Item.class.getDeclaredField("showHat");
             TAB.create(new BungeePlatform(this));
         } catch (NoSuchFieldException e) {
-            getLogger().warning(EnumChatFormat.RED + "The plugin requires BungeeCord build #1861 " +
-                    "(released on August 24th, 2024) and up (or an equivalent fork) to work. If you are using a fork that did not" +
-                    " update to the new BungeeCord version yet, stay on an older TAB version made for older BungeeCord builds in the meantime.");
+            getLogger().warning(EnumChatFormat.RED + "The plugin requires BungeeCord build #1885 " +
+                    "(released on November 23rd, 2024) and up (or an equivalent fork) to work. If you are using a fork that did not" +
+                    " update to the new BungeeCord version yet, stay on TAB v5.0.2, which supports older builds.");
         }
     }
 

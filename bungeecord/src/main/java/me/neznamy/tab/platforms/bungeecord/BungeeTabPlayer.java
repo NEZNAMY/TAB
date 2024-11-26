@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -44,21 +43,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        try {
-            getPlayer().sendMessage((BaseComponent) message.convert(getVersion()));
-        } catch (NullPointerException BungeeCordBug) {
-            // TODO remove this at some point in the near future as it got fixed in build #1882 (when 1.21.4 is out and required bungee build gets bumped)
-            // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
-            //	at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
-            //	at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:198)
-            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:565)
-            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:520)
-            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:508)
-            if (TAB.getInstance().getConfiguration().getConfig().isDebugMode()) {
-                TAB.getInstance().getErrorManager().printError("Failed to send message to player " + getName() +
-                        " (online = " + getPlayer().isConnected() + "): " + message.convert(getVersion()), BungeeCordBug);
-            }
-        }
+        getPlayer().sendMessage((BaseComponent) message.convert(getVersion()));
     }
 
     @Override
@@ -89,20 +74,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
-        if (!getPlayer().isConnected()) return;
-        try {
-            getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
-        } catch (NullPointerException BungeeCordBug) {
-            // TODO remove this at some point in the near future as it got fixed in build #1882 (when 1.21.4 is out and required bungee build gets bumped)
-            // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
-            //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
-            //        at net.md_5.bungee.ServerConnection.sendPacketQueued(ServerConnection.java:48)
-            //        at net.md_5.bungee.ServerConnection.sendData(ServerConnection.java:70)
-            if (TAB.getInstance().getConfiguration().getConfig().isDebugMode()) {
-                TAB.getInstance().getErrorManager().printError("Failed to deliver plugin message to player " + getName() +
-                        " (online = " + getPlayer().isConnected() + ")", BungeeCordBug);
-            }
-        }
+        getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
     }
 
     /**
@@ -113,18 +85,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      *          Packet to send
      */
     public void sendPacket(@NotNull DefinedPacket packet) {
-        if (!getPlayer().isConnected()) return;
-        try {
-            ((UserConnection)getPlayer()).sendPacketQueued(packet);
-        } catch (NullPointerException BungeeCordBug) {
-            // TODO remove this at some point in the near future as it got fixed in build #1882 (when 1.21.4 is out and required bungee build gets bumped)
-            // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
-            //        at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
-            //        at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:194)
-            if (TAB.getInstance().getConfiguration().getConfig().isDebugMode()) {
-                TAB.getInstance().getErrorManager().printError("Failed to deliver packet to player " + getName() +
-                        " (online = " + getPlayer().isConnected() + "): " + packet, BungeeCordBug);
-            }
-        }
+        ((UserConnection)getPlayer()).sendPacketQueued(packet);
     }
 }
