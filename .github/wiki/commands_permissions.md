@@ -1,9 +1,10 @@
 # About
-This page lists all of the commands and permissions that are available with TAB. Commands have required permissions associated with them.
+This page lists all the commands and permissions that are available with TAB.
+Commands have required permissions associated with them.
 
 **BungeeCord / Velocity users:**
 * If you have TAB installed **on the proxy**, use **/btab** instead of /tab. Permissions are the same.
-* Permission nodes are checked on the server where the plugin is installed (by default). This means that with TAB on BungeeCord, permission nodes are checked on BungeeCord and therefore you'll need a permission plugin there as well. If you wish to take permission groups and checks from backend servers instead, set `use-bukkit-permissions-manager: true` in config.
+* Permission nodes are checked on the server where the plugin is installed (by default). This means that with TAB on BungeeCord, permission nodes are checked on BungeeCord, and therefore you'll need a permission plugin there as well. If you wish to take permission groups and checks from backend servers instead, set `use-bukkit-permissions-manager: true` in config.
 
 # Content
 * [Configuration](#configuration-commands)
@@ -35,7 +36,7 @@ This page lists all of the commands and permissions that are available with TAB.
 # Configuration commands
 ## /tab \<player/group/playeruuid\> \<name\> \<property\> [value] [options]
 * **Permission:** `tab.change.<property>`
-* **Description:**  Changes a property of a group/player to the given value. No value argument will result in that property being deleted.
+* **Description:** Changes a property of a group/player to the given value. No value argument will result in that property being deleted.
 
 #### Properties
 * For tablist: `tabprefix`, `customtabname`, and `tabsuffix`.
@@ -52,7 +53,7 @@ This page lists all of the commands and permissions that are available with TAB.
 
 ## /tab \<player/group/playeruuid\> \<name\> remove
 * **Permission:** `tab.remove`
-* **Description:**  Removes all direct data from the given player/group.
+* **Description:** Removes all direct data from the given player/group.
 
 #### Notes
 * The `playeruuid` argument requires the name of an **online player** to remove data from.
@@ -63,19 +64,19 @@ This page lists all of the commands and permissions that are available with TAB.
 
 ## /tab debug [player]
 * **Permission:** `tab.debug`
-* **Description:**  Shows the server version, plugin version, permission group choice logic, and sorting type. If player argument is filled, shows info about that player:
+* **Description:** Shows the server version, plugin version, permission group choice logic, and sorting type. If player argument is filled, shows info about that player:
   * On BungeeCord, shows whether player is connected to the backend server with [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) plugin or not.
   * Sorting value & explanation, useful to see what went wrong if players are not sorted correctly.
   * Primary group set using [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups)
-  * List of all configured properties of players, their values and source.
+  * List of all configured properties, their values and source.
 
 ## /tab group \<group\>
 * **Permission:** `tab.groupinfo`
-* **Description:** Shows all settings applied to the specified group, both global and per-world / per-server. Handly when plugin is connected to MySQL, where you have no other way to effectively check group settings.
+* **Description:** Shows all settings applied to the specified group, both global and per-world / per-server. Handy when plugin is connected to MySQL, where you have no other way to effectively check group settings.
 
 ## /tab groups
 * **Permission:** `tab.grouplist`
-* **Description:** Shows list of all groups that have anything assigned to them, either globally or per-world / per-server. Handy when plugin is connected to MySQL, where you have no other way to effectively check your groups.
+* **Description:** Shows a list of all groups that have anything assigned to them, either globally or per-world / per-server. Handy when plugin is connected to MySQL, where you have no other way to effectively check your groups.
 
 # Scoreboard
 ## /tab scoreboard show \<name\> \[player\]
@@ -128,16 +129,16 @@ This page lists all of the commands and permissions that are available with TAB.
 # Other
 ## /tab cpu
 * **Permission:** `tab.cpu`
-* **Description:** Shows approximate CPU usage of the plugin from the last 10 seconds. There are parts which are impossible to be measured, so this shows slighty less than the real value is. The content is self-explanatory. All ways to decrease CPU usage can be found at [Optimizing the plugin](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin).
+* **Description:** Shows approximate CPU usage of the plugin from the last 10 seconds. There are parts that are impossible to be measured, so this shows slightly less than the real value is. The content is self-explanatory. All major ways to decrease CPU usage can be found at [Optimizing the plugin](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin).
 
 ## /tab parse \<player\> \<text\>
 * **Permission:** `tab.parse`
-* **Description:** Replaces all placeholders (both the plugin's internal ones, and those from PlaceholderAPI if it is installed) in the given `text`. Can be used to test if a placeholder works as expected.
+* **Description:** Replaces all placeholders (both the plugin's internal ones, and those from PlaceholderAPI if it is installed) in the given `text`. It can be used to test if a placeholder works as expected.
 
 # Additional permissions
 * `tab.admin` - Allows the player to execute all commands.
-* `tab.bypass` - If per-world player list is enabled as well as this permission, it allows the player to see everyone on the server, regardless of what the per-world player list settings allow. For example, if your per-world player list is set up to isolate worlds A and B, players with this permission will see all players from both A and B on their player list, whereas players that don't will only see either players from world A or players from world B, depending on what world they are in.
+* `tab.bypass` - If the per-world player list is enabled as well as this permission, it allows the player to see everyone on the server, regardless of what the per-world player list settings allow. For example, if your per-world player list is set up to isolate worlds A and B, players with this permission will see all players from both A and B on their player list, whereas players that don't have the permission will only see either players from world A or players from world B, depending on what world they are in.
 * `tab.staff` - Allows the player to be counted in the `%staffonline%` placeholder.
 * `tab.spectatorbypass` - If enabling bypass permission in [Spectator fix](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix), this is the permission.
 * `tab.tabcomplete` - Allows the player to auto-complete the `/tab` command.
-* `tab.seevanished` - Allows the player to see other vanished players on the [Global Playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) and marks the player as able to see vanished players when using [Aligned suffix](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Aligned-Tabsuffix) feature to properly space out suffixes of players based on what the player can and cannot see.
+* `tab.seevanished` - Allows the player to see other vanished players on the [Global Playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) and [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout).  

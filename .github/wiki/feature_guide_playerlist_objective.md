@@ -26,7 +26,7 @@ This feature can be configured in **config.yml** under **playerlist-objective** 
 | disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. |
 
 # Limitations
-On 1.20.2 and lower, only 2 display types are supported - number and hearts. The number's color is yellow and cannot be changed.
+At 1.20.2 and lower, only 2 display types are supported - number and hearts. The number's color is yellow and cannot be changed.
 
 # Additional info
 ## Additional note 1 - Spectator gamemode

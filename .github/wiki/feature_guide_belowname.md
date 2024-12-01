@@ -11,41 +11,49 @@
 * [Limitations](#limitations)
 * [Examples](#examples)
   * [Example 1 - Per-world values](#example-1---per-world-values)
-  * [Example 2 - Hiding `text` for 1.20.3+ players](#example-2---hiding-text-for-1203-players)
+  * [Example 2 - Hiding `title` for 1.20.3+ players](#example-2---hiding-title-for-1203-players)
 
 # About
-The scoreboard objective with BELOW_NAME display slot that adds another line of text below nametag of players. It is only visible on players within 8 block range. This value is client sided and cannot be changed by the plugin.  
+The scoreboard objective with BELOW_NAME display slot that adds another line of text below nametag of players.
+It is only visible on players within 8-block range.
+This value is client sided and cannot be changed by the plugin.  
 ![](https://images-ext-1.discordapp.net/external/YlGPCRDJVeZZI0TPWmVBKyHszxSkjatmclyqUThvTz8/https/image.prntscr.com/image/jcETUzVQQYqectQ2aI4iqQ.png)
 
 This line automatically appears on all player entities when enabled. **Therefore, it is not possible to only display it on some players or not display it on NPCs**.
 
 The feature can be configured in **config.yml** under **belowname-objective** section.
 
-The feature's properties are displayed as `[score]` + space + `text`, where `[score]` is:
-* `number` for 1.20.2- (will show `0` on NPCs)
-* `fancy-display-players` for 1.20.3+ (will show `fancy-display-default` on NPCs)
+The feature's properties are displayed as `[score]` + space + `title`, where `[score]` is:
+* `value` for 1.20.2- (will show `0` on NPCs)
+* `fancy-value` for 1.20.3+ (will show `fancy-value-default` on NPCs)
 
 # Configuration
 | Option name | Default value | Description |
 | ------------- | ------------- | ------------- |
 | enabled | true | Enables / Disables the feature |
-| number | %health% | [1.20.2-] An integer from -2147483648 to 2147483647, doesn't support decimal values. The number is always white. Supports placeholders with player-specific output, such as player health. Only visible on 1.20.2 and lower. <br/> **Note**: Even if you only support 1.20.3+, you still need to configure this value to properly evaluate to a number, because the value is still sent to the client (just not displayed). You can set it to `0` for simiplicity. |
-| fancy-display-players | &c%health% | [1.20.3+] Any text, supports placeholders with per-player output. Only visible on 1.20.3+. |
-| fancy-display-default | NPC | [1.20.3+] Default display for all player entities. Plugin uses the value above for every real player, therefore this default value will only appear on player entities which are not actual players, a.k.a. NPCs. Only visible on 1.20.3+. |
-| text | Health | Text displayed after number. It is formally called scoreboard title, which is displayed on all player entities and value is shared on all players and therefore not bound to specific players, which makes it unable to display the value per-player. It should only contain static text or placeholders which return same value for all players. All inserted placeholders are parsed for the player viewing the text. This is intentional to allow advanced configuration with conditions for per-world values for example. |
+| value | %health% | [1.20.2-] An integer from -2147483648 to 2147483647, doesn't support decimal values. The number is always white. Supports placeholders with player-specific output, such as player health. Only visible on 1.20.2 and lower. <br/> **Note**: Even if you only support 1.20.3+, you still need to configure this value to properly evaluate to a number, because the value is still sent to the client (just not displayed). You can set it to `0` for simplicity. |
+| fancy-value | &c%health% | [1.20.3+] Any text, supports placeholders with per-player output. Only visible on 1.20.3+. |
+| fancy-value-default | NPC | [1.20.3+] Default display for all player entities. Plugin uses the value above for every real player, therefore this default value will only appear on player entities which are not actual players, a.k.a. NPCs. Only visible on 1.20.3+. |
+| title | Health | Text displayed after `value`. It is formally called scoreboard title, which is displayed on all player entities and value is shared on all players and therefore not bound to specific players, which makes it unable to display the value per-player. It should only contain static text or placeholders which return same value for all players. All inserted placeholders are parsed for the player viewing the text. This is intentional to allow advanced configuration with conditions for per-world values for example. |
 | disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. |
 
 # Additional Info
 ## Additional note 1 - Copying nametag visibility rule
-The minecraft feature is programmed to be affected by nametag visibility rule. This means that when nametag is set to invisible, belowname will be invisible as well.
+The minecraft feature is programmed to be affected by nametag visibility rule.
+This means that when the nametag is set to invisible, belowname will be invisible as well.
 
 ## Additional note 2 - Hidden on sneak on 1.8
 Belowname is not visible on 1.8.x clients when player is sneaking. This is client-sided behavior and cannot be changed by the server.
 
 ## Additional note 3 - Visible on NPCs
-Belowname objective is automatically attached to all entities of player type with the default value of `0` (<1.20.3) or value configured as `fancy-display-default` (1.20.3+). This includes player NPCs.
+Belowname objective is automatically attached to all entities of player type with the default value of
+`0` (<1.20.3) or value configured as `fancy-value-default` (1.20.3+).
+This includes player NPCs.
 
-There is currently only 1 way to make them not visible on NPCs. From [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule) we know that belowname is not visible if player's nametag is invisible. NPC plugin can take advantage of this by using teams to hide the original name and display a hologram instead.
+There is currently only one way to make them not visible on NPCs.
+From [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule) we know
+that belowname is not visible if player's nametag is invisible.
+NPC plugin can take advantage of this by using teams to hide the original name and display a hologram instead.
 
 This is how you can achieve it using the following popular NPC plugins:
 * **Citizens**:
@@ -55,10 +63,12 @@ This is how you can achieve it using the following popular NPC plugins:
 
 # Tips & Tricks
 ## Tip 1 - Heart symbol
-If you want to show health of players and display a heart symbol as text, you can use this one: `❤`. Make sure you [save config in UTF-8 encoding](https://github.com/NEZNAMY/TAB/wiki/How-to-save-the-config-in-UTF8-encoding) so it's loaded correctly.
+If you want to show health of players and display a heart symbol as text, you can use this one: `❤`.
+Make sure you [save config in UTF-8 encoding](https://github.com/NEZNAMY/TAB/wiki/How-to-save-the-config-in-UTF8-encoding),
+so it's loaded correctly.
 ```
 belowname-objective:
-  text: "&4❤"
+  title: "&4❤"
 ```
 
 ## Tip 2 - Displaying health as 0-10 or in %
@@ -67,14 +77,21 @@ If you want health to display health as 0-10 instead of 0-20, you can achieve it
 * `%math_0_{player_health}*5%` for 0-100
 
 # Limitations
-* The format is a **[score] + space + shared text**, where [score] is either a white number (1.20.2-) or any text (1.20.3+).
-* The text is same on all players, therefore cannot be personalized (such as player's faction). Only the [score] can be per-player.
-* It appears on all entites of player type. **This includes player NPCs.**
-* Text length is limited to 32 characters on <1.13
+* The format is a **[score] + space + shared title**, where [score] is either a white number (1.20.2-) or any text (1.20.3+).
+* The title is the same on all players, therefore, it cannot be personalized (such as player's faction). Only the [score] can be per-player.
+* It appears on all entities of player type. **This includes player NPCs.**
+* Title length is limited to 32 characters on <1.13
 
 # Examples
 ## Example 1 - Per-world values
-This feature doesn't directly support per-world values or similar. However, this can be achieved with conditions. Let's make `fancy-display-players` conditional based on world. Let's make an example with 3 worlds. Check if player is in world `world1`, then show one text. If not, check if player is in world `world2`, then show another text. If not, show final text. This can be achieved by chaining 2 conditions:
+This feature doesn't directly support per-world values or similar.
+However, this can be achieved with conditions.
+Let's make `fancy-value` conditional based on player's world.
+Let's make an example with 3 worlds.
+Check if player is in world `world1`, then show one text.
+If not, check if player is in world `world2`, then show another text.
+If not, show the final text.
+This can be achieved by chaining 2 conditions:
 ```
 conditions:
   belowname1:
@@ -90,19 +107,31 @@ conditions:
 ```
 **WARNING: DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG! INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE, HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!!!**
 
-Finally, use this condition as value in `fancy-display-players`:
+Finally, use this condition as value in `fancy-value`:
 ```
 belowname-objective:
-  fancy-display-players: "%condition:belowname1%"
+  fancy-value: "%condition:belowname1%"
 ```
-If you are under 1.20.3 and want to make `number` and `text` conditional, create 2 condition chains, one for each value and use them.
+If you are under 1.20.3 and want to make `value` and `title` conditional,
+create two condition chains, one for each value and use them.
 
-*Note: This is just an example, the plugin is not limited to displaying different values only per world. If you want per server values on BungeeCord, use %server% with server names. If you want worldguard regions, use %worldguard_region_name% with region names. This works for any placeholder offered by the plugin or by PlaceholderAPI.*
+*Note: This is just an example, the plugin is not limited to displaying different values only per world. If you want per server values on BungeeCord, use %server% with server names. If you want WorldGuard regions, use %worldguard_region_name% with region names. This works for any placeholder offered by the plugin or by PlaceholderAPI.*
 
-## Example 2 - Hiding `text` for 1.20.3+ players
-1.20.3 has replaced `number` field, which is limited to a white number with value configurable as `fancy-display-players`, which has no limits. However, `text` field is still visible on 1.20.3+. If you support both version ranges and want to make the best out of the new functionality, you might want to not show `text` to 1.20.3+ players anymore, since you can fully customize the text you want to display in `fancy-display-players`.
+## Example 2 - Hiding `title` for 1.20.3+ players
+1.20.3 has replaced `value` field,
+which is limited to a white number with value configurable as `fancy-value`, which has no limits.
+However, `title` field is still visible on 1.20.3+.
+If you support both version ranges and want to make the best out of the new functionality,
+you might want to not show `title` to 1.20.3+ players anymore,
+since you can fully customize the text you want to display in `fancy-value`.
 
-First, let's remind outselves what `text` *actually* is. It is actually called scoreboard title. Yes, just like the one on top of sidebar, just displayed elsewhere. This is why it displays on all players and placeholders are parsed for the viewing player. With this knowledge, all we need to do is check for player's version and only show something for <1.20.3. For this, we will use `%player-version-id%` placeholder, which returns network protocol version of player's game version, which can then be compared to.
+First, let's remind ourselves what `title` *actually* is.
+It is actually called scoreboard title.
+Yes, just like the one on top of sidebar, just displayed elsewhere.
+This is why it displays on all players and placeholders are parsed for the viewing player.
+With this knowledge, all we need to do is check for player's version and only show something for <1.20.3.
+For this, we will use `%player-version-id%` placeholder,
+which returns the network protocol version of player's game version, which can then be compared to.
 ```
 conditions:
   version:
@@ -113,6 +142,9 @@ conditions:
 **WARNING: DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG! INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE, HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!!!**
 ```
 belowname-objective:
-  text: "%condition:version%"
+  title: "%condition:version%"
 ```
-Unfortunately, due to the limitations of this feature, there is a forced space between `number`/`fancy-display-players` and `text`, even if the `text` is empty. You'll either need to live with it, or put some shared text there to avoid having a space at the end.  
+Unfortunately, due to the limitations of this feature,
+there is a forced space between `value`/`fancy-value` and `title`,
+even if the `title` is empty.
+You'll either need to live with it, or put some shared text there to avoid having a space at the end.  

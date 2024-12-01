@@ -87,7 +87,7 @@ Same for users, which can be configured in **users.yml**.
 ## Additional note 1 - Not resetting on server switch
 When under a BungeeCord network and having TAB installed on backend server and switching to another server, the header/footer will not reset. This is because BungeeCord makes it look like a world switch to the client. To avoid this, you have 2 options:
 * Install TAB on BungeeCord and disable header/footer on the server.
-* Install a(nother) plugin that sends some, or even empty header/footer on join.
+* Install a plugin that sends some, or even empty header/footer on join.
 
 # Tips & Tricks
 ## Tip 1 - Dynamic line count

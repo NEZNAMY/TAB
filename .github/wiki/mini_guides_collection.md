@@ -2,7 +2,7 @@
 Combine the knowledge gathered by reading the wiki to get interesting results, most frequently asked ones listed here.
 * [Displaying kill / death counter in tablist](#displaying-kill--death-counter-in-tablist)
 * [Taking prefixes/suffixes from permission plugin](#taking-prefixessuffixes-from-permission-plugin)
-* [Showing player version in tablist](#showing-player-version-in-tablist)
+* [Showing player's version in tablist](#showing-players-version-in-tablist)
 * [Replicating Purpur's TPSBar](#replicating-purpurs-tpsbar)
 * [BedWars1058 compatibility](#bedwars1058-compatibility)
 * [Displaying AFK status in tablist](#displaying-afk-status-in-tablist)
@@ -37,16 +37,25 @@ _DEFAULT_:
 ```
 This requires Vault and a permission plugin to work.  
 If you have luckperms installed on the same server instance, you can use TAB's internal `%luckperms-prefix%` (and suffix) placeholders instead.  
-**Note:** If TAB is on bungeecord and you want prefixes to be taken from backend servers, use `%vault_prefix%` (or `%luckperms_prefix%`) with [PlaceholderAPI support on bungeecord](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge).
+**Note:** If TAB is on bungeecord, and you want prefixes to be taken from backend servers, use `%vault_prefix%` (or `%luckperms_prefix%`) with [PlaceholderAPI support on bungeecord](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge).
 
-# Showing player version in tablist
+# Showing player's version in tablist
 Run `/tab group _DEFAULT_ tabsuffix " &8[&3%player-version%&8]"` or any other color combination you want. You can also include other placeholders with it. You can also modify it directly in **groups.yml** file instead. With the provided example command, you'll get the following result:  
 ![image](https://github.com/NEZNAMY/TAB/assets/6338394/2327b482-e8da-4940-9aa8-ea2bdda64b6f)
 
 # Replicating Purpur's TPSBar
 *This guide was made purely for demonstration of TAB's functionality to show you can even do things like this with conditions. It is not meant to be used as a replacement for Purpur or any of its functions or discouraging users from using Purpur.*
 
-By default, Purpur's TPSBar shows server's TPS, MSPT and player ping. These change color from green to red based on value. The easier way to achieve this is with [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements-(premium-only)), however, it alters placeholders everywhere inside TAB, which would result in features like [Yellow number](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Yellow-number) to stop working correctly when %ping% is used, since it would contain color codes now. For that reason, we will use [Conditions](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) instead.
+By default, Purpur's TPSBar shows server's TPS, MSPT and player ping.
+These change colors from green to red based on value.
+The easier way
+to achieve this is with [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements-(premium-only)),
+however, it alters placeholders everywhere inside TAB,
+which would result in features like [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)
+to stop working correctly when %ping% is used,
+since it would contain color codes now.
+For that reason,
+we will use [Conditions](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) instead.
 
 When TPS is above 19, it displays as `<#55FF55>value</#00AA00>`. When above 15, `<#FFFF55>value</#FFAA00>`, otherwise `<#FF5555>value</#AA0000>`. This can be achieved with 2 conditions:
 ```
@@ -118,8 +127,11 @@ To display only the first letter of the team, download this PlaceholderAPI expan
 and use `%bw1058plus_team_letter%` instead, if you want the color as well, put `%bw1058plus_team_color%` right before.
 
 ## Rank in lobby & Team name in game
-If you want to display the rank of the player while he's in the lobby or waiting lobby, BUT show the team name while in game, then don't worry, there's a way =)  
-You can create a condition which checks if the player's current team = nothing (which means the player isn't playing), and return either the rank or the team name depending on that condition. Example:
+If you want to display the rank of the player while he's in the lobby or waiting lobby,
+BUT show the team name while in the game, then don't worry, there's a way.  
+You can create a condition which checks if the player's current team = nothing (which means the player isn't playing),
+and return either the rank or the team name depending on that condition.
+Example:
 ```yml
 conditions:
   rankOrTeam:
@@ -136,19 +148,22 @@ First, you'll need to get an AFK plugin. TAB does not track player AFK status. T
 * `%cmi_user_afk_symbol%` for CMI
 * `%purpur_player_afk%` for Purpur (server software)
 
-Don't forget to install PlaceholderAPI and the respective expansion of your afk plugin.
+Remember to install PlaceholderAPI and the respective expansion of your afk plugin.
 
-Then, use the placeholder in configuration wherever you want it. Assuming you want it for all players, use `_DEFAULT_` group keyword in **groups.yml** for default settings for all groups. Combined with other settings, it may look like this for tabsufffix:
+Then, use the placeholder in configuration wherever you want it.
+Assuming you want it for all players,
+use `_DEFAULT_` group keyword in **groups.yml** for default settings for all groups.
+Combined with other settings, it may look like this for tabsuffix:
 ```
 _DEFAULT_:
   tabsuffix: "%luckperms-suffix%%essentials_afk%"
 ```
 Or running an in-game command: `/tab group _DEFAULT_ tabsuffix %luckperms-suffix%%essentials_afk%`.  
-This is not limited to displaying AFK status in suffix, you can also using it in tabprefix instead (or nametags).
+This is not limited to displaying AFK status in suffix, you can also use it in tabprefix instead (or nametags).
 
 
 Finally, you will most likely need to set up [placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) for the placeholder, as lots of them, including the %essentials_afk% placeholder used as an example, return `yes` and `no` values, which you most likely want to customize.  
-As mentioned, by default, Essentials' afk placeholder returns `yes` / `no` (unless modified in PlaceholderAPI's config.yml). Other placeholders may return different values. To find out what a placeholder returned, use `/tab parse <player> <placeholder>`. Don't forget to include color codes as well.  
+As mentioned, by default, Essentials' afk placeholder returns `yes` / `no` (unless modified in PlaceholderAPI's config.yml). Other placeholders may return different values. To find out what a placeholder returned, use `/tab parse <player> <placeholder>`. Remember to include color codes as well.  
 An example customization may look like this:
 ```
 placeholder-output-replacements:
@@ -156,11 +171,18 @@ placeholder-output-replacements:
     "yes": " &4&lAFK"
     "no": "" # display nothing if not afk
 ```
-Keep in mind that some placeholders don't need this. For example CMI has 2 placeholders - %cmi_user_afk% that returns true/false, and %cmi_user_afk_symbol% that returns AFK text configured in CMI configuration. Therefore, if you decide to use the latter one, you don't need to set up replacements.
+Keep in mind that some placeholders don't need this.
+For example, CMI has 2 placeholders - %cmi_user_afk% that returns true/false,
+and %cmi_user_afk_symbol% that returns AFK text configured in CMI configuration.
+Therefore, if you decide to use the latter one, you don't need to set up replacements.
 
 # Showing combined online player count from multiple servers
 ## Option 1 - Using global playerlist
-First way is to install TAB on the proxy and enable [global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist). It allows you to create groups of servers that share playerlist. These groups can then be used to show player count on those servers using a placeholder. Using the following example:
+The first way is to install TAB on the proxy
+and enable [global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist).
+It allows you to create groups of servers that share playerlist.
+These groups can then be used to show player count on those servers using a placeholder.
+Using the following example:
 ```
 global-playerlist:
   enabled: true
@@ -171,7 +193,10 @@ global-playerlist:
 ```
 Servers `lobby1` and `lobby2` will share playerlist. You will also be able to use placeholder formula `%playerlist-group_<group>%`, in this case `%playerlist-group_lobbies%`. It will show amount of players on `lobby1` and `lobby2` combined.
 
-Advantage of this is the natural compatibility with global playerlist's settings, which is also its disavantage, since global playerlist has to be configured that way. When using [layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) feature, global playerlist is redundant and having it enabled only for the placeholder is inefficient.
+Advantage of this is the natural compatibility with global playerlist's settings,
+which is also its disadvantage, since global playerlist has to be configured that way.
+When using [layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) feature,
+global playerlist is redundant and having it enabled only for the placeholder is inefficient.
 
 ## Option 2 - Using PlaceholderAPI
 Unlike the first option, this one offers much more freedom, but also requires another plugin. You'll need to [download PlaceholderAPI and its expansions called math and bungee](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide) (`/papi ecloud download bungee`, `/papi ecloud download math`, `/papi reload`).  

@@ -22,7 +22,9 @@ To use this feature, you need [TAB installed on bungeecord](https://github.com/N
 | update-latency | false | When **enabled**, plugin will send ping update to players on other servers, since backend servers only send ping updates of players on the same server. This is displayed as the green bar in tablist, unless altered by a mod / resource pack (?). <br /> <br />When **disabled**, ping of players on other servers will be set to 0 (5 bars).  <br /> <br />Disabled by default, because it's not only not very useful, but also has a very high CPU usage to due spamming a large amount of packets (especially on large networks). |
 
 ## Grouping players only from certain servers
-In case you want multiple servers to share playerlist, but not with every server, simply create a server group and put servers there. The default example
+In case you want multiple servers to share playerlist,
+but not with every server, create a server group and put servers there.
+The default example
 ```
 global-playerlist:
   server-groups:
@@ -33,17 +35,21 @@ global-playerlist:
       - server1
       - server2
 ```
-contains 2 groups, each of them consisting of 2 servers. Server group name can be anything (in our case they're called "lobbies" and "group2"). Under group name, list the actual server names defined in config.yml of bungeecord.
+Contains 2 groups, each of them consisting of 2 servers.
+Server group name can be anything (in our case, they're called "lobbies" and "group2").
+Under group name, list the actual server names defined in config.yml of bungeecord.
 
 With this setup, "lobby1" and "lobby2" will share playerlist, as well as "server1" with "server2". All unlisted servers are automatically put into a hidden default group and share playerlist. This means that all other servers except these 4 will share playerlist.
 
-To make all servers share playerlist, simply clear server groups and set
+To make all servers share the playerlist, simply clear server groups and set
 ```
   server-groups: {}
 ```
 
 ## Configuring isolated servers
-If you want servers which are isolated (no one will see these players and they will not see anyone on other servers), simply create a new group and only put that 1 server there. For example:
+If you want servers which are isolated (no one will see these players, and they will not see anyone on other servers),
+create a new group and only put that 1 server there.
+For example:
 ```
 global-playerlist:
   server-groups:
@@ -54,7 +60,9 @@ global-playerlist:
 ```
 
 ## Seeing all players on the network from some server
-If despite configuring server groups you want players to see everyone on the network if they're connected to specific server(s), you can simply list those servers at
+If, despite configuring server groups,
+you want players to see everyone on the network if they're connected to specific server(s),
+you can list those servers at
 ```
 global-playerlist:
   spy-servers:

@@ -28,6 +28,8 @@ per-world-playerlist:
       - paintball
       - bedwars
 ```
-contains 2 groups, each of them consisting of 2 worlds. World group name can be anything (in our case they're called "lobby" and "minigames"). Under group name, list the actual world names.
+Contains 2 groups, each of them consisting of 2 worlds.
+World group name can be anything (in our case, they're called "lobby" and "minigames").
+Under group name, list the actual world names.
 
 With this setup, "lobby1" and "lobby2" will share playerlist, as well as "paintball" with "bedwars". All other worlds will have playerlist not shared with any other worlds. Creating a group for 1 world only is completely useless.  

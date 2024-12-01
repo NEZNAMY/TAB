@@ -23,7 +23,6 @@
 * [Sorting in tablist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist)
 * [Spectator fix](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix)
 * [Tablist name formatting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting)
-* [Unlimited nametag mode](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Unlimited-nametag-mode)
 
 ## Functions
 * [Animations](https://github.com/NEZNAMY/TAB/wiki/Animations)
@@ -37,7 +36,7 @@
 ## Other
 * [Client-sided mechanics](https://github.com/NEZNAMY/TAB/wiki/Client%E2%80%90sided-mechanics)
 * [Quick PlaceholderAPI startup guide](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide)
-* [How to setup compatibility with glow plugins](https://github.com/NEZNAMY/TAB/wiki/How-to-make-TAB-compatible-with-glow-plugins)
+* [How to set up compatibility with glow plugins](https://github.com/NEZNAMY/TAB/wiki/How-to-make-TAB-compatible-with-glow-plugins)
 * [How to display name from nickname plugins](https://github.com/NEZNAMY/TAB/wiki/How-to-display-name-from-nickname-plugins)
 * [How to configure weights in LuckPerms](https://github.com/NEZNAMY/TAB/wiki/How-to-setup-weights-priorities)
 * [How to save config in UTF-8 encoding](https://github.com/NEZNAMY/TAB/wiki/How-to-save-the-config-in-UTF8-encoding)

@@ -10,7 +10,9 @@
   * [Compatibility with RGB and gradients](#compatibility-with-rgb-and-gradients)
 
 # Introduction
-As of 1.16 mojang introduced RGB color support. This allows us to use 256^3 different colors instead of the original 16 ones. This is not supported on <1.16 in any way.
+As of 1.16, mojang introduced RGB color support.
+This allows us to use 256^3 different colors instead of the original 16 ones.
+This is not supported on <1.16 in any way.
 
 # Usage
 Supported RGB formats:
@@ -27,7 +29,7 @@ Gradients:
 
 TAB uses the first by default, but is able to accept the other types as well without leaving any characters (such as `{}`) behind.  
 **Gradients only support 2 colors, using more will result in an invalid syntax and won't work.**
-**Don't forget to replace `RRGGBB` with actual hexadecimal numbers, for example `FFAA00`** (yes, some people straight up copy "RRGGBB" and ask why is it not working):  
+**Remember to replace `RRGGBB` with actual hexadecimal numbers, for example `FFAA00`** (yes, some people straight up copy "RRGGBB" and ask why it is not working):  
 This color code has 256 red, 170 green and 0 blue. It is equal to the legacy color `6` (gold/orange).
 
 You can use a tool like [this one](https://htmlcolorcodes.com/) to easily find suitable colors.
@@ -53,7 +55,11 @@ Usage for classic codes:
 * `<#RRGGBB|L>`
 * `&x&R&R&G&G&B&B|L`
 
-For gradients, defining color will result in the whole text having the same color instead of each character converting to closest colors, resulting in color groups. To define it, put `|L` after the begin color of gradient.  
+For gradients,
+defining color will result in the whole text
+having the same color instead of each character converting to the closest colors,
+resulting in color groups.
+To define it, put `|L` after the beginning color of gradient.  
 Usage:
 * `<#RRGGBB|L>Text</#RRGGBB>`
 * `{#RRGGBB|L>}Text{#RRGGBB<}`

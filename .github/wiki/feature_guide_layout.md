@@ -26,7 +26,10 @@ This feature is only available for versions **1.8** and up due to massive tablis
 Layouts can be creating in config under `layout.layouts` section. Each layout contains 3 settings: Fixed slots, player groups and display condition (optional).
 
 ## Display condition
-Condition that must be met for player to see the layout. If player does not meet the condition, next defined layout's condition is checked. If player does not meet any defined display condition, they will see default tablist. Display condition is optional and doesn't need to be set.  
+Condition that must be met for player to see the layout.
+If player does not meet the condition, the next defined layout's condition is checked.
+If a player does not meet any defined display condition, they will see the default tablist.
+Display condition is optional and doesn't need to be set.  
 For list of possible condition types see [Conditions page](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders).  
 Example:
 ```
@@ -39,7 +42,7 @@ This layout will only be visible to players with `tab.staff` permission.
 ## Fixed slots
 These are slots with fixed position that contain configurable text and skin.  
 They can be configured under `fixed-slots` option of each layout. The definition syntax is `SLOT|TEXT|SKIN`. If you don't want to define custom skin for that slot, use `SLOT|TEXT`.  
-`SLOT` - the position of the fixed slot. It can be from 1 to 80. By default, the direction is set to columns, so the first column is 1-20.  
+`SLOT` - The position of the fixed slot. It can be from 1 to 80. By default, the direction is set to columns, so the first column is 1-20.  
 `TEXT` - the text. It supports placeholders.  
 `SKIN` - layout's skin, see below for configuration.  
 Example:
@@ -55,10 +58,14 @@ layouts:
 ```
 
 ## Player groups
-These are groups of players which meet the specified condition. They consist of 2 parts - condition and slots.
+These are groups of players that meet the specified condition. They consist of 2 parts - condition and slots.
 
 **1. Condition**  
-Condition players must meet to be displayed in the group. If a player doesn't meet condition for group, the next group's condition is checked (groups are checked in the order they are defined in config). If player doesn't meet any codnition, they are not displayed at all. Display condition is not required (can be used for default group).
+The condition players must meet to be displayed in the group.
+If a player doesn't meet condition for a group, the next group's condition is checked
+(groups are checked in the order they are defined in config).
+If player doesn't meet any condition, they are not displayed at all.
+Display condition is not required (can be used to make a "default" group with the remaining players).
 
 **2. Slots**  
 Slot intervals dedicated to the group. Interval `1-5` would mean all slots from 1 to 5. In case you want to define multiple intervals to exclude some slots, define another interval below the first one.  
@@ -78,7 +85,11 @@ layouts:
 In this example, slots `24-40` will be reserved for players with `tab.staff` permission. Players without that permission will be in slots `44-80`.
 
 # Managing multiple layouts with conditions
-You can define multiple layouts and display them based on a condition. To do so, define `condition` for layouts. Conditions are checked in the order layouts are defined in config. If layout doesn't specify condition, it is displayed with no requirement. If player does not meet display condition for any layout, they will see the classic tablist.  
+You can define multiple layouts and display them based on a condition.
+To do so, define `condition` for layouts.
+Conditions are checked in the order layouts are defined in config.
+If layout doesn't specify condition, it is displayed with no requirement.
+If a player does not meet display condition for any layout, they will see the classic tablist.  
 Example:
 ```
 layouts:
@@ -153,19 +164,30 @@ As a result, it is impossible for TAB to assign a different value for each fake 
 ## Additional note 2 - Global playerlist incompatibility
 The way this feature works is by pushing all real players out of the tablist and showing fake players instead.  
 As a result, enabling [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) feature won't make any difference, since real players aren't visible in the tablist.  
-Layout feature is capable of working with all online players connected to the server where TAB is installed, meaning it can show players from all servers when installed on BungeeCord. Because of this, if you use layout, you can just disable global playerlist to reduce resource usage.
+Layout feature is capable of working with all online players connected to the server where TAB is installed, meaning it can show players from all servers when installed on BungeeCord. Because of this, if you use layout, you can disable global playerlist to reduce resource usage.
 
 ## Additional note 3 - Entries in chat complete [1.19.3 - 1.21.1]
-Since 1.19.3 until 1.21.1 (inclusive), entries will also appear in chat complete. The mechanic used to hide them on <1.19.3 can no longer be used since 1.19.3. 1.21.2 has added a new way of sorting players, which is being taken advantage of to restore empty chat complete.  
-**Note**: In order to hide entries from chat complete on 1.21.2+, the server also has to be 1.21.2+ so it can send new content to the players (having TAB installed on proxy counts as using latest version).
+From 1.19.3 until 1.21.1 (inclusive), entries will also appear in chat complete.
+The mechanic used to hide them on <1.19.3 can no longer be used since 1.19.3.
+1.21.2 has added a new way of sorting players, which is being taken advantage of to restore empty chat complete.  
+**Note**: To hide entries from chat complete on 1.21.2+,
+the server also has to be 1.21.2+ so TAB can send the new content to the players
+(having TAB installed on proxy counts as using the latest version).
 
 ## Additional note 4 - Per world playerlist incompatibility
-Layout works by adding 80 fake players into the tablist, pushing real player entries out of view. Because of this, when using [per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist), the feature will only hide the real players, which are outside of tablist and not visible anyway and not touch the layout entries. However, you can replicate the same effect using layout feature itself, using conditions.
+Layout works by adding 80 fake players into the tablist, pushing real player entries out of view.
+Because of this,
+when using [per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist),
+the feature will only hide the real players,
+which are outside tablist and not visible anyway and not touch the layout entries.
+However, you can replicate the same effect using layout feature itself, using conditions.
 <details>
   <summary>Example</summary>
 
-*We are going to ignore fixed slots in the examples, as they don't affect anything and you can just configure them however you want.*  
-Let's create 2 layouts, one for world `world1` and one for world `world2`. Each layout only displays players in that world.
+*We are going to ignore fixed slots in the examples,
+as they don't affect anything, and you can just configure them however you want.*  
+Let's create 2 layouts, one for world `world1` and one for world `world2`.
+Each layout only displays players in that world.
 ```
   layouts:
     layout1:
@@ -211,7 +233,12 @@ You can also replicate "ignore-effect-in-worlds" by creating a layout with condi
 </details>
 
 ## Additional note 5 - Second layer of skin missing
-Layout works by creating 80 fake entries, pushing real players out of the tablist. Unfortunately, players must be spawned around the player viewing the tablist in order to see second layer of their skin. Since those fake entries you see are not the actual players and aren't spawned, as a result, you won't see second layer of skin of players. This can only be fixed by actually letting the real entries display in the tablist, which would require a rework of the feature, which is not planned.
+Layout works by creating 80 fake entries, pushing real players out of the tablist.
+Unfortunately, players must be spawned around the player viewing the tablist to see the second layer of their skin.
+Since those fake entries you see are not the actual players and aren't spawned,
+as a result, you won't see the second layers of skins.
+This can only be fixed by actually letting the real entries display in the tablist,
+which would require a rework of the feature, which is not planned.
 
 # Examples
 ## Example 1 - Per-server columns

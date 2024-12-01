@@ -56,7 +56,9 @@ _NEZNAMY_:
 ```
 This can also be achieved with commands, in this case `/tab player _NEZNAMY_ tagprefix "&4&lAdmin &r"` or `/tab playeruuid _NEZNAMY_ tagprefix "&4&lAdmin &r"`.
 
-Properties can also be set as "default" for everyone who does not have them defined. For that purpose, a group keyword `_DEFAULT_` was made.  
+Properties can also be set as "default" for everyone who does not have them defined.
+For that purpose, a group keyword `_DEFAULT_` was made.
+Example:
 **groups.yml**
 ```
 admin:
@@ -93,7 +95,7 @@ per-world:
 ```
 
 ## Priority system
-Full list of priorities looks like this:
+The full list of priorities looks like this:
 1. value set using the [API](#api)
 2. per-world / per-server applied to username
 3. value applied to username
@@ -106,12 +108,15 @@ Full list of priorities looks like this:
 
 This list is browsed through until the first match is found. If no match is found, empty value is used.
 
-Values are taken independently from each other. This means you can set per-world tagprefix, but only keep one global tagsuffix for example.
+Values are taken independently of each other.
+This means you can set per-world tagprefix, but only keep one global tagsuffix, for example.
 
-You can see source of a value displayed on player by using `/tab debug <player>` and checking "source" part of the value you are looking for.
+You can see the source of a value displayed on player by using `/tab debug <player>` and checking "source"
+part of the value you are looking for.
 
 ## Placeholder support
-All values fully support [TAB's internal placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#internal-placeholders) and [PlaceholderAPI placeholders](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders) including relational placeholders. Amount of placeholders is not limited and they can be used in combination with static text as well.
+All values fully support [TAB's internal placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#internal-placeholders) and [PlaceholderAPI placeholders](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders) including relational placeholders.
+The number of placeholders is not limited, and they can be used in combination with static text as well.
 
 ## Additional settings
 | Option name | Default value | Description |
@@ -124,7 +129,8 @@ All values fully support [TAB's internal placeholders](https://github.com/NEZNAM
 | disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. |
 
 # Tips & Tricks
-If you want TAB to only take prefixes/suffixes from permission plugin, delete all groups from **grous.yml** and only keep this:
+If you want TAB to only take prefixes/suffixes from the permission plugin,
+delete all groups from **groups.yml** and only keep this:
 ```
 _DEFAULT_:
   tagprefix: "%luckperms-prefix%"
@@ -133,33 +139,49 @@ _DEFAULT_:
 
 # Limitations
 * Prefix/suffix length is limited to 16 characters (including color codes) on <1.13. There is no reachable limit on 1.13+.
-* Name cannot be effectively changed and plugin doesn't offer it.
+* The name cannot be effectively changed and the plugin doesn't offer it.
 * Since 1.13, the name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
 * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
-* Name color and glow color are managed by the same value, which means they cannot be different.
+* The same value manages name color and glow color, which means they cannot be different.
 
 # Additional info
 ## Additional note 1 - NPC (in)compatibility
-Teams are bound to player names, not uuids or entity ids. Because of that, they will affect all player entities with that name. This includes NPCs with same names as online players and prefixes/suffixes will be displayed on those as well. To avoid it, make their names not match any online player and use holograms to display them instead (Citizens has an option for this).
+Teams are bound to player names, not uuids or entity ids.
+Because of that, they will affect all player entities with that name.
+This includes NPCs with the same names as online players, and prefixes/suffixes will be displayed on those as well.
+To avoid it, make their names not match any online player and use holograms to display them instead
+(Citizens plugin has an option for this).
 
 ## Additional note 2 - Prefix/suffix on pets
 Since 1.9 teams affect tamed animals as well, displaying prefix/suffix on them as well and if nametags are set to be invisible, they will be completely invisible as well. If you want to avoid it, install [this plugin](https://www.spigotmc.org/resources/109466/).
 
 ## Additional note 3 - Changing name itself
-Teams do not allow to change the nametag name itself. Changing name is a complicated process which is slightly out of scope of the plugin as well, this is what nick plugins are about. On top of that, it's a pain requiring a ton of different packets which change their structure every version and with how many versions TAB supports it doesn't sound like fun doing.
+Teams do not allow to change the nametag name itself.
+Changing name is a complicated process which is slightly out of scope of the plugin as well,
+this is what nick plugins are about.
+On top of that, it's a pain
+requiring a ton of different packets which change their structure every version and with how many versions the plugin supports,
+it doesn't sound like fun doing.
 
 ## Additional note 4 - F1 view
-Using teams causes player nametags to remain visible when using F1 view. This cannot be avoided by the plugin in any way. The only possible solution would be to modify the client.
+Using teams causes player nametags to remain visible when using F1 view.
+The plugin cannot avoid this in any way.
+The only possible solution would be to modify the client.
 
 ## Additional note 5 - Transparent players
-Minecraft teams have an option to show players in the same team transparent (partially invisible). This requires both players (viewer and target) to be in the same team. As such, this effect is impossible to achieve with TAB, because it puts every player into a different team to properly sort players and give them different prefix/suffix in nametag (and more, such as collision and nametag visibility).
+Minecraft's teams can show players in the same team transparent (partially invisible).
+This requires both players (viewer and target) to be in the same team.
+As such, this effect is impossible to achieve with TAB,
+because it puts every player into a different team
+to properly sort players and give them different prefix/suffix in nametag
+(and more, such as collision and nametag visibility).
 
 If you want this effect, the only way is to use another plugin that offers this and disable TAB's teams entirely by setting
 ```
 scoreboard-teams:
   enabled: false
 ```
-in config.yml. Keep in mind you'll not be able to use any team features if you do so.
+In config.yml. Keep in mind, you'll not be able to use any team features if you do so.
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*
@@ -176,7 +198,7 @@ To get custom values previously set using the API (they will return `null` if no
 * `NameTagManager#getCustomPrefix(TabPlayer)`
 * `NameTagManager#getCustomSuffix(TabPlayer)`
 
-To get original value set by the plugin based on configuration:
+To get the original value set by the plugin based on configuration:
 * `NameTagManager#getOriginalPrefix(TabPlayer)`
 * `NameTagManager#getOriginalSuffix(TabPlayer)`
 
@@ -188,11 +210,11 @@ To get original value set by the plugin based on configuration:
 
 ## Manipulating visibility
 * `NameTagManager#hideNametag(TabPlayer)` - Hides player's nametag from all players
-* `NameTagManager#hideNametag(TabPlayer, TabPlayer)` - Hides player's nametag from a specific player, where the first `TabPlayer` is the player who's nametag you want to hide, and the second `TabPlayer` is the player who you want to hide the first player's nametag from.
+* `NameTagManager#hideNametag(TabPlayer, TabPlayer)` - Hides player's nametag from a specific player, where the first `TabPlayer` is the player whose nametag you want to hide, and the second `TabPlayer` is the player who you want to hide the first player's nametag from.
 * `NameTagManager#showNametag(TabPlayer)` - Shows player's nametag back again for everyone
-* `NameTagManager#showNametag(TabPlayer, TabPlayer)` - Shows player's nametag back. The first `TabPlayer` is the player who's nametag you want to show, and the second `TabPlayer` is the player who you want to show the first player's nametag to.
+* `NameTagManager#showNametag(TabPlayer, TabPlayer)` - Shows player's nametag back. The first `TabPlayer` is the player whose nametag you want to show, and the second `TabPlayer` is the player who you want to show the first player's nametag to.
 * `NameTagManager#hasHiddenNametag(TabPlayer)` - Returns `true` if player has hidden nametag for everyone, `false` if not
-* `NameTagManager#hasHiddenNametag(TabPlayer, TabPlayer)` - Returns `true` if player has hidden anmetag for specific player, `false` if not. The first `TabPlayer` is the player who's nametag you want to check is hidden, and the second `TabPlayer` is the player who you want to check if they can see the first player's nametag.
+* `NameTagManager#hasHiddenNametag(TabPlayer, TabPlayer)` - Returns `true` if player has hidden nametag for specific player, `false` if not. The first `TabPlayer` is the player whose nametag you want to check is hidden, and the second `TabPlayer` is the player who you want to check if they can see the first player's nametag.
 
 ## Disabling team handling
 * `NameTagManager#pauseTeamHandling(TabPlayer)` - Pauses team handling for a specific player. This will unregister the player's team and disable anti-override for teams.

@@ -11,7 +11,13 @@
 * [API](#api)
 
 # About
-This feature allows you to configure player name formats in the tablist. It was added to minecraft in version 1.8. Versions 1.7 and lower only allow up to 16 characters including name, which is too limiting and not suppored by this plugin. If you wish to have prefix/suffix for 1.7 and lower, take advantage of [this client-sided mechanic](https://github.com/NEZNAMY/TAB/wiki/Client%E2%80%90sided-mechanics#nametag-format-in-tablist) and configure tagprefix/tagsuffix, which will appear in the tablist.  
+This feature allows you to configure player name formats in the tablist.
+It was added to minecraft in version 1.8.
+Versions 1.7 and lower only allow up to 16 characters including name,
+which is too limiting and not supported by this plugin.
+If you wish to have prefix/suffix for 1.7 and lower,
+take advantage of [this client-sided mechanic](https://github.com/NEZNAMY/TAB/wiki/Client%E2%80%90sided-mechanics#nametag-format-in-tablist) and configure tagprefix/tagsuffix,
+which will appear in the tablist.  
 ![image](https://user-images.githubusercontent.com/6338394/205877929-4df82c78-9773-4614-b4a3-93e1673d6046.png)
 
 Settings of this feature can be configured in **config.yml** under **tablist-name-formatting** section.
@@ -23,13 +29,20 @@ The display name is split into 3 parts for convenience:
 `customtabname` - second part of the text, it will be used as player name. If customtabname is not defined at all (not just setting empty value!), player's original name will be used instead  
 `tabsuffix` - last part of the text, this is where suffix is usually configured
 
-These values are then merged together and displayed in the tablist.  
+These values are then merged and displayed in the tablist.  
 ![image](https://user-images.githubusercontent.com/6338394/205877510-e40f93ce-80df-46f2-84f0-c113e0e813e8.png)
 
-While you are free to use the 3 properties in any way you want since they are only split for convenience, it is still a good idea to use them for their designed purpose to not get lost a poor configuration. This means that the text which should appear before player's name should be put into `tabprefix`, any placeholder that is supposed to display player's name (such as from a nickname plugin) should go into `customtabname` and any text that should appear after player's name should be put into `tabsuffix`.
+You are free to use the 3 properties in any way you want since they are only split for convenience.
+However, it is still a good idea to use them for their designed purpose to not get lost a poor configuration.
+This means that the text which should appear before player's name should be put into `tabprefix`,
+any placeholder that is supposed to display player's name (such as from a nickname plugin)
+should go into `customtabname` and any text that should appear after player's name should be put into `tabsuffix`.
 
 ## Groups and users
-Properties can be applied in 2 ways: groups and users. Users can be defined by both username and their UUID. Values applied to users take priority over groups.  
+Properties can be applied in 2 ways: groups and users.
+Users can be defined by both username and their UUID.
+Values applied to users take priority over groups.
+Example:  
 **groups.yml**
 ```
 admin:
@@ -48,7 +61,9 @@ _NEZNAMY_:
 ```
 This can also be achieved with commands, in this case `/tab player _NEZNAMY_ tabprefix "&6&lTAB &r"` or `/tab playeruuid _NEZNAMY_ tabprefix "&6&lTAB &r"`.
 
-Properties can also be set as "default" for everyone who does not have them defined. For that purpose, a group keyword `_DEFAULT_` was made.  
+Properties can also be set as "default" for everyone who does not have them defined.
+For that purpose, a group keyword `_DEFAULT_` was made.
+Example:   
 **groups.yml**
 ```
 admin:
@@ -84,7 +99,7 @@ per-world:
 ```
 
 ## Priority system
-Full list of priorities looks like this:
+The full list of priorities looks like this:
 1. value set using the [API](#api)
 2. per-world / per-server applied to username
 3. value applied to username
@@ -97,12 +112,15 @@ Full list of priorities looks like this:
 
 This list is browsed through until the first match is found. If no match is found, empty value is used (except `customtabname`, which defaults to player's name).
 
-Values are taken independently from each other. This means you can set per-world tabprefix, but only keep one global tabsuffix for example.
+Values are taken independently of each other.
+This means you can set per-world tabprefix, but only keep one global tabsuffix, for example.
 
-You can see source of a value displayed on player by using `/tab debug <player>` and checking "source" part of the value you are looking for.
+You can see the source of a value displayed on player by using `/tab debug <player>` and checking "source"
+part of the value you are looking for.
 
 ## Placeholder support
-All values fully support [TAB's internal placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#internal-placeholders) and [PlaceholderAPI placeholders](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders) including relational placeholders. Amount of placeholders is not limited and they can be used in combination with static text as well.
+All values fully support [TAB's internal placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#internal-placeholders) and [PlaceholderAPI placeholders](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders) including relational placeholders.
+The number of placeholders is not limited, and they can be used in combination with static text as well.
 
 ## Additional settings
 | Option name | Default value | Description |
@@ -112,7 +130,8 @@ All values fully support [TAB's internal placeholders](https://github.com/NEZNAM
 | disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. |
 
 # Tips & Tricks
-If you want TAB to only take prefixes/suffixes from permission plugin, delete all groups from **groups.yml** and only keep this:
+If you want TAB to only take prefixes/suffixes from your permission plugin,
+delete all groups from **groups.yml** and only keep this:
 ```
 _DEFAULT_:
   tabprefix: "%luckperms-prefix%"
@@ -128,14 +147,15 @@ To set the values for the respective formatting, use the following:
 * `TabListFormatManager#setPrefix(TabPlayer, String)`
 * `TabListFormatManager#setName(TabPlayer, String)`
 * `TabListFormatManager#setSuffix(TabPlayer, String)`
-  To reset the values, set them to `null`.
+
+To reset the values, set them to `null`.
 
 To get custom values previously set using the API (they will return `null` if no custom value is set):
 * `TabListFormatManager#getCustomPrefix(TabPlayer)`
 * `TabListFormatManager#getCustomName(TabPlayer)`
 * `TabListFormatManager#getCustomSuffix(TabPlayer)`
 
-To get original value set by the plugin based on configuration:
+To get the original value set by the plugin based on configuration:
 * `TabListFormatManager#getOriginalPrefix(TabPlayer)`
 * `TabListFormatManager#getOriginalName(TabPlayer)`
 * `TabListFormatManager#getOriginalSuffix(TabPlayer)`

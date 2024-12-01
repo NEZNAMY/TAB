@@ -24,13 +24,17 @@ To enable sorting, you must have either [Nametags](https://github.com/NEZNAMY/TA
 To **verify** you enabled sorting, run `/tab debug`. It will say `Sorting type:` followed by anything except `DISABLED`.
 
 # Methods of sorting
-Below are all of the different methods that you can use to sort players in TAB.
+Below are all the different methods that you can use to sort players in TAB.
 
 ## GROUPS
 This is the default and recommended method. Players will be sorted by their primary permission group, according to the configured group list.
 
-First, put your players into groups in your permission plugin. All ways to do it can be found at [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups).  
-**Verify** player's group using `/tab debug <player>`. It should say `Primary permission group:` followed by group you configured. If not, you did not assign players into groups correctly.
+First, put your players into groups in your permission plugin.
+All the ways to do it can be found
+at [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups).  
+**Verify** player's group using `/tab debug <player>`.
+It should say `Primary permission group:` followed by group you configured.
+If not, you did not assign players into groups correctly.
 
 Second, place all of your groups in to a comma separated list **in order of priority** into `sorting-types`. Example:
 ```yaml
@@ -73,7 +77,7 @@ scoreboard-teams:
 ```
 
 ## PLACEHOLDER_A_TO_Z
-This method sorts players alphabetically according to the output of a placeholder.  
+This method sorts players alphabetically, according to the output of a placeholder.  
 To configure this sorting type, write the placeholder that you want to use. That's it.  
 For example, if you want to sort players by their name alphabetically, you would do that using a configuration such as `PLACEHOLDER_A_TO_Z:%player%`.  
 Example:
@@ -84,10 +88,10 @@ scoreboard-teams:
 ```
 
 ## PLACEHOLDER_Z_TO_A
-This method sorts players reverse alphabetically according to the output of a placeholder.  
+This method sorts players reverse alphabetically, according to the output of a placeholder.  
 This is identical to the above A to Z sorting, except that the alphabet is backwards, so Z comes first, and A comes last.  
 To configure this sorting type, write the placeholder that you want to use. That's it.  
-For example, if you want to sort players by their name reverse alphabetiically, you would do that using a configuration such as `PLACEHOLDER_Z_TO_A:%player%`.  
+For example, if you want to sort players by their name reverse alphabetically, you would do that using a configuration such as `PLACEHOLDER_Z_TO_A:%player%`.  
 Example:
 ```yaml
 scoreboard-teams:
@@ -96,11 +100,11 @@ scoreboard-teams:
 ```
 
 ## PLACEHOLDER_LOW_TO_HIGH
-This method sorts players numerically depending on the output of a **numeric** placeholder from lowest value to highest value.  
+This method sorts players numerically depending on the output of a **numeric** placeholder from the lowest value to the highest value.  
 **Only placeholders that output number values will work with this sorting type!**  
 Supported number interval is from -1,000,000,000 to 1,000,000,000 and 5 decimal places.  
 To configure this sorting type, write the placeholder that you want to use. That's it.  
-For example, if you want to sort players using the output of the `%health%` placeholder from lowest health to highest, you would do that using a configuration such as `PLACEHOLDER_LOW_TO_HIGH:%health%`.  
+For example, if you want to sort players using the output of the `%health%` placeholder from the lowest health to highest, you would do that using a configuration such as `PLACEHOLDER_LOW_TO_HIGH:%health%`.  
 Example:
 ```yaml
 scoreboard-teams:
@@ -109,7 +113,7 @@ scoreboard-teams:
 ```
 
 ## PLACEHOLDER_HIGH_TO_LOW
-This method sorts players numerically depending on the output of a **numeric** placeholder fro highest value to lowest value.  
+This method sorts players numerically depending on the output of a **numeric** placeholder from the highest value to the lowest value.  
 **Only placeholders that output number values will work with this sorting type!**  
 Supported number interval is from -1,000,000,000 to 1,000,000,000 and 5 decimal places.  
 To configure this sorting type, write the placeholder that you want to use. That's it.  
@@ -138,7 +142,10 @@ Since `sorting-types` is a list, you are able to use more than one sorting type.
     - "GROUPS:owner,admin,mod,helper,builder,vip,default"
     - "PLACEHOLDER_A_TO_Z:%player%"
 ```
-Here, players are sorted by their group first. Owner goes above admin etc. However, if 2 people have the same group (such as admin), next sorting type decides final order. In this case, admin with alphabetically lower username will be higher in the tablist.
+Here, players are sorted by their group first.
+Owner goes above admin etc. However,
+if 2 people have the same group (such as admin), the next sorting type decides the final order.
+In this case, admin with alphabetically lower username will be higher in the tablist.
 
 A common request is putting AFK players on the bottom of tablist. This can be achieved with the following configuration:
 ```
@@ -147,7 +154,12 @@ A common request is putting AFK players on the bottom of tablist. This can be ac
     - "GROUPS:owner,admin,mod,helper,builder,vip,default"
     - "PLACEHOLDER_A_TO_Z:%player%"
 ```
-With AFK status taking the highest priority, AFK players will be always sorted below players which are not AFK. Both player groups (afk and non-afk) then follow the rest of the logic explained above to define the final order. If trying to copypaste this example, keep in mind [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) work here as well, so if you are using a fancier output for %essentials_afk%, you will need to use outputs respectively when defining sorting as well.
+With AFK status taking the highest priority, AFK players will always be sorted below players which are not AFK.
+Both player groups (afk and non-afk) then follow the rest of the logic explained above to define the final order.
+If trying to copy-paste this example, keep
+in mind [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) work here as well,
+so if you are using a fancier output for %essentials_afk%,
+you will need to use outputs respectively when defining sorting as well.
 
 Although you can theoretically use as many sorting types as you want, there are still strict limits set by mojang. See more about these limits and how to avoid them as much as possible at [Additional note 1 - Limitations](#additional-note-1---limitations).
 
@@ -163,32 +175,53 @@ All sorting elements must together build a team name up to 16 characters long. B
 * `PLACEHOLDER_LOW_TO_HIGH` and `PLACEHOLDER_HIGH_TO_LOW` - 3 characters
 * `PLACEHOLDER_A_TO_Z` and `PLACEHOLDER_Z_TO_A` - as many as used
 
-All your sorting types must be within a 15 character limit. Any characters above that will be cut off (TAB reserves 1 character to ensure each player is in a unique team). To get the most out of it, use the 1-character sorting types where possible.
+All your sorting types must be within a 15-character limit.
+Any characters above that will be cut off (TAB reserves 1 character to ensure each player is in a unique team).
+To get the most out of it, use the 1-character sorting types where possible.
 
-You can bypass this limit by using [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) feature. Player ordering is fully plugin-sided and therefore is not artificialy limited.
+You can bypass this limit by using [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) feature.
+Player ordering is fully plugin-sided and therefore is not artificially limited.
 
 ## Additional note 2 - per-world sorting
-Defining a per-world sorting type is not supported. However, this can be achieved with [Conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders). Simply check for %world% and return one placeholder if it matches, another one if not. This will work with anything, not just worlds (server, regions, etc).
+Defining a per-world sorting type is not supported.
+However,
+this can be achieved with [Conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders).
+Check for %world% and return one placeholder if it matches, another one if not.
+This will work with anything, not just worlds (server, regions, etc.).
 
 ## Additional note 3 - Compatibility issues with other plugins
-As you already know by now, sorting is managed by scoreboard teams (their names to be exact). Player can only be member of one team. In other words, only one plugin can handle teams at a time. Having multiple plugins handle teams is supposed to end in a disaster.
+As you already know by now, sorting is managed by scoreboard teams (their names to be exact).
+Player can only be a member of one team.
+In other words, only one plugin can handle teams at a time.
+Having multiple plugins handling teams is supposed to end in a disaster.
 
-Fortunately, TAB contains a function that prevents other plugins from assigning players into teams. This can be enabled/disabled by toggling `anti-override` setting under `scoreboard-teams`. This is however highly recommended to keep enabled, unless all of your plugins are configured correctly. When a plugin tries to override TAB's teams, this action is logged into `anti-override.log` file. If your file is empty / does not exist, it means you have no conflicting plugins / settings and can disable this option, slightly boosting performance. If the file exists, most of the time you can guess where the teams come from by their name.  
+Fortunately, TAB contains a function that prevents other plugins from assigning players into teams.
+This can be enabled/disabled by toggling `anti-override` setting under `scoreboard-teams`.
+This is, however, highly recommended to keep enabled, unless all of your plugins are configured correctly.
+When a plugin tries to override TAB's teams, this action is logged into `anti-override.log` file.
+If your file is empty / does not exist, it means you have no conflicting plugins / settings and can disable this option,
+slightly boosting performance.
+If the file exists, most of the time you can guess where the teams come from by their name.  
 Here are a few common teams and their sources (`xxxx` means any, usually random character sequence):
 * `collideRule_xxxx` - this comes from Paper. Not going to explain why as that would be quite long, but the way you can avoid is by setting `enable-player-collisions: true` in paper config and `enable-collision: false` in TAB config (yes, collisions will be disabled).
 * `CMINPxx` - CMI, set `DisableTeamManagement: true` in `plugins/CMI/config.yml`.
 * `CIT-xxxxxxxxxxxx` - Citizens NPC with the same name as some online player. Make NPC names not match real players and use holograms to display your desired text (/npc name or something).
 * `PVP-xxxxxxxxxxxx` - Team coming from [PvPManager](https://www.spigotmc.org/resources/pvpmanager-lite.845/) plugin.
 
-This detection, however, is not 100%. Because of that, you may still be experiencing a compatibility issue even with anti-override enabled. To identify such issue, check if /tab reload fixes your sorting issue. If it does, it's a compatibility issue of some sort. If not, it is most likely a misconfiguration issue.
+This detection, however, is not 100%.
+Because of that, you may still be experiencing a compatibility issue even with anti-override enabled.
+To identify such an issue, check if /tab reload fixes your sorting issue.
+If it does, it's a compatibility issue of some sort.
+If not, it is most likely a misconfiguration issue.
 
 # Common mistakes
-Every possible mistake could be called "not reading this wiki page", but that would make this section pointless. For that reason let's call it list of mistakes made when following this page.
+Every possible mistake could be called "not reading this wiki page", but that would make this section pointless.
+For that reason, let's call it list of mistakes made when following this page.
 
 The most common mistakes include:
 * Disabling both teams and layout, not realizing it disables sorting as well.
 * Disabling anti-override without disabling teams in other plugins.
-* Mistaking `primary-group-finding-list` for sorting list, despite that list having nothing to do with sorting and by default even having a comment above it saying it has nothing to do with sorting.
+* Mistaking `primary-group-finding-list` for the sorting list, despite that list having nothing to do with sorting and by default even having a comment above it saying it has nothing to do with sorting.
 * Not configuring primary groups correctly. This can have multiple reasons, such as
   * Not configuring group weights in LuckPerms.
   * Accidentally enabling `use-bukkit-permission-manager` option when on BungeeCord without knowing what it does.
@@ -203,8 +236,13 @@ The most common mistakes include:
 
 To access this feature, you'll need to obtain `SortingManager` instance. Get it using `TabAPI.getInstance().getSortingManager()`. If sorting is disabled, the method will return `null`.
 
-You can change player's team name using following methods:
+You can change player's team name using the following methods:
 * `SortingManager#forceTeamName(TabPlayer, String)` - Sets player's team name to specified value (and performs team unregister & register with new name).
 * `SortingManager#getForcedTeamName(TabPlayer)` - Returns player's forced team name using the method above. Will return `null` if no value is set.
 
-Unfortunately, there is no simple way of just changing one's position while still accounting for other players. This is because the plugin supports a lot of sorting options, not just groups, so doing amateur stuff like "priority 1, 2" doesn't make sense. If you are really only interested in sorting by groups and changing group which player is sorted as, you can use `TabPlayer#setTemporaryGroup(String)`. To reset group back to normal, call the function with `null` argument.
+Unfortunately, there is no simple way of just changing one's position while still accounting for other players.
+This is because the plugin supports a lot of sorting options, not just groups,
+so doing amateur stuff like "priority 1, 2" doesn't make sense.
+If you are really only interested in sorting by groups and changing group which player is sorted as,
+you can use `TabPlayer#setTemporaryGroup(String)`.
+To reset the group back to normal, call the function with `null` argument.

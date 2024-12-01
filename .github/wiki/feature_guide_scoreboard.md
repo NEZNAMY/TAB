@@ -33,10 +33,12 @@ Scoreboards can be created in `scoreboards` section. You can define as many scor
 Each scoreboard defines up to 3 parameters:
 
 ## title
-Title of the scoreboard. Limited to 32 characters on MineCraft versions below 1.13 (including color codes. It is automatically centered by the client.
+Title of the scoreboard.
+Limited to 32 characters on MineCraft versions below 1.13 (including color codes).
+It is automatically centered by the client.
 
 ## lines
-Up to 15 lines of text. You can define more, but client won't display them.
+Up to 15 lines of text. You can define more, but the client won't display them.
 
 Since 1.20.3, you can also configure the value on the right side, which no longer has to be a red number. To set it, use `||` sequence and put right-side text after it. Example:
 ```
@@ -48,10 +50,21 @@ Since 1.20.3, you can also configure the value on the right side, which no longe
 Will give you the following:  
 ![image](https://github.com/NEZNAMY/TAB/assets/6338394/785e4e66-935c-4233-8a16-f3e34386cfd0)
 
-The right side text will not be visible on 1.20.2 and lower and numbers will be displayed instead. **In order to properly see the right side not only the client has to be 1.20.3+, but the server as well, since plugin cannot send a packet that does not exist (on older versions). BungeeCord always includes new content and therefore counts as latest version.** This can be used to send new content to new players while having outdated server version.
+The right side text will not be visible at 1.20.2 and lower, and numbers will be displayed instead.
+To properly see the right side, not only the client has to be 1.20.3+, but the server as well,
+since the plugin cannot send a packet that does not exist (on older versions). 
+Proxies always include new content and therefore count as the latest version.
+This can be used to send new content to new players while having an outdated server version.
 
 ### Alignment
-Left side of the text is automatically aligned to the left, while the right side is automatically aligned to the right. This is done by the client and is out of plugin's control. If you want to center a line, you'll need to do it manually. If dynamic placeholder output length is preventing your from doing it, you can try to bypass it by adding spaces before and after it to artificially increase and force the scoreboard width, such as `- "          Centered text          "` (or more spaces if needed).
+The left side of the text is automatically aligned to the left,
+while the right side is automatically aligned to the right.
+This is done by the client and is out of plugin's control.
+If you want to center a line, you'll need to do it manually.
+If dynamic placeholder output length is preventing your from doing it,
+you can try to bypass it by adding spaces before and after it to artificially increase and force the scoreboard width,
+such as
+`- "          Centered text          "` (or more spaces if needed).
 
 ### Empty placeholder output
 When a line consists only of a placeholder that returned empty output, the line will be hidden completely. This is intentional to allow dynamic scoreboard size based on placeholder output. This is not the case if empty line is configured (`""`), to allow empty lines in configuration.
@@ -60,7 +73,12 @@ When a line consists only of a placeholder that returned empty output, the line 
 A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met to display this scoreboard. If it isn't met for the player, the next scoreboard's condition is checked.
 
 # Chaining scoreboards
-When defining more than 1 scoreboard in config, the plugin will display the correct scoreboard based on conditions.  Plugin goes through all defined scoreboards, starting with the scoreboard on top. If the scoreboard's condition is met or not set, it is displayed. If not, next defined scoreboard is checked and so on. If no suitable scoreboard is found (the last one has a condition requirement which wasn't met), none is displayed. Example:
+When defining more than 1 scoreboard in config, the plugin will display the correct scoreboard based on conditions.
+The plugin goes through all defined scoreboards, starting with the scoreboard on top.
+If the scoreboard's condition is met or not set, it is displayed.
+If not, the next defined scoreboard is checked and so on.
+If no suitable scoreboard is found (the last one has a condition requirement which wasn't met), none is displayed.
+Example:
 ```
   scoreboards:
     scoreboard1:
@@ -82,10 +100,11 @@ Scoreboard `scoreboard1` is checked first. If condition is not met, `scoreboard2
 If a player meets both conditions (has defined permission and is in defined world), `scoreboard1` will be displayed, because it is defined first and therefore has the highest priority. You can switch scoreboards based on your priority needs.
 
 # Announce command
-This takes priority over current scoreboard. Once the announce is over, previous scoreboard is restored.  
+This takes priority over the current scoreboard.
+Once the announcement is over, the previous scoreboard is restored.  
 `/tab announce scoreboard <name> <time>`  
 name - name of scoreboard to be displayed  
-time - amount of seconds to display the scoreboard for
+time - number of seconds to display the scoreboard for
 
 # Additional settings
 | Option name | Default value | Description |
@@ -99,28 +118,50 @@ time - amount of seconds to display the scoreboard for
 | delay-on-join-milliseconds | 0 | Delay in milliseconds to send scoreboard after joining. |
 
 # Limitations
-* Title is limited to 32 characters (including color codes) on <1.13.
+* The title is limited to 32 characters (including color codes) on <1.13.
 * Line length is limited to 28 characters (including color codes) on <1.13 (68 on lines with static text / [Longer lines](#longer-lines)).
 * Only displays up to 15 lines.
-* The red numbers on the right really cannot be removed from the plugin side (a client modification / resource pack is needed) on 1.20.2 and lower. They no longer appear on 1.20.3+ and instead any text can be configured (see above).
+* The red numbers on the right really cannot be removed from the plugin side (a client modification / resource pack is necessary) at 1.20.2 and lower. They no longer appear on 1.20.3+, and instead any text can be configured (see above).
 
 # Longer lines
-In order to make sure the scoreboard never flickers, it's only using prefix/suffix components to display text. These can easily be changed without any visual issues. The player name part, however, cannot be changed. A line has to be completely removed and a new one added. There's a chance a frame is rendered between these 2 packets are sent, causing the scoreboard to have 1 line missing for 1 frame, causing visual issue known as "flickering".
+To make sure the scoreboard never flickers, it's only using prefix/suffix components to display text.
+These can easily be changed without any visual issues.
+The player name part, however, cannot be changed.
+A line has to be completely removed and a new one added.
+There's a chance a frame is rendered between these 2 packets are sent,
+causing the scoreboard to have 1 line missing for 1 frame, causing the visual issue known as "flickering".
 
-However, if your scoreboard only has placeholders that don't change value often (pretty much any placeholder except animations, really), you can make TAB use player name part, allowing you to use additional up to 40 characters. To do so, add `Long|` prefix to all lines which should use this bypass.
+However,
+if your scoreboard only has placeholders that don't change value often
+(pretty much any placeholder except animations, really),
+you can make TAB use player name part,
+allowing you to use an additional up to 40 characters.
+To do so, add `Long|` prefix to all lines that should use this bypass.
 ```
       lines:
         - "Classic line with shorter limit"
         - "Long|Long line with much higher character limit"
 ```
-This bypass is automatically enabled for all lines which only use static text (since there's nothing to refresh and cause flickering), therefore doing it for such lines (like in the example above) has no effect.
+This bypass is automatically enabled for all lines that only use static text
+(since there's nothing to refresh and cause flickering),
+therefore doing it for such lines (like in the example above) has no effect.
 
 # Compatibility with other plugins
-TAB automatically detects scoreboard coming from other plugins and when one is sent, TAB hides its own scoreboard. Later, when the other plugin hides its scoreboard, TAB will send its scoreboard back to the player.
+TAB automatically detects scoreboard coming from other plugins, and when one is sent, TAB hides its own scoreboard.
+Later, when the other plugin hides its scoreboard, TAB will send its scoreboard back to the player.
 
-This detection must be available on your platform. For that, see Scoreboard section on [compatibility page](https://github.com/NEZNAMY/TAB/wiki/Compatibility#supported-features-per-platform). If it says ✔, the detection is available. If it says ❗, it means this detection is not available on your platform. As a result, when the other plugin hides its scoreboard, TAB will not be able to resend its own.
+This detection must be available on your platform.
+For that,
+see the Scoreboard section on [compatibility page](https://github.com/NEZNAMY/TAB/wiki/Compatibility#supported-features-per-platform).
+If it says ✔, the detection is available.
+If it says ❗, it means this detection is not available on your platform.
+As a result, when the other plugin hides its scoreboard, TAB will not be able to resend its own.
 
-If you want this detection and it's not supported by your platform, you can achieve it using an alternate solution with conditions that will make TAB display no scoreboard if the condition is not met. For this, you'll need to have more information about when exactly do plugins send scoreboards and how to detect it.
+If you want this detection,
+and it's not supported by your platform,
+you can achieve it
+using an alternate solution with conditions that will make TAB display no scoreboard if the condition is not met.
+For this, you'll need to have more information about when exactly do plugins send scoreboards and how to detect it.
 
 <details>
   <summary>Example using PremiumVanish</summary>
@@ -143,8 +184,11 @@ would turn into
       lines:
       - 'Line of text'
 ```
-Don't forget to add this condition to all of your scoreboards if you have more than 1 (for those with an existing condition merge them using `;`).  
-Keep in mind [placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) apply to placeholders here as well, so if you configured a fancy output for that placeholder, you'll need to use it in the display condition as well. To see what exactly has placeholder returned, use `/tab parse <player> <placeholder>`.
+Remember to add this condition to all of your scoreboards if you have more than 1
+(for those with an existing condition merge them using `;`).  
+Keep in mind [placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) apply to placeholders here as well,
+so if you configured a fancy output for that placeholder, you'll need to use it in the display condition as well.
+To see what exactly has placeholder returned, use `/tab parse <player> <placeholder>`.
 </details>
 
 # API
@@ -165,11 +209,17 @@ To change whether a player can see scoreboards, use `ScoreboardManager#setScoreb
 To toggle whether a player can see scoreboards, use `ScoreboardManager#toggleScoreboard(TabPlayer, boolean)`. This will either make scoreboards visible if they are not already, or make them hidden if they are currently visible.
 
 ## Announcing a scoreboard
-To announce a scoreboard to all players on the server for a given amount of ticks, use `ScoreboardManager#announceScoreboard(String, int)`, which will lookup a scoreboard with the given `String` name, and if one is found, send it to all players for the given `int` ticks.
+To announce a scoreboard to all players on the server for a given number of ticks,
+use `ScoreboardManager#announceScoreboard(String, int)`,
+which will look up a scoreboard with the given `String` name,
+and if one is found, send it to all players for the given `int` ticks.
 
 # Examples
 ## Example 1 - per-world scoreboards
-We will be using a condition of "equals" (=) type and check for output of `%world%` placeholder. If condition is met, player is in that world and scoreboard is displayed. If not, checking for next scoreboard's condition. If none of the conditions are met, display default scoreboard.
+We will be using a condition of "equals" (=) type and check for output of `%world%` placeholder.
+If condition is met, it means player is in that world and the scoreboard is displayed.
+If not, check for the next scoreboard's condition.
+If none of the conditions are met, display the default scoreboard.
 ```
   scoreboards:
     # start
@@ -209,7 +259,10 @@ switchingScoreboard:
   - "2"
 ```
 This animation will switch frames every 10 seconds.  
-Then, we will use output of this animation as a display condition. If animation is on the first frame, display first scoreboard. Otherwise, display second scoreboard.  
+Then, we will use the output of this animation as a display condition.
+If animation is on the first frame, display the first scoreboard.
+Otherwise, display the second scoreboard.
+Result:
 **config.yml**
 ```
   scoreboards:
@@ -224,13 +277,15 @@ Then, we will use output of this animation as a display condition. If animation 
       lines:
       - 'Text'
 ```
-We don't need to define display condition for second scoreboard, since if animation is not on the first frame, it has to be on the second one. If using more than 2, you will need to define display condition for all of them (except the last one).
+We don't need to define display condition for the second scoreboard,
+since if animation is not on the first frame, it has to be on the second one.
+If using more than 2, you will need to define display condition for all of them (except the last one).
 
 # Example 3 - Per-version scoreboards
 1.20.3 has added new features to scoreboards, which are not visible to older clients. If you want to use new features for new players while still displaying things properly for older players, you'll need to create 2 different scoreboards.  
 You'll find 2 placeholders useful for this:
 * `%player-version-id%` - Returns network ID of player's protocol version. Unlike with version names, you can perform numerical comparisons with these. You can find all version IDs [here](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/ProtocolVersion.java). For example, 1.20.3 is 765.
-* `%bedrock%` - Returns `true` if player is using bedrock edition, which does not support new functions either.
+* `%bedrock%` - Returns `true` if player is using the bedrock edition, which does not support new functions either.
 
 We only want the first scoreboard for players with version 765 or greater and not bedrock players. This can be achieved with the following condition: `display-condition: "%player-version-id%>=765;%bedrock%=false"`.
 

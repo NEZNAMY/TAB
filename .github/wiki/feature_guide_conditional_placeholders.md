@@ -17,10 +17,11 @@
   * [Example 2 - Conditions in conditions](#example-2---conditions-in-conditions)
 
 # About
-Conditions / conditional placeholders allow you to create output which depends on output of other placeholders or permission requirement.  
+Conditions / conditional placeholders allow you
+to create output which depends on the output of other placeholders or permission requirement.  
 They have 2 main uses in the plugin:
 * Display condition which must be met to be able to see something (bossbar, scoreboard, layout)
-* Conditional placeholders which return defined outputs in both cases if condition passes or fails
+* Conditional placeholders which return defined outputs in both cases if the condition passes or fails
 
 # Condition types
 ## Number comparations
@@ -46,15 +47,17 @@ Example: `%world%!=world` will pass if player is in any world except `world`.
 **Note 1**: For `=` and `!=` you can check for empty output of a placeholder using `%my_placeholder%=` and `%my_placeholder%!=`.
 
 `<-`: contains (left side for full text, right side text to contain)  
-Example: `%world%<-lobby-` will pass if player is in any world that contains `lobby-` (such as `lobby-1` etc).
+Example: `%world%<-lobby-` will pass if player is in any world that contains `lobby-` (such as `lobby-1` etc.).
 
 `|-`: starts with (left side for full text, right side text to start with)  
-Example: `%world%|-lobby-` will pass if player is in any world that starts with `lobby-` (such as `lobby-1` etc).
+Example: `%world%|-lobby-` will pass if player is in any world that starts with `lobby-` (such as `lobby-1` etc.).
 
 `-|`: ends with (left side for full text, right side text to end with)  
-Example: `%world%-|nether` will pass if player is in any world that ends with `nether` (such as `world_nether` etc).
+Example: `%world%-|nether` will pass if player is in any world that ends with `nether` (such as `world_nether` etc.).
 
-**Note 2**: For string operators, text must match placeholder's output exactly, including color codes. If you are using [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements), condition must contain the altered output.  
+**Note 2**: For string operators, the text must match placeholder's output exactly, including color codes.
+If you are using [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements),
+condition must contain the altered output.  
 To see the exact output of a placeholder including color codes, use `/tab parse <player> <placeholder>`.
 
 ## Permission
@@ -67,7 +70,7 @@ This value can be found under `type` field. Types are:
 * `AND` - all sub-conditions must be met for the final condition to pass
 * `OR` - at least one sub-condition must be met for the final condition to pass
 
-If you only defined one subcondition, you don't need to define type at all, since it's not used for anything.
+If you only defined one subcondition, you don't need to define the type at all, since it's not used for anything.
 
 # Condition output
 If using condition as a placeholder, you can specify output in both cases using `yes` and `no` values. `yes` is used when condition passes, `no` if not. If using condition only as a view requirement, you can leave these values empty / not specify them at all.
@@ -93,7 +96,9 @@ conditions:
 You have 2 ways to use conditions.
 
 ## Displaying text
-First way is to use conditions to display text. Configure outputs in `yes` and `no` values and then use `%condition:<name>%`, which will output text defined in `yes` or `no` depending on if condition is met or not.
+The first way is to use conditions to display text.
+Configure outputs in `yes` and `no` values and then use `%condition:<name>%`,
+which will output text defined in `yes` or `no` depending on if condition is met or not.
 <details>
   <summary>Example</summary>
 
@@ -110,7 +115,9 @@ Use with `%condition:serverName%`
 </details>
 
 ## Display condition of a feature
-The second way is to use condition's name in places where a condition is accepted. This includes display conditions for bossbar, scoreboard and layout. In these cases yes/no texts are unused, therefore, they do not need to be defined.
+The second way is to use condition's name in places where a condition is accepted.
+This includes display conditions for bossbar, scoreboard and layout.
+In these cases, yes/no texts are unused; therefore, they do not need to be defined.
 <details>
   <summary>Example</summary>
 
@@ -154,9 +161,12 @@ display-condition: "%server%=lobby|%server%=lobby2"
 </details>
 
 # Refresh interval
-Conditions are just placeholders afterall, and, as such, they must be refreshed priodically. Refresh intervals of conditions are not directly configurable. They are based on placeholders used inside (subconditions, yes/no values).  
+Conditions are just placeholders after all, and, as such, they must be refreshed periodically.
+Refresh intervals of conditions are not directly configurable.
+They are based on placeholders used inside (subconditions, yes/no values).  
 Permission checks count as 1000ms.  
-To configure refresh intervals of placeholders, check out the [Optimization guide](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---placeholder-refresh-intervals).
+To configure refresh intervals of placeholders,
+check out the [Optimization guide](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---placeholder-refresh-intervals).
 
 # Examples
 ## Example 1 - Chaining conditional placeholders
@@ -187,8 +197,10 @@ Finally, we can use this ping placeholder using `%condition:ping%`.
 This example chained 2 conditions, but more can be used. There is no limit.
 
 # Example 2 - Conditions in conditions
-If you want to use a condition in another one, for example to use both AND and OR types, create 2 conditions and use one in the other one.  
-For example, if we want to check that player is in server `lobby` **and** in worlds **either** `world1` or `world2`, it can be achieved in the following way:
+If you want to use a condition in another one,
+for example, to use both "AND" and "OR" types, create 2 conditions and use one in the other one.  
+For example, if we want to check that player is in server `lobby` **and** in worlds **either** `world1` or `world2`,
+it can be achieved in the following way:
 ```
 conditions:
   world:
