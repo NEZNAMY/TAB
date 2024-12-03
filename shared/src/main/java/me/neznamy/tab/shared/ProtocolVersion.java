@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public enum ProtocolVersion {
 
     UNKNOWN,
-    V1_21_4 (769), // Predicted PVN
+    V1_21_4 (769),
     V1_21_3 (768),
     V1_21_2 (768),
     V1_21_1 (767),
@@ -86,15 +86,12 @@ public enum ProtocolVersion {
     private static final ProtocolVersion[] VALUES = values();
 
     /** Newest MC version this plugin jar knows */
-    public static final ProtocolVersion LATEST_KNOWN_VERSION = V1_21_3;
+    public static final ProtocolVersion LATEST_KNOWN_VERSION = V1_21_4;
 
     /** Version's network id found at <a href="https://wiki.vg/Protocol_version_numbers">wiki.vg</a> */
     private final int networkId;
 
-    /** Version's minor version, such as 16 for 1.16.x. Allowing override to
-     * set minor version of UNKNOWN_SERVER_VERSION value to value from package to fix compatibility
-     * with server forks that set bukkit version field value to "Unknown".
-     */
+    /** Version's minor version, such as 16 for 1.16.x */
     private final int minorVersion;
 
     /** Version's friendly name displayed in %player-version% placeholder */
