@@ -40,6 +40,7 @@ import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.kyori.adventure.audience.Audience;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
@@ -273,7 +274,8 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public BossBar createBossBar(@NotNull TabPlayer player) {
-        if (AdventureBossBar.isAvailable()) return new AdventureBossBar(player);
+        //noinspection ConstantValue
+        if (AdventureBossBar.isAvailable() && Audience.class.isAssignableFrom(Player.class)) return new AdventureBossBar(player);
 
         // 1.9+ server, handle using API, potential 1.8 players are handled by ViaVersion
         if (BukkitReflection.getMinorVersion() >= 9) return new BukkitBossBar((BukkitTabPlayer) player);
