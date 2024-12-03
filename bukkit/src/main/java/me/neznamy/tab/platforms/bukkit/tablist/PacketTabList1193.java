@@ -25,7 +25,6 @@ public class PacketTabList1193 extends PacketTabList18 {
     private static final Map<Action, EnumSet<?>> actionToEnumSet = new EnumMap<>(Action.class);
 
     private static boolean v1_21_2Plus;
-    private static boolean v1_21_4Plus;
 
     private static Enum actionAddPlayer;
     private static Enum actionUpdateDisplayName;
@@ -95,14 +94,13 @@ public class PacketTabList1193 extends PacketTabList18 {
             actionToEnumSet.put(Action.UPDATE_LIST_ORDER, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_LIST_ORDER.name())));
             PlayerInfoData_ListOrder = ReflectionUtils.getFields(playerInfoDataClass, int.class).get(1);
             v1_21_2Plus = true;
-            try {
+            if (BukkitReflection.is1_21_4Plus()) {
                 // 1.21.4+
                 actionToEnumSet.put(Action.UPDATE_HAT, EnumSet.of(Enum.valueOf(ActionClass, Action.UPDATE_HAT.name())));
                 PlayerInfoData_ShowHat = ReflectionUtils.getFields(playerInfoDataClass, boolean.class).get(1);
                 newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
                         EnumGamemodeClass, IChatBaseComponent, boolean.class, int.class, RemoteChatSession$Data);
-                v1_21_4Plus = true;
-            } catch (Exception ignored) {
+            } else {
                 // 1.21.2 - 1.21.3
                 newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
                         EnumGamemodeClass, IChatBaseComponent, int.class, RemoteChatSession$Data);
@@ -176,7 +174,7 @@ public class PacketTabList1193 extends PacketTabList18 {
             Object displayName = PlayerInfoData_DisplayName.get(nmsData);
             int latency = PlayerInfoData_Latency.getInt(nmsData);
             int listOrder = v1_21_2Plus ? PlayerInfoData_ListOrder.getInt(nmsData) : 0;
-            boolean showHat = v1_21_4Plus && PlayerInfoData_ShowHat.getBoolean(nmsData);
+            boolean showHat = BukkitReflection.is1_21_4Plus() && PlayerInfoData_ShowHat.getBoolean(nmsData);
             if (actions.contains(actionUpdateDisplayName)) {
                 Object expectedName = getExpectedDisplayNames().get(id);
                 if (expectedName != null && expectedName != displayName) {
@@ -213,7 +211,7 @@ public class PacketTabList1193 extends PacketTabList18 {
     @SneakyThrows
     private static Object newPlayerInfoData(@NotNull UUID id, @Nullable GameProfile profile, boolean listed, int latency,
                                             @Nullable Object gameMode, @Nullable Object displayName, boolean showHat, int listOrder, @Nullable Object chatSession) {
-        if (v1_21_4Plus) {
+        if (BukkitReflection.is1_21_4Plus()) {
             return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName, showHat, listOrder, chatSession);
         } else if (v1_21_2Plus) {
             return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName,          listOrder, chatSession);

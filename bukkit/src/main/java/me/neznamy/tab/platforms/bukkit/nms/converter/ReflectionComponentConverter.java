@@ -68,8 +68,15 @@ public class ReflectionComponentConverter extends ComponentConverter {
             Class<?> chatHoverable = BukkitReflection.getClass("network.chat.HoverEvent", "network.chat.ChatHoverable", "ChatHoverable");
             ResourceLocation_tryParse = ReflectionUtils.getMethod(ResourceLocation, new String[]{"tryParse", "m_135820_", "a"}, String.class);
             ChatHexColor_fromRGB = ReflectionUtils.getMethods(chatHexColor, chatHexColor, int.class).get(0); // There should only be 1, but some mods add more
-            newChatModifier = ReflectionUtils.setAccessible(ChatModifier.getDeclaredConstructor(chatHexColor, Boolean.class, Boolean.class, Boolean.class,
-                    Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
+            if (BukkitReflection.is1_21_4Plus()) {
+                // 1.21.4+
+                newChatModifier = ReflectionUtils.setAccessible(ChatModifier.getDeclaredConstructor(chatHexColor, Integer.class, Boolean.class, Boolean.class,
+                        Boolean.class, Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
+            } else {
+                // 1.21.3-
+                newChatModifier = ReflectionUtils.setAccessible(ChatModifier.getDeclaredConstructor(chatHexColor, Boolean.class, Boolean.class, Boolean.class,
+                        Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
+            }
             convertModifier = this::createModifierModern;
         } else {
             newChatModifier = ChatModifier.getConstructor();
@@ -103,18 +110,34 @@ public class ReflectionComponentConverter extends ComponentConverter {
                 color = ChatHexColor_fromRGB.invoke(null, modifier.getColor().getLegacyColor().getRgb());
             }
         }
-        return newChatModifier.newInstance(
-                color,
-                modifier.isBold(),
-                modifier.isItalic(),
-                modifier.isUnderlined(),
-                modifier.isStrikethrough(),
-                modifier.isObfuscated(),
-                null,
-                null,
-                null,
-                modifier.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, modifier.getFont())
-        );
+        if (BukkitReflection.is1_21_4Plus()) {
+            return newChatModifier.newInstance(
+                    color,
+                    0,
+                    modifier.isBold(),
+                    modifier.isItalic(),
+                    modifier.isUnderlined(),
+                    modifier.isStrikethrough(),
+                    modifier.isObfuscated(),
+                    null,
+                    null,
+                    null,
+                    modifier.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, modifier.getFont())
+            );
+        } else {
+            return newChatModifier.newInstance(
+                    color,
+                    modifier.isBold(),
+                    modifier.isItalic(),
+                    modifier.isUnderlined(),
+                    modifier.isStrikethrough(),
+                    modifier.isObfuscated(),
+                    null,
+                    null,
+                    null,
+                    modifier.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, modifier.getFont())
+            );
+        }
     }
 
     @SneakyThrows

@@ -33,6 +33,11 @@ public class BukkitReflection {
     @Getter
     private static final boolean is1_20_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundResetScorePacket");
 
+    /** Flag determining whether the server version is at least 1.21.4 or not */
+    @Getter
+    private static final boolean is1_21_4Plus = serverVersion.minorVersion >= 21 &&
+            ReflectionUtils.getFields(getClass("network.chat.Style", "network.chat.ChatModifier"), Integer.class).size() == 1;
+
     @NotNull
     @SneakyThrows
     private static Method getHandle() {
@@ -78,7 +83,7 @@ public class BukkitReflection {
      *          if class does not exist
      */
     @SneakyThrows
-    public static Class<?> getClass(@NotNull String... names) throws ClassNotFoundException {
+    public static Class<?> getClass(@NotNull String... names) {
         for (String name : names) {
             try {
                 return serverVersion.getClass.apply(name);
