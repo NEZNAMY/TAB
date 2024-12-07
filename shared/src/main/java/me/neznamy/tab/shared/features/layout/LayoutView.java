@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.SimpleComponent;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.GroupPattern;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -72,8 +71,7 @@ public class LayoutView {
     }
 
     public void tick() {
-        Stream<TabPlayer> str = manager.getSortedPlayers().keySet().stream().filter(
-                player -> TAB.getInstance().getPlatform().canSee(viewer, player));
+        Stream<TabPlayer> str = manager.getSortedPlayers().keySet().stream().filter(viewer::canSee);
         List<TabPlayer> players = str.collect(Collectors.toList());
         for (ParentGroup group : groups) {
             group.tick(players);

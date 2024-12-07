@@ -87,7 +87,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
      */
     public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
         if (displayed == viewer) return true;
-        if (!TAB.getInstance().getPlatform().canSee(viewer, displayed)) return false;
+        if (!viewer.canSee(displayed)) return false;
         if (viewer.globalPlayerListData.onSpyServer) return true;
         return viewer.globalPlayerListData.serverGroup == displayed.globalPlayerListData.serverGroup;
     }

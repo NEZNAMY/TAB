@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.platform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import me.neznamy.tab.api.integration.VanishIntegration;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.chat.SimpleComponent;
@@ -315,6 +316,26 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      */
     public void markOffline() {
         online = false;
+    }
+
+    /**
+     * Returns {@code true} if player can see the target, {@code false} otherwise.
+     * This includes all vanish, permission & plugin API checks.
+     *
+     * @param   target
+     *          Player who is being viewed
+     * @return  {@code true} if can see, {@code false} if not.
+     */
+    public boolean canSee(@NotNull TabPlayer target) {
+        if (!VanishIntegration.getHandlers().isEmpty()) {
+            try {
+                return VanishIntegration.getHandlers().stream().allMatch(integration -> integration.canSee(this, target));
+            } catch (ConcurrentModificationException e) {
+                // PV error, try again
+                return canSee(target);
+            }
+        }
+        return !target.isVanished() || hasPermission(TabConstants.Permission.SEE_VANISHED);
     }
 
     /**

@@ -230,7 +230,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyDisplay) {
         if (viewer.belowNameData.disabled.get()) return;
-        if (!TAB.getInstance().getPlatform().canSee(viewer, scoreHolder)) return; // Prevent hack clients from knowing vanished players are connected
+        if (!viewer.canSee(scoreHolder)) return; // Prevent hack clients from knowing vanished players are connected
         viewer.getScoreboard().setScore(
                 OBJECTIVE_NAME,
                 scoreHolder.getNickname(),

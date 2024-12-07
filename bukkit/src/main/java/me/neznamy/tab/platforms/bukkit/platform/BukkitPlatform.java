@@ -348,17 +348,6 @@ public class BukkitPlatform implements BackendPlatform {
         Bukkit.getScheduler().runTask(plugin, task);
     }
 
-    // Disabling this check, because vanish plugins might process hiding with a delay on join, resulting
-    // in wrong result when called by TAB, causing vanished players to appear in layout for players who
-    // just joined, in the worst case scenario not hiding shortly after if vanish plugin takes too long.
-    /*
-    @Override
-    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        if (BackendPlatform.super.canSee(viewer, target)) return true;
-        return ((BukkitTabPlayer)viewer).getPlayer().canSee(((BukkitTabPlayer)target).getPlayer());
-    }
-    */
-
     /**
      * Converts component to legacy string using bukkit RGB format if supported by both server and client.
      * If not, closest legacy color is used instead.

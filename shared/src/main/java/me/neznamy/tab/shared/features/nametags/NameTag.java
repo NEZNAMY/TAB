@@ -87,7 +87,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (TabPlayer target : onlinePlayers.getPlayers()) {
-                if (target.isVanished() && !TAB.getInstance().getPlatform().canSee(viewer, target)) {
+                if (target.isVanished() && !viewer.canSee(target)) {
                     target.teamData.vanishedFor.add(viewer.getUniqueId());
                 }
                 if (!target.teamData.isDisabled()) registerTeam(target, viewer);
@@ -131,10 +131,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         connectedPlayer.teamData.teamName = connectedPlayer.sortingData.shortTeamName; // Sorting is loaded sync before nametags
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (all == connectedPlayer) continue; //avoiding double registration
-            if (connectedPlayer.isVanished() && !TAB.getInstance().getPlatform().canSee(all, connectedPlayer)) {
+            if (connectedPlayer.isVanished() && !all.canSee(connectedPlayer)) {
                 connectedPlayer.teamData.vanishedFor.add(all.getUniqueId());
             }
-            if (all.isVanished() && !TAB.getInstance().getPlatform().canSee(connectedPlayer, all)) {
+            if (all.isVanished() && !connectedPlayer.canSee(all)) {
                 all.teamData.vanishedFor.add(connectedPlayer.getUniqueId());
             }
             if (!all.teamData.isDisabled()) {
@@ -195,7 +195,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (player.isVanished()) {
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 if (viewer == player) continue;
-                if (!TAB.getInstance().getPlatform().canSee(viewer, player)) {
+                if (!viewer.canSee(player)) {
                     player.teamData.vanishedFor.add(viewer.getUniqueId());
                     if (!player.teamData.isDisabled()) {
                         ((SafeScoreboard<?>)viewer.getScoreboard()).unregisterTeamSafe(player.teamData.teamName);
@@ -347,7 +347,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (p.teamData.isDisabled() || p.teamData.vanishedFor.contains(viewer.getUniqueId())) return;
-        if (!TAB.getInstance().getPlatform().canSee(viewer, p) && p != viewer) return;
+        if (!viewer.canSee(p) && p != viewer) return;
         TabComponent prefix = cache.get(p.teamData.prefix.getFormat(viewer));
         viewer.getScoreboard().registerTeam(
                 p.teamData.teamName,
