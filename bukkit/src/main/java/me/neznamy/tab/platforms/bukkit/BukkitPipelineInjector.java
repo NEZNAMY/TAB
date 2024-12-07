@@ -26,7 +26,8 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             ProtocolVersion.V1_21,
             ProtocolVersion.V1_21_1,
             ProtocolVersion.V1_21_2,
-            ProtocolVersion.V1_21_3
+            ProtocolVersion.V1_21_3,
+            ProtocolVersion.V1_21_4
     );
 
     /** Function for getting player's channel */

@@ -21,7 +21,8 @@ public abstract class ComponentConverter {
             ProtocolVersion.V1_21,
             ProtocolVersion.V1_21_1,
             ProtocolVersion.V1_21_2,
-            ProtocolVersion.V1_21_3
+            ProtocolVersion.V1_21_3,
+            ProtocolVersion.V1_21_4
     );
 
     /** Instance of this class */

@@ -29,8 +29,7 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
 
     /** Versions supported by paper module that uses direct mojang-mapped NMS for latest MC version */
     private static final EnumSet<ProtocolVersion> paperNativeVersions = EnumSet.of(
-            ProtocolVersion.V1_21_2,
-            ProtocolVersion.V1_21_3
+            ProtocolVersion.V1_21_4
     );
 
     /** Instance function */
