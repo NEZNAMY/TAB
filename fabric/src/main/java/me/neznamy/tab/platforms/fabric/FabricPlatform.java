@@ -177,7 +177,9 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public double getTPS() {
-        return -1; // Not available
+        double mspt = getMSPT();
+        if(mspt < 50.0) { return 20.0; }
+        return Math.round(1000.0/mspt,2);
     }
 
     @Override
