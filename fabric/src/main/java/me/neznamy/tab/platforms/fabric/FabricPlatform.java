@@ -178,8 +178,8 @@ public class FabricPlatform implements BackendPlatform {
     @Override
     public double getTPS() {
         double mspt = getMSPT();
-        if(mspt < 50.0) { return 20.0; }
-        return Math.round(1000.0/mspt,2);
+        if (mspt < 50) return 20;
+        return Math.round(1000 / mspt);
     }
 
     @Override
