@@ -1,17 +1,17 @@
 package me.neznamy.tab.shared.config.file;
 
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.PropertyConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.yaml.snakeyaml.error.YAMLException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-
-import me.neznamy.tab.shared.TabConstants;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import me.neznamy.tab.shared.config.PropertyConfiguration;
-import me.neznamy.tab.shared.TAB;
-import org.yaml.snakeyaml.error.YAMLException;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a configuration file for properties (groups.yml or users.yml).
@@ -45,7 +45,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     public YamlPropertyConfigurationFile(@Nullable InputStream source, @NotNull File destination) throws IOException {
         super(source, destination);
         category = destination.getName().contains("groups") ? "group" : "user";
-        for (Map.Entry<String, Object> entry : getValues().entrySet()) {
+        for (Map.Entry<Object, Object> entry : getValues().entrySet()) {
             if (entry.getKey().equals(PER_SERVER)) {
                 for (String server : serverGroups) {
                     for (String name : this.<String, Object>getMap(PER_SERVER + "." + server).keySet()) {
@@ -63,8 +63,8 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
                     }
                 }
             } else {
-                for (String property : this.<String, Object>getMap(entry.getKey()).keySet()) {
-                    checkProperty(destination.getName(), category, entry.getKey(), property, null, null, true);
+                for (String property : this.<String, Object>getMap(entry.getKey().toString()).keySet()) {
+                    checkProperty(destination.getName(), category, entry.getKey().toString(), property, null, null, true);
                 }
             }
         }
@@ -126,15 +126,16 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     public @NotNull Map<String, Map<String, Object>> getPerServerSettings(@NotNull String name) {
         return convertMap(getMap(PER_SERVER), name);
     }
+
     @Override
     public @NotNull Set<String> getAllEntries() {
-        Set<String> set = new HashSet<>(values.keySet());
+        Set<Object> set = new HashSet<>(values.keySet());
         set.remove(PER_WORLD);
         set.remove(PER_SERVER);
         Map<String, Map<String, Map<String, String>>> perWorld = getMap(PER_WORLD);
         perWorld.values().forEach(m -> set.addAll(m.keySet()));
         Map<String, Map<String, Map<String, String>>> perServer = getMap(PER_SERVER);
         perServer.values().forEach(m -> set.addAll(m.keySet()));
-        return set;
+        return set.stream().map(Object::toString).collect(Collectors.toSet());
     }
 }

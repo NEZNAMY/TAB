@@ -24,7 +24,7 @@ public abstract class ConfigurationFile {
     protected List<String> header;
 
     /** Configuration file content */
-    @Getter @Setter protected Map<String, Object> values;
+    @Getter @Setter protected Map<Object, Object> values;
 
     /** File to use */
     @Getter protected final File file;
@@ -338,14 +338,14 @@ public abstract class ConfigurationFile {
      *          Value to save
      * @return  the first argument to allow chaining
      */
-    private Map<String, Object> set(@NonNull Map<String, Object> map, @NonNull String path, @Nullable Object value) {
+    private Map<Object, Object> set(@NonNull Map<Object, Object> map, @NonNull String path, @Nullable Object value) {
         if (path.contains(".")) {
             String keyWord = getRealKey(map, path.split("\\.")[0]);
             Object subMap = map.get(keyWord);
             if (!(subMap instanceof Map)) {
                 subMap = new LinkedHashMap<>();
             }
-            map.put(keyWord, set((Map<String, Object>) subMap, path.substring(keyWord.length()+1), value));
+            map.put(keyWord, set((Map<Object, Object>) subMap, path.substring(keyWord.length()+1), value));
         } else {
             if (value == null) {
                 map.remove(getRealKey(map, path));
