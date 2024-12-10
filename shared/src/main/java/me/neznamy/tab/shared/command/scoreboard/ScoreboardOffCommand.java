@@ -47,7 +47,6 @@ public class ScoreboardOffCommand extends SubCommand {
             return;
         }
         boolean silent = args.length == 2 && args[1].equals("-s");
-        if (target.scoreboardData.otherPluginScoreboard != null) return; //not overriding other plugins
         scoreboard.setScoreboardVisible(target, false, !silent);
     }
 

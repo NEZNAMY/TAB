@@ -86,7 +86,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.scoreboardData.forcedScoreboard != null || !hasScoreboardVisible(p) ||
-                announcement != null || p.scoreboardData.otherPluginScoreboard != null || p.scoreboardData.joinDelayed) return;
+                announcement != null || p.scoreboardData.joinDelayed) return;
         sendHighestScoreboard(p);
     }
 
@@ -98,8 +98,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         if (configuration.getJoinDelay() > 0) {
             connectedPlayer.scoreboardData.joinDelayed = true;
             customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-                if (connectedPlayer.scoreboardData.otherPluginScoreboard == null)
-                    setScoreboardVisible(connectedPlayer, configuration.isHiddenByDefault() == sbOffPlayers.contains(connectedPlayer.getName()), false);
+                setScoreboardVisible(connectedPlayer, configuration.isHiddenByDefault() == sbOffPlayers.contains(connectedPlayer.getName()), false);
                 connectedPlayer.scoreboardData.joinDelayed = false;
             }, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN), configuration.getJoinDelay());
         } else {
@@ -114,6 +113,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
      *          player to send scoreboard to
      */
     public void sendHighestScoreboard(@NonNull TabPlayer p) {
+        if (p.scoreboardData.otherPluginScoreboard != null) return;
         if (!hasScoreboardVisible(p)) return;
         ScoreboardImpl scoreboard = (ScoreboardImpl) detectHighestScoreboard(p);
         ScoreboardImpl current = p.scoreboardData.activeScoreboard;
@@ -273,7 +273,9 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         if (player.scoreboardData.visible == visible) return;
         if (visible) {
             player.scoreboardData.visible = true;
-            sendHighestScoreboard(player);
+            if (player.scoreboardData.otherPluginScoreboard == null) {
+                sendHighestScoreboard(player);
+            }
             if (sendToggleMessage) {
                 player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOn(), true);
             }
@@ -291,7 +293,9 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             }
         } else {
             player.scoreboardData.visible = false;
-            unregisterScoreboard(player);
+            if (player.scoreboardData.otherPluginScoreboard == null) {
+                unregisterScoreboard(player);
+            }
             if (sendToggleMessage) {
                 player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOff(), true);
             }
