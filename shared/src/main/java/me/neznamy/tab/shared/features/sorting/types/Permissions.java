@@ -1,14 +1,14 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Sorting by permission nodes
@@ -27,7 +27,7 @@ public class Permissions extends SortingType {
      *          Permission nodes separated with ","
      */
     public Permissions(Sorting sorting, String options) {
-        super(sorting, "PERMISSIONS");
+        super(sorting, "PERMISSIONS", true);
         sortedGroups = convertSortingElements(options.split(","));
         List<String> placeholders = new ArrayList<>();
         for (String permission : sortedGroups.keySet()) {

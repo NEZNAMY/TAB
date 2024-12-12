@@ -1,15 +1,15 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import java.util.LinkedHashMap;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.LinkedHashMap;
 
 /**
  * Abstract class for sorting types.
@@ -30,6 +30,9 @@ public abstract class SortingType {
     /** Placeholder to sort by, if sorting type uses it */
     protected String sortingPlaceholder;
 
+    /** Flag tracking if this sorting type is valid or not. If not, it is disabled. */
+    protected final boolean valid;
+
     /**
      * Constructs new instance with given parameter
      *
@@ -41,9 +44,11 @@ public abstract class SortingType {
         this.displayName = displayName;
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
             TAB.getInstance().getConfigHelper().startup().invalidSortingPlaceholder(sortingPlaceholder, this);
+            valid = false;
         } else {
             sorting.addUsedPlaceholder(sortingPlaceholder);
             this.sortingPlaceholder = sortingPlaceholder;
+            valid = true;
         }
     }
     

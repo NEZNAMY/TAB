@@ -60,6 +60,7 @@ public class Placeholder extends SortingType {
 
     @Override
     public String getChars(@NotNull TabPlayer p) {
+        if (!valid) return "";
         String output = EnumChatFormat.color(setPlaceholders(p));
         p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\"";
         int position;
