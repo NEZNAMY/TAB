@@ -22,12 +22,6 @@ public class SimpleComponent extends TabComponent {
 
     @Override
     @NotNull
-    public String toFlatText() {
-        return text;
-    }
-
-    @Override
-    @NotNull
     public String toRawText() {
         return text;
     }
