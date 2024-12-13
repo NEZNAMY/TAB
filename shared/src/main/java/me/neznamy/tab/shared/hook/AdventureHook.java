@@ -1,9 +1,6 @@
 package me.neznamy.tab.shared.hook;
 
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.StructuredComponent;
-import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.*;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -52,6 +49,7 @@ public class AdventureHook {
      */
     @NotNull
     public static Component toAdventureComponent(@NotNull TabComponent component, boolean modern) {
+        if (component instanceof AdventureComponent) return ((AdventureComponent) component).getComponent();
         if (component instanceof SimpleComponent) return Component.text(((SimpleComponent) component).getText());
         StructuredComponent iComponent = (StructuredComponent) component;
         ChatModifier modifier = iComponent.getModifier();

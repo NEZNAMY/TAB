@@ -20,10 +20,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.StructuredComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.*;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -41,6 +38,7 @@ import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
@@ -360,25 +358,30 @@ public class BukkitPlatform implements BackendPlatform {
      */
     @NotNull
     public String toBukkitFormat(@NotNull TabComponent component, boolean rgbClient) {
-        if (component instanceof SimpleComponent) return component.toLegacyText();
-        StructuredComponent iComponent = (StructuredComponent) component;
-        StringBuilder sb = new StringBuilder();
-        if (iComponent.getModifier().getColor() != null) {
-            if (serverVersion.supportsRGB() && rgbClient) {
-                String hexCode = iComponent.getModifier().getColor().getHexCode();
-                char c = EnumChatFormat.COLOR_CHAR;
-                sb.append(c).append("x").append(c).append(hexCode.charAt(0)).append(c).append(hexCode.charAt(1))
-                        .append(c).append(hexCode.charAt(2)).append(c).append(hexCode.charAt(3))
-                        .append(c).append(hexCode.charAt(4)).append(c).append(hexCode.charAt(5));
-            } else {
-                sb.append(iComponent.getModifier().getColor().getLegacyColor());
+        if (component instanceof SimpleComponent) {
+            return ((SimpleComponent) component).getText();
+        }
+        if (component instanceof StructuredComponent) {
+            StructuredComponent iComponent = (StructuredComponent) component;
+            StringBuilder sb = new StringBuilder();
+            if (iComponent.getModifier().getColor() != null) {
+                if (serverVersion.supportsRGB() && rgbClient) {
+                    String hexCode = iComponent.getModifier().getColor().getHexCode();
+                    char c = EnumChatFormat.COLOR_CHAR;
+                    sb.append(c).append("x").append(c).append(hexCode.charAt(0)).append(c).append(hexCode.charAt(1))
+                            .append(c).append(hexCode.charAt(2)).append(c).append(hexCode.charAt(3))
+                            .append(c).append(hexCode.charAt(4)).append(c).append(hexCode.charAt(5));
+                } else {
+                    sb.append(iComponent.getModifier().getColor().getLegacyColor());
+                }
             }
+            sb.append(iComponent.getModifier().getMagicCodes());
+            sb.append(iComponent.getText());
+            for (StructuredComponent extra : iComponent.getExtra()) {
+                sb.append(toBukkitFormat(extra, rgbClient));
+            }
+            return sb.toString();
         }
-        sb.append(iComponent.getModifier().getMagicCodes());
-        sb.append(iComponent.getText());
-        for (StructuredComponent extra : iComponent.getExtra()) {
-            sb.append(toBukkitFormat(extra, rgbClient));
-        }
-        return sb.toString();
+        return LegacyComponentSerializer.builder().hexColors().useUnusualXRepeatedCharacterHexFormat().build().serialize(((AdventureComponent)component).getComponent());
     }
 }

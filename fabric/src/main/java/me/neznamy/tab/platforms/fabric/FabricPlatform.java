@@ -135,16 +135,20 @@ public class FabricPlatform implements BackendPlatform {
     @Override
     @NotNull
     public Component convertComponent(@NotNull TabComponent component, boolean modern) {
-        if (component instanceof SimpleComponent) return FabricMultiVersion.newTextComponent(((SimpleComponent) component).getText());
-
-        StructuredComponent component1 = (StructuredComponent) component;
-        Component nmsComponent = FabricMultiVersion.newTextComponent(component1.getText());
-
-        FabricMultiVersion.setStyle(nmsComponent, FabricMultiVersion.convertModifier(component1.getModifier(), modern));
-        for (StructuredComponent extra : component1.getExtra()) {
-            FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra, modern));
+        if (component instanceof SimpleComponent component1) {
+            return FabricMultiVersion.newTextComponent(component1.getText());
         }
-        return nmsComponent;
+        if (component instanceof StructuredComponent component1) {
+            Component nmsComponent = FabricMultiVersion.newTextComponent(component1.getText());
+
+            FabricMultiVersion.setStyle(nmsComponent, FabricMultiVersion.convertModifier(component1.getModifier(), modern));
+            for (StructuredComponent extra : component1.getExtra()) {
+                FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra, modern));
+            }
+            return nmsComponent;
+        }
+        throw new UnsupportedOperationException("Adventure components created using MiniMessage syntax are not supported on Fabric. " +
+                "You can request the implementation if you ran into this error.");
     }
 
     @Override

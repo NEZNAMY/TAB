@@ -1,23 +1,14 @@
 package me.neznamy.tab.shared.chat.rgb;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.rgb.format.BukkitFormat;
-import me.neznamy.tab.shared.chat.rgb.format.HtmlFormat;
-import me.neznamy.tab.shared.chat.rgb.format.KyoriFormat;
-import me.neznamy.tab.shared.chat.rgb.format.MiniMessageFormat;
-import me.neznamy.tab.shared.chat.rgb.format.UnnamedFormat1;
+import me.neznamy.tab.shared.chat.rgb.format.*;
 import me.neznamy.tab.shared.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.shared.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.shared.chat.rgb.gradient.GradientPattern;
 import me.neznamy.tab.shared.chat.rgb.gradient.NexEngineGradient;
-import me.neznamy.tab.shared.util.ReflectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-import me.neznamy.tab.shared.chat.rgb.format.CMIFormat;
-import me.neznamy.tab.shared.chat.rgb.format.RGBFormatter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.regex.Pattern;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
@@ -37,18 +28,13 @@ public class RGBUtils {
      * Constructs new instance and loads all RGB patterns and gradients
      */
     public RGBUtils() {
-        List<RGBFormatter> list = new ArrayList<>();
-        if (ReflectionUtils.classExists("net.kyori.adventure.text.minimessage.MiniMessage") &&
-                ReflectionUtils.classExists("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer")) {
-            list.add(new MiniMessageFormat());
-        }
-        list.add(new BukkitFormat());
-        list.add(new CMIFormat());
-        list.add(new UnnamedFormat1());
-        list.add(new HtmlFormat());
-        list.add(new KyoriFormat());
-        formats = list.toArray(new RGBFormatter[0]);
-
+        formats = new RGBFormatter[] {
+                new BukkitFormat(),
+                new CMIFormat(),
+                new UnnamedFormat1(),
+                new HtmlFormat(),
+                new KyoriFormat()
+        };
         gradients = new GradientPattern[] {
                 //{#RRGGBB>}text{#RRGGBB<}
                 new CMIGradient(),

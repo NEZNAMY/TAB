@@ -1,20 +1,18 @@
 package me.neznamy.tab.platforms.paper;
 
 import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.StructuredComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
-import net.minecraft.ChatFormatting;
+import me.neznamy.tab.shared.chat.*;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Component converter using direct mojang-mapped code for versions 1.20.5+.
@@ -25,38 +23,71 @@ public class PaperComponentConverter extends ComponentConverter {
     @Override
     @NotNull
     public Component convert(@NotNull TabComponent component, boolean modern) {
-        if (component instanceof SimpleComponent) return Component.literal(((SimpleComponent) component).getText());
+        switch (component) {
+            case SimpleComponent simpleComponent -> {
+                return Component.literal(simpleComponent.getText());
+            }
+            case StructuredComponent component1 -> {
+                MutableComponent nmsComponent = Component.literal(component1.getText());
+                ChatModifier modifier = component1.getModifier();
+                TextColor color = null;
+                if (modifier.getColor() != null) {
+                    if (modern) {
+                        color = TextColor.fromRgb(modifier.getColor().getRgb());
+                    } else {
+                        color = TextColor.fromRgb(modifier.getColor().getLegacyColor().getRgb());
+                    }
+                }
+                nmsComponent.setStyle(newStyle(color, modifier.isBold(), modifier.isItalic(), modifier.isUnderlined(),
+                        modifier.isUnderlined(), modifier.isObfuscated(), modifier.getFont()));
+                for (StructuredComponent extra : component1.getExtra()) {
+                    nmsComponent.append(convert(extra, modern));
+                }
+                return nmsComponent;
+            }
+            case AdventureComponent component1 -> {
+                return fromAdventure(component1.getComponent());
+            }
+            default -> throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
+        }
+    }
 
-        StructuredComponent component1 = (StructuredComponent) component;
-        MutableComponent nmsComponent = Component.literal(component1.getText());
-        nmsComponent.setStyle(createModifierModern(component1.getModifier(), modern));
-        for (StructuredComponent extra : component1.getExtra()) {
-            nmsComponent.append(convert(extra, modern));
+    @NotNull
+    private Component fromAdventure(@NotNull net.kyori.adventure.text.Component component) {
+        MutableComponent nmsComponent;
+        if (component instanceof TextComponent component1) {
+            nmsComponent = Component.literal(component1.content());
+        } else if (component instanceof TranslatableComponent component1) {
+            nmsComponent = Component.translatable(component1.key());
+        } else throw new IllegalStateException("Cannot convert " + component.getClass().getName());
+
+        net.kyori.adventure.text.format.TextColor color = component.color();
+        Key font = component.style().font();
+        nmsComponent.setStyle(newStyle(
+                color == null ? null : TextColor.fromRgb(color.value()),
+                component.style().hasDecoration(TextDecoration.BOLD),
+                component.style().hasDecoration(TextDecoration.ITALIC),
+                component.style().hasDecoration(TextDecoration.UNDERLINED),
+                component.style().hasDecoration(TextDecoration.STRIKETHROUGH),
+                component.style().hasDecoration(TextDecoration.OBFUSCATED),
+                font == null ? null : font.asString()
+        ));
+        for (net.kyori.adventure.text.Component extra : component.children()) {
+            nmsComponent.append(fromAdventure(extra));
         }
         return nmsComponent;
     }
 
     @NotNull
-    private Style createModifierModern(@NotNull ChatModifier modifier, boolean modern) {
-        TextColor color = null;
-        if (modifier.getColor() != null) {
-            if (modern) {
-                color = TextColor.fromRgb(modifier.getColor().getRgb());
-            } else {
-                color = TextColor.fromRgb(modifier.getColor().getLegacyColor().getRgb());
-            }
-        }
-        List<ChatFormatting> formats = new ArrayList<>();
-        if (modifier.isBold()) formats.add(ChatFormatting.BOLD);
-        if (modifier.isItalic()) formats.add(ChatFormatting.ITALIC);
-        if (modifier.isUnderlined()) formats.add(ChatFormatting.UNDERLINE);
-        if (modifier.isStrikethrough()) formats.add(ChatFormatting.STRIKETHROUGH);
-        if (modifier.isObfuscated()) formats.add(ChatFormatting.OBFUSCATED);
-
-        Style style = Style.EMPTY;
-        if (color != null) style = style.withColor(color);
-        if (!formats.isEmpty()) style = style.applyFormats(formats.toArray(new ChatFormatting[0]));
-        if (modifier.getFont() != null) style = style.withFont(ResourceLocation.tryParse(modifier.getFont()));
-        return style;
+    private Style newStyle(@Nullable TextColor color, boolean bold, boolean italic, boolean underlined,
+                           boolean strikethrough, boolean obfuscated, @Nullable String font) {
+        return Style.EMPTY
+                .withColor(color)
+                .withBold(bold)
+                .withItalic(italic)
+                .withUnderlined(underlined)
+                .withStrikethrough(strikethrough)
+                .withObfuscated(obfuscated)
+                .withFont(font == null ? null : ResourceLocation.tryParse(font));
     }
 }

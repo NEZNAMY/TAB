@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.*;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -136,35 +135,41 @@ public class BungeePlatform extends ProxyPlatform {
     @Override
     @NotNull
     public BaseComponent convertComponent(@NotNull TabComponent component, boolean modern) {
-        if (component instanceof SimpleComponent) return new TextComponent(component.toLegacyText());
-        StructuredComponent iComponent = (StructuredComponent) component;
-        TextComponent textComponent = new TextComponent(iComponent.getText());
-        ChatModifier modifier = iComponent.getModifier();
-        if (modifier.getColor() != null) {
-            if (modern) {
-                textComponent.setColor(ChatColor.of("#" + modifier.getColor().getHexCode()));
-            } else {
-                textComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name()));
-            }
+        if (component instanceof SimpleComponent) {
+            return new TextComponent(((SimpleComponent) component).getText());
         }
-
-        if (modifier.isBold()) textComponent.setBold(true);
-        if (modifier.isItalic()) textComponent.setItalic(true);
-        if (modifier.isObfuscated()) textComponent.setObfuscated(true);
-        if (modifier.isStrikethrough()) textComponent.setStrikethrough(true);
-        if (modifier.isUnderlined()) textComponent.setUnderlined(true);
-
-        textComponent.setFont(modifier.getFont());
-
-        if (!iComponent.getExtra().isEmpty()) {
-            List<BaseComponent> list = new ArrayList<>();
-            for (StructuredComponent extra : iComponent.getExtra()) {
-                list.add(convertComponent(extra, modern));
+        if (component instanceof StructuredComponent) {
+            StructuredComponent iComponent = (StructuredComponent) component;
+            TextComponent textComponent = new TextComponent(iComponent.getText());
+            ChatModifier modifier = iComponent.getModifier();
+            if (modifier.getColor() != null) {
+                if (modern) {
+                    textComponent.setColor(ChatColor.of("#" + modifier.getColor().getHexCode()));
+                } else {
+                    textComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name()));
+                }
             }
-            textComponent.setExtra(list);
-        }
 
-        return textComponent;
+            if (modifier.isBold()) textComponent.setBold(true);
+            if (modifier.isItalic()) textComponent.setItalic(true);
+            if (modifier.isObfuscated()) textComponent.setObfuscated(true);
+            if (modifier.isStrikethrough()) textComponent.setStrikethrough(true);
+            if (modifier.isUnderlined()) textComponent.setUnderlined(true);
+
+            textComponent.setFont(modifier.getFont());
+
+            if (!iComponent.getExtra().isEmpty()) {
+                List<BaseComponent> list = new ArrayList<>();
+                for (StructuredComponent extra : iComponent.getExtra()) {
+                    list.add(convertComponent(extra, modern));
+                }
+                textComponent.setExtra(list);
+            }
+
+            return textComponent;
+        }
+        throw new UnsupportedOperationException("Adventure components created using MiniMessage syntax are not supported on BungeeCord. " +
+                "You can request the implementation if you ran into this error.");
     }
 
     @Override

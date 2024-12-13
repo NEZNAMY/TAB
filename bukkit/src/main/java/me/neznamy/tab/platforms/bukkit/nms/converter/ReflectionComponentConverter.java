@@ -2,13 +2,15 @@ package me.neznamy.tab.platforms.bukkit.nms.converter;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.StructuredComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.*;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -23,6 +25,7 @@ import java.util.function.BiFunction;
 public class ReflectionComponentConverter extends ComponentConverter {
 
     private final FunctionWithException<String, Object> newTextComponent;
+    private final FunctionWithException<String, Object> newTranslatableComponent;
     private final BiFunction<ChatModifier, Boolean, Object> convertModifier;
 
     private final Class<?> ChatModifier = BukkitReflection.getClass("network.chat.Style", "network.chat.ChatModifier", "ChatModifier");
@@ -50,6 +53,8 @@ public class ReflectionComponentConverter extends ComponentConverter {
         if (BukkitReflection.getMinorVersion() >= 19) {
             Method IChatBaseComponent_b = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"b", "literal"}, String.class);
             newTextComponent = text -> IChatBaseComponent_b.invoke(null, text);
+            Method IChatBaseComponent_c = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"c", "translatable"}, String.class);
+            newTranslatableComponent = text -> IChatBaseComponent_c.invoke(null, text);
             Class<?> IChatMutableComponent = BukkitReflection.getClass("network.chat.MutableComponent", "network.chat.IChatMutableComponent", "IChatMutableComponent");
             Component_modifier = ReflectionUtils.getOnlyField(IChatMutableComponent, ChatModifier);
             ChatBaseComponent_addSibling = ReflectionUtils.getOnlyMethod(IChatMutableComponent, IChatMutableComponent, IChatBaseComponent);
@@ -57,9 +62,14 @@ public class ReflectionComponentConverter extends ComponentConverter {
             Class<?> ChatComponentText = BukkitReflection.getClass("network.chat.TextComponent", "network.chat.ChatComponentText", "ChatComponentText");
             Constructor<?> newChatComponentText = ChatComponentText.getConstructor(String.class);
             newTextComponent = newChatComponentText::newInstance;
+
+            Class<?> ChatMessage = BukkitReflection.getClass("network.chat.TranslatableComponent", "network.chat.ChatMessage", "ChatMessage");
+            Constructor<?> newChatMessage = ChatMessage.getConstructor(String.class, Object[].class);
+            newTranslatableComponent = text -> newChatMessage.newInstance(text, new Object[0]);
+
             Class<?> ChatBaseComponent = BukkitReflection.getClass("network.chat.BaseComponent", "network.chat.ChatBaseComponent", "ChatBaseComponent");
             Component_modifier = ReflectionUtils.getOnlyField(ChatBaseComponent, ChatModifier);
-            ChatBaseComponent_addSibling = ReflectionUtils.getOnlyMethod(ChatComponentText, IChatBaseComponent, IChatBaseComponent);
+            ChatBaseComponent_addSibling = ReflectionUtils.getOnlyMethod(ChatBaseComponent, IChatBaseComponent, IChatBaseComponent);
         }
         if (BukkitReflection.getMinorVersion() >= 16) {
             Class<?> chatHexColor = BukkitReflection.getClass("network.chat.TextColor", "network.chat.ChatHexColor", "ChatHexColor");
@@ -89,13 +99,44 @@ public class ReflectionComponentConverter extends ComponentConverter {
     @SneakyThrows
     @NotNull
     public Object convert(@NotNull TabComponent component, boolean modern) {
-        if (component instanceof SimpleComponent) return newTextComponent.apply(((SimpleComponent) component).getText());
+        if (component instanceof SimpleComponent) {
+            return newTextComponent.apply(((SimpleComponent) component).getText());
+        } else if (component instanceof StructuredComponent) {
+            StructuredComponent component1 = (StructuredComponent) component;
+            Object nmsComponent = newTextComponent.apply(component1.getText());
+            Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier(), modern));
+            for (StructuredComponent extra : component1.getExtra()) {
+                ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra, modern));
+            }
+            return nmsComponent;
+        } else {
+            return fromAdventure(((AdventureComponent)component).getComponent());
+        }
+    }
 
-        StructuredComponent component1 = (StructuredComponent) component;
-        Object nmsComponent = newTextComponent.apply(component1.getText());
-        Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier(), modern));
-        for (StructuredComponent extra : component1.getExtra()) {
-            ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra, modern));
+    @SneakyThrows
+    @NotNull
+    private Object fromAdventure(@NotNull net.kyori.adventure.text.Component component) {
+        Object nmsComponent;
+        if (component instanceof TextComponent) {
+            nmsComponent = newTextComponent.apply(((TextComponent) component).content());
+        } else if (component instanceof TranslatableComponent) {
+            nmsComponent = newTranslatableComponent.apply(((TranslatableComponent)component).key());
+        } else throw new IllegalStateException("Cannot convert " + component.getClass().getName());
+
+        net.kyori.adventure.text.format.TextColor color = component.color();
+        Key font = component.style().font();
+        Component_modifier.set(nmsComponent, newStyleModern(
+                color == null ? null : ChatHexColor_fromRGB.invoke(null, color.value()),
+                component.style().hasDecoration(TextDecoration.BOLD),
+                component.style().hasDecoration(TextDecoration.ITALIC),
+                component.style().hasDecoration(TextDecoration.UNDERLINED),
+                component.style().hasDecoration(TextDecoration.STRIKETHROUGH),
+                component.style().hasDecoration(TextDecoration.OBFUSCATED),
+                font == null ? null : font.asString()
+        ));
+        for (net.kyori.adventure.text.Component extra : component.children()) {
+            ChatBaseComponent_addSibling.invoke(nmsComponent, fromAdventure(extra));
         }
         return nmsComponent;
     }
@@ -110,34 +151,14 @@ public class ReflectionComponentConverter extends ComponentConverter {
                 color = ChatHexColor_fromRGB.invoke(null, modifier.getColor().getLegacyColor().getRgb());
             }
         }
-        if (BukkitReflection.is1_21_4Plus()) {
-            return newChatModifier.newInstance(
-                    color,
-                    0,
-                    modifier.isBold(),
-                    modifier.isItalic(),
-                    modifier.isUnderlined(),
-                    modifier.isStrikethrough(),
-                    modifier.isObfuscated(),
-                    null,
-                    null,
-                    null,
-                    modifier.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, modifier.getFont())
-            );
-        } else {
-            return newChatModifier.newInstance(
-                    color,
-                    modifier.isBold(),
-                    modifier.isItalic(),
-                    modifier.isUnderlined(),
-                    modifier.isStrikethrough(),
-                    modifier.isObfuscated(),
-                    null,
-                    null,
-                    null,
-                    modifier.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, modifier.getFont())
-            );
-        }
+        return newStyleModern(
+                color,
+                modifier.isBold(),
+                modifier.isItalic(),
+                modifier.isUnderlined(),
+                modifier.isStrikethrough(),
+                modifier.isObfuscated(),
+                modifier.getFont());
     }
 
     @SneakyThrows
@@ -152,5 +173,39 @@ public class ReflectionComponentConverter extends ComponentConverter {
         if (modifier.isUnderlined()) magicCodes.get(3).set(nmsModifier, true);
         if (modifier.isObfuscated()) magicCodes.get(4).set(nmsModifier, true);
         return nmsModifier;
+    }
+
+    @SneakyThrows
+    @NotNull
+    private Object newStyleModern(@Nullable Object color, boolean bold, boolean italic, boolean underlined,
+                           boolean strikethrough, boolean obfuscated, @Nullable String font) {
+        if (BukkitReflection.is1_21_4Plus()) {
+            return newChatModifier.newInstance(
+                    color,
+                    0,
+                    bold,
+                    italic,
+                    underlined,
+                    strikethrough,
+                    obfuscated,
+                    null,
+                    null,
+                    null,
+                    font == null ? null : ResourceLocation_tryParse.invoke(null, font)
+            );
+        } else {
+            return newChatModifier.newInstance(
+                    color,
+                    bold,
+                    italic,
+                    underlined,
+                    strikethrough,
+                    obfuscated,
+                    null,
+                    null,
+                    null,
+                    font == null ? null : ResourceLocation_tryParse.invoke(null, font)
+            );
+        }
     }
 }
