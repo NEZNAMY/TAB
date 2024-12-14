@@ -6,6 +6,8 @@ import me.neznamy.tab.shared.chat.*;
 import me.neznamy.tab.shared.util.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -26,6 +28,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
 
     private final FunctionWithException<String, Object> newTextComponent;
     private final FunctionWithException<String, Object> newTranslatableComponent;
+    private final FunctionWithException<String, Object> newKeybindComponent;
     private final BiFunction<ChatModifier, Boolean, Object> convertModifier;
 
     private final Class<?> ChatModifier = BukkitReflection.getClass("network.chat.Style", "network.chat.ChatModifier", "ChatModifier");
@@ -53,8 +56,13 @@ public class ReflectionComponentConverter extends ComponentConverter {
         if (BukkitReflection.getMinorVersion() >= 19) {
             Method IChatBaseComponent_b = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"b", "literal"}, String.class);
             newTextComponent = text -> IChatBaseComponent_b.invoke(null, text);
+
             Method IChatBaseComponent_c = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"c", "translatable"}, String.class);
             newTranslatableComponent = text -> IChatBaseComponent_c.invoke(null, text);
+
+            Method IChatBaseComponent_d = ReflectionUtils.getMethod(IChatBaseComponent, new String[] {"d", "keybind"}, String.class);
+            newKeybindComponent = text -> IChatBaseComponent_d.invoke(null, text);
+
             Class<?> IChatMutableComponent = BukkitReflection.getClass("network.chat.MutableComponent", "network.chat.IChatMutableComponent", "IChatMutableComponent");
             Component_modifier = ReflectionUtils.getOnlyField(IChatMutableComponent, ChatModifier);
             ChatBaseComponent_addSibling = ReflectionUtils.getOnlyMethod(IChatMutableComponent, IChatMutableComponent, IChatBaseComponent);
@@ -66,6 +74,10 @@ public class ReflectionComponentConverter extends ComponentConverter {
             Class<?> ChatMessage = BukkitReflection.getClass("network.chat.TranslatableComponent", "network.chat.ChatMessage", "ChatMessage");
             Constructor<?> newChatMessage = ChatMessage.getConstructor(String.class, Object[].class);
             newTranslatableComponent = text -> newChatMessage.newInstance(text, new Object[0]);
+
+            newKeybindComponent = text -> {
+                throw new UnsupportedOperationException("Keybind component conversion is not implemented");
+            };
 
             Class<?> ChatBaseComponent = BukkitReflection.getClass("network.chat.BaseComponent", "network.chat.ChatBaseComponent", "ChatBaseComponent");
             Component_modifier = ReflectionUtils.getOnlyField(ChatBaseComponent, ChatModifier);
@@ -116,13 +128,17 @@ public class ReflectionComponentConverter extends ComponentConverter {
 
     @SneakyThrows
     @NotNull
-    private Object fromAdventure(@NotNull net.kyori.adventure.text.Component component) {
+    private Object fromAdventure(@NotNull Component component) {
         Object nmsComponent;
         if (component instanceof TextComponent) {
             nmsComponent = newTextComponent.apply(((TextComponent) component).content());
         } else if (component instanceof TranslatableComponent) {
             nmsComponent = newTranslatableComponent.apply(((TranslatableComponent)component).key());
-        } else throw new IllegalStateException("Cannot convert " + component.getClass().getName());
+        } else if (component instanceof KeybindComponent) {
+            nmsComponent = newKeybindComponent.apply(((KeybindComponent)component).keybind());
+        } else {
+            throw new IllegalStateException("Cannot convert " + component.getClass().getName());
+        }
 
         net.kyori.adventure.text.format.TextColor color = component.color();
         Key font = component.style().font();
@@ -135,7 +151,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
                 component.style().hasDecoration(TextDecoration.OBFUSCATED),
                 font == null ? null : font.asString()
         ));
-        for (net.kyori.adventure.text.Component extra : component.children()) {
+        for (Component extra : component.children()) {
             ChatBaseComponent_addSibling.invoke(nmsComponent, fromAdventure(extra));
         }
         return nmsComponent;

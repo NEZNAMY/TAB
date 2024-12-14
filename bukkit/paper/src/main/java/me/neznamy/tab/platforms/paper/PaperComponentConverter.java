@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.paper;
 import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.shared.chat.*;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -54,12 +55,12 @@ public class PaperComponentConverter extends ComponentConverter {
 
     @NotNull
     private Component fromAdventure(@NotNull net.kyori.adventure.text.Component component) {
-        MutableComponent nmsComponent;
-        if (component instanceof TextComponent component1) {
-            nmsComponent = Component.literal(component1.content());
-        } else if (component instanceof TranslatableComponent component1) {
-            nmsComponent = Component.translatable(component1.key());
-        } else throw new IllegalStateException("Cannot convert " + component.getClass().getName());
+        MutableComponent nmsComponent = switch (component) {
+            case TextComponent text -> Component.literal(text.content());
+            case TranslatableComponent translate -> Component.translatable(translate.key());
+            case KeybindComponent keyBind -> Component.keybind(keyBind.keybind());
+            default -> throw new IllegalStateException("Cannot convert " + component.getClass().getName());
+        };
 
         net.kyori.adventure.text.format.TextColor color = component.color();
         Key font = component.style().font();
