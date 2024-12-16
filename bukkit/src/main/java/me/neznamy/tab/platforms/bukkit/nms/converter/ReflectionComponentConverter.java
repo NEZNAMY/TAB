@@ -198,7 +198,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
         if (BukkitReflection.is1_21_4Plus()) {
             return newChatModifier.newInstance(
                     color,
-                    0,
+                    null,
                     bold,
                     italic,
                     underlined,
