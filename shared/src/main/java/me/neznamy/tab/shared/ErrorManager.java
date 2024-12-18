@@ -2,7 +2,6 @@ package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import me.neznamy.tab.api.event.TabEvent;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -116,7 +115,7 @@ public class ErrorManager {
             try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))) {
                 if (message != null) {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
-                        buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + EnumChatFormat.decolor(message) + System.lineSeparator());
+                        buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + message + System.lineSeparator());
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().getConfig().isDebugMode())
                         TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText(message));
                 }
