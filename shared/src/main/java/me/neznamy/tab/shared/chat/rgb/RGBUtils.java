@@ -19,36 +19,23 @@ public class RGBUtils {
     @Getter private static final RGBUtils instance = new RGBUtils();
 
     /** Registered RGB formatters */
-    private final RGBFormatter[] formats;
+    private final RGBFormatter[]  formats = {
+            new BukkitFormat(),
+            new CMIFormat(),
+            new UnnamedFormat1(),
+            new HtmlFormat(),
+            new KyoriFormat()
+    };
 
     /** Registered gradient patterns */
-    private final GradientPattern[] gradients;
-
-    /**
-     * Constructs new instance and loads all RGB patterns and gradients
-     */
-    public RGBUtils() {
-        formats = new RGBFormatter[] {
-                new BukkitFormat(),
-                new CMIFormat(),
-                new UnnamedFormat1(),
-                new HtmlFormat(),
-                new KyoriFormat()
-        };
-        gradients = new GradientPattern[] {
-                //{#RRGGBB>}text{#RRGGBB<}
-                new CMIGradient(),
-                //<#RRGGBB>Text</#RRGGBB>
-                new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>.*?</#[0-9a-fA-F]{6}>"),
-                        Pattern.compile("<#[0-9a-fA-F]{6}\\|.>.*?</#[0-9a-fA-F]{6}>"),
-                        "<#", 9, 2, 9, 7),
-                //<$#RRGGBB>Text<$#RRGGBB>
-                new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>.*?<\\$#[0-9a-fA-F]{6}>"),
-                        Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>.*?<\\$#[0-9a-fA-F]{6}>"),
-                        "<$", 10, 3, 10, 7),
-                new NexEngineGradient()
-        };
-    }
+    private final GradientPattern[] gradients = {
+            new CMIGradient(), //{#RRGGBB>}Text{#RRGGBB<}
+            new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>.*?</#[0-9a-fA-F]{6}>"),
+                    Pattern.compile("<#[0-9a-fA-F]{6}\\|.>.*?</#[0-9a-fA-F]{6}>"), "<#", 9, 2, 9, 7), //<#RRGGBB>Text</#RRGGBB>
+            new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>.*?<\\$#[0-9a-fA-F]{6}>"),
+                    Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>.*?<\\$#[0-9a-fA-F]{6}>"), "<$", 10, 3, 10, 7), //<$#RRGGBB>Text<$#RRGGBB>
+            new NexEngineGradient() // <gradient:#RRGGBB>Text</gradient:#RRGGBB>
+    };
 
     /**
      * Applies all RGB formats and gradients to text and returns it.
