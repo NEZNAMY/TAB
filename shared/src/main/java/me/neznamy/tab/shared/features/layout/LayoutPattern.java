@@ -24,7 +24,6 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     private final Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
     private final List<GroupPattern> groups = new ArrayList<>();
 
-    @SuppressWarnings("unchecked")
     public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull LayoutDefinition def) {
         this.manager = manager;
         this.name = name;
