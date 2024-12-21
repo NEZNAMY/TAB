@@ -26,14 +26,6 @@ public class SkinData {
             "world.entity.player.Player", "world.entity.player.EntityHuman", "EntityHuman"), GameProfile.class).get(0);
 
     /**
-     * Constructs new instance and loads NMS fields. If it fails, throws an Exception.
-     *
-     * @throws  ReflectiveOperationException
-     *          If something goes wrong
-     */
-    public SkinData() throws ReflectiveOperationException {}
-
-    /**
      * Returns player's skin. If server is in offline mode, returns {@code null}.
      *
      * @param   player
