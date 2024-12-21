@@ -64,7 +64,7 @@ public class ParseCommand extends SubCommand {
             TAB.getInstance().getErrorManager().parseCommandError(replaced, target, e);
             return;
         }
-        TabComponent colored = TabComponent.fromColoredText(EnumChatFormat.color("&3Colored output: &e\"&r" + replaced + "&e\""));
+        TabComponent colored = TabComponent.fromColoredText("&3Colored output: &e\"&r" + replaced + "&e\"");
         if (sender != null) {
             sender.sendMessage(colored);
         } else {
