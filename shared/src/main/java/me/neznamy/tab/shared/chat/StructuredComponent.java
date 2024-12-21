@@ -75,15 +75,15 @@ public class StructuredComponent extends TabComponent {
     }
 
     @Override
-    @NotNull
+    @Nullable
     protected TextColor fetchLastColor() {
         TextColor lastColor = modifier.getColor();
         for (StructuredComponent extra : getExtra()) {
-            if (extra.modifier.getColor() != null) {
-                lastColor = extra.modifier.getColor();
+            TextColor color = extra.fetchLastColor();
+            if (color != null) {
+                lastColor = color;
             }
         }
-        if (lastColor == null) lastColor = TextColor.legacy(EnumChatFormat.WHITE);
         return lastColor;
     }
 

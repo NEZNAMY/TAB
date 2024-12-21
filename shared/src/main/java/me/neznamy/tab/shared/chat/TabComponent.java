@@ -129,13 +129,16 @@ public abstract class TabComponent {
     }
 
     /**
-     * Returns last color of this component. This value is cached.
+     * Returns last color of this component. This value is cached. If no color is used, WHITE color is returned.
      *
      * @return  Last color of this component
      */
     @NotNull
     public TextColor getLastColor() {
-        if (lastColor == null) lastColor = fetchLastColor();
+        if (lastColor == null) {
+            lastColor = fetchLastColor();
+            if (lastColor == null) lastColor = TextColor.legacy(EnumChatFormat.WHITE);
+        }
         return lastColor;
     }
 
@@ -148,11 +151,12 @@ public abstract class TabComponent {
     public abstract String toLegacyText();
 
     /**
-     * Returns last color of this component.
+     * Computes and returns the last used color code in this component.
+     * If no color is present, {@code null} is returned.
      *
-     * @return  Last color of this component
+     * @return  Last color of this component, {@code null} if no colors are used
      */
-    @NotNull
+    @Nullable
     protected abstract TextColor fetchLastColor();
 
     /**

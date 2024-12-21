@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class is a wrapper for Adventure component created by MiniMessage. This not only
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class AdventureComponent extends TabComponent {
 
+    /** The wrapped component */
     @NotNull
     private final Component component;
 
@@ -25,7 +27,7 @@ public class AdventureComponent extends TabComponent {
     }
 
     @Override
-    @NotNull
+    @Nullable
     protected TextColor fetchLastColor() {
         net.kyori.adventure.text.format.TextColor lastColor = component.color();
         for (Component extra : component.children()) {
@@ -33,7 +35,6 @@ public class AdventureComponent extends TabComponent {
                 lastColor = extra.color();
             }
         }
-        if (lastColor == null) return TextColor.legacy(EnumChatFormat.WHITE);
-        return new TextColor(lastColor.red(), lastColor.green(), lastColor.blue());
+        return lastColor == null ? null : new TextColor(lastColor.red(), lastColor.green(), lastColor.blue());
     }
 }
