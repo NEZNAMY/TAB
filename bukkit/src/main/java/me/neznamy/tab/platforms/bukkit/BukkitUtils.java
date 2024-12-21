@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -58,8 +57,7 @@ public class BukkitUtils {
     public static void compatibilityError(@NotNull Exception exception, @NotNull String failedCheck,
                                           @Nullable String fallback, @NotNull String... missingFeatures) {
         StringBuilder sb = new StringBuilder();
-        sb.append(EnumChatFormat.RED);
-        sb.append("[TAB] Failed to initialize minecraft fields for ");
+        sb.append("§c[TAB] Failed to initialize minecraft fields for ");
         sb.append(failedCheck);
         sb.append(" due to a compatibility error. ");
         if (fallback != null) {
@@ -81,7 +79,7 @@ public class BukkitUtils {
      */
     public static void sendCompatibilityMessage() {
         if (!compatibilityIssue) return;
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED + "[TAB] Please update the plugin to " +
+        Bukkit.getConsoleSender().sendMessage("§c[TAB] Please update the plugin to " +
                 "a version with native support for your server version for optimal experience. This plugin version " +
                 "was made for " + ProtocolVersion.V1_5.getFriendlyName() + " - " + ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName() + ".");
     }

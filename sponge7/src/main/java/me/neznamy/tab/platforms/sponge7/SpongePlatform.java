@@ -6,7 +6,6 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -78,7 +77,7 @@ public class SpongePlatform implements BackendPlatform {
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        plugin.getLogger().warn(EnumChatFormat.RED + message.toLegacyText());
+        plugin.getLogger().warn("§c" + message.toLegacyText());
     }
 
     @Override

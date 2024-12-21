@@ -1,22 +1,16 @@
 package me.neznamy.tab.shared.config.mysql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetProvider;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetProvider;
+import java.sql.*;
+import java.util.Properties;
 
 @RequiredArgsConstructor
 public class MySQL {
@@ -32,7 +26,7 @@ public class MySQL {
         properties.setProperty("useSSL", String.valueOf(configuration.isUseSSL()));
         properties.setProperty("characterEncoding", "UTF-8");
         con = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s", configuration.getHost(), configuration.getPort(), configuration.getDatabase()), properties);
-        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GREEN + "Successfully connected to MySQL"));
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText("&aSuccessfully connected to MySQL"));
     }
     
     public void closeConnection() throws SQLException {

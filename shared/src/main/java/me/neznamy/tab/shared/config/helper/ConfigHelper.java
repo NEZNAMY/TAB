@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.config.helper;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +45,7 @@ public class ConfigHelper {
      *          Hint message to print
      */
     public void hint(@NotNull File file, @NotNull String message) {
-        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GOLD + "[Hint] [" + file.getName() + "] " + message));
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText("&6[Hint] [" + file.getName() + "] " + message));
     }
 
     /**
@@ -58,6 +57,6 @@ public class ConfigHelper {
      *          Hint message to print
      */
     public void hint(@NotNull String file, @NotNull String message) {
-        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(EnumChatFormat.GOLD + "[" + file + "] [Hint] " + message));
+        TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText("&6[" + file + "] [Hint] " + message));
     }
 }

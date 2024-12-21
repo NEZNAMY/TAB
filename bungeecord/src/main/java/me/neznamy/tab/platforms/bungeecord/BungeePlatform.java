@@ -90,7 +90,7 @@ public class BungeePlatform extends ProxyPlatform {
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        plugin.getLogger().warning(EnumChatFormat.RED + message.toLegacyText());
+        plugin.getLogger().warning("§c" + message.toLegacyText());
     }
 
     @Override

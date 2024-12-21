@@ -107,7 +107,7 @@ public class BukkitPlatform implements BackendPlatform {
             BukkitPipelineInjector.tryLoad(serverVersion);
         }
         BukkitUtils.sendCompatibilityMessage();
-        Bukkit.getConsoleSender().sendMessage("[TAB] " + EnumChatFormat.GRAY + "Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
+        Bukkit.getConsoleSender().sendMessage("[TAB] §7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
     }
 
     @Override
@@ -211,7 +211,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED + "[TAB] [WARN] " + toBukkitFormat(message, true));
+        Bukkit.getConsoleSender().sendMessage("&c[TAB] [WARN] " + toBukkitFormat(message, true));
     }
 
     @Override
