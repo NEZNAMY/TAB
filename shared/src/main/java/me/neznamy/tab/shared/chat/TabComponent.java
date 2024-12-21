@@ -148,20 +148,26 @@ public abstract class TabComponent {
     public abstract String toLegacyText();
 
     /**
-     * Converts this component into a string that only consists of text without any formatting.
-     *
-     * @return  String containing text of the component and extras
-     */
-    @NotNull
-    public abstract String toRawText();
-
-    /**
      * Returns last color of this component.
      *
      * @return  Last color of this component
      */
     @NotNull
     protected abstract TextColor fetchLastColor();
+
+    /**
+     * Converts this component into a string that only consists of text without any formatting.
+     *
+     * @return  String containing text of the component and extras
+     */
+    @NotNull
+    public String toRawText() {
+        String text = toLegacyText();
+        for (EnumChatFormat format : EnumChatFormat.VALUES) {
+            if (text.contains(format.toString())) text = text.replace(format.toString(), "");
+        }
+        return text;
+    }
 
     /**
      * Returns organized component from colored text

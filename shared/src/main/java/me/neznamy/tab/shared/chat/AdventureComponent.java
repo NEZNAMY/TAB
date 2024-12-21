@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.chat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,17 +22,6 @@ public class AdventureComponent extends TabComponent {
     @NotNull
     public String toLegacyText() {
         return LegacyComponentSerializer.legacySection().serialize(component);
-    }
-
-    @Override
-    @NotNull
-    public String toRawText() {
-        StringBuilder builder = new StringBuilder();
-        if (component instanceof TextComponent) builder.append(((TextComponent) component).content());
-        for (Component extra : component.children()) {
-            if (extra instanceof TextComponent) builder.append(((TextComponent) extra).content());
-        }
-        return builder.toString();
     }
 
     @Override

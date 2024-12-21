@@ -76,16 +76,6 @@ public class StructuredComponent extends TabComponent {
 
     @Override
     @NotNull
-    public String toRawText() {
-        StringBuilder builder = new StringBuilder(text);
-        for (StructuredComponent extra : getExtra()) {
-            builder.append(extra.toRawText());
-        }
-        return builder.toString();
-    }
-
-    @Override
-    @NotNull
     protected TextColor fetchLastColor() {
         TextColor lastColor = modifier.getColor();
         for (StructuredComponent extra : getExtra()) {
