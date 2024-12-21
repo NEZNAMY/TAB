@@ -36,12 +36,6 @@ public enum EnumChatFormat {
     /** Creating a constant to avoid memory allocations on each request */
     public static final EnumChatFormat[] VALUES = values();
 
-    /** The symbol minecraft uses to colorize text */
-    public static final char COLOR_CHAR = 0x00a7;
-
-    /** The color symbol in form of a string */
-    public static final String COLOR_STRING = String.valueOf(COLOR_CHAR);
-
     /** Character representing the color or magic code */
     private final char character;
 
@@ -71,7 +65,7 @@ public enum EnumChatFormat {
     EnumChatFormat(char character, int rgb) {
         this.character = character;
         this.rgb = rgb;
-        format = String.valueOf(COLOR_CHAR) + character;
+        format = "§" + character;
         red = (short) ((rgb >> 16) & 0xFF);
         green = (short) ((rgb >> 8) & 0xFF);
         blue = (short) (rgb & 0xFF);
@@ -104,23 +98,11 @@ public enum EnumChatFormat {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
             if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx#".indexOf(b[(i + 1)]) > -1)) {
-                b[i] = COLOR_CHAR;
+                b[i] = '§';
                 b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
             }
         }
         return new String(b);
-    }
-
-    /**
-     * Turns back the color symbol into '&amp;' symbol in provided text.
-     *
-     * @param   text
-     *          text to revert colors in
-     * @return  reverted text
-     */
-    public static @NotNull String decolor(@NotNull String text) {
-        if (!text.contains(COLOR_STRING)) return text;
-        return text.replace(COLOR_CHAR, '&');
     }
 
     /**
@@ -135,10 +117,10 @@ public enum EnumChatFormat {
         int length = input.length();
         for (int index = length - 1; index > -1; index--) {
             char section = input.charAt(index);
-            if ((section == COLOR_CHAR || section == '&') && (index < length - 1)) {
+            if ((section == '§' || section == '&') && (index < length - 1)) {
                 char c = input.charAt(index + 1);
                 if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
-                    result.insert(0, COLOR_CHAR);
+                    result.insert(0, '§');
                     result.insert(1, c);
                     if ("0123456789AaBbCcDdEeFfRr".contains(String.valueOf(c))) {
                         break;

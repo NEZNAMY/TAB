@@ -367,10 +367,9 @@ public class BukkitPlatform implements BackendPlatform {
             if (iComponent.getModifier().getColor() != null) {
                 if (serverVersion.supportsRGB() && rgbClient) {
                     String hexCode = iComponent.getModifier().getColor().getHexCode();
-                    char c = EnumChatFormat.COLOR_CHAR;
-                    sb.append(c).append("x").append(c).append(hexCode.charAt(0)).append(c).append(hexCode.charAt(1))
-                            .append(c).append(hexCode.charAt(2)).append(c).append(hexCode.charAt(3))
-                            .append(c).append(hexCode.charAt(4)).append(c).append(hexCode.charAt(5));
+                    sb.append('§').append("x").append('§').append(hexCode.charAt(0)).append('§').append(hexCode.charAt(1))
+                            .append('§').append(hexCode.charAt(2)).append('§').append(hexCode.charAt(3))
+                            .append('§').append(hexCode.charAt(4)).append('§').append(hexCode.charAt(5));
                 } else {
                     sb.append(iComponent.getModifier().getColor().getLegacyColor());
                 }

@@ -183,7 +183,7 @@ public class DebugCommand extends SubCommand {
         if (disabled) {
             sendMessage(sender, "&a" + property.getName() + ": &cDisabled for player with condition");
         } else {
-            String rawValue = EnumChatFormat.decolor(property.getCurrentRawValue());
+            String rawValue = property.getCurrentRawValue().replace('§', '&');
             String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(Source: %s)")), property.getName(), rawValue, property.getSource());
             sendRawMessage(sender, value);
         }

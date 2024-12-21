@@ -220,7 +220,7 @@ public abstract class TabComponent {
         component.getModifier().setFont(font);
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            if (c == EnumChatFormat.COLOR_CHAR) {
+            if (c == '§') {
                 i++;
                 if (i >= text.length()) {
                     break;

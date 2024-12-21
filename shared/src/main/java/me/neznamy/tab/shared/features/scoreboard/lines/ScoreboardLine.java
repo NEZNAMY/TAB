@@ -105,7 +105,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
     protected String[] split(@NonNull String string, int firstElementMaxLength) {
         if (string.length() <= firstElementMaxLength) return new String[] {string, ""};
         int splitIndex = firstElementMaxLength;
-        if (string.charAt(splitIndex-1) == EnumChatFormat.COLOR_CHAR) splitIndex--;
+        if (string.charAt(splitIndex-1) == '§') splitIndex--;
         return new String[] {string.substring(0, splitIndex), string.substring(splitIndex)};
     }
 
@@ -117,7 +117,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
      * @return  forced name start
      */
     protected String getPlayerName(int lineNumber) {
-        return EnumChatFormat.COLOR_STRING + "0123456789abcdefklmnor".charAt(lineNumber-1) + EnumChatFormat.COLOR_STRING + "r";
+        return String.format("§%c§r", "0123456789abcdefklmnor".charAt(lineNumber-1));
     }
     
     /**

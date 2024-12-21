@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.hook;
 
 import me.neznamy.tab.shared.chat.AdventureComponent;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -31,7 +30,7 @@ public class MiniMessageHook {
     public static TabComponent parseText(@NotNull String text) {
         if (mm == null) return null;
         if (!text.contains("<")) return null; // User did not even attempt to use MiniMessage
-        if (text.contains(EnumChatFormat.COLOR_STRING)) return null;
+        if (text.contains("§")) return null;
         try {
             return new AdventureComponent(mm.deserialize(text));
         } catch (Throwable ignored) {

@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.platform.decorators;
 
 import lombok.*;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -261,7 +260,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     public static String cutTo(@Nullable String string, int length) {
         if (string == null) return "";
         if (string.length() <= length) return string;
-        if (string.charAt(length-1) == EnumChatFormat.COLOR_CHAR) {
+        if (string.charAt(length-1) == '§') {
             return string.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
         } else {
             return string.substring(0, length);

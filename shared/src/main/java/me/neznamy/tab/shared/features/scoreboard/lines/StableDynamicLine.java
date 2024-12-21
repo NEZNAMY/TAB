@@ -114,9 +114,9 @@ public class StableDynamicLine extends ScoreboardLine {
             StringBuilder suffix = new StringBuilder(text);
             prefix.setLength(charLimit);
             suffix.delete(0, charLimit);
-            if (prefix.charAt(charLimit-1) == EnumChatFormat.COLOR_CHAR) {
+            if (prefix.charAt(charLimit-1) == '§') {
                 prefix.setLength(prefix.length()-1);
-                suffix.insert(0, EnumChatFormat.COLOR_CHAR);
+                suffix.insert(0, '§');
             }
             String prefixString = prefix.toString();
             suffix.insert(0, EnumChatFormat.getLastColors(parent.getManager().getCache().get(prefixString).toLegacyText()));
