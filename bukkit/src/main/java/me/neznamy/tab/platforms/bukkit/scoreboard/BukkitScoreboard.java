@@ -160,7 +160,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         if (serverMinorVersion >= 9)
             t.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE, OptionStatus.values()[team.getCollision().ordinal()]);
         if (serverMinorVersion >= TEAM_COLOR_VERSION)
-            t.setColor(ChatColor.valueOf(team.getColor().name()));
+            t.setColor(ChatColor.valueOf(team.getColor().getLegacyColor().name()));
         if (serverMinorVersion >= 7 && player.getPlatform().getServerVersion().getNetworkId() >= ProtocolVersion.V1_7_8.getNetworkId()) {
             for (String player : team.getPlayers()) {
                 t.addEntry(player);
@@ -192,7 +192,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         if (serverMinorVersion >= 9)
             t.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE, OptionStatus.values()[team.getCollision().ordinal()]);
         if (serverMinorVersion >= TEAM_COLOR_VERSION)
-            t.setColor(ChatColor.valueOf(team.getColor().name()));
+            t.setColor(ChatColor.valueOf(team.getColor().getLegacyColor().name()));
         t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         t.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
     }

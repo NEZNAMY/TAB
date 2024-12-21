@@ -159,7 +159,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         CollisionRule.ALWAYS,
                         Collections.singletonList(redis.getNickname()),
                         2,
-                        prefix.getLastColor().getLegacyColor()
+                        prefix.getLastColor()
                 );
             }
             redis.sendMessage(new UpdateRedisPlayer(
@@ -260,7 +260,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     player.teamData.teamName,
                     prefix,
                     cache.get(player.teamData.suffix.getFormat(viewer)),
-                    prefix.getLastColor().getLegacyColor()
+                    prefix.getLastColor()
             );
         }
         if (redis != null) redis.sendMessage(new UpdateRedisPlayer(
@@ -357,7 +357,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 Collections.singletonList(p.getNickname()),
                 teamOptions,
-                prefix.getLastColor().getLegacyColor()
+                prefix.getLastColor()
         );
     }
 
@@ -781,7 +781,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                             CollisionRule.ALWAYS,
                             Collections.singletonList(target.getNickname()),
                             2,
-                            prefixComponent.getLastColor().getLegacyColor()
+                            prefixComponent.getLastColor()
                     );
                 }
             } else {
@@ -793,7 +793,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                             nameVisibility,
                             CollisionRule.ALWAYS,
                             2,
-                            prefixComponent.getLastColor().getLegacyColor()
+                            prefixComponent.getLastColor()
                     );
                 }
             }

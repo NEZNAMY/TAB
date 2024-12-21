@@ -113,7 +113,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
                 .displayName(Component.text(team.getName()))
                 .prefix(team.getPrefix().toAdventure(player.getVersion()))
                 .suffix(team.getSuffix().toAdventure(player.getVersion()))
-                .color(NamedTextColor.NAMES.valueOr(team.getColor().name(), NamedTextColor.WHITE))
+                .color(NamedTextColor.NAMES.valueOr(team.getColor().getLegacyColor().name(), NamedTextColor.WHITE))
                 .allowFriendlyFire((team.getOptions() & 0x01) != 0)
                 .canSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0)
                 .collisionRule(collisionRules[team.getCollision().ordinal()])
@@ -137,7 +137,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
         spongeTeam.setDisplayName(Component.text(team.getName()));
         spongeTeam.setPrefix(team.getPrefix().toAdventure(player.getVersion()));
         spongeTeam.setSuffix(team.getSuffix().toAdventure(player.getVersion()));
-        spongeTeam.setColor(NamedTextColor.NAMES.valueOr(team.getColor().name(), NamedTextColor.WHITE));
+        spongeTeam.setColor(NamedTextColor.NAMES.valueOr(team.getColor().getLegacyColor().name(), NamedTextColor.WHITE));
         spongeTeam.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         spongeTeam.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
         spongeTeam.setCollisionRule(collisionRules[team.getCollision().ordinal()]);

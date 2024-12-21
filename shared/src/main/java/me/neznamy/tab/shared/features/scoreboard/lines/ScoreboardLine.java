@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
+import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.scoreboard.ScoreRefresher;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
@@ -147,7 +148,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
                 Scoreboard.CollisionRule.NEVER,
                 Collections.singletonList(fakePlayer),
                 0,
-                EnumChatFormat.RESET
+                TextColor.legacy(EnumChatFormat.RESET)
         );
         shownPlayers.add(p);
     }
@@ -253,7 +254,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
                 teamName,
                 parent.getManager().getCache().get(prefix),
                 parent.getManager().getCache().get(suffix),
-                EnumChatFormat.RESET
+                TextColor.legacy(EnumChatFormat.RESET)
         );
     }
 

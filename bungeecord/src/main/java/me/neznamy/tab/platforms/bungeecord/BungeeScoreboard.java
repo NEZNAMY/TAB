@@ -112,7 +112,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
                 either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 team.getVisibility().toString(),
                 team.getCollision().toString(),
-                player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().ordinal() : 0,
+                player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().getLegacyColor().ordinal() : 0,
                 (byte) team.getOptions(),
                 team.getPlayers().toArray(new String[0])
         ));
@@ -133,7 +133,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
                 either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 team.getVisibility().toString(),
                 team.getCollision().toString(),
-                player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().ordinal() : 0,
+                player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().getLegacyColor().ordinal() : 0,
                 (byte) team.getOptions(),
                 null
         ));

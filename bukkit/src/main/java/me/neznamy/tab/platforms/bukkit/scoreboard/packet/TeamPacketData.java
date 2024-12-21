@@ -226,7 +226,7 @@ public class TeamPacketData {
         if (MODERN_TEAM_DATA_VERSION) {
             ScoreboardTeam_setPrefix.invoke(nmsTeam, (Object) team.getPrefix().convert(clientVersion));
             ScoreboardTeam_setSuffix.invoke(nmsTeam, (Object) team.getSuffix().convert(clientVersion));
-            ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().ordinal()]);
+            ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().getLegacyColor().ordinal()]);
         } else {
             String prefix = team.getPrefix().toLegacyText();
             String suffix = team.getSuffix().toLegacyText();
