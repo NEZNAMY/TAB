@@ -24,12 +24,11 @@ public class SimpleComponent extends TabComponent {
     @Override
     @Nullable
     protected TextColor fetchLastColor() {
-        String last = EnumChatFormat.getLastColors(text);
-        if (!last.isEmpty()) {
-            char c = last.toCharArray()[1];
-            for (EnumChatFormat e : EnumChatFormat.VALUES) {
-                if (e.getCharacter() == c) return TextColor.legacy(e);
-            }
+        char[] chars = text.toCharArray();
+        for (int index = chars.length - 2; index >= 0; index--) {
+            if (chars[index] != '§') continue;
+            EnumChatFormat color = EnumChatFormat.getByChar(chars[index + 1]);
+            if (color != null) return TextColor.legacy(color);
         }
         return null;
     }
