@@ -133,7 +133,11 @@ public class DebugCommand extends SubCommand {
      */
     private @NotNull String getGroup(@NotNull TabPlayer analyzed) {
         if (TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions()) {
-            return "&eHighest group permission: &8tab.group.&a" + analyzed.getGroup();
+            String s = "&eHighest group permission: &8tab.group.&a" + analyzed.getGroup();
+            if (analyzed.hasPermission(TabConstants.Permission.TEST_PERMISSION)) {
+                s += " &c| This user appears to have all permissions. Are they OP? &r";
+            }
+            return s;
         }
         return "&ePrimary permission group: &a" + analyzed.getGroup();
     }
