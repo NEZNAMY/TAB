@@ -40,7 +40,7 @@ public class PaperComponentConverter extends ComponentConverter {
                     }
                 }
                 nmsComponent.setStyle(newStyle(color, modifier.isBold(), modifier.isItalic(), modifier.isUnderlined(),
-                        modifier.isUnderlined(), modifier.isObfuscated(), modifier.getFont()));
+                        modifier.isStrikethrough(), modifier.isObfuscated(), modifier.getFont()));
                 for (StructuredComponent extra : component1.getExtra()) {
                     nmsComponent.append(convert(extra, modern));
                 }
