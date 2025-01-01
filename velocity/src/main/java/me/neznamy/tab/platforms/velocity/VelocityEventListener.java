@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult;
@@ -10,8 +9,8 @@ import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.platform.EventListener;
@@ -53,7 +52,7 @@ public class VelocityEventListener implements EventListener<Player> {
      * @param   e
      *          Event fired before player switches server for proper freezing
      */
-    @Subscribe(order = PostOrder.LAST)
+    @Subscribe
     public void preConnect(@NotNull ServerPreConnectEvent e) {
         if (e.getResult().isAllowed()) {
             TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
