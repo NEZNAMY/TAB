@@ -209,4 +209,9 @@ public class BungeePlatform extends ProxyPlatform {
     public boolean supportsListOrder() {
         return true;
     }
+
+    @Override
+    public boolean supportsScoreboards() {
+        return true;
+    }
 }

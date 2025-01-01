@@ -56,7 +56,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
     public void load() {
         playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
         pingSpoof = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PING_SPOOF);
-        teamsEnabled = TAB.getInstance().getNameTagManager() != null;
+        teamsEnabled = TAB.getInstance().getNameTagManager() != null && TAB.getInstance().getPlatform().supportsScoreboards();
         if (pingSpoof == null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher());
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);

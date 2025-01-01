@@ -180,6 +180,11 @@ public class FabricPlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsScoreboards() {
+        return true;
+    }
+
+    @Override
     public double getTPS() {
         double mspt = getMSPT();
         if (mspt < 50) return 20;

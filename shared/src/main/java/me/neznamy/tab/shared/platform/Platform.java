@@ -185,4 +185,11 @@ public interface Platform {
      * @return  {@code true} if server is able to use {@code listOrder} tablist field, {@code false} if not
      */
     boolean supportsListOrder();
+
+    /**
+     * Returns {@code true} if server has a scoreboard implementation, {@code false} if not.
+     *
+     * @return   {@code true} if server has a scoreboard implementation, {@code false} if not
+     */
+    boolean supportsScoreboards();
 }

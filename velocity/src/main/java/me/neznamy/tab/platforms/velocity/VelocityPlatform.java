@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.AdventureHook;
-import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -187,6 +186,11 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     public boolean supportsListOrder() {
         return true;
+    }
+
+    @Override
+    public boolean supportsScoreboards() {
+        return scoreboardAPI;
     }
 
     @Override

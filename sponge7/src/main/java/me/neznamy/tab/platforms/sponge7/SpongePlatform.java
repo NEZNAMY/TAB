@@ -146,6 +146,11 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsScoreboards() {
+        return true;
+    }
+
+    @Override
     public double getTPS() {
         return Sponge.getServer().getTicksPerSecond();
     }

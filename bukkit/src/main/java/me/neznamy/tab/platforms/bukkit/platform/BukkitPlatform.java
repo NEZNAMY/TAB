@@ -303,6 +303,11 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsScoreboards() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public GroupManager detectPermissionPlugin() {
         if (LuckPermsHook.getInstance().isInstalled()) {
