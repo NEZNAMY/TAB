@@ -5,13 +5,13 @@ The usage can be checked at any time using [**/tab cpu**](https://github.com/NEZ
 * [#1 - [All platforms] Static text instead of placeholders](#1---all-platforms-static-text-instead-of-placeholders)
 * [#2 - [All platforms] Placeholder refresh intervals](#2---all-platforms-placeholder-refresh-intervals)
 * [#3 - [All platforms] Don't use RGB](#3---all-platforms-dont-use-rgb)
-* [#4 - [All platforms] Disable anti-override](#4---all-platforms-disable-anti-override)
-* [#5 - [All platforms] Disable tablist name formatting](#5---all-platforms-disable-tablist-name-formatting)
-* [#6 - [All platforms] Increase permission refresh interval](#6---all-platforms-increase-permission-refresh-interval)
-* [#7 - [BungeeCord / Velocity] Disable TAB expansion](#7---bungeecord--velocity-disable-tab-expansion)
-* [#8 - [BungeeCord / Velocity] Disable update-latency option in global playerlist](#8---bungeecord--velocity-disable-update-latency-option-in-global-playerlist)
-* [#9 - [BungeeCord] Disable ByteBuf deserialization](#9---bungeecord-disable-bytebuf-deserialization)
-* [#10 - [Velocity] Disable header/footer translation](#10---velocity-disable-headerfooter-translation)
+* [#4 - [All platforms] Don't use animations](#4---all-platforms-dont-use-animations)
+* [#5 - [All platforms] Disable anti-override](#5---all-platforms-disable-anti-override)
+* [#6 - [All platforms] Disable tablist name formatting](#6---all-platforms-disable-tablist-name-formatting)
+* [#7 - [All platforms] Increase permission refresh interval](#7---all-platforms-increase-permission-refresh-interval)
+* [#8 - [BungeeCord / Velocity] Disable TAB expansion](#8---bungeecord--velocity-disable-tab-expansion)
+* [#9 - [BungeeCord / Velocity] Disable update-latency option in global playerlist](#9---bungeecord--velocity-disable-update-latency-option-in-global-playerlist)
+* [#10 - [BungeeCord] Disable ByteBuf deserialization](#10---bungeecord-disable-bytebuf-deserialization)
 
 # #1 - [All platforms] Static text instead of placeholders
 Static text doesn't need to be refreshed periodically, resulting in better performance.
@@ -50,7 +50,13 @@ Using a higher interval will help if needed, but may lead to misleading info in 
 # #3 - [All platforms] Don't use RGB
 Though RGB colors look good, they require the text to be split into several components with `color` field used instead of the whole text pasted into the `text` field. This is a complicated process that takes quite some time. Sticking to legacy colors results in better performance.
 
-# #4 - [All platforms] Disable anti-override
+# #4 - [All platforms] Don't use animations
+While animations look cool, they also have a high resource usage.
+This is because they work by spamming updates every time an animation switches to a new frame.
+When animations are not used, no updates need to be sent (unless another placeholder changes value),
+not causing extra CPU usage.
+
+# #5 - [All platforms] Disable anti-override
 By default, TAB prevents other plugins from overriding it.
 This is because many server owners are not competent enough to configure their plugins correctly,
 such as disabling CMI collision handling which breaks nametags or even disabling team handling in paper.
@@ -70,7 +76,7 @@ tablist-name-formatting:
   anti-override: false
 ```
 
-# #5 - [All platforms] Disable tablist name formatting
+# #6 - [All platforms] Disable tablist name formatting
 As we already know from [Client-sided mechanics](https://github.com/NEZNAMY/TAB/wiki/Client%E2%80%90sided-mechanics#nametag-format-in-tablist) page,
 the nametag format appears in tablist if tablist name is not defined.
 You can take advantage of this to effectively disable one entire feature and its cpu usage,
@@ -81,7 +87,7 @@ However, you can only do this if:
 
 Whether you have another plugin attempting to handle them or not may not be easy to identify with a lot of plugins and not enough time spent configuring them. In that case, your best choice is to try it and see. If tablist names break, it means you have another plugin and cannot take advantage of this optimization option.
 
-# #6 - [All platforms] Increase permission refresh interval
+# #7 - [All platforms] Increase permission refresh interval
 Plugin needs to constantly check permissions for:
 * Permission checks in conditions
 * Permission checks if sorting by permissions
@@ -92,9 +98,11 @@ default value
 ```
 permission-refresh-interval: 1000
 ```
-refreshes them every second. If you don't need any permission/group changes to take effect within a second, you can increase this value for better performance.
+Refreshes them every second.
+If you don't need any permission/group changes to take effect within a second,
+you can increase this value for better performance.
 
-# #7 - [BungeeCord / Velocity] Disable TAB expansion
+# #8 - [BungeeCord / Velocity] Disable TAB expansion
 To maximize the performance of TAB's response to PlaceholderAPI request,
 values are tracked in advance and then quickly returned.
 This process takes resources and is especially heavy on proxy installation,
@@ -105,36 +113,24 @@ Disabling TAB's PlaceholderAPI expansion if you don't use it improves performanc
 placeholders:
   register-tab-expansion: false
 ```
-# #8 - [BungeeCord / Velocity] Disable update-latency option in global playerlist
+# #9 - [BungeeCord / Velocity] Disable update-latency option in global playerlist
 When [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) is enabled, you can enable / disable [update-latency](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist#:~:text=other%20unlisted%20servers.-,update%2Dlatency,-false) option (open the link for detailed description of the option). Disabling this option massively improves performance.
 
-# #9 - [BungeeCord] Disable ByteBuf deserialization
+# #10 - [BungeeCord] Disable ByteBuf deserialization
 In order for anti-override to work properly, some packets must be manually deserialized due to BungeeCord not doing it. If you don't need it, you can disable those functions, which will also disable the deserialization completely. To do so, you must disable 2 functions (only having 1 disabled is not enough):  
 #1 - Anti-override for teams
 ```
 scoreboard-teams:
   anti-override: false
 ```
-Whether you need anti-override or not depends on the configuration of your plugins. 
-The easiest way is to have it enabled and see if you get `anti-override.log` file in TAB folder. 
+Whether you need anti-override or not depends on the configuration of your plugins.
+The easiest way is to have it enabled and see if you get `anti-override.log` file in TAB folder.
 If you don't, you don't need it.
-If you do, you'll need to do some configuring. 
-[Here](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#additional-note-3---compatibility-issues-with-other-plugins) 
+If you do, you'll need to do some configuring.
+[Here](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#additional-note-3---compatibility-issues-with-other-plugins)
 are a few examples of software and their team names, which you may find helpful.
 
 #2 - Scoreboard detection of other plugins
 TAB checks for packets sent by other plugins, and if another plugin sends a scoreboard,
 TAB hides its own and resends it after the other plugin removes it.
 This check cannot be disabled if the scoreboard is enabled.
-
-# #10 - [Velocity] Disable header/footer translation
-Velocity offers header/footer translation of translatable components.
-However, TAB does not use these.
-Despite that, Velocity's attempt to "translate" the components is still there,
-causing the whole feature to use up to 3x more CPU than it would without it.
-There is no way to disable this inside Velocity itself,
-however, there is a third party [fork](https://github.com/GemstoneGG/Velocity-CTD/) that offers it.  
-**Use at your own risk**.  
-After installing, default velocity.toml file will contain `translate-header-footer = true` option.
-If just upgrading, you will need to add it there yourself.
-Setting it to `false` will disable this function.

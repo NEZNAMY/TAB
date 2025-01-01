@@ -23,7 +23,7 @@ This line automatically appears on all player entities when enabled. **Therefore
 
 The feature can be configured in **config.yml** under **belowname-objective** section.
 
-The feature's properties are displayed as `[score]` + space + `title`, where `[score]` is:
+The feature's properties are displayed as `[score]` + space + `title` (no, the space cannot be removed), where `[score]` is:
 * `value` for 1.20.2- (will show `0` on NPCs)
 * `fancy-value` for 1.20.3+ (will show `fancy-value-default` on NPCs)
 
@@ -77,7 +77,7 @@ If you want health to display health as 0-10 instead of 0-20, you can achieve it
 * `%math_0_{player_health}*5%` for 0-100
 
 # Limitations
-* The format is a **[score] + space + shared title**, where [score] is either a white number (1.20.2-) or any text (1.20.3+).
+* The format is a **[score] + space + shared title**, where [score] is either a white number (1.20.2-) or any text (1.20.3+). No, the space cannot be removed.
 * The title is the same on all players, therefore, it cannot be personalized (such as player's faction). Only the [score] can be per-player.
 * It appears on all entities of player type. **This includes player NPCs.**
 * Title length is limited to 32 characters on <1.13

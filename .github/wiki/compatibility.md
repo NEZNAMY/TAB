@@ -28,7 +28,7 @@ It is compiled with Java 8 and therefore supports any version of 8 and above.
         <tr>
             <td rowspan=2>Vanilla</td>
             <td rowspan=1><a href="https://getbukkit.org/">Bukkit</a> (+forge hybrids)</td>
-            <td>✔ (1.5 - 1.21.3)</td>
+            <td>✔ (1.5 - 1.21.4)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>
@@ -39,7 +39,7 @@ It is compiled with Java 8 and therefore supports any version of 8 and above.
         <tr>
             <td rowspan=2>Modded</td>
             <td rowspan=1><a href="https://fabricmc.net">Fabric</a></td>
-            <td>✔ (1.14 - 1.21.3)</td>
+            <td>✔ (1.14 - 1.21.4)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://minecraftforge.net">Forge</a></td>
@@ -124,7 +124,8 @@ In order to enhance user experience, TAB hooks into other plugins for better exp
 * **SkBee** (skript addon) sends empty scoreboard, causing TAB's to not show sometimes.
 * **Waterfall**'s `disable_tab_list_rewrite: true` **may** cause tablist to use offline UUIDs while TAB expects online uuids, causing various problems (most notably tablist formatting not working). Checking for this option is not an option either, because tablist rewrite might still be enabled despite being disabled (don't ask how, I have no idea). Set the option to `false` if you are experiencing issues.
 * **ViaVersion on BungeeCord and TAB on backend** acts like a client-sided protocol hack, making it impossible for TAB to know player's real version and causing issues related to it, see [Per-version experience](https://github.com/NEZNAMY/TAB/wiki/Additional-information#per-version-experience) for more info. Avoid this combination. Either install ViaVersion on all backend servers instead or install TAB on BungeeCord instead.
-* **Custom clients / resource packs** - Unofficially modified minecraft clients often tend to break things. Just Lunar client has tons of bugs that can be reproduced with TAB. Resource packs may also contain modifications you are not aware of, making things not look the way you want them to. If you are experiencing any visual issue and are using a custom client or resource pack, try it with a clean vanilla client. If it works there, it's an issue with the client / resource pack and TAB cannot do anything about it. Here are a few bugs in LunarClient / FeatherClient that you may run into when using TAB:
+* **Custom clients / resource packs** - Unofficially modified minecraft clients often tend to break things. Just Lunar client has tons of bugs that can be reproduced with TAB. Resource packs may also contain modifications you are not aware of, making things not look the way you want them to. If you are experiencing any visual issue and are using a custom client or resource pack, try it with a clean vanilla client. If it works there, it's an issue with the client / resource pack and TAB cannot do anything about it.  
+  For example, here are a few bugs in LunarClient / FeatherClient that you may run into when using TAB:
   * They add their icon to players in tablist, but don't widen the entries. This results in player names overlapping with latency bar. You can avoid this by configuring some spaces in tabsuffix.
   * They don't support color field in chat components, which means they don't support RGB codes and will display bossbar without colors as well.
   * Bossbar is not visible on 1.8.

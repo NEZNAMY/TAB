@@ -10,6 +10,7 @@
 * [Examples](#examples)
     * [Example 1 - Adding brackets to placeholder output if it returns non-empty value](#example-1---adding-brackets-to-placeholder-output-if-it-returns-non-empty-value)
     * [Example 2 - Replicating PlaceholderAPI's %player_colored_ping%](#example-2---replicating-placeholderapis-player_colored_ping)
+    * [Example 3 - Using both original and replaced output](#example-3---using-both-original-and-replaced-output)
 
 # About
 Most placeholders don't have fully configurable output, making you unable to customize it as you'd like.
@@ -156,3 +157,30 @@ If you want that feature and ping to be displayed there, replacements won't work
 and you'll need
 to use [Conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) instead
 to achieve colored ping.
+
+# Example 3 - Using both original and replaced output
+Once configured, replacements are applied as the placeholder output everywhere. It is not directly possible to use original output in one place and replaced in another.
+
+If you need this, you should consider [conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) instead.  
+If conditional placeholders would be too complicated to use, there are alternate ways. The main point of the solution is to create different placeholder that eventually calls the same function and returns the same result. This can be done by "wrapping" the placeholder into another one. The easiest way using existing TAB's functions is using animations. Create an animation with a single frame that contains the placeholder and configure replacements for that placeholder instead.
+<details>
+  <summary>Example for %ping%</summary>
+
+**animations.yml**:
+```
+ping:
+  change-interval: 50 # Actual value doesn't matter
+  texts:
+    - "%ping%"
+```
+Then, configure replacements for the animation in **config.yml**:
+```
+placeholder-output-replacements:
+  "%animation:ping%":
+    "0-50": "&a%animation:ping%" # %ping% would work too
+    "51-100": "&e%animation:ping%"
+    "else": "&c%animation:ping%"
+```
+Now, you can use `%ping%` for original output and `%animation:ping%` for replaced.
+
+</details>

@@ -22,13 +22,13 @@ Before attempting to use the function, make sure your server software has an int
 TAB does not contain it by itself.
 See the compatibility table below for current information about compatibility:
 
-| Platform | Available |
-| ------------- | ------------- |
-| Bukkit | ✔ |
-| BungeeCord | ✔ |
-| Fabric | ❌ |
-| Sponge | ❌ |
-| Velocity | ❌ |
+| Platform   | Available |
+|------------|-----------|
+| Bukkit     | ✔         |
+| BungeeCord | ✔         |
+| Fabric     | ❌         |
+| Sponge     | ❌         |
+| Velocity   | ❌         |
 
 # Enabling
 Find this section in **config.yml**:

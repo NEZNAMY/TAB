@@ -1,30 +1,37 @@
 # Content
-* [Bukkit/Spigot](#bukkitspigot)
-* [BungeeCord](#bungeecord)
+* [Backend](#backend)
+* [BungeeCord / Velocity](#bungeecord--velocity)
   * [Proxy installation](#proxy-installation)
   * [Backend installation](#backend-installation)
   * [Mixed installation](#mixed-installation)
 * [Updating the plugin](#updating-the-plugin)
 
-# Bukkit/Spigot
-Installation on Bukkit/Spigot/Paper is as simple as it can be.
+# Backend
+Installation on Bukkit / Fabric / Sponge is as simple as it can be.
 Put the plugin into the plugins folder and restart the server.  
 Dynamic (re)loads at runtime such as `/plugman load tab` to load the plugin are fully supported.
-However, plugins hooking into TAB may break when you use plugman to reload it.
+However, plugins hooking into TAB may break when you use such ways to (re)load it.
 
-# BungeeCord
+# BungeeCord / Velocity
+When running a network, you have 3 options:
+* Installing TAB only on the proxy (recommended)
+* Installing TAB on all backend servers instead
+* Installing TAB everywhere and disabling features so they don't conflict (not recommended)
+
+See below for more information regarding each way.
+
 ## Proxy installation
 This is the recommended setup.
 Put the plugin into the plugins folder of the proxy server and restart it.  
 **Recommended**:
 Install [TAB-Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) on your backend servers for PlaceholderAPI support and more.  
 **Recommended**:
-On **Velocity** installation install [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/) plugin for scoreboard-related features to work.
+If you are using **Velocity**, install [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/) plugin for scoreboard-related features to work.
 
 **Note**: With proxy installation use **/btab** command instead of **/tab**.
 
 Advantages of proxy installation compared to installing on all backend servers instead:
-* Can use the [Global player list](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist)
+* Can use the [Global player list](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) and [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) can work with all players connected to the proxy
 * Can use new content for new clients even if a backend server version is old (1.16+ RGB codes, 1.20.3+ scoreboard features)
 * Avoid [header/footer](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer#additional-note-1---not-resetting-on-server-switch) and [bossbar](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar#additional-note-2---not-hiding-on-server-switch) not disappearing on server switch
 * Configuration files in a single place for easier editing / no need to use MySQL for syncing data
@@ -34,7 +41,7 @@ Disadvantages compared to installing on all backend servers instead:
 * No [per-world player list](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist) (can be achieved by installing the plugin on backend servers and disabling all features except the per-world player list)
 
 ## Backend installation
-Just like when not using BungeeCord, install the plugin on all servers where you want the plugin. However, this setup is not recommended (see advantages of proxy installation).
+Just like when not running a network, install the plugin on all servers where you want the plugin. However, this setup is not as good (see advantages of proxy installation).
 
 ## Mixed installation
 Mixed installation is absolutely not recommended and should be avoided.

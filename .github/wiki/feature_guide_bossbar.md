@@ -102,7 +102,7 @@ bossbar:
 `name` is name of bossbar defined in config.yml under **bossbar** section, `time` is length of display time in seconds.
 
 When using a bossbar announcement, you have a new placeholder available:
-`%countdown%` that shows remaining time of the announcement in seconds. 
+`%countdown%` that shows remaining time of the announcement in seconds.
 You can further use this placeholder in progress, for example,
 using Math expansion from PlaceholderAPI, such as `%math_{tab_placeholder_countdown}/<total time>*100%`.
 

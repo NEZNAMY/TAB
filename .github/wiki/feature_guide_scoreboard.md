@@ -18,7 +18,7 @@
   * [Toggling scoreboard visibility](#toggling-scoreboard-visibility)
   * [Announcing a scoreboard](#announcing-a-scoreboard)
 * [Examples](#examples)
-  * [Example 1 - per-world scoreboards](#example-1---per-world-scoreboards)
+  * [Example 1 - Per-world scoreboards](#example-1---per-world-scoreboards)
   * [Example 2 - Periodical scoreboard switching](#example-2---periodical-scoreboard-switching)
   * [Example 3 - Per-version scoreboards](#example-3---per-version-scoreboards)
 
@@ -52,7 +52,7 @@ Will give you the following:
 
 The right side text will not be visible at 1.20.2 and lower, and numbers will be displayed instead.
 To properly see the right side, not only the client has to be 1.20.3+, but the server as well,
-since the plugin cannot send a packet that does not exist (on older versions). 
+since the plugin cannot send a packet that does not exist (on older versions).
 Proxies always include new content and therefore count as the latest version.
 This can be used to send new content to new players while having an outdated server version.
 
@@ -215,7 +215,7 @@ which will look up a scoreboard with the given `String` name,
 and if one is found, send it to all players for the given `int` ticks.
 
 # Examples
-## Example 1 - per-world scoreboards
+## Example 1 - Per-world scoreboards
 We will be using a condition of "equals" (=) type and check for output of `%world%` placeholder.
 If condition is met, it means player is in that world and the scoreboard is displayed.
 If not, check for the next scoreboard's condition.

@@ -226,7 +226,7 @@ The most common mistakes include:
   * Not configuring group weights in LuckPerms.
   * Accidentally enabling `use-bukkit-permission-manager` option when on BungeeCord without knowing what it does.
   * Installing TAB on BungeeCord without having any permission plugin on BungeeCord.
-  * Enabling `assign-groups-by-permissions` without giving those permissions.
+  * Enabling `assign-groups-by-permissions` without giving those permissions (or the opposite - giving away OP to users, resulting in the highest group being taken).
 
   [Debug command](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-debug-player) will help you identify if this is your case.
 * Using a plugin that causes TAB to fail to apply teams (such as Tablisknu). This includes installing TAB plugin on both bukkit and bungeecord, causing the installations to conflict.

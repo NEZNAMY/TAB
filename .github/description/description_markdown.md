@@ -4,8 +4,8 @@ The compact configuration allows you to get the plugin to work the way you want 
 Default configuration already contains useful values and examples to give you a better understanding and get you started quickly with instant results. 
 The extensive [wiki](https://github.com/NEZNAMY/TAB/wiki) answers any and all of your questions.
 
-![https://img.shields.io/badge/Release-5.0.1-blue.svg](https://img.shields.io/badge/Release-5.0.1-blue.svg)  
-![https://img.shields.io/badge/Minecraft-1.5%20--%201.21.3-blue.svg](https://img.shields.io/badge/Minecraft-1.5%20--%201.21.3-blue.svg)  
+![https://img.shields.io/badge/Release-5.0.3-blue.svg](https://img.shields.io/badge/Release-5.0.3-blue.svg)  
+![https://img.shields.io/badge/Minecraft-1.5%20--%201.21.4-blue.svg](https://img.shields.io/badge/Minecraft-1.5%20--%201.21.4-blue.svg)  
 ![https://img.shields.io/badge/Java-8+-blue.svg](https://img.shields.io/badge/Java-8+-blue.svg)  
 [![https://img.shields.io/badge/GitHub-Source%20code-yellow.svg](https://img.shields.io/badge/GitHub-Source%20code-yellow.svg)](https://github.com/NEZNAMY/TAB)  
 [![https://img.shields.io/github/issues/neznamy/tab?label=Issues](https://img.shields.io/github/issues/neznamy/tab?label=Issues)](https://github.com/NEZNAMY/TAB/issues)  
