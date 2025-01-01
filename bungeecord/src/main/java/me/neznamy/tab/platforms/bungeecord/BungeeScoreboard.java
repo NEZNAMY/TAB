@@ -43,34 +43,26 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
     @Override
     public void registerObjective(@NonNull Objective objective) {
-        player.sendPacket(new ScoreboardObjective(
-                objective.getName(),
-                either(objective.getTitle(), Limitations.SCOREBOARD_TITLE_PRE_1_13),
-                ScoreboardObjective.HealthDisplay.values()[objective.getHealthDisplay().ordinal()],
-                (byte) ObjectiveAction.REGISTER,
-                numberFormat(objective.getNumberFormat())
-        ));
+        sendObjectivePacket(objective, (byte) ObjectiveAction.REGISTER);
         player.sendPacket(new ScoreboardDisplay(objective.getDisplaySlot().ordinal(), objective.getName()));
     }
 
     @Override
     public void unregisterObjective(@NonNull Objective objective) {
-        player.sendPacket(new ScoreboardObjective(
-                objective.getName(),
-                either(objective.getTitle(), Limitations.SCOREBOARD_TITLE_PRE_1_13), // Empty value instead of null to prevent NPE kick on 1.7
-                null,
-                (byte) ObjectiveAction.UNREGISTER,
-                null
-        ));
+        sendObjectivePacket(objective, (byte) ObjectiveAction.UNREGISTER);
     }
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
+        sendObjectivePacket(objective, (byte) ObjectiveAction.UPDATE);
+    }
+
+    private void sendObjectivePacket(@NonNull Objective objective, byte action) {
         player.sendPacket(new ScoreboardObjective(
                 objective.getName(),
                 either(objective.getTitle(), Limitations.SCOREBOARD_TITLE_PRE_1_13),
                 ScoreboardObjective.HealthDisplay.values()[objective.getHealthDisplay().ordinal()],
-                (byte) ObjectiveAction.UPDATE,
+                action,
                 numberFormat(objective.getNumberFormat())
         ));
     }
@@ -104,9 +96,23 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
     @Override
     public void registerTeam(@NonNull Team team) {
+        sendTeamPacket(team, (byte) TeamAction.CREATE);
+    }
+
+    @Override
+    public void unregisterTeam(@NonNull Team team) {
+        sendTeamPacket(team, (byte) TeamAction.REMOVE);
+    }
+
+    @Override
+    public void updateTeam(@NonNull Team team) {
+        sendTeamPacket(team, (byte) TeamAction.UPDATE);
+    }
+
+    private void sendTeamPacket(@NonNull Team team, byte action) {
         player.sendPacket(new net.md_5.bungee.protocol.packet.Team(
                 team.getName(),
-                (byte) TeamAction.CREATE,
+                action,
                 either(new SimpleComponent(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 either(team.getPrefix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
@@ -115,27 +121,6 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
                 player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().getLegacyColor().ordinal() : 0,
                 (byte) team.getOptions(),
                 team.getPlayers().toArray(new String[0])
-        ));
-    }
-
-    @Override
-    public void unregisterTeam(@NonNull Team team) {
-        player.sendPacket(new net.md_5.bungee.protocol.packet.Team(team.getName()));
-    }
-
-    @Override
-    public void updateTeam(@NonNull Team team) {
-        player.sendPacket(new net.md_5.bungee.protocol.packet.Team(
-                team.getName(),
-                (byte) TeamAction.UPDATE,
-                either(new SimpleComponent(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
-                either(team.getPrefix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
-                either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
-                team.getVisibility().toString(),
-                team.getCollision().toString(),
-                player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().getLegacyColor().ordinal() : 0,
-                (byte) team.getOptions(),
-                null
         ));
     }
 
@@ -159,6 +144,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         }
     }
 
+    @NotNull
     private Either<String, BaseComponent> either(@NonNull TabComponent text, int legacyLimit) {
         if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
             return Either.right(text.convert(player.getVersion()));
