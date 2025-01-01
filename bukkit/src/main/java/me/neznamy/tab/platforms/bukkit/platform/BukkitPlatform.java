@@ -211,7 +211,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        Bukkit.getConsoleSender().sendMessage("&c[TAB] [WARN] " + toBukkitFormat(message, true));
+        Bukkit.getConsoleSender().sendMessage("§c[TAB] [WARN] " + toBukkitFormat(message, true));
     }
 
     @Override

@@ -37,7 +37,7 @@ public class BelowNameConfiguration {
         // Check placeholders in title
         String title = section.getString("title", "Health");
         if (title.contains("%") && !title.contains("%animation") && !title.contains("%condition")) {
-            section.startupWarn("Belowname title is set to " + title + ", however, the feature cannot display different title on different players " +
+            section.startupWarn("Belowname title is set to \"" + title + "\", however, the feature cannot display different title on different players " +
                     "due to a minecraft limitation. Placeholders will be parsed for viewing player.");
         }
 
