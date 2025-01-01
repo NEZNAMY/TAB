@@ -1,7 +1,7 @@
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 
 plugins {
-    id("org.spongepowered.gradle.plugin") version "2.0.2"
+    id("org.spongepowered.gradle.plugin") version "2.3.0"
 }
 
 repositories {
