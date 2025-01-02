@@ -44,11 +44,11 @@ public class ChatModifier {
     @NotNull
     public String getMagicCodes() {
         StringBuilder builder = new StringBuilder();
-        if (bold) builder.append(EnumChatFormat.BOLD);
-        if (italic) builder.append(EnumChatFormat.ITALIC);
-        if (obfuscated) builder.append(EnumChatFormat.OBFUSCATED);
-        if (strikethrough) builder.append(EnumChatFormat.STRIKETHROUGH);
-        if (underlined) builder.append(EnumChatFormat.UNDERLINE);
+        if (bold) builder.append("§l");
+        if (italic) builder.append("§o");
+        if (obfuscated) builder.append("§k");
+        if (strikethrough) builder.append("§m");
+        if (underlined) builder.append("§n");
         return builder.toString();
     }
 
