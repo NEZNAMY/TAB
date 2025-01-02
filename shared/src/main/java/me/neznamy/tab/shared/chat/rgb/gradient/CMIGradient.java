@@ -17,9 +17,7 @@ public class CMIGradient extends CommonGradient {
      * Constructs new instance.
      */
     public CMIGradient() {
-        super(Pattern.compile("\\{#[0-9a-fA-F]{6}>}[^{]*\\{#[0-9a-fA-F]{6}<}"),
-                Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>}[^{]*\\{#[0-9a-fA-F]{6}<}"),
-                "{#", 9, 2, 10, 8);
+        super(Pattern.compile("\\{#[0-9a-fA-F]{6}>}[^{]*\\{#[0-9a-fA-F]{6}<}"), "{#", 2, 10, 8);
     }
     
     @Override

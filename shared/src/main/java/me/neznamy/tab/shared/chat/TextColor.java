@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.chat;
 
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -21,20 +21,12 @@ public class TextColor {
     private int rgb = -1;
 
     /** Closest legacy color to this color object. */
+    @Nullable
     private EnumChatFormat legacyColor;
 
     /** HEX code of this color as a 6-digit hexadecimal string without "#" prefix. */
+    @Nullable
     private String hexCode;
-
-    /**
-     * Boolean value whether the legacy color was forced with constructor or should be
-     * automatically assigned as closest color.
-     * This value is used in gradients when converting text for legacy players.
-     */
-    @Getter private boolean legacyColorForced;
-
-    /** Flag tracking whether this color is actually a legacy color or not */
-    @Getter private boolean legacy;
 
     /**
      * Constructs new instance from provided 6-digit hex code string
@@ -49,22 +41,6 @@ public class TextColor {
     }
 
     /**
-     * Constructs new instance from provided 6-digit hex code and forced legacy color
-     *
-     * @param   hexCode
-     *          6-digit combination of hex numbers as a string
-     * @param   legacyColor
-     *          color to use for legacy clients instead of using the closest legacy color
-     * @throws  IllegalArgumentException
-     *          if {@code hexCode} is {@code null} or {@code legacyColor} is {@code null}
-     */
-    public TextColor(@NotNull String hexCode, @NotNull EnumChatFormat legacyColor) {
-        this.hexCode = hexCode;
-        legacyColorForced = true;
-        this.legacyColor = legacyColor;
-    }
-
-    /**
      * Constructs new instance from provided legacy color
      *
      * @param   legacyColor
@@ -74,8 +50,6 @@ public class TextColor {
         rgb = legacyColor.getRgb();
         this.legacyColor = legacyColor;
         hexCode = String.format("%06X", legacyColor.getRgb());
-        legacyColorForced = true;
-        legacy = true;
     }
 
     /**
@@ -147,7 +121,7 @@ public class TextColor {
      * @return  rgb value
      */
     public int getRgb() {
-        if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
+        if (rgb == -1) rgb = Integer.parseInt(getHexCode(), 16);
         return rgb;
     }
 
@@ -158,7 +132,8 @@ public class TextColor {
      *
      * @return  closest legacy color
      */
-    public @NotNull EnumChatFormat getLegacyColor() {
+    @NotNull
+    public EnumChatFormat getLegacyColor() {
         if (legacyColor == null) legacyColor = loadClosestColor();
         return legacyColor;
     }
@@ -168,7 +143,8 @@ public class TextColor {
      *
      * @return  the rgb combination as a 6-digit hex code string
      */
-    public @NotNull String getHexCode() {
+    @NotNull
+    public String getHexCode() {
         if (hexCode == null) hexCode = String.format("%06X", rgb);
         return hexCode;
     }

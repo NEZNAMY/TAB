@@ -270,15 +270,8 @@ public abstract class TabComponent {
             } else if (c == '#' && text.length() > i+6) {
                 String hex = text.substring(i+1, i+7);
                 if (isHexCode(hex)) {
-                    TextColor color;
-                    EnumChatFormat code = text.length() - i >= 9 ? EnumChatFormat.getByChar(text.charAt(i+8)) : null;
-                    if (code != null && text.charAt(i+7) == '|') {
-                        color = new TextColor(hex, code);
-                        i += 8;
-                    } else {
-                        color = new TextColor(hex);
-                        i += 6;
-                    }
+                    TextColor color = new TextColor(hex);
+                    i += 6;
                     if (builder.length() > 0) {
                         component.setText(builder.toString());
                         components.add(component);

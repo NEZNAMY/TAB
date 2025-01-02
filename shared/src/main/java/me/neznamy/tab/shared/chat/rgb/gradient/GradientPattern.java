@@ -40,7 +40,6 @@ public interface GradientPattern {
         if (length == 1) {
             sb.append("#");
             sb.append(start.getHexCode());
-            if (start.isLegacyColorForced()) sb.append("|").append(start.getLegacyColor().getCharacter());
             sb.append(magicCodes);
             sb.append(deColorized);
             return sb.toString();
@@ -51,7 +50,6 @@ public interface GradientPattern {
             int blue = (int) (start.getBlue() + (float)(end.getBlue() - start.getBlue())/(length-1)*i);
             sb.append("#");
             sb.append(new TextColor(red, green, blue).getHexCode());
-            if (start.isLegacyColorForced()) sb.append("|").append(start.getLegacyColor().getCharacter());
             sb.append(magicCodes);
             sb.append(deColorized.charAt(i));
         }
