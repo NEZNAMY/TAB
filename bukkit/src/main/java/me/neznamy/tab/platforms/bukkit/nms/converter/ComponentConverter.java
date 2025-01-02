@@ -34,12 +34,10 @@ public abstract class ComponentConverter {
      *
      * @param   component
      *          Component to convert
-     * @param   modern
-     *          Whether client supports RGB or not
      * @return  Converted component
      */
     @NotNull
-    public abstract Object convert(@NotNull TabComponent component, boolean modern);
+    public abstract Object convert(@NotNull TabComponent component);
 
     /**
      * Attempts to load component converter.

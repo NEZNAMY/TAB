@@ -23,7 +23,7 @@ public class PaperComponentConverter extends ComponentConverter {
 
     @Override
     @NotNull
-    public Component convert(@NotNull TabComponent component, boolean modern) {
+    public Component convert(@NotNull TabComponent component) {
         switch (component) {
             case SimpleComponent simpleComponent -> {
                 return Component.literal(simpleComponent.getText());
@@ -33,16 +33,12 @@ public class PaperComponentConverter extends ComponentConverter {
                 ChatModifier modifier = component1.getModifier();
                 TextColor color = null;
                 if (modifier.getColor() != null) {
-                    if (modern) {
-                        color = TextColor.fromRgb(modifier.getColor().getRgb());
-                    } else {
-                        color = TextColor.fromRgb(modifier.getColor().getLegacyColor().getRgb());
-                    }
+                    color = TextColor.fromRgb(modifier.getColor().getRgb());
                 }
                 nmsComponent.setStyle(newStyle(color, modifier.isBold(), modifier.isItalic(), modifier.isUnderlined(),
                         modifier.isStrikethrough(), modifier.isObfuscated(), modifier.getFont()));
                 for (StructuredComponent extra : component1.getExtra()) {
-                    nmsComponent.append(convert(extra, modern));
+                    nmsComponent.append(convert(extra));
                 }
                 return nmsComponent;
             }

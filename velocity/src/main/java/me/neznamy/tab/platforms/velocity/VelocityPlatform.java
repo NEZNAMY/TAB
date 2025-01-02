@@ -9,7 +9,6 @@ import com.velocitypowered.api.scoreboard.ScoreboardManager;
 import lombok.Getter;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -112,12 +111,12 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        logger.info(message.toAdventure(ProtocolVersion.LATEST_KNOWN_VERSION));
+        logger.info(message.toAdventure());
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        logger.warn(message.toAdventure(ProtocolVersion.LATEST_KNOWN_VERSION));
+        logger.warn(message.toAdventure());
     }
 
     @Override
@@ -153,7 +152,7 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     @NotNull
     public Component convertComponent(@NotNull TabComponent component, boolean modern) {
-        return AdventureHook.toAdventureComponent(component, modern);
+        return AdventureHook.toAdventureComponent(component);
     }
 
     @Override

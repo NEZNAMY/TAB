@@ -20,6 +20,6 @@ public class PaperHeaderFooter extends HeaderFooter {
 
     @Override
     public void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer) {
-        player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventure(player.getVersion()), footer.toAdventure(player.getVersion()));
+        player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventure(), footer.toAdventure());
     }
 }

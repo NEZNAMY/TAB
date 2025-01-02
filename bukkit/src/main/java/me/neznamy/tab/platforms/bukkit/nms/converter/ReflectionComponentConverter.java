@@ -18,7 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Class for converting TAB component into NMS components (1.7+).
@@ -29,7 +29,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
     private final FunctionWithException<String, Object> newTextComponent;
     private final FunctionWithException<String, Object> newTranslatableComponent;
     private final FunctionWithException<String, Object> newKeybindComponent;
-    private final BiFunction<ChatModifier, Boolean, Object> convertModifier;
+    private final Function<ChatModifier, Object> convertModifier;
 
     private final Class<?> ChatModifier = BukkitReflection.getClass("network.chat.Style", "network.chat.ChatModifier", "ChatModifier");
     private final Class<Enum> EnumChatFormat = (Class<Enum>) BukkitReflection.getClass("ChatFormatting", "EnumChatFormat");
@@ -103,22 +103,22 @@ public class ReflectionComponentConverter extends ComponentConverter {
         } else {
             newChatModifier = ChatModifier.getConstructor();
             ChatModifier_setColor = ReflectionUtils.getOnlyMethod(ChatModifier, ChatModifier, EnumChatFormat);
-            convertModifier = (modifier, protocolVersion) -> createModifierLegacy(modifier);
+            convertModifier = this::createModifierLegacy;
         }
     }
 
     @Override
     @SneakyThrows
     @NotNull
-    public Object convert(@NotNull TabComponent component, boolean modern) {
+    public Object convert(@NotNull TabComponent component) {
         if (component instanceof SimpleComponent) {
             return newTextComponent.apply(((SimpleComponent) component).getText());
         } else if (component instanceof StructuredComponent) {
             StructuredComponent component1 = (StructuredComponent) component;
             Object nmsComponent = newTextComponent.apply(component1.getText());
-            Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier(), modern));
+            Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier()));
             for (StructuredComponent extra : component1.getExtra()) {
-                ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra, modern));
+                ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra));
             }
             return nmsComponent;
         } else {
@@ -158,17 +158,9 @@ public class ReflectionComponentConverter extends ComponentConverter {
     }
 
     @SneakyThrows
-    private Object createModifierModern(@NotNull ChatModifier modifier, boolean modern) {
-        Object color = null;
-        if (modifier.getColor() != null) {
-            if (modern) {
-                color = ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb());
-            } else {
-                color = ChatHexColor_fromRGB.invoke(null, modifier.getColor().getLegacyColor().getRgb());
-            }
-        }
+    private Object createModifierModern(@NotNull ChatModifier modifier) {
         return newStyleModern(
-                color,
+                modifier.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb()),
                 modifier.isBold(),
                 modifier.isItalic(),
                 modifier.isUnderlined(),

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,13 +30,9 @@ public abstract class TabComponent {
     @Nullable
     private Object convertedLegacy;
 
-    /** Adventure component from this component for 1.16+ players */
+    /** Adventure component from this component */
     @Nullable
-    private Component adventureModern;
-
-    /** Adventure component from this component for 1.15- players */
-    @Nullable
-    private Component adventureLegacy;
+    private Component adventureComponent;
 
     @Nullable
     private Object fixedFormat;
@@ -46,8 +42,9 @@ public abstract class TabComponent {
     private Object textHolder;
 
     /**
-     * Last color of this component. Used to determine team color based on last color of prefix.
-     * Saves as TextColor instead of EnumChatFormat to have things ready if Mojang adds RGB support to team color.
+     * Last color of this component.
+     * Used to determine team color based on the last color of prefix.
+     * Saved as TextColor instead of EnumChatFormat to have things ready if Mojang adds RGB support to team color.
      */
     @Nullable
     private TextColor lastColor;
@@ -74,21 +71,13 @@ public abstract class TabComponent {
     }
 
     /**
-     * Converts this component to adventure component.
-     *
-     * @param   clientVersion
-     *          Client version
+     * Converts this component to an Adventure component.
      * @return  Converted component
      */
     @NotNull
-    public Component toAdventure(@NotNull ProtocolVersion clientVersion) {
-        if (clientVersion.supportsRGB()) {
-            if (adventureModern == null) adventureModern = AdventureHook.toAdventureComponent(this, true);
-            return adventureModern;
-        } else {
-            if (adventureLegacy == null) adventureLegacy = AdventureHook.toAdventureComponent(this, false);
-            return adventureLegacy;
-        }
+    public Component toAdventure() {
+        if (adventureComponent == null) adventureComponent = AdventureHook.toAdventureComponent(this);
+        return adventureComponent;
     }
 
     /**
@@ -115,16 +104,14 @@ public abstract class TabComponent {
      *
      * @param   convertFunction
      *          Function for converting adventure Component to TextHolder
-     * @param   version
-     *          Player version
      * @return  Converted TextHolder
      * @param   <T>
      *          TextHolder type
      */
     @SuppressWarnings("unchecked")
     @NotNull
-    public <T> T toTextHolder(@NotNull BiFunction<TabComponent, ProtocolVersion, T> convertFunction, @NotNull ProtocolVersion version) {
-        if (textHolder == null) textHolder = convertFunction.apply(this, version);
+    public <T> T toTextHolder(@NotNull Function<TabComponent, T> convertFunction) {
+        if (textHolder == null) textHolder = convertFunction.apply(this);
         return (T) textHolder;
     }
 

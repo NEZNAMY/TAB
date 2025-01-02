@@ -84,14 +84,12 @@ public class FabricMultiVersion {
      *
      * @param   modifier
      *          Modifier to convert
-     * @param   modern
-     *          Whether RGB should be supported or not
      * @return  Converted style
      */
     @NotNull
-    public static Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
-        if (serverVersion.getMinorVersion() >= 16) return loaderLatest.convertModifier(modifier, modern);
-        return loader1_14_4.convertModifier(modifier, modern);
+    public static Style convertModifier(@NotNull ChatModifier modifier) {
+        if (serverVersion.getMinorVersion() >= 16) return loaderLatest.convertModifier(modifier);
+        return loader1_14_4.convertModifier(modifier);
     }
 
     /**

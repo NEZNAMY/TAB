@@ -3,22 +3,21 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.TextHolder;
 import com.velocitypowered.api.scoreboard.*;
 import lombok.NonNull;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Scoreboard implementation using VelocityScoreboardAPI plugin.
  */
 public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
 
-    private static final BiFunction<TabComponent, ProtocolVersion, TextHolder> textHolderFunction =
-            (component, version) -> TextHolder.of(component.toLegacyText(), component.toAdventure(version));
+    private static final Function<TabComponent, TextHolder> textHolderFunction =
+            component -> TextHolder.of(component.toLegacyText(), component.toAdventure());
 
     private static final StringToComponentCache displayNames = new StringToComponentCache("Team display name", 5000);
 
@@ -44,8 +43,8 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
             ProxyObjective.Builder builder = scoreboard.objectiveBuilder(objective.getName())
                     .displaySlot(com.velocitypowered.api.scoreboard.DisplaySlot.valueOf(objective.getDisplaySlot().name()))
                     .healthDisplay(com.velocitypowered.api.scoreboard.HealthDisplay.valueOf(objective.getHealthDisplay().name()))
-                    .title(objective.getTitle().toTextHolder(textHolderFunction, player.getVersion()))
-                    .numberFormat(objective.getNumberFormat() == null ? null : NumberFormat.fixed(objective.getNumberFormat().toAdventure(player.getVersion())));
+                    .title(objective.getTitle().toTextHolder(textHolderFunction))
+                    .numberFormat(objective.getNumberFormat() == null ? null : NumberFormat.fixed(objective.getNumberFormat().toAdventure()));
             objective.setPlatformObjective(scoreboard.registerObjective(builder));
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().printError("Failed to register objective " + objective.getName() + " for player " + player.getName(), e);
@@ -66,8 +65,8 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
         try {
             ProxyObjective obj = (ProxyObjective) objective.getPlatformObjective();
             obj.setHealthDisplay(com.velocitypowered.api.scoreboard.HealthDisplay.valueOf(objective.getHealthDisplay().name()));
-            obj.setTitle(objective.getTitle().toTextHolder(textHolderFunction, player.getVersion()));
-            obj.setNumberFormat(objective.getNumberFormat() == null ? null : NumberFormat.fixed(objective.getNumberFormat().toAdventure(player.getVersion())));
+            obj.setTitle(objective.getTitle().toTextHolder(textHolderFunction));
+            obj.setNumberFormat(objective.getNumberFormat() == null ? null : NumberFormat.fixed(objective.getNumberFormat().toAdventure()));
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().printError("Failed to update objective " + objective.getName() + " for player " + player.getName(), e);
         }
@@ -78,8 +77,8 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
         try {
             ((ProxyObjective)score.getObjective().getPlatformObjective()).setScore(score.getHolder(), b -> b
                     .score(score.getValue())
-                    .displayName(score.getDisplayName() == null ? null : score.getDisplayName().toAdventure(player.getVersion()))
-                    .numberFormat(score.getNumberFormat() == null ? null : NumberFormat.fixed(score.getNumberFormat().toAdventure(player.getVersion())))
+                    .displayName(score.getDisplayName() == null ? null : score.getDisplayName().toAdventure())
+                    .numberFormat(score.getNumberFormat() == null ? null : NumberFormat.fixed(score.getNumberFormat().toAdventure()))
             );
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().printError("Failed to set score " + score.getHolder() + " for player " + player.getName(), e);
@@ -105,9 +104,9 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
     public void registerTeam(@NonNull Team team) {
         try {
             team.setPlatformTeam(scoreboard.registerTeam(scoreboard.teamBuilder(team.getName())
-                    .displayName(displayNames.get(team.getName()).toTextHolder(textHolderFunction, player.getVersion()))
-                    .prefix(team.getPrefix().toTextHolder(textHolderFunction, player.getVersion()))
-                    .suffix(team.getSuffix().toTextHolder(textHolderFunction, player.getVersion()))
+                    .displayName(displayNames.get(team.getName()).toTextHolder(textHolderFunction))
+                    .prefix(team.getPrefix().toTextHolder(textHolderFunction))
+                    .suffix(team.getSuffix().toTextHolder(textHolderFunction))
                     .nameVisibility(visibilities[team.getVisibility().ordinal()])
                     .collisionRule(collisions[team.getCollision().ordinal()])
                     .allowFriendlyFire((team.getOptions() & 0x01) > 0)
@@ -136,8 +135,8 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
     @Override
     public void updateTeam(@NonNull Team team) {
         ((ProxyTeam)team.getPlatformTeam()).updateProperties(b -> b
-                .prefix(team.getPrefix().toTextHolder(textHolderFunction, player.getVersion()))
-                .suffix(team.getSuffix().toTextHolder(textHolderFunction, player.getVersion()))
+                .prefix(team.getPrefix().toTextHolder(textHolderFunction))
+                .suffix(team.getSuffix().toTextHolder(textHolderFunction))
                 .nameVisibility(visibilities[team.getVisibility().ordinal()])
                 .collisionRule(collisions[team.getCollision().ordinal()])
                 .color(colors[team.getColor().getLegacyColor().ordinal()])

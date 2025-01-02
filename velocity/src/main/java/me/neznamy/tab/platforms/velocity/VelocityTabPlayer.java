@@ -40,7 +40,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        getPlayer().sendMessage(message.toAdventure(getVersion()));
+        getPlayer().sendMessage(message.toAdventure());
     }
 
     @Override

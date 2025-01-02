@@ -73,7 +73,7 @@ public class Loader_1_14_4 implements Loader {
 
     @Override
     @NotNull
-    public Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
+    public Style convertModifier(@NotNull ChatModifier modifier) {
         Style style = new Style();
         if (modifier.getColor() != null) {
             style.setColor(ChatFormatting.valueOf(modifier.getColor().getLegacyColor().name()));

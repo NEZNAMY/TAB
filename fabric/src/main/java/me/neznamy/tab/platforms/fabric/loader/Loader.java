@@ -75,12 +75,10 @@ public interface Loader {
      *
      * @param   modifier
      *          Modifier to convert
-     * @param   modern
-     *          Whether RGB should be supported or not
      * @return  Converted style
      */
     @NotNull
-    default Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
+    default Style convertModifier(@NotNull ChatModifier modifier) {
         throw new UnsupportedOperationException("Not implemented.");
     }
 

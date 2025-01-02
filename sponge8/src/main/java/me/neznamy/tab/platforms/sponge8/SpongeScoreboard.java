@@ -67,7 +67,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         org.spongepowered.api.scoreboard.objective.Objective obj = org.spongepowered.api.scoreboard.objective.Objective.builder()
                 .name(objective.getName())
-                .displayName(objective.getTitle().toAdventure(player.getVersion()))
+                .displayName(objective.getTitle().toAdventure())
                 .objectiveDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()])
                 .criterion(Criteria.DUMMY)
                 .build();
@@ -84,7 +84,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         org.spongepowered.api.scoreboard.objective.Objective obj = (org.spongepowered.api.scoreboard.objective.Objective) objective.getPlatformObjective();
-        obj.setDisplayName(objective.getTitle().toAdventure(player.getVersion()));
+        obj.setDisplayName(objective.getTitle().toAdventure());
         obj.setDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()]);
     }
 
@@ -111,8 +111,8 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
         org.spongepowered.api.scoreboard.Team spongeTeam = org.spongepowered.api.scoreboard.Team.builder()
                 .name(team.getName())
                 .displayName(Component.text(team.getName()))
-                .prefix(team.getPrefix().toAdventure(player.getVersion()))
-                .suffix(team.getSuffix().toAdventure(player.getVersion()))
+                .prefix(team.getPrefix().toAdventure())
+                .suffix(team.getSuffix().toAdventure())
                 .color(NamedTextColor.NAMES.valueOr(team.getColor().getLegacyColor().name(), NamedTextColor.WHITE))
                 .allowFriendlyFire((team.getOptions() & 0x01) != 0)
                 .canSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0)
@@ -135,8 +135,8 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void updateTeam(@NonNull Team team) {
         org.spongepowered.api.scoreboard.Team spongeTeam = (org.spongepowered.api.scoreboard.Team) team.getPlatformTeam();
         spongeTeam.setDisplayName(Component.text(team.getName()));
-        spongeTeam.setPrefix(team.getPrefix().toAdventure(player.getVersion()));
-        spongeTeam.setSuffix(team.getSuffix().toAdventure(player.getVersion()));
+        spongeTeam.setPrefix(team.getPrefix().toAdventure());
+        spongeTeam.setSuffix(team.getSuffix().toAdventure());
         spongeTeam.setColor(NamedTextColor.NAMES.valueOr(team.getColor().getLegacyColor().name(), NamedTextColor.WHITE));
         spongeTeam.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         spongeTeam.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);

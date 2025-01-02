@@ -47,29 +47,29 @@ public class PaperScoreboard extends BukkitScoreboard {
     public org.bukkit.scoreboard.Objective newObjective(@NonNull String objectiveName, @NonNull String criteria,
                                                         @NonNull TabComponent title, @NonNull HealthDisplay display) {
         return scoreboard.registerNewObjective(objectiveName, criteria,
-                title.toAdventure(player.getVersion()), RenderType.values()[display.ordinal()]);
+                title.toAdventure(), RenderType.values()[display.ordinal()]);
     }
 
     @Override
     public void setDisplayName(@NonNull org.bukkit.scoreboard.Objective objective, @NonNull TabComponent displayName) {
-        objective.displayName(displayName.toAdventure(player.getVersion()));
+        objective.displayName(displayName.toAdventure());
     }
 
     @Override
     public void setPrefix(@NonNull org.bukkit.scoreboard.Team team, @NonNull TabComponent prefix) {
-        team.prefix(prefix.toAdventure(player.getVersion()));
+        team.prefix(prefix.toAdventure());
     }
 
     @Override
     public void setSuffix(@NonNull org.bukkit.scoreboard.Team team, @NonNull TabComponent suffix) {
-        team.suffix(suffix.toAdventure(player.getVersion()));
+        team.suffix(suffix.toAdventure());
     }
 
     @Override
     @SneakyThrows
     public void setScoreDisplayName(@NotNull org.bukkit.scoreboard.Score s, @Nullable TabComponent displayName) {
         if (numberFormatAPI) {
-            Component component = displayName == null ? null : displayName.toAdventure(player.getVersion());
+            Component component = displayName == null ? null : displayName.toAdventure();
             Method m = s.getClass().getMethod("customName", Component.class);
             m.setAccessible(true); // Why is this needed? The method is public!
             m.invoke(s, component);
@@ -103,6 +103,6 @@ public class PaperScoreboard extends BukkitScoreboard {
     private Object numberFormat(@Nullable TabComponent numberFormat) {
         if (numberFormat == null) return null;
         return Class.forName("io.papermc.paper.scoreboard.numbers.NumberFormat").getMethod("fixed", ComponentLike.class)
-                .invoke(null, numberFormat.toAdventure(player.getVersion()));
+                .invoke(null, numberFormat.toAdventure());
     }
 }

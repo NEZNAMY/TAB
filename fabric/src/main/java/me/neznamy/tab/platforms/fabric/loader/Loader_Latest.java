@@ -64,17 +64,9 @@ public class Loader_Latest implements Loader {
 
     @Override
     @NotNull
-    public Style convertModifier(@NotNull ChatModifier modifier, boolean modern) {
-        TextColor color = null;
-        if (modifier.getColor() != null) {
-            if (modern) {
-                color = TextColor.fromRgb(modifier.getColor().getRgb());
-            } else {
-                color = TextColor.fromRgb(modifier.getColor().getLegacyColor().getRgb());
-            }
-        }
+    public Style convertModifier(@NotNull ChatModifier modifier) {
         return Style.EMPTY
-                .withColor(color)
+                .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
                 .withBold(modifier.isBold())
                 .withItalic(modifier.isItalic())
                 .withUnderlined(modifier.isUnderlined())
