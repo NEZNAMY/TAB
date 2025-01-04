@@ -58,7 +58,7 @@ public class Configs {
     public Configs() throws IOException {
         File errorLog = TAB.getInstance().getErrorManager().getErrorLog();
         if (errorLog.length() > TabConstants.MAX_LOG_SIZE) {
-            TAB.getInstance().getConfigHelper().startup().startupWarn(errorLog, "The file has reached its size limit (1MB). No new errors will be logged. " +
+            TAB.getInstance().getConfigHelper().startup().startupWarn(errorLog, "The file has reached its size limit (16MB). No new errors will be logged. " +
                     "Take a look at the existing logged errors, as they may have caused the plugin to not work properly " +
                     "in the past and if not fixed, will most likely cause problems in the future as well. If you are using latest version " +
                     "of the plugin, consider reporting them.");
