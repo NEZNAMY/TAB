@@ -106,7 +106,7 @@ public class BungeePlatform extends ProxyPlatform {
 
     @Override
     public void registerCommand() {
-        ProxyServer.getInstance().getPluginManager().registerCommand(plugin, new BungeeTabCommand());
+        ProxyServer.getInstance().getPluginManager().registerCommand(plugin, new BungeeTabCommand(getCommand()));
     }
 
     @Override
@@ -213,5 +213,11 @@ public class BungeePlatform extends ProxyPlatform {
     @Override
     public boolean supportsScoreboards() {
         return true;
+    }
+
+    @Override
+    @NotNull
+    public String getCommand() {
+        return "btab";
     }
 }

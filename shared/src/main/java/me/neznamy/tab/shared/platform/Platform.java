@@ -192,4 +192,13 @@ public interface Platform {
      * @return   {@code true} if server has a scoreboard implementation, {@code false} if not
      */
     boolean supportsScoreboards();
+
+    /**
+     * Returns the command string used by this platform without "/"
+     * prefix, such as "tab" on backend and "btab" on BungeeCord.
+     *
+     * @return  command string on this platform without "/" prefix
+     */
+    @NotNull
+    String getCommand();
 }

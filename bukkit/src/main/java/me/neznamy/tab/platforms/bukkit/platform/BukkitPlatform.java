@@ -227,7 +227,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void registerCommand() {
-        PluginCommand command = Bukkit.getPluginCommand(TabConstants.COMMAND_BACKEND);
+        PluginCommand command = Bukkit.getPluginCommand(getCommand());
         if (command != null) {
             BukkitTabCommand cmd = new BukkitTabCommand();
             command.setExecutor(cmd);

@@ -1,11 +1,10 @@
 package me.neznamy.tab.shared.command;
 
+import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Command processor when TAB is disabled due to broken configuration file
@@ -34,10 +33,9 @@ public class DisabledCommand {
             }
         } else {
             if (hasAdminPermission) {
-                String command = "/" + (TAB.getInstance().getPlatform().isProxy() ? TabConstants.COMMAND_PROXY : TabConstants.COMMAND_BACKEND);
                 messages.add("&m                                                                                ");
                 messages.add(" &cPlugin is disabled due to an error. Check console for more details.");
-                messages.add(" &8>> &3&l" + command + " reload");
+                messages.add(" &8>> &3&l/" + TAB.getInstance().getPlatform().getCommand() + " reload");
                 messages.add("      - &7Reloads plugin and config");
                 messages.add("&m                                                                                ");
             }

@@ -100,13 +100,14 @@ public class VelocityEventListener implements EventListener<Player> {
      */
     @Subscribe
     public void onCommand(@NotNull CommandExecuteEvent e) {
+        String command = TAB.getInstance().getPlatform().getCommand();
         BossBarManagerImpl bossBarManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
         if (bossBarManager != null && bossBarManager.getCommand().substring(1).equals(e.getCommand())) {
-            e.setResult(CommandResult.command(TabConstants.COMMAND_PROXY + " bossbar"));
+            e.setResult(CommandResult.command(command + " bossbar"));
         }
         ScoreboardManagerImpl scoreboard = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
         if (scoreboard != null && scoreboard.getCommand().substring(1).equals(e.getCommand())) {
-            e.setResult(CommandResult.command(TabConstants.COMMAND_PROXY + " scoreboard"));
+            e.setResult(CommandResult.command(command + " scoreboard"));
         }
     }
 

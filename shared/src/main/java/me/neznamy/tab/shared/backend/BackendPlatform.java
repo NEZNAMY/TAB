@@ -46,6 +46,12 @@ public interface BackendPlatform extends Platform {
         return false;
     }
 
+    @Override
+    @NotNull
+    default String getCommand() {
+        return "tab";
+    }
+
     /**
      * Registers a dummy placeholder implementation for specified identifier in case
      * no placeholder plugin was found.

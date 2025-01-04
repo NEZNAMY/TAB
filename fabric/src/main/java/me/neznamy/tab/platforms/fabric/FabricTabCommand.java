@@ -31,7 +31,7 @@ public class FabricTabCommand {
      *          Dispatcher to register command to
      */
     public void onRegisterCommands(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
-        LiteralCommandNode<CommandSourceStack> command = Commands.literal(TabConstants.COMMAND_BACKEND)
+        LiteralCommandNode<CommandSourceStack> command = Commands.literal("tab") // TODO extract it from Platform somehow
                 .executes(context -> executeCommand(context.getSource(), new String[0]))
                 .build();
         ArgumentCommandNode<CommandSourceStack, String> args = Commands.argument("args", StringArgumentType.greedyString())

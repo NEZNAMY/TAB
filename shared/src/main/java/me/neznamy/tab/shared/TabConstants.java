@@ -23,9 +23,6 @@ public class TabConstants {
     public static final String REDIS_CHANNEL_NAME = PLUGIN_NAME;
     public static final String PIPELINE_HANDLER_NAME = PLUGIN_NAME;
 
-    public static final String COMMAND_BACKEND = "tab";
-    public static final String COMMAND_PROXY = "btab";
-
     public static final int BSTATS_PLUGIN_ID_BUKKIT = 5304;
     public static final int BSTATS_PLUGIN_ID_BUNGEE = 10535;
     public static final int BSTATS_PLUGIN_ID_SPONGE = 17732;

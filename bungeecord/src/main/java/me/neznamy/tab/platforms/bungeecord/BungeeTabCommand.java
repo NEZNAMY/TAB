@@ -19,10 +19,13 @@ import java.util.Collections;
 public class BungeeTabCommand extends Command implements TabExecutor {
 
     /**
-     * Constructs new instance
+     * Constructs new instance.
+     *
+     * @param   command
+     *          Command to register
      */
-    public BungeeTabCommand() {
-        super(TabConstants.COMMAND_PROXY, null);
+    public BungeeTabCommand(@NotNull String command) {
+        super(command, null);
     }
 
     @Override

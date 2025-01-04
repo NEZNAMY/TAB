@@ -49,7 +49,7 @@ public class Sponge8TAB {
      */
     @Listener
     public void onRegisterCommands(@NotNull RegisterCommandEvent<Command.Raw> event) {
-        event.register(container, new SpongeTabCommand(), TabConstants.COMMAND_BACKEND);
+        event.register(container, new SpongeTabCommand(), "tab"); // TODO extract it from Platform somehow
     }
 
     /**

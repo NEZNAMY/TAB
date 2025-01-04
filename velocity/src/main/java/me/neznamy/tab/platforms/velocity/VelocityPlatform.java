@@ -132,7 +132,7 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     public void registerCommand() {
         CommandManager cmd = plugin.getServer().getCommandManager();
-        cmd.register(cmd.metaBuilder(TabConstants.COMMAND_PROXY).build(), new VelocityTabCommand());
+        cmd.register(cmd.metaBuilder(getCommand()).build(), new VelocityTabCommand());
     }
 
     @Override
@@ -200,5 +200,11 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     public void registerChannel() {
         plugin.getServer().getChannelRegistrar().register(MCI);
+    }
+
+    @Override
+    @NotNull
+    public String getCommand() {
+        return "btab"; // Maybe change it to vtab one day?
     }
 }
