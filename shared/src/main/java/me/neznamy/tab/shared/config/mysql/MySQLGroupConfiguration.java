@@ -22,6 +22,13 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
         this.mysql = mysql;
         mysql.execute("create table if not exists tab_groups (`group` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
         CachedRowSet crs = mysql.getCRS("select * from tab_groups");
+        if (crs.size() == 0) {
+            String command = "/" + (TAB.getInstance().getPlatform().isProxy() ? TabConstants.COMMAND_PROXY : TabConstants.COMMAND_BACKEND);
+            TAB.getInstance().getConfigHelper().startup().startupWarn("[MySQL] Using MySQL to store groups and users, however, the database is empty. " +
+                    "You can get started by uploading existing data in files using \"" + command + " mysql upload\". Further modifications can " +
+                    "be done using property commands (" + command + " <group / player> <name> <property> <value...>).");
+            return;
+        }
         while (crs.next()) {
             String group = crs.getString("group");
             if (!group.equals(TabConstants.DEFAULT_GROUP)) group = group.toLowerCase(Locale.US);
