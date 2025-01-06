@@ -255,7 +255,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onGroupChange(@NotNull TabPlayer player) {
-        if (updateProperties(player)) {
+        if (updateProperties(player) && !player.tablistData.disabled.get()) {
             updatePlayer(player, true);
         }
     }
@@ -273,6 +273,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         Runnable r = () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; // Already updated above
+                if (all.tablistData.disabled.get()) continue;
                 connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
             }
             if (redis != null) {
@@ -309,6 +310,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).tablistData.prefix.setTemporaryValue(prefix);
+        if (((TabPlayer)player).tablistData.disabled.get()) return;
         updatePlayer(((TabPlayer)player), true);
     }
 
@@ -317,6 +319,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).tablistData.name.setTemporaryValue(customName);
+        if (((TabPlayer)player).tablistData.disabled.get()) return;
         updatePlayer(((TabPlayer)player), true);
     }
 
@@ -325,6 +328,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).tablistData.suffix.setTemporaryValue(suffix);
+        if (((TabPlayer)player).tablistData.disabled.get()) return;
         updatePlayer(((TabPlayer)player), true);
     }
 
