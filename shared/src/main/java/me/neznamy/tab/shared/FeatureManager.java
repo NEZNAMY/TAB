@@ -60,16 +60,9 @@ public class FeatureManager {
     public void load() {
         for (TabFeature f : values) {
             if (!(f instanceof Loadable)) continue;
-            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-                long time = System.currentTimeMillis();
-                ((Loadable) f).load();
-                TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed load in " + (System.currentTimeMillis()-time) + "ms");
-            }, f.getFeatureName(), CpuUsageCategory.PLUGIN_LOAD);
-            if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().execute(task);
-            } else {
-                task.run();
-            }
+            long time = System.currentTimeMillis();
+            ((Loadable) f).load();
+            TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed load in " + (System.currentTimeMillis()-time) + "ms");
         }
         if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
             MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
