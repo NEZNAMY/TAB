@@ -41,6 +41,9 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
     //display condition
     private Condition displayCondition;
 
+    /** Flag tracking whether this scoreboard was made using API or not */
+    private final boolean api;
+
     //lines of scoreboard
     private final List<Line> lines = new ArrayList<>();
 
@@ -60,7 +63,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Scoreboard properties
      */
     public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull ScoreboardDefinition definition) {
-        this(manager, name, definition, false);
+        this(manager, name, definition, false, false);
         displayCondition = Condition.getCondition(definition.getDisplayCondition());
         if (displayCondition != null) {
             manager.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
@@ -78,10 +81,13 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Scoreboard properties
      * @param   dynamicLinesOnly
      *          Whether this scoreboard should only use dynamic lines or not
+     * @param   api
+     *          Whether this scoreboard was created using API or not
      */
-    public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull ScoreboardDefinition definition, boolean dynamicLinesOnly) {
+    public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull ScoreboardDefinition definition, boolean dynamicLinesOnly, boolean api) {
         this.manager = manager;
         this.name = name;
+        this.api = api;
         title = definition.getTitle();
         for (int i = 0; i< definition.getLines().size(); i++) {
             String line = definition.getLines().get(i);

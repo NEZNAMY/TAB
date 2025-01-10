@@ -71,7 +71,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             registeredScoreboards.put(scoreboardName, sb);
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(scoreboardName), sb);
         }
-        definedScoreboards = registeredScoreboards.values().toArray(new me.neznamy.tab.api.scoreboard.Scoreboard[0]);
+        definedScoreboards = registeredScoreboards.values().stream().filter(s -> !((ScoreboardImpl)s).isApi()).toArray(me.neznamy.tab.api.scoreboard.Scoreboard[]::new);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
@@ -213,9 +213,8 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     @NotNull
     public me.neznamy.tab.api.scoreboard.Scoreboard createScoreboard(@NonNull String name, @NonNull String title, @NonNull List<String> lines) {
         ensureActive();
-        me.neznamy.tab.api.scoreboard.Scoreboard sb = new ScoreboardImpl(this, name, new ScoreboardDefinition(null, title, lines), true);
+        ScoreboardImpl sb = new ScoreboardImpl(this, name, new ScoreboardDefinition(null, title, lines), true, true);
         registeredScoreboards.put(name, sb);
-        definedScoreboards = registeredScoreboards.values().toArray(new me.neznamy.tab.api.scoreboard.Scoreboard[0]);
         return sb;
     }
 
