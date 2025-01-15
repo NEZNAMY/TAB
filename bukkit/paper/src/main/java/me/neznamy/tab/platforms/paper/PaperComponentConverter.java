@@ -15,6 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 /**
  * Component converter using direct mojang-mapped code for versions 1.20.5+.
  */
@@ -35,8 +37,15 @@ public class PaperComponentConverter extends ComponentConverter {
                 if (modifier.getColor() != null) {
                     color = TextColor.fromRgb(modifier.getColor().getRgb());
                 }
-                nmsComponent.setStyle(newStyle(color, modifier.isBold(), modifier.isItalic(), modifier.isUnderlined(),
-                        modifier.isStrikethrough(), modifier.isObfuscated(), modifier.getFont()));
+                nmsComponent.setStyle(newStyle(
+                        color,
+                        modifier.getBold(),
+                        modifier.getItalic(),
+                        modifier.getUnderlined(),
+                        modifier.getStrikethrough(),
+                        modifier.getObfuscated(),
+                        modifier.getFont()
+                ));
                 for (StructuredComponent extra : component1.getExtra()) {
                     nmsComponent.append(convert(extra));
                 }
@@ -60,13 +69,14 @@ public class PaperComponentConverter extends ComponentConverter {
 
         net.kyori.adventure.text.format.TextColor color = component.color();
         Key font = component.style().font();
+        Map<TextDecoration, TextDecoration.State> decorations = component.style().decorations();
         nmsComponent.setStyle(newStyle(
                 color == null ? null : TextColor.fromRgb(color.value()),
-                component.style().hasDecoration(TextDecoration.BOLD),
-                component.style().hasDecoration(TextDecoration.ITALIC),
-                component.style().hasDecoration(TextDecoration.UNDERLINED),
-                component.style().hasDecoration(TextDecoration.STRIKETHROUGH),
-                component.style().hasDecoration(TextDecoration.OBFUSCATED),
+                getDecoration(decorations.get(TextDecoration.BOLD)),
+                getDecoration(decorations.get(TextDecoration.ITALIC)),
+                getDecoration(decorations.get(TextDecoration.UNDERLINED)),
+                getDecoration(decorations.get(TextDecoration.STRIKETHROUGH)),
+                getDecoration(decorations.get(TextDecoration.OBFUSCATED)),
                 font == null ? null : font.asString()
         ));
         for (net.kyori.adventure.text.Component extra : component.children()) {
@@ -75,9 +85,15 @@ public class PaperComponentConverter extends ComponentConverter {
         return nmsComponent;
     }
 
+    @Nullable
+    private Boolean getDecoration(@Nullable TextDecoration.State state) {
+        if (state == null || state == TextDecoration.State.NOT_SET) return null;
+        return state == TextDecoration.State.TRUE;
+    }
+
     @NotNull
-    private Style newStyle(@Nullable TextColor color, boolean bold, boolean italic, boolean underlined,
-                           boolean strikethrough, boolean obfuscated, @Nullable String font) {
+    private Style newStyle(@Nullable TextColor color, @Nullable Boolean bold, @Nullable Boolean italic, @Nullable Boolean underlined,
+                           @Nullable Boolean strikethrough, @Nullable Boolean obfuscated, @Nullable String font) {
         return Style.EMPTY
                 .withColor(color)
                 .withBold(bold)

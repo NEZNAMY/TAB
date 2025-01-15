@@ -12,11 +12,11 @@ import org.jetbrains.annotations.Nullable;
 public class ChatModifier {
 
     @Nullable private TextColor color;
-    private boolean bold;
-    private boolean italic;
-    private boolean obfuscated;
-    private boolean strikethrough;
-    private boolean underlined;
+    @Nullable private Boolean bold;
+    @Nullable private Boolean italic;
+    @Nullable private Boolean obfuscated;
+    @Nullable private Boolean strikethrough;
+    @Nullable private Boolean underlined;
     @Nullable private String font;
 
     /**
@@ -44,11 +44,11 @@ public class ChatModifier {
     @NotNull
     public String getMagicCodes() {
         StringBuilder builder = new StringBuilder();
-        if (bold) builder.append("§l");
-        if (italic) builder.append("§o");
-        if (obfuscated) builder.append("§k");
-        if (strikethrough) builder.append("§m");
-        if (underlined) builder.append("§n");
+        if (Boolean.TRUE.equals(bold)) builder.append("§l");
+        if (Boolean.TRUE.equals(italic)) builder.append("§o");
+        if (Boolean.TRUE.equals(obfuscated)) builder.append("§k");
+        if (Boolean.TRUE.equals(strikethrough)) builder.append("§m");
+        if (Boolean.TRUE.equals(underlined)) builder.append("§n");
         return builder.toString();
     }
 
@@ -59,11 +59,11 @@ public class ChatModifier {
      */
     public int getMagicCodeBitMask() {
         int mask = 0;
-        if (bold)          mask += 1;
-        if (italic)        mask += 2;
-        if (obfuscated)    mask += 4;
-        if (strikethrough) mask += 8;
-        if (underlined)    mask += 16;
+        if (Boolean.TRUE.equals(bold))          mask += 1;
+        if (Boolean.TRUE.equals(italic))        mask += 2;
+        if (Boolean.TRUE.equals(obfuscated))    mask += 4;
+        if (Boolean.TRUE.equals(strikethrough)) mask += 8;
+        if (Boolean.TRUE.equals(underlined))    mask += 16;
         return mask;
     }
 }

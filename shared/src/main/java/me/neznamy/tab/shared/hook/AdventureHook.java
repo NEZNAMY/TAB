@@ -56,7 +56,7 @@ public class AdventureHook {
         Component adventureComponent = Component.text(
                 iComponent.getText(),
                 modifier.getColor() == null ? null : TextColor.color(modifier.getColor().getRgb()),
-                decorations[modifier.getMagicCodeBitMask()]
+                decorations[modifier.getMagicCodeBitMask()] // TODO make sure null vs false behave properly
         );
 
         if (modifier.getFont() != null) {

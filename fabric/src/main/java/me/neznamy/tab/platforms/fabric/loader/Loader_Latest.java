@@ -67,11 +67,11 @@ public class Loader_Latest implements Loader {
     public Style convertModifier(@NotNull ChatModifier modifier) {
         return Style.EMPTY
                 .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
-                .withBold(modifier.isBold())
-                .withItalic(modifier.isItalic())
-                .withUnderlined(modifier.isUnderlined())
-                .withStrikethrough(modifier.isStrikethrough())
-                .withObfuscated(modifier.isObfuscated())
+                .withBold(modifier.getBold())
+                .withItalic(modifier.getItalic())
+                .withUnderlined(modifier.getUnderlined())
+                .withStrikethrough(modifier.getStrikethrough())
+                .withObfuscated(modifier.getObfuscated())
                 .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
     }
 

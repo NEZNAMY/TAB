@@ -18,6 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -142,13 +143,14 @@ public class ReflectionComponentConverter extends ComponentConverter {
 
         net.kyori.adventure.text.format.TextColor color = component.color();
         Key font = component.style().font();
+        Map<TextDecoration, TextDecoration.State> decorations = component.style().decorations();
         Component_modifier.set(nmsComponent, newStyleModern(
                 color == null ? null : ChatHexColor_fromRGB.invoke(null, color.value()),
-                component.style().hasDecoration(TextDecoration.BOLD),
-                component.style().hasDecoration(TextDecoration.ITALIC),
-                component.style().hasDecoration(TextDecoration.UNDERLINED),
-                component.style().hasDecoration(TextDecoration.STRIKETHROUGH),
-                component.style().hasDecoration(TextDecoration.OBFUSCATED),
+                getDecoration(decorations.get(TextDecoration.BOLD)),
+                getDecoration(decorations.get(TextDecoration.ITALIC)),
+                getDecoration(decorations.get(TextDecoration.UNDERLINED)),
+                getDecoration(decorations.get(TextDecoration.STRIKETHROUGH)),
+                getDecoration(decorations.get(TextDecoration.OBFUSCATED)),
                 font == null ? null : font.asString()
         ));
         for (Component extra : component.children()) {
@@ -157,16 +159,23 @@ public class ReflectionComponentConverter extends ComponentConverter {
         return nmsComponent;
     }
 
+    @Nullable
+    private Boolean getDecoration(@Nullable TextDecoration.State state) {
+        if (state == null || state == TextDecoration.State.NOT_SET) return null;
+        return state == TextDecoration.State.TRUE;
+    }
+
     @SneakyThrows
     private Object createModifierModern(@NotNull ChatModifier modifier) {
         return newStyleModern(
                 modifier.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb()),
-                modifier.isBold(),
-                modifier.isItalic(),
-                modifier.isUnderlined(),
-                modifier.isStrikethrough(),
-                modifier.isObfuscated(),
-                modifier.getFont());
+                modifier.getBold(),
+                modifier.getItalic(),
+                modifier.getUnderlined(),
+                modifier.getStrikethrough(),
+                modifier.getObfuscated(),
+                modifier.getFont()
+        );
     }
 
     @SneakyThrows
@@ -175,18 +184,18 @@ public class ReflectionComponentConverter extends ComponentConverter {
         if (modifier.getColor() != null) {
             ChatModifier_setColor.invoke(nmsModifier, Enum.valueOf(EnumChatFormat, modifier.getColor().getLegacyColor().name()));
         }
-        if (modifier.isBold()) magicCodes.get(0).set(nmsModifier, true);
-        if (modifier.isItalic()) magicCodes.get(1).set(nmsModifier, true);
-        if (modifier.isStrikethrough()) magicCodes.get(2).set(nmsModifier, true);
-        if (modifier.isUnderlined()) magicCodes.get(3).set(nmsModifier, true);
-        if (modifier.isObfuscated()) magicCodes.get(4).set(nmsModifier, true);
+        magicCodes.get(0).set(nmsModifier, modifier.getBold());
+        magicCodes.get(1).set(nmsModifier, modifier.getItalic());
+        magicCodes.get(2).set(nmsModifier, modifier.getStrikethrough());
+        magicCodes.get(3).set(nmsModifier, modifier.getUnderlined());
+        magicCodes.get(4).set(nmsModifier, modifier.getObfuscated());
         return nmsModifier;
     }
 
     @SneakyThrows
     @NotNull
-    private Object newStyleModern(@Nullable Object color, boolean bold, boolean italic, boolean underlined,
-                           boolean strikethrough, boolean obfuscated, @Nullable String font) {
+    private Object newStyleModern(@Nullable Object color, @Nullable Boolean bold, @Nullable Boolean italic, @Nullable Boolean underlined,
+                                  @Nullable Boolean strikethrough, @Nullable Boolean obfuscated, @Nullable String font) {
         if (BukkitReflection.is1_21_4Plus()) {
             return newChatModifier.newInstance(
                     color,

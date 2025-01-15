@@ -78,11 +78,11 @@ public class Loader_1_14_4 implements Loader {
         if (modifier.getColor() != null) {
             style.setColor(ChatFormatting.valueOf(modifier.getColor().getLegacyColor().name()));
         }
-        if (modifier.isBold()) style.setBold(true);
-        if (modifier.isItalic()) style.setItalic(true);
-        if (modifier.isStrikethrough()) style.setStrikethrough(true);
-        if (modifier.isUnderlined()) style.setUnderlined(true);
-        if (modifier.isObfuscated()) style.setObfuscated(true);
+        style.setBold(modifier.getBold());
+        style.setItalic(modifier.getItalic());
+        style.setStrikethrough(modifier.getStrikethrough());
+        style.setUnderlined(modifier.getUnderlined());
+        style.setObfuscated(modifier.getObfuscated());
         return style;
     }
 

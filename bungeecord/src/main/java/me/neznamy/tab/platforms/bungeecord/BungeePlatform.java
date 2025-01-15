@@ -150,11 +150,11 @@ public class BungeePlatform extends ProxyPlatform {
                 }
             }
 
-            if (modifier.isBold()) textComponent.setBold(true);
-            if (modifier.isItalic()) textComponent.setItalic(true);
-            if (modifier.isObfuscated()) textComponent.setObfuscated(true);
-            if (modifier.isStrikethrough()) textComponent.setStrikethrough(true);
-            if (modifier.isUnderlined()) textComponent.setUnderlined(true);
+            textComponent.setBold(modifier.getBold());
+            textComponent.setItalic(modifier.getItalic());
+            textComponent.setObfuscated(modifier.getObfuscated());
+            textComponent.setStrikethrough(modifier.getStrikethrough());
+            textComponent.setUnderlined(modifier.getUnderlined());
 
             textComponent.setFont(modifier.getFont());
 
