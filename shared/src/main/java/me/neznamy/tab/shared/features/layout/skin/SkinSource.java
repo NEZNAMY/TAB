@@ -1,13 +1,6 @@
 package me.neznamy.tab.shared.features.layout.skin;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.platform.TabList.Skin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +8,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract class for skin sources for getting skins.
@@ -57,6 +56,7 @@ public abstract class SkinSource {
         }
         Skin downloaded = download(skin);
         if (downloaded != null) {
+            skins.put(skin, downloaded);
             cache.put(skin, Arrays.asList(downloaded.getValue(), downloaded.getSignature()));
             file.set(path, cache);
         }
