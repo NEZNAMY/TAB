@@ -44,6 +44,7 @@ public class Texture extends SkinSource {
 
     @NotNull
     private static InputStreamReader getInputStreamReader(@NotNull String texture) throws IOException {
+        TAB.getInstance().debug("Downloading skin from https://textures.minecraft.net/texture/" + texture);
         URL url = new URL("https://api.mineskin.org/generate/url/");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestProperty("User-Agent", "ExampleApp/v1.0");

@@ -31,7 +31,9 @@ public class MineSkin extends SkinSource {
             } catch (NumberFormatException ex) {
                 type = "uuid";
             }
-            JSONObject json = getResponse("https://api.mineskin.org/get/" + type + "/" + input);
+            String url = "https://api.mineskin.org/get/" + type + "/" + input;
+            TAB.getInstance().debug("Downloading skin from " + url);
+            JSONObject json = getResponse(url);
             JSONObject data = (JSONObject) json.get("data");
             JSONObject texture = (JSONObject) data.get("texture");
             String value = (String) texture.get("value");

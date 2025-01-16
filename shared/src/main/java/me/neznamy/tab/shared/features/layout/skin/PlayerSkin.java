@@ -24,7 +24,9 @@ public class PlayerSkin extends SkinSource {
     @Nullable
     public Skin download(@NotNull String input) {
         try {
-            JSONObject json = getResponse("https://api.ashcon.app/mojang/v2/user/" + input);
+            String url = "https://api.ashcon.app/mojang/v2/user/" + input;
+            TAB.getInstance().debug("Downloading skin from " + url);
+            JSONObject json = getResponse(url);
             JSONObject textures = (JSONObject) json.get("textures");
             JSONObject raw = (JSONObject) textures.get("raw");
             String value = (String) raw.get("value");
