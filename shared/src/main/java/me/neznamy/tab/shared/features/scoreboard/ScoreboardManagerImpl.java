@@ -254,7 +254,6 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             p.scoreboardData.forcedScoreboard = null;
             me.neznamy.tab.api.scoreboard.Scoreboard sb = detectHighestScoreboard(p);
             if (sb == null) return; //no scoreboard available
-            p.scoreboardData.activeScoreboard = (ScoreboardImpl) sb;
             ((ScoreboardImpl) sb).addPlayer(p);
         }
     }
