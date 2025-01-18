@@ -63,16 +63,15 @@ public class YamlConfigurationFile extends ConfigurationFile {
     }
 
     @Override
-    public void save() {
+    public synchronized void save() {
         try {
             Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8);
             DumperOptions options = new DumperOptions();
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
             new Yaml(options).dump(values, writer);
             writer.close();
-            fixHeader();
         } catch (IOException e) {
-            TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText("Failed to save yaml file " + file.getPath() + " with content " + values.toString()));
+            TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText("Failed to save yaml file " + file.getPath() + " with content " + values.toString() + ": " + e.getMessage()));
         }
     }
 }

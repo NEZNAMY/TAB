@@ -51,7 +51,6 @@ public abstract class ConfigurationFile {
             if (source == null) throw new IllegalStateException("File does not exist and source is null");
             Files.copy(source, file.toPath());
         }
-        detectHeader();
     }
 
     /**
@@ -371,40 +370,6 @@ public abstract class ConfigurationFile {
             if (mapKey.toString().equalsIgnoreCase(key)) return mapKey.toString();
         }
         return key;
-    }
-
-    /**
-     * Detects header of a file (first lines of file starting with #).
-     *
-     * @throws  IOException
-     *          if I/O operation fails
-     */
-    private void detectHeader() throws IOException {
-        header = new ArrayList<>();
-        for (String line : Files.readAllLines(file.toPath())) {
-            if (line.startsWith("#")) {
-                header.add(line);
-            } else {
-                break;
-            }
-        }
-    }
-
-    /**
-     * Inserts header back into file. This is required after calling {@link #save()}, because
-     * it destroys the header.
-     *
-     * @throws  IOException
-     *          if I/O operation fails
-     */
-    public void fixHeader() throws IOException {
-        if (header == null) return;
-        List<String> content = new ArrayList<>(header);
-        content.addAll(Files.readAllLines(file.toPath()));
-        Files.delete(file.toPath());
-        if (file.createNewFile()) {
-            Files.write(file.toPath(), content);
-        }
     }
 
     /**
