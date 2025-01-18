@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A class representing a scoreboard configured in config
@@ -50,7 +51,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
     private boolean containsNumberFormat;
 
     //players currently seeing this scoreboard
-    private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<TabPlayer> players = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     /**
      * Constructs new instance with given parameters and registers lines to feature manager
@@ -238,6 +239,9 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      */
     public void removePlayerFromSet(@NonNull TabPlayer player) {
         players.remove(player);
+        for (Line line : lines) {
+            ((ScoreboardLine)line).removePlayerSilently(player);
+        }
     }
 
     @NotNull
