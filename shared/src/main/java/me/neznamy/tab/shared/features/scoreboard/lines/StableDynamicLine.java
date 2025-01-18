@@ -132,7 +132,15 @@ public class StableDynamicLine extends ScoreboardLine {
         initializeText(text);
         for (TabPlayer p : parent.getPlayers()) {
             p.scoreboardData.lineProperties.get(this).changeRawValue(text);
-            refresh(p, true);
+            String[] prefixSuffix = replaceText(p, true, true);
+            if (prefixSuffix.length == 0) {
+                if (text.isEmpty()) {
+                    prefixSuffix = new String[]{"", ""};
+                } else {
+                    continue;
+                }
+            }
+            updateTeam(p, prefixSuffix[0], prefixSuffix[1]);
         }
     }
 }
