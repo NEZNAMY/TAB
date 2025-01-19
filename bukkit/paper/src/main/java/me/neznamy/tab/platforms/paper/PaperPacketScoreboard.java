@@ -58,7 +58,7 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                 dummyScoreboard,
                 objective.getName(),
                 ObjectiveCriteria.DUMMY,
-                objective.getTitle().convert(player.getVersion()),
+                objective.getTitle().convert(),
                 ObjectiveCriteria.RenderType.values()[objective.getHealthDisplay().ordinal()],
                 false,
                 objective.getNumberFormat() == null ? null : objective.getNumberFormat().toFixedFormat(FixedFormat::new)
@@ -76,7 +76,7 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         net.minecraft.world.scores.Objective obj = (net.minecraft.world.scores.Objective) objective.getPlatformObjective();
-        obj.setDisplayName(objective.getTitle().convert(player.getVersion()));
+        obj.setDisplayName(objective.getTitle().convert());
         obj.setRenderType(ObjectiveCriteria.RenderType.values()[objective.getHealthDisplay().ordinal()]);
         sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE));
     }
@@ -88,7 +88,7 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                         score.getHolder(),
                         score.getObjective().getName(),
                         score.getValue(),
-                        Optional.ofNullable(score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion())), 
+                        Optional.ofNullable(score.getDisplayName() == null ? null : score.getDisplayName().convert()),
                         Optional.ofNullable(score.getNumberFormat() == null ? null : score.getNumberFormat().toFixedFormat(FixedFormat::new))
                 )
         );
@@ -131,8 +131,8 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         t.setColor(formats[team.getColor().getLegacyColor().ordinal()]);
         t.setCollisionRule(collisions[team.getCollision().ordinal()]);
         t.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
-        t.setPlayerPrefix(team.getPrefix().convert(player.getVersion()));
-        t.setPlayerSuffix(team.getSuffix().convert(player.getVersion()));
+        t.setPlayerPrefix(team.getPrefix().convert());
+        t.setPlayerSuffix(team.getSuffix().convert());
     }
 
     @Override

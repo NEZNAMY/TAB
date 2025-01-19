@@ -141,7 +141,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void setScore(@NonNull Score score) {
         packetSender.sendPacket(player, scorePacketData.setScore(score.getObjective().getName(), score.getHolder(), score.getValue(),
-                score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
+                score.getDisplayName() == null ? null : score.getDisplayName().convert(),
                 score.getNumberFormat() == null ? null : toFixedFormat(score.getNumberFormat())));
     }
 
@@ -202,7 +202,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                     emptyScoreboard,
                     objective.getName(),
                     null, // Criteria
-                    objective.getTitle().convert(player.getVersion()),
+                    objective.getTitle().convert(),
                     healthDisplays[objective.getHealthDisplay().ordinal()],
                     false, // Auto update
                     objective.getNumberFormat() == null ? null : toFixedFormat(objective.getNumberFormat())
@@ -214,7 +214,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                     emptyScoreboard,
                     objective.getName(),
                     null, // Criteria
-                    objective.getTitle().convert(player.getVersion()),
+                    objective.getTitle().convert(),
                     healthDisplays[objective.getHealthDisplay().ordinal()]
             );
         }

@@ -274,7 +274,7 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      */
     @NotNull
     private String transform(@NonNull TabComponent text, int maxLengthModern, int maxLengthLegacy) {
-        String transformed = player.getPlatform().toBukkitFormat(text, player.getVersion().supportsRGB());
+        String transformed = player.getPlatform().toBukkitFormat(text);
         if (player.getPlatform().getServerVersion().supportsRGB() && maxLengthModern < TITLE_LIMIT_MODERN) { // Scoreboard title is not stripping colors
             while (ChatColor.stripColor(transformed).length() > maxLengthModern)
                 transformed = transformed.substring(0, transformed.length()-1);

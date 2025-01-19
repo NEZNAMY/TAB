@@ -114,7 +114,7 @@ public class PaperPacketTabList extends TabListBase<Component> {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        sendPacket(new ClientboundTabListPacket(header.convert(player.getVersion()), footer.convert(player.getVersion())));
+        sendPacket(new ClientboundTabListPacket(header.convert(), footer.convert()));
     }
 
     @Override

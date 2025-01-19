@@ -71,6 +71,20 @@ public abstract class TabComponent {
     }
 
     /**
+     * Converts this component to platform's component.
+     *
+     * @return  Converted component
+     * @param   <T>
+     *          Platform's component class
+     */
+    @NotNull
+    @SuppressWarnings("unchecked")
+    public <T> T convert() {
+        if (convertedModern == null) convertedModern = TAB.getInstance().getPlatform().convertComponent(this, true);
+        return (T) convertedModern;
+    }
+
+    /**
      * Converts this component to an Adventure component.
      * @return  Converted component
      */
@@ -95,7 +109,7 @@ public abstract class TabComponent {
     @SuppressWarnings("unchecked")
     @SneakyThrows
     public <F, C> F toFixedFormat(@NotNull FunctionWithException<C, F> createFunction) {
-        if (fixedFormat == null) fixedFormat = createFunction.apply(convert(ProtocolVersion.LATEST_KNOWN_VERSION)); // Numbers formats are 1.20.3+, which is above 1.16
+        if (fixedFormat == null) fixedFormat = createFunction.apply(convert());
         return (F) fixedFormat;
     }
 

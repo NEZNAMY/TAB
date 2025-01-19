@@ -52,6 +52,6 @@ public class PacketHeaderFooter extends HeaderFooter {
     @Override
     @SneakyThrows
     public void set(@NotNull BukkitTabPlayer player, @NotNull TabComponent header, @NotNull TabComponent footer) {
-        packetSender.sendPacket(player, createPacket.apply(header.convert(player.getVersion()), footer.convert(player.getVersion())));
+        packetSender.sendPacket(player, createPacket.apply(header.convert(), footer.convert()));
     }
 }

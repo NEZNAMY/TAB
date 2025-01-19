@@ -206,12 +206,12 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        Bukkit.getConsoleSender().sendMessage("[TAB] " + toBukkitFormat(message, true));
+        Bukkit.getConsoleSender().sendMessage("[TAB] " + toBukkitFormat(message));
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        Bukkit.getConsoleSender().sendMessage("§c[TAB] [WARN] " + toBukkitFormat(message, true));
+        Bukkit.getConsoleSender().sendMessage("§c[TAB] [WARN] " + toBukkitFormat(message));
     }
 
     @Override
@@ -352,17 +352,15 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     /**
-     * Converts component to legacy string using bukkit RGB format if supported by both server and client.
+     * Converts component to string using bukkit RGB format if supported by the server.
      * If not, closest legacy color is used instead.
      *
      * @param   component
      *          Component to convert
-     * @param   rgbClient
-     *          Whether client accepts RGB colors or not.
      * @return  Converted string using bukkit color format
      */
     @NotNull
-    public String toBukkitFormat(@NotNull TabComponent component, boolean rgbClient) {
+    public String toBukkitFormat(@NotNull TabComponent component) {
         if (component instanceof SimpleComponent) {
             return ((SimpleComponent) component).getText();
         }
@@ -370,7 +368,7 @@ public class BukkitPlatform implements BackendPlatform {
             StructuredComponent iComponent = (StructuredComponent) component;
             StringBuilder sb = new StringBuilder();
             if (iComponent.getModifier().getColor() != null) {
-                if (serverVersion.supportsRGB() && rgbClient) {
+                if (serverVersion.supportsRGB()) {
                     String hexCode = iComponent.getModifier().getColor().getHexCode();
                     sb.append('§').append("x").append('§').append(hexCode.charAt(0)).append('§').append(hexCode.charAt(1))
                             .append('§').append(hexCode.charAt(2)).append('§').append(hexCode.charAt(3))
@@ -382,7 +380,7 @@ public class BukkitPlatform implements BackendPlatform {
             sb.append(iComponent.getModifier().getMagicCodes());
             sb.append(iComponent.getText());
             for (StructuredComponent extra : iComponent.getExtra()) {
-                sb.append(toBukkitFormat(extra, rgbClient));
+                sb.append(toBukkitFormat(extra));
             }
             return sb.toString();
         }

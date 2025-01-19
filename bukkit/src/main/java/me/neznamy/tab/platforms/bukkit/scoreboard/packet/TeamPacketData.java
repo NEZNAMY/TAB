@@ -224,8 +224,8 @@ public class TeamPacketData {
         ScoreboardTeam_setAllowFriendlyFire.invoke(nmsTeam, (team.getOptions() & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(nmsTeam, (team.getOptions() & 0x2) > 0);
         if (MODERN_TEAM_DATA_VERSION) {
-            ScoreboardTeam_setPrefix.invoke(nmsTeam, (Object) team.getPrefix().convert(clientVersion));
-            ScoreboardTeam_setSuffix.invoke(nmsTeam, (Object) team.getSuffix().convert(clientVersion));
+            ScoreboardTeam_setPrefix.invoke(nmsTeam, (Object) team.getPrefix().convert());
+            ScoreboardTeam_setSuffix.invoke(nmsTeam, (Object) team.getSuffix().convert());
             ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().getLegacyColor().ordinal()]);
         } else {
             String prefix = team.getPrefix().toLegacyText();

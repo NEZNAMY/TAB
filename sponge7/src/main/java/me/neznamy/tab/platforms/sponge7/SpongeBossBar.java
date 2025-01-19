@@ -42,7 +42,7 @@ public class SpongeBossBar extends SafeBossBar<ServerBossBar> {
     @NotNull
     public ServerBossBar constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         return ServerBossBar.builder()
-                .name(title.convert(player.getVersion()))
+                .name(title.convert())
                 .color(colors[color.ordinal()])
                 .overlay(styles[style.ordinal()])
                 .percent(progress)
@@ -56,7 +56,7 @@ public class SpongeBossBar extends SafeBossBar<ServerBossBar> {
 
     @Override
     public void updateTitle(@NotNull BossBarInfo bar) {
-        bar.getBossBar().setName(bar.getTitle().convert(player.getVersion()));
+        bar.getBossBar().setName(bar.getTitle().convert());
     }
 
     @Override

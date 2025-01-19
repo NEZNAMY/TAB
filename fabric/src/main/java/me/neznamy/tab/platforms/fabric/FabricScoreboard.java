@@ -36,7 +36,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         net.minecraft.world.scores.Objective obj = FabricMultiVersion.newObjective(
                 objective.getName(),
-                objective.getTitle().convert(player.getVersion()),
+                objective.getTitle().convert(),
                 RenderType.values()[objective.getHealthDisplay().ordinal()],
                 objective.getNumberFormat()
         );
@@ -53,7 +53,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         net.minecraft.world.scores.Objective obj = (net.minecraft.world.scores.Objective) objective.getPlatformObjective();
-        obj.setDisplayName(objective.getTitle().convert(player.getVersion()));
+        obj.setDisplayName(objective.getTitle().convert());
         obj.setRenderType(RenderType.values()[objective.getHealthDisplay().ordinal()]);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE));
     }
@@ -61,7 +61,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     @Override
     public void setScore(@NonNull Score score) {
         player.sendPacket(FabricMultiVersion.setScore(score.getObjective().getName(), score.getHolder(), score.getValue(),
-                score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
+                score.getDisplayName() == null ? null : score.getDisplayName().convert(),
                 score.getNumberFormat()));
     }
 
@@ -102,8 +102,8 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         t.setColor(formats[team.getColor().getLegacyColor().ordinal()]);
         t.setCollisionRule(collisions[team.getCollision().ordinal()]);
         t.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
-        t.setPlayerPrefix(team.getPrefix().convert(player.getVersion()));
-        t.setPlayerSuffix(team.getSuffix().convert(player.getVersion()));
+        t.setPlayerPrefix(team.getPrefix().convert());
+        t.setPlayerSuffix(team.getSuffix().convert());
     }
 
     @Override
