@@ -250,6 +250,8 @@ per-world-playerlist:
       - paintball
       - bedwars
 
+compensate-for-packetevents-bug: false
+
 #####################################################################
 # PROXY ONLY - THE FOLLOWING SECTION IS ONLY FOR PROXY INSTALLATION #
 #####################################################################

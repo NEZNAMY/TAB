@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -107,7 +108,7 @@ public class StableDynamicLine extends ScoreboardLine {
      * @return  array of 2 elements for prefix and suffix
      */
     private String[] split(@NonNull TabPlayer p, @NonNull String text) {
-        if (p.getVersion().getMinorVersion() >= 13) return new String[] {text, ""};
+        if (p.getVersion().getMinorVersion() >= 13 && !TAB.getInstance().getConfiguration().getConfig().isPacketEventsCompensation()) return new String[] {text, ""};
         int charLimit = Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13;
         if (text.length() > charLimit) {
             StringBuilder prefix = new StringBuilder(text);

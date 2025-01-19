@@ -221,7 +221,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         // 1.5 - 1.12.2
         Object nmsObjective = newScoreboardObjective.newInstance(emptyScoreboard, objective.getName(), IScoreboardCriteria_dummy);
         String title = objective.getTitle().toLegacyText();
-        if (player.getVersion().getMinorVersion() < 13) {
+        if (player.getVersion().getMinorVersion() < 13 || TAB.getInstance().getConfiguration().getConfig().isPacketEventsCompensation()) {
             title = cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13);
         }
         ScoreboardObjective_setDisplayName.invoke(nmsObjective, title);

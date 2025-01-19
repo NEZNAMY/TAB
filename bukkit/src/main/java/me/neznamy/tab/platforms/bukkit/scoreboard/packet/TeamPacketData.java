@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard.Team;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -230,7 +231,7 @@ public class TeamPacketData {
         } else {
             String prefix = team.getPrefix().toLegacyText();
             String suffix = team.getSuffix().toLegacyText();
-            if (clientVersion.getMinorVersion() < 13) {
+            if (clientVersion.getMinorVersion() < 13 || TAB.getInstance().getConfiguration().getConfig().isPacketEventsCompensation()) {
                 prefix = SafeScoreboard.cutTo(prefix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13);
                 suffix = SafeScoreboard.cutTo(suffix, Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13);
             }
