@@ -6,7 +6,6 @@ import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +27,7 @@ public class UpdatePlaceholder implements IncomingMessage {
         // Ignore placeholders that were not registered with this reload
         // (for example, a condition was used in config but not defined, but now it is defined).
         // It is also in bridge memory, but bridge will not return the correct value, so ignore it.
-        if (!((ProxyPlatform)TAB.getInstance().getPlatform()).getBridgePlaceholders().containsKey(identifier)) return;
+        if (!TAB.getInstance().getPlaceholderManager().getBridgePlaceholders().containsKey(identifier)) return;
 
         Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholderRaw(identifier);
         if (placeholder == null) return;

@@ -18,18 +18,12 @@ import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Abstract class containing common variables and methods
  * shared between proxies.
  */
 @Getter
 public abstract class ProxyPlatform implements Platform {
-
-    /** Placeholders which are refreshed on backend server */
-    private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
 
     @Override
     public @NotNull GroupManager detectPermissionPlugin() {
@@ -58,11 +52,10 @@ public abstract class ProxyPlatform implements Platform {
         Placeholder placeholder;
         int refresh = pl.getRefreshInterval(identifier);
         if (identifier.startsWith("%rel_")) {
-            placeholder = pl.registerRelationalPlaceholder(identifier, -1, (viewer, target) -> null);
+            placeholder = pl.registerRelationalBridgePlaceholder(identifier, refresh);
         } else {
-            placeholder = pl.registerPlayerPlaceholder(identifier, -1, player -> null);
+            placeholder = pl.registerBridgePlaceholder(identifier, refresh);
         }
-        bridgePlaceholders.put(placeholder.getIdentifier(), refresh);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             ((ProxyTabPlayer)all).sendPluginMessage(new RegisterPlaceholder(placeholder.getIdentifier(), refresh));
         }
@@ -70,7 +63,6 @@ public abstract class ProxyPlatform implements Platform {
 
     @Override
     public void registerPlaceholders() {
-        bridgePlaceholders.clear();
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.TPS, -1,
                 () -> "\"tps\" is a backend-only placeholder as the proxy does not tick anything. If you wish to display TPS of " +
                         "the server player is connected to, use placeholders from PlaceholderAPI and install TAB-Bridge for forwarding support to the proxy.");

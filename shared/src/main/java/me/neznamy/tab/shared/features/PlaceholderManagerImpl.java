@@ -56,6 +56,10 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
 
     private final CpuManager cpu;
 
+    /** Placeholders which are refreshed on backend server */
+    @Getter
+    private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
+
     /**
      * Constructs new instance.
      *
@@ -387,6 +391,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     @Override
     public @NotNull ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<String> supplier) {
         ensureActive();
+        bridgePlaceholders.remove(identifier);
         return registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
     }
 
@@ -394,6 +399,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     public @NotNull PlayerPlaceholderImpl registerPlayerPlaceholder(@NonNull String identifier, int refresh,
                                                                     @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
         ensureActive();
+        bridgePlaceholders.remove(identifier);
         return registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
     }
 
@@ -401,7 +407,22 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     public @NotNull RelationalPlaceholderImpl registerRelationalPlaceholder(
             @NonNull String identifier, int refresh, @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
         ensureActive();
+        bridgePlaceholders.remove(identifier);
         return registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
+    }
+
+    @NotNull
+    public PlayerPlaceholderImpl registerBridgePlaceholder(@NonNull String identifier, int backendRefresh) {
+        ensureActive();
+        bridgePlaceholders.put(identifier, backendRefresh);
+        return registerPlaceholder(new PlayerPlaceholderImpl(identifier, -1, player -> null));
+    }
+
+    @NotNull
+    public RelationalPlaceholderImpl registerRelationalBridgePlaceholder(@NonNull String identifier, int backendRefresh) {
+        ensureActive();
+        bridgePlaceholders.put(identifier, backendRefresh);
+        return registerPlaceholder(new RelationalPlaceholderImpl(identifier, -1, (viewer, target) -> null));
     }
 
     @Override
