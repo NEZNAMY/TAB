@@ -70,6 +70,7 @@ public abstract class ProxyPlatform implements Platform {
 
     @Override
     public void registerPlaceholders() {
+        bridgePlaceholders.clear();
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.TPS, -1,
                 () -> "\"tps\" is a backend-only placeholder as the proxy does not tick anything. If you wish to display TPS of " +
                         "the server player is connected to, use placeholders from PlaceholderAPI and install TAB-Bridge for forwarding support to the proxy.");
