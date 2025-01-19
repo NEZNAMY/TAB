@@ -24,6 +24,7 @@ public class MineSkin extends SkinSource {
     @Nullable
     public Skin download(@NotNull String input) {
         try {
+            long time = System.currentTimeMillis();
             String type;
             try {
                 Integer.parseInt(input);
@@ -31,13 +32,12 @@ public class MineSkin extends SkinSource {
             } catch (NumberFormatException ex) {
                 type = "uuid";
             }
-            String url = "https://api.mineskin.org/get/" + type + "/" + input;
-            TAB.getInstance().debug("Downloading skin from " + url);
-            JSONObject json = getResponse(url);
+            JSONObject json = getResponse("https://api.mineskin.org/get/" + type + "/" + input);
             JSONObject data = (JSONObject) json.get("data");
             JSONObject texture = (JSONObject) data.get("texture");
             String value = (String) texture.get("value");
             String signature = (String) texture.get("signature");
+            TAB.getInstance().debug("Downloaded MINESKIN skin " + input + " in " + (System.currentTimeMillis()-time) + "ms");
             return new Skin(value, signature);
         } catch (FileNotFoundException e) {
             TAB.getInstance().getConfigHelper().runtime().unknownMineSkin(input);

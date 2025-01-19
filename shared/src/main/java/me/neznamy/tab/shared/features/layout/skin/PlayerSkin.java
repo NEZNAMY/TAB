@@ -24,13 +24,13 @@ public class PlayerSkin extends SkinSource {
     @Nullable
     public Skin download(@NotNull String input) {
         try {
-            String url = "https://api.ashcon.app/mojang/v2/user/" + input;
-            TAB.getInstance().debug("Downloading skin from " + url);
-            JSONObject json = getResponse(url);
+            long time = System.currentTimeMillis();
+            JSONObject json = getResponse("https://api.ashcon.app/mojang/v2/user/" + input);
             JSONObject textures = (JSONObject) json.get("textures");
             JSONObject raw = (JSONObject) textures.get("raw");
             String value = (String) raw.get("value");
             String signature = (String) raw.get("signature");
+            TAB.getInstance().debug("Downloaded PLAYER skin " + input + " in " + (System.currentTimeMillis()-time) + "ms");
             return new Skin(value, signature);
         } catch (FileNotFoundException e) {
             TAB.getInstance().getConfigHelper().runtime().unknownPlayerSkin(input);
