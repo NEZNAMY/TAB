@@ -248,7 +248,7 @@ public class ErrorManager {
      */
     public void mineSkinDownloadError(@NotNull String id, @NotNull Throwable t) {
         printError("Failed to download skin \"" + id + "\" from MineSkin: " + t.getMessage(),
-                t, true, errorLog);
+                Collections.emptyList(), true, errorLog);
     }
 
     /**
@@ -261,7 +261,7 @@ public class ErrorManager {
      */
     public void playerSkinDownloadError(@NotNull String name, @NotNull Throwable t) {
         printError("Failed to download skin of player \"" + name + "\": " + t.getMessage(),
-                t, true, errorLog);
+                Collections.emptyList(), true, errorLog);
     }
 
     /**
@@ -274,7 +274,7 @@ public class ErrorManager {
      */
     public void textureSkinDownloadError(@NotNull String texture, @NotNull Throwable t) {
         printError("Failed to download skin from texture \"" + texture + "\": " + t.getMessage(),
-                t, true, errorLog);
+                Collections.emptyList(), true, errorLog);
     }
 
     /**
