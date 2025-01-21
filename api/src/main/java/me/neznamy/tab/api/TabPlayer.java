@@ -17,21 +17,24 @@ public interface TabPlayer {
      *
      * @return  Player's name
      */
-    @NotNull String getName();
+    @NotNull
+    String getName();
 
     /**
      * Returns player's UUID
      *
      * @return  Player's UUID
      */
-    @NotNull UUID getUniqueId();
+    @NotNull
+    UUID getUniqueId();
 
     /**
      * Returns platform-specific entity
      *
      * @return  platform's player object
      */
-    @NotNull Object getPlayer();
+    @NotNull
+    Object getPlayer();
 
     /**
      * Returns true once the player is successfully loaded (onJoin method ran through all methods)
@@ -47,7 +50,8 @@ public interface TabPlayer {
      *
      * @return  player's primary permission group
      */
-    @NotNull String getGroup();
+    @NotNull
+    String getGroup();
 
     /**
      * Temporarily overrides player's group and applies all changes coming from new group.
@@ -91,4 +95,32 @@ public interface TabPlayer {
      */
     @NotNull
     String getExpectedProfileName();
+
+
+    /**
+     * Returns name of the server the player is connected to.
+     * This requires TAB on proxy.
+     * On backend installation, this method returns {@code "N/A"}.
+     *
+     * @return  Player's server on proxy or {@code "N/A"} on backend installation
+     */
+    @NotNull
+    String getServer();
+
+    /**
+     * Returns name of the world the player is in.
+     * On proxy installation, TAB-Bridge must be installed to forward this info to the proxy.
+     * Otherwise, it will return {@code "N/A"}.
+     *
+     * @return  Player's world or {@code "N/A"} on proxy installation without TAB-Bridge installed
+     */
+    @NotNull
+    String getWorld();
+
+    /**
+     * Returns {@code true} if this player is a bedrock player, {@code false} if not.
+     *
+     * @return  {@code true} if this player is a bedrock player, {@code false} if not
+     */
+    boolean isBedrockPlayer();
 }
