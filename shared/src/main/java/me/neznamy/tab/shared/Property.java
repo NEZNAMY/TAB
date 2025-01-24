@@ -143,9 +143,6 @@ public class Property {
             }
         }
 
-        // Apply gradients that do not include placeholders to avoid applying them on every refresh
-        rawFormattedValue0 = RGBUtils.getInstance().applyCleanGradients(rawFormattedValue0);
-
         // Make \n work even if used in '', which snakeyaml does not convert to newline
         if (rawFormattedValue0.contains("\\n")) {
             rawFormattedValue0 = rawFormattedValue0.replace("\\n", "\n");

@@ -21,7 +21,7 @@ public class CMIGradient extends CommonGradient {
     }
     
     @Override
-    public String applyPattern(@NotNull String text, boolean ignorePlaceholders) {
+    public String applyPattern(@NotNull String text) {
         String replaced = text;
         if (replaced.contains("<>}")) {
             Matcher m = shortcutPattern.matcher(replaced);
@@ -31,6 +31,6 @@ public class CMIGradient extends CommonGradient {
                 replaced = replaced.replace(format, "{#" + code + "<}{#" + code + ">}");
             }
         }
-        return super.applyPattern(replaced, ignorePlaceholders);
+        return super.applyPattern(replaced);
     }
 }

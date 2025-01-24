@@ -20,13 +20,12 @@ public class CommonGradient implements GradientPattern {
     private final int endColorStartSub;
 
     @Override
-    public String applyPattern(@NotNull String text, boolean ignorePlaceholders) {
+    public String applyPattern(@NotNull String text) {
         if (!text.contains(containCheck)) return text;
         String replaced = text;
         Matcher m = pattern.matcher(replaced);
         while (m.find()) {
             String format = m.group();
-            if (ignorePlaceholders && format.contains("%")) continue;
             TextColor start = new TextColor(format.substring(startColorStart, startColorStart+6));
             String message = format.substring(messageStart, format.length()-10);
             TextColor end = new TextColor(format.substring(format.length()-endColorStartSub, format.length()-endColorStartSub+6));

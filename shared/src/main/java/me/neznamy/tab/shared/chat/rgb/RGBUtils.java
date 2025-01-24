@@ -45,26 +45,10 @@ public class RGBUtils {
     public @NotNull String applyFormats(@NotNull String text) {
         String replaced = text;
         for (GradientPattern pattern : gradients) {
-            replaced = pattern.applyPattern(replaced, false);
+            replaced = pattern.applyPattern(replaced);
         }
         for (RGBFormatter formatter : formats) {
             replaced = formatter.reformat(replaced);
-        }
-        return replaced;
-    }
-
-    /**
-     * Applies all gradient formats to text and returns it. This only affects
-     * usage where no placeholder is used inside.
-     *
-     * @param   text
-     *          original text
-     * @return  text where all gradients with static text are converted to #RRGGBB
-     */
-    public @NotNull String applyCleanGradients(@NotNull String text) {
-        String replaced = text;
-        for (GradientPattern pattern : gradients) {
-            replaced = pattern.applyPattern(replaced, true);
         }
         return replaced;
     }

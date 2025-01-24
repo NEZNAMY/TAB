@@ -14,11 +14,9 @@ public interface GradientPattern {
      *
      * @param   text
      *          text to be reformatted
-     * @param   ignorePlaceholders
-     *          Whether text containing "%" should be ignored or not
      * @return  reformatted text
      */
-    String applyPattern(@NotNull String text, boolean ignorePlaceholders);
+    String applyPattern(@NotNull String text);
 
     /**
      * Returns gradient text based on start color, text and end color
