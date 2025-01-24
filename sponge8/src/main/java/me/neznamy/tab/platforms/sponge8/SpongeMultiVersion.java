@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.util.BiFunctionWithException;
-import me.neznamy.tab.shared.util.FunctionWithException;
+import me.neznamy.tab.shared.util.function.BiFunctionWithException;
+import me.neznamy.tab.shared.util.function.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import me.neznamy.tab.shared.util.ToIntFunction;
+import me.neznamy.tab.shared.util.function.ToIntFunction;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;

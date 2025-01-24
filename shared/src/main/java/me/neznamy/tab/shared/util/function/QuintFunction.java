@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.util;
+package me.neznamy.tab.shared.util.function;
 
 import java.lang.reflect.InvocationTargetException;
 

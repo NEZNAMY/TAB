@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.paper;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.shared.util.FunctionWithException;
+import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 /**

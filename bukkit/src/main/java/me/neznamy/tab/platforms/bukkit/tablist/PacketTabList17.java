@@ -8,7 +8,7 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import me.neznamy.tab.shared.util.TriFunctionWithException;
+import me.neznamy.tab.shared.util.function.TriFunctionWithException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

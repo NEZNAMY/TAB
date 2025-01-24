@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.converter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.chat.*;
-import me.neznamy.tab.shared.util.FunctionWithException;
+import me.neznamy.tab.shared.util.function.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.util;
+package me.neznamy.tab.shared.util.function;
 
 /**
  * Represents a function that accepts an int-valued argument and produces a

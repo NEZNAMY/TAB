@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.shared.util.BiConsumerWithException;
+import me.neznamy.tab.shared.util.function.BiConsumerWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 

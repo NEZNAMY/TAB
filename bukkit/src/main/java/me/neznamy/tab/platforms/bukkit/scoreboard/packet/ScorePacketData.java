@@ -4,8 +4,8 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.util.BiFunctionWithException;
-import me.neznamy.tab.shared.util.QuintFunction;
+import me.neznamy.tab.shared.util.function.BiFunctionWithException;
+import me.neznamy.tab.shared.util.function.QuintFunction;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.Nullable;
 

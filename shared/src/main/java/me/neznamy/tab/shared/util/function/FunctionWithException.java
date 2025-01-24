@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.util;
+package me.neznamy.tab.shared.util.function;
 
 /**
  * An interface for Function which can throw an exception.

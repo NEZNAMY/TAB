@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
-import me.neznamy.tab.shared.util.ToIntFunction;
+import me.neznamy.tab.shared.util.function.ToIntFunction;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
