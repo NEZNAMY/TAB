@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.hook;
 
-import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.AdventureComponent;
 import me.neznamy.tab.shared.chat.TabComponent;
@@ -14,14 +13,28 @@ import org.jetbrains.annotations.Nullable;
  */
 public class MiniMessageHook {
 
-    /** Flag tracking whether MiniMessage is available on the server or not */
-    @Getter
-    private static final boolean available = ReflectionUtils.classExists("net.kyori.adventure.text.minimessage.MiniMessage") &&
-            ReflectionUtils.classExists("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer");
-
     /** Minimessage deserializer with disabled component post-processing */
     @Nullable
-    private static final MiniMessage mm = available ? MiniMessage.builder().postProcessor(c->c).build() : null;
+    private static final MiniMessage mm = createMiniMessage();
+
+    @Nullable
+    private static MiniMessage createMiniMessage() {
+        try {
+            if (ReflectionUtils.classExists("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer")) {
+                return MiniMessage.builder().postProcessor(c->c).build();
+            }
+        } catch (Throwable ignored) {}
+        return null;
+    }
+
+    /**
+     * Returns {@code true} if MiniMessage is available on the server, {@code false} if not.
+     *
+     * @return  {@code true} if MiniMessage is available on the server, {@code false} if not
+     */
+    public static boolean isAvailable() {
+        return mm != null;
+    }
 
     /**
      * Attempts to parse the text into an adventure component using MiniMessage syntax. If MiniMessage is
