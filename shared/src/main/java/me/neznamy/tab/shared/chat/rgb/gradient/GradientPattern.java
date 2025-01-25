@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.chat.rgb.gradient;
 
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.util.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,43 +14,10 @@ public interface GradientPattern {
      *
      * @param   text
      *          text to be reformatted
+     * @param   gradientFunction
+     *          Function for reformatting gradient to new text
      * @return  reformatted text
      */
-    String applyPattern(@NotNull String text);
-
-    /**
-     * Returns gradient text based on start color, text and end color
-     *
-     * @param   start
-     *          start color
-     * @param   text
-     *          text to be reformatted
-     * @param   end
-     *          end color
-     * @return  reformatted text
-     */
-    default String asGradient(@NotNull TextColor start, @NotNull String text, @NotNull TextColor end) {
-        //lazy support for magic codes in gradients
-        String magicCodes = EnumChatFormat.getLastColors(text);
-        String deColorized = text.substring(magicCodes.length());
-        StringBuilder sb = new StringBuilder();
-        int length = deColorized.length();
-        if (length == 1) {
-            sb.append("#");
-            sb.append(start.getHexCode());
-            sb.append(magicCodes);
-            sb.append(deColorized);
-            return sb.toString();
-        }
-        for (int i=0; i<length; i++) {
-            int red = (int) (start.getRed() + (float)(end.getRed() - start.getRed())/(length-1)*i);
-            int green = (int) (start.getGreen() + (float)(end.getGreen() - start.getGreen())/(length-1)*i);
-            int blue = (int) (start.getBlue() + (float)(end.getBlue() - start.getBlue())/(length-1)*i);
-            sb.append("#");
-            sb.append(new TextColor(red, green, blue).getHexCode());
-            sb.append(magicCodes);
-            sb.append(deColorized.charAt(i));
-        }
-        return sb.toString();
-    }
+    @NotNull
+    String applyPattern(@NotNull String text, @NotNull TriFunction<TextColor, String, TextColor, String> gradientFunction);
 }

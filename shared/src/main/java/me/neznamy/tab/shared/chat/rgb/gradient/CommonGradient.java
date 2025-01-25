@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.chat.rgb.gradient;
 
 import lombok.AllArgsConstructor;
 import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.util.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
@@ -20,7 +21,8 @@ public class CommonGradient implements GradientPattern {
     private final int endColorStartSub;
 
     @Override
-    public String applyPattern(@NotNull String text) {
+    @NotNull
+    public String applyPattern(@NotNull String text, @NotNull TriFunction<TextColor, String, TextColor, String> gradientFunction) {
         if (!text.contains(containCheck)) return text;
         String replaced = text;
         Matcher m = pattern.matcher(replaced);
@@ -29,8 +31,7 @@ public class CommonGradient implements GradientPattern {
             TextColor start = new TextColor(format.substring(startColorStart, startColorStart+6));
             String message = format.substring(messageStart, format.length()-10);
             TextColor end = new TextColor(format.substring(format.length()-endColorStartSub, format.length()-endColorStartSub+6));
-            String applied = asGradient(start, message, end);
-            replaced = replaced.replace(format, applied);
+            replaced = replaced.replace(format, gradientFunction.apply(start, message, end));
         }
         return replaced;
     }

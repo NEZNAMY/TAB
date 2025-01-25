@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
+import me.neznamy.tab.shared.util.function.TriFunction;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,35 @@ import java.util.regex.Pattern;
  * Base class for managing minecraft components.
  */
 public abstract class TabComponent {
+
+    /** Formatter to convert gradient into TAB's #RRGGBB spam */
+    private static final TriFunction<TextColor, String, TextColor, String> TABGradientFormatter = (start, text, end) -> {
+        //lazy support for magic codes in gradients
+        String magicCodes = EnumChatFormat.getLastColors(text);
+        String deColorized = text.substring(magicCodes.length());
+        StringBuilder sb = new StringBuilder();
+        int length = deColorized.length();
+        if (length == 1) {
+            sb.append("#");
+            sb.append(start.getHexCode());
+            sb.append(magicCodes);
+            sb.append(deColorized);
+            return sb.toString();
+        }
+        for (int i=0; i<length; i++) {
+            int red = (int) (start.getRed() + (float)(end.getRed() - start.getRed())/(length-1)*i);
+            int green = (int) (start.getGreen() + (float)(end.getGreen() - start.getGreen())/(length-1)*i);
+            int blue = (int) (start.getBlue() + (float)(end.getBlue() - start.getBlue())/(length-1)*i);
+            sb.append("#");
+            sb.append(new TextColor(red, green, blue).getHexCode());
+            sb.append(magicCodes);
+            sb.append(deColorized.charAt(i));
+        }
+        return sb.toString();
+    };
+
+    /** Formatter to convert RGB code to use TAB's #RRGGBB */
+    private static final Function<TextColor, String> TABRGBFormatter = color -> "#" + color.getHexCode();
 
     /** Pattern for detecting fonts */
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
@@ -214,7 +244,7 @@ public abstract class TabComponent {
 
     @NotNull
     private static List<StructuredComponent> toComponentArray(@NotNull String originalText, @Nullable String font) {
-        String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText));
+        String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText), TABGradientFormatter, TABRGBFormatter);
         List<StructuredComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         StructuredComponent component = new StructuredComponent();

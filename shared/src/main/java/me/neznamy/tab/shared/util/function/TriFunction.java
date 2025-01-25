@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.util.function;
 
 /**
- * An interface for TriFunction which can throw an exception.
+ * An interface for a function with 3 input arguments.
  * @param   <A>
  *          First function argument
  * @param   <B>
@@ -12,7 +12,7 @@ package me.neznamy.tab.shared.util.function;
  *          Function return type
  */
 @FunctionalInterface
-public interface TriFunctionWithException<A, B, C, D> {
+public interface TriFunction<A, B, C, D> {
 
     /**
      * Runs the function and returns the result
@@ -24,8 +24,6 @@ public interface TriFunctionWithException<A, B, C, D> {
      * @param   c
      *          Third argument
      * @return  Output from function
-     * @throws  ReflectiveOperationException
-     *          If reflective operation fails
      */
-    D apply(A a, B b, C c) throws ReflectiveOperationException;
+    D apply(A a, B b, C c);
 }
