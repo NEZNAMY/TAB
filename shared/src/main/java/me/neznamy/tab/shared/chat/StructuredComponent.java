@@ -52,8 +52,22 @@ public class StructuredComponent extends TabComponent {
      */
     public StructuredComponent(@NotNull String text, @NotNull List<StructuredComponent> components) {
         this.text = text;
-        if (components.isEmpty()) throw new IllegalArgumentException("Unexpected empty array of components"); //exception taken from minecraft
-        extra = components;
+        if (!components.isEmpty()) {
+            extra = components;
+        }
+    }
+
+    /**
+     * Constructs new instance with given text and color.
+     *
+     * @param   text
+     *          Component text
+     * @param   color
+     *          Text color
+     */
+    public StructuredComponent(@NotNull String text, @Nullable TextColor color) {
+        this.text = text;
+        modifier.setColor(color);
     }
 
     /**
@@ -61,7 +75,8 @@ public class StructuredComponent extends TabComponent {
      *
      * @return  list of extra components
      */
-    public @NotNull List<StructuredComponent> getExtra() {
+    @NotNull
+    public List<StructuredComponent> getExtra() {
         if (extra == null) return Collections.emptyList();
         return extra;
     }

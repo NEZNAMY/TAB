@@ -1,18 +1,17 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.config.MessageFile;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class representing a subcommand of "/tab" command
@@ -87,7 +86,7 @@ public abstract class SubCommand {
      * @param   sender
      *          player or console to send the message to
      * @param   message
-     *          the message to sent
+     *          the message to send
      */
     public void sendMessage(@Nullable TabPlayer sender, @NotNull String message) {
         if (message.isEmpty()) return;
@@ -99,19 +98,19 @@ public abstract class SubCommand {
     }
 
     /**
-     * Sends message to the command sender without colors translated
+     * Sends the message component to the player.
+     * If player is {@code null}, the message is sent to the console instead.
      *
      * @param   sender
      *          player or console to send the message to
      * @param   message
-     *          the message to sent
+     *          the message to send
      */
-    public void sendRawMessage(@Nullable TabPlayer sender, @NotNull String message) {
-        if (message.isEmpty()) return;
+    public void sendMessage(@Nullable TabPlayer sender, @NotNull TabComponent message) {
         if (sender != null) {
-            sender.sendMessage(message, false);
+            sender.sendMessage(message);
         } else {
-            TAB.getInstance().getPlatform().logInfo(new SimpleComponent(message));
+            TAB.getInstance().getPlatform().logInfo(message);
         }
     }
 

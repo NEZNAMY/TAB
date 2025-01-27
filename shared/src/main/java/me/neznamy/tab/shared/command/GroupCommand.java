@@ -1,13 +1,16 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Handler for "/tab group" subcommand
@@ -60,20 +63,20 @@ public class GroupCommand extends PropertyCommand {
     private void sendGroupInfo(@Nullable TabPlayer sender, @NotNull String group) {
         sendMessage(sender, "&f=== Group &9" + group + "&f ===");
         for (Map.Entry<String, Object> entry : TAB.getInstance().getConfiguration().getGroups().getGlobalSettings(group).entrySet()) {
-            sendRawMessage(sender, "  " + entry.getKey() + ": " + entry.getValue());
+            sendMessage(sender, "  " + entry.getKey() + ": " + entry.getValue());
         }
         for (Map.Entry<String, Map<String, Object>> entry : TAB.getInstance().getConfiguration().getGroups().getPerWorldSettings(group).entrySet()) {
             if (entry.getValue() == null) continue;
             sendMessage(sender, "&6World " + entry.getKey() + ":&e");
             for (Map.Entry<String, Object> properties : entry.getValue().entrySet()) {
-                sendRawMessage(sender, "  " + properties.getKey() + ": " + properties.getValue());
+                sendMessage(sender, "  " + properties.getKey() + ": " + properties.getValue());
             }
         }
         for (Map.Entry<String, Map<String, Object>> entry : TAB.getInstance().getConfiguration().getGroups().getPerServerSettings(group).entrySet()) {
             if (entry.getValue() == null) continue;
             sendMessage(sender, "&3Server " + entry.getKey() + ":&b");
             for (Map.Entry<String, Object> properties : entry.getValue().entrySet()) {
-                sendRawMessage(sender, "  " + properties.getKey() + ": " + properties.getValue());
+                sendMessage(sender, "  " + properties.getKey() + ": " + properties.getValue());
             }
         }
     }
