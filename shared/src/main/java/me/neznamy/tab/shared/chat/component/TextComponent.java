@@ -102,11 +102,12 @@ public class TextComponent extends TabComponent {
     private @NotNull String getFormatting() {
         StringBuilder builder = new StringBuilder();
         if (modifier.getColor() != null) {
+            builder.append("§");
             if (modifier.getColor().getLegacyColor() == EnumChatFormat.WHITE) {
                 //preventing unwanted &r → &f conversion and stopping the <1.13 client bug fix from working
-                builder.append(EnumChatFormat.RESET);
+                builder.append("r");
             } else {
-                builder.append(modifier.getColor().getLegacyColor());
+                builder.append(modifier.getColor().getLegacyColor().getCharacter());
             }
         }
         builder.append(modifier.getMagicCodes());

@@ -1,11 +1,12 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
@@ -32,7 +33,11 @@ public class BungeeTabCommand extends Command implements TabExecutor {
     public void execute(@NotNull CommandSender sender, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
-                sender.sendMessage(new TextComponent(EnumChatFormat.color(message)));
+                if (sender instanceof ProxiedPlayer) {
+                    sender.sendMessage((BaseComponent) TabComponent.fromColoredText(message).convert(ProtocolVersion.fromNetworkId(((ProxiedPlayer)sender).getPendingConnection().getVersion())));
+                } else {
+                    sender.sendMessage((BaseComponent) TabComponent.fromColoredText(message).convert());
+                }
             }
         } else {
             TabPlayer p = null;

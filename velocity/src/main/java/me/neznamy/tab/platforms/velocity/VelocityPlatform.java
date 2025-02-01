@@ -11,7 +11,6 @@ import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.TextComponent;
@@ -86,7 +85,7 @@ public class VelocityPlatform extends ProxyPlatform {
             logInfo(new TextComponent("As of version 5.0.0, TAB no longer uses TAB-Bridge to encode scoreboard packets on Velocity. " +
                     "Instead, it uses a custom made plugin that adds scoreboard API directly to Velocity, which offers better performance and reliability. " +
                     "You can download the plugin from https://github.com/NEZNAMY/VelocityScoreboardAPI/releases/. " +
-                    "Until then, the following features will not work: scoreboard-teams, belowname-objective, playerlist-objective, scoreboard", TextColor.legacy(EnumChatFormat.RED)));
+                    "Until then, the following features will not work: scoreboard-teams, belowname-objective, playerlist-objective, scoreboard", TextColor.RED));
         }
         if (plugin.getServer().getPluginManager().isLoaded("premiumvanish")) {
             new VelocityPremiumVanishHook().register();

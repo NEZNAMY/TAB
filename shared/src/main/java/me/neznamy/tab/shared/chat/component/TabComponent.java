@@ -204,7 +204,7 @@ public abstract class TabComponent {
     public TextColor getLastColor() {
         if (lastColor == null) {
             lastColor = fetchLastColor();
-            if (lastColor == null) lastColor = TextColor.legacy(EnumChatFormat.WHITE);
+            if (lastColor == null) lastColor = TextColor.WHITE;
         }
         return lastColor;
     }
@@ -242,11 +242,14 @@ public abstract class TabComponent {
      */
     @NotNull
     public String toRawText() {
-        String text = toLegacyText();
-        for (EnumChatFormat format : EnumChatFormat.VALUES) {
-            if (text.contains(format.toString())) text = text.replace(format.toString(), "");
+        StringBuilder builder = new StringBuilder();
+        if (this instanceof TextComponent) builder.append(((TextComponent)this).getText());
+        for (TabComponent extra : extra) {
+            if (extra instanceof TextComponent) {
+                builder.append(((TextComponent) extra).getText());
+            }
         }
-        return text;
+        return builder.toString();
     }
 
     /**
@@ -301,7 +304,7 @@ public abstract class TabComponent {
                 if ((c >= 'A') && (c <= 'Z')) {
                     c = (char)(c + ' ');
                 }
-                EnumChatFormat format = EnumChatFormat.getByChar(c);
+                TextColor format = TextColor.getLegacyByChar(c);
                 if (format != null) {
                     if (builder.length() > 0) {
                         component.setText(builder.toString());
@@ -311,32 +314,24 @@ public abstract class TabComponent {
                         component.modifier.setFont(font);
                         builder = new StringBuilder();
                     }
-                    switch (format) {
-                        case BOLD:
-                            component.modifier.setBold(true);
-                            break;
-                        case ITALIC:
-                            component.modifier.setItalic(true);
-                            break;
-                        case UNDERLINE:
-                            component.modifier.setUnderlined(true);
-                            break;
-                        case STRIKETHROUGH:
-                            component.modifier.setStrikethrough(true);
-                            break;
-                        case OBFUSCATED:
-                            component.modifier.setObfuscated(true);
-                            break;
-                        case RESET:
-                            component = new TextComponent();
-                            component.modifier.setColor(TextColor.legacy(EnumChatFormat.WHITE));
-                            component.modifier.setFont(font);
-                            break;
-                        default:
-                            component = new TextComponent();
-                            component.modifier.setColor(TextColor.legacy(format));
-                            component.modifier.setFont(font);
-                            break;
+                    if (format == TextColor.BOLD) {
+                        component.modifier.setBold(true);
+                    } else if (format == TextColor.ITALIC) {
+                        component.modifier.setItalic(true);
+                    } else if (format == TextColor.UNDERLINE) {
+                        component.modifier.setUnderlined(true);
+                    } else if (format == TextColor.STRIKETHROUGH) {
+                        component.modifier.setStrikethrough(true);
+                    } else if (format == TextColor.OBFUSCATED) {
+                        component.modifier.setObfuscated(true);
+                    } else if (format == TextColor.RESET) {
+                        component = new TextComponent();
+                        component.modifier.setColor(TextColor.WHITE);
+                        component.modifier.setFont(font);
+                    } else {
+                        component = new TextComponent();
+                        component.modifier.setColor(format);
+                        component.modifier.setFont(font);
                     }
                 }
             } else if (c == '#' && text.length() > i+6) {

@@ -368,7 +368,7 @@ public class BukkitPlatform implements BackendPlatform {
                         .append('§').append(hexCode.charAt(2)).append('§').append(hexCode.charAt(3))
                         .append('§').append(hexCode.charAt(4)).append('§').append(hexCode.charAt(5));
             } else {
-                sb.append(component.getModifier().getColor().getLegacyColor().getFormat());
+                sb.append('§').append(component.getModifier().getColor().getLegacyColor().getCharacter());
             }
         }
         sb.append(component.getModifier().getMagicCodes());

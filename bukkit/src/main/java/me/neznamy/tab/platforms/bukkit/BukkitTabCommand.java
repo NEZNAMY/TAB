@@ -1,8 +1,9 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,7 +24,7 @@ public class BukkitTabCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
-                sender.sendMessage(EnumChatFormat.color(message));
+                sender.sendMessage(((BukkitPlatform)TAB.getInstance().getPlatform()).toBukkitFormat(TabComponent.fromColoredText(message)));
             }
         } else {
             TabPlayer p = null;

@@ -148,7 +148,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
                 Scoreboard.CollisionRule.NEVER,
                 Collections.singletonList(fakePlayer),
                 0,
-                TextColor.legacy(EnumChatFormat.RESET)
+                TextColor.RESET
         );
         shownPlayers.add(p);
     }
@@ -254,7 +254,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
                 teamName,
                 parent.getManager().getCache().get(prefix),
                 parent.getManager().getCache().get(suffix),
-                TextColor.legacy(EnumChatFormat.RESET)
+                TextColor.RESET
         );
     }
 

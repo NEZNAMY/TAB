@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.chat.component;
 
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,8 +32,8 @@ public class SimpleTextComponent extends TextComponent {
         char[] chars = text.toCharArray();
         for (int index = chars.length - 2; index >= 0; index--) {
             if (chars[index] != '§') continue;
-            EnumChatFormat color = EnumChatFormat.getByChar(chars[index + 1]);
-            if (color != null) return TextColor.legacy(color);
+            TextColor color = TextColor.getLegacyByChar(chars[index + 1]);
+            if (color != null) return color;
         }
         return null;
     }

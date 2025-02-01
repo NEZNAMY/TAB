@@ -1,13 +1,14 @@
 package me.neznamy.tab.shared.chat;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * An enum containing all possible legacy color codes and magic codes. Also contains handy color-related methods.
  */
 @Getter
+@AllArgsConstructor
 public enum EnumChatFormat {
 
     BLACK('0', 0x000000),
@@ -33,57 +34,11 @@ public enum EnumChatFormat {
     ITALIC('o', 0),
     RESET('r', 0);
 
-    /** Creating a constant to avoid memory allocations on each request */
-    public static final EnumChatFormat[] VALUES = values();
-
     /** Character representing the color or magic code */
     private final char character;
 
-    /** Red value of this constant, 0 for magic codes */
-    private final short red;
-
-    /** Green value of this constant, 0 for magic codes */
-    private final short green;
-
-    /** Blue value of this constant, 0 for magic codes */
-    private final short blue;
-
     /** Color as a hex code, 0 for magic codes */
     private final int rgb;
-
-    /** Color symbol followed by constant's character */
-    private final String format;
-
-    /**
-     * Constructs new color instance with given character and hex code
-     *
-     * @param   character
-     *          character which the color goes by
-     * @param   rgb
-     *          hex code of the color
-     */
-    EnumChatFormat(char character, int rgb) {
-        this.character = character;
-        this.rgb = rgb;
-        format = "§" + character;
-        red = (short) ((rgb >> 16) & 0xFF);
-        green = (short) ((rgb >> 8) & 0xFF);
-        blue = (short) (rgb & 0xFF);
-    }
-
-    /**
-     * Returns enum value based on provided character or null if character is not valid
-     *
-     * @param   c
-     *          color code character (0-9, a-f, k-o, r)
-     * @return  instance from the character or null if character is not valid
-     */
-    public static @Nullable EnumChatFormat getByChar(char c) {
-        for (EnumChatFormat format : VALUES) {
-            if (format.character == c) return format;
-        }
-        return null;
-    }
 
     /**
      * Color translation method taken from bukkit, which converts '&amp;' symbol into
@@ -129,10 +84,5 @@ public enum EnumChatFormat {
             }
         }
         return result.toString();
-    }
-
-    @Override
-    public String toString() {
-        return format;
     }
 }

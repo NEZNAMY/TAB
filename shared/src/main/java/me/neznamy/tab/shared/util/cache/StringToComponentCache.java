@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.util.cache;
 
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
@@ -44,10 +43,11 @@ public class StringToComponentCache extends Cache<String, TabComponent> {
                 String mmFormatted = RGBUtils.getInstance().applyFormats(text, kyoriGradientFormatter, kyoriRGBFormatter);
 
                 // Convert legacy codes into kyori format
-                for (EnumChatFormat format : EnumChatFormat.VALUES) {
-                    if (mmFormatted.contains(format.getFormat())) {
-                        String colorName = format == EnumChatFormat.UNDERLINE ? "underlined" : format.name().toLowerCase(Locale.US);
-                        mmFormatted = mmFormatted.replace(format.getFormat(), "<" + colorName + ">");
+                for (TextColor format : TextColor.LEGACY_COLORS.values()) {
+                    String sequence = "§" + format.getLegacyColor().getCharacter();
+                    if (mmFormatted.contains(sequence)) {
+                        String colorName = format == TextColor.UNDERLINE ? "underlined" : format.getLegacyColor().name().toLowerCase(Locale.US);
+                        mmFormatted = mmFormatted.replace(sequence, "<" + colorName + ">");
                     }
                 }
 

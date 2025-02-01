@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.config.file;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.chat.component.TextComponent;
@@ -53,12 +52,12 @@ public class YamlConfigurationFile extends ConfigurationFile {
             TAB tab = TAB.getInstance();
             tab.setBrokenFile(destination.getName());
             tab.getPlatform().logWarn(new SimpleTextComponent("File " + destination + " has broken syntax."));
-            tab.getPlatform().logInfo(new TextComponent("Error message from yaml parser: " + e.getMessage(), TextColor.legacy(EnumChatFormat.GOLD)));
+            tab.getPlatform().logInfo(new TextComponent("Error message from yaml parser: " + e.getMessage(), TextColor.GOLD));
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
-                tab.getPlatform().logInfo(new TextComponent("Suggestions to fix yaml syntax:", TextColor.legacy(EnumChatFormat.LIGHT_PURPLE)));
+                tab.getPlatform().logInfo(new TextComponent("Suggestions to fix yaml syntax:", TextColor.LIGHT_PURPLE));
                 for (String suggestion : suggestions) {
-                    tab.getPlatform().logInfo(new TextComponent("- " + suggestion, TextColor.legacy(EnumChatFormat.LIGHT_PURPLE)));
+                    tab.getPlatform().logInfo(new TextComponent("- " + suggestion, TextColor.LIGHT_PURPLE));
                 }
             }
             throw e;

@@ -3,15 +3,41 @@ package me.neznamy.tab.shared.chat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * A class representing a component color, which can be either RGB or legacy code.
  */
 public class TextColor {
 
-    /** Instances from legacy colors to avoid new class initialization each time */
-    private static final TextColor[] legacyColors = Arrays.stream(EnumChatFormat.VALUES).map(TextColor::new).toArray(TextColor[]::new);
+    /** Map of legacy colors by their character */
+    public static final Map<Character, TextColor> LEGACY_COLORS = new LinkedHashMap<>();
+
+    public static final TextColor BLACK = new TextColor(EnumChatFormat.BLACK);
+    public static final TextColor DARK_BLUE = new TextColor(EnumChatFormat.DARK_BLUE);
+    public static final TextColor DARK_GREEN = new TextColor(EnumChatFormat.DARK_GREEN);
+    public static final TextColor DARK_AQUA = new TextColor(EnumChatFormat.DARK_AQUA);
+    public static final TextColor DARK_RED = new TextColor(EnumChatFormat.DARK_RED);
+    public static final TextColor DARK_PURPLE = new TextColor(EnumChatFormat.DARK_PURPLE);
+    public static final TextColor GOLD = new TextColor(EnumChatFormat.GOLD);
+    public static final TextColor GRAY = new TextColor(EnumChatFormat.GRAY);
+    public static final TextColor DARK_GRAY = new TextColor(EnumChatFormat.DARK_GRAY);
+    public static final TextColor BLUE = new TextColor(EnumChatFormat.BLUE);
+    public static final TextColor GREEN = new TextColor(EnumChatFormat.GREEN);
+    public static final TextColor AQUA = new TextColor(EnumChatFormat.AQUA);
+    public static final TextColor RED = new TextColor(EnumChatFormat.RED);
+    public static final TextColor LIGHT_PURPLE = new TextColor(EnumChatFormat.LIGHT_PURPLE);
+    public static final TextColor YELLOW = new TextColor(EnumChatFormat.YELLOW);
+    public static final TextColor WHITE = new TextColor(EnumChatFormat.WHITE);
+    public static final TextColor OBFUSCATED = new TextColor(EnumChatFormat.OBFUSCATED);
+    public static final TextColor BOLD = new TextColor(EnumChatFormat.BOLD);
+    public static final TextColor STRIKETHROUGH = new TextColor(EnumChatFormat.STRIKETHROUGH);
+    public static final TextColor UNDERLINE = new TextColor(EnumChatFormat.UNDERLINE);
+    public static final TextColor ITALIC = new TextColor(EnumChatFormat.ITALIC);
+    public static final TextColor RESET = new TextColor(EnumChatFormat.RESET);
+
+    private static final TextColor[] legacyColorArray = LEGACY_COLORS.values().toArray(new TextColor[0]);
 
     /**
      * RGB values as a single number of 3 8-bit numbers (0-255).
@@ -50,6 +76,7 @@ public class TextColor {
         rgb = legacyColor.getRgb();
         this.legacyColor = legacyColor;
         hexCode = String.format("%06X", legacyColor.getRgb());
+        LEGACY_COLORS.put(legacyColor.getCharacter(), this);
     }
 
     /**
@@ -73,7 +100,7 @@ public class TextColor {
         double minMaxDist = 9999;
         double maxDist;
         EnumChatFormat closestColor = EnumChatFormat.WHITE;
-        for (EnumChatFormat color : EnumChatFormat.VALUES) {
+        for (TextColor color : legacyColorArray) {
             int rDiff = Math.abs(color.getRed() - getRed());
             int gDiff = Math.abs(color.getGreen() - getGreen());
             int bDiff = Math.abs(color.getBlue() - getBlue());
@@ -82,7 +109,7 @@ public class TextColor {
             if (bDiff > maxDist) maxDist = bDiff;
             if (maxDist < minMaxDist) {
                 minMaxDist = maxDist;
-                closestColor = color;
+                closestColor = color.legacyColor;
             }
         }
         return closestColor;
@@ -150,13 +177,14 @@ public class TextColor {
     }
 
     /**
-     * Returns color from given legacy color
+     * Returns legacy colors based on provided character or {@code null} if character is not valid
      *
-     * @param   format
-     *          Legacy color
-     * @return  Instance from legacy color
+     * @param   c
+     *          color code character (0-9, a-f, k-o, r)
+     * @return  instance from the character or {@code null} if character is not valid
      */
-    public static TextColor legacy(@NotNull EnumChatFormat format) {
-        return legacyColors[format.ordinal()];
+    @Nullable
+    public static TextColor getLegacyByChar(char c) {
+        return LEGACY_COLORS.get(c);
     }
 }

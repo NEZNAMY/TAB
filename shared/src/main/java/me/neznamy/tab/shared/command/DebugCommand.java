@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.command;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
@@ -195,11 +194,11 @@ public class DebugCommand extends SubCommand {
         } else {
             // Do it this way to avoid sending the "§" symbol to the console to try to color the text (does not work on Velocity)
             sendMessage(sender, new TextComponent("", Arrays.asList(
-                    new TextComponent(property.getName() + ": ", TextColor.legacy(EnumChatFormat.GREEN)),
-                    new TextComponent("\"", TextColor.legacy(EnumChatFormat.YELLOW)),
-                    new TextComponent(property.getCurrentRawValue().replace('§', '&'), TextColor.legacy(EnumChatFormat.WHITE)),
-                    new TextComponent("\" ", TextColor.legacy(EnumChatFormat.YELLOW)),
-                    new TextComponent("(Source: " + property.getSource() + ")", TextColor.legacy(EnumChatFormat.GRAY))
+                    new TextComponent(property.getName() + ": ", TextColor.GREEN),
+                    new TextComponent("\"", TextColor.YELLOW),
+                    new TextComponent(property.getCurrentRawValue().replace('§', '&'), TextColor.WHITE),
+                    new TextComponent("\" ", TextColor.YELLOW),
+                    new TextComponent("(Source: " + property.getSource() + ")", TextColor.GRAY)
             )));
         }
     }

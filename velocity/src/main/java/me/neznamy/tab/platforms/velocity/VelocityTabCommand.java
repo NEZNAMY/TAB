@@ -5,9 +5,8 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -23,7 +22,7 @@ public class VelocityTabCommand implements SimpleCommand {
         CommandSource sender = invocation.source();
         if (TAB.getInstance().isPluginDisabled()) {
             for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
-                sender.sendMessage(Component.text(EnumChatFormat.color(message)));
+                sender.sendMessage(TabComponent.fromColoredText(message).toAdventure());
             }
         } else {
             TabPlayer p = null;
