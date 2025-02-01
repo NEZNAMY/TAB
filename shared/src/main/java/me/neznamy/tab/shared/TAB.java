@@ -186,7 +186,7 @@ public class TAB extends TabAPI {
             pluginDisabled = false;
             cpu.enable();
             configHelper.startup().printWarnCount();
-            platform.logInfo(new TextComponent("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", TextColor.GREEN));
+            platform.logInfo(new TextComponent("Enabled in " + (System.currentTimeMillis()-time) + "ms", TextColor.GREEN));
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {
             platform.logWarn(new TextComponent("Did not enable due to a broken configuration file.", TextColor.RED));
