@@ -64,6 +64,18 @@ public class Loader_Latest implements Loader {
 
     @Override
     @NotNull
+    public Component newTranslatableComponent(@NotNull String text) {
+        return Component.translatable(text);
+    }
+
+    @Override
+    @NotNull
+    public Component newKeybindComponent(@NotNull String key) {
+        return Component.keybind(key);
+    }
+
+    @Override
+    @NotNull
     public Style convertModifier(@NotNull ChatModifier modifier) {
         return Style.EMPTY
                 .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))

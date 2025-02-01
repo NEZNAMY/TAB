@@ -71,6 +71,30 @@ public interface Loader {
     }
 
     /**
+     * Creates new translatable component using given text.
+     *
+     * @param   text
+     *          Text to translate
+     * @return  Text component with given text
+     */
+    @NotNull
+    default Component newTranslatableComponent(@NotNull String text) {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
+
+    /**
+     * Creates new keybind component using given text.
+     *
+     * @param   key
+     *          Key bind
+     * @return  Text component with given text
+     */
+    @NotNull
+    default Component newKeybindComponent(@NotNull String key) {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
+
+    /**
      * Converts TAB's ChatModifier class to Minecraft Style class.
      *
      * @param   modifier

@@ -195,6 +195,32 @@ public class FabricMultiVersion {
     }
 
     /**
+     * Creates new translatable component using given text.
+     *
+     * @param   text
+     *          Component text
+     * @return  Text component with given text
+     */
+    @NotNull
+    public static Component newTranslatableComponent(@NotNull String text) {
+        if (serverVersion.getMinorVersion() >= 19) return loaderLatest.newTranslatableComponent(text);
+        return loader1_14_4.newTranslatableComponent(text);
+    }
+
+    /**
+     * Creates new keybind component using given text.
+     *
+     * @param   key
+     *          Key bind
+     * @return  Text component with given text
+     */
+    @NotNull
+    public static Component newKeybindComponent(@NotNull String key) {
+        if (serverVersion.getMinorVersion() >= 19) return loaderLatest.newKeybindComponent(key);
+        return loader1_14_4.newKeybindComponent(key);
+    }
+
+    /**
      * Sends message to command source.
      *
      * @param   source

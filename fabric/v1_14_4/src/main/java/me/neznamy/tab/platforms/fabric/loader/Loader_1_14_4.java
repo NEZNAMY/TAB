@@ -18,9 +18,7 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket.PlayerUpdate;
@@ -69,6 +67,18 @@ public class Loader_1_14_4 implements Loader {
     @NotNull
     public Component newTextComponent(@NotNull String text) {
         return new TextComponent(text);
+    }
+
+    @Override
+    @NotNull
+    public Component newTranslatableComponent(@NotNull String text) {
+        return new TranslatableComponent(text);
+    }
+
+    @Override
+    @NotNull
+    public Component newKeybindComponent(@NotNull String key) {
+        return new KeybindComponent(key);
     }
 
     @Override
