@@ -2,10 +2,10 @@ package me.neznamy.tab.platforms.sponge8;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandCause;
@@ -36,7 +36,7 @@ public class SpongeTabCommand implements Command.Raw {
             boolean hasAdminPermission = cause.hasPermission(TabConstants.Permission.COMMAND_ALL);
             List<String> messages = TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission);
             for (String message : messages) {
-                cause.sendMessage(Identity.nil(), LegacyComponentSerializer.legacySection().deserialize(message));
+                cause.sendMessage(Identity.nil(), TabComponent.fromColoredText(message).toAdventure());
             }
             return CommandResult.success();
         }

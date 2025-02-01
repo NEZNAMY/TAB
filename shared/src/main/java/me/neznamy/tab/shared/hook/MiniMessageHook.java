@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.hook;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,11 +18,10 @@ public class MiniMessageHook {
     @Nullable
     private static MiniMessage createMiniMessage() {
         try {
-            if (ReflectionUtils.classExists("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer")) {
-                return MiniMessage.builder().postProcessor(c->c).build();
-            }
-        } catch (Throwable ignored) {}
-        return null;
+            return MiniMessage.builder().postProcessor(c -> c).build();
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     /**
