@@ -9,12 +9,12 @@ This feature can be configured in **config.yml** under **per-world-playerlist** 
 To use it, you need TAB installed on bukkit server. This feature is not available on BungeeCord.
 
 # Configuration
-| Option name | Default value | Description |
-| ------------- | ------------- | ------------- |
-| enabled | false | Enables / Disables the feature. |
-| allow-bypass-permission | false | If enabled, players with `tab.bypass` permission will see everyone in tablist despite this feature enabled. |
-| ignore-effect-in-worlds | *List* | List of worlds where players will see everyone in tablist, not just players in the same world / world group |
-| shared-playerlist-world-groups | *Map* | See [Grouping playerlist from multiple worlds](#grouping-playerlist-from-multiple-worlds) |
+| Option name                    | Default value | Description                                                                                                 |
+|--------------------------------|---------------|-------------------------------------------------------------------------------------------------------------|
+| enabled                        | false         | Enables / Disables the feature.                                                                             |
+| allow-bypass-permission        | false         | If enabled, players with `tab.bypass` permission will see everyone in tablist despite this feature enabled. |
+| ignore-effect-in-worlds        | *List*        | List of worlds where players will see everyone in tablist, not just players in the same world / world group |
+| shared-playerlist-world-groups | *Map*         | See [Grouping playerlist from multiple worlds](#grouping-playerlist-from-multiple-worlds)                   |
 
 ## Grouping playerlist from multiple worlds
 In case you want multiple worlds to share playerlist despite this option enabled, create a group and put world names there. The default example

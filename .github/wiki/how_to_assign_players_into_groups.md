@@ -2,7 +2,7 @@
 * [About](#about)
 * [Option 1: Primary group from permission plugin](#option-1-primary-group-from-permission-plugin)
 * [Option 2: Permission nodes](#option-2-permission-nodes)
-* [Taking groups from backend servers when TAB is on BungeeCord](#taking-groups-from-backend-servers-when-tab-is-on-bungeecord)
+* [Taking groups from backend servers when TAB is on proxy](#taking-groups-from-backend-servers-when-tab-is-on-proxy)
 
 ## About
 TAB uses groups to assign properties (such as tabprefix) and sort players in tablist (if sorting by groups). You have 2 ways of configuring primary groups of players in TAB.
@@ -12,13 +12,17 @@ First option hooks into your permission plugin and takes groups from it. Therefo
 If your permission plugin is not supported, you can use [Option 2](#option-2-permission-nodes).
 
 ## Option 1: Primary group from permission plugin
-This is the default method and recommended. TAB will ask your permission plugin for player's primary group.  
-To use it, keep `assign-groups-by-permissions: false` in your config.
+This is the default method and recommended.
+TAB will ask your permission plugin for player's primary group.
+There are 2 simple steps to this:
+* Keep `assign-groups-by-permissions: false` in your config
+* Put players into groups in your permission plugin
+> [!CAUTION]
+> If assigning players into multiple groups, make sure their weights are correct
+> (for luckperms /lp group \<group\> setweight \<number\>).
 
-Put players into groups in your permission plugin
-(remember to configure weights - for luckperms /lp group \<group\> setweight \<number\>).
-
-**Verify** group using `/tab debug <player>`. It should say `Primary permission group: <your group>`.
+> [!TIP]
+> Verify player's group using `/tab debug <player>`. It should say `Primary permission group: <your group>`.
 
 ## Option 2: Permission nodes
 Instead of taking whole groups, TAB will check for permission nodes and assign groups based on the highest permission.
@@ -31,9 +35,14 @@ Instead of taking whole groups, TAB will check for permission nodes and assign g
    #2 - if a player has permission for more than one group, the list will be used to pick the correct one
    (the one higher in the list).
 
-**Remember that OP = all permissions!** That's the whole point of OP function. To grant all permissions. In that case, you need to negate permissions in your permission plugin for other groups which are higher than player's wanted group (depending on your permission plugin it can be achieved using `-tab.group.groupname` or setting the permission value to false).
+> [!WARNING]
+> Remember that OP = all permissions!
+> That's the whole point of OP function.
+> To grant all permissions.
+> In that case,
+> you need to negate permissions in your permission plugin for other groups which are higher than player's wanted group.
 
-# Taking groups from backend servers when TAB is on BungeeCord
+# Taking groups from backend servers when TAB is on proxy
 By default, TAB takes groups from the permission plugin installed on the same server instance.
 In the case of proxy installation, groups are by default taken from the proxy.
 To see how is your proxy permission plugin configured, use its respective command

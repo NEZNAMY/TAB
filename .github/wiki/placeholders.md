@@ -102,11 +102,11 @@ Full list of placeholders:
 | %tab_tagprefix% | Current tagprefix with replaced placeholders |
 | %tab_tagsuffix% | Current tagsuffix with replaced placeholders |
 | %tab_customtabname% | Current customtabname with replaced placeholders |
-| %tab_tabprefix_raw% | Raw tabprefix containing unparsed placeholders |
-| %tab_tabsuffix_raw% | Raw tabsuffix containing unparsed placeholders |
-| %tab_tagprefix_raw% | Raw tagprefix containing unparsed placeholders |
-| %tab_tagsuffix_raw% | Raw tagsuffix containing unparsed placeholders |
-| %tab_customtabname_raw% | Raw customtabname containing unparsed placeholders |
+| %tab_tabprefix_raw% | Raw tabprefix containing raw placeholders |
+| %tab_tabsuffix_raw% | Raw tabsuffix containing raw placeholders |
+| %tab_tagprefix_raw% | Raw tagprefix containing raw placeholders |
+| %tab_tagsuffix_raw% | Raw tagsuffix containing raw placeholders |
+| %tab_customtabname_raw% | Raw customtabname containing raw placeholders |
 | %tab_scoreboard_name% | Returns name of player's currently displayed scoreboard or empty string if none is displayed due to no display condition being met |
 | %tab_scoreboard_visible% | "Enabled" if visible, "Disabled" if not |
 | %tab_bossbar_visible% | "Enabled" if visible, "Disabled" if not |
@@ -156,19 +156,28 @@ Configured refresh intervals and CPU usage of placeholders can be checked using 
 # Placeholder is not working
 When using a placeholder, you should know if it's a [TAB's internal placeholder](#internal-placeholders) or a [PlaceholderAPI placeholder](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders). If you don't, that's the problem.
 
-**Note:** Remember that using `%` symbol will mess up placeholder starts and ends, breaking all placeholders after it.
-To make the symbol display correctly without messing up placeholders, use `%%` to display the symbol.  
-**Example:** `Sale 100% OFF! %some_placeholder%` -> `Sale 100%% OFF! %some_placeholder%`.
+> [!CAUTION]
+> Remember that using `%` symbol will mess up placeholder starts and ends, breaking all placeholders after it.
+> To make the symbol display correctly without messing up placeholders, use `%%` to display the symbol.  
+> **Example:** `Sale 100% OFF! %some_placeholder%` -> `Sale 100%% OFF! %some_placeholder%`.
 
 ## Internal placeholder is not working
-All TAB's internal placeholders are listed above. Some of them are bukkit only (meaning they won't work on bungeecord) and some are bungee only. **Trying to use a bukkit-only placeholder on bungeecord will not work.**  
-If you want to use those, [set up PlaceholderAPI support on bungeecord](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) and find their PlaceholderAPI equivalent. A large portion of those are included on [PlaceholderAPI's wiki](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders).  
-For example, you can use %vault_prefix% instead of %vault-prefix%, %player_health% instead of %health% and so on.
+All TAB's internal placeholders are listed above.
+Some of them are bukkit only (meaning they won't work on bungeecord) and some are bungee only.
+> [!IMPORTANT]
+> Trying to use a bukkit-only placeholder on bungeecord will not work.
+> If you want to use those,
+> [set up PlaceholderAPI support on bungeecord](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)
+> and find their PlaceholderAPI equivalent.
+> For example, you can use %vault_prefix% instead of %vault-prefix%,
+> %player_health_rounded% instead of %health% and so on.
 
 ## PlaceholderAPI placeholder is not working
 If you have TAB installed on bungeecord, make sure you [set up PlaceholderAPI support on bungeecord](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) as there is no other way to retrieve data from technically a different server.
 
-If you have TAB on bukkit or the previous step did not work, make sure it works when using `/papi parse me <placeholder>`. If it does not work, the issue is not on TAB's end.
+> [!TIP]
+> Use `/papi parse me <placeholder>` to check if the placeholder is working.
+> If it does not work, the issue is not on TAB's end.
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*

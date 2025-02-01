@@ -49,7 +49,7 @@ Commands have required permissions associated with them.
 #### Names for each command type
 * player: Supports both player name and raw uuid. Player doesn't need to be online.
 * playeruuid: Requires name of an online player. Equal to using `player` with player's uuid.
-* group: Uses group names from permission plugin. `_DEFAULT_` is used for default settings for all groups.
+* group: Using group names from permission plugin. `_DEFAULT_` is used for default settings for all groups.
 
 ## /tab \<player/group/playeruuid\> \<name\> remove
 * **Permission:** `tab.remove`
@@ -133,7 +133,7 @@ Commands have required permissions associated with them.
 
 ## /tab parse \<player\> \<text\>
 * **Permission:** `tab.parse`
-* **Description:** Replaces all placeholders (both the plugin's internal ones, and those from PlaceholderAPI if it is installed) in the given `text`. It can be used to test if a placeholder works as expected.
+* **Description:** Replaces all placeholders (both the plugin's internal ones, and those from PlaceholderAPI if it is installed) in the given `text`. It can be used to verify if a placeholder works as expected.
 
 # Additional permissions
 * `tab.admin` - Allows the player to execute all commands.

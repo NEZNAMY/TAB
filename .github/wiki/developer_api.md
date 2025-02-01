@@ -26,7 +26,7 @@ For Maven users, you can add the API dependency like this:
 <dependency>
     <groupId>com.github.NEZNAMY</groupId>
     <artifactId>TAB-API</artifactId>
-    <version>5.0.3</version>
+    <version>5.0.5</version>
     <scope>provided</scope>
 </dependency>
  ```
@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.NEZNAMY:TAB-API:5.0.3'
+    compileOnly 'com.github.NEZNAMY:TAB-API:5.0.5'
 }
 ```
 
@@ -51,7 +51,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.NEZNAMY", "TAB-API", "5.0.3")
+    compileOnly("com.github.NEZNAMY", "TAB-API", "5.0.5")
 }
 ```
 

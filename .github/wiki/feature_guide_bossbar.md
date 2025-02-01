@@ -61,8 +61,8 @@ A number from 0 to 100. Accepts decimals.
 ![image](https://user-images.githubusercontent.com/6338394/196031770-2208848c-8e38-44cc-aa49-c86427160cab.png)  
 If you want to show the progress of a placeholder's value relative to a maximum one, you can use the [Math Expansion](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders#math) from PlaceholderAPI and use a placeholder like this one: `%math_{placeholder_current_value}/{placeholder_max_value}*100%` or `%math_{placeholder_current_value}/<max_value>*100%` if your max value is fixed.
 
-Notes:  
-Replace the text in between the `{}` with the actual placeholder you want to use and `<max_value>` with a valid number
+> [!NOTE]
+> Replace the text in between the `{}` with the actual placeholder you want to use and `<max_value>` with a valid number
 (i.e., 20).  
 You cannot use the `%placeholder%` format inside the math placeholder.
 
@@ -107,12 +107,12 @@ You can further use this placeholder in progress, for example,
 using Math expansion from PlaceholderAPI, such as `%math_{tab_placeholder_countdown}/<total time>*100%`.
 
 ## Additional settings
-| Option name | Default value | Description |
-| ------------- | ------------- | ------------- |
-| enabled | false | Enables / Disables the feature |
-| toggle-command | /bossbar | A command to toggle bossbar visibility for player running the command. This command requires `tab.bossbar.toggle` permission. <br />**Note:** This command will not appear in command auto-complete, because it's not a real registered command. Registered commands must be defined in plugin jar directly and cannot be dynamic. If you want to solve this, you can try getting a dummy private plugin made which registers that command. |
-| remember-toggle-choice | false | When enabled, disabling bossbar using `toggle-command` is remembered between reloads and restarts. |
-| hidden-by-default | false | When enabled, bossbar will automatically be hidden until toggle command is used. |
+| Option name            | Default value | Description                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| enabled                | false         | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                              |
+| toggle-command         | /bossbar      | A command to toggle bossbar visibility for player running the command. This command requires `tab.bossbar.toggle` permission. <br />**Note:** This command will not appear in command auto-complete, because it's not a real registered command. Registered commands must be defined in plugin jar directly and cannot be dynamic. If you want to solve this, you can try getting a dummy private plugin made which registers that command. |
+| remember-toggle-choice | false         | When enabled, disabling bossbar using `toggle-command` is remembered between reloads and restarts.                                                                                                                                                                                                                                                                                                                                          |
+| hidden-by-default      | false         | When enabled, bossbar will automatically be hidden until toggle command is used.                                                                                                                                                                                                                                                                                                                                                            |
 
 # Limitations
 * Does not support newlines. If you want to display more lines, you'll need to create multiple bossbars.
@@ -121,11 +121,14 @@ using Math expansion from PlaceholderAPI, such as `%math_{tab_placeholder_countd
 # Additional info
 ## Additional note 1 - Hiding bar itself
 If you want to hide the bossbar itself and only show text, this is possible, but not from the plugin's side.
-You'll need to create a custom resource pack where the bar doesn't show up and only the text does.
+You'll need to create a custom resource pack where the bar is invisible.
 Then, you need to force your players to get the resource pack.
 
 ## Additional note 2 - Not hiding on server switch
-When under a BungeeCord network and having TAB installed on backend server and switching to another server, the bossbar will not hide. This is because BungeeCord makes it look like a world switch to the client. To avoid this, the only way is to install TAB on BungeeCord and disable bossbar on that server.
+When under a proxy network and having TAB installed on backend server and switching to another server,
+the bossbar will not hide.
+This is because BungeeCord makes it look like a world switch to the client.
+To avoid this, the only way is to install TAB on BungeeCord and disable bossbar on that server.
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*

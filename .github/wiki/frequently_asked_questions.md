@@ -112,15 +112,11 @@ When using the symbol in configuration using \u format, remember to use `""` in 
 ## #16 - Is MiniMessage supported?
 Kind of.
 MiniMessage support **is** included; however, this doesn't mean it is guaranteed to work.
-Here are a few reasons why it may not work for you:
-* MiniMessage library must be included in your server software. TAB does not include this library.
-  * It **is** included in Paper 1.16.5 and higher, Velocity and Sponge 8.
-  * It **is not** included in Spigot, any server software for 1.16.4 and lower, BungeeCord (and any of its forks), Sponge 7 and Fabric.
-* You may not use any legacy color codes (&) in the text where you want MiniMessage support. If you use them, MiniMessage parser will throw an error. Therefore, if trying to use both legacy colors and MiniMessage syntax, MiniMessage syntax will not work.
-* A plugin/mod might be shading an outdated/incomplete version of Adventure without relocating it, and java class loader might make TAB use the wrong source of the duplicated library.
+MiniMessage library must be included in your server software.
+TAB does not include this library.
+* It **is** included in **Paper 1.18.2** and higher, **Velocity** and **Sponge 8**.
+* It **is not** included in **Spigot**, any server software for 1.18.1 and lower, **BungeeCord**, **Sponge 7** and **Fabric**.
 
-This list is not final.
-There might still be other reasons why MiniMessage won't work for you, which are not known yet.
 If you believe MiniMessage should be supported on your server but doesn't work, open a bug report.
 
 ## #17 - Is it possible to show the number of players in a specific group, similar to staffonline placeholder?

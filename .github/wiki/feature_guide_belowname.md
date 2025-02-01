@@ -28,14 +28,14 @@ The feature's properties are displayed as `[score]` + space + `title` (no, the s
 * `fancy-value` for 1.20.3+ (will show `fancy-value-default` on NPCs)
 
 # Configuration
-| Option name | Default value | Description |
-| ------------- | ------------- | ------------- |
-| enabled | true | Enables / Disables the feature |
-| value | %health% | [1.20.2-] An integer from -2147483648 to 2147483647, doesn't support decimal values. The number is always white. Supports placeholders with player-specific output, such as player health. Only visible on 1.20.2 and lower. <br/> **Note**: Even if you only support 1.20.3+, you still need to configure this value to properly evaluate to a number, because the value is still sent to the client (just not displayed). You can set it to `0` for simplicity. |
-| fancy-value | &c%health% | [1.20.3+] Any text, supports placeholders with per-player output. Only visible on 1.20.3+. |
-| fancy-value-default | NPC | [1.20.3+] Default display for all player entities. Plugin uses the value above for every real player, therefore this default value will only appear on player entities which are not actual players, a.k.a. NPCs. Only visible on 1.20.3+. |
-| title | Health | Text displayed after `value`. It is formally called scoreboard title, which is displayed on all player entities and value is shared on all players and therefore not bound to specific players, which makes it unable to display the value per-player. It should only contain static text or placeholders which return same value for all players. All inserted placeholders are parsed for the player viewing the text. This is intentional to allow advanced configuration with conditions for per-world values for example. |
-| disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. |
+| Option name         | Default value         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+|---------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| enabled             | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| value               | %health%              | [1.20.2-] An integer from -2147483648 to 2147483647, doesn't support decimal values. The number is always white. Supports placeholders with player-specific output, such as player health. Only visible on 1.20.2 and lower. <br/> **Note**: Even if you only support 1.20.3+, you still need to configure this value to properly evaluate to a number, because the value is still sent to the client (just not displayed). You can set it to `0` for simplicity.                                                              |
+| fancy-value         | &c%health%            | [1.20.3+] Any text, supports placeholders with per-player output. Only visible on 1.20.3+.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| fancy-value-default | NPC                   | [1.20.3+] Default display for all player entities. Plugin uses the value above for every real player, therefore this default value will only appear on player entities which are not actual players, a.k.a. NPCs. Only visible on 1.20.3+.                                                                                                                                                                                                                                                                                     |
+| title               | Health                | Text displayed after `value`. It is formally called scoreboard title, which is displayed on all player entities and value is shared on all players and therefore not bound to specific players, which makes it unable to display the value per-player. It should only contain static text or placeholders which return same value for all players. All inserted placeholders are parsed for the player viewing the text. This is intentional to allow advanced configuration with conditions for per-world values for example. |
+| disable-condition   | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever.                                                                                                                                                                                                                                                                                                                            |
 
 # Additional Info
 ## Additional note 1 - Copying nametag visibility rule
@@ -64,12 +64,12 @@ This is how you can achieve it using the following popular NPC plugins:
 # Tips & Tricks
 ## Tip 1 - Heart symbol
 If you want to show health of players and display a heart symbol as text, you can use this one: `❤`.
-Make sure you [save config in UTF-8 encoding](https://github.com/NEZNAMY/TAB/wiki/How-to-save-the-config-in-UTF8-encoding),
-so it's loaded correctly.
 ```
 belowname-objective:
   title: "&4❤"
 ```
+> [!IMPORTANT]
+> Make sure your config is saved in UTF-8 encoding to properly read the heart symbol.
 
 ## Tip 2 - Displaying health as 0-10 or in %
 If you want health to display health as 0-10 instead of 0-20, you can achieve it with PlaceholderAPI:
@@ -77,10 +77,11 @@ If you want health to display health as 0-10 instead of 0-20, you can achieve it
 * `%math_0_{player_health}*5%` for 0-100
 
 # Limitations
-* The format is a **[score] + space + shared title**, where [score] is either a white number (1.20.2-) or any text (1.20.3+). No, the space cannot be removed.
-* The title is the same on all players, therefore, it cannot be personalized (such as player's faction). Only the [score] can be per-player.
+* [1.5 - 1.12.2] Title length is limited to 32 characters (including color codes).
+* [1.5 - 1.20.2] `value` is limited to a white number.
+* The format is a **[score] + space + shared title**. No, the space cannot be removed.
+* The title is the same on all players, therefore, it cannot be personalized (such as player's faction). Only [score] can be per-player.
 * It appears on all entities of player type. **This includes player NPCs.**
-* Title length is limited to 32 characters on <1.13
 
 # Examples
 ## Example 1 - Per-world values
@@ -105,7 +106,10 @@ conditions:
     true: "Text to display in world world2" # Player is in world world2, display the text
     false: "Text to display in other worlds" # Player is not in any of the 2 worlds
 ```
-**WARNING: DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG! INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE, HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!!!**
+> [!WARNING]
+> DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG!
+> INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE,
+> HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!
 
 Finally, use this condition as value in `fancy-value`:
 ```
@@ -115,7 +119,11 @@ belowname-objective:
 If you are under 1.20.3 and want to make `value` and `title` conditional,
 create two condition chains, one for each value and use them.
 
-*Note: This is just an example, the plugin is not limited to displaying different values only per world. If you want per server values on BungeeCord, use %server% with server names. If you want WorldGuard regions, use %worldguard_region_name% with region names. This works for any placeholder offered by the plugin or by PlaceholderAPI.*
+> [!NOTE]
+> This is just an example, the plugin is not limited to displaying different values only per world.
+> If you want per server values on BungeeCord, use %server% with server names.
+> If you want WorldGuard regions, use %worldguard_region_name% with region names.
+> This works for any placeholder offered by the plugin or by PlaceholderAPI.
 
 ## Example 2 - Hiding `title` for 1.20.3+ players
 1.20.3 has replaced `value` field,
@@ -139,7 +147,10 @@ conditions:
   true: "" # Show empty value for 1.20.3+
   false: "Some text to display"
 ```
-**WARNING: DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG! INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE, HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!!!**
+> [!WARNING]
+> DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG!
+> INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE,
+> HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!
 ```
 belowname-objective:
   title: "%condition:version%"

@@ -119,14 +119,14 @@ All values fully support [TAB's internal placeholders](https://github.com/NEZNAM
 The number of placeholders is not limited, and they can be used in combination with static text as well.
 
 ## Additional settings
-| Option name | Default value | Description |
-| ------------- | ------------- | ------------- |
-| enabled | true | Enables / Disables the feature |
-| enable-collision | true | Controls collision rule. Available values are: <br />- `true` - Collision will be enabled permanently. <br />- `false` - Collision will be disabled permanently. <br /> - *Conditional expression* - Collision will be enabled if player meets the condition (for example `%world%=world` will result in collision only being enabled for players in world `world`). <br /> - *Condition name* - Uses name of a [defined condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for a player to have collision enabled. |
-| invisible-nametags | false| When enabled, everyone will have invisible nametag all the time. Option to hide nametags was added in minecraft **1.8**, therefore it will not work on 1.7 and lower. |
-| anti-override | true | While enabled, prevents other plugins from assigning online players into teams and making TAB not work correctly. They should be configured to not use teams, however many users fail to disable features in other plugins that they don't want, making this option required. Some plugins don't even say they use teams to achieve their goals. Did you know even Paper uses teams? |
-| can-see-friendly-invisibles | false | Controlling value of the team flag. It allows you to see invisible players in the same team as transparent instead of completely invisible. Since TAB places each player into an individual team, this option will only take effect in combination with plugins that spawn a dummy clone of the player (sit or disguise plugins). |
-| disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. |
+| Option name                 | Default value         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|-----------------------------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| enabled                     | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| enable-collision            | true                  | Controls collision rule. Available values are: <br />- `true` - Collision will be enabled permanently. <br />- `false` - Collision will be disabled permanently. <br /> - *Conditional expression* - Collision will be enabled if player meets the condition (for example `%world%=world` will result in collision only being enabled for players in world `world`). <br /> - *Condition name* - Uses name of a [defined condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for a player to have collision enabled. |
+| invisible-nametags          | false                 | When enabled, everyone will have invisible nametag all the time. Option to hide nametags was added in minecraft **1.8**, therefore it will not work on 1.7 and lower.                                                                                                                                                                                                                                                                                                                                                                                                     |
+| anti-override               | true                  | While enabled, prevents other plugins from assigning online players into teams and making TAB not work correctly. They should be configured to not use teams, however many users fail to disable features in other plugins that they don't want, making this option required. Some plugins don't even say they use teams to achieve their goals. Did you know even Paper uses teams?                                                                                                                                                                                      |
+| can-see-friendly-invisibles | false                 | Controlling value of the team flag. It allows you to see invisible players in the same team as transparent instead of completely invisible. Since TAB places each player into an individual team, this option will only take effect in combination with plugins that spawn a dummy clone of the player (sit or disguise plugins).                                                                                                                                                                                                                                         |
+| disable-condition           | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever.                                                                                                                                                                                                                                                                                                                                                                       |
 
 # Tips & Tricks
 If you want TAB to only take prefixes/suffixes from the permission plugin,
@@ -138,9 +138,9 @@ _DEFAULT_:
 ```
 
 # Limitations
-* Prefix/suffix length is limited to 16 characters (including color codes) on <1.13. There is no reachable limit on 1.13+.
+* [1.5 - 1.12.2] Prefix/suffix length is limited to 16 characters (including color codes).
+* [1.13+] The name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
 * The name cannot be effectively changed and the plugin doesn't offer it.
-* Since 1.13, the name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
 * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
 * The same value manages name color and glow color, which means they cannot be different.
 
@@ -202,7 +202,11 @@ To get the original value set by the plugin based on configuration:
 * `NameTagManager#getOriginalPrefix(TabPlayer)`
 * `NameTagManager#getOriginalSuffix(TabPlayer)`
 
-**Note**: These values are only temporary, meaning they won't get saved anywhere and will get reset on player quit or plugin reload. If you wish to save these values into file, use [commands](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-playergroupplayeruuid-name-property-value-options).
+> [!NOTE]
+> These values are only temporary,
+> meaning they won't get saved anywhere and will get reset on player quit or plugin reload.
+> If you wish to save these values into file,
+> use [commands](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-playergroupplayeruuid-name-property-value-options).
 
 ## Collision
 * `NameTagManager#getCollisionRule(TabPlayer)` - Returns forced collision rule using the API, `null` if no value was forced and player follows the configuration.

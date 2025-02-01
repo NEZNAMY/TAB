@@ -1,7 +1,7 @@
 # About
 When TAB is installed on BungeeCord, the plugin has very limited access to information. It is unable to retrieve internal server data, as well as hook into backend plugins, because it's a different server.  
 Bridge is a backend plugin that sends this data to the proxy, allowing TAB to work better when installed on BungeeCord.  
-You can download it from [GitHub](https://github.com/NEZNAMY/TAB-Bridge/releases) or [Spigot](https://www.spigotmc.org/resources/83966).  
+You can download it from [GitHub](https://github.com/NEZNAMY/TAB-Bridge/releases) or [Spigot](https://www.spigotmc.org/resources/83966).
 
 # Installation
 Installation is as simple as it can be.

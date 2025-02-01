@@ -32,7 +32,7 @@ It is compiled with Java 8 and therefore supports any version of 8 and above.
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>
-            <td>✔ (1.9<sup>1</sup> - 1.21.3)</td>
+            <td>✔ (1.9<sup>1</sup> - 1.21.4)</td>
         </tr>
     </tbody>
     <tbody>
@@ -91,7 +91,9 @@ so you can always safely update to new version/build of your proxy software if t
 ❌ = Completely missing
 
 # Plugin hooks
-In order to enhance user experience, TAB hooks into other plugins for better experience. This set of plugins is different for each platform based on their availability. Some are available on all platforms, some only in a few.
+To enhance user experience, TAB hooks into other plugins for better experience.
+This set of plugins is different for each platform based on their availability.
+Some are available on all platforms, some only in a few.
 ## All platforms
 [**Floodgate**](https://github.com/GeyserMC/Floodgate) - For properly detecting bedrock players to adapt features for the best possible user experience.  
 [**LuckPerms**](https://github.com/LuckPerms/LuckPerms) - Detecting permission groups of players for per-group settings.  
@@ -100,12 +102,14 @@ In order to enhance user experience, TAB hooks into other plugins for better exp
 ## Bukkit
 [**LibsDisguises**](https://github.com/libraryaddict/LibsDisguises) - Detecting disguised players to disable collision to avoid endless push by colliding with own copy created by LibsDisguises.  
 [**PlaceholderAPI**](https://github.com/PlaceholderAPI/PlaceholderAPI) - Allows users to use its placeholders inside TAB.  
-[**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PremiumVanish's vanish levels instead of using a basic vanish compatibility system.  
+[**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system.  
 [**Vault**](https://github.com/milkbowl/Vault) - Detecting permission groups of players for per-group settings.
 
 ## BungeeCord
-[**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PremiumVanish's vanish levels instead of using a basic vanish compatibility system.  
-[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) - Communicating with other proxies to properly display visuals on players on another proxy.
+[**PremiumVanish**](https://www.spigotmc.org/resources/14404) -
+Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system.  
+[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) -
+Communicating with other proxies to properly display visuals on players on another proxy.
 
 ## Fabric
 [**fabric-permissions-api**](https://github.com/lucko/fabric-permissions-api) - Supporting permission nodes instead of OP levels.
@@ -114,9 +118,12 @@ In order to enhance user experience, TAB hooks into other plugins for better exp
 *None*
 
 ## Velocity
-[**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PV's vanish levels instead of using a basic vanish compatibility system.  
-[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) - Communicating with other proxies to properly display visuals on players on another proxy.  
-[**VelocityScoreboardAPI**](https://github.com/NEZNAMY/VelocityScoreboardAPI) - Sending scoreboard packets (scoreboard-teams, belowname-objective, playerlist-objective, scoreboard)
+[**PremiumVanish**](https://www.spigotmc.org/resources/14404) -
+Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system.  
+[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) -
+Communicating with other proxies to properly display visuals on players on another proxy.  
+[**VelocityScoreboardAPI**](https://github.com/NEZNAMY/VelocityScoreboardAPI) -
+Sending scoreboard packets (scoreboard-teams, belowname-objective, playerlist-objective, scoreboard)
 
 # Compatibility issues
 * **Glow plugins** will fail to apply glow color correctly. Check [How to make the plugin compatible with glow plugins](https://github.com/NEZNAMY/TAB/wiki/How-to-make-TAB-compatible-with-glow-plugins) for more information.
@@ -124,6 +131,7 @@ In order to enhance user experience, TAB hooks into other plugins for better exp
 * **SkBee** (skript addon) sends empty scoreboard, causing TAB's to not show sometimes.
 * **Waterfall**'s `disable_tab_list_rewrite: true` **may** cause tablist to use offline UUIDs while TAB expects online uuids, causing various problems (most notably tablist formatting not working). Checking for this option is not an option either, because tablist rewrite might still be enabled despite being disabled (don't ask how, I have no idea). Set the option to `false` if you are experiencing issues.
 * **ViaVersion on BungeeCord and TAB on backend** acts like a client-sided protocol hack, making it impossible for TAB to know player's real version and causing issues related to it, see [Per-version experience](https://github.com/NEZNAMY/TAB/wiki/Additional-information#per-version-experience) for more info. Avoid this combination. Either install ViaVersion on all backend servers instead or install TAB on BungeeCord instead.
+* **ViaVersion**'s `hide-scoreboard-numbers` config option makes [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)'s `value` and [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)'s `value` not visible for 1.20.3+ clients on <1.20.3 server when enabled. When using this setup, you'll need to keep the option disabled (sadly scoreboard numbers will not be hidden, solving this would require an implementation on ViaVersion's side).
 * **Custom clients / resource packs** - Unofficially modified minecraft clients often tend to break things. Just Lunar client has tons of bugs that can be reproduced with TAB. Resource packs may also contain modifications you are not aware of, making things not look the way you want them to. If you are experiencing any visual issue and are using a custom client or resource pack, try it with a clean vanilla client. If it works there, it's an issue with the client / resource pack and TAB cannot do anything about it.  
   For example, here are a few bugs in LunarClient / FeatherClient that you may run into when using TAB:
   * They add their icon to players in tablist, but don't widen the entries. This results in player names overlapping with latency bar. You can avoid this by configuring some spaces in tabsuffix.
@@ -133,4 +141,4 @@ In order to enhance user experience, TAB hooks into other plugins for better exp
   * They don't respect nametag visibility rule, showing their own nametag using F5 even if set to invisible by the plugin.
   * When the scoreboard is set to use all 0s, lines are rendered in opposite order on 1.20.3+.
   * They don't display 1.20.3+ NumberFormat feature in scoreboard objectives.
-* **Random Spigot/BungeeCord forks** - All safe patches for improving security & performance are present in well-known public opensource projects, such as Paper, Purpur or Waterfall. Using a random overpriced closed-source (and probably obfuscated) fork from BuiltByBit may not be safe, since they likely include unsafe patches that may break compatibility with plugins in an attempt to fix things that are not broken. Before spending your entire budget on such fork, reconsider it first. Paper (and its forks) is a performance-oriented fork used by 2/3 of all MC servers worldwide, while the rest is still stuck on Spigot. It is highly unlikely your needs are so specific you need every single "improvement" anyone can come up with. If you need a feature, Purpur is a feature-oriented fork. Together with plugins you should achieve what you are looking for.
+* **Random Spigot/BungeeCord forks** - All safe patches for improving security & performance are present in well-known public opensource projects, such as Paper, Purpur or Waterfall. Using a random overpriced closed-source (and probably obfuscated) fork from BuiltByBit may not be safe, since they likely include unsafe patches that may break compatibility with plugins in an attempt to fix things that are not broken. Before spending your entire budget on such a fork, reconsider it first. Paper (and its forks) is a performance-oriented fork used by 2/3 of all MC servers worldwide, while the rest is still stuck on Spigot. It is highly unlikely your needs are so specific you need every single "improvement" anyone can come up with. If you need a feature, Purpur is a feature-oriented fork. Together with plugins you should achieve what you are looking for.

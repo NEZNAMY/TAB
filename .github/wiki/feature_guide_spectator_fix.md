@@ -18,9 +18,9 @@ prevent-spectator-effect:
 ``` 
 
 # Permissions
-| Permission  | Description |
-| ------------- | ------------- |
-| `tab.spectatorbypass`  | Players with this permission will see spectators the usual way despite this feature being enabled. If you don't want players (or even staff members) to bypass this feature, don't give them that permission.  |
+| Permission            | Description                                                                                                                                                                                                   |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `tab.spectatorbypass` | Players with this permission will see spectators the usual way despite this feature being enabled. If you don't want players (or even staff members) to bypass this feature, don't give them that permission. |
 
 # Additional info
 ## Additional note 1 - Seeing yourself still as spectator

@@ -21,18 +21,20 @@
 # Enabling
 To enable sorting, you must have either [Nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) or [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) (or both) enabled.
 
-To **verify** you enabled sorting, run `/tab debug`. It will say `Sorting type:` followed by anything except `DISABLED`.
+> [!TIP]
+> To verify you enabled sorting, run `/tab debug`. It will say `Sorting type:` followed by anything except `DISABLED`.
 
 # Methods of sorting
-Below are all the different methods that you can use to sort players in TAB.
+Below are all the different methods that you can use to sort players.
 
 ## GROUPS
 This is the default and recommended method. Players will be sorted by their primary permission group, according to the configured group list.
 
 First, put your players into groups in your permission plugin.
 All the ways to do it can be found
-at [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups).  
-**Verify** player's group using `/tab debug <player>`.
+at [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups).
+> [!TIP]
+> Verify player's group using `/tab debug <player>`.
 It should say `Primary permission group:` followed by group you configured.
 If not, you did not assign players into groups correctly.
 
@@ -42,7 +44,8 @@ scoreboard-teams:
   sorting-types:
     - "GROUPS:owner,admin,mod,default"
 ```
-**Verify** configured sorting priority of players using `/tab debug <player>`.
+> [!TIP]
+> Verify configured sorting priority of players using `/tab debug <player>`.
 
 It should show a message like this:  
 ![image](https://github.com/NEZNAMY/TAB/assets/6338394/095d8523-e8c0-4eff-8935-b0b8e6e0d5ff)
@@ -52,8 +55,12 @@ If a group is not in the list, you will get the following:
 If that's the case, you forgot to add that group into the list.
 
 ## PERMISSIONS
-**This method is not recommended, as many low quality servers give OP to every staff member and don't know how to negate permissions, making this option not function as intended. If you think you can pull it off, and sorting by primary group is not an option, you can give this a try.  
-This method is, however, handy when trying to sort specific players **without** assigning them into a group.**
+> [!CAUTION]
+> This method is not recommended,
+> as many low quality servers give OP to every staff member and don't know how to negate permissions,
+> making this option not function as intended.
+> If you think you can pull it off, and sorting by primary group is not an option, you can give this a try.  
+This method is, however, handy when trying to sort specific players without assigning them into a group.
 
 This method will sort players based on permission nodes they have.  
 Place all of your permissions in to a comma separated list **in order of priority**.  
@@ -64,6 +71,8 @@ scoreboard-teams:
   sorting-types:
     - "PERMISSIONS:my.permission.1,my.permission.2,my.permission.3"
 ```
+> [!TIP]  
+> Verify sorting permissions of a player using `/tab debug <player>`
 
 ## PLACEHOLDER
 This method sorts players using the output of a placeholder and comparing that to pre-defined values.  
@@ -164,9 +173,9 @@ you will need to use outputs respectively when defining sorting as well.
 Although you can theoretically use as many sorting types as you want, there are still strict limits set by mojang. See more about these limits and how to avoid them as much as possible at [Additional note 1 - Limitations](#additional-note-1---limitations).
 
 # Additional settings
-| Option name | Default value | Description |
-| ------------- | ------------- | ------------- |
-| case-sensitive-sorting | true | When enabled, players will be sorted as A-Z a-z. When disabled, Aa-Zz. |
+| Option name            | Default value | Description                                                            |
+|------------------------|---------------|------------------------------------------------------------------------|
+| case-sensitive-sorting | true          | When enabled, players will be sorted as A-Z a-z. When disabled, Aa-Zz. |
 
 # Additional info
 ## Additional note 1 - Limitations

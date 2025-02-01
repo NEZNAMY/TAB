@@ -22,7 +22,10 @@ or using in-game command `/tab group _DEFAULT_ customtabname %essentials_nicknam
 
 This example uses `%essentials_nickname%` placeholder from Essentials. Giving it to `_DEFAULT_` group keyword makes it a default value for all groups that do not override this property.
 
-**WARNING: Do NOT put nickname placeholder into tabprefix! You will end up with double names!**
+> [!CAUTION]
+> Do NOT put nickname placeholder into tabprefix!
+> You will end up with double names!
+> Put the nickname placeholder into customtabname instead.
 
 # Nametag
 Nametags are more complicated because they consist of player's username, team prefix and team suffix.

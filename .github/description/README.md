@@ -1,7 +1,9 @@
 # About
-This folder contains the plugin's description as advertised on various marketplaces which use various syntax's (bbcode, markdown).  
+This folder contains the plugin's description as advertised on various marketplaces which use various syntaxes
+(bbcode, markdown).  
   
-While this is not accurate folder to have this stored in (".github"), it is the closest if we don't want to create a folder for this in the root.  
+While this is not an accurate folder to have this stored in (`.github`),
+it is the closest if we don't want to create a folder for this in the root.  
   
 The file structure of this folder is as following:  
 

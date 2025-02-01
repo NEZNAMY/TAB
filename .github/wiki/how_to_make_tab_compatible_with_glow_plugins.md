@@ -11,11 +11,10 @@ Glow color is managed by scoreboard teams, which also handle nametag formatting 
 
 ## Solution
 The solution to get around this issue is to use the glow plugin's placeholder (if it has any).  
-This placeholder has to be at the end of the player's `tagprefix` as it has to be the last color in the prefix.  
-**NOTE:
-For Minecraft version 1.9 -
-1.12 the prefix can't be longer than 14 characters due to [16-character limit](https://github.com/NEZNAMY/TAB/wiki/Limitations#name-tags) total
-(glow placeholder adds 2 characters - `&` and the color code)**
+This placeholder has to be at the end of the player's `tagprefix` as it has to be the last color in the prefix.
+> [!WARNING]
+> For Minecraft versions below 1.13 the prefix can't be longer than 14 characters due to [16-character limit](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags#limitations) total
+(glow placeholder adds 2 characters - `&` and the color code)
 
 **Example:**
 This example uses the placeholder of the [eGlow](https://www.spigotmc.org/resources/63295/) plugin.

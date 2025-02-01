@@ -16,7 +16,7 @@ However, plugins hooking into TAB may break when you use such ways to (re)load i
 When running a network, you have 3 options:
 * Installing TAB only on the proxy (recommended)
 * Installing TAB on all backend servers instead
-* Installing TAB everywhere and disabling features so they don't conflict (not recommended)
+* Installing TAB everywhere and disabling features, so they don't conflict (not recommended)
 
 See below for more information regarding each way.
 
@@ -24,11 +24,13 @@ See below for more information regarding each way.
 This is the recommended setup.
 Put the plugin into the plugins folder of the proxy server and restart it.  
 **Recommended**:
-Install [TAB-Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) on your backend servers for PlaceholderAPI support and more.  
+Install [TAB-Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) on your **backend servers** for PlaceholderAPI support and more.  
 **Recommended**:
-If you are using **Velocity**, install [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/) plugin for scoreboard-related features to work.
+If you are using **Velocity**,
+install [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/) plugin **on the proxy** for scoreboard-related features to work.
 
-**Note**: With proxy installation use **/btab** command instead of **/tab**.
+> [!NOTE]  
+> With proxy installation, use **/btab** command instead of **/tab**.
 
 Advantages of proxy installation compared to installing on all backend servers instead:
 * Can use the [Global player list](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) and [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) can work with all players connected to the proxy

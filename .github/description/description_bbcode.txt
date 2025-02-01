@@ -1,8 +1,8 @@
 [IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_About.png[/IMG]
 TAB is an all-in-one plugin for displaying information in various places, which aims to outperform all similar plugins in terms of features, compatibility and performance.
-The compact configuration allows you to get the plugin to work the way you want regardless of how simple or complex you want it to be or how experienced you are. Default configuration already contains useful values and examples to give you a better understanding and get you started quickly with instant results. The extensive [URL='https://github.com/NEZNAMY/TAB/wiki']wiki[/URL] answers any and all of your questions.
+The compact configuration allows you to get the plugin to work the way you want regardless of how simple or complex you want it to be or how experienced you are. The default configuration already contains useful values and examples to give you a better understanding and get you started quickly with instant results. The extensive [URL='https://github.com/NEZNAMY/TAB/wiki']wiki[/URL] answers any of your questions.
 
-[IMG]https://img.shields.io/badge/Release-5.0.3-blue.svg[/IMG]
+[IMG]https://img.shields.io/badge/Release-5.0.5-blue.svg[/IMG]
 [IMG]https://img.shields.io/badge/Minecraft-1.5%20--%201.21.4-blue.svg[/IMG]
 [IMG]https://img.shields.io/badge/Java-8+-blue.svg[/IMG]
 [URL='https://github.com/NEZNAMY/TAB'][IMG]https://img.shields.io/badge/GitHub-Source%20code-yellow.svg[/IMG][/URL]
@@ -57,7 +57,7 @@ Before you consider requiring assistance, check out the [URL='https://github.com
 [CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_PlayerlistObjective.png[/IMG]
 [IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveNumber.png[/IMG]
 [IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveHealth.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveFancy.png[/IMG] [/CENTER]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveFancy.png[/IMG][/CENTER]
 [LIST]
 [*]Display value of any numeric placeholder or hearts
 [*]Display any text on 1.20.3+
@@ -97,7 +97,7 @@ Before you consider requiring assistance, check out the [URL='https://github.com
 [*]Multiple layouts based on conditions
 [/LIST]
 [CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Scoreboard.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_ScoreboardLegacy.png[/IMG][/CENTER]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_ScoreboardComparison.png[/IMG][/CENTER]
 [LIST]
 [*]Display up to 15 lines
 [*]Option to show 0 (or any other static number) in every line instead of 1-15
@@ -127,12 +127,6 @@ Before you consider requiring assistance, check out the [URL='https://github.com
 [*]Create custom boss bars, toggle bossbar visibility, announce bossbar
 [*]... and more!
 [/LIST]
-
-
-
-
-
-
 [LIST]
 [*]Placeholder support
 [LIST]
