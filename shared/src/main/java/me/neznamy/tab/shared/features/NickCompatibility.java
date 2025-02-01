@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.belowname.BelowName;

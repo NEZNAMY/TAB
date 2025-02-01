@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;

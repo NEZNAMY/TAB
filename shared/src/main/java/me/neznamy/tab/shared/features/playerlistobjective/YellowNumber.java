@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -40,7 +40,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
 
     /** Scoreboard title which is unused in java */
-    private static final TabComponent TITLE = new SimpleComponent("Java Edition is better"); // Unused by this objective slot (on Java, only visible on Bedrock)
+    private static final TabComponent TITLE = new SimpleTextComponent("Java Edition is better"); // Unused by this objective slot (on Java, only visible on Bedrock)
 
     @Getter
     private final StringToComponentCache cache = new StringToComponentCache("Playerlist Objective", 1000);
@@ -208,7 +208,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     }
 
     private void register(@NotNull TabPlayer player) {
-        player.getScoreboard().registerObjective(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME, TITLE, configuration.getHealthDisplay(), new SimpleComponent(""));
+        player.getScoreboard().registerObjective(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME, TITLE, configuration.getHealthDisplay(), new SimpleTextComponent(""));
     }
 
     /**

@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.Limitations;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;

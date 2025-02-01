@@ -6,7 +6,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.Limitations;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.function.TriFunctionWithException;
 import org.jetbrains.annotations.NotNull;

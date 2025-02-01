@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import net.md_5.bungee.protocol.packet.BossBar;
 import org.jetbrains.annotations.NotNull;

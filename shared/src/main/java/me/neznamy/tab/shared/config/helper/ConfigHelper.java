@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.config.helper;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

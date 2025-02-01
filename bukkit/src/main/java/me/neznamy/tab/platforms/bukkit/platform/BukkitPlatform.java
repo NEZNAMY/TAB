@@ -20,7 +20,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.tab.shared.chat.*;
+import me.neznamy.tab.shared.chat.component.*;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -38,7 +38,6 @@ import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
@@ -233,7 +232,7 @@ public class BukkitPlatform implements BackendPlatform {
             command.setExecutor(cmd);
             command.setTabCompleter(cmd);
         } else {
-            logWarn(TabComponent.fromColoredText("Failed to register command, is it defined in plugin.yml?"));
+            logWarn(new SimpleTextComponent("Failed to register command, is it defined in plugin.yml?"));
         }
     }
 
@@ -361,29 +360,30 @@ public class BukkitPlatform implements BackendPlatform {
      */
     @NotNull
     public String toBukkitFormat(@NotNull TabComponent component) {
-        if (component instanceof SimpleComponent) {
-            return ((SimpleComponent) component).getText();
-        }
-        if (component instanceof StructuredComponent) {
-            StructuredComponent iComponent = (StructuredComponent) component;
-            StringBuilder sb = new StringBuilder();
-            if (iComponent.getModifier().getColor() != null) {
-                if (serverVersion.supportsRGB()) {
-                    String hexCode = iComponent.getModifier().getColor().getHexCode();
-                    sb.append('§').append("x").append('§').append(hexCode.charAt(0)).append('§').append(hexCode.charAt(1))
-                            .append('§').append(hexCode.charAt(2)).append('§').append(hexCode.charAt(3))
-                            .append('§').append(hexCode.charAt(4)).append('§').append(hexCode.charAt(5));
-                } else {
-                    sb.append(iComponent.getModifier().getColor().getLegacyColor().getFormat());
-                }
+        StringBuilder sb = new StringBuilder();
+        if (component.getModifier().getColor() != null) {
+            if (serverVersion.supportsRGB()) {
+                String hexCode = component.getModifier().getColor().getHexCode();
+                sb.append('§').append("x").append('§').append(hexCode.charAt(0)).append('§').append(hexCode.charAt(1))
+                        .append('§').append(hexCode.charAt(2)).append('§').append(hexCode.charAt(3))
+                        .append('§').append(hexCode.charAt(4)).append('§').append(hexCode.charAt(5));
+            } else {
+                sb.append(component.getModifier().getColor().getLegacyColor().getFormat());
             }
-            sb.append(iComponent.getModifier().getMagicCodes());
-            sb.append(iComponent.getText());
-            for (StructuredComponent extra : iComponent.getExtra()) {
-                sb.append(toBukkitFormat(extra));
-            }
-            return sb.toString();
         }
-        return LegacyComponentSerializer.builder().hexColors().useUnusualXRepeatedCharacterHexFormat().build().serialize(((AdventureComponent)component).getComponent());
+        sb.append(component.getModifier().getMagicCodes());
+        if (component instanceof TextComponent) {
+            sb.append(((TextComponent) component).getText());
+        } else if (component instanceof TranslatableComponent) {
+            sb.append(((TranslatableComponent) component).getKey());
+        } else if (component instanceof KeybindComponent) {
+            sb.append(((KeybindComponent) component).getKeybind());
+        } else {
+            throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
+        }
+        for (TabComponent extra : component.getExtra()) {
+            sb.append(toBukkitFormat(extra));
+        }
+        return sb.toString();
     }
 }

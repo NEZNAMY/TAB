@@ -9,7 +9,7 @@ import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.SortingManager;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.api.tablist.layout.LayoutManager;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;

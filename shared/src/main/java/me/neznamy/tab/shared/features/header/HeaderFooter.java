@@ -5,7 +5,7 @@ import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.header.HeaderFooterConfiguration.HeaderFooterPair;
 import me.neznamy.tab.shared.features.types.*;
@@ -124,7 +124,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
-            p.getTabList().setPlayerListHeaderFooter(new SimpleComponent(""), new SimpleComponent(""));
+            p.getTabList().setPlayerListHeaderFooter(new SimpleTextComponent(""), new SimpleTextComponent(""));
         } else {
             sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
         }

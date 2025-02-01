@@ -9,7 +9,10 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.tab.shared.chat.*;
+import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TranslatableComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -21,11 +24,6 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.KeybindComponent;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TranslatableComponent;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Platform implementation for Fabric
@@ -139,58 +136,27 @@ public class FabricPlatform implements BackendPlatform {
     @Override
     @NotNull
     public Component convertComponent(@NotNull TabComponent component, boolean modern) {
-        if (component instanceof SimpleComponent component1) {
-            return FabricMultiVersion.newTextComponent(component1.getText());
-        }
-        if (component instanceof StructuredComponent component1) {
-            Component nmsComponent = FabricMultiVersion.newTextComponent(component1.getText());
-            FabricMultiVersion.setStyle(nmsComponent, FabricMultiVersion.convertModifier(component1.getModifier()));
-            for (StructuredComponent extra : component1.getExtra()) {
-                FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra, modern));
-            }
-            return nmsComponent;
-        }
-        if (component instanceof AdventureComponent) {
-            return fromAdventure(((AdventureComponent) component).getComponent());
-        }
-        throw new UnsupportedOperationException("Unknown component implementation: " + component.getClass().getName());
-    }
-
-    @NotNull
-    private Component fromAdventure(@NotNull net.kyori.adventure.text.Component component) {
+        // Component type
         Component nmsComponent;
         if (component instanceof TextComponent) {
-            nmsComponent = FabricMultiVersion.newTextComponent(((TextComponent) component).content());
+            nmsComponent = FabricMultiVersion.newTextComponent(((TextComponent) component).getText());
         } else if (component instanceof TranslatableComponent) {
-            nmsComponent = FabricMultiVersion.newTranslatableComponent(((TranslatableComponent)component).key());
+            nmsComponent = FabricMultiVersion.newTranslatableComponent(((TranslatableComponent) component).getKey());
         } else if (component instanceof KeybindComponent) {
-            nmsComponent = FabricMultiVersion.newKeybindComponent(((KeybindComponent)component).keybind());
+            nmsComponent = FabricMultiVersion.newKeybindComponent(((KeybindComponent) component).getKeybind());
         } else {
-            throw new IllegalStateException("Cannot convert " + component.getClass().getName());
+            throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         }
 
-        net.kyori.adventure.text.format.TextColor color = component.color();
-        Key font = component.style().font();
-        Map<TextDecoration, TextDecoration.State> decorations = component.style().decorations();
-        FabricMultiVersion.setStyle(nmsComponent, FabricMultiVersion.convertModifier(new ChatModifier(
-                color == null ? null : new TextColor(color.red(), color.green(), color.blue()),
-                getDecoration(decorations.get(TextDecoration.BOLD)),
-                getDecoration(decorations.get(TextDecoration.ITALIC)),
-                getDecoration(decorations.get(TextDecoration.UNDERLINED)),
-                getDecoration(decorations.get(TextDecoration.STRIKETHROUGH)),
-                getDecoration(decorations.get(TextDecoration.OBFUSCATED)),
-                font == null ? null : font.asString()
-        )));
-        for (net.kyori.adventure.text.Component extra : component.children()) {
-            FabricMultiVersion.addSibling(nmsComponent, fromAdventure(extra));
+        // Component style
+        FabricMultiVersion.setStyle(nmsComponent, FabricMultiVersion.convertModifier(component.getModifier()));
+
+        // Extra
+        for (TabComponent extra : component.getExtra()) {
+            FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra, modern));
         }
+
         return nmsComponent;
-    }
-
-    @Nullable
-    private Boolean getDecoration(@Nullable TextDecoration.State state) {
-        if (state == null || state == TextDecoration.State.NOT_SET) return null;
-        return state == TextDecoration.State.TRUE;
     }
 
     @Override

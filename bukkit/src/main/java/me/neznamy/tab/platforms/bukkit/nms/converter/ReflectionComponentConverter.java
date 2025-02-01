@@ -2,15 +2,13 @@ package me.neznamy.tab.platforms.bukkit.nms.converter;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.chat.*;
-import me.neznamy.tab.shared.util.function.FunctionWithException;
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TranslatableComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.KeybindComponent;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TranslatableComponent;
-import net.kyori.adventure.text.format.TextDecoration;
+import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +16,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -77,7 +74,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
             newTranslatableComponent = text -> newChatMessage.newInstance(text, new Object[0]);
 
             newKeybindComponent = text -> {
-                throw new UnsupportedOperationException("Keybind component conversion is not implemented");
+                throw new UnsupportedOperationException("Keybind component conversion is not implemented on < 1.19");
             };
 
             Class<?> ChatBaseComponent = BukkitReflection.getClass("network.chat.BaseComponent", "network.chat.ChatBaseComponent", "ChatBaseComponent");
@@ -112,57 +109,26 @@ public class ReflectionComponentConverter extends ComponentConverter {
     @SneakyThrows
     @NotNull
     public Object convert(@NotNull TabComponent component) {
-        if (component instanceof SimpleComponent) {
-            return newTextComponent.apply(((SimpleComponent) component).getText());
-        } else if (component instanceof StructuredComponent) {
-            StructuredComponent component1 = (StructuredComponent) component;
-            Object nmsComponent = newTextComponent.apply(component1.getText());
-            Component_modifier.set(nmsComponent, convertModifier.apply(component1.getModifier()));
-            for (StructuredComponent extra : component1.getExtra()) {
-                ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra));
-            }
-            return nmsComponent;
-        } else {
-            return fromAdventure(((AdventureComponent)component).getComponent());
-        }
-    }
-
-    @SneakyThrows
-    @NotNull
-    private Object fromAdventure(@NotNull Component component) {
+        // Component type
         Object nmsComponent;
         if (component instanceof TextComponent) {
-            nmsComponent = newTextComponent.apply(((TextComponent) component).content());
+            nmsComponent = newTextComponent.apply(((TextComponent) component).getText());
         } else if (component instanceof TranslatableComponent) {
-            nmsComponent = newTranslatableComponent.apply(((TranslatableComponent)component).key());
+            nmsComponent = newTranslatableComponent.apply(((TranslatableComponent) component).getKey());
         } else if (component instanceof KeybindComponent) {
-            nmsComponent = newKeybindComponent.apply(((KeybindComponent)component).keybind());
+            nmsComponent = newKeybindComponent.apply(((KeybindComponent) component).getKeybind());
         } else {
-            throw new IllegalStateException("Cannot convert " + component.getClass().getName());
+            throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         }
 
-        net.kyori.adventure.text.format.TextColor color = component.color();
-        Key font = component.style().font();
-        Map<TextDecoration, TextDecoration.State> decorations = component.style().decorations();
-        Component_modifier.set(nmsComponent, newStyleModern(
-                color == null ? null : ChatHexColor_fromRGB.invoke(null, color.value()),
-                getDecoration(decorations.get(TextDecoration.BOLD)),
-                getDecoration(decorations.get(TextDecoration.ITALIC)),
-                getDecoration(decorations.get(TextDecoration.UNDERLINED)),
-                getDecoration(decorations.get(TextDecoration.STRIKETHROUGH)),
-                getDecoration(decorations.get(TextDecoration.OBFUSCATED)),
-                font == null ? null : font.asString()
-        ));
-        for (Component extra : component.children()) {
-            ChatBaseComponent_addSibling.invoke(nmsComponent, fromAdventure(extra));
+        // Component style
+        Component_modifier.set(nmsComponent, convertModifier.apply(component.getModifier()));
+
+        // Extra
+        for (TabComponent extra : component.getExtra()) {
+            ChatBaseComponent_addSibling.invoke(nmsComponent, convert(extra));
         }
         return nmsComponent;
-    }
-
-    @Nullable
-    private Boolean getDecoration(@Nullable TextDecoration.State state) {
-        if (state == null || state == TextDecoration.State.NOT_SET) return null;
-        return state == TextDecoration.State.TRUE;
     }
 
     @SneakyThrows

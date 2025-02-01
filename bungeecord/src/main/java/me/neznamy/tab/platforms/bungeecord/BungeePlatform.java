@@ -10,7 +10,8 @@ import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList18;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.*;
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.component.*;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.BossBar;
@@ -24,7 +25,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
@@ -32,8 +32,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * BungeeCord implementation of Platform
@@ -62,7 +60,7 @@ public class BungeePlatform extends ProxyPlatform {
         try {
             ProxyConfig config = ProxyServer.getInstance().getConfig();
             if ((boolean) config.getClass().getMethod("isDisableTabListRewrite").invoke(config)) {
-                logWarn(TabComponent.fromColoredText("Waterfall's \"disable_tab_list_rewrite: true\" option may cause " +
+                logWarn(new SimpleTextComponent("Waterfall's \"disable_tab_list_rewrite: true\" option may cause " +
                         "the plugin to not work correctly. Disable it to avoid issues."));
             }
         } catch (Exception e) {
@@ -135,41 +133,40 @@ public class BungeePlatform extends ProxyPlatform {
     @Override
     @NotNull
     public BaseComponent convertComponent(@NotNull TabComponent component, boolean modern) {
-        if (component instanceof SimpleComponent) {
-            return new TextComponent(((SimpleComponent) component).getText());
+        // Component type
+        BaseComponent bComponent;
+        if (component instanceof TextComponent) {
+            bComponent = new net.md_5.bungee.api.chat.TextComponent(((TextComponent) component).getText());
+        } else if (component instanceof TranslatableComponent) {
+            bComponent = new net.md_5.bungee.api.chat.TranslatableComponent(((TranslatableComponent) component).getKey());
+        } else if (component instanceof KeybindComponent) {
+            bComponent = new net.md_5.bungee.api.chat.KeybindComponent(((KeybindComponent) component).getKeybind());
+        } else {
+            throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         }
-        if (component instanceof StructuredComponent) {
-            StructuredComponent iComponent = (StructuredComponent) component;
-            TextComponent textComponent = new TextComponent(iComponent.getText());
-            ChatModifier modifier = iComponent.getModifier();
-            if (modifier.getColor() != null) {
-                if (modern) {
-                    textComponent.setColor(ChatColor.of("#" + modifier.getColor().getHexCode()));
-                } else {
-                    textComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name()));
-                }
+
+        // Component style
+        ChatModifier modifier = component.getModifier();
+        if (modifier.getColor() != null) {
+            if (modern) {
+                bComponent.setColor(ChatColor.of("#" + modifier.getColor().getHexCode()));
+            } else {
+                bComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name()));
             }
-
-            textComponent.setBold(modifier.getBold());
-            textComponent.setItalic(modifier.getItalic());
-            textComponent.setObfuscated(modifier.getObfuscated());
-            textComponent.setStrikethrough(modifier.getStrikethrough());
-            textComponent.setUnderlined(modifier.getUnderlined());
-
-            textComponent.setFont(modifier.getFont());
-
-            if (!iComponent.getExtra().isEmpty()) {
-                List<BaseComponent> list = new ArrayList<>();
-                for (StructuredComponent extra : iComponent.getExtra()) {
-                    list.add(convertComponent(extra, modern));
-                }
-                textComponent.setExtra(list);
-            }
-
-            return textComponent;
         }
-        throw new UnsupportedOperationException("Adventure components created using MiniMessage syntax are not supported on BungeeCord. " +
-                "You can request the implementation if you ran into this error.");
+        bComponent.setBold(modifier.getBold());
+        bComponent.setItalic(modifier.getItalic());
+        bComponent.setObfuscated(modifier.getObfuscated());
+        bComponent.setStrikethrough(modifier.getStrikethrough());
+        bComponent.setUnderlined(modifier.getUnderlined());
+        bComponent.setFont(modifier.getFont());
+
+        // Extra
+        for (TabComponent extra : component.getExtra()) {
+            bComponent.addExtra(convertComponent(extra, modern));
+        }
+
+        return bComponent;
     }
 
     @Override

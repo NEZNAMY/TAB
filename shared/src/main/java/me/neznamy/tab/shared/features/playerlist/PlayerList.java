@@ -11,8 +11,8 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
-import me.neznamy.tab.shared.chat.SimpleComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -128,7 +128,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             UUID tablistId = getTablistUUID(player, viewer);
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
-                    tablistId.getMostSignificantBits() == 0 ? new SimpleComponent(player.getName()) : null);
+                    tablistId.getMostSignificantBits() == 0 ? new SimpleTextComponent(player.getName()) : null);
         }
         if (redis != null) redis.sendMessage(new UpdateRedisPlayer(player.getUniqueId(), player.tablistData.prefix.get() +
                 player.tablistData.name.get() + player.tablistData.suffix.get()));

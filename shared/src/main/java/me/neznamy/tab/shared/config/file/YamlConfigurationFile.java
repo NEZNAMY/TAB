@@ -2,7 +2,11 @@ package me.neznamy.tab.shared.config.file;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.yamlassist.YamlAssist;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
@@ -49,8 +53,8 @@ public class YamlConfigurationFile extends ConfigurationFile {
             if (input != null) input.close();
             TAB tab = TAB.getInstance();
             tab.setBrokenFile(destination.getName());
-            tab.getPlatform().logWarn(TabComponent.fromColoredText("File " + destination + " has broken syntax."));
-            tab.getPlatform().logInfo(TabComponent.fromColoredText("&6Error message from yaml parser: " + e.getMessage()));
+            tab.getPlatform().logWarn(new SimpleTextComponent("File " + destination + " has broken syntax."));
+            tab.getPlatform().logInfo(new TextComponent("Error message from yaml parser: " + e.getMessage(), TextColor.legacy(EnumChatFormat.GOLD)));
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
                 tab.getPlatform().logInfo(TabComponent.fromColoredText("&dSuggestions to fix yaml syntax:"));

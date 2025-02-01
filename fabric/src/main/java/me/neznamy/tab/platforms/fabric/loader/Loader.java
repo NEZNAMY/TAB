@@ -5,7 +5,7 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.fabric.FabricScoreboard;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.commands.CommandSourceStack;

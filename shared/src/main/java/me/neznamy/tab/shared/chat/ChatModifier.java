@@ -54,19 +54,4 @@ public class ChatModifier {
         if (Boolean.TRUE.equals(underlined)) builder.append("§n");
         return builder.toString();
     }
-
-    /**
-     * Returns bitmask of magic codes.
-     *
-     * @return  Bitmask of magic codes
-     */
-    public int getMagicCodeBitMask() {
-        int mask = 0;
-        if (Boolean.TRUE.equals(bold))          mask += 1;
-        if (Boolean.TRUE.equals(italic))        mask += 2;
-        if (Boolean.TRUE.equals(obfuscated))    mask += 4;
-        if (Boolean.TRUE.equals(strikethrough)) mask += 8;
-        if (Boolean.TRUE.equals(underlined))    mask += 16;
-        return mask;
-    }
 }

@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;

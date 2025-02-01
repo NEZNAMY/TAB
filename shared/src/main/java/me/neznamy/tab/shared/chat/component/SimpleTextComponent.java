@@ -1,19 +1,25 @@
-package me.neznamy.tab.shared.chat;
+package me.neznamy.tab.shared.chat.component;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Simple component with only text using legacy colors and nothing else.
+ * An implementation that only uses the "text" field with legacy colors in it, without using
+ * any component style or extra.
  */
-@Getter
-@RequiredArgsConstructor
-public class SimpleComponent extends TabComponent {
+public class SimpleTextComponent extends TextComponent {
 
-    @NotNull
-    private final String text;
+    /**
+     * Constructs new instance with given text.
+     *
+     * @param   text
+     *          Component text
+     */
+    public SimpleTextComponent(@NotNull String text) {
+        super(text);
+    }
 
     @Override
     @NotNull

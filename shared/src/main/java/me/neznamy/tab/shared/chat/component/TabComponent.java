@@ -1,8 +1,13 @@
-package me.neznamy.tab.shared.chat;
+package me.neznamy.tab.shared.chat.component;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
@@ -12,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -62,6 +68,7 @@ public abstract class TabComponent {
 
     /** Adventure component from this component */
     @Nullable
+    @Setter
     private Component adventureComponent;
 
     @Nullable
@@ -78,6 +85,35 @@ public abstract class TabComponent {
      */
     @Nullable
     private TextColor lastColor;
+
+    /** Chat modifier containing color, magic codes, hover and click event */
+    @NotNull
+    @Getter
+    protected ChatModifier modifier = new ChatModifier();
+
+    /** Extra components used in "extra" field */
+    protected List<TabComponent> extra;
+
+    /**
+     * Returns list of extra components. If no extra components are defined, returns empty list.
+     *
+     * @return  list of extra components
+     */
+    public List<TabComponent> getExtra() {
+        if (extra == null) return Collections.emptyList();
+        return extra;
+    }
+
+    /**
+     * Adds extra component to this component.
+     *
+     * @param   extra
+     *          Extra component to append
+     */
+    public void addExtra(@NotNull TabComponent extra) {
+        if (this.extra == null) this.extra = new ArrayList<>();
+        this.extra.add(extra);
+    }
 
     /**
      * Converts this component to platform's component.
@@ -120,7 +156,7 @@ public abstract class TabComponent {
      */
     @NotNull
     public Component toAdventure() {
-        if (adventureComponent == null) adventureComponent = AdventureHook.toAdventureComponent(this);
+        if (adventureComponent == null) adventureComponent = AdventureHook.convert(this);
         return adventureComponent;
     }
 
@@ -188,7 +224,16 @@ public abstract class TabComponent {
      * @return  Last color of this component, {@code null} if no colors are used
      */
     @Nullable
-    protected abstract TextColor fetchLastColor();
+    protected TextColor fetchLastColor() {
+        TextColor lastColor = modifier.getColor();
+        for (TabComponent extra : getExtra()) {
+            TextColor color = extra.fetchLastColor();
+            if (color != null) {
+                lastColor = color;
+            }
+        }
+        return lastColor;
+    }
 
     /**
      * Converts this component into a string that only consists of text without any formatting.
@@ -212,9 +257,9 @@ public abstract class TabComponent {
      * @return  organized component from colored text
      */
     @NotNull
-    public static StructuredComponent fromColoredText(@NotNull String originalText) {
+    public static TextComponent fromColoredText(@NotNull String originalText) {
         String remainingText = originalText;
-        List<StructuredComponent> components = new ArrayList<>();
+        List<TabComponent> components = new ArrayList<>();
         while (!remainingText.isEmpty()) {
             Matcher m = fontPattern.matcher(remainingText);
             if (m.find()) {
@@ -235,16 +280,16 @@ public abstract class TabComponent {
                 break;
             }
         }
-        return new StructuredComponent("", components);
+        return new TextComponent("", components);
     }
 
     @NotNull
-    private static List<StructuredComponent> toComponentArray(@NotNull String originalText, @Nullable String font) {
+    private static List<TextComponent> toComponentArray(@NotNull String originalText, @Nullable String font) {
         String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText), TABGradientFormatter, TABRGBFormatter);
-        List<StructuredComponent> components = new ArrayList<>();
+        List<TextComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
-        StructuredComponent component = new StructuredComponent();
-        component.getModifier().setFont(font);
+        TextComponent component = new TextComponent();
+        component.modifier.setFont(font);
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if (c == '§') {
@@ -261,36 +306,36 @@ public abstract class TabComponent {
                     if (builder.length() > 0) {
                         component.setText(builder.toString());
                         components.add(component);
-                        component = new StructuredComponent(component);
+                        component = new TextComponent(component);
                         component.setText("");
-                        component.getModifier().setFont(font);
+                        component.modifier.setFont(font);
                         builder = new StringBuilder();
                     }
                     switch (format) {
                         case BOLD:
-                            component.getModifier().setBold(true);
+                            component.modifier.setBold(true);
                             break;
                         case ITALIC:
-                            component.getModifier().setItalic(true);
+                            component.modifier.setItalic(true);
                             break;
                         case UNDERLINE:
-                            component.getModifier().setUnderlined(true);
+                            component.modifier.setUnderlined(true);
                             break;
                         case STRIKETHROUGH:
-                            component.getModifier().setStrikethrough(true);
+                            component.modifier.setStrikethrough(true);
                             break;
                         case OBFUSCATED:
-                            component.getModifier().setObfuscated(true);
+                            component.modifier.setObfuscated(true);
                             break;
                         case RESET:
-                            component = new StructuredComponent();
-                            component.getModifier().setColor(TextColor.legacy(EnumChatFormat.WHITE));
-                            component.getModifier().setFont(font);
+                            component = new TextComponent();
+                            component.modifier.setColor(TextColor.legacy(EnumChatFormat.WHITE));
+                            component.modifier.setFont(font);
                             break;
                         default:
-                            component = new StructuredComponent();
-                            component.getModifier().setColor(TextColor.legacy(format));
-                            component.getModifier().setFont(font);
+                            component = new TextComponent();
+                            component.modifier.setColor(TextColor.legacy(format));
+                            component.modifier.setFont(font);
                             break;
                     }
                 }
@@ -304,9 +349,9 @@ public abstract class TabComponent {
                         components.add(component);
                         builder = new StringBuilder();
                     }
-                    component = new StructuredComponent();
-                    component.getModifier().setColor(color);
-                    component.getModifier().setFont(font);
+                    component = new TextComponent();
+                    component.modifier.setColor(color);
+                    component.modifier.setFont(font);
                 } else {
                     builder.append('#');
                 }

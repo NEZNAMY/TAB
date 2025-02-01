@@ -7,7 +7,7 @@ import me.neznamy.tab.platforms.fabric.loader.Loader;
 import me.neznamy.tab.platforms.fabric.loader.Loader_Latest;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.commands.CommandSourceStack;

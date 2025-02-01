@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.platform.impl;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 

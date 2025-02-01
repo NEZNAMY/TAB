@@ -11,10 +11,9 @@ import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -151,7 +150,7 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     @NotNull
     public Component convertComponent(@NotNull TabComponent component, boolean modern) {
-        return AdventureHook.toAdventureComponent(component);
+        return component.toAdventure();
     }
 
     @Override

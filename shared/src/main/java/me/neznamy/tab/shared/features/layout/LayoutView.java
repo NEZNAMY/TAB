@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.SimpleComponent;
+import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.GroupPattern;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabList;
@@ -55,7 +55,7 @@ public class LayoutView {
                     true,
                     manager.getConfiguration().getEmptySlotPing(),
                     0,
-                    new SimpleComponent(""),
+                    new SimpleTextComponent(""),
                     Integer.MAX_VALUE - manager.getConfiguration().getDirection().translateSlot(slot),
                     true
             ));

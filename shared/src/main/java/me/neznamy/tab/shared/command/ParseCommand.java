@@ -5,9 +5,9 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.StructuredComponent;
-import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -58,11 +58,11 @@ public class ParseCommand extends SubCommand {
             return;
         }
         // Do it this way to avoid sending the "§" symbol to the console to try to color the text (does not work on Velocity)
-        sendMessage(sender, new StructuredComponent("", Arrays.asList(
-                new StructuredComponent("Replacing placeholder ", TextColor.legacy(EnumChatFormat.GOLD)),
-                new StructuredComponent(textToParse, TextColor.legacy(EnumChatFormat.YELLOW)),
-                new StructuredComponent(" for player ", TextColor.legacy(EnumChatFormat.GOLD)),
-                new StructuredComponent(target.getName(), TextColor.legacy(EnumChatFormat.YELLOW))
+        sendMessage(sender, new TextComponent("", Arrays.asList(
+                new TextComponent("Replacing placeholder ", TextColor.legacy(EnumChatFormat.GOLD)),
+                new TextComponent(textToParse, TextColor.legacy(EnumChatFormat.YELLOW)),
+                new TextComponent(" for player ", TextColor.legacy(EnumChatFormat.GOLD)),
+                new TextComponent(target.getName(), TextColor.legacy(EnumChatFormat.YELLOW))
         )));
         try {
             String replaced = new Property(null, null, target, textToParse, null).get();
@@ -72,11 +72,11 @@ public class ParseCommand extends SubCommand {
             } else {
                 TAB.getInstance().getPlatform().logInfo(colored);
             }
-            sendMessage(sender, new StructuredComponent("", Arrays.asList(
-                    new StructuredComponent("Raw colors: ", TextColor.legacy(EnumChatFormat.DARK_AQUA)),
-                    new StructuredComponent("\"", TextColor.legacy(EnumChatFormat.YELLOW)),
-                    new StructuredComponent(replaced.replace('§', '&'), TextColor.legacy(EnumChatFormat.WHITE)),
-                    new StructuredComponent("\"", TextColor.legacy(EnumChatFormat.YELLOW))
+            sendMessage(sender, new TextComponent("", Arrays.asList(
+                    new TextComponent("Raw colors: ", TextColor.legacy(EnumChatFormat.DARK_AQUA)),
+                    new TextComponent("\"", TextColor.legacy(EnumChatFormat.YELLOW)),
+                    new TextComponent(replaced.replace('§', '&'), TextColor.legacy(EnumChatFormat.WHITE)),
+                    new TextComponent("\"", TextColor.legacy(EnumChatFormat.YELLOW))
             )));
             sendMessage(sender, "&3Output length: &e" + replaced.length() + " &3characters");
         } catch (Exception e) {
