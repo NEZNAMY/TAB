@@ -5,7 +5,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.yamlassist.YamlAssist;
 import org.jetbrains.annotations.Nullable;
@@ -57,9 +56,9 @@ public class YamlConfigurationFile extends ConfigurationFile {
             tab.getPlatform().logInfo(new TextComponent("Error message from yaml parser: " + e.getMessage(), TextColor.legacy(EnumChatFormat.GOLD)));
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
-                tab.getPlatform().logInfo(TabComponent.fromColoredText("&dSuggestions to fix yaml syntax:"));
+                tab.getPlatform().logInfo(new TextComponent("Suggestions to fix yaml syntax:", TextColor.legacy(EnumChatFormat.LIGHT_PURPLE)));
                 for (String suggestion : suggestions) {
-                    tab.getPlatform().logInfo(TabComponent.fromColoredText("&d- " + suggestion));
+                    tab.getPlatform().logInfo(new TextComponent("- " + suggestion, TextColor.legacy(EnumChatFormat.LIGHT_PURPLE)));
                 }
             }
             throw e;
@@ -75,7 +74,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
             new Yaml(options).dump(values, writer);
             writer.close();
         } catch (IOException e) {
-            TAB.getInstance().getPlatform().logWarn(TabComponent.fromColoredText("Failed to save yaml file " + file.getPath() + " with content " + values.toString() + ": " + e.getMessage()));
+            TAB.getInstance().getPlatform().logWarn(new SimpleTextComponent("Failed to save yaml file " + file.getPath() + " with content " + values.toString() + ": " + e.getMessage()));
         }
     }
 }

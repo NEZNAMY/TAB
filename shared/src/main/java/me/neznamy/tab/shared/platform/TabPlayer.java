@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
@@ -239,16 +238,10 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @param   message
      *          message to be sent
-     * @param   translateColors
-     *          whether colors should be translated or not
      */
-    public void sendMessage(@NotNull String message, boolean translateColors) {
+    public void sendMessage(@NotNull String message) {
         if (message.isEmpty()) return;
-        if (translateColors) {
-            sendMessage(TabComponent.fromColoredText(message));
-        } else {
-            sendMessage(new SimpleTextComponent(message));
-        }
+        sendMessage(TabComponent.fromColoredText(message));
     }
 
     @Override

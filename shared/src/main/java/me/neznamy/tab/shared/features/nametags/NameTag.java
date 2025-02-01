@@ -597,10 +597,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TabPlayer player = (TabPlayer) p;
         if (player.teamData.invisibleNameTagView) {
             player.teamData.invisibleNameTagView = false;
-            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsShown(), true);
+            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsShown());
         } else {
             player.teamData.invisibleNameTagView = true;
-            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden(), true);
+            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden());
         }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(player, !player.teamData.invisibleNameTagView);
         for (TabPlayer all : onlinePlayers.getPlayers()) {

@@ -91,7 +91,7 @@ public abstract class SubCommand {
     public void sendMessage(@Nullable TabPlayer sender, @NotNull String message) {
         if (message.isEmpty()) return;
         if (sender != null) {
-            sender.sendMessage(message, true);
+            sender.sendMessage(message);
         } else {
             TAB.getInstance().getPlatform().logInfo(TabComponent.fromColoredText(message));
         }

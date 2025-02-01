@@ -222,7 +222,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         if (visible) {
             player.bossbarData.visible = true;
             detectBossBarsAndSend(player);
-            if (sendToggleMessage) player.sendMessage(toggleOnMessage, true);
+            if (sendToggleMessage) player.sendMessage(toggleOnMessage);
             if (toggleManager != null) {
                 if (configuration.isHiddenByDefault()) {
                     toggleManager.add(player);
@@ -235,7 +235,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
             for (BossBar l : lineValues) {
                 l.removePlayer(player);
             }
-            if (sendToggleMessage) player.sendMessage(toggleOffMessage, true);
+            if (sendToggleMessage) player.sendMessage(toggleOffMessage);
             if (toggleManager != null) {
                 if (configuration.isHiddenByDefault()) {
                     toggleManager.remove(player);

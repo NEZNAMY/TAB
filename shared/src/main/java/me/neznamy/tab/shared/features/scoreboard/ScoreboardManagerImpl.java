@@ -273,7 +273,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
                 sendHighestScoreboard(player);
             }
             if (sendToggleMessage) {
-                player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOn(), true);
+                player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOn());
             }
             if (toggleManager != null) {
                 if (configuration.isHiddenByDefault()) {
@@ -288,7 +288,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
                 unregisterScoreboard(player);
             }
             if (sendToggleMessage) {
-                player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOff(), true);
+                player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOff());
             }
             if (toggleManager != null) {
                 if (configuration.isHiddenByDefault()) {

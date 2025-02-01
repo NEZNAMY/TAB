@@ -107,7 +107,7 @@ public class BungeeTabList17 extends BungeeTabList {
         String displayNameString = component.toLegacyText();
         if (displayNameString.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7)
             displayNameString = displayNameString.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
-        return TabComponent.fromColoredText(displayNameString).convert(player.getVersion());
+        return new me.neznamy.tab.shared.chat.component.TextComponent(displayNameString).convert(player.getVersion());
     }
 
     private void update(@NonNull PlayerListItem.Action action, @NonNull PlayerListItem.Item item) {
