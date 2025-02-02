@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.chat;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class ChatModifier {
 
     @Nullable private TextColor color;
