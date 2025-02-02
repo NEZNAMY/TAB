@@ -10,16 +10,14 @@ import me.neznamy.tab.shared.chat.component.TranslatableComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.function.Function;
 
 /**
- * Class for converting TAB component into NMS components (1.7+).
+ * Class for converting TAB components into NMS components (1.7+).
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ReflectionComponentConverter extends ComponentConverter {
@@ -27,7 +25,6 @@ public class ReflectionComponentConverter extends ComponentConverter {
     private final FunctionWithException<String, Object> newTextComponent;
     private final FunctionWithException<String, Object> newTranslatableComponent;
     private final FunctionWithException<String, Object> newKeybindComponent;
-    private final Function<ChatModifier, Object> convertModifier;
 
     private final Class<?> ChatModifier = BukkitReflection.getClass("network.chat.Style", "network.chat.ChatModifier", "ChatModifier");
     private final Class<Enum> EnumChatFormat = (Class<Enum>) BukkitReflection.getClass("ChatFormatting", "EnumChatFormat");
@@ -44,7 +41,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
     private Method ResourceLocation_tryParse;
 
     /**
-     * Constructs new instance and loads all NMS classes, constructors and methods.
+     * Constructs new instance and loads all NMS classes, constructors, and methods.
      *
      * @throws  ReflectiveOperationException
      *          If something failed
@@ -97,11 +94,9 @@ public class ReflectionComponentConverter extends ComponentConverter {
                 newChatModifier = ReflectionUtils.setAccessible(ChatModifier.getDeclaredConstructor(chatHexColor, Boolean.class, Boolean.class, Boolean.class,
                         Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
             }
-            convertModifier = this::createModifierModern;
         } else {
             newChatModifier = ChatModifier.getConstructor();
             ChatModifier_setColor = ReflectionUtils.getOnlyMethod(ChatModifier, ChatModifier, EnumChatFormat);
-            convertModifier = this::createModifierLegacy;
         }
     }
 
@@ -122,7 +117,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
         }
 
         // Component style
-        Component_modifier.set(nmsComponent, convertModifier.apply(component.getModifier()));
+        Component_modifier.set(nmsComponent, convertStyle(component.getModifier()));
 
         // Extra
         for (TabComponent extra : component.getExtra()) {
@@ -132,63 +127,46 @@ public class ReflectionComponentConverter extends ComponentConverter {
     }
 
     @SneakyThrows
-    private Object createModifierModern(@NotNull ChatModifier modifier) {
-        return newStyleModern(
-                modifier.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb()),
-                modifier.getBold(),
-                modifier.getItalic(),
-                modifier.getUnderlined(),
-                modifier.getStrikethrough(),
-                modifier.getObfuscated(),
-                modifier.getFont()
-        );
-    }
-
-    @SneakyThrows
-    private Object createModifierLegacy(@NotNull ChatModifier modifier) {
-        Object nmsModifier = newChatModifier.newInstance();
-        if (modifier.getColor() != null) {
-            ChatModifier_setColor.invoke(nmsModifier, Enum.valueOf(EnumChatFormat, modifier.getColor().getLegacyColor().name()));
-        }
-        magicCodes.get(0).set(nmsModifier, modifier.getBold());
-        magicCodes.get(1).set(nmsModifier, modifier.getItalic());
-        magicCodes.get(2).set(nmsModifier, modifier.getStrikethrough());
-        magicCodes.get(3).set(nmsModifier, modifier.getUnderlined());
-        magicCodes.get(4).set(nmsModifier, modifier.getObfuscated());
-        return nmsModifier;
-    }
-
-    @SneakyThrows
-    @NotNull
-    private Object newStyleModern(@Nullable Object color, @Nullable Boolean bold, @Nullable Boolean italic, @Nullable Boolean underlined,
-                                  @Nullable Boolean strikethrough, @Nullable Boolean obfuscated, @Nullable String font) {
+    private Object convertStyle(@NotNull ChatModifier modifier) {
+        Object color = modifier.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb());
         if (BukkitReflection.is1_21_4Plus()) {
             return newChatModifier.newInstance(
                     color,
+                    modifier.getShadowColor(),
+                    modifier.getBold(),
+                    modifier.getItalic(),
+                    modifier.getItalic(),
+                    modifier.getUnderlined(),
+                    modifier.getObfuscated(),
                     null,
-                    bold,
-                    italic,
-                    underlined,
-                    strikethrough,
-                    obfuscated,
                     null,
                     null,
-                    null,
-                    font == null ? null : ResourceLocation_tryParse.invoke(null, font)
+                    modifier.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, modifier.getFont())
             );
-        } else {
+        } else if (BukkitReflection.getMinorVersion() >= 16) {
             return newChatModifier.newInstance(
                     color,
-                    bold,
-                    italic,
-                    underlined,
-                    strikethrough,
-                    obfuscated,
+                    modifier.getBold(),
+                    modifier.getItalic(),
+                    modifier.getItalic(),
+                    modifier.getUnderlined(),
+                    modifier.getObfuscated(),
                     null,
                     null,
                     null,
-                    font == null ? null : ResourceLocation_tryParse.invoke(null, font)
+                    modifier.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, modifier.getFont())
             );
+        } else {
+            Object nmsModifier = newChatModifier.newInstance();
+            if (modifier.getColor() != null) {
+                ChatModifier_setColor.invoke(nmsModifier, Enum.valueOf(EnumChatFormat, modifier.getColor().getLegacyColor().name()));
+            }
+            magicCodes.get(0).set(nmsModifier, modifier.getBold());
+            magicCodes.get(1).set(nmsModifier, modifier.getItalic());
+            magicCodes.get(2).set(nmsModifier, modifier.getStrikethrough());
+            magicCodes.get(3).set(nmsModifier, modifier.getUnderlined());
+            magicCodes.get(4).set(nmsModifier, modifier.getObfuscated());
+            return nmsModifier;
         }
     }
 }

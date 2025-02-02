@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.chat;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -10,9 +11,11 @@ import org.jetbrains.annotations.Nullable;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ChatModifier {
 
     @Nullable private TextColor color;
+    @Nullable private Integer shadowColor; // ARGB
     @Nullable private Boolean bold;
     @Nullable private Boolean italic;
     @Nullable private Boolean obfuscated;
@@ -21,13 +24,14 @@ public class ChatModifier {
     @Nullable private String font;
 
     /**
-     * Constructs a copy of provided modifier.
+     * Constructs a copy of the provided modifier.
      *
      * @param   modifier
      *          Modifier to copy
      */
     public ChatModifier(@NotNull ChatModifier modifier) {
         color = modifier.color;
+        shadowColor = modifier.shadowColor;
         bold = modifier.bold;
         italic = modifier.italic;
         obfuscated = modifier.obfuscated;

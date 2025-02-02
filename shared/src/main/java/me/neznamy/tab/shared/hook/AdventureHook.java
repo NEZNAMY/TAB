@@ -1,11 +1,14 @@
 package me.neznamy.tab.shared.hook;
 
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.component.KeybindComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TranslatableComponent;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.KeybindComponent;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -21,6 +24,9 @@ import java.util.Map;
  */
 public class AdventureHook {
 
+    /** Flag for tracking presence of shadow color parameter in current included adventure library (added in 1.21.4) */
+    private static final boolean SHADOW_COLOR_AVAILABLE = ReflectionUtils.methodExists(Component.class, "shadowColor");
+
     /**
      * Converts TAB component to adventure component
      *
@@ -30,36 +36,36 @@ public class AdventureHook {
      */
     @NotNull
     public static Component convert(@NotNull TabComponent component) {
-        // Component type
-        Component adventureComponent;
-        if (component instanceof me.neznamy.tab.shared.chat.component.TextComponent) {
-            adventureComponent = Component.text(((me.neznamy.tab.shared.chat.component.TextComponent) component).getText());
-        } else if (component instanceof me.neznamy.tab.shared.chat.component.TranslatableComponent) {
-            adventureComponent = Component.translatable(((me.neznamy.tab.shared.chat.component.TranslatableComponent) component).getKey());
-        } else if (component instanceof me.neznamy.tab.shared.chat.component.KeybindComponent) {
-            adventureComponent = Component.keybind(((me.neznamy.tab.shared.chat.component.KeybindComponent) component).getKeybind());
-        } else {
-            throw new UnsupportedOperationException(component.getClass().getName() + " component type is not supported");
-        }
-
         // Component style
-        adventureComponent = adventureComponent.style(Style.empty().toBuilder()
+        Style.Builder style = Style.style()
                 .color(component.getModifier().getColor() == null ? null : TextColor.color(component.getModifier().getColor().getRgb()))
                 .decoration(TextDecoration.BOLD, getDecoration(component.getModifier().getBold()))
                 .decoration(TextDecoration.ITALIC, getDecoration(component.getModifier().getItalic()))
                 .decoration(TextDecoration.UNDERLINED, getDecoration(component.getModifier().getUnderlined()))
                 .decoration(TextDecoration.STRIKETHROUGH, getDecoration(component.getModifier().getStrikethrough()))
                 .decoration(TextDecoration.OBFUSCATED, getDecoration(component.getModifier().getObfuscated()))
-                .font(component.getModifier().getFont() == null ? null : Key.key(component.getModifier().getFont())).build());
+                .font(component.getModifier().getFont() == null ? null : Key.key(component.getModifier().getFont()));
+        if (SHADOW_COLOR_AVAILABLE && component.getModifier().getShadowColor() != null) {
+            style.shadowColor(ShadowColor.shadowColor(component.getModifier().getShadowColor()));
+        }
 
         // Extra
         List<Component> list = new ArrayList<>();
         for (TabComponent extra : component.getExtra()) {
             list.add(convert(extra));
         }
-        adventureComponent = adventureComponent.children(list);
-
-        return adventureComponent;
+        
+        // Component type & return
+        if (component instanceof TextComponent) {
+            return Component.text(((TextComponent) component).getText(), style.build()).children(list);
+        }
+        if (component instanceof TranslatableComponent) {
+            return Component.translatable(((TranslatableComponent) component).getKey(), style.build()).children(list);
+        }
+        if (component instanceof KeybindComponent) {
+            return Component.keybind(((KeybindComponent) component).getKeybind(), style.build()).children(list);
+        }
+        throw new UnsupportedOperationException(component.getClass().getName() + " component type is not supported");
     }
 
     @NotNull
@@ -79,27 +85,28 @@ public class AdventureHook {
     public static TabComponent convert(@NotNull Component component) {
         // Component type
         TabComponent tabComponent;
-        if (component instanceof TextComponent) {
-            tabComponent = new me.neznamy.tab.shared.chat.component.TextComponent(((TextComponent) component).content());
-        } else if (component instanceof TranslatableComponent) {
-            tabComponent = new me.neznamy.tab.shared.chat.component.TranslatableComponent(((TranslatableComponent) component).key());
-        } else if (component instanceof KeybindComponent) {
-            tabComponent = new me.neznamy.tab.shared.chat.component.KeybindComponent(((KeybindComponent) component).keybind());
+        if (component instanceof net.kyori.adventure.text.TextComponent) {
+            tabComponent = new TextComponent(((net.kyori.adventure.text.TextComponent) component).content());
+        } else if (component instanceof net.kyori.adventure.text.TranslatableComponent) {
+            tabComponent = new TranslatableComponent(((net.kyori.adventure.text.TranslatableComponent) component).key());
+        } else if (component instanceof net.kyori.adventure.text.KeybindComponent) {
+            tabComponent = new KeybindComponent(((net.kyori.adventure.text.KeybindComponent) component).keybind());
         } else {
             throw new UnsupportedOperationException(component.getClass().getName() + " component type is not supported");
         }
 
         // Component style
         Map<TextDecoration, TextDecoration.State> decorations = component.style().decorations();
-        TextColor color = component.color();
-        tabComponent.getModifier().setColor(color == null ? null : new me.neznamy.tab.shared.chat.TextColor(color.red(), color.green(), color.blue()));
-        tabComponent.getModifier().setBold(getDecoration(decorations.get(TextDecoration.BOLD)));
-        tabComponent.getModifier().setItalic(getDecoration(decorations.get(TextDecoration.ITALIC)));
-        tabComponent.getModifier().setUnderlined(getDecoration(decorations.get(TextDecoration.UNDERLINED)));
-        tabComponent.getModifier().setStrikethrough(getDecoration(decorations.get(TextDecoration.STRIKETHROUGH)));
-        tabComponent.getModifier().setObfuscated(getDecoration(decorations.get(TextDecoration.OBFUSCATED)));
-        Key font = component.style().font();
-        tabComponent.getModifier().setFont(font == null ? null : font.asString());
+        tabComponent.setModifier(new ChatModifier(
+                component.color() == null ? null : new me.neznamy.tab.shared.chat.TextColor(component.color().value()),
+                !SHADOW_COLOR_AVAILABLE || component.shadowColor() == null ? null : component.shadowColor().value(),
+                getDecoration(decorations.get(TextDecoration.BOLD)),
+                getDecoration(decorations.get(TextDecoration.ITALIC)),
+                getDecoration(decorations.get(TextDecoration.UNDERLINED)),
+                getDecoration(decorations.get(TextDecoration.STRIKETHROUGH)),
+                getDecoration(decorations.get(TextDecoration.OBFUSCATED)),
+                component.font() == null ? null : component.font().asString()
+        ));
 
         // Extra
         for (Component extra : component.children()) {

@@ -5,12 +5,16 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.fabric.FabricTabList;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,6 +74,19 @@ public class Loader_1_21_3 implements Loader {
                 null
         ));
         return packet;
+    }
+
+    @Override
+    @NotNull
+    public Style convertModifier(@NotNull ChatModifier modifier) {
+        return Style.EMPTY
+                .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
+                .withBold(modifier.getBold())
+                .withItalic(modifier.getItalic())
+                .withUnderlined(modifier.getUnderlined())
+                .withStrikethrough(modifier.getStrikethrough())
+                .withObfuscated(modifier.getObfuscated())
+                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
     }
 
     private static class Register1_19_3 {

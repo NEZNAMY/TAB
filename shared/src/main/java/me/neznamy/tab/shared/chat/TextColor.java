@@ -80,6 +80,16 @@ public class TextColor {
     }
 
     /**
+     * Constructs new instance with given RGB value.
+     *
+     * @param   rgb
+     *          RGB value
+     */
+    public TextColor(int rgb) {
+        this.rgb = rgb;
+    }
+
+    /**
      * Constructs new instance with red, green and blue values
      *
      * @param   red

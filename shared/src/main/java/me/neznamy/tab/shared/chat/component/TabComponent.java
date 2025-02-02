@@ -89,6 +89,7 @@ public abstract class TabComponent {
     /** Chat modifier containing color, magic codes, hover and click event */
     @NotNull
     @Getter
+    @Setter
     protected ChatModifier modifier = new ChatModifier();
 
     /** Extra components used in "extra" field */

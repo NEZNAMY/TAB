@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Component converter using direct mojang-mapped code for versions 1.20.5+.
+ * Component converter using direct mojang-mapped code for versions 1.21.4+.
  */
 @SuppressWarnings("unused") // Used via reflection
 public class PaperComponentConverter extends ComponentConverter {
@@ -32,14 +32,16 @@ public class PaperComponentConverter extends ComponentConverter {
 
         // Component style
         ChatModifier modifier = component.getModifier();
-        nmsComponent.setStyle(Style.EMPTY
+        Style style = Style.EMPTY
                 .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
                 .withBold(modifier.getBold())
                 .withItalic(modifier.getItalic())
                 .withUnderlined(modifier.getUnderlined())
                 .withStrikethrough(modifier.getStrikethrough())
                 .withObfuscated(modifier.getObfuscated())
-                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont())));
+                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
+        if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor()); // withShadowColor takes int instead of Integer, bug?
+        nmsComponent.setStyle(style);
 
         // Extra
         for (TabComponent extra : component.getExtra()) {

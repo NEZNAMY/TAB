@@ -31,6 +31,7 @@ import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.Color;
 import java.io.File;
 
 /**
@@ -154,6 +155,12 @@ public class BungeePlatform extends ProxyPlatform {
                 bComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name()));
             }
         }
+        bComponent.setShadowColor(modifier.getShadowColor() == null ? null : new Color(
+                (modifier.getShadowColor() >> 16) & 0xFF,
+                (modifier.getShadowColor() >> 8) & 0xFF,
+                (modifier.getShadowColor()) & 0xFF,
+                (modifier.getShadowColor() >> 24) & 0xFF
+        ));
         bComponent.setBold(modifier.getBold());
         bComponent.setItalic(modifier.getItalic());
         bComponent.setObfuscated(modifier.getObfuscated());

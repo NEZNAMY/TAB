@@ -10,18 +10,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumSet;
 
 /**
- * Interface for converting TAB component into NMS components (1.7+).
+ * Interface for converting TAB components into NMS components (1.7+).
  */
 public abstract class ComponentConverter {
 
-    /** Versions supported by paper module that uses direct mojang-mapped NMS for latest MC version */
+    /** Versions supported by paper module that uses direct mojang-mapped NMS */
     private static final EnumSet<ProtocolVersion> paperNativeVersions = EnumSet.of(
-            ProtocolVersion.V1_20_5,
-            ProtocolVersion.V1_20_6,
-            ProtocolVersion.V1_21,
-            ProtocolVersion.V1_21_1,
-            ProtocolVersion.V1_21_2,
-            ProtocolVersion.V1_21_3,
             ProtocolVersion.V1_21_4
     );
 
