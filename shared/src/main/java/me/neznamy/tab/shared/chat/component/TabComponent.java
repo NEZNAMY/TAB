@@ -244,7 +244,7 @@ public abstract class TabComponent {
     public String toRawText() {
         StringBuilder builder = new StringBuilder();
         if (this instanceof TextComponent) builder.append(((TextComponent)this).getText());
-        for (TabComponent extra : extra) {
+        for (TabComponent extra : getExtra()) {
             if (extra instanceof TextComponent) {
                 builder.append(((TextComponent) extra).getText());
             }
