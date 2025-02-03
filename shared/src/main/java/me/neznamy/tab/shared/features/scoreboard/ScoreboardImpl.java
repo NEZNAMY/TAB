@@ -179,10 +179,14 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
     public void removePlayer(@NonNull TabPlayer p) {
         if (p.scoreboardData.activeScoreboard != this) return; // not registered
         p.getScoreboard().unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
-        for (Line line : lines) {
-            if (((ScoreboardLine)line).isShownTo(p))
-                p.getScoreboard().unregisterTeam(((ScoreboardLine)line).getTeamName());
+        for (Line l : lines) {
+            ScoreboardLine line = (ScoreboardLine) l;
+            if (line.isShownTo(p)) {
+                p.getScoreboard().unregisterTeam(line.getTeamName());
+                line.removePlayerSilently(p);
+            }
         }
+        players.remove(p);
         p.scoreboardData.activeScoreboard = null;
         p.scoreboardData.titleProperty = null;
         p.scoreboardData.lineProperties.clear();
