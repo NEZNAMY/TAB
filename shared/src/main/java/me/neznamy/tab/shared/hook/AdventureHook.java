@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.chat.component.TranslatableComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -45,8 +44,8 @@ public class AdventureHook {
                 .decoration(TextDecoration.STRIKETHROUGH, getDecoration(component.getModifier().getStrikethrough()))
                 .decoration(TextDecoration.OBFUSCATED, getDecoration(component.getModifier().getObfuscated()))
                 .font(component.getModifier().getFont() == null ? null : Key.key(component.getModifier().getFont()));
-        if (SHADOW_COLOR_AVAILABLE && component.getModifier().getShadowColor() != null) {
-            style.shadowColor(ShadowColor.shadowColor(component.getModifier().getShadowColor()));
+        if (SHADOW_COLOR_AVAILABLE) {
+            AdventureShadowHook.setShadowColor(style, component.getModifier().getShadowColor());
         }
 
         // Extra
@@ -99,7 +98,7 @@ public class AdventureHook {
         Map<TextDecoration, TextDecoration.State> decorations = component.style().decorations();
         tabComponent.setModifier(new ChatModifier(
                 component.color() == null ? null : new me.neznamy.tab.shared.chat.TextColor(component.color().value()),
-                !SHADOW_COLOR_AVAILABLE || component.shadowColor() == null ? null : component.shadowColor().value(),
+                SHADOW_COLOR_AVAILABLE ? AdventureShadowHook.getShadowColor(component) : null,
                 getDecoration(decorations.get(TextDecoration.BOLD)),
                 getDecoration(decorations.get(TextDecoration.ITALIC)),
                 getDecoration(decorations.get(TextDecoration.UNDERLINED)),
