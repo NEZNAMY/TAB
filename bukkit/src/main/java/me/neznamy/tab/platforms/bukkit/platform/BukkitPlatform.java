@@ -307,6 +307,11 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean isSafeFromPacketEventsBug() {
+        return serverVersion.getMinorVersion() >= 13;
+    }
+
+    @Override
     @NotNull
     public GroupManager detectPermissionPlugin() {
         if (LuckPermsHook.getInstance().isInstalled()) {

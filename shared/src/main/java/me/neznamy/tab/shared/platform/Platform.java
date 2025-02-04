@@ -194,6 +194,15 @@ public interface Platform {
     boolean supportsScoreboards();
 
     /**
+     * Returns {@code true} if the server is safe from being affected by the packetevents bug with limitations, {@code false} if not.
+     *
+     * @return  {@code true} if server is safe, {@code false} if not
+     */
+    default boolean isSafeFromPacketEventsBug() {
+        return true;
+    }
+
+    /**
      * Returns the command string used by this platform without "/"
      * prefix, such as "tab" on backend and "btab" on BungeeCord.
      *
