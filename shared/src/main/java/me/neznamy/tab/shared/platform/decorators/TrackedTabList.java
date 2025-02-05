@@ -77,7 +77,7 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
      * @return  Converted component
      */
     public C toComponent(@NonNull TabComponent component) {
-        return component.convert(player.getVersion());
+        return component.convert();
     }
 
     /**

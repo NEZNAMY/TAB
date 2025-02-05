@@ -74,7 +74,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
                 (byte) ScoreAction.CHANGE,
                 score.getObjective().getName(),
                 score.getValue(),
-                score.getDisplayName() == null ? null : score.getDisplayName().convert(player.getVersion()),
+                score.getDisplayName() == null ? null : player.getPlatform().transformComponent(score.getDisplayName(), player.getVersion()),
                 numberFormat(score.getNumberFormat())
         ));
     }
@@ -147,7 +147,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     @NotNull
     private Either<String, BaseComponent> either(@NonNull TabComponent text, int legacyLimit) {
         if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
-            return Either.right(text.convert(player.getVersion()));
+            return Either.right(player.getPlatform().transformComponent(text, player.getVersion()));
         } else {
             return Either.left(cutTo(text.toLegacyText(), legacyLimit));
         }

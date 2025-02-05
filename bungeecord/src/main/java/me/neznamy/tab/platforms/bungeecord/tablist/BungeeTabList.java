@@ -161,4 +161,9 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
     public boolean containsEntry(@NonNull UUID entry) {
         return uuids.contains(entry);
     }
+
+    @Override
+    public BaseComponent toComponent(@NonNull TabComponent component) {
+        return player.getPlatform().transformComponent(component, player.getVersion());
+    }
 }

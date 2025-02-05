@@ -151,7 +151,7 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @Override
     @NotNull
-    public Component convertComponent(@NotNull TabComponent component, boolean modern) {
+    public Component convertComponent(@NotNull TabComponent component) {
         return component.toAdventure();
     }
 

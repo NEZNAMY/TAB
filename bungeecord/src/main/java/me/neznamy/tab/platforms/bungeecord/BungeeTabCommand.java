@@ -34,7 +34,10 @@ public class BungeeTabCommand extends Command implements TabExecutor {
         if (TAB.getInstance().isPluginDisabled()) {
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
                 if (sender instanceof ProxiedPlayer) {
-                    sender.sendMessage((BaseComponent) TabComponent.fromColoredText(message).convert(ProtocolVersion.fromNetworkId(((ProxiedPlayer)sender).getPendingConnection().getVersion())));
+                    sender.sendMessage(((BungeePlatform)TAB.getInstance().getPlatform()).transformComponent(
+                            TabComponent.fromColoredText(message),
+                            ProtocolVersion.fromNetworkId(((ProxiedPlayer)sender).getPendingConnection().getVersion())
+                    ));
                 } else {
                     sender.sendMessage((BaseComponent) TabComponent.fromColoredText(message).convert());
                 }

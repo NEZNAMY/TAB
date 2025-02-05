@@ -21,6 +21,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import me.neznamy.tab.shared.util.cache.Cache;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
@@ -41,6 +42,9 @@ public class BungeePlatform extends ProxyPlatform {
 
     @NotNull
     private final BungeeTAB plugin;
+
+    /** Cache for legacy components for <1.16 players, as we need 2 different components for each tab component */
+    private final Cache<TabComponent, BaseComponent> legacyComponentCache = new Cache<>("Bungee legacy component cache", 1000, tab -> createComponent(tab, false));
 
     /**
      * Constructs new instance with given plugin instance.
@@ -133,7 +137,40 @@ public class BungeePlatform extends ProxyPlatform {
 
     @Override
     @NotNull
-    public BaseComponent convertComponent(@NotNull TabComponent component, boolean modern) {
+    public BaseComponent convertComponent(@NotNull TabComponent component) {
+        return createComponent(component, true);
+    }
+
+    /**
+     * Transforms the TAB component into a bungee component depending on player's version.
+     *
+     * @param   component
+     *          Component to transform
+     * @param   version
+     *          Version to transform the component to
+     * @return  Bungee component for the specified client version
+     */
+    @NotNull
+    public BaseComponent transformComponent(@NotNull TabComponent component, @NotNull ProtocolVersion version) {
+        if (version.getMinorVersion() >= 16) {
+            return component.convert();
+        } else {
+            // Convert color to legacy for <1.16 players
+            return legacyComponentCache.get(component);
+        }
+    }
+
+    /**
+     * Creates a bungee component using the given TAB component and modern flag for an RGB/legacy color decision.
+     *
+     * @param   component
+     *          Component to convert
+     * @param   modern
+     *          {@code true} if colors should be as RGB, {@code false} if legacy
+     * @return  Converted component
+     */
+    @NotNull
+    private BaseComponent createComponent(@NotNull TabComponent component, boolean modern) {
         // Component type
         BaseComponent bComponent;
         if (component instanceof TextComponent) {
@@ -170,7 +207,7 @@ public class BungeePlatform extends ProxyPlatform {
 
         // Extra
         for (TabComponent extra : component.getExtra()) {
-            bComponent.addExtra(convertComponent(extra, modern));
+            bComponent.addExtra(createComponent(extra, modern));
         }
 
         return bComponent;

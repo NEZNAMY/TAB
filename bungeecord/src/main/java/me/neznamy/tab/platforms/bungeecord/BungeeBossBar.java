@@ -32,7 +32,7 @@ public class BungeeBossBar extends SafeBossBar<UUID> {
     public void create(@NotNull BossBarInfo bar) {
         BossBar packet = new BossBar(bar.getBossBar(), 0);
         packet.setHealth(bar.getProgress());
-        packet.setTitle(bar.getTitle().convert(player.getVersion()));
+        packet.setTitle(player.getPlatform().transformComponent(bar.getTitle(), player.getVersion()));
         packet.setColor(bar.getColor().ordinal());
         packet.setDivision(bar.getStyle().ordinal());
         player.sendPacket(packet);
@@ -41,7 +41,7 @@ public class BungeeBossBar extends SafeBossBar<UUID> {
     @Override
     public void updateTitle(@NotNull BossBarInfo bar) {
         BossBar packet = new BossBar(bar.getBossBar(), 3);
-        packet.setTitle(bar.getTitle().convert(player.getVersion()));
+        packet.setTitle(player.getPlatform().transformComponent(bar.getTitle(), player.getVersion()));
         player.sendPacket(packet);
     }
 

@@ -253,7 +253,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     @NotNull
-    public Object convertComponent(@NotNull TabComponent component, boolean modern) {
+    public Object convertComponent(@NotNull TabComponent component) {
         if (ComponentConverter.INSTANCE != null) {
             return ComponentConverter.INSTANCE.convert(component);
         } else {

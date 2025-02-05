@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.chat.component;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -61,10 +60,7 @@ public abstract class TabComponent {
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
 
     @Nullable
-    private Object convertedModern;
-
-    @Nullable
-    private Object convertedLegacy;
+    private Object converted;
 
     /** Adventure component from this component */
     @Nullable
@@ -119,27 +115,6 @@ public abstract class TabComponent {
     /**
      * Converts this component to platform's component.
      *
-     * @param   clientVersion
-     *          Client version
-     * @return  Converted component
-     * @param   <T>
-     *          Platform's component class
-     */
-    @NotNull
-    @SuppressWarnings("unchecked")
-    public <T> T convert(@NotNull ProtocolVersion clientVersion) {
-        if (clientVersion.supportsRGB()) {
-            if (convertedModern == null) convertedModern = TAB.getInstance().getPlatform().convertComponent(this, true);
-            return (T) convertedModern;
-        } else {
-            if (convertedLegacy == null) convertedLegacy = TAB.getInstance().getPlatform().convertComponent(this, false);
-            return (T) convertedLegacy;
-        }
-    }
-
-    /**
-     * Converts this component to platform's component.
-     *
      * @return  Converted component
      * @param   <T>
      *          Platform's component class
@@ -147,8 +122,8 @@ public abstract class TabComponent {
     @NotNull
     @SuppressWarnings("unchecked")
     public <T> T convert() {
-        if (convertedModern == null) convertedModern = TAB.getInstance().getPlatform().convertComponent(this, true);
-        return (T) convertedModern;
+        if (converted == null) converted = TAB.getInstance().getPlatform().convertComponent(this);
+        return (T) converted;
     }
 
     /**

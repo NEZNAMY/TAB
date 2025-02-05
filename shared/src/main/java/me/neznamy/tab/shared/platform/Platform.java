@@ -129,16 +129,14 @@ public interface Platform {
     boolean isProxy();
 
     /**
-     * Converts TAB component into platform's component.
+     * Converts thhe TAB component into platform's component.
      *
      * @param   component
      *          Component to convert
-     * @param   modern
-     *          Whether clients supports RGB or not
      * @return  Converted component
      */
     @NotNull
-    Object convertComponent(@NotNull TabComponent component, boolean modern);
+    Object convertComponent(@NotNull TabComponent component);
 
     /**
      * Creates new scoreboard instance for given player.

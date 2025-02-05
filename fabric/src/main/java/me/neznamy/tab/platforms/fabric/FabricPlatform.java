@@ -135,7 +135,7 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     @NotNull
-    public Component convertComponent(@NotNull TabComponent component, boolean modern) {
+    public Component convertComponent(@NotNull TabComponent component) {
         // Component type
         Component nmsComponent;
         if (component instanceof TextComponent) {
@@ -153,7 +153,7 @@ public class FabricPlatform implements BackendPlatform {
 
         // Extra
         for (TabComponent extra : component.getExtra()) {
-            FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra, modern));
+            FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra));
         }
 
         return nmsComponent;
