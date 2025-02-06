@@ -128,10 +128,9 @@ public class ReflectionComponentConverter extends ComponentConverter {
 
     @SneakyThrows
     private Object convertStyle(@NotNull ChatModifier modifier) {
-        Object color = modifier.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb());
         if (BukkitReflection.is1_21_4Plus()) {
             return newChatModifier.newInstance(
-                    color,
+                    modifier.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb()),
                     modifier.getShadowColor(),
                     modifier.getBold(),
                     modifier.getItalic(),
@@ -145,7 +144,7 @@ public class ReflectionComponentConverter extends ComponentConverter {
             );
         } else if (BukkitReflection.getMinorVersion() >= 16) {
             return newChatModifier.newInstance(
-                    color,
+                    modifier.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, modifier.getColor().getRgb()),
                     modifier.getBold(),
                     modifier.getItalic(),
                     modifier.getItalic(),
