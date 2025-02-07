@@ -1,11 +1,10 @@
-package me.neznamy.tab.shared.hook;
+package me.neznamy.chat.hook;
 
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.component.KeybindComponent;
-import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
-import me.neznamy.tab.shared.chat.component.TranslatableComponent;
-import me.neznamy.tab.shared.util.ReflectionUtils;
+import me.neznamy.chat.ChatModifier;
+import me.neznamy.chat.component.KeybindComponent;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.chat.component.TextComponent;
+import me.neznamy.chat.component.TranslatableComponent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
@@ -24,7 +23,18 @@ import java.util.Map;
 public class AdventureHook {
 
     /** Flag for tracking presence of shadow color parameter in current included adventure library (added in 1.21.4) */
-    private static final boolean SHADOW_COLOR_AVAILABLE = ReflectionUtils.methodExists(Component.class, "shadowColor");
+    private static final boolean SHADOW_COLOR_AVAILABLE;
+
+    static {
+        boolean value;
+        try {
+            Component.class.getDeclaredMethod("shadowColor");
+            value = true;
+        } catch (Throwable t) {
+            value = false;
+        }
+        SHADOW_COLOR_AVAILABLE = value;
+    }
 
     /**
      * Converts TAB component to adventure component
@@ -97,7 +107,7 @@ public class AdventureHook {
         // Component style
         Map<TextDecoration, TextDecoration.State> decorations = component.style().decorations();
         tabComponent.setModifier(new ChatModifier(
-                component.color() == null ? null : new me.neznamy.tab.shared.chat.TextColor(component.color().value()),
+                component.color() == null ? null : new me.neznamy.chat.TextColor(component.color().value()),
                 SHADOW_COLOR_AVAILABLE ? AdventureShadowHook.getShadowColor(component) : null,
                 getDecoration(decorations.get(TextDecoration.BOLD)),
                 getDecoration(decorations.get(TextDecoration.ITALIC)),

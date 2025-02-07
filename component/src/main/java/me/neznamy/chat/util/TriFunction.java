@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.util.function;
+package me.neznamy.chat.util;
 
 /**
  * An interface for a function with 3 input arguments.

@@ -1,12 +1,12 @@
-package me.neznamy.tab.shared.chat.component;
+package me.neznamy.chat.component;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.chat.ChatModifier;
+import me.neznamy.chat.EnumChatFormat;
+import me.neznamy.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

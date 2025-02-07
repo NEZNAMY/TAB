@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.config.mysql;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.chat.TextColor;
+import me.neznamy.chat.component.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

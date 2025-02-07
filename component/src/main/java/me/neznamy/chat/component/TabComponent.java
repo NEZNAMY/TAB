@@ -1,16 +1,14 @@
-package me.neznamy.tab.shared.chat.component;
+package me.neznamy.chat.component;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.hook.AdventureHook;
-import me.neznamy.tab.shared.util.function.FunctionWithException;
-import me.neznamy.tab.shared.util.function.TriFunction;
+import me.neznamy.chat.ChatModifier;
+import me.neznamy.chat.EnumChatFormat;
+import me.neznamy.chat.TextColor;
+import me.neznamy.chat.hook.AdventureHook;
+import me.neznamy.chat.rgb.RGBUtils;
+import me.neznamy.chat.util.TriFunction;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +24,10 @@ import java.util.regex.Pattern;
  * Base class for managing minecraft components.
  */
 public abstract class TabComponent {
+
+    /** Function for converting this class into platform's actual component */
+    @Nullable
+    public static Function<TabComponent, Object> CONVERT_FUNCTION;
 
     /** Formatter to convert gradient into TAB's #RRGGBB spam */
     private static final TriFunction<TextColor, String, TextColor, String> TABGradientFormatter = (start, text, end) -> {
@@ -122,7 +124,8 @@ public abstract class TabComponent {
     @NotNull
     @SuppressWarnings("unchecked")
     public <T> T convert() {
-        if (converted == null) converted = TAB.getInstance().getPlatform().convertComponent(this);
+        if (CONVERT_FUNCTION == null) throw new IllegalStateException("Convert function is not initialized");
+        if (converted == null) converted = CONVERT_FUNCTION.apply(this);
         return (T) converted;
     }
 
@@ -150,7 +153,7 @@ public abstract class TabComponent {
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public <F, C> F toFixedFormat(@NotNull FunctionWithException<C, F> createFunction) {
+    public <F, C> F toFixedFormat(@NotNull Function<C, F> createFunction) {
         if (fixedFormat == null) fixedFormat = createFunction.apply(convert());
         return (F) fixedFormat;
     }

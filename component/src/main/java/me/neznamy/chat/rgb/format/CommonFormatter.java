@@ -1,7 +1,7 @@
-package me.neznamy.tab.shared.chat.rgb.format;
+package me.neznamy.chat.rgb.format;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;

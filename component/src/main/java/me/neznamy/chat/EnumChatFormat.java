@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.chat;
+package me.neznamy.chat;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

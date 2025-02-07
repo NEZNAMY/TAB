@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.redis;
 
 import lombok.*;
 import me.neznamy.tab.shared.TabConstants.Permission;
-import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.NotNull;

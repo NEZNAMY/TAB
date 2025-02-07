@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

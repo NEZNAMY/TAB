@@ -2,7 +2,7 @@ package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import me.neznamy.tab.api.event.TabEvent;
-import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

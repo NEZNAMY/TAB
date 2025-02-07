@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.hook;
+package me.neznamy.chat.hook;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.ShadowColor;

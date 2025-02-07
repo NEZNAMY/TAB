@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.platform.decorators;
 
 import lombok.*;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.chat.TextColor;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;

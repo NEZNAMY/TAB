@@ -1,6 +1,6 @@
-package me.neznamy.tab.shared.chat.component;
+package me.neznamy.chat.component;
 
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

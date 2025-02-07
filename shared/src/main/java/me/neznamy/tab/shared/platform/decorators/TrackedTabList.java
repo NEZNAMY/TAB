@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.platform.decorators;
 
 import lombok.*;
-import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.Nullable;

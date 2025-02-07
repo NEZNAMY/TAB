@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.chat;
+package me.neznamy.chat;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

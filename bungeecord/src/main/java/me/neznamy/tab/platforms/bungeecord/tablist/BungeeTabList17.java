@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.Limitations;
-import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.chat.component.TabComponent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -107,7 +107,7 @@ public class BungeeTabList17 extends BungeeTabList {
         String displayNameString = component.toLegacyText();
         if (displayNameString.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7)
             displayNameString = displayNameString.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
-        return player.getPlatform().transformComponent(new me.neznamy.tab.shared.chat.component.TextComponent(displayNameString), player.getVersion());
+        return player.getPlatform().transformComponent(new me.neznamy.chat.component.TextComponent(displayNameString), player.getVersion());
     }
 
     private void update(@NonNull PlayerListItem.Action action, @NonNull PlayerListItem.Item item) {

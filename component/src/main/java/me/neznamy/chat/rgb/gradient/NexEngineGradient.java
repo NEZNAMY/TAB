@@ -1,7 +1,7 @@
-package me.neznamy.tab.shared.chat.rgb.gradient;
+package me.neznamy.chat.rgb.gradient;
 
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.util.function.TriFunction;
+import me.neznamy.chat.TextColor;
+import me.neznamy.chat.util.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;

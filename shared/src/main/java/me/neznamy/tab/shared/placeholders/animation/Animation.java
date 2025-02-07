@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.animation.AnimationConfiguration.AnimationDefinition;
 import org.jetbrains.annotations.NotNull;

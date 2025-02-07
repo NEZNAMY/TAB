@@ -1,15 +1,15 @@
-package me.neznamy.tab.shared.chat.rgb;
+package me.neznamy.chat.rgb;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.rgb.format.BukkitFormat;
-import me.neznamy.tab.shared.chat.rgb.format.CommonFormatter;
-import me.neznamy.tab.shared.chat.rgb.format.RGBFormatter;
-import me.neznamy.tab.shared.chat.rgb.gradient.CMIGradient;
-import me.neznamy.tab.shared.chat.rgb.gradient.CommonGradient;
-import me.neznamy.tab.shared.chat.rgb.gradient.GradientPattern;
-import me.neznamy.tab.shared.chat.rgb.gradient.NexEngineGradient;
-import me.neznamy.tab.shared.util.function.TriFunction;
+import me.neznamy.chat.TextColor;
+import me.neznamy.chat.rgb.format.BukkitFormat;
+import me.neznamy.chat.rgb.format.CommonFormatter;
+import me.neznamy.chat.rgb.format.RGBFormatter;
+import me.neznamy.chat.rgb.gradient.CMIGradient;
+import me.neznamy.chat.rgb.gradient.CommonGradient;
+import me.neznamy.chat.rgb.gradient.GradientPattern;
+import me.neznamy.chat.rgb.gradient.NexEngineGradient;
+import me.neznamy.chat.util.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;

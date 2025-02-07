@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.config.helper;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import org.jetbrains.annotations.NotNull;
 

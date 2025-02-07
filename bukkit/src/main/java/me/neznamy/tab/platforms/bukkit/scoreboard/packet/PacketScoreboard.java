@@ -9,7 +9,7 @@ import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -232,6 +232,12 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @SneakyThrows
     private static Object toFixedFormat(@NonNull TabComponent component) {
         if (newFixedFormat == null) return null;
-        return component.toFixedFormat(nmsComponent -> newFixedFormat.newInstance(nmsComponent));
+        return component.toFixedFormat(PacketScoreboard::convertFixedFormat);
+    }
+
+    @NotNull
+    @SneakyThrows
+    private static Object convertFixedFormat(@NotNull Object nmsComponent) {
+        return newFixedFormat.newInstance(nmsComponent);
     }
 }

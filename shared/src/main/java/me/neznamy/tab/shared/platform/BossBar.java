@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.chat.component.TabComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
