@@ -55,7 +55,9 @@ public class VelocityTAB {
     @Subscribe
     public void onProxyInitialization(@Nullable ProxyInitializeEvent event) {
         if (!ReflectionUtils.methodExists(TabListEntry.class, "setListOrder", int.class)) {
+            logger.warn("====================================================================================================");
             logger.warn("The plugin requires Velocity build #450 (released on November 10th, 2024) and up to work.");
+            logger.warn("====================================================================================================");
             return;
         }
         TAB.create(new VelocityPlatform(this));
