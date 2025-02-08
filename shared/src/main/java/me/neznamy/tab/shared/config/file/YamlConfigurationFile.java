@@ -1,13 +1,14 @@
 package me.neznamy.tab.shared.config.file;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.chat.TextColor;
 import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TextComponent;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.yamlassist.YamlAssist;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -44,7 +45,10 @@ public class YamlConfigurationFile extends ConfigurationFile {
         FileInputStream input = null;
         try {
             input = new FileInputStream(file);
-            values = new Yaml().load(input);
+            LoaderOptions loaderOptions = new LoaderOptions();
+            loaderOptions.setCodePointLimit(Integer.MAX_VALUE);
+            Yaml yaml = new Yaml(loaderOptions);
+            values = yaml.load(input);
             if (values == null) values = new LinkedHashMap<>();
             input.close();
         } catch (YAMLException e) {
