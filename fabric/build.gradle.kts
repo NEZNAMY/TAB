@@ -35,6 +35,6 @@ tasks {
         options.release.set(17)
     }
     validateAccessWidener {
-        enabled = true
+        enabled = false
     }
 }

@@ -77,16 +77,19 @@ public class Loader_Latest implements Loader {
     @Override
     @NotNull
     public Style convertModifier(@NotNull ChatModifier modifier) {
-        Style style = Style.EMPTY
-                .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
-                .withBold(modifier.getBold())
-                .withItalic(modifier.getItalic())
-                .withUnderlined(modifier.getUnderlined())
-                .withStrikethrough(modifier.getStrikethrough())
-                .withObfuscated(modifier.getObfuscated())
-                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
-        if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor());
-        return style;
+        return new Style(
+                modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()),
+                modifier.getShadowColor(),
+                modifier.getBold(),
+                modifier.getItalic(),
+                modifier.getUnderlined(),
+                modifier.getStrikethrough(),
+                modifier.getObfuscated(),
+                null,
+                null,
+                null,
+                modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont())
+        );
     }
 
     @Override

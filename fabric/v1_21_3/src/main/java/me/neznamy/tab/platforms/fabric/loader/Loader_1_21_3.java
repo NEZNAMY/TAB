@@ -79,14 +79,18 @@ public class Loader_1_21_3 implements Loader {
     @Override
     @NotNull
     public Style convertModifier(@NotNull ChatModifier modifier) {
-        return Style.EMPTY
-                .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
-                .withBold(modifier.getBold())
-                .withItalic(modifier.getItalic())
-                .withUnderlined(modifier.getUnderlined())
-                .withStrikethrough(modifier.getStrikethrough())
-                .withObfuscated(modifier.getObfuscated())
-                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
+        return new Style(
+                modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()),
+                modifier.getBold(),
+                modifier.getItalic(),
+                modifier.getUnderlined(),
+                modifier.getStrikethrough(),
+                modifier.getObfuscated(),
+                null,
+                null,
+                null,
+                modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont())
+        );
     }
 
     private static class Register1_19_3 {
