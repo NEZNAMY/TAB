@@ -6,16 +6,13 @@ import com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
-import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -47,24 +44,6 @@ public class VelocityEventListener implements EventListener<Player> {
     }
 
     /**
-     * Freezes Boss bar for 1.20.2+ players due to bug with adventure that causes disconnect
-     * on 1.20.5+ with "Network Protocol Error"
-     *
-     * @param   e
-     *          Event fired before player switches server for proper freezing
-     */
-    @Subscribe
-    public void preConnect(@NotNull ServerPreConnectEvent e) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        if (e.getResult().isAllowed()) {
-            TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-            if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-                ((SafeBossBar<?>)p.getBossBar()).freeze();
-            }
-        }
-    }
-
-    /**
      * Listens to player connecting to a backend server. This handles
      * both initial connections and server switch.
      *
@@ -87,9 +66,6 @@ public class VelocityEventListener implements EventListener<Player> {
                         e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null")
                 );
                 tab.getFeatureManager().onTabListClear(player);
-                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
-                }
             }
         });
     }

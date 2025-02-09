@@ -1,6 +1,9 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
+import me.neznamy.chat.ChatModifier;
+import me.neznamy.chat.component.TextComponent;
+import me.neznamy.chat.component.*;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
 import me.neznamy.tab.platforms.bungeecord.hook.BungeePremiumVanishHook;
 import me.neznamy.tab.platforms.bungeecord.injection.BungeePipelineInjector;
@@ -10,15 +13,11 @@ import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList18;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.*;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.cache.Cache;
@@ -32,7 +31,7 @@ import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 
 /**
@@ -217,16 +216,6 @@ public class BungeePlatform extends ProxyPlatform {
     @NotNull
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
         return new BungeeScoreboard((BungeeTabPlayer) player);
-    }
-
-    @Override
-    @NotNull
-    public BossBar createBossBar(@NotNull TabPlayer player) {
-        if (player.getVersion().getMinorVersion() >= 9) {
-            return new BungeeBossBar((BungeeTabPlayer) player);
-        } else {
-            return new DummyBossBar();
-        }
     }
 
     @Override

@@ -1,8 +1,8 @@
-package me.neznamy.tab.shared.platform;
+package me.neznamy.bossbar.shared;
 
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.chat.component.TabComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * Interface for sending BossBars to players.
  */
-public interface BossBar {
+public interface BossBarManager {
 
     /**
      * Creates boss bar and sends it to the player

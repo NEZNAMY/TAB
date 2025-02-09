@@ -10,6 +10,8 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
+import me.neznamy.bossbar.shared.BossBarAPI;
+import me.neznamy.bossbar.velocity.VelocityBossBarAPI;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -60,6 +62,7 @@ public class VelocityTAB {
             logger.warn("====================================================================================================");
             return;
         }
+        BossBarAPI.setInstance(new VelocityBossBarAPI(this, server));
         TAB.create(new VelocityPlatform(this));
     }
     

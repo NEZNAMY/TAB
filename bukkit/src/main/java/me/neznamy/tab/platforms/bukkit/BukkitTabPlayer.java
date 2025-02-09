@@ -57,7 +57,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        getPlayer().sendMessage(getPlatform().toBukkitFormat(message));
+        getPlayer().sendMessage(message.toBukkitFormat(getPlatform().getServerVersion().supportsRGB()));
     }
 
     @Override

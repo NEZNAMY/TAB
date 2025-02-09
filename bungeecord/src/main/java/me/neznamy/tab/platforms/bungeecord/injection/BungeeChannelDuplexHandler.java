@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector.TabChannelDuplexHandler;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.md_5.bungee.protocol.packet.Login;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +39,6 @@ public class BungeeChannelDuplexHandler extends TabChannelDuplexHandler {
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     // For 1.20.2+ we need to do this, because server switch event is called before tablist is cleared
                     TAB.getInstance().getFeatureManager().onTabListClear(player);
-                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
                 }
             }, "Pipeline injection", TabConstants.CpuUsageCategory.PACKET_LOGIN), 200);
         }

@@ -92,7 +92,7 @@ public class FeatureManager {
         long time = System.currentTimeMillis();
         for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
             player.getScoreboard().clear();
-            player.getBossBar().clear();
+            player.getBossBarManager().clear();
         }
         TAB.getInstance().debug("Unregistered all scoreboard teams, objectives and boss bars for all players in " + (System.currentTimeMillis()-time) + "ms");
         TAB.getInstance().getPlaceholderManager().getTabExpansion().unregisterExpansion();

@@ -3,6 +3,9 @@ package me.neznamy.tab.shared.platform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import me.neznamy.bossbar.shared.BossBarManager;
+import me.neznamy.bossbar.shared.BossBarAPI;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.integration.VanishIntegration;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
@@ -10,7 +13,6 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.belowname.BelowNamePlayerData;
@@ -140,7 +142,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Player's bossbar view */
     @Getter
     @NotNull
-    private final BossBar bossBar;
+    private final BossBarManager bossBarManager;
 
     /** Player's tablist view */
     @Getter
@@ -179,7 +181,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
         tablistId = useRealId ? uniqueId : UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
         scoreboard = platform.createScoreboard(this);
-        bossBar = platform.createBossBar(this);
+        bossBarManager = BossBarAPI.getInstance().getBossBarManager(player);
         tabList = platform.createTabList(this);
     }
 

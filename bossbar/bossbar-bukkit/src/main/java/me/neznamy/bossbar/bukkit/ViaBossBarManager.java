@@ -1,29 +1,33 @@
-package me.neznamy.tab.platforms.bukkit.bossbar;
+package me.neznamy.bossbar.bukkit;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.legacy.bossbar.BossBar;
 import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
-import lombok.RequiredArgsConstructor;
+import me.neznamy.bossbar.shared.SafeBossBarManager;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Handler for 1.9+ players on 1.8 server using ViaVersion API.
  */
-@RequiredArgsConstructor
-public class ViaBossBar extends SafeBossBar<BossBar> {
+public class ViaBossBarManager extends SafeBossBarManager<BossBar> {
 
     /** Style array for fast access */
     private static final BossStyle[] styles = BossStyle.values();
-    
-    /** Player this handler belongs to */
-    @NotNull
-    private final BukkitTabPlayer player;
+
+    /**
+     * Constructs new instance for given player.
+     *
+     * @param   player
+     *          Player this Boss bar will belong to
+     */
+    public ViaBossBarManager(@NotNull Player player) {
+        super(player);
+    }
 
     @Override
     @NotNull
@@ -38,7 +42,7 @@ public class ViaBossBar extends SafeBossBar<BossBar> {
 
     @Override
     public void create(@NotNull BossBarInfo bar) {
-        bar.getBossBar().addPlayer(player.getPlayer().getUniqueId());
+        bar.getBossBar().addPlayer(((Player)player).getUniqueId());
     }
 
     @Override
@@ -63,6 +67,6 @@ public class ViaBossBar extends SafeBossBar<BossBar> {
 
     @Override
     public void remove(@NotNull BossBarInfo bar) {
-        bar.getBossBar().removePlayer(player.getPlayer().getUniqueId());
+        bar.getBossBar().removePlayer(((Player)player).getUniqueId());
     }
 }

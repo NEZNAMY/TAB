@@ -24,7 +24,7 @@ public class BukkitTabCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
-                sender.sendMessage(((BukkitPlatform)TAB.getInstance().getPlatform()).toBukkitFormat(TabComponent.fromColoredText(message)));
+                sender.sendMessage(TabComponent.fromColoredText(message).toBukkitFormat(((BukkitPlatform)TAB.getInstance().getPlatform()).getServerVersion().supportsRGB()));
             }
         } else {
             TabPlayer p = null;

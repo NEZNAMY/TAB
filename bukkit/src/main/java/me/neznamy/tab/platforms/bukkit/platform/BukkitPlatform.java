@@ -5,8 +5,6 @@ import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.chat.component.*;
 import me.neznamy.tab.platforms.bukkit.*;
-import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
-import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
@@ -29,15 +27,11 @@ import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
-import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
-import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.kyori.adventure.audience.Audience;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
@@ -205,12 +199,12 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        Bukkit.getConsoleSender().sendMessage("[TAB] " + toBukkitFormat(message));
+        Bukkit.getConsoleSender().sendMessage("[TAB] " + message.toBukkitFormat(serverVersion.supportsRGB()));
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        Bukkit.getConsoleSender().sendMessage("§c[TAB] [WARN] " + toBukkitFormat(message));
+        Bukkit.getConsoleSender().sendMessage("§c[TAB] [WARN] " + message.toBukkitFormat(serverVersion.supportsRGB()));
     }
 
     @Override
@@ -266,22 +260,6 @@ public class BukkitPlatform implements BackendPlatform {
     @SneakyThrows
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
         return ScoreboardLoader.getInstance().apply((BukkitTabPlayer) player);
-    }
-
-    @Override
-    @NotNull
-    public BossBar createBossBar(@NotNull TabPlayer player) {
-        //noinspection ConstantValue
-        if (AdventureBossBar.isAvailable() && Audience.class.isAssignableFrom(Player.class)) return new AdventureBossBar(player);
-
-        // 1.9+ server, handle using API, potential 1.8 players are handled by ViaVersion
-        if (BukkitReflection.getMinorVersion() >= 9) return new BukkitBossBar((BukkitTabPlayer) player);
-
-        // 1.9+ player on 1.8 server, handle using ViaVersion API
-        if (player.getVersion().getMinorVersion() >= 9) return new ViaBossBar((BukkitTabPlayer) player);
-
-        // 1.8- server and player, no implementation
-        return new DummyBossBar();
     }
 
     @Override
@@ -353,42 +331,5 @@ public class BukkitPlatform implements BackendPlatform {
      */
     public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
         Bukkit.getScheduler().runTask(plugin, task);
-    }
-
-    /**
-     * Converts component to string using bukkit RGB format if supported by the server.
-     * If not, closest legacy color is used instead.
-     *
-     * @param   component
-     *          Component to convert
-     * @return  Converted string using bukkit color format
-     */
-    @NotNull
-    public String toBukkitFormat(@NotNull TabComponent component) {
-        StringBuilder sb = new StringBuilder();
-        if (component.getModifier().getColor() != null) {
-            if (serverVersion.supportsRGB()) {
-                String hexCode = component.getModifier().getColor().getHexCode();
-                sb.append('§').append("x").append('§').append(hexCode.charAt(0)).append('§').append(hexCode.charAt(1))
-                        .append('§').append(hexCode.charAt(2)).append('§').append(hexCode.charAt(3))
-                        .append('§').append(hexCode.charAt(4)).append('§').append(hexCode.charAt(5));
-            } else {
-                sb.append('§').append(component.getModifier().getColor().getLegacyColor().getCharacter());
-            }
-        }
-        sb.append(component.getModifier().getMagicCodes());
-        if (component instanceof TextComponent) {
-            sb.append(((TextComponent) component).getText());
-        } else if (component instanceof TranslatableComponent) {
-            sb.append(((TranslatableComponent) component).getKey());
-        } else if (component instanceof KeybindComponent) {
-            sb.append(((KeybindComponent) component).getKeybind());
-        } else {
-            throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
-        }
-        for (TabComponent extra : component.getExtra()) {
-            sb.append(toBukkitFormat(extra));
-        }
-        return sb.toString();
     }
 }

@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     api(projects.shared)
+    api(projects.bossbar.bossbarFabric)
     minecraft("com.mojang:minecraft:25w06a")
     mappings(loom.officialMojangMappings())
     modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")

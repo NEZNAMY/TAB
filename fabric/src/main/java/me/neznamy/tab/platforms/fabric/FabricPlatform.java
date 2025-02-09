@@ -4,22 +4,21 @@ import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.chat.component.KeybindComponent;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.chat.component.TextComponent;
+import me.neznamy.chat.component.TranslatableComponent;
 import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.chat.component.KeybindComponent;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.chat.component.TextComponent;
-import me.neznamy.chat.component.TranslatableComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
-import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -163,12 +162,6 @@ public class FabricPlatform implements BackendPlatform {
     @NotNull
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
         return new FabricScoreboard((FabricTabPlayer) player);
-    }
-
-    @Override
-    @NotNull
-    public BossBar createBossBar(@NotNull TabPlayer player) {
-        return new FabricBossBar((FabricTabPlayer) player);
     }
 
     @Override

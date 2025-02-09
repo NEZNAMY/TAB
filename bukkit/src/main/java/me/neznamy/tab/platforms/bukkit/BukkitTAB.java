@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import me.neznamy.bossbar.bukkit.BukkitBossBarAPI;
+import me.neznamy.bossbar.shared.BossBarAPI;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.platform.FoliaPlatform;
 import me.neznamy.tab.shared.TAB;
@@ -13,6 +15,7 @@ public class BukkitTAB extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        BossBarAPI.setInstance(new BukkitBossBarAPI());
         boolean folia = ReflectionUtils.classExists("io.papermc.paper.threadedregions.RegionizedServer");
         TAB.create(folia ? new FoliaPlatform(this) : new BukkitPlatform(this));
     }

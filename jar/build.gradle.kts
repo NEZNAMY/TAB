@@ -14,6 +14,7 @@ val platforms = setOf(
 ).map { it.dependencyProject }
 
 val fabrics = setOf(
+    rootProject.projects.bossbar.bossbarFabric,
     rootProject.projects.fabric,
     rootProject.projects.fabric.v1144,
     rootProject.projects.fabric.v1182,
