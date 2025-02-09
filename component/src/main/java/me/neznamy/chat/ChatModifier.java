@@ -18,9 +18,9 @@ public class ChatModifier {
     @Nullable private Integer shadowColor; // ARGB
     @Nullable private Boolean bold;
     @Nullable private Boolean italic;
-    @Nullable private Boolean obfuscated;
-    @Nullable private Boolean strikethrough;
     @Nullable private Boolean underlined;
+    @Nullable private Boolean strikethrough;
+    @Nullable private Boolean obfuscated;
     @Nullable private String font;
 
     /**
