@@ -92,12 +92,12 @@ public class BukkitPlatform implements BackendPlatform {
             new BukkitPremiumVanishHook().register();
         }
         PingRetriever.tryLoad();
-        ComponentConverter.tryLoad(serverVersion);
-        ScoreboardLoader.findInstance(serverVersion);
-        TabListBase.findInstance(serverVersion);
+        ComponentConverter.tryLoad();
+        ScoreboardLoader.findInstance();
+        TabListBase.findInstance();
         if (BukkitReflection.getMinorVersion() >= 8) {
             HeaderFooter.findInstance();
-            BukkitPipelineInjector.tryLoad(serverVersion);
+            BukkitPipelineInjector.tryLoad();
         }
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] §7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");

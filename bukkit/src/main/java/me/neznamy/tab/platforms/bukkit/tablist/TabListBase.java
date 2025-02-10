@@ -3,20 +3,17 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.header.HeaderFooter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
-import me.neznamy.tab.shared.util.function.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
-import java.util.EnumSet;
 import java.util.UUID;
 
 /**
@@ -26,11 +23,6 @@ import java.util.UUID;
  *          Component class
  */
 public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> {
-
-    /** Versions supported by paper module that uses direct mojang-mapped NMS for latest MC version */
-    private static final EnumSet<ProtocolVersion> paperNativeVersions = EnumSet.of(
-            ProtocolVersion.V1_21_4
-    );
 
     /** Instance function */
     @Getter
@@ -52,16 +44,10 @@ public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> 
 
     /**
      * Finds the best available instance for current server software.
-     *
-     * @param   serverVersion
-     *          Server version
      */
-    public static void findInstance(@NotNull ProtocolVersion serverVersion) {
+    public static void findInstance() {
         try {
-            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && paperNativeVersions.contains(serverVersion)) {
-                Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketTabList").getConstructor(BukkitTabPlayer.class);
-                instance = player -> (TabListBase<?>) constructor.newInstance(player);
-            } else if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {
+            if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {
                 PacketTabList1193.loadNew();
                 instance = PacketTabList1193::new;
             } else if (BukkitReflection.getMinorVersion() >= 8) {

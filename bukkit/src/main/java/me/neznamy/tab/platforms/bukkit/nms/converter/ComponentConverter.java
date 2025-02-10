@@ -7,22 +7,13 @@ import me.neznamy.chat.component.TextComponent;
 import me.neznamy.chat.component.TranslatableComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.EnumSet;
 
 /**
  * Interface for converting TAB components into NMS components (1.7+).
  */
 public abstract class ComponentConverter {
-
-    /** Versions supported by paper module that uses direct mojang-mapped NMS */
-    private static final EnumSet<ProtocolVersion> paperNativeVersions = EnumSet.of(
-            ProtocolVersion.V1_21_4
-    );
 
     /** Instance of this class */
     @Nullable
@@ -112,15 +103,10 @@ public abstract class ComponentConverter {
 
     /**
      * Attempts to load component converter.
-     *
-     * @param   serverVersion
-     *          Server version
      */
-    public static void tryLoad(@NotNull ProtocolVersion serverVersion) {
+    public static void tryLoad() {
         try {
-            if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") && paperNativeVersions.contains(serverVersion)) {
-                INSTANCE = (ComponentConverter) Class.forName("me.neznamy.tab.platforms.paper.PaperComponentConverter").getConstructor().newInstance();
-            } else if (BukkitReflection.getMinorVersion() >= 19) {
+            if (BukkitReflection.getMinorVersion() >= 19) {
                 // 1.19+
                 INSTANCE = new ModernComponentConverter();
             } else if (BukkitReflection.getMinorVersion() >= 16) {
