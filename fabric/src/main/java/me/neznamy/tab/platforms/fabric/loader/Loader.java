@@ -107,18 +107,6 @@ public interface Loader {
     }
 
     /**
-     * Adds sibling to a component.
-     *
-     * @param   parent
-     *          Parent to add sibling to
-     * @param   child
-     *          Sibling to add
-     */
-    default void addSibling(@NotNull Component parent, @NotNull Component child) {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    /**
      * Creates team register packet using given team.
      *
      * @param   team

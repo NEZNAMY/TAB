@@ -153,7 +153,7 @@ public class FabricPlatform implements BackendPlatform {
 
         // Extra
         for (TabComponent extra : component.getExtra()) {
-            FabricMultiVersion.addSibling(nmsComponent, convertComponent(extra));
+            nmsComponent.getSiblings().add(convertComponent(extra));
         }
 
         return nmsComponent;

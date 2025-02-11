@@ -93,11 +93,6 @@ public class Loader_Latest implements Loader {
     }
 
     @Override
-    public void addSibling(@NotNull Component parent, @NotNull Component child) {
-        parent.getSiblings().add(child);
-    }
-
-    @Override
     @NotNull
     public Packet<?> registerTeam(@NotNull PlayerTeam team) {
         return ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);

@@ -67,19 +67,6 @@ public class FabricMultiVersion {
     }
 
     /**
-     * Adds sibling to a component.
-     *
-     * @param   parent
-     *          Parent to add sibling to
-     * @param   child
-     *          Sibling to add
-     */
-    public static void addSibling(@NotNull Component parent, @NotNull Component child) {
-        if (serverVersion.getMinorVersion() >= 16) loaderLatest.addSibling(parent, child);
-        else loader1_14_4.addSibling(parent, child);
-    }
-
-    /**
      * Converts TAB's ChatModifier class to Minecraft Style class.
      *
      * @param   modifier

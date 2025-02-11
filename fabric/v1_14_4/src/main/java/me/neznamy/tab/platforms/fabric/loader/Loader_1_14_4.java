@@ -97,11 +97,6 @@ public class Loader_1_14_4 implements Loader {
     }
 
     @Override
-    public void addSibling(@NotNull Component parent, @NotNull Component child) {
-        parent.append(child);
-    }
-
-    @Override
     @NotNull
     public Packet<?> registerTeam(@NotNull PlayerTeam team) {
         return new ClientboundSetPlayerTeamPacket(team, 0);
