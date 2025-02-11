@@ -149,6 +149,16 @@ public interface Platform {
     Scoreboard createScoreboard(@NotNull TabPlayer player);
 
     /**
+     * Creates new bossbar instance for given player.
+     *
+     * @param   player
+     *          Player to create bossbar for
+     * @return  Bossbar implementation for given player
+     */
+    @NotNull
+    BossBar createBossBar(@NotNull TabPlayer player);
+
+    /**
      * Creates new tablist instance for given player.
      *
      * @param   player

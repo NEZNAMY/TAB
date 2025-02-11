@@ -1,9 +1,10 @@
-package me.neznamy.bossbar.shared;
+package me.neznamy.tab.shared.platform.decorators;
 
 import lombok.*;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.platform.BossBar;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -20,15 +21,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param   <T>
  *          Platform's BossBar class
  */
-@RequiredArgsConstructor
-public abstract class SafeBossBarManager<T> implements BossBarManager {
+public abstract class SafeBossBar<T> implements BossBar {
 
     /** BossBars currently visible to the player */
     private final Map<UUID, BossBarInfo> bossBars = new ConcurrentHashMap<>();
-
-    /** Player this bossbar belongs to */
-    @NotNull
-    protected final Object player;
 
     /** Flag tracking whether boss bars should be frozen or not */
     private boolean frozen;

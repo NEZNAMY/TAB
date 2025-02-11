@@ -2,8 +2,6 @@ package me.neznamy.tab.platforms.sponge7;
 
 import com.google.inject.Inject;
 import lombok.Getter;
-import me.neznamy.bossbar.shared.BossBarAPI;
-import me.neznamy.bossbar.sponge7.Sponge7BossBarAPI;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +39,6 @@ public class Sponge7TAB {
      */
     @Listener
     public void onServerStart(@Nullable GameStartedServerEvent event) {
-        BossBarAPI.setInstance(new Sponge7BossBarAPI());
         TAB.create(new SpongePlatform(this));
     }
 

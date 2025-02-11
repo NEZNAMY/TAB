@@ -1,9 +1,13 @@
-package me.neznamy.bossbar.shared.impl;
+package me.neznamy.tab.shared.platform.impl;
 
-import me.neznamy.bossbar.shared.SafeBossBarManager;
-import me.neznamy.chat.component.TabComponent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
@@ -13,17 +17,15 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Shared BossBar implementation using Adventure API.
  */
-public class AdventureBossBarManager extends SafeBossBarManager<BossBar> {
+@RequiredArgsConstructor
+public class AdventureBossBar extends SafeBossBar<BossBar> {
 
-    /**
-     * Constructs new instance for given player.
-     *
-     * @param   player
-     *          Player this Boss bar will belong to
-     */
-    public AdventureBossBarManager(@NotNull Object player) { // Object because otherwise error is thrown if adventure is not available and this class is imported
-        super(player);
-    }
+    /** Flag tracking whether this implementation is available on the server or not */
+    @Getter
+    private static final boolean available = ReflectionUtils.classExists("net.kyori.adventure.bossbar.BossBar");
+
+    /** Player this BossBar belongs to */
+    private final TabPlayer player;
 
     @Override
     @NotNull
@@ -33,7 +35,7 @@ public class AdventureBossBarManager extends SafeBossBarManager<BossBar> {
 
     @Override
     public void create(@NotNull BossBarInfo bar) {
-        ((Audience)player).showBossBar(bar.getBossBar());
+        ((Audience)player.getPlayer()).showBossBar(bar.getBossBar());
     }
 
     @Override
@@ -58,6 +60,6 @@ public class AdventureBossBarManager extends SafeBossBarManager<BossBar> {
 
     @Override
     public void remove(@NotNull BossBarInfo bar) {
-        ((Audience)player).hideBossBar(bar.getBossBar());
+        ((Audience)player.getPlayer()).hideBossBar(bar.getBossBar());
     }
 }

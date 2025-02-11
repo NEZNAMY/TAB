@@ -232,43 +232,6 @@ public abstract class TabComponent {
     }
 
     /**
-     * Converts component to string using bukkit RGB format if supported by the server.
-     * If not, closest legacy color is used instead.
-     *
-     * @param   rgbSupport
-     *          Whether server supports RGB or not
-     * @return  Converted string using bukkit color format
-     */
-    @NotNull
-    public String toBukkitFormat(boolean rgbSupport) {
-        StringBuilder sb = new StringBuilder();
-        if (modifier.getColor() != null) {
-            if (rgbSupport) {
-                String hexCode = modifier.getColor().getHexCode();
-                sb.append('§').append("x").append('§').append(hexCode.charAt(0)).append('§').append(hexCode.charAt(1))
-                        .append('§').append(hexCode.charAt(2)).append('§').append(hexCode.charAt(3))
-                        .append('§').append(hexCode.charAt(4)).append('§').append(hexCode.charAt(5));
-            } else {
-                sb.append('§').append(modifier.getColor().getLegacyColor().getCharacter());
-            }
-        }
-        sb.append(modifier.getMagicCodes());
-        if (this instanceof TextComponent) {
-            sb.append(((TextComponent) this).getText());
-        } else if (this instanceof TranslatableComponent) {
-            sb.append(((TranslatableComponent) this).getKey());
-        } else if (this instanceof KeybindComponent) {
-            sb.append(((KeybindComponent) this).getKeybind());
-        } else {
-            throw new IllegalStateException("Unexpected component type: " + getClass().getName());
-        }
-        for (TabComponent extra : getExtra()) {
-            sb.append(extra.toBukkitFormat(rgbSupport));
-        }
-        return sb.toString();
-    }
-
-    /**
      * Returns organized component from colored text
      *
      * @param   originalText

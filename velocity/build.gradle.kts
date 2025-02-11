@@ -1,6 +1,5 @@
 dependencies {
     implementation(projects.shared)
-    implementation(projects.bossbar.bossbarVelocity)
     implementation("org.bstats:bstats-velocity:3.1.0")
     compileOnly("com.github.limework.redisbungee:RedisBungee-Velocity:0.11.0")
     compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")

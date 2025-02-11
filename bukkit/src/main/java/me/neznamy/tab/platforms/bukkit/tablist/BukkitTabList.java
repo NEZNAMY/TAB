@@ -70,6 +70,6 @@ public class BukkitTabList extends TabListBase<String> {
 
     @Override
     public String toComponent(@NonNull TabComponent component) {
-        return component.toBukkitFormat(player.getPlatform().getServerVersion().supportsRGB());
+        return player.getPlatform().toBukkitFormat(component);
     }
 }

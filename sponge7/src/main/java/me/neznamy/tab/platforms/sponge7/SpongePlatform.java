@@ -2,15 +2,16 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -119,6 +120,12 @@ public class SpongePlatform implements BackendPlatform {
     @NotNull
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
         return new SpongeScoreboard((SpongeTabPlayer) player);
+    }
+
+    @Override
+    @NotNull
+    public BossBar createBossBar(@NotNull TabPlayer player) {
+        return new SpongeBossBar((SpongeTabPlayer) player);
     }
 
     @Override

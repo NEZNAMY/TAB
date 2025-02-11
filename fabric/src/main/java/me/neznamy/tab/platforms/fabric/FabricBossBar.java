@@ -1,11 +1,11 @@
-package me.neznamy.bossbar.fabric;
+package me.neznamy.tab.platforms.fabric;
 
-import me.neznamy.bossbar.shared.SafeBossBarManager;
-import me.neznamy.chat.component.TabComponent;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import net.minecraft.server.level.ServerBossEvent;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent.BossBarColor;
 import net.minecraft.world.BossEvent.BossBarOverlay;
 import org.jetbrains.annotations.NotNull;
@@ -13,17 +13,12 @@ import org.jetbrains.annotations.NotNull;
 /**
  * BossBar implementation for Fabric using packets.
  */
-public class FabricBossBarManager extends SafeBossBarManager<ServerBossEvent> {
+@RequiredArgsConstructor
+public class FabricBossBar extends SafeBossBar<ServerBossEvent> {
 
-    /**
-     * Constructs new instance for given player.
-     *
-     * @param   player
-     *          Player this Boss bar will belong to
-     */
-    public FabricBossBarManager(@NotNull ServerPlayer player) {
-        super(player);
-    }
+    /** Player this BossBar belongs to */
+    @NotNull
+    private final FabricTabPlayer player;
 
     @Override
     @NotNull
@@ -33,13 +28,13 @@ public class FabricBossBarManager extends SafeBossBarManager<ServerBossEvent> {
                 BossBarColor.valueOf(color.name()),
                 BossBarOverlay.valueOf(style.name())
         );
-        bar.setProgress(progress); // Somehow, the compiled method name is same despite method being renamed in 1.17
+        bar.setProgress(progress); // Somehow the compiled method name is same despite method being renamed in 1.17
         return bar;
     }
 
     @Override
     public void create(@NotNull BossBarInfo bar) {
-        bar.getBossBar().addPlayer((ServerPlayer) player);
+        bar.getBossBar().addPlayer(player.getPlayer());
     }
 
     @Override
@@ -49,7 +44,7 @@ public class FabricBossBarManager extends SafeBossBarManager<ServerBossEvent> {
 
     @Override
     public void updateProgress(@NotNull BossBarInfo bar) {
-        bar.getBossBar().setProgress(bar.getProgress()); // Somehow, the compiled method name is same despite method being renamed in 1.17
+        bar.getBossBar().setProgress(bar.getProgress()); // Somehow the compiled method name is same despite method being renamed in 1.17
     }
 
     @Override
@@ -64,6 +59,6 @@ public class FabricBossBarManager extends SafeBossBarManager<ServerBossEvent> {
 
     @Override
     public void remove(@NotNull BossBarInfo bar) {
-        bar.getBossBar().removePlayer((ServerPlayer) player);
+        bar.getBossBar().removePlayer(player.getPlayer());
     }
 }

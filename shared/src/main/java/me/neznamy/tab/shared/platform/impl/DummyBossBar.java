@@ -1,25 +1,15 @@
-package me.neznamy.bossbar.shared.impl;
+package me.neznamy.tab.shared.platform.impl;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.bossbar.shared.SafeBossBarManager;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Dummy implementation when no suitable one is available.
  */
-public class DummyBossBarManager extends SafeBossBarManager<Object> {
-
-    /**
-     * Constructs new instance for given player.
-     *
-     * @param   player
-     *          Player this Boss bar will belong to
-     */
-    public DummyBossBarManager(@NotNull Object player) {
-        super(player);
-    }
+public class DummyBossBar extends SafeBossBar<Object> {
 
     @Override
     @NotNull

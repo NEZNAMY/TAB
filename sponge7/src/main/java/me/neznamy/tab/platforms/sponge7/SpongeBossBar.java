@@ -1,17 +1,18 @@
-package me.neznamy.bossbar.sponge7;
+package me.neznamy.tab.platforms.sponge7;
 
-import me.neznamy.bossbar.shared.SafeBossBarManager;
-import me.neznamy.chat.component.TabComponent;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.boss.*;
-import org.spongepowered.api.entity.living.player.Player;
 
 /**
  * BossBar implementation for Sponge 7 using its API.
  */
-public class Sponge7BossBarManager extends SafeBossBarManager<ServerBossBar> {
+@RequiredArgsConstructor
+public class SpongeBossBar extends SafeBossBar<ServerBossBar> {
 
     /** Color array for fast access */
     private static final BossBarColor[] colors = {
@@ -33,15 +34,9 @@ public class Sponge7BossBarManager extends SafeBossBarManager<ServerBossBar> {
             BossBarOverlays.NOTCHED_20
     };
 
-    /**
-     * Constructs new instance for given player.
-     *
-     * @param   player
-     *          Player this Boss bar will belong to
-     */
-    public Sponge7BossBarManager(@NotNull Player player) {
-        super(player);
-    }
+    /** Player to send boss bars to */
+    @NotNull
+    private final SpongeTabPlayer player;
 
     @Override
     @NotNull
@@ -56,7 +51,7 @@ public class Sponge7BossBarManager extends SafeBossBarManager<ServerBossBar> {
 
     @Override
     public void create(@NotNull BossBarInfo bar) {
-        bar.getBossBar().addPlayer((Player) player);
+        bar.getBossBar().addPlayer(player.getPlayer());
     }
 
     @Override
@@ -81,6 +76,6 @@ public class Sponge7BossBarManager extends SafeBossBarManager<ServerBossBar> {
 
     @Override
     public void remove(@NotNull BossBarInfo bar) {
-        bar.getBossBar().removePlayer((Player) player);
+        bar.getBossBar().removePlayer(player.getPlayer());
     }
 }
