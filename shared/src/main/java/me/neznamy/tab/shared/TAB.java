@@ -180,12 +180,12 @@ public class TAB extends TabAPI {
             groupManager = platform.detectPermissionPlugin();
             platform.registerPlaceholders();
             featureManager.loadFeaturesFromConfig();
+            pluginDisabled = false;
             platform.loadPlayers();
             command = new TabCommand();
             featureManager.load();
             for (TabPlayer p : onlinePlayers) p.markAsLoaded(false);
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
-            pluginDisabled = false;
             cpu.enable();
             configHelper.startup().printWarnCount();
             platform.logInfo(new TextComponent("Enabled in " + (System.currentTimeMillis()-time) + "ms", TextColor.GREEN));
