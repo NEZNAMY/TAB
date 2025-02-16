@@ -112,6 +112,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
         if (this.gamemode == gamemode) return; // Player join with player in survival mode
         this.gamemode = gamemode;
         ((PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GAMEMODE)).update(this);
+        TAB.getInstance().getFeatureManager().onGameModeChange(this);
     }
 
     /**
