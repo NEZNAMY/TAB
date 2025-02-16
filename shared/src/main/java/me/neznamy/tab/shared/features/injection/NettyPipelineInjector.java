@@ -66,7 +66,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
                 if (player.getVersion().getMinorVersion() >= 8) {
-                    ((TrackedTabList<?, ?>)player.getTabList()).onPacketSend(packet);
+                    ((TrackedTabList<?>)player.getTabList()).onPacketSend(packet);
                 }
                 if (((SafeScoreboard<?>)player.getScoreboard()).isAntiOverrideTeams() || ((SafeScoreboard<?>)player.getScoreboard()).isAntiOverrideScoreboard()) {
                     ((SafeScoreboard<?>)player.getScoreboard()).onPacketSend(packet);

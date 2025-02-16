@@ -54,7 +54,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         if (configuration.isAntiOverride()) {
             TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
                         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                            ((TrackedTabList<?, ?>)p.getTabList()).checkDisplayNames();
+                            ((TrackedTabList<?>)p.getTabList()).checkDisplayNames();
                         }
                     }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC), 500
             );
@@ -157,7 +157,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     @Override
     public void load() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            ((TrackedTabList<?, ?>)all.getTabList()).setAntiOverride(configuration.isAntiOverride());
+            ((TrackedTabList<?>)all.getTabList()).setAntiOverride(configuration.isAntiOverride());
             loadProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
                 all.tablistData.disabled.set(true);
@@ -262,7 +262,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        ((TrackedTabList<?, ?>)connectedPlayer.getTabList()).setAntiOverride(configuration.isAntiOverride());
+        ((TrackedTabList<?>)connectedPlayer.getTabList()).setAntiOverride(configuration.isAntiOverride());
         loadProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.tablistData.disabled.set(true);

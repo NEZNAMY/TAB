@@ -17,7 +17,7 @@ import java.util.UUID;
 /**
  * TabList implementation for Fabric using packets.
  */
-public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
+public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
 
     /**
      * Constructs new instance.
@@ -36,9 +36,9 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable Component displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.UPDATE_DISPLAY_NAME,
-                new Builder(entry, "", null, false, 0, 0, displayName, 0, false)));
+                new Builder(entry, "", null, false, 0, 0, displayName == null ? null : displayName.convert(), 0, false)));
     }
 
     @Override
@@ -78,15 +78,15 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer, Component> {
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable Component displayName, int listOrder, boolean showHat) {
+    public void addEntry0(@NonNull Entry entry) {
         player.sendPacket(FabricMultiVersion.buildTabListPacket(Action.ADD_PLAYER,
-                new Builder(id, name, skin, listed, latency, gameMode, displayName, listOrder, showHat)));
+                new Builder(entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(), entry.getLatency(),
+                        entry.getGameMode(), entry.getDisplayName() == null ? null : entry.getDisplayName().convert(), entry.getListOrder(), entry.isShowHat())));
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.sendPacket(FabricMultiVersion.newHeaderFooter(toComponent(header), toComponent(footer)));
+        player.sendPacket(FabricMultiVersion.newHeaderFooter(header.convert(), footer.convert()));
     }
 
     @Override

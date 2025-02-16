@@ -10,14 +10,13 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
-import org.spongepowered.api.text.Text;
 
 import java.util.UUID;
 
 /**
  * TabList implementation for Sponge 7 and lower
  */
-public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Text> {
+public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
 
     /** Gamemode array for fast access */
     private static final GameMode[] gameModes = {
@@ -40,8 +39,8 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Text> {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable Text displayName) {
-        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(displayName));
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(displayName == null ? null : displayName.convert()));
     }
 
     @Override
@@ -70,24 +69,23 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Text> {
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable Text displayName, int listOrder, boolean showHat) {
-        GameProfile profile = GameProfile.of(id, name);
-        if (skin != null) profile.getPropertyMap().put(TEXTURES_PROPERTY, ProfileProperty.of(
-                TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
+    public void addEntry0(@NonNull Entry entry) {
+        GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
+        if (entry.getSkin() != null) profile.getPropertyMap().put(TEXTURES_PROPERTY, ProfileProperty.of(
+                TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
         TabListEntry tabListEntry = TabListEntry.builder()
                 .list(player.getPlayer().getTabList())
                 .profile(profile)
-                .latency(latency)
-                .gameMode(gameModes[gameMode])
-                .displayName(displayName)
+                .latency(entry.getLatency())
+                .gameMode(gameModes[entry.getGameMode()])
+                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().convert())
                 .build();
         player.getPlayer().getTabList().addEntry(tabListEntry);
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.getPlayer().getTabList().setHeaderAndFooter(toComponent(header), toComponent(footer));
+        player.getPlayer().getTabList().setHeaderAndFooter(header.convert(), footer.convert());
     }
 
     @Override
@@ -98,9 +96,9 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer, Text> {
     @Override
     public void checkDisplayNames() {
         for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            Text expectedComponent = getExpectedDisplayNames().get(entry.getProfile().getUniqueId());
-            if (expectedComponent != null && entry.getDisplayName().orElse(null) != expectedComponent) {
-                entry.setDisplayName(expectedComponent);
+            TabComponent expectedComponent = getExpectedDisplayNames().get(entry.getProfile().getUniqueId());
+            if (expectedComponent != null && entry.getDisplayName().orElse(null) != expectedComponent.convert()) {
+                entry.setDisplayName(expectedComponent.convert());
             }
         }
     }

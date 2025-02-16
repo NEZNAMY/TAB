@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 import com.mojang.authlib.GameProfile;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -144,7 +145,7 @@ public class PacketTabList1193 extends PacketTabList18 {
     @NotNull
     @Override
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                               boolean listed, int latency, int gameMode, @Nullable Object displayName, int listOrder, boolean showHat) {
+                               boolean listed, int latency, int gameMode, @Nullable TabComponent displayName, int listOrder, boolean showHat) {
         Object packet = newPlayerInfo.newInstance(actionToEnumSet.get(action), Collections.emptyList());
         PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData(
                 id,
@@ -152,7 +153,7 @@ public class PacketTabList1193 extends PacketTabList18 {
                 listed,
                 latency,
                 gameModes[gameMode],
-                displayName,
+                displayName == null ? null : displayName.convert(),
                 showHat,
                 listOrder,
                 null
@@ -176,9 +177,9 @@ public class PacketTabList1193 extends PacketTabList18 {
             int listOrder = v1_21_2Plus ? PlayerInfoData_ListOrder.getInt(nmsData) : 0;
             boolean showHat = BukkitReflection.is1_21_4Plus() && PlayerInfoData_ShowHat.getBoolean(nmsData);
             if (actions.contains(actionUpdateDisplayName)) {
-                Object expectedName = getExpectedDisplayNames().get(id);
-                if (expectedName != null && expectedName != displayName) {
-                    displayName = expectedName;
+                TabComponent expectedName = getExpectedDisplayNames().get(id);
+                if (expectedName != null && expectedName.convert() != displayName) {
+                    displayName = expectedName.convert();
                     rewriteEntry = rewritePacket = true;
                 }
             }

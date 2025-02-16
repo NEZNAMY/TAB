@@ -18,16 +18,13 @@ import java.util.UUID;
 
 /**
  * Base TabList class for all implementations.
- *
- * @param   <C>
- *          Component class
  */
-public abstract class TabListBase<C> extends TrackedTabList<BukkitTabPlayer, C> {
+public abstract class TabListBase extends TrackedTabList<BukkitTabPlayer> {
 
     /** Instance function */
     @Getter
     @Setter
-    private static FunctionWithException<BukkitTabPlayer, TabListBase<?>> instance;
+    private static FunctionWithException<BukkitTabPlayer, TabListBase> instance;
 
     @Nullable
     protected static SkinData skinData;

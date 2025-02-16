@@ -13,11 +13,9 @@ import java.util.*;
  *
  * @param   <P>
  *          Platform's player class
- * @param   <C>
- *          Platform's component class
  */
 @RequiredArgsConstructor
-public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList {
+public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     /** Player this tablist belongs to */
     protected final P player;
@@ -29,24 +27,21 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
     @Getter
-    private final Map<UUID, C> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<UUID, TabComponent> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        C component = displayName == null ? null : toComponent(displayName);
-        if (antiOverride) expectedDisplayNames.put(entry, component);
-        updateDisplayName(entry, component);
+        if (antiOverride) expectedDisplayNames.put(entry, displayName);
+        updateDisplayName0(entry, displayName);
     }
 
     @Override
     public void addEntry(@NonNull Entry entry) {
-        C component = entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName());
-        if (antiOverride) expectedDisplayNames.put(entry.getUniqueId(), component);
-        addEntry(entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(), entry.getLatency(),
-                entry.getGameMode(), component, entry.getListOrder(), entry.isShowHat());
+        if (antiOverride) expectedDisplayNames.put(entry.getUniqueId(), entry.getDisplayName());
+        addEntry0(entry);
         if (player.getVersion().getMinorVersion() == 8) {
             // Compensation for 1.8.0 client sided bug
-            updateDisplayName(entry.getUniqueId(), component);
+            updateDisplayName0(entry.getUniqueId(), entry.getDisplayName());
         }
     }
 
@@ -70,17 +65,6 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
     }
 
     /**
-     * Converts TAB component into platform's component.
-     *
-     * @param   component
-     *          Component to convert
-     * @return  Converted component
-     */
-    public C toComponent(@NonNull TabComponent component) {
-        return component.convert();
-    }
-
-    /**
      * Updates display name of an entry. Using {@code null} makes it undefined and
      * scoreboard team prefix/suffix will be visible instead.
      *
@@ -89,30 +73,13 @@ public abstract class TrackedTabList<P extends TabPlayer, C> implements TabList 
      * @param   displayName
      *          New display name
      */
-    public abstract void updateDisplayName(@NonNull UUID entry, @Nullable C displayName);
+    public abstract void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName);
 
     /**
-     * Adds specified entry to tablist
+     * Adds specified entry to tablist.
      *
-     * @param   id
-     *          Entry UUID
-     * @param   name
-     *          Entry name
-     * @param   skin
-     *          Entry skin
-     * @param   listed
-     *          Whether entry should be listed or not
-     * @param   latency
-     *          Entry latency
-     * @param   gameMode
-     *          Entry game mode
-     * @param   displayName
-     *          Entry display name
-     * @param   listOrder
-     *          Entry list order
-     * @param   showHat
-     *          Show hat flag
+     * @param   entry
+     *          Entry to add
      */
-    public abstract void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                                  boolean listed, int latency, int gameMode, @Nullable C displayName, int listOrder, boolean showHat);
+    public abstract void addEntry0(@NonNull Entry entry);
 }

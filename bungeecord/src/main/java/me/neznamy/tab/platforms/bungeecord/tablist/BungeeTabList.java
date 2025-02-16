@@ -2,9 +2,9 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
@@ -16,7 +16,6 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import net.md_5.bungee.tab.ServerUnique;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -25,7 +24,7 @@ import java.util.UUID;
  * Abstract TabList class for BungeeCord containing
  * common code for all implementations.
  */
-public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, BaseComponent> {
+public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
 
     /** Pointer to UUIDs in player's TabList */
     private final Collection<UUID> uuids;
@@ -63,44 +62,27 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
     }
 
     /**
-     * Converts entry data to item.
+     * Converts entry to item.
      *
-     * @param   id
-     *          Entry UUID
-     * @param   name
-     *          Entry name
-     * @param   skin
-     *          Entry skin
-     * @param   listed
-     *          Whether entry should be listed or not
-     * @param   latency
-     *          Entry latency
-     * @param   gameMode
-     *          Entry game mode
-     * @param   displayName
-     *          Entry display name
-     * @param   listOrder
-     *          Entry list order
-     * @param   showHat
-     *          Show hat flag
-     * @return  Converted item from parameters
+     * @param   entry
+     *          Entry to convert
+     * @return  Converted item from entry
      */
     @NotNull
-    public Item entryToItem(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                            int gameMode, @Nullable BaseComponent displayName, int listOrder, boolean showHat) {
-        Item item = item(id);
-        item.setUsername(name);
-        item.setDisplayName(displayName);
-        item.setGamemode(gameMode);
-        item.setListed(listed);
-        item.setPing(latency);
-        if (skin != null) {
-            item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, skin.getValue(), skin.getSignature())});
+    public Item entryToItem(@NonNull Entry entry) {
+        Item item = item(entry.getUniqueId());
+        item.setUsername(entry.getName());
+        item.setDisplayName(entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName()));
+        item.setGamemode(entry.getGameMode());
+        item.setListed(entry.isListed());
+        item.setPing(entry.getLatency());
+        if (entry.getSkin() != null) {
+            item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature())});
         } else {
             item.setProperties(new Property[0]);
         }
-        item.setListOrder(listOrder);
-        item.setShowHat(showHat);
+        item.setListOrder(entry.getListOrder());
+        item.setShowHat(entry.isShowHat());
         return item;
     }
 
@@ -130,8 +112,8 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    BaseComponent expectedDisplayName = getExpectedDisplayNames().get(item.getUuid());
-                    if (expectedDisplayName != null) item.setDisplayName(expectedDisplayName);
+                    TabComponent expectedDisplayName = getExpectedDisplayNames().get(item.getUuid());
+                    if (expectedDisplayName != null) item.setDisplayName(toComponent(expectedDisplayName));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
@@ -144,8 +126,8 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    BaseComponent expectedDisplayName = getExpectedDisplayNames().get(item.getUuid());
-                    if (expectedDisplayName != null) item.setDisplayName(expectedDisplayName);
+                    TabComponent expectedDisplayName = getExpectedDisplayNames().get(item.getUuid());
+                    if (expectedDisplayName != null) item.setDisplayName(toComponent(expectedDisplayName));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
@@ -162,8 +144,8 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer, Base
         return uuids.contains(entry);
     }
 
-    @Override
-    public BaseComponent toComponent(@NonNull TabComponent component) {
+    @NotNull
+    protected BaseComponent toComponent(@NonNull TabComponent component) {
         return player.getPlatform().transformComponent(component, player.getVersion());
     }
 }

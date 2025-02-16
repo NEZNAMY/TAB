@@ -41,8 +41,8 @@ public class Loader_1_20_3 implements Loader {
             Component displayName = nmsData.displayName();
             int latency = nmsData.latency();
             if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                Component expectedDisplayName = ((FabricTabList)receiver.getTabList()).getExpectedDisplayNames().get(nmsData.profileId());
-                if (expectedDisplayName != null) displayName = expectedDisplayName;
+                TabComponent expectedDisplayName = ((FabricTabList)receiver.getTabList()).getExpectedDisplayNames().get(nmsData.profileId());
+                if (expectedDisplayName != null) displayName = expectedDisplayName.convert();
             }
             if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
                 latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, nmsData.profileId(), latency);

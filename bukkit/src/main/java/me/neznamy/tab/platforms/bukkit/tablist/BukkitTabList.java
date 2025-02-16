@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * TabList handler using the almighty Bukkit API.
  */
-public class BukkitTabList extends TabListBase<String> {
+public class BukkitTabList extends TabListBase {
 
     /**
      * Constructs new instance with given player.
@@ -31,10 +31,10 @@ public class BukkitTabList extends TabListBase<String> {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void updateDisplayName(@NonNull UUID entry, @Nullable String displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
         Player p = Bukkit.getPlayer(entry);
         if (p == null) return;
-        p.setPlayerListName(displayName);
+        p.setPlayerListName(displayName == null ? null : displayName.toLegacyText());
     }
 
     @Override
@@ -63,13 +63,7 @@ public class BukkitTabList extends TabListBase<String> {
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable String displayName, int listOrder, boolean showHat) {
+    public void addEntry0(@NonNull Entry entry) {
         // Shrug
-    }
-
-    @Override
-    public String toComponent(@NonNull TabComponent component) {
-        return player.getPlatform().toBukkitFormat(component);
     }
 }

@@ -1,15 +1,16 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.UUID;
 
 /**
  * TabList handler for 1.19.3+ players using the new tab list packets.
@@ -73,9 +74,9 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable BaseComponent displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
         Item item = item(entry);
-        item.setDisplayName(displayName);
+        if (displayName != null) item.setDisplayName(toComponent(displayName));
         sendPacket(updateDisplayName, item);
     }
 
@@ -117,9 +118,8 @@ public class BungeeTabList1193 extends BungeeTabList {
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable BaseComponent displayName, int listOrder, boolean showHat) {
-        addUuid(id);
+    public void addEntry0(@NonNull Entry entry) {
+        addUuid(entry.getUniqueId());
         EnumSet<PlayerListItemUpdate.Action> actions;
         if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_4.getNetworkId()) {
             actions = addPlayer_1_21_4;
@@ -128,7 +128,7 @@ public class BungeeTabList1193 extends BungeeTabList {
         } else {
             actions = addPlayer_legacy;
         }
-        sendPacket(actions, entryToItem(id, name, skin, listed, latency, gameMode, displayName, listOrder, showHat));
+        sendPacket(actions, entryToItem(entry));
     }
 
     private void sendPacket(@NonNull EnumSet<PlayerListItemUpdate.Action> actions, @NonNull Item item) {

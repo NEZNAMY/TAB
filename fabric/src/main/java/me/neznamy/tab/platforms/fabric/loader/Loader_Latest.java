@@ -11,6 +11,7 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.numbers.FixedFormat;
@@ -149,8 +150,8 @@ public class Loader_Latest implements Loader {
             Component displayName = nmsData.displayName();
             int latency = nmsData.latency();
             if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                Component expectedDisplayName = ((FabricTabList)receiver.getTabList()).getExpectedDisplayNames().get(nmsData.profileId());
-                if (expectedDisplayName != null) displayName = expectedDisplayName;
+                TabComponent expectedDisplayName = ((TrackedTabList<?>)receiver.getTabList()).getExpectedDisplayNames().get(nmsData.profileId());
+                if (expectedDisplayName != null) displayName = expectedDisplayName.convert();
             }
             if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
                 latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, nmsData.profileId(), latency);

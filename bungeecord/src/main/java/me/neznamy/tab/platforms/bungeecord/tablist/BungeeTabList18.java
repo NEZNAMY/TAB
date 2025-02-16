@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import org.jetbrains.annotations.Nullable;
@@ -32,9 +32,9 @@ public class BungeeTabList18 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable BaseComponent displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
         Item item = item(entry);
-        item.setDisplayName(displayName);
+        if (displayName != null) item.setDisplayName(toComponent(displayName));
         sendPacket(PlayerListItem.Action.UPDATE_DISPLAY_NAME, item);
     }
 
@@ -68,10 +68,9 @@ public class BungeeTabList18 extends BungeeTabList {
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable BaseComponent displayName, int listOrder, boolean showHat) {
-        addUuid(id);
-        sendPacket(PlayerListItem.Action.ADD_PLAYER, entryToItem(id, name, skin, listed, latency, gameMode, displayName, listOrder, showHat));
+    public void addEntry0(@NonNull Entry entry) {
+        addUuid(entry.getUniqueId());
+        sendPacket(PlayerListItem.Action.ADD_PLAYER, entryToItem(entry));
     }
 
     private void sendPacket(@NonNull PlayerListItem.Action action, @NonNull Item item) {

@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
@@ -25,7 +26,7 @@ import java.util.*;
  */
 @Setter
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class PacketTabList18 extends TabListBase<Object> {
+public class PacketTabList18 extends TabListBase {
 
     protected static Class<?> PlayerInfoClass;
     protected static Constructor<?> newPlayerInfo;
@@ -116,7 +117,7 @@ public class PacketTabList18 extends TabListBase<Object> {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable Object displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
         packetSender.sendPacket(player,
                 createPacket(Action.UPDATE_DISPLAY_NAME, entry, "", null, false, 0, 0, displayName, 0, false));
     }
@@ -149,10 +150,10 @@ public class PacketTabList18 extends TabListBase<Object> {
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable Object displayName, int listOrder, boolean showHat) {
+    public void addEntry0(@NonNull Entry entry) {
         packetSender.sendPacket(player,
-                createPacket(Action.ADD_PLAYER, id, name, skin, listed, latency, gameMode, displayName, listOrder, showHat));
+                createPacket(Action.ADD_PLAYER, entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(),
+                        entry.getLatency(), entry.getGameMode(), entry.getDisplayName(), entry.getListOrder(), entry.isShowHat()));
     }
 
     /**
@@ -183,7 +184,7 @@ public class PacketTabList18 extends TabListBase<Object> {
     @SneakyThrows
     @NotNull
     public Object createPacket(@NonNull Action action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                               boolean listed, int latency, int gameMode, @Nullable Object displayName, int listOrder, boolean showHat) {
+                               boolean listed, int latency, int gameMode, @Nullable TabComponent displayName, int listOrder, boolean showHat) {
         Object packet = newPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()), Collections.emptyList());
         List<Object> parameters = new ArrayList<>();
         if (newPlayerInfoData.getParameterTypes()[0] == PlayerInfoClass) {
@@ -192,7 +193,7 @@ public class PacketTabList18 extends TabListBase<Object> {
         parameters.add(createProfile(id, name, skin));
         parameters.add(latency);
         parameters.add(gameModes[gameMode]);
-        parameters.add(displayName);
+        parameters.add(displayName == null ? null : displayName.convert());
         if (BukkitReflection.getMinorVersion() >= 19) parameters.add(null);
         PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(parameters.toArray())));
         return packet;
@@ -228,8 +229,8 @@ public class PacketTabList18 extends TabListBase<Object> {
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
             UUID id = profile.getId();
             if (action.equals(Action.UPDATE_DISPLAY_NAME.name()) || action.equals(Action.ADD_PLAYER.name())) {
-                Object expectedName = getExpectedDisplayNames().get(id);
-                if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName);
+                TabComponent expectedName = getExpectedDisplayNames().get(id);
+                if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
             }
             if (action.equals(Action.UPDATE_LATENCY.name()) || action.equals(Action.ADD_PLAYER.name())) {
                 int oldLatency = PlayerInfoData_Latency.getInt(nmsData);

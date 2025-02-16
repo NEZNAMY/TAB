@@ -14,6 +14,7 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -163,8 +164,8 @@ public class Loader_1_14_4 implements Loader {
             Field displayNameField = ReflectionUtils.getFields(PlayerUpdate.class, Component.class).get(0);
             Field latencyField = ReflectionUtils.getFields(PlayerUpdate.class, int.class).get(0);
             if (action.name().equals(TabList.Action.UPDATE_DISPLAY_NAME.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
-                Object expectedName = ((FabricTabList)receiver.getTabList()).getExpectedDisplayNames().get(profile.getId());
-                if (expectedName != null) displayNameField.set(nmsData, expectedName);
+                TabComponent expectedName = ((TrackedTabList<?>)receiver.getTabList()).getExpectedDisplayNames().get(profile.getId());
+                if (expectedName != null) displayNameField.set(nmsData, expectedName.convert());
             }
             if (action.name().equals(TabList.Action.UPDATE_LATENCY.name()) || action.name().equals(TabList.Action.ADD_PLAYER.name())) {
                 latencyField.set(nmsData, TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latencyField.getInt(nmsData)));

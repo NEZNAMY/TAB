@@ -5,7 +5,6 @@ import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +15,7 @@ import java.util.UUID;
 /**
  * TabList implementation for Velocity using its API.
  */
-public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component> {
+public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
 
     /**
      * Constructs new instance.
@@ -34,8 +33,8 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable Component displayName) {
-        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(displayName));
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(displayName == null ? null : displayName.toAdventure()));
     }
 
     @Override
@@ -64,18 +63,17 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
     }
 
     @Override
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable Component displayName, int listOrder, boolean showHat) {
-        GameProfile profile = new GameProfile(id, name, skin == null ? Collections.emptyList() : Collections.singletonList(
-                        new GameProfile.Property(TEXTURES_PROPERTY, skin.getValue(), Objects.requireNonNull(skin.getSignature()))));
+    public void addEntry0(@NonNull Entry entry) {
+        GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName(), entry.getSkin() == null ? Collections.emptyList() : Collections.singletonList(
+                        new GameProfile.Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), Objects.requireNonNull(entry.getSkin().getSignature()))));
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(profile)
-                .displayName(displayName)
-                .latency(latency)
-                .gameMode(gameMode)
-                .listed(listed)
-                .listOrder(listOrder)
+                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventure())
+                .latency(entry.getLatency())
+                .gameMode(entry.getGameMode())
+                .listed(entry.isListed())
+                .listOrder(entry.getListOrder())
                 .build();
         // TODO showHat once velocity adds it
 
@@ -85,7 +83,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
         // #2 - If player is 1.20.2+, tablist is cleared by the client itself without requirement to remove
         //      manually by the proxy, however velocity's tablist entry tracker still thinks they are present
         //      and therefore will refuse to add them
-        removeEntry(id);
+        removeEntry(entry.getUniqueId());
 
         player.getPlayer().getTabList().addEntry(e);
     }
@@ -103,9 +101,9 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer, Component
     @Override
     public void checkDisplayNames() {
         for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            Component expectedComponent = getExpectedDisplayNames().get(entry.getProfile().getId());
-            if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
-                entry.setDisplayName(expectedComponent);
+            TabComponent expectedComponent = getExpectedDisplayNames().get(entry.getProfile().getId());
+            if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent.toAdventure()) {
+                entry.setDisplayName(expectedComponent.toAdventure());
             }
         }
     }

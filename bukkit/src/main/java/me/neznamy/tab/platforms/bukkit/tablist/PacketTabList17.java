@@ -21,7 +21,7 @@ import java.util.UUID;
 /**
  * TabList handler for 1.7- servers using packets.
  */
-public class PacketTabList17 extends TabListBase<String> {
+public class PacketTabList17 extends TabListBase {
 
     private static TriFunctionWithException<String, Boolean, Integer, Object> newPacket;
     private static PacketSender packetSender;
@@ -83,10 +83,10 @@ public class PacketTabList17 extends TabListBase<String> {
 
     @Override
     @SneakyThrows
-    public void updateDisplayName(@NonNull UUID entry, @Nullable String displayName) {
+    public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         packetSender.sendPacket(player, newPacket.apply(displayNames.get(entry), false, 0));
-        addEntry(entry, userNames.get(entry), null, false, 0, 0, displayName, 0, false);
+        addEntry0(new Entry(entry, userNames.get(entry), null, false, 0, 0, displayName, 0, false));
     }
 
     @Override
@@ -118,18 +118,16 @@ public class PacketTabList17 extends TabListBase<String> {
 
     @Override
     @SneakyThrows
-    public void addEntry(@NonNull UUID id, @NonNull String name, @Nullable Skin skin, boolean listed, int latency,
-                         int gameMode, @Nullable String displayName, int listOrder, boolean showHat) {
-        String display = displayName == null ? name : displayName;
-        packetSender.sendPacket(player, newPacket.apply(display, true, latency));
-        userNames.put(id, name);
-        displayNames.put(id, display);
-    }
-
-    @Override
-    public String toComponent(@NonNull TabComponent component) {
-        String name = component.toLegacyText();
-        if (name.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7) name = name.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
-        return name;
+    public void addEntry0(@NonNull Entry entry) {
+        String displayName;
+        if (entry.getDisplayName() != null) {
+            displayName = entry.getDisplayName().toLegacyText();
+            if (displayName.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7) displayName = displayName.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
+        } else {
+            displayName = entry.getName();
+        }
+        packetSender.sendPacket(player, newPacket.apply(displayName, true, entry.getLatency()));
+        userNames.put(entry.getUniqueId(), entry.getName());
+        displayNames.put(entry.getUniqueId(), displayName);
     }
 }
