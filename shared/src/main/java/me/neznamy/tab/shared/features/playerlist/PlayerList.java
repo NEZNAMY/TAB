@@ -278,7 +278,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             }
             if (proxy != null) {
                 for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
-                    connectedPlayer.getTabList().updateDisplayName(proxied.getUniqueId(), proxied.getTabFormat());
+                    if (TAB.getInstance().getPlatform().isProxy()) {
+                        connectedPlayer.getTabList().updateDisplayName(proxied.getUniqueId(), proxied.getTabFormat());
+                    } else {
+                        connectedPlayer.getTabList().addEntry(proxied.asEntry());
+                    }
                 }
             }
         };
@@ -374,10 +378,32 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         return ((TabPlayer)player).tablistData.suffix.getOriginalRawValue();
     }
 
+    // ------------------
+    // ProxySupport
+    // ------------------
+
     @Override
     public void onProxyLoadRequest() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             proxy.sendMessage(new UpdateProxyPlayer(all.getTablistId(), all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get()));
+        }
+    }
+
+    @Override
+    public void onJoin(@NotNull ProxyPlayer player) {
+        if (TAB.getInstance().getPlatform().isProxy()) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getVersion().getMinorVersion() < 8) return;
+            viewer.getTabList().addEntry(player.asEntry());
+        }
+    }
+
+    @Override
+    public void onQuit(@NotNull ProxyPlayer player) {
+        if (TAB.getInstance().getPlatform().isProxy()) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getVersion().getMinorVersion() < 8) return;
+            viewer.getTabList().removeEntry(player.getUniqueId());
         }
     }
 

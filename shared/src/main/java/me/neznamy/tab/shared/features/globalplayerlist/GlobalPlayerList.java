@@ -163,7 +163,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         if (proxy != null) {
             for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
                 if (!proxied.server.equals(connectedPlayer.server) && shouldSee(connectedPlayer, proxied)) {
-                    connectedPlayer.getTabList().addEntry(getEntry(proxied));
+                    connectedPlayer.getTabList().addEntry(proxied.asEntry());
                 }
             }
         }
@@ -208,7 +208,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         if (proxy != null) {
             for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
                 if (!proxied.server.equals(player.server) && shouldSee(player, proxied)) {
-                    player.getTabList().addEntry(getEntry(proxied));
+                    player.getTabList().addEntry(proxied.asEntry());
                 }
             }
         }
@@ -294,11 +294,6 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         return viewer.globalPlayerListData.serverGroup == target.serverGroup;
     }
 
-    @NotNull
-    private TabList.Entry getEntry(@NotNull ProxyPlayer player) {
-        return new TabList.Entry(player.getUniqueId(), player.getNickname(), player.getSkin(), true, 0, 0, player.getTabFormat(), 0, true);
-    }
-
     // ------------------
     // ProxySupport
     // ------------------
@@ -308,7 +303,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         player.serverGroup = getServerGroup(player.server);
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (shouldSee(viewer, player) && !viewer.server.equals(player.server)) {
-                viewer.getTabList().addEntry(getEntry(player));
+                viewer.getTabList().addEntry(player.asEntry());
             }
         }
     }
@@ -319,7 +314,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (viewer.server.equals(player.server)) continue;
             if (shouldSee(viewer, player)) {
-                viewer.getTabList().addEntry(getEntry(player));
+                viewer.getTabList().addEntry(player.asEntry());
             } else {
                 viewer.getTabList().removeEntry(player.getUniqueId());
             }
@@ -346,7 +341,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         } else {
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
                 if (shouldSee(viewer, player)) {
-                    viewer.getTabList().addEntry(getEntry(player));
+                    viewer.getTabList().addEntry(player.asEntry());
                 }
             }
         }

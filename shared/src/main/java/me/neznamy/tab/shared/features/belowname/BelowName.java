@@ -292,10 +292,30 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
+    // ------------------
+    // ProxySupport
+    // ------------------
+
     @Override
     public void onProxyLoadRequest() {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, all.getTablistId(), getValue(all), all.belowNameData.numberFormat.get()));
+        }
+    }
+
+    @Override
+    public void onJoin(@NotNull ProxyPlayer player) {
+        if (TAB.getInstance().getPlatform().isProxy()) return;
+        if (player.getBelowNameFancy() == null) return; // This proxy player is not loaded yet
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.belowNameData.disabled.get()) continue;
+            viewer.getScoreboard().setScore(
+                    OBJECTIVE_NAME,
+                    player.getNickname(),
+                    player.getBelowNameNumber(),
+                    null, // Unused by this objective slot
+                    player.getBelowNameFancy()
+            );
         }
     }
 

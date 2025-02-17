@@ -95,4 +95,9 @@ public class ProxyPlayer {
         this.vanished = vanished;
         this.staff = staff;
     }
+
+    @NotNull
+    public TabList.Entry asEntry() {
+        return new TabList.Entry(uniqueId, nickname, skin, true, 0, 0, tabFormat, 0, true);
+    }
 }

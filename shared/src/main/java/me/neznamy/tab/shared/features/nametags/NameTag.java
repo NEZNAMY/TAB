@@ -397,6 +397,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         }, getFeatureName(), "Updating team name"));
     }
 
+    // ------------------
+    // ProxySupport
+    // ------------------
+
     @Override
     public void onProxyLoadRequest() {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
@@ -407,6 +411,25 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     all.teamData.suffix.get(),
                     getTeamVisibility(all, all) ? NameVisibility.ALWAYS : NameVisibility.NEVER
             ));
+        }
+    }
+
+    @Override
+    public void onJoin(@NotNull ProxyPlayer player) {
+        if (TAB.getInstance().getPlatform().isProxy()) return;
+        if (player.getTagPrefix() == null) return; // This proxy player is not loaded yet
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            TabComponent prefix = cache.get(player.getTagPrefix());
+            viewer.getScoreboard().registerTeam(
+                    player.getTeamName(),
+                    prefix,
+                    cache.get(player.getTagSuffix()),
+                    player.getNameVisibility(),
+                    CollisionRule.ALWAYS,
+                    Collections.singletonList(player.getNickname()),
+                    2,
+                    prefix.getLastColor()
+            );
         }
     }
 
