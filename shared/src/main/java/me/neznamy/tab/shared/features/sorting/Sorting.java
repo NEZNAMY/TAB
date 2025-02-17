@@ -8,8 +8,8 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.sorting.types.*;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
@@ -29,7 +29,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
 
     private NameTag nameTags;
     private LayoutManagerImpl layout;
-    private RedisSupport redis;
+    private ProxySupport proxy;
     
     //map of all registered sorting types
     private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
@@ -80,7 +80,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         // All of these features are instantiated after this one, so they must be detected later
         nameTags = TAB.getInstance().getNameTagManager();
         layout = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
-        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             onJoin(all);
         }
@@ -163,8 +163,8 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
                     break;
                 }
             }
-            if (!nameTaken && redis != null && nameTags != null) {
-                for (RedisPlayer all : redis.getRedisPlayers().values()) {
+            if (!nameTaken && proxy != null && nameTags != null) {
+                for (ProxyPlayer all : proxy.getProxyPlayers().values()) {
                     if (potentialTeamName.equals(all.getTeamName())) {
                         nameTaken = true;
                         break;

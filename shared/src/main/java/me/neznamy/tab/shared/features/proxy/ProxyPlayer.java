@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features.redis;
+package me.neznamy.tab.shared.features.proxy;
 
 import lombok.*;
 import me.neznamy.tab.shared.TabConstants.Permission;
@@ -14,7 +14,7 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class RedisPlayer {
+public class ProxyPlayer {
 
     /** Tablist UUID of the player */
     @NotNull
@@ -87,7 +87,7 @@ public class RedisPlayer {
      * @param   staff
      *          Whether player has {@link Permission#STAFF} permission or not
      */
-    public RedisPlayer(@NotNull UUID uniqueId, @NotNull String name, @NotNull String nickname, @NotNull String server, boolean vanished, boolean staff) {
+    public ProxyPlayer(@NotNull UUID uniqueId, @NotNull String name, @NotNull String nickname, @NotNull String server, boolean vanished, boolean staff) {
         this.uniqueId = uniqueId;
         this.name = name;
         this.nickname = nickname;

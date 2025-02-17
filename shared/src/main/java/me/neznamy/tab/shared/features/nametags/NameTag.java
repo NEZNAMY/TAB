@@ -13,9 +13,9 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.redis.message.RedisMessage;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.message.ProxyMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, RedisFeature, GroupListener {
+        Loadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, ProxyFeature, GroupListener {
 
     private final ThreadExecutor customThread = new ThreadExecutor("TAB NameTag Thread");
     private OnlinePlayers onlinePlayers;
@@ -41,7 +41,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private final CollisionManager collisionManager;
     private final int teamOptions;
     private final DisableChecker disableChecker;
-    @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    @Nullable private final ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
 
     /**
      * Constructs new instance and registers sub-features.
@@ -56,8 +56,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         collisionManager = new CollisionManager(this);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
-        if (redis != null) {
-            redis.registerMessage("teams", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        if (proxy != null) {
+            proxy.registerMessage("teams", UpdateProxyPlayer.class, UpdateProxyPlayer::new);
         }
     }
 
@@ -75,8 +75,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 continue;
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
-            if (redis != null) {
-                redis.sendMessage(new UpdateRedisPlayer(
+            if (proxy != null) {
+                proxy.sendMessage(new UpdateProxyPlayer(
                         all.getTablistId(),
                         all.teamData.teamName,
                         all.teamData.prefix.get(),
@@ -147,22 +147,22 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             return;
         }
         registerTeam(connectedPlayer);
-        if (redis != null) {
-            for (RedisPlayer redis : redis.getRedisPlayers().values()) {
-                if (redis.getTagPrefix() == null) continue; // This redis player is not loaded yet
-                TabComponent prefix = cache.get(redis.getTagPrefix());
+        if (proxy != null) {
+            for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
+                if (proxied.getTagPrefix() == null) continue; // This proxy player is not loaded yet
+                TabComponent prefix = cache.get(proxied.getTagPrefix());
                 connectedPlayer.getScoreboard().registerTeam(
-                        redis.getTeamName(),
+                        proxied.getTeamName(),
                         prefix,
-                        cache.get(redis.getTagSuffix()),
-                        redis.getNameVisibility(),
+                        cache.get(proxied.getTagSuffix()),
+                        proxied.getNameVisibility(),
                         CollisionRule.ALWAYS,
-                        Collections.singletonList(redis.getNickname()),
+                        Collections.singletonList(proxied.getNickname()),
                         2,
                         prefix.getLastColor()
                 );
             }
-            redis.sendMessage(new UpdateRedisPlayer(
+            proxy.sendMessage(new UpdateProxyPlayer(
                     connectedPlayer.getTablistId(),
                     connectedPlayer.teamData.teamName,
                     connectedPlayer.teamData.prefix.get(),
@@ -263,7 +263,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     prefix.getLastColor()
             );
         }
-        if (redis != null) redis.sendMessage(new UpdateRedisPlayer(
+        if (proxy != null) proxy.sendMessage(new UpdateProxyPlayer(
                 player.getTablistId(),
                 player.teamData.teamName,
                 player.teamData.prefix.get(),
@@ -310,7 +310,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
                 );
             }
-            if (redis != null) redis.sendMessage(new UpdateRedisPlayer(player.getTablistId(), player.teamData.teamName,
+            if (proxy != null) proxy.sendMessage(new UpdateProxyPlayer(player.getTablistId(), player.teamData.teamName,
                     player.teamData.prefix.get(),
                     player.teamData.suffix.get(),
                     getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
@@ -387,7 +387,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 viewer.getScoreboard().renameTeam(player.teamData.teamName, newTeamName);
             }
             player.teamData.teamName = newTeamName;
-            if (redis != null) redis.sendMessage(new UpdateRedisPlayer(
+            if (proxy != null) proxy.sendMessage(new UpdateProxyPlayer(
                     player.getTablistId(),
                     player.teamData.teamName,
                     player.teamData.prefix.get(),
@@ -398,9 +398,9 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     @Override
-    public void onRedisLoadRequest() {
+    public void onProxyLoadRequest() {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            redis.sendMessage(new UpdateRedisPlayer(
+            proxy.sendMessage(new UpdateProxyPlayer(
                     all.getTablistId(),
                     all.teamData.teamName,
                     all.teamData.prefix.get(),
@@ -411,9 +411,9 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     @Override
-    public void onQuit(@NotNull RedisPlayer player) {
+    public void onQuit(@NotNull ProxyPlayer player) {
         if (player.getTeamName() == null) {
-            TAB.getInstance().getErrorManager().printError("Unable to unregister team of redis player " + player.getName() + " on quit, because team is null", null);
+            TAB.getInstance().getErrorManager().printError("Unable to unregister team of proxy player " + player.getName() + " on quit, because team is null", null);
             return;
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
@@ -718,11 +718,11 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     /**
-     * Redis message to update team data of a player.
+     * Proxy message to update team data of a player.
      */
     @NoArgsConstructor
     @AllArgsConstructor
-    private class UpdateRedisPlayer extends RedisMessage {
+    private class UpdateProxyPlayer extends ProxyMessage {
 
         private UUID playerId;
         private String teamName;
@@ -754,14 +754,14 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         }
 
         @Override
-        public void process(@NotNull RedisSupport redisSupport) {
-            RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
+        public void process(@NotNull ProxySupport proxySupport) {
+            ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
             if (target == null) {
-                TAB.getInstance().getErrorManager().printError("Unable to process nametag update of redis player " + playerId + ", because no such player exists", null);
+                TAB.getInstance().getErrorManager().printError("Unable to process nametag update of proxy player " + playerId + ", because no such player exists", null);
                 return;
             }
             if (target.getTeamName() == null) {
-                TAB.getInstance().debug("Processing nametag join of redis player " + target.getName());
+                TAB.getInstance().debug("Processing nametag join of proxy player " + target.getName());
             }
             String oldTeamName = target.getTeamName();
             String newTeamName = checkTeamName(target, teamName.substring(0, teamName.length()-1));
@@ -800,7 +800,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         }
 
         @NotNull
-        private String checkTeamName(@NotNull RedisPlayer player, @NotNull String currentName15) {
+        private String checkTeamName(@NotNull ProxyPlayer player, @NotNull String currentName15) {
             char id = 'A';
             while (true) {
                 String potentialTeamName = currentName15 + id;
@@ -811,8 +811,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         break;
                     }
                 }
-                if (!nameTaken && redis != null) {
-                    for (RedisPlayer all : redis.getRedisPlayers().values()) {
+                if (!nameTaken && proxy != null) {
+                    for (ProxyPlayer all : proxy.getProxyPlayers().values()) {
                         if (all == player) continue;
                         if (potentialTeamName.equals(all.getTeamName())) {
                             nameTaken = true;

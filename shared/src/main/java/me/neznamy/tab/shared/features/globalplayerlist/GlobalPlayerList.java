@@ -8,8 +8,8 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -23,11 +23,11 @@ import org.jetbrains.annotations.Nullable;
  * Feature handler for global PlayerList feature.
  */
 public class GlobalPlayerList extends RefreshableFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
-        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, CustomThreaded, RedisFeature {
+        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, CustomThreaded, ProxyFeature {
 
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB Global PlayerList Thread");
     @Getter private OnlinePlayers onlinePlayers;
-    @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    @Nullable private final ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
     @NotNull private final GlobalPlayerListConfiguration configuration;
     @NotNull  private final Map<String, String> serverToGroupName = new HashMap<>();
     @NotNull private final Map<String, Object> groupNameToGroup = new HashMap<>();
@@ -48,8 +48,8 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 for (TabPlayer player : onlinePlayers.getPlayers()) {
                     if (entry.getValue().contains(player.server) && !player.isVanished()) count++;
                 }
-                if (redis != null) {
-                    for (RedisPlayer player : redis.getRedisPlayers().values()) {
+                if (proxy != null) {
+                    for (ProxyPlayer player : proxy.getProxyPlayers().values()) {
                         if (entry.getValue().contains(player.server) && !player.isVanished()) count++;
                     }
                 }
@@ -160,10 +160,10 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 connectedPlayer.getTabList().addEntry(getAddInfoData(all, connectedPlayer));
             }
         }
-        if (redis != null) {
-            for (RedisPlayer redis : redis.getRedisPlayers().values()) {
-                if (!redis.server.equals(connectedPlayer.server) && shouldSee(connectedPlayer, redis)) {
-                    connectedPlayer.getTabList().addEntry(getEntry(redis));
+        if (proxy != null) {
+            for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
+                if (!proxied.server.equals(connectedPlayer.server) && shouldSee(connectedPlayer, proxied)) {
+                    connectedPlayer.getTabList().addEntry(getEntry(proxied));
                 }
             }
         }
@@ -205,10 +205,10 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 player.getTabList().addEntry(getAddInfoData(all, player));
             }
         }
-        if (redis != null) {
-            for (RedisPlayer redis : redis.getRedisPlayers().values()) {
-                if (!redis.server.equals(player.server) && shouldSee(player, redis)) {
-                    player.getTabList().addEntry(getEntry(redis));
+        if (proxy != null) {
+            for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
+                if (!proxied.server.equals(player.server) && shouldSee(player, proxied)) {
+                    player.getTabList().addEntry(getEntry(proxied));
                 }
             }
         }
@@ -288,23 +288,23 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         }
     }
 
-    private boolean shouldSee(@NotNull TabPlayer viewer, @NotNull RedisPlayer target) {
+    private boolean shouldSee(@NotNull TabPlayer viewer, @NotNull ProxyPlayer target) {
         if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
         if (viewer.globalPlayerListData.onSpyServer) return true;
         return viewer.globalPlayerListData.serverGroup == target.serverGroup;
     }
 
     @NotNull
-    private TabList.Entry getEntry(@NotNull RedisPlayer player) {
+    private TabList.Entry getEntry(@NotNull ProxyPlayer player) {
         return new TabList.Entry(player.getUniqueId(), player.getNickname(), player.getSkin(), true, 0, 0, player.getTabFormat(), 0, true);
     }
 
     // ------------------
-    // RedisBungee
+    // ProxySupport
     // ------------------
 
     @Override
-    public void onJoin(@NotNull RedisPlayer player) {
+    public void onJoin(@NotNull ProxyPlayer player) {
         player.serverGroup = getServerGroup(player.server);
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (shouldSee(viewer, player) && !viewer.server.equals(player.server)) {
@@ -314,7 +314,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     }
 
     @Override
-    public void onServerSwitch(@NotNull RedisPlayer player) {
+    public void onServerSwitch(@NotNull ProxyPlayer player) {
         player.serverGroup = getServerGroup(player.server);
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (viewer.server.equals(player.server)) continue;
@@ -327,7 +327,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     }
 
     @Override
-    public void onQuit(@NotNull RedisPlayer player) {
+    public void onQuit(@NotNull ProxyPlayer player) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (!player.server.equals(viewer.server)) {
                 viewer.getTabList().removeEntry(player.getUniqueId());
@@ -336,7 +336,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     }
 
     @Override
-    public void onVanishStatusChange(@NotNull RedisPlayer player) {
+    public void onVanishStatusChange(@NotNull ProxyPlayer player) {
         if (player.isVanished()) {
             for (TabPlayer all : onlinePlayers.getPlayers()) {
                 if (!shouldSee(all, player)) {

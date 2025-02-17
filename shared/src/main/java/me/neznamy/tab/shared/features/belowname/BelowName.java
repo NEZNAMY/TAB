@@ -6,8 +6,8 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -24,7 +24,7 @@ import java.util.Map;
  * Feature handler for BelowName feature
  */
 public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        WorldSwitchListener, ServerSwitchListener, CustomThreaded, RedisFeature, VanishListener {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded, ProxyFeature, VanishListener {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -44,7 +44,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     private final DisableChecker disableChecker;
 
     @Nullable
-    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    private final ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
 
     /**
      * Constructs new instance and registers disable condition checker and text refresher to feature manager.
@@ -57,8 +57,8 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.belowNameData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
-        if (redis != null) {
-            redis.registerMessage("belowname", BelowNameUpdateRedisPlayer.class, () -> new BelowNameUpdateRedisPlayer(this));
+        if (proxy != null) {
+            proxy.registerMessage("belowname", BelowNameUpdateProxyPlayer.class, () -> new BelowNameUpdateProxyPlayer(this));
         }
     }
 
@@ -74,8 +74,8 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 register(loaded);
             }
             values.put(loaded, getValue(loaded));
-            if (redis != null) {
-                redis.sendMessage(new BelowNameUpdateRedisPlayer(this, loaded.getTablistId(), values.get(loaded), loaded.belowNameData.numberFormat.get()));
+            if (proxy != null) {
+                proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, loaded.getTablistId(), values.get(loaded), loaded.belowNameData.numberFormat.get()));
             }
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
@@ -112,17 +112,17 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 setScore(connectedPlayer, all, getValue(all), all.belowNameData.numberFormat.getFormat(connectedPlayer));
             }
         }
-        if (redis != null) {
-            redis.sendMessage(new BelowNameUpdateRedisPlayer(this, connectedPlayer.getTablistId(), getValue(connectedPlayer), connectedPlayer.belowNameData.numberFormat.get()));
+        if (proxy != null) {
+            proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, connectedPlayer.getTablistId(), getValue(connectedPlayer), connectedPlayer.belowNameData.numberFormat.get()));
             if (connectedPlayer.belowNameData.disabled.get()) return;
-            for (RedisPlayer redisPlayer : redis.getRedisPlayers().values()) {
-                if (redisPlayer.getBelowNameFancy() == null) continue; // This redis player is not loaded yet
+            for (ProxyPlayer proxyPlayer : proxy.getProxyPlayers().values()) {
+                if (proxyPlayer.getBelowNameFancy() == null) continue; // This proxy player is not loaded yet
                 connectedPlayer.getScoreboard().setScore(
                         OBJECTIVE_NAME,
-                        redisPlayer.getNickname(),
-                        redisPlayer.getBelowNameNumber(),
+                        proxyPlayer.getNickname(),
+                        proxyPlayer.getBelowNameNumber(),
                         null, // Unused by this objective slot
-                        redisPlayer.getBelowNameFancy()
+                        proxyPlayer.getBelowNameFancy()
                 );
             }
         }
@@ -145,16 +145,16 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 if (!sameServerAndWorld(p, all)) continue;
                 setScore(p, all, getValue(all), all.belowNameData.numberFormat.getFormat(p));
             }
-            if (redis != null) {
-                redis.sendMessage(new BelowNameUpdateRedisPlayer(this, p.getTablistId(), getValue(p), p.belowNameData.numberFormat.get()));
-                for (RedisPlayer redisPlayer : redis.getRedisPlayers().values()) {
-                    if (redisPlayer.getBelowNameFancy() == null) continue; // This redis player is not loaded yet
+            if (proxy != null) {
+                proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, p.getTablistId(), getValue(p), p.belowNameData.numberFormat.get()));
+                for (ProxyPlayer proxyPlayer : proxy.getProxyPlayers().values()) {
+                    if (proxyPlayer.getBelowNameFancy() == null) continue; // This proxy player is not loaded yet
                     p.getScoreboard().setScore(
                             OBJECTIVE_NAME,
-                            redisPlayer.getNickname(),
-                            redisPlayer.getBelowNameNumber(),
+                            proxyPlayer.getNickname(),
+                            proxyPlayer.getBelowNameNumber(),
                             null, // Unused by this objective slot
-                            redisPlayer.getBelowNameFancy()
+                            proxyPlayer.getBelowNameFancy()
                     );
                 }
             }
@@ -203,7 +203,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
             if (!sameServerAndWorld(viewer, refreshed)) continue;
             setScore(viewer, refreshed, number, fancy.getFormat(viewer));
         }
-        if (redis != null) redis.sendMessage(new BelowNameUpdateRedisPlayer(this, refreshed.getTablistId(), number, fancy.get()));
+        if (proxy != null) proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, refreshed.getTablistId(), number, fancy.get()));
     }
 
     private void register(@NotNull TabPlayer player) {
@@ -293,9 +293,9 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     }
 
     @Override
-    public void onRedisLoadRequest() {
+    public void onProxyLoadRequest() {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            redis.sendMessage(new BelowNameUpdateRedisPlayer(this, all.getTablistId(), getValue(all), all.belowNameData.numberFormat.get()));
+            proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, all.getTablistId(), getValue(all), all.belowNameData.numberFormat.get()));
         }
     }
 

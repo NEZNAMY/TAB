@@ -494,4 +494,17 @@ public class Converter {
         config.rename("belowname-objective.fancy-display-players", "belowname-objective.fancy-value");
         config.rename("belowname-objective.fancy-display-default", "belowname-objective.fancy-value-default");
     }
+
+    /**
+     * Converts config from 5.0.7 to 5.0.8.
+     * This creates the option proxy-support and remove the old enable-redisbungee-support configuration.
+     *
+     * @param   config
+     *          Config file
+     */
+    public void convert507to508(@NotNull ConfigurationFile config) {
+        config.rename("enable-redisbungee-support", "proxy-support.enabled");
+        config.set("proxy-support.type", "PLUGIN");
+        config.set("proxy-support.plugin.name", "RedisBungee");
+    }
 }
