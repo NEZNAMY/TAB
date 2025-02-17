@@ -503,8 +503,10 @@ public class Converter {
      *          Config file
      */
     public void convert507to508(@NotNull ConfigurationFile config) {
-        config.rename("enable-redisbungee-support", "proxy-support.enabled");
-        config.set("proxy-support.type", "PLUGIN");
-        config.set("proxy-support.plugin.name", "RedisBungee");
+        if (config.rename("enable-redisbungee-support", "proxy-support.enabled")) {
+            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 5.0.7 to 5.0.8", TextColor.YELLOW));
+            config.set("proxy-support.type", "PLUGIN");
+            config.set("proxy-support.plugin.name", "RedisBungee");
+        }
     }
 }

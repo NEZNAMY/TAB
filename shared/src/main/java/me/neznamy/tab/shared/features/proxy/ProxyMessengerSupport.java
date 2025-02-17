@@ -2,19 +2,17 @@ package me.neznamy.tab.shared.features.proxy;
 
 import com.saicone.delivery4j.AbstractMessenger;
 import com.saicone.delivery4j.Broker;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
+@RequiredArgsConstructor
 public class ProxyMessengerSupport extends ProxySupport {
 
     private final Supplier<Broker> brokerSupplier;
     private AbstractMessenger messenger;
-
-    public ProxyMessengerSupport(Supplier<Broker> brokerSupplier) {
-        this.brokerSupplier = brokerSupplier;
-    }
 
     @Override
     public void sendMessage(@NotNull String message) {
