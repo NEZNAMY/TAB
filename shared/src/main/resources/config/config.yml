@@ -231,7 +231,7 @@ mysql:
 
 proxy-support:
   enabled: true
-  # Types: PLUGIN
+  # Supported types: PLUGIN, REDIS, RABBITMQ
   type: PLUGIN
   plugin:
     # Compatible plugins: RedisBungee
