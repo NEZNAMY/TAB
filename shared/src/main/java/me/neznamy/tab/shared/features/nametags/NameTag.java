@@ -415,26 +415,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     @Override
-    public void onJoin(@NotNull ProxyPlayer player) {
-        if (TAB.getInstance().getPlatform().isProxy()) return;
-        if (player.getTagPrefix() == null) return; // This proxy player is not loaded yet
-        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (viewer.getUniqueId().equals(player.getUniqueId())) continue;
-            TabComponent prefix = cache.get(player.getTagPrefix());
-            viewer.getScoreboard().registerTeam(
-                    player.getTeamName(),
-                    prefix,
-                    cache.get(player.getTagSuffix()),
-                    player.getNameVisibility(),
-                    CollisionRule.ALWAYS,
-                    Collections.singletonList(player.getNickname()),
-                    2,
-                    prefix.getLastColor()
-            );
-        }
-    }
-
-    @Override
     public void onQuit(@NotNull ProxyPlayer player) {
         if (player.getTeamName() == null) {
             TAB.getInstance().getErrorManager().printError("Unable to unregister team of proxy player " + player.getName() + " on quit, because team is null", null);
@@ -797,6 +777,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             TabComponent prefixComponent = cache.get(prefix);
             if (!newTeamName.equals(oldTeamName)) {
                 for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                    if (viewer.getUniqueId().equals(target.getUniqueId())) continue;
                     if (oldTeamName != null) viewer.getScoreboard().unregisterTeam(oldTeamName);
                     viewer.getScoreboard().registerTeam(
                             newTeamName,
