@@ -419,6 +419,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (TAB.getInstance().getPlatform().isProxy()) return;
         if (player.getTagPrefix() == null) return; // This proxy player is not loaded yet
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            if (viewer.getUniqueId().equals(player.getUniqueId())) continue;
             TabComponent prefix = cache.get(player.getTagPrefix());
             viewer.getScoreboard().registerTeam(
                     player.getTeamName(),
@@ -440,6 +441,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             return;
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            if (viewer.getUniqueId().equals(player.getUniqueId())) continue;
             ((SafeScoreboard<?>)viewer.getScoreboard()).unregisterTeamSafe(player.getTeamName());
         }
     }

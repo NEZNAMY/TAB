@@ -393,7 +393,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onJoin(@NotNull ProxyPlayer player) {
         if (TAB.getInstance().getPlatform().isProxy()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) return;
+            if (viewer.getVersion().getMinorVersion() < 8 || viewer.getUniqueId().equals(player.getUniqueId())) continue;
             viewer.getTabList().addEntry(player.asEntry());
         }
     }
@@ -402,7 +402,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onQuit(@NotNull ProxyPlayer player) {
         if (TAB.getInstance().getPlatform().isProxy()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) return;
+            if (viewer.getVersion().getMinorVersion() < 8 || viewer.getUniqueId().equals(player.getUniqueId())) continue;
             viewer.getTabList().removeEntry(player.getUniqueId());
         }
     }
@@ -411,7 +411,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onVanishStatusChange(@NotNull ProxyPlayer player) {
         if (player.isVanished()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) continue;
+            if (viewer.getVersion().getMinorVersion() < 8 || viewer.getUniqueId().equals(player.getUniqueId())) continue;
             viewer.getTabList().updateDisplayName(player.getUniqueId(), player.getTabFormat());
         }
     }
