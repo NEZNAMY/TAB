@@ -237,6 +237,11 @@ proxy-support:
     # Compatible plugins: RedisBungee
     # If enabled and compatible plugin is found, hook is enabled to work with proxied players
     name: RedisBungee
+  redis:
+    url: 'redis://:password@localhost:6379/0'
+  rabbitmq:
+    exchange: 'plugin'
+    url: 'amqp://guest:guest@localhost:5672/%2F'
 
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #

@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared;
 
+import com.saicone.delivery4j.broker.RabbitMQBroker;
+import com.saicone.delivery4j.broker.RedisBroker;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.config.files.Config;
@@ -16,6 +18,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.pingspoof.PingSpoof;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.playerlistobjective.YellowNumber;
+import me.neznamy.tab.shared.features.proxy.ProxyMessengerSupport;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
@@ -567,11 +570,21 @@ public class FeatureManager {
         // Load the feature first, because it will be processed in main thread (to make it run before feature threads)
         if (config.isEnableProxySupport()) {
             String type = config.getConfig().getString("proxy-support.type");
+            ProxySupport proxy;
             if (type.equalsIgnoreCase("PLUGIN")) {
-                String plugin = config.getConfig().getString("proxy-support.plugin.name");
-                ProxySupport proxy = TAB.getInstance().getPlatform().getProxySupport(plugin);
-                if (proxy != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PROXY_SUPPORT, proxy);
+                String plugin = config.getConfig().getString("proxy-support.plugin.name", "RedisBungee");
+                proxy = TAB.getInstance().getPlatform().getProxySupport(plugin);
+            } else if (type.equalsIgnoreCase("REDIS")) {
+                String url = config.getConfig().getString("proxy-support.redis.url");
+                proxy = new ProxyMessengerSupport(() -> RedisBroker.of(url));
+            } else if (type.equalsIgnoreCase("RABBITMQ")) {
+                String exchange = config.getConfig().getString("proxy-support.rabbitmq.exchange");
+                String url = config.getConfig().getString("proxy-support.rabbitmq.url");
+                proxy = new ProxyMessengerSupport(() -> RabbitMQBroker.of(url, exchange));
+            } else {
+                proxy = null;
             }
+            if (proxy != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PROXY_SUPPORT, proxy);
         }
 
         if (config.isPipelineInjection()) {

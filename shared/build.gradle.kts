@@ -21,6 +21,11 @@ dependencies {
     compileOnlyApi("org.geysermc.floodgate:api:2.2.0-SNAPSHOT")
     compileOnlyApi("net.kyori:adventure-api:4.18.0")
     compileOnlyApi("net.kyori:adventure-text-minimessage:4.18.0")
+    implementation("com.saicone.delivery4j:delivery4j:1.1.1")
+    implementation("com.saicone.delivery4j:broker-rabbitmq:1.1.1")
+    implementation("com.saicone.delivery4j:broker-redis:1.1.1")
+    implementation("com.saicone.delivery4j:extension-guava:1.1.1")
+    implementation("org.slf4j:slf4j-nop:1.7.36")
 }
 
 blossom {
