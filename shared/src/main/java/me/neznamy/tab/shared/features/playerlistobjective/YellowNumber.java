@@ -265,22 +265,6 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         }
     }
 
-    @Override
-    public void onJoin(@NotNull ProxyPlayer player) {
-        if (TAB.getInstance().getPlatform().isProxy()) return;
-        if (player.getPlayerlistFancy() == null) return; // This proxy player is not loaded yet
-        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (viewer.playerlistObjectiveData.disabled.get() || viewer.getUniqueId().equals(player.getUniqueId())) continue;
-            viewer.getScoreboard().setScore(
-                    OBJECTIVE_NAME,
-                    player.getNickname(),
-                    player.getPlayerlistNumber(),
-                    null, // Unused by this objective slot
-                    player.getPlayerlistFancy()
-            );
-        }
-    }
-
     @NotNull
     @Override
     public String getFeatureName() {
@@ -345,7 +329,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             target.setPlayerlistNumber(value);
             target.setPlayerlistFancy(cache.get(fancyValue));
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (viewer.playerlistObjectiveData.disabled.get()) continue;
+                if (viewer.playerlistObjectiveData.disabled.get() || viewer.getUniqueId().equals(target.getUniqueId())) continue;
                 viewer.getScoreboard().setScore(
                         OBJECTIVE_NAME,
                         target.getNickname(),
