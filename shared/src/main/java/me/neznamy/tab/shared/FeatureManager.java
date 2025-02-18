@@ -635,7 +635,7 @@ public class FeatureManager {
         }
 
         // Must be loaded after: PlayerList
-        if (config.getGlobalPlayerList() != null && TAB.getInstance().getPlatform().isProxy()) {
+        if (config.getGlobalPlayerList() != null) {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList(config.getGlobalPlayerList()));
         }
 

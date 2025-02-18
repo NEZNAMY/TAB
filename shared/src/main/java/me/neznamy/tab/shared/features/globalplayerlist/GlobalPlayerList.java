@@ -291,6 +291,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     private boolean shouldSee(@NotNull TabPlayer viewer, @NotNull ProxyPlayer target) {
         if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
         if (viewer.globalPlayerListData.onSpyServer) return true;
+        if (viewer.getUniqueId().equals(target.getUniqueId())) return false;
         return viewer.globalPlayerListData.serverGroup == target.serverGroup;
     }
 
@@ -324,7 +325,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void onQuit(@NotNull ProxyPlayer player) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (!player.server.equals(viewer.server)) {
+            if (!player.server.equals(viewer.server) && !viewer.getUniqueId().equals(player.getUniqueId())) {
                 viewer.getTabList().removeEntry(player.getUniqueId());
             }
         }
