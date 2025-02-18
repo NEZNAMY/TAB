@@ -507,6 +507,9 @@ public class Converter {
             TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 5.0.7 to 5.0.8", TextColor.YELLOW));
             config.set("proxy-support.type", "PLUGIN");
             config.set("proxy-support.plugin.name", "RedisBungee");
+            config.set("proxy-support.redis.url", "redis://:password@localhost:6379/0");
+            config.set("proxy-support.rabbitmq.exchange", "plugin");
+            config.set("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
         }
     }
 }
