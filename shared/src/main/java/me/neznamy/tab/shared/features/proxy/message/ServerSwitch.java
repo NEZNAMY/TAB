@@ -38,6 +38,10 @@ public class ServerSwitch extends ProxyMessage {
             return;
         }
         TAB.getInstance().debug("Processing server switch of proxy player " + target.getName());
+        if (TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
+            TAB.getInstance().debug("The player " + target.getName() + " is already connected");
+            return;
+        }
         target.setServer(newServer);
         TAB.getInstance().getFeatureManager().onServerSwitch(target);
     }

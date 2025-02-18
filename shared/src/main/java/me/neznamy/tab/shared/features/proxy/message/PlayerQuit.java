@@ -35,7 +35,10 @@ public class PlayerQuit extends ProxyMessage {
             return;
         }
         TAB.getInstance().debug("Processing quit of proxy player " + target.getName());
-        TAB.getInstance().getFeatureManager().onQuit(target);
+        // Do not remove connected player
+        if (!TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
+            TAB.getInstance().getFeatureManager().onQuit(target);
+        }
         proxySupport.getProxyPlayers().remove(target.getUniqueId());
     }
 }

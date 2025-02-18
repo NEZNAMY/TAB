@@ -326,10 +326,15 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             if (target.getPlayerlistFancy() == null) {
                 TAB.getInstance().debug("Processing playerlist objective join of proxy player " + target.getName());
             }
+            // Yellow number is already being processed by connected player
+            if (TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
+                TAB.getInstance().debug("The player " + target.getName() + " is already connected");
+                return;
+            }
             target.setPlayerlistNumber(value);
             target.setPlayerlistFancy(cache.get(fancyValue));
             for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (viewer.playerlistObjectiveData.disabled.get() || viewer.getUniqueId().equals(target.getUniqueId())) continue;
+                if (viewer.playerlistObjectiveData.disabled.get()) continue;
                 viewer.getScoreboard().setScore(
                         OBJECTIVE_NAME,
                         target.getNickname(),

@@ -307,8 +307,10 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     public void onJoin(@NotNull ProxyPlayer player) {
         if (TAB.getInstance().getPlatform().isProxy()) return;
         if (player.getBelowNameFancy() == null) return; // This proxy player is not loaded yet
+        // Below name is already being processed by connected player
+        if (TAB.getInstance().isPlayerConnected(player.getUniqueId())) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.belowNameData.disabled.get() || viewer.getUniqueId().equals(player.getUniqueId())) continue;
+            if (viewer.belowNameData.disabled.get()) continue;
             viewer.getScoreboard().setScore(
                     OBJECTIVE_NAME,
                     player.getNickname(),

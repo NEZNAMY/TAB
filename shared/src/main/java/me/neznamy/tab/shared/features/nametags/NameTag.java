@@ -421,7 +421,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             return;
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (viewer.getUniqueId().equals(player.getUniqueId())) continue;
             ((SafeScoreboard<?>)viewer.getScoreboard()).unregisterTeamSafe(player.getTeamName());
         }
     }
@@ -768,6 +767,11 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             if (target.getTeamName() == null) {
                 TAB.getInstance().debug("Processing nametag join of proxy player " + target.getName());
             }
+            // Nametag is already being processed by connected player
+            if (TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
+                TAB.getInstance().debug("The player " + target.getName() + " is already connected");
+                return;
+            }
             String oldTeamName = target.getTeamName();
             String newTeamName = checkTeamName(target, teamName.substring(0, teamName.length()-1));
             target.setTeamName(newTeamName);
@@ -777,7 +781,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             TabComponent prefixComponent = cache.get(prefix);
             if (!newTeamName.equals(oldTeamName)) {
                 for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                    if (viewer.getUniqueId().equals(target.getUniqueId())) continue;
                     if (oldTeamName != null) viewer.getScoreboard().unregisterTeam(oldTeamName);
                     viewer.getScoreboard().registerTeam(
                             newTeamName,

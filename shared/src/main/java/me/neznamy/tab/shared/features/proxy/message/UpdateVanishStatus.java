@@ -38,6 +38,11 @@ public class UpdateVanishStatus extends ProxyMessage {
             return;
         }
         TAB.getInstance().debug("Processing vanish status update of proxy player " + target.getName());
+        // Vanish status is already being processed by connected player
+        if (TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
+            TAB.getInstance().debug("The player " + target.getName() + " is already connected");
+            return;
+        }
         target.setVanished(vanished);
         TAB.getInstance().getFeatureManager().onVanishStatusChange(target);
     }

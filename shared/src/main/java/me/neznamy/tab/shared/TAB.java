@@ -149,6 +149,17 @@ public class TAB extends TabAPI {
     }
 
     /**
+     * Check if the provided TabList UUID is registered as connected player.
+     *
+     * @param   tabListId
+     *          TabList id of player
+     * @return  true if player is connected, false otherwise.
+     */
+    public boolean isPlayerConnected(UUID tabListId) {
+        return playersByTabListId.containsKey(tabListId);
+    }
+
+    /**
      * Returns player by TabList UUID. This is required due to Velocity
      * as player uuid and TabList uuid do not match there at some circumstances
      *
