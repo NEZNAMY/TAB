@@ -59,30 +59,4 @@ public enum EnumChatFormat {
         }
         return new String(b);
     }
-
-    /**
-     * Code taken from bukkit, which returns last color codes used in provided text.
-     *
-     * @param   input
-     *          text to get last colors from
-     * @return  last colors used in provided text or empty string if nothing was found
-     */
-    public static @NotNull String getLastColors(@NotNull String input) {
-        StringBuilder result = new StringBuilder();
-        int length = input.length();
-        for (int index = length - 1; index > -1; index--) {
-            char section = input.charAt(index);
-            if ((section == '§' || section == '&') && (index < length - 1)) {
-                char c = input.charAt(index + 1);
-                if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
-                    result.insert(0, '§');
-                    result.insert(1, c);
-                    if ("0123456789AaBbCcDdEeFfRr".contains(String.valueOf(c))) {
-                        break;
-                    }
-                }
-            }
-        }
-        return result.toString();
-    }
 }

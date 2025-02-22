@@ -4,7 +4,6 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -120,7 +119,7 @@ public class StableDynamicLine extends ScoreboardLine {
                 suffix.insert(0, '§');
             }
             String prefixString = prefix.toString();
-            suffix.insert(0, EnumChatFormat.getLastColors(parent.getManager().getCache().get(prefixString).toLegacyText()));
+            suffix.insert(0, getLastColors(parent.getManager().getCache().get(prefixString).toLegacyText()));
             return new String[] {prefixString, suffix.toString()};
         } else {
             return new String[] {text, ""};
