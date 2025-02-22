@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared;
 
+import com.saicone.delivery4j.broker.RabbitMQBroker;
+import com.saicone.delivery4j.broker.RedisBroker;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.config.files.Config;
@@ -16,8 +18,9 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.pingspoof.PingSpoof;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.playerlistobjective.YellowNumber;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxyMessengerSupport;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
@@ -403,11 +406,11 @@ public class FeatureManager {
     /**
      * Called when another proxy is reloaded to request all data again.
      */
-    public void onRedisLoadRequest() {
+    public void onProxyLoadRequest() {
         for (TabFeature f : values) {
-            if (!(f instanceof RedisFeature)) continue;
+            if (!(f instanceof ProxyFeature)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
-                    () -> ((RedisFeature) f).onRedisLoadRequest(), f.getFeatureName(), CpuUsageCategory.REDIS_RELOAD);
+                    () -> ((ProxyFeature) f).onProxyLoadRequest(), f.getFeatureName(), CpuUsageCategory.PROXY_RELOAD);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -417,16 +420,16 @@ public class FeatureManager {
     }
 
     /**
-     * Handles redis player join and forwards it to all features.
+     * Handles proxy player join and forwards it to all features.
      *
      * @param   connectedPlayer
      *          Player who joined
      */
-    public void onJoin(@NotNull RedisPlayer connectedPlayer) {
+    public void onJoin(@NotNull ProxyPlayer connectedPlayer) {
         for (TabFeature f : values) {
-            if (!(f instanceof RedisFeature)) continue;
+            if (!(f instanceof ProxyFeature)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
-                    () -> ((RedisFeature) f).onJoin(connectedPlayer), f.getFeatureName(), CpuUsageCategory.PLAYER_JOIN);
+                    () -> ((ProxyFeature) f).onJoin(connectedPlayer), f.getFeatureName(), CpuUsageCategory.PLAYER_JOIN);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -436,16 +439,16 @@ public class FeatureManager {
     }
 
     /**
-     * Handles redis player server switch and forwards it to all features.
+     * Handles proxy player server switch and forwards it to all features.
      *
      * @param   player
      *          Player who joined
      */
-    public void onServerSwitch(@NotNull RedisPlayer player) {
+    public void onServerSwitch(@NotNull ProxyPlayer player) {
         for (TabFeature f : values) {
-            if (!(f instanceof RedisFeature)) continue;
+            if (!(f instanceof ProxyFeature)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
-                    () -> ((RedisFeature) f).onServerSwitch(player), f.getFeatureName(), CpuUsageCategory.SERVER_SWITCH);
+                    () -> ((ProxyFeature) f).onServerSwitch(player), f.getFeatureName(), CpuUsageCategory.SERVER_SWITCH);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -455,16 +458,16 @@ public class FeatureManager {
     }
 
     /**
-     * Handles redis player quit and forwards it to all features.
+     * Handles proxy player quit and forwards it to all features.
      *
      * @param   disconnectedPlayer
      *          Player who left
      */
-    public void onQuit(@NotNull RedisPlayer disconnectedPlayer) {
+    public void onQuit(@NotNull ProxyPlayer disconnectedPlayer) {
         for (TabFeature f : values) {
-            if (!(f instanceof RedisFeature)) continue;
+            if (!(f instanceof ProxyFeature)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
-                    () -> ((RedisFeature) f).onQuit(disconnectedPlayer), f.getFeatureName(), CpuUsageCategory.PLAYER_QUIT);
+                    () -> ((ProxyFeature) f).onQuit(disconnectedPlayer), f.getFeatureName(), CpuUsageCategory.PLAYER_QUIT);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -482,11 +485,11 @@ public class FeatureManager {
      * @param   player
      *          Player whose vanish status changed
      */
-    public void onVanishStatusChange(@NotNull RedisPlayer player) {
+    public void onVanishStatusChange(@NotNull ProxyPlayer player) {
         for (TabFeature f : values) {
-            if (!(f instanceof RedisFeature)) continue;
+            if (!(f instanceof ProxyFeature)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
-                    () -> ((RedisFeature) f).onVanishStatusChange(player), f.getFeatureName(), CpuUsageCategory.VANISH_CHANGE);
+                    () -> ((ProxyFeature) f).onVanishStatusChange(player), f.getFeatureName(), CpuUsageCategory.VANISH_CHANGE);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
@@ -565,9 +568,23 @@ public class FeatureManager {
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
 
         // Load the feature first, because it will be processed in main thread (to make it run before feature threads)
-        if (config.isEnableRedisHook()) {
-            RedisSupport redis = TAB.getInstance().getPlatform().getRedisSupport();
-            if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
+        if (config.isEnableProxySupport()) {
+            String type = config.getConfig().getString("proxy-support.type");
+            ProxySupport proxy;
+            if (type.equalsIgnoreCase("PLUGIN")) {
+                String plugin = config.getConfig().getString("proxy-support.plugin.name", "RedisBungee");
+                proxy = TAB.getInstance().getPlatform().getProxySupport(plugin);
+            } else if (type.equalsIgnoreCase("REDIS")) {
+                String url = config.getConfig().getString("proxy-support.redis.url");
+                proxy = new ProxyMessengerSupport(() -> RedisBroker.of(url));
+            } else if (type.equalsIgnoreCase("RABBITMQ")) {
+                String exchange = config.getConfig().getString("proxy-support.rabbitmq.exchange");
+                String url = config.getConfig().getString("proxy-support.rabbitmq.url");
+                proxy = new ProxyMessengerSupport(() -> RabbitMQBroker.of(url, exchange));
+            } else {
+                proxy = null;
+            }
+            if (proxy != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PROXY_SUPPORT, proxy);
         }
 
         if (config.isPipelineInjection()) {
@@ -618,7 +635,7 @@ public class FeatureManager {
         }
 
         // Must be loaded after: PlayerList
-        if (config.getGlobalPlayerList() != null && TAB.getInstance().getPlatform().isProxy()) {
+        if (config.getGlobalPlayerList() != null) {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList(config.getGlobalPlayerList()));
         }
 

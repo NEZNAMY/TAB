@@ -1,12 +1,12 @@
-package me.neznamy.tab.shared.features.redis.message;
+package me.neznamy.tab.shared.features.proxy.message;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import org.jetbrains.annotations.NotNull;
 
-public class LoadRequest extends RedisMessage {
+public class LoadRequest extends ProxyMessage {
 
     @Override
     public void write(@NotNull ByteArrayDataOutput out) {
@@ -19,8 +19,8 @@ public class LoadRequest extends RedisMessage {
     }
 
     @Override
-    public void process(@NotNull RedisSupport redisSupport) {
-        redisSupport.sendMessage(new Load(TAB.getInstance().getOnlinePlayers()));
-        TAB.getInstance().getFeatureManager().onRedisLoadRequest();
+    public void process(@NotNull ProxySupport proxySupport) {
+        proxySupport.sendMessage(new Load(TAB.getInstance().getOnlinePlayers()));
+        TAB.getInstance().getFeatureManager().onProxyLoadRequest();
     }
 }

@@ -494,4 +494,22 @@ public class Converter {
         config.rename("belowname-objective.fancy-display-players", "belowname-objective.fancy-value");
         config.rename("belowname-objective.fancy-display-default", "belowname-objective.fancy-value-default");
     }
+
+    /**
+     * Converts config from 5.0.7 to 5.0.8.
+     * This creates the option proxy-support and remove the old enable-redisbungee-support configuration.
+     *
+     * @param   config
+     *          Config file
+     */
+    public void convert507to508(@NotNull ConfigurationFile config) {
+        if (config.rename("enable-redisbungee-support", "proxy-support.enabled")) {
+            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 5.0.7 to 5.0.8", TextColor.YELLOW));
+            config.set("proxy-support.type", "PLUGIN");
+            config.set("proxy-support.plugin.name", "RedisBungee");
+            config.set("proxy-support.redis.url", "redis://:password@localhost:6379/0");
+            config.set("proxy-support.rabbitmq.exchange", "plugin");
+            config.set("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
+        }
+    }
 }

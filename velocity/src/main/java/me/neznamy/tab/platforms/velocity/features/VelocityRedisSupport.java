@@ -7,14 +7,14 @@ import lombok.AllArgsConstructor;
 import me.neznamy.tab.platforms.velocity.VelocityTAB;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * RedisBungee implementation for Velocity
  */
 @AllArgsConstructor
-public class VelocityRedisSupport extends RedisSupport {
+public class VelocityRedisSupport extends ProxySupport {
 
     /** Plugin reference for registering listener */
     @NotNull
@@ -28,26 +28,26 @@ public class VelocityRedisSupport extends RedisSupport {
      */
     @Subscribe
     public void onMessage(PubSubMessageEvent e) {
-        if (!e.getChannel().equals(TabConstants.REDIS_CHANNEL_NAME)) return;
+        if (!e.getChannel().equals(TabConstants.PROXY_CHANNEL_NAME)) return;
         processMessage(e.getMessage());
     }
 
     @Override
     public void register() {
         plugin.getServer().getEventManager().register(plugin, this);
-        RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
+        RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.PROXY_CHANNEL_NAME);
     }
 
     @Override
     public void unregister() {
         plugin.getServer().getEventManager().unregisterListener(plugin, this);
-        RedisBungeeAPI.getRedisBungeeApi().unregisterPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
+        RedisBungeeAPI.getRedisBungeeApi().unregisterPubSubChannels(TabConstants.PROXY_CHANNEL_NAME);
     }
 
     @Override
     public void sendMessage(@NotNull String message) {
         try {
-            RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
+            RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.PROXY_CHANNEL_NAME, message);
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().redisBungeeMessageSendFail(e);
         }

@@ -1,18 +1,18 @@
 package me.neznamy.tab.shared.features.types;
 
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Interface for features that hook into RedisSupport for displaying data
+ * Interface for features that hook into ProxySupport for displaying data
  * of players on other servers.
  */
-public interface RedisFeature {
+public interface ProxyFeature {
 
     /**
      * Called when another proxy is reloaded to request all data again.
      */
-    default void onRedisLoadRequest() {}
+    default void onProxyLoadRequest() {}
 
     /**
      * Called when a player joins another proxy.
@@ -20,7 +20,7 @@ public interface RedisFeature {
      * @param   player
      *          Player who joined
      */
-    default void onJoin(@NotNull RedisPlayer player) {}
+    default void onJoin(@NotNull ProxyPlayer player) {}
 
     /**
      * Called when a player quits another proxy.
@@ -28,21 +28,21 @@ public interface RedisFeature {
      * @param   player
      *          Player who left
      */
-    default void onQuit(@NotNull RedisPlayer player) {}
+    default void onQuit(@NotNull ProxyPlayer player) {}
 
     /**
-     * Called when vanish status of a redis player changes.
+     * Called when vanish status of a proxy player changes.
      *
      * @param   player
      *          Player with changed vanish status
      */
-    default void onVanishStatusChange(@NotNull RedisPlayer player) {}
+    default void onVanishStatusChange(@NotNull ProxyPlayer player) {}
 
     /**
-     * Called when a redis player switches server.
+     * Called when a proxy player switches server.
      *
      * @param   player
      *          Player who switched server
      */
-    default void onServerSwitch(@NotNull RedisPlayer player) {}
+    default void onServerSwitch(@NotNull ProxyPlayer player) {}
 }

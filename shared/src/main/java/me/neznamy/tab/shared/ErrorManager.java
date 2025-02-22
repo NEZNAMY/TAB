@@ -232,8 +232,8 @@ public class ErrorManager {
      * @param   action
      *          Message action
      */
-    public void unknownRedisMessage(@NotNull String action) {
-        printError("RedisSupport received unknown action: \"" + action +
+    public void unknownProxyMessage(@NotNull String action) {
+        printError("ProxySupport received unknown action: \"" + action +
                 "\". Does it come from a feature enabled on another proxy, but not here?",
                 Collections.emptyList(), false, errorLog);
     }

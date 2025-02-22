@@ -15,7 +15,7 @@ import me.neznamy.chat.TextColor;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -101,10 +101,12 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @Override
     @Nullable
-    public RedisSupport getRedisSupport() {
-        if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
-                RedisBungeeAPI.getRedisBungeeApi() != null) {
-            return new VelocityRedisSupport(plugin);
+    public ProxySupport getProxySupport(@NotNull String plugin) {
+        if (plugin.equalsIgnoreCase("RedisBungee")) {
+            if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
+                    RedisBungeeAPI.getRedisBungeeApi() != null) {
+                return new VelocityRedisSupport(this.plugin);
+            }
         }
         return null;
     }

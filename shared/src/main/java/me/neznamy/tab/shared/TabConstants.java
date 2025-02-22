@@ -20,7 +20,7 @@ public class TabConstants {
     public static final String NO_GROUP = "NONE";
     public static final String DEFAULT_GROUP = "_DEFAULT_";
     public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-6";
-    public static final String REDIS_CHANNEL_NAME = PLUGIN_NAME;
+    public static final String PROXY_CHANNEL_NAME = PLUGIN_NAME;
     public static final String PIPELINE_HANDLER_NAME = PLUGIN_NAME;
 
     public static final int BSTATS_PLUGIN_ID_BUKKIT = 5304;
@@ -44,7 +44,7 @@ public class TabConstants {
         public static final String WORLD_SWITCH = "World Switch";
         public static final String SERVER_SWITCH = "Server Switch";
         public static final String COMMAND_PREPROCESS = "Command Preprocess";
-        public static final String REDIS_BUNGEE_MESSAGE = "Redis Message processing";
+        public static final String PROXY_MESSAGE = "Proxy Message processing";
 
         public static final String PLUGIN_MESSAGE_DECODE = "Decoding message";
         public static final String PLUGIN_MESSAGE_PROCESS = "Processing message";
@@ -65,7 +65,7 @@ public class TabConstants {
         public static final String BYTE_BUF = "ByteBuf";
         public static final String PACKET_LOGIN = "Login packet";
         public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
-        public static final String REDIS_RELOAD = "Processing reload from another proxy";
+        public static final String PROXY_RELOAD = "Processing reload from another proxy";
         public static final String GROUP_CHANGE = "Processing group change";
 
         // Placeholders
@@ -148,12 +148,12 @@ public class TabConstants {
         public static final String NAME_TAGS_VISIBILITY = "NameTagVisibility";
         public static final String PLACEHOLDER_MANAGER = "PlaceholderManager";
         public static final String PING_SPOOF = "PingSpoof";
+        public static final String PROXY_SUPPORT = "ProxySupport";
 
         //Bukkit only
         public static final String PER_WORLD_PLAYER_LIST = "PerWorldPlayerList";
 
         //BungeeCord only
-        public static final String REDIS_BUNGEE = "RedisBungee";
         public static final String GLOBAL_PLAYER_LIST = "GlobalPlayerList";
 
         //additional info displayed in cpu command

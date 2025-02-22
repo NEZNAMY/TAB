@@ -4,7 +4,7 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
@@ -59,11 +59,11 @@ public interface Platform {
     @NotNull TabExpansion createTabExpansion();
 
     /**
-     * Creates RedisSupport feature, registers listeners and returns it
+     * Creates ProxySupport feature, registers listeners and returns it
      *
      * @return  Created instance
      */
-    @Nullable RedisSupport getRedisSupport();
+    @Nullable ProxySupport getProxySupport(@NotNull String plugin);
 
     /**
      * Returns per world player list feature handler.

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features.redis;
+package me.neznamy.tab.shared.features.proxy;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
-import me.neznamy.tab.shared.features.redis.message.*;
+import me.neznamy.tab.shared.features.proxy.message.*;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.PerformanceUtil;
@@ -22,25 +22,25 @@ import java.util.function.Supplier;
 
 /**
  * Feature synchronizing player display data between
- * multiple proxies connected with a redis plugin.
+ * multiple servers connected with a proxy messenger.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Getter
-public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener,
+public abstract class ProxySupport extends TabFeature implements JoinListener, QuitListener,
         Loadable, UnLoadable, ServerSwitchListener,
         VanishListener {
 
-    /** Redis players on other proxies by their UUID */
-    @NotNull protected final Map<UUID, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
+    /** Proxy players on other proxies by their UUID */
+    @NotNull protected final Map<UUID, ProxyPlayer> proxyPlayers = new ConcurrentHashMap<>();
 
     /** UUID of this proxy to ignore messages coming from the same proxy */
     @NotNull private final UUID proxy = UUID.randomUUID();
 
     private EventHandler<TabPlaceholderRegisterEvent> eventHandler;
-    @NotNull private final Map<String, Supplier<RedisMessage>> messages = new HashMap<>();
-    @NotNull private final Map<Class<? extends RedisMessage>, String> classStringMap = new HashMap<>();
+    @NotNull private final Map<String, Supplier<ProxyMessage>> messages = new HashMap<>();
+    @NotNull private final Map<Class<? extends ProxyMessage>, String> classStringMap = new HashMap<>();
 
-    protected RedisSupport() {
+    protected ProxySupport() {
         registerMessage("load", Load.class, Load::new);
         registerMessage("loadrequest", LoadRequest.class, LoadRequest::new);
         registerMessage("join", PlayerJoin.class, PlayerJoin::new);
@@ -52,33 +52,33 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @NotNull
     @Override
     public String getFeatureName() {
-        return "RedisSupport";
+        return "ProxySupport";
     }
 
     /**
-     * Processes incoming redis message
+     * Processes incoming proxy message
      *
      * @param   msg
      *          json message to process
      */
     public void processMessage(@NotNull String msg) {
         // Queue the task to make sure it does not execute before load does, causing NPE
-        TAB.getInstance().getCpu().runMeasuredTask(getFeatureName(), CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
+        TAB.getInstance().getCpu().runMeasuredTask(getFeatureName(), CpuUsageCategory.PROXY_MESSAGE, () -> {
             ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
             String proxy = in.readUTF();
             if (proxy.equals(this.proxy.toString())) return; // Message coming from current proxy
             String action = in.readUTF();
-            Supplier<RedisMessage> supplier = messages.get(action);
+            Supplier<ProxyMessage> supplier = messages.get(action);
             if (supplier == null) {
-                TAB.getInstance().getErrorManager().unknownRedisMessage(action);
+                TAB.getInstance().getErrorManager().unknownProxyMessage(action);
                 return;
             }
-            RedisMessage redisMessage = supplier.get();
-            redisMessage.read(in);
-            if (redisMessage.getCustomThread() != null) {
-                redisMessage.getCustomThread().execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> redisMessage.process(this), getFeatureName(), CpuUsageCategory.REDIS_BUNGEE_MESSAGE));
+            ProxyMessage proxyMessage = supplier.get();
+            proxyMessage.read(in);
+            if (proxyMessage.getCustomThread() != null) {
+                proxyMessage.getCustomThread().execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> proxyMessage.process(this), getFeatureName(), CpuUsageCategory.PROXY_MESSAGE));
             } else {
-                redisMessage.process(this);
+                proxyMessage.process(this);
             }
         });
     }
@@ -92,12 +92,12 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     public abstract void sendMessage(@NotNull String message);
 
     /**
-     * Registers event and redis message listeners
+     * Registers event and proxy message listeners
      */
     public abstract void register();
 
     /**
-     * Unregisters event and redis message listeners
+     * Unregisters event and proxy message listeners
      */
     public abstract void unregister();
 
@@ -120,7 +120,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
                     for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                         if (player.server.equals(server) && !player.isVanished()) count++;
                     }
-                    for (RedisPlayer player : redisPlayers.values()) {
+                    for (ProxyPlayer player : proxyPlayers.values()) {
                         if (player.server.equals(server) && !player.isVanished()) count++;
                     }
                     return PerformanceUtil.toString(count);
@@ -132,7 +132,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (!player.isVanished()) count++;
             }
-            for (RedisPlayer player : redisPlayers.values()) {
+            for (ProxyPlayer player : proxyPlayers.values()) {
                 if (!player.isVanished()) count++;
             }
             return PerformanceUtil.toString(count);
@@ -142,7 +142,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (!player.isVanished() && player.hasPermission(TabConstants.Permission.STAFF)) count++;
             }
-            for (RedisPlayer player : redisPlayers.values()) {
+            for (ProxyPlayer player : proxyPlayers.values()) {
                 if (!player.isVanished() && player.isStaff()) count++;
             }
             return PerformanceUtil.toString(count);
@@ -152,7 +152,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (((TabPlayer)p).server.equals(player.server) && !player.isVanished()) count++;
             }
-            for (RedisPlayer player : redisPlayers.values()) {
+            for (ProxyPlayer player : proxyPlayers.values()) {
                 if (((TabPlayer)p).server.equals(player.server) && !player.isVanished()) count++;
             }
             return PerformanceUtil.toString(count);
@@ -187,7 +187,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      * @param   message
      *          Message to send
      */
-    public void sendMessage(@NotNull RedisMessage message) {
+    public void sendMessage(@NotNull ProxyMessage message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(proxy.toString());
         out.writeUTF(classStringMap.get(message.getClass()));
@@ -196,7 +196,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     }
 
     /**
-     * Registers redis message.
+     * Registers proxy message.
      *
      * @param   name
      *          Message name
@@ -205,7 +205,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      * @param   supplier
      *          Message supplier
      */
-    public void registerMessage(@NotNull String name, @NotNull Class<? extends RedisMessage> clazz, @NotNull Supplier<RedisMessage> supplier) {
+    public void registerMessage(@NotNull String name, @NotNull Class<? extends ProxyMessage> clazz, @NotNull Supplier<ProxyMessage> supplier) {
         messages.put(name, supplier);
         classStringMap.put(clazz, name);
     }

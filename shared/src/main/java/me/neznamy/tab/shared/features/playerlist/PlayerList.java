@@ -15,9 +15,9 @@ import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.redis.message.RedisMessage;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.message.ProxyMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -34,11 +34,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Getter
 public class PlayerList extends RefreshableFeature implements TabListFormatManager, JoinListener, Loadable,
-        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, RedisFeature, GroupListener {
+        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, ProxyFeature, GroupListener {
 
     @NotNull private final StringToComponentCache cache = new StringToComponentCache("Tablist name formatting", 1000);
     @NotNull private final TablistFormattingConfiguration configuration;
-    @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    @Nullable private final ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
     @NotNull private final DisableChecker disableChecker;
 
     /**
@@ -59,8 +59,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                     }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC), 500
             );
         }
-        if (redis != null) {
-            redis.registerMessage("tabformat", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        if (proxy != null) {
+            proxy.registerMessage("tabformat", UpdateProxyPlayer.class, UpdateProxyPlayer::new);
         }
     }
 
@@ -130,7 +130,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
                     tablistId.getMostSignificantBits() == 0 ? new SimpleTextComponent(player.getName()) : null);
         }
-        if (redis != null) redis.sendMessage(new UpdateRedisPlayer(player.getUniqueId(), player.tablistData.prefix.get() +
+        if (proxy != null) proxy.sendMessage(new UpdateProxyPlayer(player.getUniqueId(), player.tablistData.prefix.get() +
                 player.tablistData.name.get() + player.tablistData.suffix.get()));
     }
 
@@ -162,7 +162,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             if (disableChecker.isDisableConditionMet(all)) {
                 all.tablistData.disabled.set(true);
             } else {
-                if (redis != null) redis.sendMessage(new UpdateRedisPlayer(all.getUniqueId(),
+                if (proxy != null) proxy.sendMessage(new UpdateProxyPlayer(all.getUniqueId(),
                         all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get()));
             }
         }
@@ -203,9 +203,9 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                 )
                     all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
             }
-            if (redis != null) {
-                for (RedisPlayer redis : redis.getRedisPlayers().values()) {
-                    p.getTabList().updateDisplayName(redis.getUniqueId(), redis.getTabFormat());
+            if (proxy != null) {
+                for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
+                    p.getTabList().updateDisplayName(proxied.getUniqueId(), proxied.getTabFormat());
                 }
             }
         }, getFeatureName(), CpuUsageCategory.PLAYER_JOIN), 300);
@@ -276,9 +276,9 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                 if (all.tablistData.disabled.get()) continue;
                 connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
             }
-            if (redis != null) {
-                for (RedisPlayer redis : redis.getRedisPlayers().values()) {
-                    connectedPlayer.getTabList().updateDisplayName(redis.getUniqueId(), redis.getTabFormat());
+            if (proxy != null) {
+                for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
+                    connectedPlayer.getTabList().updateDisplayName(proxied.getUniqueId(), proxied.getTabFormat());
                 }
             }
         };
@@ -374,15 +374,19 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         return ((TabPlayer)player).tablistData.suffix.getOriginalRawValue();
     }
 
+    // ------------------
+    // ProxySupport
+    // ------------------
+
     @Override
-    public void onRedisLoadRequest() {
+    public void onProxyLoadRequest() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            redis.sendMessage(new UpdateRedisPlayer(all.getTablistId(), all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get()));
+            proxy.sendMessage(new UpdateProxyPlayer(all.getTablistId(), all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get()));
         }
     }
 
     @Override
-    public void onVanishStatusChange(@NotNull RedisPlayer player) {
+    public void onVanishStatusChange(@NotNull ProxyPlayer player) {
         if (player.isVanished()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
@@ -415,11 +419,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     }
 
     /**
-     * Redis message to update tablist format of a player.
+     * Proxy message to update tablist format of a player.
      */
     @NoArgsConstructor
     @AllArgsConstructor
-    private class UpdateRedisPlayer extends RedisMessage {
+    private class UpdateProxyPlayer extends ProxyMessage {
 
         private UUID playerId;
         private String format;
@@ -437,14 +441,14 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         }
 
         @Override
-        public void process(@NotNull RedisSupport redisSupport) {
-            RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
+        public void process(@NotNull ProxySupport proxySupport) {
+            ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
             if (target == null) {
-                TAB.getInstance().getErrorManager().printError("Unable to process tablist format update of redis player " + playerId + ", because no such player exists", null);
+                TAB.getInstance().getErrorManager().printError("Unable to process tablist format update of proxy player " + playerId + ", because no such player exists", null);
                 return;
             }
             if (target.getTabFormat() == null) {
-                TAB.getInstance().debug("Processing tablist formatting join of redis player " + target.getName());
+                TAB.getInstance().debug("Processing tablist formatting join of proxy player " + target.getName());
             }
             target.setTabFormat(cache.get(format));
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
