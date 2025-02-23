@@ -6,20 +6,20 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.redis.message.RedisMessage;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.message.ProxyMessage;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 /**
- * Redis message to update belowname data of a player.
+ * Proxy message to update belowname data of a player.
  */
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class BelowNameUpdateRedisPlayer extends RedisMessage {
+public class BelowNameUpdateProxyPlayer extends ProxyMessage {
 
     @NotNull
     private final BelowName feature;
@@ -48,14 +48,14 @@ public class BelowNameUpdateRedisPlayer extends RedisMessage {
     }
 
     @Override
-    public void process(@NotNull RedisSupport redisSupport) {
-        RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
+    public void process(@NotNull ProxySupport proxySupport) {
+        ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
         if (target == null) {
-            TAB.getInstance().getErrorManager().printError("Unable to process Belowname objective update of redis player " + playerId + ", because no such player exists", null);
+            TAB.getInstance().getErrorManager().printError("Unable to process Belowname objective update of proxy player " + playerId + ", because no such player exists", null);
             return;
         }
         if (target.getBelowNameFancy() == null) {
-            TAB.getInstance().debug("Processing belowname objective join of redis player " + target.getName());
+            TAB.getInstance().debug("Processing belowname objective join of proxy player " + target.getName());
         }
         target.setBelowNameNumber(value);
         target.setBelowNameFancy(feature.getCache().get(fancyValue));

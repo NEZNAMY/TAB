@@ -61,7 +61,7 @@ public class Config {
     private final boolean pipelineInjection = getSecretOption("pipeline-injection", true);
     @NotNull private final String serverName = getSecretOption("server-name", "N/A");
     private final int permissionRefreshInterval = config.getInt("permission-refresh-interval", 1000);
-    private final boolean enableRedisHook = config.getBoolean("enable-redisbungee-support", true);
+    private final boolean enableProxySupport = config.getBoolean("proxy-support.enabled", true);
     private final boolean packetEventsCompensation = config.getBoolean("compensate-for-packetevents-bug", false) && !TAB.getInstance().getPlatform().isSafeFromPacketEventsBug();
 
     /** If enabled, groups are assigned via permissions instead of permission plugin */
@@ -78,6 +78,7 @@ public class Config {
         converter.convert409to410(config);
         converter.convert419to500(config);
         converter.convert501to502(config);
+        converter.convert507to508(config);
 
         conditions = ConditionsSection.fromSection(config.getConfigurationSection("conditions"));
         refresh = PlaceholderRefreshConfiguration.fromSection(config.getConfigurationSection("placeholderapi-refresh-intervals"));

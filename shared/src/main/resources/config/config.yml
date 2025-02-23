@@ -229,6 +229,20 @@ mysql:
   password: password
   useSSL: true
 
+proxy-support:
+  enabled: true
+  # Supported types: PLUGIN, REDIS, RABBITMQ
+  type: PLUGIN
+  plugin:
+    # Compatible plugins: RedisBungee
+    # If enabled and compatible plugin is found, hook is enabled to work with proxied players
+    name: RedisBungee
+  redis:
+    url: 'redis://:password@localhost:6379/0'
+  rabbitmq:
+    exchange: 'plugin'
+    url: 'amqp://guest:guest@localhost:5672/%2F'
+
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #
 ########################################################################
@@ -281,6 +295,3 @@ use-bukkit-permissions-manager: false
 # If you experience tablist formatting not working, toggle this option (set it to opposite value)
 # Only affects proxies with online mode enabled
 use-online-uuid-in-tablist: true
-
-# If enabled and RedisBungee plugin is found, hook is enabled to work with players on all proxies
-enable-redisbungee-support: true

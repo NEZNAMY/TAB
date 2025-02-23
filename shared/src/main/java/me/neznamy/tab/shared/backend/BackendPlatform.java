@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.platform.Platform;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +24,7 @@ public interface BackendPlatform extends Platform {
         return new GroupManager("None", p -> TabConstants.NO_GROUP);
     }
 
-    default RedisSupport getRedisSupport() { return null; }
+    default ProxySupport getProxySupport(@NotNull String plugin) { return null; }
 
     @Override
     default void registerPlaceholders() {

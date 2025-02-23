@@ -9,8 +9,8 @@ import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.belowname.BelowName;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.playerlistobjective.YellowNumber;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.EntryAddListener;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -31,7 +31,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     @Nullable private final NameTag nameTags = TAB.getInstance().getNameTagManager();
     @Nullable private final BelowName belowname = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
     @Nullable private final YellowNumber yellownumber = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.YELLOW_NUMBER);
-    @Nullable private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    @Nullable private final ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
 
     public synchronized void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
         TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
@@ -47,13 +47,13 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
             TAB.getInstance().debug("Processing name change of player " + packetPlayer.getName() + " to " + name);
             processNameChange(packetPlayer);
         }
-        if (redis != null) {
-            RedisPlayer redisPlayer = redis.getRedisPlayers().get(id);
-            if (redisPlayer == null) return;
-            if (!redisPlayer.getNickname().equals(name)) {
-                redisPlayer.setNickname(name);
-                TAB.getInstance().debug("Processing name change of redis player " + redisPlayer.getName() + " to " + name);
-                processNameChange(redisPlayer);
+        if (proxy != null) {
+            ProxyPlayer proxyPlayer = proxy.getProxyPlayers().get(id);
+            if (proxyPlayer == null) return;
+            if (!proxyPlayer.getNickname().equals(name)) {
+                proxyPlayer.setNickname(name);
+                TAB.getInstance().debug("Processing name change of proxy player " + proxyPlayer.getName() + " to " + name);
+                processNameChange(proxyPlayer);
             }
         }
     }
@@ -87,7 +87,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
         }, getFeatureName(), CpuUsageCategory.NICK_PLUGIN_COMPATIBILITY));
     }
 
-    private void processNameChange(RedisPlayer player) {
+    private void processNameChange(ProxyPlayer player) {
         CpuManager cpu = TAB.getInstance().getCpu();
         cpu.getProcessingThread().execute(new TimedCaughtTask(cpu, () -> {
             if (nameTags != null) {

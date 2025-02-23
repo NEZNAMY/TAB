@@ -12,9 +12,9 @@ import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.redis.message.RedisMessage;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.message.ProxyMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * PLAYER_LIST display slot (in tablist).
  */
 public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        CustomThreaded, RedisFeature {
+        CustomThreaded, ProxyFeature {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
@@ -56,7 +56,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     private final DisableChecker disableChecker;
 
     @Nullable
-    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    private final ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
 
     /**
      * Constructs new instance and registers disable condition checker to feature manager.
@@ -68,8 +68,8 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.playerlistObjectiveData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
-        if (redis != null) {
-            redis.registerMessage("yellow-number", UpdateRedisPlayer.class, UpdateRedisPlayer::new);
+        if (proxy != null) {
+            proxy.registerMessage("yellow-number", UpdateProxyPlayer.class, UpdateProxyPlayer::new);
         }
     }
 
@@ -112,8 +112,8 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
                 register(loaded);
             }
             values.put(loaded, getValueNumber(loaded));
-            if (redis != null) {
-                redis.sendMessage(new UpdateRedisPlayer(loaded.getTablistId(), values.get(loaded), loaded.playerlistObjectiveData.valueModern.get()));
+            if (proxy != null) {
+                proxy.sendMessage(new UpdateProxyPlayer(loaded.getTablistId(), values.get(loaded), loaded.playerlistObjectiveData.valueModern.get()));
             }
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
@@ -142,17 +142,17 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
                 setScore(connectedPlayer, all, getValueNumber(all), all.playerlistObjectiveData.valueModern.getFormat(connectedPlayer));
             }
         }
-        if (redis != null) {
-            redis.sendMessage(new UpdateRedisPlayer(connectedPlayer.getTablistId(), getValueNumber(connectedPlayer), connectedPlayer.playerlistObjectiveData.valueModern.get()));
+        if (proxy != null) {
+            proxy.sendMessage(new UpdateProxyPlayer(connectedPlayer.getTablistId(), getValueNumber(connectedPlayer), connectedPlayer.playerlistObjectiveData.valueModern.get()));
             if (connectedPlayer.playerlistObjectiveData.disabled.get()) return;
-            for (RedisPlayer redis : redis.getRedisPlayers().values()) {
-                if (redis.getPlayerlistFancy() == null) continue; // This redis player is not loaded yet
+            for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
+                if (proxied.getPlayerlistFancy() == null) continue; // This proxy player is not loaded yet
                 connectedPlayer.getScoreboard().setScore(
                         OBJECTIVE_NAME,
-                        redis.getNickname(),
-                        redis.getPlayerlistNumber(),
+                        proxied.getNickname(),
+                        proxied.getPlayerlistNumber(),
                         null, // Unused by this objective slot
-                        redis.getPlayerlistFancy()
+                        proxied.getPlayerlistFancy()
                 );
             }
         }
@@ -174,16 +174,16 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             for (TabPlayer all : onlinePlayers.getPlayers()) {
                 setScore(p, all, getValueNumber(all), all.playerlistObjectiveData.valueModern.getFormat(p));
             }
-            if (redis != null) {
-                redis.sendMessage(new UpdateRedisPlayer(p.getTablistId(), getValueNumber(p), p.playerlistObjectiveData.valueModern.get()));
-                for (RedisPlayer redis : redis.getRedisPlayers().values()) {
-                    if (redis.getPlayerlistFancy() == null) continue; // This redis player is not loaded yet
+            if (proxy != null) {
+                proxy.sendMessage(new UpdateProxyPlayer(p.getTablistId(), getValueNumber(p), p.playerlistObjectiveData.valueModern.get()));
+                for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
+                    if (proxied.getPlayerlistFancy() == null) continue; // This proxy player is not loaded yet
                     p.getScoreboard().setScore(
                             OBJECTIVE_NAME,
-                            redis.getNickname(),
-                            redis.getPlayerlistNumber(),
+                            proxied.getNickname(),
+                            proxied.getPlayerlistNumber(),
                             null, // Unused by this objective slot
-                            redis.getPlayerlistFancy()
+                            proxied.getPlayerlistFancy()
                     );
                 }
             }
@@ -204,7 +204,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, refreshed, value, refreshed.playerlistObjectiveData.valueModern.getFormat(viewer));
         }
-        if (redis != null) redis.sendMessage(new UpdateRedisPlayer(refreshed.getTablistId(), value, refreshed.playerlistObjectiveData.valueModern.get()));
+        if (proxy != null) proxy.sendMessage(new UpdateProxyPlayer(refreshed.getTablistId(), value, refreshed.playerlistObjectiveData.valueModern.get()));
     }
 
     private void register(@NotNull TabPlayer player) {
@@ -254,10 +254,14 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
+    // ------------------
+    // ProxySupport
+    // ------------------
+
     @Override
-    public void onRedisLoadRequest() {
+    public void onProxyLoadRequest() {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            redis.sendMessage(new UpdateRedisPlayer(all.getTablistId(), getValueNumber(all), all.playerlistObjectiveData.valueModern.get()));
+            proxy.sendMessage(new UpdateProxyPlayer(all.getTablistId(), getValueNumber(all), all.playerlistObjectiveData.valueModern.get()));
         }
     }
 
@@ -283,11 +287,11 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     }
 
     /**
-     * Redis message to update playerlist objective data of a player.
+     * Proxy message to update playerlist objective data of a player.
      */
     @NoArgsConstructor
     @AllArgsConstructor
-    private class UpdateRedisPlayer extends RedisMessage {
+    private class UpdateProxyPlayer extends ProxyMessage {
 
         private UUID playerId;
         private int value;
@@ -313,14 +317,19 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         }
 
         @Override
-        public void process(@NotNull RedisSupport redisSupport) {
-            RedisPlayer target = redisSupport.getRedisPlayers().get(playerId);
+        public void process(@NotNull ProxySupport proxySupport) {
+            ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
             if (target == null) {
-                TAB.getInstance().getErrorManager().printError("Unable to process Playerlist objective update of redis player " + playerId + ", because no such player exists", null);
+                TAB.getInstance().getErrorManager().printError("Unable to process Playerlist objective update of proxy player " + playerId + ", because no such player exists", null);
                 return;
             }
             if (target.getPlayerlistFancy() == null) {
-                TAB.getInstance().debug("Processing playerlist objective join of redis player " + target.getName());
+                TAB.getInstance().debug("Processing playerlist objective join of proxy player " + target.getName());
+            }
+            // Yellow number is already being processed by connected player
+            if (TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
+                TAB.getInstance().debug("The player " + target.getName() + " is already connected");
+                return;
             }
             target.setPlayerlistNumber(value);
             target.setPlayerlistFancy(cache.get(fancyValue));
