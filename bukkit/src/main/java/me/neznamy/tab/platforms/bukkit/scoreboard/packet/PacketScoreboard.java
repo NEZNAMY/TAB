@@ -3,13 +3,13 @@ package me.neznamy.tab.platforms.bukkit.scoreboard.packet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
+import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -152,23 +153,30 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     @NotNull
+    @SneakyThrows
     public Object createTeam(@NonNull String name) {
-        return teamPacketData.createTeam(name);
+        return teamPacketData.createTeam.apply(name);
     }
 
     @Override
+    @SneakyThrows
     public void registerTeam(@NonNull Team team) {
-        packetSender.sendPacket(player, teamPacketData.registerTeam(team, player.getVersion()));
+        teamPacketData.ScoreboardTeam_players.set(team.getPlatformTeam(), new HashSet<>(team.getPlayers()));
+        teamPacketData.updateTeamData(team, player.getVersion());
+        packetSender.sendPacket(player, teamPacketData.newRegisterTeamPacket.apply(team, player.getVersion()));
     }
 
     @Override
+    @SneakyThrows
     public void unregisterTeam(@NonNull Team team) {
-        packetSender.sendPacket(player, teamPacketData.unregisterTeam(team));
+        packetSender.sendPacket(player, teamPacketData.newUnregisterTeamPacket.apply(team));
     }
 
     @Override
+    @SneakyThrows
     public void updateTeam(@NonNull Team team) {
-        packetSender.sendPacket(player, teamPacketData.updateTeam(team, player.getVersion()));
+        teamPacketData.updateTeamData(team, player.getVersion());
+        packetSender.sendPacket(player, teamPacketData.newUpdateTeamPacket.apply(team, player.getVersion()));
     }
 
     @Override
