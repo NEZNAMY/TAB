@@ -3,6 +3,10 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
+tasks.withType<Zip>().configureEach {
+    isZip64 = true
+}
+
 tasks {
     shadowJar {
         archiveFileName.set("TAB-${project.name}-${project.version}.jar")
