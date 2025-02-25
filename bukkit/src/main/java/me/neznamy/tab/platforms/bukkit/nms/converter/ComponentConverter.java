@@ -5,19 +5,12 @@ import me.neznamy.chat.component.KeybindComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
 import me.neznamy.chat.component.TranslatableComponent;
-import me.neznamy.tab.platforms.bukkit.BukkitUtils;
-import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Interface for converting TAB components into NMS components (1.7+).
  */
 public abstract class ComponentConverter {
-
-    /** Instance of this class */
-    @Nullable
-    public static ComponentConverter INSTANCE;
 
     /**
      * Converts TAB component to NMS component.
@@ -100,26 +93,4 @@ public abstract class ComponentConverter {
      *          Child component to append
      */
     public abstract void addSibling(@NotNull Object parent, @NotNull Object child);
-
-    /**
-     * Attempts to load component converter.
-     */
-    public static void tryLoad() {
-        try {
-            if (BukkitReflection.getMinorVersion() >= 19) {
-                // 1.19+
-                INSTANCE = new ModernComponentConverter();
-            } else if (BukkitReflection.getMinorVersion() >= 16) {
-                // 1.16 - 1.18.2
-                INSTANCE = new ModerateComponentConverter();
-            } else {
-                // 1.7 - 1.15.2
-                INSTANCE = new LegacyComponentConverter();
-            }
-        } catch (Exception e) {
-            if (BukkitUtils.PRINT_EXCEPTIONS) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

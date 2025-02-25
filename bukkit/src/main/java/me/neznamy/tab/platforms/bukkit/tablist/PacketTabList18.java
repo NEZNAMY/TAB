@@ -8,7 +8,6 @@ import lombok.SneakyThrows;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
@@ -101,7 +100,6 @@ public class PacketTabList18 extends TabListBase {
                 Enum.valueOf(gameMode, "SPECTATOR")
         };
         packetSender = new PacketSender();
-        if (ComponentConverter.INSTANCE == null) throw new IllegalStateException("Component converter is not available");
         try {
             skinData = new SkinData();
         } catch (Exception e) {
