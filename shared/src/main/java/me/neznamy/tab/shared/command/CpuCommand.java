@@ -64,9 +64,9 @@ public class CpuCommand extends SubCommand {
         int printCounter = 0;
         for (Entry<String, Float> entry : map.entrySet()) {
             if (printCounter++ == 5) break;
-            String refresh = "";
             Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey());
-            if (p.getRefresh() != -1) refresh = " &8(" + p.getRefresh() + ")&7";
+            Integer configuredRefresh = TAB.getInstance().getPlaceholderManager().getConfiguration().getRefreshIntervals().get(entry.getKey());
+            String refresh = String.format(" %s (%d)&7", configuredRefresh == null ? "&8" : "&3", p.getRefresh());
             String colorized = entry.getKey().startsWith("%sync:") ? "&c" + decimal3.format(entry.getValue()) : colorize(decimal3.format(entry.getValue()), 1, 0.3f);
             sendMessage(sender, String.format("&8&l%s &7%s - %s%%", LINE_CHAR, entry.getKey() + refresh, colorized));
         }
