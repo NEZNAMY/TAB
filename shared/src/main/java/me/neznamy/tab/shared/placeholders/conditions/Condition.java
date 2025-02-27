@@ -194,7 +194,7 @@ public class Condition {
             conditions = conditions.stream().map(String::trim).collect(Collectors.toList());
             Condition c = new Condition(type, anonVersion, conditions, "true", "false");
             c.finishSetup();
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.name), c.refresh,
+            TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.condition(c.name), c.refresh,
                     p -> c.getText((TabPlayer) p));
             return c;
         }

@@ -81,7 +81,7 @@ public class Config {
         converter.convert507to508(config);
 
         conditions = ConditionsSection.fromSection(config.getConfigurationSection("conditions"));
-        refresh = PlaceholderRefreshConfiguration.fromSection(config.getConfigurationSection("placeholderapi-refresh-intervals"));
+        refresh = PlaceholderRefreshConfiguration.fromSection(config.getConfigurationSection("placeholder-refresh-intervals"));
         replacements = PlaceholderReplacementsConfiguration.fromSection(config.getConfigurationSection("placeholder-output-replacements"));
         placeholders = PlaceholdersConfiguration.fromSection(config.getConfigurationSection("placeholders"));
         if (config.getBoolean("belowname-objective.enabled", false)) belowname = BelowNameConfiguration.fromSection(config.getConfigurationSection("belowname-objective"));

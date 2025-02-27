@@ -55,8 +55,7 @@ public class FabricPlatform implements BackendPlatform {
         }
 
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
-        int refresh = manager.getRefreshInterval(identifier);
-        manager.registerPlayerPlaceholder(identifier, refresh,
+        manager.registerPlayerPlaceholder(identifier,
                 p -> Placeholders.parseText(
                             FabricMultiVersion.newTextComponent(identifier),
                             PlaceholderContext.of((ServerPlayer) p.getPlayer())

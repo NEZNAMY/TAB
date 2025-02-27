@@ -127,7 +127,7 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
                 });
             }
         };
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
+        TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (!player.isVanished()) count++;
@@ -137,7 +137,7 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
             }
             return PerformanceUtil.toString(count);
         });
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () -> {
+        TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (!player.isVanished() && player.hasPermission(TabConstants.Permission.STAFF)) count++;
@@ -147,7 +147,7 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
             }
             return PerformanceUtil.toString(count);
         });
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
+        TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (((TabPlayer)p).server.equals(player.server) && !player.isVanished()) count++;

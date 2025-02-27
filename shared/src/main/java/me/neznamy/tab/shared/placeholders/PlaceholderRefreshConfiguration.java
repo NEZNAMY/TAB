@@ -20,12 +20,38 @@ public class PlaceholderRefreshConfiguration {
     @NotNull private final Map<String, Integer> refreshIntervals;
 
     /**
-     * Returns instance of this class created from given configuration section. If there are
-     * issues in the configuration, console warns are printed.
+     * Returns refresh interval for specified placeholder.
+     * If not defined, {@link #defaultInterval} is returned.
+     *
+     * @param   identifier
+     *          Placeholder identifier
+     * @return  Refresh interval for given placeholder
+     */
+    public int getRefreshInterval(@NotNull String identifier) {
+        return refreshIntervals.getOrDefault(identifier, defaultInterval);
+    }
+
+    /**
+     * Returns refresh interval for specified placeholder.
+     * If not defined, {@code defaultInterval} is returned.
+     *
+     * @param   identifier
+     *          Placeholder identifier
+     * @param   defaultInterval
+     *          Interval to use if not defined in config
+     * @return  Refresh interval for given placeholder
+     */
+    public int getRefreshInterval(@NotNull String identifier, int defaultInterval) {
+        return refreshIntervals.getOrDefault(identifier, defaultInterval);
+    }
+
+    /**
+     * Returns instance of this class created from the given configuration section.
+     * If there are issues in the configuration, console warns are printed.
      *
      * @param   section
      *          Configuration section to load from
-     * @return  Loaded instance from given configuration section
+     * @return  Loaded instance from the given configuration section
      */
     @NotNull
     public static PlaceholderRefreshConfiguration fromSection(@NotNull ConfigurationSection section) {

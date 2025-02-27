@@ -57,10 +57,10 @@ public class FoliaPlatform extends BukkitPlatform {
     }
 
     @Override
-    public void registerSyncPlaceholder(@NotNull String identifier, int refresh) {
+    public void registerSyncPlaceholder(@NotNull String identifier) {
         String syncedPlaceholder = "%" + identifier.substring(6);
         PlayerPlaceholderImpl[] ppl = new PlayerPlaceholderImpl[1];
-        ppl[0] = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> {
+        ppl[0] = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, p -> {
             runSync((Entity) p.getPlayer(), () -> {
                 long time = System.nanoTime();
                 String output = isPlaceholderAPI() ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier;

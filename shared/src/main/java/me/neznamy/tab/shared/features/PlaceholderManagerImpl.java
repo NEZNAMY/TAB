@@ -42,7 +42,9 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
 
     private static final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
-    @NotNull private final PlaceholderRefreshConfiguration configuration;
+    @NotNull
+    @Getter
+    private final PlaceholderRefreshConfiguration configuration;
 
     private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
@@ -198,18 +200,6 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             }
         }
         return set;
-    }
-
-    /**
-     * Returns refresh interval the placeholder has configured. If not configured,
-     * default refresh interval is returned.
-     *
-     * @param   identifier
-     *          Placeholder identifier
-     * @return  Configured refresh interval for placeholder
-     */
-    public int getRefreshInterval(@NotNull String identifier) {
-        return configuration.getRefreshIntervals().getOrDefault(identifier, configuration.getDefaultInterval());
     }
 
     /**
@@ -384,28 +374,65 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         return registeredPlaceholders.get(identifier);
     }
 
+    @NotNull
+    public ServerPlaceholderImpl registerInternalServerPlaceholder(@NonNull String identifier, int defaultRefresh, @NonNull Supplier<String> supplier) {
+        return registerServerPlaceholder(identifier, configuration.getRefreshInterval(identifier, defaultRefresh), supplier);
+    }
+
+    @NotNull
+    public PlayerPlaceholderImpl registerInternalPlayerPlaceholder(@NonNull String identifier, int defaultRefresh,
+                                                                    @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
+        return registerPlayerPlaceholder(identifier, configuration.getRefreshInterval(identifier, defaultRefresh), function);
+    }
+
+    @NotNull
+    public RelationalPlaceholderImpl registerInternalRelationalPlaceholder(@NonNull String identifier, int defaultRefresh,
+                                                                           @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
+        return registerRelationalPlaceholder(identifier, configuration.getRefreshInterval(identifier, defaultRefresh), function);
+    }
+
+    @NotNull
+    public ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, @NonNull Supplier<String> supplier) {
+        return registerServerPlaceholder(identifier, configuration.getRefreshInterval(identifier), supplier);
+    }
+
+    @NotNull
+    public PlayerPlaceholderImpl registerPlayerPlaceholder(@NonNull String identifier,
+                                                           @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
+        return registerPlayerPlaceholder(identifier, configuration.getRefreshInterval(identifier), function);
+    }
+
+    @NotNull
+    public RelationalPlaceholderImpl registerRelationalPlaceholder(@NonNull String identifier,
+                                                                   @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
+        return registerRelationalPlaceholder(identifier, configuration.getRefreshInterval(identifier), function);
+    }
+
     // ------------------
     // API Implementation
     // ------------------
 
     @Override
-    public @NotNull ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<String> supplier) {
+    @NotNull
+    public ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<String> supplier) {
         ensureActive();
         bridgePlaceholders.remove(identifier);
         return registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
     }
 
     @Override
-    public @NotNull PlayerPlaceholderImpl registerPlayerPlaceholder(@NonNull String identifier, int refresh,
-                                                                    @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
+    @NotNull
+    public PlayerPlaceholderImpl registerPlayerPlaceholder(@NonNull String identifier, int refresh,
+                                                           @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
         ensureActive();
         bridgePlaceholders.remove(identifier);
         return registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
     }
 
     @Override
-    public @NotNull RelationalPlaceholderImpl registerRelationalPlaceholder(
-            @NonNull String identifier, int refresh, @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
+    @NotNull
+    public RelationalPlaceholderImpl registerRelationalPlaceholder(@NonNull String identifier, int refresh,
+                                                                   @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
         ensureActive();
         bridgePlaceholders.remove(identifier);
         return registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
@@ -436,11 +463,11 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
             if (TAB.getInstance().getEventBus() != null) TAB.getInstance().getEventBus().fire(event);
             if (event.getServerPlaceholder() != null) {
-                registerServerPlaceholder(identifier, getRefreshInterval(identifier), event.getServerPlaceholder());
+                registerServerPlaceholder(identifier, event.getServerPlaceholder());
             } else if (event.getPlayerPlaceholder() != null) {
-                registerPlayerPlaceholder(identifier, getRefreshInterval(identifier), event.getPlayerPlaceholder());
+                registerPlayerPlaceholder(identifier, event.getPlayerPlaceholder());
             } else if (event.getRelationalPlaceholder() != null) {
-                registerRelationalPlaceholder(identifier, getRefreshInterval(identifier), event.getRelationalPlaceholder());
+                registerRelationalPlaceholder(identifier, event.getRelationalPlaceholder());
             } else {
                 TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
             }

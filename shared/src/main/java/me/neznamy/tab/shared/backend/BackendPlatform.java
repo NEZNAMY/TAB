@@ -1,13 +1,13 @@
 package me.neznamy.tab.shared.backend;
 
-import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.platform.Platform;
-import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,14 +29,14 @@ public interface BackendPlatform extends Platform {
     @Override
     default void registerPlaceholders() {
         UniversalPlaceholderRegistry registry = new UniversalPlaceholderRegistry();
-        PlaceholderManager manager = TAB.getInstance().getPlaceholderManager();
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100,
+        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100,
                 p -> PerformanceUtil.toString((int) Math.ceil(((BackendTabPlayer)p).getHealth())));
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500,
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500,
                 p -> ((BackendTabPlayer)p).getDisplayName());
-        manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000,
+        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.TPS, 1000,
                 () -> registry.getDecimal2().format(Math.min(20, getTPS())));
-        manager.registerServerPlaceholder(TabConstants.Placeholder.MSPT, 1000,
+        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MSPT, 1000,
                 () -> registry.getDecimal2().format(getMSPT()));
         registry.registerPlaceholders(manager);
     }

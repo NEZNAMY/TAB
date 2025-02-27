@@ -32,7 +32,7 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
 
     @Override
     public void load() {
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
+        TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
             TabPlayer player = (TabPlayer) p;
             if (player.teamData.forcedCollision != null) return Boolean.toString(player.teamData.forcedCollision);
             boolean newCollision = !((TabPlayer)p).isDisguised() && enableCollision.isMet((TabPlayer) p);
