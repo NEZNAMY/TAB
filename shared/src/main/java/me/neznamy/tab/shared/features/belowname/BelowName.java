@@ -190,7 +190,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     @NotNull
     @Override
     public String getRefreshDisplayName() {
-        return "Updating BelowName number";
+        return "Updating BelowName value";
     }
 
     @Override
