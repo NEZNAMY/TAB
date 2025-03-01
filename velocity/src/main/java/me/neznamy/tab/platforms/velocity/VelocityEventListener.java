@@ -122,10 +122,10 @@ public class VelocityEventListener implements EventListener<Player> {
      */
     @Subscribe
     public void onPluginMessageEvent(@NotNull PluginMessageEvent e) {
-        if (TAB.getInstance().isPluginDisabled()) return;
         if (!e.getIdentifier().getId().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
+        e.setResult(PluginMessageEvent.ForwardResult.handled()); // Also cancel messages from players to prevent exploits
+        if (TAB.getInstance().isPluginDisabled()) return;
         if (e.getTarget() instanceof Player) {
-            e.setResult(PluginMessageEvent.ForwardResult.handled());
             pluginMessage(((Player) e.getTarget()).getUniqueId(), e.getData());
         }
     }

@@ -97,8 +97,9 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
     @EventHandler
     public void onPluginMessage(PluginMessageEvent e) {
         if (!e.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
+        e.setCancelled(true); // Also cancel messages from players to prevent exploits
+        if (TAB.getInstance().isPluginDisabled()) return;
         if (e.getReceiver() instanceof ProxiedPlayer) {
-            e.setCancelled(true);
             pluginMessage(((ProxiedPlayer) e.getReceiver()).getUniqueId(), e.getData());
         }
     }
