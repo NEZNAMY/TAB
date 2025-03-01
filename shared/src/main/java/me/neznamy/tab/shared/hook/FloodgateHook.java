@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.hook;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.jetbrains.annotations.NotNull;
@@ -39,18 +38,6 @@ public class FloodgateHook {
         }
         boolean bedrock = FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
         TAB.getInstance().debug("Floodgate returned bedrock status " + String.valueOf(bedrock).toUpperCase() + " for player " + name);
-        char firstCharacter = name.charAt(0);
-        boolean validFirstChar = (firstCharacter >= 'A' && firstCharacter <= 'Z') ||
-                (firstCharacter >= 'a' && firstCharacter <= 'z') ||
-                (firstCharacter >= '0' && firstCharacter <= '9') ||
-                (firstCharacter == '_');
-        if (!bedrock && !validFirstChar) {
-            TAB.getInstance().getPlatform().logWarn(new SimpleTextComponent("Floodgate returned bedrock status FALSE " +
-                    "for player " + name + ", however, this player appears to be a bedrock player. This means " +
-                    "floodgate is not configured correctly, usually because it is also installed on proxy, but not " +
-                    "linked properly. See proxy setup on floodgate wiki for more details. This may result in visual issues for the player."));
-        }
-
         return bedrock;
     }
 }
