@@ -1,0 +1,95 @@
+package me.neznamy.tab.platforms.viaversion.platform;
+
+import me.neznamy.tab.platforms.viaversion.scoreboard.ViaScoreboard1203;
+import me.neznamy.tab.platforms.viaversion.scoreboard.ViaScoreboard13;
+import me.neznamy.tab.platforms.viaversion.scoreboard.ViaScoreboard16;
+import me.neznamy.tab.platforms.viaversion.tablist.ViaTabList1193;
+import me.neznamy.tab.platforms.viaversion.tablist.ViaTabList1212;
+import me.neznamy.tab.platforms.viaversion.tablist.ViaTabList1214;
+import me.neznamy.tab.platforms.viaversion.tablist.ViaTabList16;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.function.FunctionWithException;
+import org.jetbrains.annotations.NotNull;
+
+public class ViaVersionPlatform {
+
+    @NotNull
+    public static <P extends TabPlayer> FunctionWithException<P, Scoreboard> findScoreboardProvider(@NotNull ProtocolVersion serverVersion) {
+        FunctionWithException<P, Scoreboard> function = FunctionWithException.empty();
+
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_20_3.getNetworkId()) {
+            function = function.fallback(player -> {
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
+                    return new ViaScoreboard1203<>(player);
+                }
+                return null;
+            });
+        }
+
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_16.getNetworkId()) {
+            function = function.fallback(player -> {
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_16.getNetworkId()) {
+                    return new ViaScoreboard16<>(player);
+                }
+                return null;
+            });
+        }
+
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_13.getNetworkId()) {
+            function = function.fallback(player -> {
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_13.getNetworkId()) {
+                    return new ViaScoreboard13<>(player);
+                }
+                return null;
+            });
+        }
+
+        return function;
+    }
+
+    @NotNull
+    public static <P extends TabPlayer> FunctionWithException<P, TabList> findTablistProvider(@NotNull ProtocolVersion serverVersion) {
+        FunctionWithException<P, TabList> function = FunctionWithException.empty();
+
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_21_4.getNetworkId()) {
+            function = function.fallback(player -> {
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_4.getNetworkId()) {
+                    return new ViaTabList1214<>(player);
+                }
+                return null;
+            });
+        }
+
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_21_2.getNetworkId()) {
+            function = function.fallback(player -> {
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) {
+                    return new ViaTabList1212<>(player);
+                }
+                return null;
+            });
+        }
+
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_19_3.getNetworkId()) {
+            function = function.fallback(player -> {
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
+                    return new ViaTabList1193<>(player);
+                }
+                return null;
+            });
+        }
+
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_16.getNetworkId()) {
+            function = function.fallback(player -> {
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_16.getNetworkId()) {
+                    return new ViaTabList16<>(player);
+                }
+                return null;
+            });
+        }
+
+        return function;
+    }
+}

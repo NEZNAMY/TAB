@@ -126,6 +126,15 @@ public class TextColor {
     }
 
     /**
+     * Check if the current text color is a legacy color code.
+     *
+     * @return true if this a legacy color, false otherwise.
+     */
+    public boolean isLegacy() {
+        return legacyColor != null;
+    }
+
+    /**
      * Returns {@code red} value
      *
      * @return  red value
