@@ -22,7 +22,6 @@ dependencies {
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", version))
     modImplementation(fabricApi.module("fabric-networking-api-v1", version))
     modImplementation(fabricApi.module("fabric-entity-events-v1", version))
-    modImplementation(fabricApi.module("fabric-command-api-v1", "0.77.0+1.18.2"))
     modImplementation(fabricApi.module("fabric-command-api-v2", version))
 }
 
@@ -35,6 +34,6 @@ tasks {
         options.release.set(17)
     }
     validateAccessWidener {
-        enabled = false
+        enabled = true
     }
 }

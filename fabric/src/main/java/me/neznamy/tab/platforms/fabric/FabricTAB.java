@@ -1,41 +1,32 @@
 package me.neznamy.tab.platforms.fabric;
 
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.SharedConstants;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ServerLevelData;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Main class for Fabric.
  */
 public class FabricTAB implements DedicatedServerModInitializer {
 
-    /** Minecraft version string */
-    public static final String minecraftVersion = getServerVersion();
-
     @Override
     public void onInitializeServer() {
-        if (ReflectionUtils.classExists("net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback")) {
-            net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
-        } else {
-            net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register((dispatcher, $) -> new FabricTabCommand().onRegisterCommands(dispatcher));
-        }
+        CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
         ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
         ServerLifecycleEvents.SERVER_STOPPING.register($ -> TAB.getInstance().unload());
     }
 
-    @SneakyThrows
-    private static String getServerVersion() {
-        try {
-            // 1.19.4+
-            return SharedConstants.getCurrentVersion().getName();
-        } catch (Throwable e) {
-            // 1.19.3-
-            @SuppressWarnings("JavaReflectionMemberAccess") // Fabric-mapped method name
-            Object gameVersion = SharedConstants.class.getMethod("method_16673").invoke(null);
-            return (String) gameVersion.getClass().getMethod("getName").invoke(gameVersion);
-        }
+    @NotNull
+    public static String getLevelName(@NotNull Level level) {
+        String path = level.dimension().location().getPath();
+        return ((ServerLevelData)level.getLevelData()).getLevelName() + switch (path) {
+            case "overworld" -> ""; // No suffix for overworld
+            case "the_nether" -> "_nether";
+            default -> "_" + path; // End + default behavior for other dimensions created by mods
+        };
     }
 }

@@ -27,22 +27,22 @@ public class FabricTabPlayer extends BackendTabPlayer {
      */
     public FabricTabPlayer(@NotNull FabricPlatform platform, @NotNull ServerPlayer player) {
         super(platform, player, player.getUUID(), player.getGameProfile().getName(),
-                FabricMultiVersion.getLevelName(FabricMultiVersion.getLevel(player)), platform.getServerVersion().getNetworkId());
+                FabricTAB.getLevelName(player.level()), platform.getServerVersion().getNetworkId());
     }
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return PermissionsAPIHook.hasPermission(FabricMultiVersion.createCommandSourceStack(getPlayer()), permission);
+        return PermissionsAPIHook.hasPermission(getPlayer().createCommandSourceStack(), permission);
     }
 
     @Override
     public int getPing() {
-        return FabricMultiVersion.getPing(getPlayer());
+        return getPlayer().connection.latency();
     }
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        FabricMultiVersion.sendMessage(getPlayer(), message.convert());
+        getPlayer().sendSystemMessage(message.convert());
     }
 
     @Override
@@ -60,7 +60,8 @@ public class FabricTabPlayer extends BackendTabPlayer {
     public TabList.Skin getSkin() {
         Collection<Property> properties = getPlayer().getGameProfile().getProperties().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
-        return FabricMultiVersion.propertyToSkin(properties.iterator().next());
+        Property property = properties.iterator().next();
+        return new TabList.Skin(property.value(), property.signature());
     }
 
     @Override
@@ -96,7 +97,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     }
 
     /**
-     * Sends packet to the player
+     * Sends the packet to the player.
      *
      * @param   packet
      *          Packet to send

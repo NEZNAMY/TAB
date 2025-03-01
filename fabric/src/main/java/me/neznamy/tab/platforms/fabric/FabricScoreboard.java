@@ -4,13 +4,15 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
-import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
+import net.minecraft.network.chat.numbers.FixedFormat;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 /**
  * Scoreboard implementation for Fabric using packets.
@@ -34,15 +36,18 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
 
     @Override
     public void registerObjective(@NonNull Objective objective) {
-        net.minecraft.world.scores.Objective obj = FabricMultiVersion.newObjective(
+        net.minecraft.world.scores.Objective obj = new net.minecraft.world.scores.Objective(
+                dummyScoreboard,
                 objective.getName(),
+                ObjectiveCriteria.DUMMY,
                 objective.getTitle().convert(),
                 RenderType.values()[objective.getHealthDisplay().ordinal()],
-                objective.getNumberFormat()
+                false,
+                objective.getNumberFormat() == null ? null : objective.getNumberFormat().toFixedFormat(FixedFormat::new)
         );
         objective.setPlatformObjective(obj);
         player.sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
-        player.sendPacket(FabricMultiVersion.setDisplaySlot(objective.getDisplaySlot().ordinal(), obj));
+        player.sendPacket(new ClientboundSetDisplayObjectivePacket(net.minecraft.world.scores.DisplaySlot.values()[objective.getDisplaySlot().ordinal()], obj));
     }
 
     @Override
@@ -60,14 +65,18 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
 
     @Override
     public void setScore(@NonNull Score score) {
-        player.sendPacket(FabricMultiVersion.setScore(score.getObjective().getName(), score.getHolder(), score.getValue(),
-                score.getDisplayName() == null ? null : score.getDisplayName().convert(),
-                score.getNumberFormat()));
+        player.sendPacket(new ClientboundSetScorePacket(
+                score.getHolder(),
+                score.getObjective().getName(),
+                score.getValue(),
+                Optional.ofNullable(score.getDisplayName() == null ? null : score.getDisplayName().convert()),
+                Optional.ofNullable(score.getNumberFormat() == null ? null : score.getNumberFormat().toFixedFormat(FixedFormat::new)))
+        );
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
-        player.sendPacket(FabricMultiVersion.removeScore(score.getObjective().getName(), score.getHolder()));
+        player.sendPacket(new ClientboundResetScorePacket(score.getHolder(), score.getObjective().getName()));
     }
 
     @Override
@@ -81,18 +90,18 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         updateTeamProperties(team);
         PlayerTeam t = (PlayerTeam) team.getPlatformTeam();
         t.getPlayers().addAll(team.getPlayers());
-        player.sendPacket(FabricMultiVersion.registerTeam(t));
+        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(t, true));
     }
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        player.sendPacket(FabricMultiVersion.unregisterTeam((PlayerTeam) team.getPlatformTeam()));
+        player.sendPacket(ClientboundSetPlayerTeamPacket.createRemovePacket((PlayerTeam) team.getPlatformTeam()));
     }
 
     @Override
     public void updateTeam(@NonNull Team team) {
         updateTeamProperties(team);
-        player.sendPacket(FabricMultiVersion.updateTeam((PlayerTeam) team.getPlatformTeam()));
+        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket((PlayerTeam) team.getPlatformTeam(), false));
     }
 
     private void updateTeamProperties(@NonNull Team team) {
@@ -110,14 +119,17 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     public void onPacketSend(@NonNull Object packet) {
         if (isAntiOverrideScoreboard()) {
             if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
-                TAB.getInstance().getFeatureManager().onDisplayObjective(player, FabricMultiVersion.getDisplaySlot(display), display.objectiveName);
+                TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getSlot().ordinal(), display.objectiveName);
             }
             if (packet instanceof ClientboundSetObjectivePacket objective) {
                 TAB.getInstance().getFeatureManager().onObjective(player, objective.method, objective.objectiveName);
             }
         }
         if (isAntiOverrideTeams()) {
-            FabricMultiVersion.checkTeamPacket((Packet<?>) packet, this);
+            if (packet instanceof ClientboundSetPlayerTeamPacket team) {
+                if (team.method == TeamAction.UPDATE) return;
+                team.players = onTeamPacket(team.method, team.getName(), team.players);
+            }
         }
     }
 }

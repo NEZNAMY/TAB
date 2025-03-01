@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -22,17 +21,14 @@ public class FabricEventListener implements EventListener<ServerPlayer> {
         ServerPlayConnectionEvents.DISCONNECT.register((connection, $) -> quit(connection.player.getUUID()));
         ServerPlayConnectionEvents.JOIN.register((connection, $, $$) -> join(connection.player));
         //TODO command preprocess
-        if (ReflectionUtils.classExists("net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents")) {
-            // Added in 1.16
-            ServerPlayerEvents.AFTER_RESPAWN.register(
-                    (oldPlayer, newPlayer, alive) -> {
-                        replacePlayer(newPlayer.getUUID(), newPlayer);
-                        // respawning from death & taking end portal in the end do not call world change event
-                        worldChange(newPlayer.getUUID(), FabricMultiVersion.getLevelName(FabricMultiVersion.getLevel(newPlayer)));
-                    });
-            ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(
-                    (player, origin, destination) -> worldChange(player.getUUID(), FabricMultiVersion.getLevelName(destination)));
-        } // TODO else
+        ServerPlayerEvents.AFTER_RESPAWN.register(
+                (oldPlayer, newPlayer, alive) -> {
+                    replacePlayer(newPlayer.getUUID(), newPlayer);
+                    // respawning from death & taking end portal in the end does not call world change event
+                    worldChange(newPlayer.getUUID(), FabricTAB.getLevelName(newPlayer.level()));
+                });
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(
+                (player, origin, destination) -> worldChange(player.getUUID(), FabricTAB.getLevelName(destination)));
     }
 
     @Override

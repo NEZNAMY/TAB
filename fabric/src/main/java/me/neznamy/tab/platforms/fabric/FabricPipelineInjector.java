@@ -20,6 +20,6 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     @Override
     @NotNull
     protected Channel getChannel(@NotNull TabPlayer player) {
-        return FabricMultiVersion.getChannel(((FabricTabPlayer)player).getPlayer());
+        return ((FabricTabPlayer)player).getPlayer().connection.connection.channel;
     }
 }

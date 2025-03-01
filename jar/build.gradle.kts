@@ -12,14 +12,6 @@ val platforms = setOf(
     rootProject.projects.sponge8
 ).map { it.dependencyProject }
 
-val fabrics = setOf(
-    rootProject.projects.fabric,
-    rootProject.projects.fabric.v1144,
-    rootProject.projects.fabric.v1182,
-    rootProject.projects.fabric.v1203,
-    rootProject.projects.fabric.v1213
-).map { it.dependencyProject }
-
 tasks {
     shadowJar {
         archiveFileName.set("TAB-${project.version}.jar")
@@ -35,9 +27,8 @@ tasks {
             registerPlatform(it, it.tasks.named<ShadowJar>("shadowJar").get())
         }
 
-        fabrics.forEach {
-            registerPlatform(it, it.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").get())
-        }
+        registerPlatform(rootProject.projects.fabric.dependencyProject, rootProject.projects.fabric.dependencyProject.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").get())
+
     }
     build {
         dependsOn(shadowJar)

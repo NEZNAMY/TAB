@@ -28,7 +28,7 @@ public class FabricBossBar extends SafeBossBar<ServerBossEvent> {
                 BossBarColor.valueOf(color.name()),
                 BossBarOverlay.valueOf(style.name())
         );
-        bar.setProgress(progress); // Somehow the compiled method name is same despite method being renamed in 1.17
+        bar.setProgress(progress);
         return bar;
     }
 
@@ -44,7 +44,7 @@ public class FabricBossBar extends SafeBossBar<ServerBossEvent> {
 
     @Override
     public void updateProgress(@NotNull BossBarInfo bar) {
-        bar.getBossBar().setProgress(bar.getProgress()); // Somehow the compiled method name is same despite method being renamed in 1.17
+        bar.getBossBar().setProgress(bar.getProgress());
     }
 
     @Override
