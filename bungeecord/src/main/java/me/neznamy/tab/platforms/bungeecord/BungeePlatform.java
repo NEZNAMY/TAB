@@ -23,6 +23,7 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.cache.Cache;
 import net.md_5.bungee.api.ChatColor;
@@ -65,6 +66,20 @@ public class BungeePlatform extends ProxyPlatform {
     public void loadPlayers() {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             TAB.getInstance().addPlayer(new BungeeTabPlayer(this, p));
+        }
+    }
+
+    @Override
+    public void registerPlaceholders() {
+        super.registerPlaceholders();
+        for (String server : ProxyServer.getInstance().getConfig().getServers().keySet()) {
+            TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder("%online_" + server + "%", 1000, () -> {
+                int count = 0;
+                for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                    if (player.server.equals(server) && !player.isVanished()) count++;
+                }
+                return PerformanceUtil.toString(count);
+            });
         }
     }
 

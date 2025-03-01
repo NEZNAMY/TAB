@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.scoreboard.ObjectiveEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.scoreboard.ScoreboardManager;
 import lombok.Getter;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
@@ -23,6 +24,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.impl.DummyScoreboard;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -96,6 +98,20 @@ public class VelocityPlatform extends ProxyPlatform {
     public void loadPlayers() {
         for (Player p : plugin.getServer().getAllPlayers()) {
             TAB.getInstance().addPlayer(new VelocityTabPlayer(this, p));
+        }
+    }
+
+    @Override
+    public void registerPlaceholders() {
+        super.registerPlaceholders();
+        for (RegisteredServer server : plugin.getServer().getAllServers()) {
+            TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder("%online_" + server.getServerInfo().getName() + "%", 1000, () -> {
+                int count = 0;
+                for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                    if (player.server.equals(server.getServerInfo().getName()) && !player.isVanished()) count++;
+                }
+                return PerformanceUtil.toString(count);
+            });
         }
     }
 
