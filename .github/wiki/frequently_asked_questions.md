@@ -75,7 +75,7 @@ Most common reasons for a placeholder to not work include:
 * Using % symbol by itself, which breaks placeholder starts and ends and therefore breaks all placeholders after it (use %% to display the symbol)
 * Trying to use a PlaceholderAPI placeholder without downloading its expansion or not having PlaceholderAPI installed at all
 * Trying to use [TAB's internal bukkit-only placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#bukkit-only) on BungeeCord
-* Trying to use [PlaceholderAPI placeholders on BungeeCord](https://github.com/NEZNAMY/TAB/wiki/How-to-set-up-PlaceholderAPI-support-on-bungeecord) without installing [bridge plugin](https://www.mc-market.org/resources/20631/)
+* Trying to use [PlaceholderAPI placeholders on BungeeCord](https://github.com/NEZNAMY/TAB/wiki/How-to-set-up-PlaceholderAPI-support-on-bungeecord) without installing [bridge plugin](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)
 
 The full list of reasons can be found on the [Placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#placeholder-is-not-working) page.
 

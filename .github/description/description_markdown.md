@@ -4,7 +4,7 @@ The compact configuration allows you to get the plugin to work the way you want 
 The default configuration already contains useful values and examples to give you a better understanding and get you started quickly with instant results.
 The extensive [wiki](https://github.com/NEZNAMY/TAB/wiki) answers any of your questions.
 
-![https://img.shields.io/badge/Release-5.0.5-blue.svg](https://img.shields.io/badge/Release-5.0.5-blue.svg)  
+![https://img.shields.io/badge/Release-5.0.7-blue.svg](https://img.shields.io/badge/Release-5.0.7-blue.svg)  
 ![https://img.shields.io/badge/Minecraft-1.5%20--%201.21.4-blue.svg](https://img.shields.io/badge/Minecraft-1.5%20--%201.21.4-blue.svg)  
 ![https://img.shields.io/badge/Java-8+-blue.svg](https://img.shields.io/badge/Java-8+-blue.svg)  
 [![https://img.shields.io/badge/GitHub-Source%20code-yellow.svg](https://img.shields.io/badge/GitHub-Source%20code-yellow.svg)](https://github.com/NEZNAMY/TAB)  

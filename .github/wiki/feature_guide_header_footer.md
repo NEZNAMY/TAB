@@ -67,7 +67,7 @@ header-footer:
 
 > [!NOTE]
 > To make per-world work on proxy installation,
-> install the [TAB-Bridge](https://www.mc-market.org/resources/21641) plugin on your backend servers.
+> install the [TAB-Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) plugin on your backend servers.
 
 ## Per-group / per-player
 **groups.yml**

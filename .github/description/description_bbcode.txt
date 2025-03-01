@@ -2,7 +2,7 @@
 TAB is an all-in-one plugin for displaying information in various places, which aims to outperform all similar plugins in terms of features, compatibility and performance.
 The compact configuration allows you to get the plugin to work the way you want regardless of how simple or complex you want it to be or how experienced you are. The default configuration already contains useful values and examples to give you a better understanding and get you started quickly with instant results. The extensive [URL='https://github.com/NEZNAMY/TAB/wiki']wiki[/URL] answers any of your questions.
 
-[IMG]https://img.shields.io/badge/Release-5.0.5-blue.svg[/IMG]
+[IMG]https://img.shields.io/badge/Release-5.0.7-blue.svg[/IMG]
 [IMG]https://img.shields.io/badge/Minecraft-1.5%20--%201.21.4-blue.svg[/IMG]
 [IMG]https://img.shields.io/badge/Java-8+-blue.svg[/IMG]
 [URL='https://github.com/NEZNAMY/TAB'][IMG]https://img.shields.io/badge/GitHub-Source%20code-yellow.svg[/IMG][/URL]

@@ -25,44 +25,35 @@ They have 2 main uses in the plugin:
 
 # Condition types
 ## Number comparations
-`>=`: greater than or equal to  
-Example: `%ping%>=100` will pass if the player's ping is greater than or equal to `100`.
-
-`>`: greater than   
-Example: `%ping%>100` will pass if the player's ping is greater than `100`.
-
-`<=`: less than or equal to  
-Example: `%ping%<=100` will pass if the player's ping is less than or equal to `100`.
-
-`<`: less than  
-Example: `%ping%<100` will pass if the player's ping is less than `100`.
+| Operation         | Description         | Example |
+|-------------------|---------------------|---------|
+| `>=` | Greater than or equal to | `%ping%>=100` will pass if the player's ping is greater than or equal to `100` |
+| `>` | Greater than | `%ping%>100` will pass if the player's ping is greater than `100` |
+| `<=` | Less than or equal to | `%ping%<=100` will pass if the player's ping is less than or equal to `100` |
+| `<` | Less than | `%ping%<100` will pass if the player's ping is less than `100` |
 
 ## Text operations
-`=`: equal to (must match exactly)  
-Example: `%world%=world` will pass if player is in world `world`.
+| Operation         | Description         | Example |
+|-------------------|---------------------|---------|
+| `=` | Equal to | `%world%=world` will pass if player is in world `world` |
+| `!=` | Not equal to | `%world%!=world` will pass if player is in any world except `world` |
+| `<-` | Contains (left side for full text, right side text to contain) | `%world%<-lobby-` will pass if player is in any world that contains `lobby-` (such as `lobby-1` etc.) |
+| `\|-` | Starts with (left side for full text, right side text to start with) | `%world%\|-lobby-` will pass if player is in any world that starts with `lobby-` (such as `lobby-1` etc.) |
+| `-\|` | Ends with (left side for full text, right side text to end with) | `%world%-\|nether` will pass if player is in any world that ends with `nether` (such as `world_nether` etc.) |
 
-`!=`: not equal to (opposite of the above)  
-Example: `%world%!=world` will pass if player is in any world except `world`.
+> [!NOTE]
+> For `=` and `!=` you can check for empty output of a placeholder using `%my_placeholder%=` and `%my_placeholder%!=`.
 
-**Note 1**: For `=` and `!=` you can check for empty output of a placeholder using `%my_placeholder%=` and `%my_placeholder%!=`.
-
-`<-`: contains (left side for full text, right side text to contain)  
-Example: `%world%<-lobby-` will pass if player is in any world that contains `lobby-` (such as `lobby-1` etc.).
-
-`|-`: starts with (left side for full text, right side text to start with)  
-Example: `%world%|-lobby-` will pass if player is in any world that starts with `lobby-` (such as `lobby-1` etc.).
-
-`-|`: ends with (left side for full text, right side text to end with)  
-Example: `%world%-|nether` will pass if player is in any world that ends with `nether` (such as `world_nether` etc.).
-
-**Note 2**: For string operators, the text must match placeholder's output exactly, including color codes.
+> [!NOTE]
+> For string operations, the text must match placeholder's output exactly, including color codes.
 If you are using [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements),
 condition must contain the altered output.  
 To see the exact output of a placeholder including color codes, use `/tab parse <player> <placeholder>`.
 
 ## Permission
-`permission:<value>`: permission requirement  
-Example: `permission:my.permission` will pass if player has `my.permission` permission.
+| Operation         | Description         | Example |
+|-------------------|---------------------|---------|
+| `permission:<value>` | Permission requirement | `permission:my.permission` will pass if player has `my.permission` permission |
 
 # Multiple condition requirements
 Each condition has a `conditions` parameter, which a list of conditions. If you define more than 1 condition, you must specify the condition type.  
@@ -166,7 +157,7 @@ Refresh intervals of conditions are not directly configurable.
 They are based on placeholders used inside (subconditions, yes/no values).  
 Permission checks count as 1000ms.  
 To configure refresh intervals of placeholders,
-check out the [Optimization guide](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---placeholder-refresh-intervals).
+check out the [Optimization guide](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---all-platforms-placeholder-refresh-intervals).
 
 # Examples
 ## Example 1 - Chaining conditional placeholders

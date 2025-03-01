@@ -14,6 +14,7 @@
   * [Additional note 3 - Changing name itself](#additional-note-3---changing-name-itself)
   * [Additional note 4 - F1 view](#additional-note-4---f1-view)
   * [Additional note 5 - Transparent players](#additional-note-5---transparent-players)
+  * [Additional note 6 - Vanish hook](#additional-note-6---vanish-hook)
 * [API](#api)
   * [Changing prefix and suffix](#changing-prefix-and-suffix)
   * [Collision](#collision)
@@ -138,7 +139,7 @@ _DEFAULT_:
 ```
 
 # Limitations
-* [1.5 - 1.12.2] Prefix/suffix length is limited to 16 characters (including color codes).
+* [1.5 - 1.12.2] Prefix/suffix length is limited to 16 characters (including color codes). Any characters beyond that will be cut to prevent players getting disconnected.
 * [1.13+] The name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
 * The name cannot be effectively changed and the plugin doesn't offer it.
 * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
@@ -183,6 +184,13 @@ scoreboard-teams:
 ```
 In config.yml. Keep in mind, you'll not be able to use any team features if you do so.
 
+# Additional note 6 - Vanish hook
+When a player is [vanished](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection), their team is unregistered for all other players who do **not** have `tab.seevanished` permission.
+
+The purpose of this is to avoid players figuring out a staff member is still online but just vanished by "checking" registered teams and their members. The easiest way of "exploiting" this is to have a 3rd party client spawn a player entity with name of a chosen player (staff member) and seeing if their name is formatted (= team is registered = player is online) or not (offline).
+
+For this reason, make sure you give all of your staff members who can see vanished players the `tab.seevanished` permission, otherwise the vanished player will appear on top of the tablist (players without team are above players with team) and their nametag will not be formatted.
+
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*
 
@@ -192,7 +200,8 @@ To access this feature, you'll need to obtain `NameTagManager` instance. Get it 
 To set the values for the respective formatting, use the following:
 * `NameTagManager#setPrefix(TabPlayer, String)`
 * `NameTagManager#setSuffix(TabPlayer, String)`
-  To reset them, set values to `null`.
+
+To reset them, set values to `null`.
 
 To get custom values previously set using the API (they will return `null` if no custom value is set):
 * `NameTagManager#getCustomPrefix(TabPlayer)`
@@ -209,8 +218,8 @@ To get the original value set by the plugin based on configuration:
 > use [commands](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-playergroupplayeruuid-name-property-value-options).
 
 ## Collision
-* `NameTagManager#getCollisionRule(TabPlayer)` - Returns forced collision rule using the API, `null` if no value was forced and player follows the configuration.
 * `NameTagManager#setCollisionRule(TabPlayer, Boolean)` - Forces collision rule to the player. Use `null` to reset value and make it follow configuration again.
+* `NameTagManager#getCollisionRule(TabPlayer)` - Returns forced collision rule using the API, `null` if no value was forced and player follows the configuration.
 
 ## Manipulating visibility
 * `NameTagManager#hideNametag(TabPlayer)` - Hides player's nametag from all players
