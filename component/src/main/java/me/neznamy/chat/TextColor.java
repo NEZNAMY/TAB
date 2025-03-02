@@ -131,7 +131,7 @@ public class TextColor {
      * @return true if this a legacy color, false otherwise.
      */
     public boolean isLegacy() {
-        return legacyColor != null;
+        return LEGACY_COLORS.containsValue(this);
     }
 
     /**
