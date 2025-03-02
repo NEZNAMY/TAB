@@ -11,7 +11,6 @@ import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Scoreboard abstract implementation using ViaVersion packets,
@@ -78,7 +77,7 @@ public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<
     }
 
     @Override
-    public @NotNull Object createTeam(@NonNull String name) {
+    public @NonNull Object createTeam(@NonNull String name) {
         return null;
     }
 
