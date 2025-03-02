@@ -14,7 +14,7 @@ dependencies {
         exclude("com.google.guava", "guava")
         exclude("org.checkerframework", "checker-qual")
     }
-    compileOnlyApi("com.viaversion:viaversion-api:4.5.1")
+    compileOnlyApi("com.viaversion:viaversion-api:5.2.1")
     compileOnlyApi("io.netty:netty-all:4.1.90.Final")
     compileOnlyApi("net.luckperms:api:5.4")
     compileOnlyApi("com.google.guava:guava:31.1-jre")

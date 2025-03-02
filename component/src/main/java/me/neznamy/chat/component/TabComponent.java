@@ -7,6 +7,7 @@ import me.neznamy.chat.ChatModifier;
 import me.neznamy.chat.EnumChatFormat;
 import me.neznamy.chat.TextColor;
 import me.neznamy.chat.hook.AdventureHook;
+import me.neznamy.chat.hook.ViaVersionHook;
 import me.neznamy.chat.rgb.RGBUtils;
 import me.neznamy.chat.util.TriFunction;
 import net.kyori.adventure.text.Component;
@@ -102,6 +103,11 @@ public abstract class TabComponent {
     @Setter
     private Component adventureComponent;
 
+    /** ViaVersion component from this component */
+    @Nullable
+    @Setter
+    private Object viaComponent;
+
     @Nullable
     private Object fixedFormat;
 
@@ -170,6 +176,17 @@ public abstract class TabComponent {
     public Component toAdventure() {
         if (adventureComponent == null) adventureComponent = AdventureHook.convert(this);
         return adventureComponent;
+    }
+
+    /**
+     * Converts this component to an ViaVersion component.
+     * @return  Converted component
+     */
+    @NotNull
+    @SuppressWarnings("unchecked")
+    public <T> T toViaVersion() {
+        if (viaComponent == null) viaComponent = ViaVersionHook.convert(this);
+        return (T) viaComponent;
     }
 
     /**
