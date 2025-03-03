@@ -40,11 +40,38 @@ public class ViaVersionHook {
         object.addProperty("type", "text"); // +1.20.3 optimization
         object.addProperty("text", component.getText());
 
+        return convert(object, component);
+    }
+
+    @NotNull
+    private static Object convert(@NotNull TranslatableComponent component) {
+        final JsonObject object = new JsonObject();
+
+        // Root
+        object.addProperty("type", "translatable"); // +1.20.3 optimization
+        object.addProperty("translate", component.getKey());
+
+        return convert(object, component);
+    }
+
+    @NotNull
+    private static Object convert(@NotNull KeybindComponent component) {
+        final JsonObject object = new JsonObject();
+
+        // Root
+        object.addProperty("type", "keybind"); // +1.20.3 optimization
+        object.addProperty("keybind", component.getKeybind());
+
+        return convert(object, component);
+    }
+
+    @NotNull
+    public static Object convert(@NotNull JsonObject object, @NotNull TabComponent component) {
         // Color
         final ChatModifier modifier = component.getModifier();
         if (modifier.getColor() != null) {
             final TextColor color = modifier.getColor();
-            if (color.isLegacy()) {
+            if (TextColor.LEGACY_COLORS.containsValue(color)) {
                 object.addProperty("color", color.getLegacyColor().name().toLowerCase());
             } else {
                 object.addProperty("color", "#" + color.getHexCode());
@@ -80,37 +107,6 @@ public class ViaVersionHook {
             }
             object.add("extra", extra);
         }
-
-        return object;
-    }
-
-    @NotNull
-    private static Object convert(@NotNull TranslatableComponent component) {
-        final JsonObject object = new JsonObject();
-
-        // Root
-        object.addProperty("type", "translatable"); // +1.20.3 optimization
-        object.addProperty("translate", component.getKey());
-
-        // With
-        if (!component.getExtra().isEmpty()) {
-            final JsonArray extra = new JsonArray();
-            for (TabComponent sub : component.getExtra()) {
-                extra.add((JsonElement) convert(sub));
-            }
-            object.add("with", extra);
-        }
-
-        return object;
-    }
-
-    @NotNull
-    private static Object convert(@NotNull KeybindComponent component) {
-        final JsonObject object = new JsonObject();
-
-        // Root
-        object.addProperty("type", "keybind"); // +1.20.3 optimization
-        object.addProperty("keybind", component.getKeybind());
 
         return object;
     }
