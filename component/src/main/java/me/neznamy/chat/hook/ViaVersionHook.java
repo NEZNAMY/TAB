@@ -5,7 +5,6 @@ import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.ComponentUtil;
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.TextColor;
 import me.neznamy.chat.component.KeybindComponent;
 import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
@@ -21,61 +20,28 @@ public class ViaVersionHook {
     public static Object convert(@NotNull TabComponent component) {
         if (component instanceof SimpleTextComponent) {
             return ComponentUtil.legacyToJson(component.toLegacyText());
-        } else if (component instanceof TextComponent) {
-            return convert((TextComponent) component);
+        }
+
+        final JsonObject object = new JsonObject();
+
+        // Root
+        if (component instanceof TextComponent) {
+            object.addProperty("type", "text"); // +1.20.3 optimization
+            object.addProperty("text", ((TextComponent) component).getText());
         } else if (component instanceof TranslatableComponent) {
-            return convert((TranslatableComponent) component);
+            object.addProperty("type", "translatable"); // +1.20.3 optimization
+            object.addProperty("translate", ((TranslatableComponent) component).getKey());
         } else if (component instanceof KeybindComponent) {
-            return convert((KeybindComponent) component);
+            object.addProperty("type", "keybind"); // +1.20.3 optimization
+            object.addProperty("keybind", ((KeybindComponent) component).getKeybind());
         } else {
             throw new IllegalStateException("Unknown component type: " + component.getClass().getName());
         }
-    }
 
-    @NotNull
-    private static Object convert(@NotNull TextComponent component) {
-        final JsonObject object = new JsonObject();
-
-        // Root
-        object.addProperty("type", "text"); // +1.20.3 optimization
-        object.addProperty("text", component.getText());
-
-        return convert(object, component);
-    }
-
-    @NotNull
-    private static Object convert(@NotNull TranslatableComponent component) {
-        final JsonObject object = new JsonObject();
-
-        // Root
-        object.addProperty("type", "translatable"); // +1.20.3 optimization
-        object.addProperty("translate", component.getKey());
-
-        return convert(object, component);
-    }
-
-    @NotNull
-    private static Object convert(@NotNull KeybindComponent component) {
-        final JsonObject object = new JsonObject();
-
-        // Root
-        object.addProperty("type", "keybind"); // +1.20.3 optimization
-        object.addProperty("keybind", component.getKeybind());
-
-        return convert(object, component);
-    }
-
-    @NotNull
-    public static Object convert(@NotNull JsonObject object, @NotNull TabComponent component) {
         // Color
         final ChatModifier modifier = component.getModifier();
         if (modifier.getColor() != null) {
-            final TextColor color = modifier.getColor();
-            if (TextColor.LEGACY_COLORS.containsValue(color)) {
-                object.addProperty("color", color.getLegacyColor().name().toLowerCase());
-            } else {
-                object.addProperty("color", "#" + color.getHexCode());
-            }
+            object.addProperty("color", "#" + modifier.getColor().getHexCode());
         }
         if (modifier.getShadowColor() != null) {
             object.addProperty("shadow_color", modifier.getShadowColor());
