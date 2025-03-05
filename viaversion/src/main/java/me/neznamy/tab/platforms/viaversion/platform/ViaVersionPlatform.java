@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +19,9 @@ public class ViaVersionPlatform {
 
     @NotNull
     public static <P extends TabPlayer> FunctionWithException<P, Scoreboard> findScoreboardProvider(@NotNull ProtocolVersion serverVersion) {
+        if (!ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3")) {
+            return FunctionWithException.empty();
+        }
         if (serverVersion.getNetworkId() < ProtocolVersion.V1_13.getNetworkId()) {
             return player -> {
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
@@ -56,6 +60,9 @@ public class ViaVersionPlatform {
 
     @NotNull
     public static <P extends TabPlayer> FunctionWithException<P, TabList> findTablistProvider(@NotNull ProtocolVersion serverVersion) {
+        if (!ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_21_2to1_21_4.Protocol1_21_2To1_21_4")) {
+            return FunctionWithException.empty();
+        }
         if (serverVersion.getNetworkId() < ProtocolVersion.V1_16.getNetworkId()) {
             return player -> {
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_4.getNetworkId()) {
