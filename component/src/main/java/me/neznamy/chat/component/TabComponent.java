@@ -328,7 +328,11 @@ public abstract class TabComponent {
                 break;
             }
         }
-        return new TextComponent("", components);
+        final TextComponent component = new TextComponent("", components);
+        // Safe check to avoid rare mojang "bug" that display text as italic by default
+        // This doesn't affect #toLegacyText() method at all
+        component.modifier.setItalic(false);
+        return component;
     }
 
     @NotNull

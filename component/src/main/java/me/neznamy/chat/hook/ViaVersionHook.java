@@ -51,7 +51,9 @@ public class ViaVersionHook {
         if (Boolean.TRUE.equals(modifier.getBold())) {
             object.addProperty("bold", true);
         }
-        object.addProperty("italic", Boolean.TRUE.equals(modifier.getItalic()));
+        if (modifier.getItalic() != null) {
+            object.addProperty("italic", modifier.getItalic());
+        }
         if (Boolean.TRUE.equals(modifier.getObfuscated())) {
             object.addProperty("obfuscated", true);
         }
