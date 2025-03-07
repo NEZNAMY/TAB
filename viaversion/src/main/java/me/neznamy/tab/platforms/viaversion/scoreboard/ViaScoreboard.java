@@ -6,7 +6,6 @@ import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.util.ComponentUtil;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -20,6 +19,8 @@ import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
  * @param <P> Platform's TabPlayer class
  */
 public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<P> {
+
+    private static final Object DUMMY = new Object();
 
     protected final Class<? extends Protocol> protocol;
     private final PacketType setDisplayObjective;
@@ -78,7 +79,8 @@ public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<
 
     @Override
     public @NonNull Object createTeam(@NonNull String name) {
-        return null;
+        // This implementation does not use team objects
+        return DUMMY;
     }
 
     @Override
