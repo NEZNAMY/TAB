@@ -71,11 +71,6 @@ public abstract class ViaTabList<P extends TabPlayer> extends TrackedTabList<P> 
     }
 
     @Override
-    public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        sendInfoUpdate(Action.UPDATE_LIST_ORDER, entry, listOrder);
-    }
-
-    @Override
     public boolean containsEntry(@NonNull UUID entry) {
         return true;
     }
@@ -84,8 +79,8 @@ public abstract class ViaTabList<P extends TabPlayer> extends TrackedTabList<P> 
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
         final PacketWrapper packet = PacketWrapper.create(tabList, null, connection);
 
-        packet.write(Types.COMPONENT, header.toViaVersion());
-        packet.write(Types.COMPONENT, footer.toViaVersion());
+        writeComponent(packet, header);
+        writeComponent(packet, footer);
 
         packet.scheduleSend(protocol);
     }
@@ -115,7 +110,7 @@ public abstract class ViaTabList<P extends TabPlayer> extends TrackedTabList<P> 
                 packet.write(Types.BOOLEAN, (boolean) value);
                 break;
             case UPDATE_DISPLAY_NAME:
-                packet.write(Types.OPTIONAL_COMPONENT, value == null ? null : ((TabComponent) value).toViaVersion());
+                writeOptionalComponent(packet, (TabComponent) value);
                 break;
             default:
                 throw new IllegalArgumentException("Cannot send info update with action " + action.name());
@@ -123,6 +118,10 @@ public abstract class ViaTabList<P extends TabPlayer> extends TrackedTabList<P> 
 
         packet.scheduleSend(protocol);
     }
+
+    protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);
+
+    protected abstract void writeOptionalComponent(@NonNull PacketWrapper packet, @Nullable TabComponent component);
 
     protected abstract void writeAction(@NonNull PacketWrapper packet, @NonNull Action action);
 

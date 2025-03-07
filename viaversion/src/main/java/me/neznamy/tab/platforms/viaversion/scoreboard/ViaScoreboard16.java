@@ -32,15 +32,7 @@ public class ViaScoreboard16<P extends TabPlayer> extends ViaScoreboard13<P> {
     }
 
     @Override
-    protected void writeObjectiveDisplay(@NonNull PacketWrapper packet, @NonNull Objective objective) {
-        // Objective value
-        packet.write(Types.COMPONENT, objective.getTitle().toViaVersion());
-        // Type
-        packet.write(Types.VAR_INT, objective.getHealthDisplay() == HealthDisplay.INTEGER ? 0 : 1);
-    }
-
-    @Override
-    protected void writeTeamComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
+    protected void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
         packet.write(Types.COMPONENT, component.toViaVersion());
     }
 }

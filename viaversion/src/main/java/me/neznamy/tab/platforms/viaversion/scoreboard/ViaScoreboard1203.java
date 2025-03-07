@@ -7,6 +7,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3;
 import com.viaversion.viaversion.protocols.v1_20_2to1_20_3.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.util.ComponentUtil;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -47,7 +48,7 @@ public class ViaScoreboard1203<P extends TabPlayer> extends ViaScoreboard16<P> {
         // Value
         packet.write(Types.VAR_INT, score.getValue());
         // Display name
-        packet.write(Types.OPTIONAL_TAG, score.getDisplayName() == null ? null : score.getDisplayName().toViaVersion());
+        packet.write(Types.OPTIONAL_TAG, score.getDisplayName() == null ? null : score.getDisplayName().toViaVersionTag());
         // Number format
         writeNumberFormat(packet, score.getNumberFormat());
 
@@ -64,6 +65,16 @@ public class ViaScoreboard1203<P extends TabPlayer> extends ViaScoreboard16<P> {
         packet.write(Types.OPTIONAL_STRING, score.getObjective().getName().isEmpty() ? null : score.getObjective().getName());
 
         packet.scheduleSend(protocol);
+    }
+
+    @Override
+    protected void writeComponent(@NonNull PacketWrapper packet, @NonNull String text) {
+        packet.write(Types.TAG, ComponentUtil.jsonToTag(ComponentUtil.legacyToJson(text)));
+    }
+
+    @Override
+    protected void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
+        packet.write(Types.TAG, component.toViaVersionTag());
     }
 
     @Override
@@ -97,7 +108,7 @@ public class ViaScoreboard1203<P extends TabPlayer> extends ViaScoreboard16<P> {
             // Fixed format
             packet.write(Types.VAR_INT, 2);
             // Content
-            packet.write(Types.COMPONENT, content.toViaVersion());
+            packet.write(Types.TAG, content.toViaVersionTag());
         }
     }
 }

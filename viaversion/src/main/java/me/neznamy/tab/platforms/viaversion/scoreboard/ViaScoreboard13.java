@@ -60,6 +60,16 @@ public class ViaScoreboard13<P extends TabPlayer> extends ViaScoreboard<P> {
     }
 
     @Override
+    protected void writeComponent(@NonNull PacketWrapper packet, @NonNull String text) {
+        packet.write(Types.COMPONENT, ComponentUtil.legacyToJson(text));
+    }
+
+    @Override
+    protected void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
+        packet.write(Types.COMPONENT, ComponentUtil.legacyToJson(component.toLegacyText()));
+    }
+
+    @Override
     protected void writeObjective(@NonNull PacketWrapper packet, @NonNull Objective objective) {
         packet.write(Types.BYTE, (byte) objective.getDisplaySlot().ordinal());
         packet.write(Types.STRING, objective.getName());
@@ -68,13 +78,8 @@ public class ViaScoreboard13<P extends TabPlayer> extends ViaScoreboard<P> {
     @Override
     protected void writeObjectiveDisplay(@NonNull PacketWrapper packet, @NonNull Objective objective) {
         // Objective value
-        packet.write(Types.COMPONENT, ComponentUtil.legacyToJson(objective.getTitle().toLegacyText()));
+        writeComponent(packet, objective.getTitle());
         // Type
         packet.write(Types.VAR_INT, objective.getHealthDisplay() == HealthDisplay.INTEGER ? 0 : 1);
-    }
-
-    @Override
-    protected void writeTeamComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
-        packet.write(Types.COMPONENT, ComponentUtil.legacyToJson(component.toLegacyText()));
     }
 }

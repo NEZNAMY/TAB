@@ -7,8 +7,10 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_15_2to1_16.Protocol1_15_2To1_16;
 import com.viaversion.viaversion.protocols.v1_15_2to1_16.packet.ClientboundPackets1_16;
 import lombok.NonNull;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -58,6 +60,16 @@ public class ViaTabList16<P extends TabPlayer> extends ViaTabList<P> {
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
         // Added in 1.21.4
+    }
+
+    @Override
+    protected void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
+        packet.write(Types.COMPONENT, component.toViaVersion());
+    }
+
+    @Override
+    protected void writeOptionalComponent(@NonNull PacketWrapper packet, @Nullable TabComponent component) {
+        packet.write(Types.OPTIONAL_COMPONENT, component == null ? null : component.toViaVersion());
     }
 
     @Override

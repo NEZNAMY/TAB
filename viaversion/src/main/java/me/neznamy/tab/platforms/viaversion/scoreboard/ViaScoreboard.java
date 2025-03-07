@@ -125,7 +125,7 @@ public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<
             case TeamAction.CREATE:
             case TeamAction.UPDATE:
                 // Team display name
-                packet.write(Types.COMPONENT, ComponentUtil.legacyToJson(team.getName()));
+                writeComponent(packet, team.getName());
                 // Friendly flags
                 packet.write(Types.BYTE, (byte) team.getOptions());
                 // Name tag visibility
@@ -135,9 +135,9 @@ public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<
                 // Team color
                 packet.write(Types.VAR_INT, team.getColor().getLegacyColor().ordinal());
                 // Team prefix
-                writeTeamComponent(packet, team.getPrefix());
+                writeComponent(packet, team.getPrefix());
                 // Team suffix
-                writeTeamComponent(packet, team.getSuffix());
+                writeComponent(packet, team.getSuffix());
                 if (mode == TeamAction.UPDATE) {
                     break;
                 }
@@ -158,9 +158,11 @@ public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<
         packet.scheduleSend(protocol);
     }
 
+    protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull String text);
+
+    protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);
+
     protected abstract void writeObjective(@NonNull PacketWrapper packet, @NonNull Objective objective);
 
     protected abstract void writeObjectiveDisplay(@NonNull PacketWrapper packet, @NonNull Objective objective);
-
-    protected abstract void writeTeamComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);
 }

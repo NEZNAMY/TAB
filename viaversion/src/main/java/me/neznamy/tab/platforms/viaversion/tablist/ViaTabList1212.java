@@ -7,6 +7,7 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.Protocol1_21To1_21_2;
 import lombok.NonNull;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +48,16 @@ public class ViaTabList1212<P extends TabPlayer> extends ViaTabList1193<P> {
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
         sendInfoUpdate(Action.UPDATE_LIST_ORDER, entry, listOrder);
+    }
+
+    @Override
+    protected void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
+        packet.write(Types.TAG, component.toViaVersionTag());
+    }
+
+    @Override
+    protected void writeOptionalComponent(@NonNull PacketWrapper packet, @Nullable TabComponent component) {
+        packet.write(Types.OPTIONAL_TAG, component == null ? null : component.toViaVersionTag());
     }
 
     @Override

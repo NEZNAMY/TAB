@@ -1,5 +1,6 @@
 package me.neznamy.chat.component;
 
+import com.viaversion.viaversion.util.ComponentUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -107,6 +108,10 @@ public abstract class TabComponent {
     @Nullable
     @Setter
     private Object viaComponent;
+    /** ViaVersion tag from this component */
+    @Nullable
+    @Setter
+    private Object viaTag;
 
     @Nullable
     private Object fixedFormat;
@@ -187,6 +192,17 @@ public abstract class TabComponent {
     public <T> T toViaVersion() {
         if (viaComponent == null) viaComponent = ViaVersionHook.convert(this);
         return (T) viaComponent;
+    }
+
+    /**
+     * Converts this component to an ViaVersion tag.
+     * @return  Converted component
+     */
+    @NotNull
+    @SuppressWarnings("unchecked")
+    public <T> T toViaVersionTag() {
+        if (viaTag == null) viaTag = ComponentUtil.jsonToTag(toViaVersion());
+        return (T) viaTag;
     }
 
     /**
