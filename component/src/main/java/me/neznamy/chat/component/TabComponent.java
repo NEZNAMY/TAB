@@ -1,5 +1,7 @@
 package me.neznamy.chat.component;
 
+import com.viaversion.nbt.tag.Tag;
+import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.util.ComponentUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -107,11 +109,11 @@ public abstract class TabComponent {
     /** ViaVersion component from this component */
     @Nullable
     @Setter
-    private Object viaComponent;
+    private JsonElement viaComponent;
     /** ViaVersion tag from this component */
     @Nullable
     @Setter
-    private Object viaTag;
+    private Tag viaTag;
 
     @Nullable
     private Object fixedFormat;
@@ -188,10 +190,9 @@ public abstract class TabComponent {
      * @return  Converted component
      */
     @NotNull
-    @SuppressWarnings("unchecked")
-    public <T> T toViaVersion() {
+    public JsonElement toViaVersion() {
         if (viaComponent == null) viaComponent = ViaVersionHook.convert(this);
-        return (T) viaComponent;
+        return viaComponent;
     }
 
     /**
@@ -199,10 +200,9 @@ public abstract class TabComponent {
      * @return  Converted component
      */
     @NotNull
-    @SuppressWarnings("unchecked")
-    public <T> T toViaVersionTag() {
+    public Tag toViaVersionTag() {
         if (viaTag == null) viaTag = ComponentUtil.jsonToTag(toViaVersion());
-        return (T) viaTag;
+        return viaTag;
     }
 
     /**

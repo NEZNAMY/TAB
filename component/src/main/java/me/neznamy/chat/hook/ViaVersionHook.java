@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class ViaVersionHook {
 
     @NotNull
-    public static Object convert(@NotNull TabComponent component) {
+    public static JsonElement convert(@NotNull TabComponent component) {
         if (component instanceof SimpleTextComponent) {
             return ComponentUtil.legacyToJson(component.toLegacyText());
         }
