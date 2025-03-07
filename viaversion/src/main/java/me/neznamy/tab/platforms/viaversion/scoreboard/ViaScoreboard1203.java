@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.viaversion.scoreboard;
 
-import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
@@ -86,15 +85,7 @@ public class ViaScoreboard1203<P extends TabPlayer> extends ViaScoreboard16<P> {
     @Override
     protected void writeObjectiveDisplay(@NonNull PacketWrapper packet, @NonNull Objective objective) {
         super.writeObjectiveDisplay(packet, objective);
-        // ViaVersion configuration compatibility
-        if (objective.getHealthDisplay() == HealthDisplay.INTEGER && Via.getConfig().hideScoreboardNumbers()) {
-            // Has number format
-            packet.write(Types.BOOLEAN, true);
-            // Blank format
-            packet.write(Types.VAR_INT, 0);
-        } else {
-            writeNumberFormat(packet, objective.getNumberFormat());
-        }
+        writeNumberFormat(packet, objective.getNumberFormat());
     }
 
     protected void writeNumberFormat(@NonNull PacketWrapper packet, @Nullable TabComponent content) {
