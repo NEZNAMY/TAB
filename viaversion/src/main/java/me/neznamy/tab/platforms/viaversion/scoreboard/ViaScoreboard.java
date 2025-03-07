@@ -7,6 +7,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
+import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
@@ -127,7 +128,7 @@ public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<
             case TeamAction.CREATE:
             case TeamAction.UPDATE:
                 // Team display name
-                writeComponent(packet, team.getName());
+                writeComponent(packet, new SimpleTextComponent(team.getName()));
                 // Friendly flags
                 packet.write(Types.BYTE, (byte) team.getOptions());
                 // Name tag visibility
@@ -159,8 +160,6 @@ public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<
 
         packet.scheduleSend(protocol);
     }
-
-    protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull String text);
 
     protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);
 

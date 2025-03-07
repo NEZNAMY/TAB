@@ -60,11 +60,6 @@ public class ViaScoreboard13<P extends TabPlayer> extends ViaScoreboard<P> {
     }
 
     @Override
-    protected void writeComponent(@NonNull PacketWrapper packet, @NonNull String text) {
-        packet.write(Types.COMPONENT, ComponentUtil.legacyToJson(text));
-    }
-
-    @Override
     protected void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
         packet.write(Types.COMPONENT, ComponentUtil.legacyToJson(component.toLegacyText()));
     }
