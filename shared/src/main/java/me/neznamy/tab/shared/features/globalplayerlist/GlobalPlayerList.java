@@ -229,15 +229,13 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         if (playerlist != null && !p.tablistData.disabled.get()) {
             format = playerlist.getTabFormat(p, viewer);
         }
-        int gameMode = (configuration.isOthersAsSpectators() && !p.server.equals(viewer.server)) ||
-                (configuration.isVanishedAsSpectators() && p.isVanished()) ? 3 : p.getGamemode();
         return new TabList.Entry(
                 p.getTablistId(),
                 p.getNickname(),
                 p.getSkin(),
                 true,
                 configuration.isUpdateLatency() ? p.getPing() : 0,
-                gameMode,
+                configuration.isOthersAsSpectators() || (configuration.isVanishedAsSpectators() && p.isVanished()) ? 3 : p.getGamemode(),
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null,
                 0,
                 true
