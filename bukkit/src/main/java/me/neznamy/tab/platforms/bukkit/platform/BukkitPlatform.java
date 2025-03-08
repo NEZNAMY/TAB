@@ -298,17 +298,19 @@ public class BukkitPlatform implements BackendPlatform {
         }
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         if (identifier.startsWith("%rel_")) {
-            //relational placeholder
-            TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, (viewer, target) ->
+            // relational placeholder
+            pl.registerRelationalPlaceholder(identifier, (viewer, target) ->
                     PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier));
         } else if (identifier.startsWith("%sync:")) {
             registerSyncPlaceholder(identifier);
+        } else if (identifier.contains("{") && identifier.contains("}")) {
+            // has nested bracket placeholders
+            pl.registerPlayerPlaceholder(identifier, p -> PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), PlaceholderAPI.setBracketPlaceholders((Player) p.getPlayer(), identifier)));
         } else if (identifier.startsWith("%server_")) {
-            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier,
-                    () -> PlaceholderAPI.setPlaceholders(null, identifier));
+            // placeholder with the same output for all players, register as server for better performance
+            pl.registerServerPlaceholder(identifier, () -> PlaceholderAPI.setPlaceholders(null, identifier));
         } else {
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier,
-                    p -> PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier));
+            pl.registerPlayerPlaceholder(identifier, p -> PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier));
         }
     }
 
@@ -324,7 +326,7 @@ public class BukkitPlatform implements BackendPlatform {
         ppl[0] = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, p -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 long time = System.nanoTime();
-                ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
+                ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), PlaceholderAPI.setBracketPlaceholders((Player) p.getPlayer(), syncedPlaceholder)) : identifier);
                 TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, System.nanoTime() - time);
             });
             return null;
