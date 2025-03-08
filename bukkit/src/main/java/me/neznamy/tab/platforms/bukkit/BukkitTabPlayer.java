@@ -73,7 +73,10 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     @Nullable
     public TabList.Skin getSkin() {
-        return ((TabListBase)getTabList()).getSkin();
+        if (getTabList() instanceof TabListBase) {
+            return ((TabListBase)getTabList()).getSkin();
+        }
+        return null;
     }
 
     @Override

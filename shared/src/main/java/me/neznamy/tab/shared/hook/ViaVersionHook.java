@@ -19,6 +19,7 @@ public class ViaVersionHook {
     private static final ViaVersionHook instance = new ViaVersionHook();
 
     /** Flag tracking if ViaVersion is installed or not */
+    @Getter
     private final boolean installed = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
 
     /**
