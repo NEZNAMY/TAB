@@ -111,6 +111,6 @@ public class ViaTabList16<P extends TabPlayer> extends ViaTabList<P> {
         }
         packet.write(Types.VAR_INT, entry.getGameMode());
         packet.write(Types.VAR_INT, entry.getLatency());
-        packet.write(Types.OPTIONAL_COMPONENT, entry.getDisplayName() == null ? null : entry.getDisplayName().toViaVersion());
+        writeOptionalComponent(packet, entry.getDisplayName());
     }
 }

@@ -75,7 +75,6 @@ public class ViaTabList1214<P extends TabPlayer> extends ViaTabList1212<P> {
     @Override
     protected void writeEntry(@NonNull PacketWrapper packet, @NonNull Entry entry) {
         super.writeEntry(packet, entry);
-        packet.write(Types.VAR_INT, entry.getListOrder());
         packet.write(Types.BOOLEAN, entry.isShowHat());
     }
 }
