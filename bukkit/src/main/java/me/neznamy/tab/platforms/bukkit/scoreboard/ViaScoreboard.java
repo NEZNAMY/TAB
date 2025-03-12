@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.viaversion.scoreboard;
+package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
@@ -9,17 +9,15 @@ import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
 import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 
 /**
  * Scoreboard abstract implementation using ViaVersion packets,
  * focused to unlock new features on older versions, and also
  * optimize packet conversion between versions.
- *
- * @param <P> Platform's TabPlayer class
  */
-public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<P> {
+public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     private static final Object DUMMY = new Object();
 
@@ -47,7 +45,7 @@ public abstract class ViaScoreboard<P extends TabPlayer> extends SafeScoreboard<
      * @param setPlayerTeam
      *        Player team packet
      */
-    public ViaScoreboard(@NonNull P player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType setDisplayObjective, @NonNull PacketType setObjective, @NonNull PacketType setScore, @NonNull PacketType setPlayerTeam) {
+    public ViaScoreboard(@NonNull BukkitTabPlayer player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType setDisplayObjective, @NonNull PacketType setObjective, @NonNull PacketType setScore, @NonNull PacketType setPlayerTeam) {
         super(player);
         this.protocol = protocol;
         this.setDisplayObjective = setDisplayObjective;

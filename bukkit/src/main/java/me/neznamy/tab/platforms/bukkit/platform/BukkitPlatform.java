@@ -22,7 +22,6 @@ import me.neznamy.tab.platforms.bukkit.scoreboard.BukkitScoreboard;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PaperScoreboard;
 import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
 import me.neznamy.tab.platforms.bukkit.tablist.*;
-import me.neznamy.tab.platforms.viaversion.platform.ViaVersionPlatform;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -101,7 +100,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     /** Provider for tablist implementation */
     @NotNull
-    private final FunctionWithException<BukkitTabPlayer, TabList> tablistProvider = findTablistProvider();
+    private final FunctionWithException<BukkitTabPlayer, TabListBase> tablistProvider = findTablistProvider();
 
     /** Header/footer implementation */
     @Getter
@@ -172,8 +171,8 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @NotNull
-    private FunctionWithException<BukkitTabPlayer, TabList> findTablistProvider() {
-        final FunctionWithException<BukkitTabPlayer, TabList> base;
+    private FunctionWithException<BukkitTabPlayer, TabListBase> findTablistProvider() {
+        final FunctionWithException<BukkitTabPlayer, TabListBase> base;
         if (ViaVersionHook.getInstance().isInstalled()) {
             base = ViaVersionPlatform.findTablistProvider(serverVersion);
         } else {

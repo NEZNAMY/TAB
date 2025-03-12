@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.viaversion.scoreboard;
+package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
@@ -8,16 +8,14 @@ import com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_
 import com.viaversion.viaversion.protocols.v1_20_2to1_20_3.packet.ClientboundPackets1_20_3;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Scoreboard implementation using ViaVersion packets
  * to unlock +1.20.3 player features on pre 1.20.3 servers.
- *
- * @param <P> Platform's TabPlayer class
  */
-public class ViaScoreboard1203<P extends TabPlayer> extends ViaScoreboard16<P> {
+public class ViaScoreboard1203 extends ViaScoreboard16 {
 
     private final PacketType resetScore;
 
@@ -26,11 +24,11 @@ public class ViaScoreboard1203<P extends TabPlayer> extends ViaScoreboard16<P> {
      *
      * @param player          Player this scoreboard will belong to
      */
-    public ViaScoreboard1203(@NonNull P player) {
+    public ViaScoreboard1203(@NonNull BukkitTabPlayer player) {
         this(player, Protocol1_20_2To1_20_3.class, ClientboundPackets1_20_3.SET_DISPLAY_OBJECTIVE, ClientboundPackets1_20_3.SET_OBJECTIVE, ClientboundPackets1_20_3.SET_SCORE, ClientboundPackets1_20_3.RESET_SCORE, ClientboundPackets1_20_3.SET_PLAYER_TEAM);
     }
 
-    protected ViaScoreboard1203(@NonNull P player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType setDisplayObjective, @NonNull PacketType setObjective, @NonNull PacketType setScore, @NonNull PacketType resetScore, @NonNull PacketType setPlayerTeam) {
+    protected ViaScoreboard1203(@NonNull BukkitTabPlayer player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType setDisplayObjective, @NonNull PacketType setObjective, @NonNull PacketType setScore, @NonNull PacketType resetScore, @NonNull PacketType setPlayerTeam) {
         super(player, protocol, setDisplayObjective, setObjective, setScore, setPlayerTeam);
         this.resetScore = resetScore;
     }

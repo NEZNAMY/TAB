@@ -1,6 +1,5 @@
 dependencies {
     api(projects.shared)
-    api(projects.viaversion)
     implementation("org.bstats:bstats-bukkit:3.1.0")
     compileOnly("org.purpurmc.purpur:purpur-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.6")
@@ -16,4 +15,6 @@ dependencies {
         exclude("net.md-5", "bungeecord-chat")
     }
     compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.8.8")
+    compileOnlyApi("com.viaversion:viaversion-api:5.2.1")
+    compileOnly("com.viaversion:viaversion-common:5.2.1")
 }

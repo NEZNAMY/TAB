@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.viaversion.tablist;
+package me.neznamy.tab.platforms.bukkit.tablist;
 
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
@@ -8,7 +8,7 @@ import com.viaversion.viaversion.protocols.v1_15_2to1_16.Protocol1_15_2To1_16;
 import com.viaversion.viaversion.protocols.v1_15_2to1_16.packet.ClientboundPackets1_16;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,10 +17,8 @@ import java.util.UUID;
 /**
  * TabList handler using ViaVersion packets,
  * to unlock +1.16 player features on pre 1.16 servers.
- *
- * @param <P> Platform's TabPlayer class
  */
-public class ViaTabList16<P extends TabPlayer> extends ViaTabList<P> {
+public class ViaTabList16 extends ViaTabList {
 
     private static final int ADD_PLAYER = 0;
     private static final int UPDATE_GAME_MODE = 1;
@@ -34,11 +32,11 @@ public class ViaTabList16<P extends TabPlayer> extends ViaTabList<P> {
      * @param   player
      *          Player this tablist will belong to
      */
-    public ViaTabList16(@NotNull P player) {
+    public ViaTabList16(@NotNull BukkitTabPlayer player) {
         this(player, Protocol1_15_2To1_16.class, ClientboundPackets1_16.PLAYER_INFO, ClientboundPackets1_16.TAB_LIST);
     }
 
-    protected ViaTabList16(@NonNull P player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType playerInfoUpdate, @NonNull PacketType tabList) {
+    protected ViaTabList16(@NonNull BukkitTabPlayer player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType playerInfoUpdate, @NonNull PacketType tabList) {
         super(player, protocol, playerInfoUpdate, tabList);
     }
 

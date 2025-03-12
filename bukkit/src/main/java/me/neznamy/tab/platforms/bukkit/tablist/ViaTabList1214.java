@@ -1,11 +1,11 @@
-package me.neznamy.tab.platforms.viaversion.tablist;
+package me.neznamy.tab.platforms.bukkit.tablist;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_2to1_21_4.Protocol1_21_2To1_21_4;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import lombok.NonNull;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.BitSet;
@@ -14,10 +14,8 @@ import java.util.UUID;
 /**
  * TabList handler using ViaVersion packets,
  * to unlock +1.21.4 player features on pre 1.21.4 servers.
- *
- * @param <P> Platform's TabPlayer class
  */
-public class ViaTabList1214<P extends TabPlayer> extends ViaTabList1212<P> {
+public class ViaTabList1214 extends ViaTabList1212 {
 
     private static final BitSet ADD_PLAYER = bitSet(8, 0, 8);
     //private static final BitSet INITIALIZE_CHAT = bitSet(8, 1);
@@ -34,7 +32,7 @@ public class ViaTabList1214<P extends TabPlayer> extends ViaTabList1212<P> {
      * @param   player
      *          Player this tablist will belong to
      */
-    public ViaTabList1214(@NotNull P player) {
+    public ViaTabList1214(@NotNull BukkitTabPlayer player) {
         super(player, Protocol1_21_2To1_21_4.class, ClientboundPackets1_21_2.PLAYER_INFO_REMOVE, ClientboundPackets1_21_2.PLAYER_INFO_UPDATE, ClientboundPackets1_21_2.TAB_LIST);
     }
 

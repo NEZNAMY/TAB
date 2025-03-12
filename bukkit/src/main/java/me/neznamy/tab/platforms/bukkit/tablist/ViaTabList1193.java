@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.viaversion.tablist;
+package me.neznamy.tab.platforms.bukkit.tablist;
 
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
@@ -7,7 +7,7 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_19_1to1_19_3.packet.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.v1_19_1to1_19_3.Protocol1_19_1To1_19_3;
 import lombok.NonNull;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,10 +17,8 @@ import java.util.UUID;
 /**
  * TabList handler using ViaVersion packets,
  * to unlock +1.19.3 player features on pre 1.19.3 servers.
- *
- * @param <P> Platform's TabPlayer class
  */
-public class ViaTabList1193<P extends TabPlayer> extends ViaTabList16<P> {
+public class ViaTabList1193 extends ViaTabList16 {
 
     private static final BitSet ADD_PLAYER = bitSet(6, 0, 6);
     //private static final BitSet INITIALIZE_CHAT = bitSet(6, 1);
@@ -37,11 +35,11 @@ public class ViaTabList1193<P extends TabPlayer> extends ViaTabList16<P> {
      * @param   player
      *          Player this tablist will belong to
      */
-    public ViaTabList1193(@NotNull P player) {
+    public ViaTabList1193(@NotNull BukkitTabPlayer player) {
         this(player, Protocol1_19_1To1_19_3.class, ClientboundPackets1_19_3.PLAYER_INFO_REMOVE, ClientboundPackets1_19_3.PLAYER_INFO_UPDATE, ClientboundPackets1_19_3.TAB_LIST);
     }
 
-    protected ViaTabList1193(@NonNull P player, @NonNull Class<? extends Protocol> protocol, @Nullable PacketType playerInfoRemove, @NonNull PacketType playerInfoUpdate, @NonNull PacketType tabList) {
+    protected ViaTabList1193(@NonNull BukkitTabPlayer player, @NonNull Class<? extends Protocol> protocol, @Nullable PacketType playerInfoRemove, @NonNull PacketType playerInfoUpdate, @NonNull PacketType tabList) {
         super(player, protocol, playerInfoUpdate, tabList);
         this.playerInfoRemove = playerInfoRemove;
     }

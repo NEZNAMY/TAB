@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.viaversion.tablist;
+package me.neznamy.tab.platforms.bukkit.tablist;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
@@ -8,8 +8,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,10 +19,8 @@ import java.util.UUID;
  * TabList abstract handler using ViaVersion packets,
  * focused to unlock new features on older versions,
  * and also optimize packet conversion between versions.
- *
- * @param <P> Platform's TabPlayer class
  */
-public abstract class ViaTabList<P extends TabPlayer> extends TrackedTabList<P> {
+public abstract class ViaTabList extends TabListBase {
 
     protected final Class<? extends Protocol> protocol;
     private final PacketType playerInfoUpdate;
@@ -42,7 +39,7 @@ public abstract class ViaTabList<P extends TabPlayer> extends TrackedTabList<P> 
      * @param tabList
      *        Tab list packet
      */
-    public ViaTabList(@NonNull P player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType playerInfoUpdate, @NonNull PacketType tabList) {
+    public ViaTabList(@NonNull BukkitTabPlayer player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType playerInfoUpdate, @NonNull PacketType tabList) {
         super(player);
         this.protocol = protocol;
         this.playerInfoUpdate = playerInfoUpdate;
@@ -68,11 +65,6 @@ public abstract class ViaTabList<P extends TabPlayer> extends TrackedTabList<P> 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
         sendInfoUpdate(Action.UPDATE_GAME_MODE, entry, gameMode);
-    }
-
-    @Override
-    public boolean containsEntry(@NonNull UUID entry) {
-        return true;
     }
 
     @Override

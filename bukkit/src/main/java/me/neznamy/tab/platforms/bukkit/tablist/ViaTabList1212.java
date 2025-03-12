@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.viaversion.tablist;
+package me.neznamy.tab.platforms.bukkit.tablist;
 
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
@@ -8,7 +8,7 @@ import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPacke
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.Protocol1_21To1_21_2;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,10 +18,8 @@ import java.util.UUID;
 /**
  * TabList handler using ViaVersion packets,
  * to unlock +1.21.2 player features on pre 1.21.2 servers.
- *
- * @param <P> Platform's TabPlayer class
  */
-public class ViaTabList1212<P extends TabPlayer> extends ViaTabList1193<P> {
+public class ViaTabList1212 extends ViaTabList1193 {
 
     private static final BitSet ADD_PLAYER = bitSet(7, 0, 7);
     //private static final BitSet INITIALIZE_CHAT = bitSet(7, 1);
@@ -37,11 +35,11 @@ public class ViaTabList1212<P extends TabPlayer> extends ViaTabList1193<P> {
      * @param   player
      *          Player this tablist will belong to
      */
-    public ViaTabList1212(@NotNull P player) {
+    public ViaTabList1212(@NotNull BukkitTabPlayer player) {
         super(player, Protocol1_21To1_21_2.class, ClientboundPackets1_21_2.PLAYER_INFO_REMOVE, ClientboundPackets1_21_2.PLAYER_INFO_UPDATE, ClientboundPackets1_21_2.TAB_LIST);
     }
 
-    protected ViaTabList1212(@NonNull P player, @NonNull Class<? extends Protocol> protocol, @Nullable PacketType playerInfoRemove, @NonNull PacketType playerInfoUpdate, @NonNull PacketType tabList) {
+    protected ViaTabList1212(@NonNull BukkitTabPlayer player, @NonNull Class<? extends Protocol> protocol, @Nullable PacketType playerInfoRemove, @NonNull PacketType playerInfoUpdate, @NonNull PacketType tabList) {
         super(player, protocol, playerInfoRemove, playerInfoUpdate, tabList);
     }
 
