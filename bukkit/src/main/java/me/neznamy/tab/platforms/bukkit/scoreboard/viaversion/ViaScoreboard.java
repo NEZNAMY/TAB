@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.scoreboard;
+package me.neznamy.tab.platforms.bukkit.scoreboard.viaversion;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;

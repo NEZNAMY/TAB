@@ -1,14 +1,14 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.scoreboard.ViaScoreboard1203;
-import me.neznamy.tab.platforms.bukkit.scoreboard.ViaScoreboard13;
-import me.neznamy.tab.platforms.bukkit.scoreboard.ViaScoreboard16;
+import me.neznamy.tab.platforms.bukkit.scoreboard.viaversion.ViaScoreboard1203;
+import me.neznamy.tab.platforms.bukkit.scoreboard.viaversion.ViaScoreboard113;
+import me.neznamy.tab.platforms.bukkit.scoreboard.viaversion.ViaScoreboard116;
 import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
-import me.neznamy.tab.platforms.bukkit.tablist.ViaTabList1193;
-import me.neznamy.tab.platforms.bukkit.tablist.ViaTabList1212;
-import me.neznamy.tab.platforms.bukkit.tablist.ViaTabList1214;
-import me.neznamy.tab.platforms.bukkit.tablist.ViaTabList16;
+import me.neznamy.tab.platforms.bukkit.tablist.viaversion.ViaTabList1193;
+import me.neznamy.tab.platforms.bukkit.tablist.viaversion.ViaTabList1212;
+import me.neznamy.tab.platforms.bukkit.tablist.viaversion.ViaTabList1214;
+import me.neznamy.tab.platforms.bukkit.tablist.viaversion.ViaTabList116;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -28,10 +28,10 @@ public class ViaVersionPlatform {
                     return new ViaScoreboard1203(player);
                 }
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_16.getNetworkId()) {
-                    return new ViaScoreboard16(player);
+                    return new ViaScoreboard116(player);
                 }
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_13.getNetworkId()) {
-                    return new ViaScoreboard13(player);
+                    return new ViaScoreboard113(player);
                 }
                 return null;
             };
@@ -42,7 +42,7 @@ public class ViaVersionPlatform {
                     return new ViaScoreboard1203(player);
                 }
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_16.getNetworkId()) {
-                    return new ViaScoreboard16(player);
+                    return new ViaScoreboard116(player);
                 }
                 return null;
             };
@@ -75,7 +75,7 @@ public class ViaVersionPlatform {
                     return new ViaTabList1193(player);
                 }
                 if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_16.getNetworkId()) {
-                    return new ViaTabList16(player);
+                    return new ViaTabList116(player);
                 }
                 return null;
             };

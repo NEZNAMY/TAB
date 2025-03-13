@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.scoreboard;
+package me.neznamy.tab.platforms.bukkit.scoreboard.viaversion;
 
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * Scoreboard implementation using ViaVersion packets
  * to unlock +1.20.3 player features on pre 1.20.3 servers.
  */
-public class ViaScoreboard1203 extends ViaScoreboard16 {
+public class ViaScoreboard1203 extends ViaScoreboard116 {
 
     private final PacketType resetScore;
 

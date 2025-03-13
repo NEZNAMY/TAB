@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.scoreboard;
+package me.neznamy.tab.platforms.bukkit.scoreboard.viaversion;
 
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
@@ -15,18 +15,18 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
  * Scoreboard implementation using ViaVersion packets
  * to unlock +1.13 player features on pre 1.13 servers.
  */
-public class ViaScoreboard13 extends ViaScoreboard {
+public class ViaScoreboard113 extends ViaScoreboard {
 
     /**
      * Constructs new instance with given player.
      *
      * @param player          Player this scoreboard will belong to
      */
-    public ViaScoreboard13(@NonNull BukkitTabPlayer player) {
+    public ViaScoreboard113(@NonNull BukkitTabPlayer player) {
         this(player, Protocol1_12_2To1_13.class, ClientboundPackets1_13.SET_DISPLAY_OBJECTIVE, ClientboundPackets1_13.SET_OBJECTIVE, ClientboundPackets1_13.SET_SCORE, ClientboundPackets1_13.SET_PLAYER_TEAM);
     }
 
-    protected ViaScoreboard13(@NonNull BukkitTabPlayer player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType setDisplayObjective, @NonNull PacketType setObjective, @NonNull PacketType setScore, @NonNull PacketType setPlayerTeam) {
+    protected ViaScoreboard113(@NonNull BukkitTabPlayer player, @NonNull Class<? extends Protocol> protocol, @NonNull PacketType setDisplayObjective, @NonNull PacketType setObjective, @NonNull PacketType setScore, @NonNull PacketType setPlayerTeam) {
         super(player, protocol, setDisplayObjective, setObjective, setScore, setPlayerTeam);
     }
 

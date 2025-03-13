@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.tablist;
+package me.neznamy.tab.platforms.bukkit.tablist.viaversion;
 
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;

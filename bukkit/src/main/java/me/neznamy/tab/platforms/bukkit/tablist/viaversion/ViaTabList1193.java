@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.tablist;
+package me.neznamy.tab.platforms.bukkit.tablist.viaversion;
 
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
@@ -18,7 +18,7 @@ import java.util.UUID;
  * TabList handler using ViaVersion packets,
  * to unlock +1.19.3 player features on pre 1.19.3 servers.
  */
-public class ViaTabList1193 extends ViaTabList16 {
+public class ViaTabList1193 extends ViaTabList116 {
 
     private static final BitSet ADD_PLAYER = bitSet(6, 0, 6);
     //private static final BitSet INITIALIZE_CHAT = bitSet(6, 1);

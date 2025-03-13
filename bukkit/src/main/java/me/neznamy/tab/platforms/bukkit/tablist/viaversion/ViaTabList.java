@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.tablist;
+package me.neznamy.tab.platforms.bukkit.tablist.viaversion;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
@@ -9,6 +9,7 @@ import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
