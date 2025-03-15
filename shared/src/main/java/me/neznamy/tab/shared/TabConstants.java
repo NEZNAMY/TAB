@@ -38,7 +38,6 @@ public class TabConstants {
     public static class CpuUsageCategory {
 
         // Events
-        public static final String PLUGIN_LOAD = "Load";
         public static final String PLAYER_JOIN = "Player Join";
         public static final String PLAYER_QUIT = "Player Quit";
         public static final String WORLD_SWITCH = "World Switch";
@@ -53,12 +52,6 @@ public class TabConstants {
 
         /** Periodic task checking for current and expected display names of all entries */
         public static final String ANTI_OVERRIDE_TABLIST_PERIODIC = "Tablist anti override (periodic task)";
-
-        /** Packet listener checking for new and expected display names of all entries */
-        public static final String ANTI_OVERRIDE_TABLIST_PACKET = "Tablist anti override (packet listener)";
-
-        /** Packet listener checking for new and expected scoreboard objectives and teams */
-        public static final String ANTI_OVERRIDE_SCOREBOARDS_PACKET = "Scoreboard anti override (packet listener)";
 
         public static final String PING_CHANGE = "Processing ping change";
         public static final String NICK_PLUGIN_COMPATIBILITY = "Compatibility with nick plugins";
