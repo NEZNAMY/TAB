@@ -1,15 +1,14 @@
 package me.neznamy.tab.shared.config;
 
+import lombok.Getter;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import lombok.Getter;
-import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
-import org.jetbrains.annotations.NotNull;
-
-import me.neznamy.tab.shared.TAB;
 
 @Getter
 public class MessageFile extends YamlConfigurationFile {
@@ -49,6 +48,8 @@ public class MessageFile extends YamlConfigurationFile {
             ,"    &7shows CPU usage of the plugin"
             ," &8>> &3&l/tab group/player <name> remove"
             ,"    &7Clears all data about player/group"
+            ," &8>> &3&l/tab nametag"
+            ,"    &7Nametag-related commands"
             ,"&m                                                                                "));
     private final List<String> mySQLHelpMenu = getStringList("mysql-help-menu", Arrays.asList(
             "/tab mysql upload - uploads data from files to mysql",
@@ -58,12 +59,6 @@ public class MessageFile extends YamlConfigurationFile {
     private final String mySQLFailError = getString("mysql-fail-error", "MySQL download failed due to an error. Check console for more info.");
     private final String mySQLDownloadSuccess = getString("mysql-download-success", "&aMySQL data downloaded successfully.");
     private final String mySQLUploadSuccess = getString("mysql-upload-success", "&aMySQL data uploaded successfully.");
-    private final List<String> nameTagHelpMenu = getStringList("nametag-help-menu", Arrays.asList(
-            "/tab nametag toggle [player] - toggles nametags on all players for command sender"
-    ));
-    private final String nameTagFeatureNotEnabled = getString("nametag-feature-not-enabled", "&cThis command requires nametag feature to be enabled.");
-    private final String nameTagsHidden = getString("nametags-hidden", "&aNametags of all players were hidden to you");
-    private final String nameTagsShown = getString("nametags-shown", "&aNametags of all players were shown to you");
     private final List<String> scoreboardHelpMenu = getStringList("scoreboard-help-menu", Arrays.asList(
             "/tab scoreboard [on/off/toggle] [player] [options]",
             "/tab scoreboard show <name> [player]",
@@ -74,6 +69,21 @@ public class MessageFile extends YamlConfigurationFile {
             "/tab bossbar send <name> [player]",
             "/tab bossbar announce <name> <length>"
     ));
+
+    // ------------------
+    // Nametags
+    // ------------------
+
+    private final List<String> nameTagHelpMenu = getStringList("nametag.help-menu", Arrays.asList(
+            "/tab nametag <show/hide/toggle> [player] [-s] - Toggles nametag of specified player",
+            "/tab nametag <showview/hideview/toggleview> [player] [viewer] [-s] - Toggles nametag VIEW of specified player on other player(s)"
+    ));
+    private final String nameTagFeatureNotEnabled = getString("nametag.feature-not-enabled", "&cThis command requires nametag feature to be enabled.");
+    private final String nameTagViewHidden = getString("nametag.view-hidden", "&aNametags of all players were hidden to you");
+    private final String nameTagViewShown = getString("nametag.view-shown", "&aNametags of all players were shown to you");
+    private final String nameTagTargetHidden = getString("nametag.player-hidden", "&aYour nametag was hidden");
+    private final String nameTagTargetShown = getString("nametag.player-shown", "&aYour nametag was shown");
+    private final String nameTagNoArgFromConsole = getString("nametag.no-arg-from-console", "&cYou need to specify player if running this command from the console");
 
     public MessageFile() throws IOException {
         super(MessageFile.class.getClassLoader().getResourceAsStream("config/messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));

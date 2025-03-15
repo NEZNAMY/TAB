@@ -6,6 +6,7 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.MessageFile;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
@@ -63,7 +64,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             ((SafeScoreboard<?>)all.getScoreboard()).setAntiOverrideTeams(configuration.isAntiOverride());
             loadProperties(all);
             if (configuration.isInvisibleNameTags()) {
-                all.teamData.nameTagInvisibilityReasons.add(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
+                all.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
             }
             all.teamData.teamName = all.sortingData.shortTeamName; // Sorting is loaded sync before nametags
             if (disableChecker.isDisableConditionMet(all)) {
@@ -126,7 +127,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideTeams(configuration.isAntiOverride());
         loadProperties(connectedPlayer);
         if (configuration.isInvisibleNameTags()) {
-            connectedPlayer.teamData.nameTagInvisibilityReasons.add(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
+            connectedPlayer.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
         }
         connectedPlayer.teamData.teamName = connectedPlayer.sortingData.shortTeamName; // Sorting is loaded sync before nametags
         for (TabPlayer all : onlinePlayers.getPlayers()) {
@@ -367,10 +368,11 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        if (!p.teamData.nameTagInvisibilityReasons.isEmpty()) return false; // At least 1 reason for invisible nametag exists
+        if (p.teamData.hasHiddenNametag()) return false; // At least 1 reason for invisible nametag exists
+        if (p.teamData.hasHiddenNametag(viewer.getUniqueId())) return false; // At least 1 reason for invisible nametag for this viewer exists
         if (viewer.teamData.invisibleNameTagView) return false; // Viewer does not want to see nametags
         if (viewer.getVersion().getMinorVersion() == 8 && p.hasInvisibilityPotion()) return false;
-        return !hasHiddenNameTag(p, viewer);
+        return true;
     }
 
     /**
@@ -434,67 +436,114 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         }
     }
 
+    public void hideNameTag(@NonNull TabPlayer player, @NonNull NameTagInvisibilityReason reason, @NonNull String cpuReason,
+                            boolean sendMessage) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (player.teamData.hideNametag(reason)) {
+                updateVisibility(player);
+            }
+            if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
+        }, getFeatureName(), cpuReason));
+    }
+
+    public void hideNameTag(@NonNull TabPlayer player, @NonNull TabPlayer viewer, @NonNull NameTagInvisibilityReason reason,
+                            @NonNull String cpuReason, boolean sendMessage) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (player.teamData.hideNametag(viewer.getUniqueId(), reason)) {
+                updateVisibility(player, viewer);
+            }
+            if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
+        }, getFeatureName(), cpuReason));
+    }
+
+    public void showNameTag(@NonNull TabPlayer player, @NonNull NameTagInvisibilityReason reason, @NonNull String cpuReason,
+                            boolean sendMessage) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (player.teamData.showNametag(reason)) {
+                updateVisibility(player);
+            }
+            if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
+        }, getFeatureName(), cpuReason));
+    }
+
+    public void showNameTag(@NonNull TabPlayer player, @NonNull TabPlayer viewer, @NonNull NameTagInvisibilityReason reason,
+                            @NonNull String cpuReason, boolean sendMessage) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (player.teamData.showNametag(viewer.getUniqueId(), reason)) {
+                updateVisibility(player, viewer);
+            }
+            if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
+        }, getFeatureName(), cpuReason));
+    }
+
+    public void toggleNameTag(@NonNull TabPlayer player, @NonNull NameTagInvisibilityReason reason, @NonNull String cpuReason,
+                              boolean sendMessage) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (player.teamData.hasHiddenNametag(reason)) {
+                player.teamData.showNametag(reason);
+                if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
+            } else {
+                player.teamData.hideNametag(reason);
+                if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
+            }
+            updateVisibility(player);
+        }, getFeatureName(), cpuReason));
+    }
+
+    public void toggleNameTag(@NonNull TabPlayer player, @NonNull TabPlayer viewer, @NonNull NameTagInvisibilityReason reason,
+                              @NonNull String cpuReason, boolean sendMessage) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (player.teamData.hasHiddenNametag(viewer.getUniqueId(), reason)) {
+                player.teamData.showNametag(viewer.getUniqueId(), reason);
+                if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
+            } else {
+                player.teamData.hideNametag(viewer.getUniqueId(), reason);
+                if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
+            }
+            updateVisibility(player, viewer);
+        }, getFeatureName(), cpuReason));
+    }
+
     // ------------------
     // API Implementation
     // ------------------
 
     @Override
     public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        ensureActive();
-        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            TabPlayer p = (TabPlayer) player;
-            p.ensureLoaded();
-            if (p.teamData.nameTagInvisibilityReasons.add(NameTagInvisibilityReason.GLOBAL_API_HIDE)) {
-                updateVisibility(p);
-            }
-        }, getFeatureName(), "Processing API call (hideNameTag)"));
-
+        hideNameTag((TabPlayer) player, NameTagInvisibilityReason.API_HIDE, "Processing API call (hideNameTag)", false);
     }
 
     @Override
     public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
-        ensureActive();
-        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            TabPlayer p = (TabPlayer) player;
-            p.ensureLoaded();
-            if (!p.teamData.addHiddenNameTagFor((TabPlayer) viewer)) return;
-            updateVisibility(p, (TabPlayer) viewer);
-        }, getFeatureName(), "Processing API call (hideNameTag)"));
+        hideNameTag((TabPlayer) player, (TabPlayer) viewer, NameTagInvisibilityReason.API_HIDE, "Processing API call (hideNameTag)", false);
     }
 
     @Override
     public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        ensureActive();
-        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            TabPlayer p = (TabPlayer) player;
-            p.ensureLoaded();
-            if (p.teamData.nameTagInvisibilityReasons.remove(NameTagInvisibilityReason.GLOBAL_API_HIDE)) {
-                updateVisibility(p);
-            }
-        }, getFeatureName(), "Processing API call (showNameTag)"));
+        showNameTag((TabPlayer) player, NameTagInvisibilityReason.API_HIDE, "Processing API call (showNameTag)", false);
     }
 
     @Override
     public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
-        ensureActive();
-        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            TabPlayer p = (TabPlayer) player;
-            p.ensureLoaded();
-            if (!p.teamData.removeHiddenNameTagFor((TabPlayer) viewer)) return;
-            updateVisibility(p, (TabPlayer) viewer);
-        }, getFeatureName(), "Processing API call (showNameTag)"));
+        showNameTag((TabPlayer) player, (TabPlayer) viewer, NameTagInvisibilityReason.API_HIDE, "Processing API call (showNameTag)", false);
     }
 
     @Override
     public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
-        return ((TabPlayer)player).teamData.nameTagInvisibilityReasons.contains(NameTagInvisibilityReason.GLOBAL_API_HIDE);
+        return ((TabPlayer)player).teamData.hasHiddenNametag(NameTagInvisibilityReason.API_HIDE);
     }
 
     @Override
     public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         ensureActive();
-        return ((TabPlayer)player).teamData.hasHiddenNameTagFor((TabPlayer) viewer);
+        return ((TabPlayer)player).teamData.hasHiddenNametag(viewer.getUniqueId(), NameTagInvisibilityReason.API_HIDE);
     }
 
     @Override
@@ -604,16 +653,28 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void toggleNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer p, boolean sendToggleMessage) {
+        setNameTagVisibilityView((TabPlayer) p, ((TabPlayer) p).teamData.invisibleNameTagView, sendToggleMessage);
+    }
+
+    @Override
+    public void showNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer p, boolean sendToggleMessage) {
+        setNameTagVisibilityView((TabPlayer) p, true, sendToggleMessage);
+    }
+
+    @Override
+    public void hideNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer p, boolean sendToggleMessage) {
+        setNameTagVisibilityView((TabPlayer) p, false, sendToggleMessage);
+    }
+
+    private void setNameTagVisibilityView(@NonNull TabPlayer player, boolean visible, boolean sendToggleMessage) {
         ensureActive();
-        TabPlayer player = (TabPlayer) p;
-        if (player.teamData.invisibleNameTagView) {
-            player.teamData.invisibleNameTagView = false;
-            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsShown());
-        } else {
-            player.teamData.invisibleNameTagView = true;
-            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden());
+        if (player.teamData.invisibleNameTagView != visible) return;
+        player.teamData.invisibleNameTagView = !visible;
+        if (sendToggleMessage) {
+            MessageFile messageFile = TAB.getInstance().getConfiguration().getMessages();
+            player.sendMessage(visible ? messageFile.getNameTagViewShown() :messageFile.getNameTagViewHidden());
         }
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(player, !player.teamData.invisibleNameTagView);
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(player, visible);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             updateVisibility(all, player);
         }

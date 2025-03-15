@@ -201,14 +201,36 @@ public interface NameTagManager {
     /**
      * Toggles name tag visibility view on all players for specified player.
      * On first call, name tags of all players will become invisible for specified
-     * player. On second call, they will become visible again.
+     * player. On the second call, they will become visible again.
      *
      * @param   player
      *          player to toggle name tag visibility view for
      * @param   sendToggleMessage
-     *          {@code true} if configured toggle message should be sent, {@code false} if not
+     *          {@code true} if the configured toggle message should be sent, {@code false} if not
      */
     void toggleNameTagVisibilityView(@NonNull TabPlayer player, boolean sendToggleMessage);
+
+    /**
+     * Shows back name tag visibility view on all players for specified player.
+     * If the view is not hidden, nothing happens.
+     *
+     * @param   player
+     *          player to show name tag visibility view for
+     * @param   sendToggleMessage
+     *          {@code true} if the configured toggle message should be sent, {@code false} if not
+     */
+    void showNameTagVisibilityView(@NonNull TabPlayer player, boolean sendToggleMessage);
+
+    /**
+     * Hides name tag visibility view on all players for specified player.
+     * If the view is already hidden, nothing happens.
+     *
+     * @param   player
+     *          player to show name tag visibility view for
+     * @param   sendToggleMessage
+     *          {@code true} if the configured toggle message should be sent, {@code false} if not
+     */
+    void hideNameTagVisibilityView(@NonNull TabPlayer player, boolean sendToggleMessage);
 
     /**
      * Returns {@code true} if player has hidden name tags by either calling

@@ -5,9 +5,12 @@ package me.neznamy.tab.shared.features.nametags;
  */
 public enum NameTagInvisibilityReason {
 
-    /** API function for global nametag hiding (#hideNametag) */
-    GLOBAL_API_HIDE,
+    /** API function for nametag hiding (#hideNameTag) */
+    API_HIDE,
 
     /** invisible-nametags option returned true for the player */
-    MEETING_CONFIGURED_CONDITION
+    MEETING_CONFIGURED_CONDITION,
+
+    /** /tab nametag hide command */
+    HIDE_COMMAND
 }

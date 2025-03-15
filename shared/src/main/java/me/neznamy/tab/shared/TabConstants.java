@@ -105,8 +105,10 @@ public class TabConstants {
 
         public static final String COMMAND_MYSQL_DOWNLOAD           = "tab.mysql.download";
         public static final String COMMAND_MYSQL_UPLOAD             = "tab.mysql.upload";
-        public static final String COMMAND_NAMETAG_TOGGLE           = "tab.nametag.toggle";
-        public static final String COMMAND_NAMETAG_TOGGLE_OTHER     = "tab.nametag.toggle.other";
+        public static final String COMMAND_NAMETAG_VISIBILITY       = "tab.nametag.visibility";
+        public static final String COMMAND_NAMETAG_VISIBILITY_OTHER = "tab.nametag.visibility.other";
+        public static final String COMMAND_NAMETAG_VIEW             = "tab.nametag.view";
+        public static final String COMMAND_NAMETAG_VIEW_OTHER       = "tab.nametag.view.other";
 
         public static final String COMMAND_SCOREBOARD_ANNOUNCE      = "tab.announce.scoreboard";
         public static final String COMMAND_SCOREBOARD_TOGGLE        = "tab.scoreboard.toggle";

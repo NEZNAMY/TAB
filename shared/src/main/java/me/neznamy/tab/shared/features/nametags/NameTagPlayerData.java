@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.nametags;
 
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,10 +24,6 @@ public class NameTagPlayerData {
     /** Flag tracking whether this feature is disabled for the player with condition or not */
     public final AtomicBoolean disabled = new AtomicBoolean();
 
-    /** Players who should not see this player's name tag */
-    @Nullable
-    private Set<TabPlayer> hiddenNameTagFor;
-
     /** Flag tracking whether team handling is paused or not */
     public boolean teamHandlingPaused;
 
@@ -47,7 +42,11 @@ public class NameTagPlayerData {
 
     /** Reasons why player's nametag is hidden for everyone */
     @NotNull
-    public EnumSet<NameTagInvisibilityReason> nameTagInvisibilityReasons = EnumSet.noneOf(NameTagInvisibilityReason.class);
+    private final EnumSet<NameTagInvisibilityReason> nameTagInvisibilityReasons = EnumSet.noneOf(NameTagInvisibilityReason.class);
+
+    /** Reasons why player's nametag is hidden for specific players */
+    @NotNull
+    private final Map<UUID, EnumSet<NameTagInvisibilityReason>> nameTagInvisibilityReasonsRelational = new HashMap<>();
 
     /**
      * Returns current collision rule. If forced using API, the forced value is returned.
@@ -60,42 +59,6 @@ public class NameTagPlayerData {
     }
 
     /**
-     * Returns {@code true} if nametag is hidden for specified viewer, {@code false} if not.
-     *
-     * @param   viewer
-     *          Player viewing the nametag
-     * @return  {@code true} if hidden for viewer, {@code false} if not
-     */
-    public boolean hasHiddenNameTagFor(@NotNull TabPlayer viewer) {
-        if (hiddenNameTagFor == null) return false;
-        return hiddenNameTagFor.contains(viewer);
-    }
-
-    /**
-     * Adds player to players to hide nametag for.
-     *
-     * @param   viewer
-     *          Player to hide nametag for
-     * @return  {@code true} if player was added, {@code false} if player was already added before
-     */
-    public boolean addHiddenNameTagFor(@NotNull TabPlayer viewer) {
-        if (hiddenNameTagFor == null) hiddenNameTagFor = Collections.newSetFromMap(new WeakHashMap<>());
-        return hiddenNameTagFor.add(viewer);
-    }
-
-    /**
-     * Removes player from players to hide nametag for.
-     *
-     * @param   viewer
-     *          Player to show back nametag for
-     * @return  {@code true} if player was remove, {@code false} if player was not in list
-     */
-    public boolean removeHiddenNameTagFor(@NotNull TabPlayer viewer) {
-        if (hiddenNameTagFor != null) return hiddenNameTagFor.remove(viewer);
-        return false;
-    }
-
-    /**
      * Returns {@code true} if teams are disabled for this player either with condition
      * or with the API, {@code false} otherwise.
      *
@@ -103,5 +66,99 @@ public class NameTagPlayerData {
      */
     public boolean isDisabled() {
         return disabled.get() || teamHandlingPaused;
+    }
+
+    /**
+     * Hides nametag for a specified reason.
+     *
+     * @param   reason
+     *          Reason for hiding nametag
+     * @return  Whether the state has changed as a result of this call
+     */
+    public boolean hideNametag(@NotNull NameTagInvisibilityReason reason) {
+        return nameTagInvisibilityReasons.add(reason);
+    }
+
+    /**
+     * Shows nametag for a specified reason (removes existing hide reason).
+     *
+     * @param   reason
+     *          Reason for showing nametag
+     * @return  Whether the state has changed as a result of this call
+     */
+    public boolean showNametag(@NotNull NameTagInvisibilityReason reason) {
+        return nameTagInvisibilityReasons.remove(reason);
+    }
+
+    /**
+     * Returns {@code true} if nametag is hidden for specified reason, {@code false} if not.
+     *
+     * @param   reason
+     *          Reason to check
+     * @return  {@code true} if nametag is hidden for specified reason, {@code false} if not
+     */
+    public boolean hasHiddenNametag(@NotNull NameTagInvisibilityReason reason) {
+        return nameTagInvisibilityReasons.contains(reason);
+    }
+
+    /**
+     * Returns {@code true} if there is at least 1 reason why this nametag should be hidden, otherwise,
+     * returns {@code false}.
+     *
+     * @return  {@code true} if nametag should be hidden, {@code false} if not
+     */
+    public boolean hasHiddenNametag() {
+        return !nameTagInvisibilityReasons.isEmpty();
+    }
+
+    /**
+     * Hides nametag for specified viewer for specified reason.
+     *
+     * @param   viewer
+     *          Viewer to mark nametag as hidden for
+     * @param   reason
+     *          Reason for hiding nametag
+     * @return  Whether the state has changed as a result of this call
+     */
+    public boolean hideNametag(@NotNull UUID viewer, @NotNull NameTagInvisibilityReason reason) {
+        return nameTagInvisibilityReasonsRelational.computeIfAbsent(viewer, v -> EnumSet.noneOf(NameTagInvisibilityReason.class)).add(reason);
+    }
+
+    /**
+     * Shows nametag for specified player for specified reason (removes existing hide reason).
+     *
+     * @param   viewer
+     *          Viewer to show nametag back for
+     * @param   reason
+     *          Reason for showing nametag
+     * @return  Whether the state has changed as a result of this call
+     */
+    public boolean showNametag(@NotNull UUID viewer, @NotNull NameTagInvisibilityReason reason) {
+        return nameTagInvisibilityReasonsRelational.computeIfAbsent(viewer, v -> EnumSet.noneOf(NameTagInvisibilityReason.class)).remove(reason);
+    }
+
+    /**
+     * Returns {@code true} if nametag is hidden for specified viewer for specified reason, {@code false} if not.
+     *
+     * @param   viewer
+     *          Viewer who nametag might be hidden for
+     * @param   reason
+     *          Reason to check
+     * @return  {@code true} if nametag is hidden for specified reason, {@code false} if not
+     */
+    public boolean hasHiddenNametag(@NotNull UUID viewer, @NotNull NameTagInvisibilityReason reason) {
+        return nameTagInvisibilityReasonsRelational.computeIfAbsent(viewer, v -> EnumSet.noneOf(NameTagInvisibilityReason.class)).contains(reason);
+    }
+
+    /**
+     * Returns {@code true} if there is at least 1 reason why this nametag should be hidden for given viewer,
+     * otherwise, returns {@code false}.
+     *
+     * @param   viewer
+     *          Viewer who nametag might be hidden for
+     * @return  {@code true} if nametag should be hidden, {@code false} if not
+     */
+    public boolean hasHiddenNametag(@NotNull UUID viewer) {
+        return !nameTagInvisibilityReasonsRelational.computeIfAbsent(viewer, v -> EnumSet.noneOf(NameTagInvisibilityReason.class)).isEmpty();
     }
 }
