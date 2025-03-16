@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A class containing various constants used everywhere in the plugin
@@ -221,7 +222,6 @@ public class TabConstants {
         public static final String NON_STAFF_ONLINE = "%nonstaffonline%";
         public static final String LUCKPERMS_PREFIX = "%luckperms-prefix%";
         public static final String LUCKPERMS_SUFFIX = "%luckperms-suffix%";
-        public static final String COUNTDOWN = "%countdown%";
         public static final String GAMEMODE = "%gamemode%";
         public static final String BEDROCK = "%bedrock%";
 
@@ -247,6 +247,14 @@ public class TabConstants {
 
         public static String globalPlayerListGroup(String group) {
             return "%playerlist-group_" + group + "%";
+        }
+
+        public static String bossbarAnnounceLeft(@NotNull String name) {
+            return "%bossbar_announce_time_left_" + name + "%";
+        }
+
+        public static String bossbarAnnounceTotal(@NotNull String name) {
+            return "%bossbar_announce_time_total_" + name + "%";
         }
     }
 
