@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 
@@ -20,13 +21,19 @@ import java.util.function.Function;
 @Getter
 public class LuckPermsHook {
 
-    /** Instance of the class */
+    /**
+     * Instance of the class
+     */
     @Getter private static final LuckPermsHook instance = new LuckPermsHook();
 
-    /** Flag tracking if LuckPerms is installed or not */
+    /**
+     * Flag tracking if LuckPerms is installed or not
+     */
     private final boolean installed = ReflectionUtils.classExists("net.luckperms.api.LuckPerms");
 
-    /** Function retrieving group of player from LuckPerms */
+    /**
+     * Function retrieving group of player from LuckPerms
+     */
     private final Function<TabPlayer, String> groupFunction = p -> {
         if (p.luckPermsUser == null) p.luckPermsUser = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
         if (p.luckPermsUser == null) {
@@ -39,9 +46,8 @@ public class LuckPermsHook {
     /**
      * Returns player's prefix configured in LuckPerms
      *
-     * @param   p
-     *          Player to get prefix of
-     * @return  Player's prefix
+     * @param p Player to get prefix of
+     * @return Player's prefix
      */
     public String getPrefix(@NonNull TabPlayer p) {
         return getValue(p, true);
@@ -50,9 +56,8 @@ public class LuckPermsHook {
     /**
      * Returns player's suffix configured in LuckPerms
      *
-     * @param   p
-     *          Player to get suffix of
-     * @return  Player's suffix
+     * @param p Player to get suffix of
+     * @return Player's suffix
      */
     public String getSuffix(@NonNull TabPlayer p) {
         return getValue(p, false);
@@ -62,11 +67,9 @@ public class LuckPermsHook {
      * Returns player's metadata value based on entered boolean flag,
      * {@code true} for prefix, {@code false} for suffix.
      *
-     * @param   p
-     *          Player to get metadata value of
-     * @param   prefix
-     *          {@code true} if prefix should be returned, {@code false} if suffix
-     * @return  Player's metadata value
+     * @param p      Player to get metadata value of
+     * @param prefix {@code true} if prefix should be returned, {@code false} if suffix
+     * @return Player's metadata value
      */
     private String getValue(@NonNull TabPlayer p, boolean prefix) {
         User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
@@ -81,5 +84,25 @@ public class LuckPermsHook {
             value = data.getSuffix();
         }
         return value == null ? "" : value;
+    }
+
+    public int getWeight(@NonNull TabPlayer tabPlayer) {
+        User user = LuckPermsProvider.get().getUserManager().getUser(tabPlayer.getUniqueId());
+        if (user == null) {
+            return 0;
+        }
+        Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
+        if (!options.isPresent()) {
+            return 0;
+        }
+        CachedMetaData data = user.getCachedData().getMetaData(options.get());
+        String primaryGroupName = user.getPrimaryGroup();
+        Group primaryGroup = LuckPermsProvider.get().getGroupManager().getGroup(primaryGroupName);
+
+        if (primaryGroup == null) {
+            return 0;
+        }
+
+        return primaryGroup.getWeight().orElse(0);
     }
 }
