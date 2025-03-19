@@ -59,7 +59,7 @@ public class StringToComponentCache extends Cache<String, TabComponent> {
             }
             return text.contains("#") || text.contains("§x") || text.contains("<") ?
                     TabComponent.fromColoredText(text) : //contains RGB colors or font
-                    new SimpleTextComponent(text); //no RGB
+                    SimpleTextComponent.text(text); //no RGB
         });
     }
 

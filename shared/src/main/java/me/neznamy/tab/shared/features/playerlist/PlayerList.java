@@ -128,7 +128,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             UUID tablistId = getTablistUUID(player, viewer);
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
-                    tablistId.getMostSignificantBits() == 0 ? new SimpleTextComponent(player.getName()) : null);
+                    tablistId.getMostSignificantBits() == 0 ? SimpleTextComponent.text(player.getName()) : null);
         }
         if (proxy != null) proxy.sendMessage(new UpdateProxyPlayer(player.getUniqueId(), player.tablistData.prefix.get() +
                 player.tablistData.name.get() + player.tablistData.suffix.get()));

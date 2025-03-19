@@ -198,6 +198,6 @@ public class RuntimeErrorPrinter {
      *          Message to log
      */
     public void error(@NotNull String message) {
-        TAB.getInstance().getPlatform().logWarn(new SimpleTextComponent(message.replace('§', '&')));
+        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(message.replace('§', '&')));
     }
 }

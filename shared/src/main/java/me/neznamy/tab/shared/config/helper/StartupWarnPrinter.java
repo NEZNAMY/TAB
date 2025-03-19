@@ -56,13 +56,13 @@ public class StartupWarnPrinter {
     public void startupWarn(@NotNull String... messages) {
         warnCount++;
         for (String message : messages) {
-            TAB.getInstance().getPlatform().logWarn(new SimpleTextComponent(message));
+            TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(message));
         }
     }
 
     public void startupWarn(@NotNull File file, @NotNull String message) {
         warnCount++;
-        TAB.getInstance().getPlatform().logWarn(new SimpleTextComponent("[" + file.getName() + "] " + message));
+        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text("[" + file.getName() + "] " + message));
     }
 
     /**
@@ -70,7 +70,7 @@ public class StartupWarnPrinter {
      */
     public void printWarnCount() {
         if (warnCount == 0) return;
-        TAB.getInstance().getPlatform().logWarn(new SimpleTextComponent("Found a total of " + warnCount + " issues."));
+        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text("Found a total of " + warnCount + " issues."));
         // Reset after printing to prevent count going up on each reload
         warnCount = 0;
     }
