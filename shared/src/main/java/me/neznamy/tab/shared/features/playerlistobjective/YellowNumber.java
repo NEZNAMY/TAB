@@ -212,7 +212,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
                 OBJECTIVE_NAME,
                 cache.get(player.playerlistObjectiveData.title.updateAndGet()),
                 configuration.getHealthDisplay(),
-                new SimpleTextComponent("")
+                SimpleTextComponent.EMPTY
         );
     }
 

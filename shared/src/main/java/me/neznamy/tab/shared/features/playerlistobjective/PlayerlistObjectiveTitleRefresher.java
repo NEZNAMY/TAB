@@ -36,7 +36,7 @@ public class PlayerlistObjectiveTitleRefresher extends RefreshableFeature implem
                 YellowNumber.OBJECTIVE_NAME,
                 feature.getCache().get(refreshed.playerlistObjectiveData.title.updateAndGet()),
                 feature.getConfiguration().getHealthDisplay(),
-                new SimpleTextComponent("")
+                SimpleTextComponent.EMPTY
         );
     }
 

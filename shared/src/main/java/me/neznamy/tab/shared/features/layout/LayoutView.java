@@ -55,7 +55,7 @@ public class LayoutView {
                     true,
                     manager.getConfiguration().getEmptySlotPing(),
                     0,
-                    new SimpleTextComponent(""),
+                    SimpleTextComponent.EMPTY,
                     Integer.MAX_VALUE - manager.getConfiguration().getDirection().translateSlot(slot),
                     true
             ));
