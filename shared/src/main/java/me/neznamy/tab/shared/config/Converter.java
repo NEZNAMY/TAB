@@ -512,5 +512,6 @@ public class Converter {
             config.set("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
         }
         config.rename("placeholderapi-refresh-intervals", "placeholder-refresh-intervals");
+        config.setIfMissing("playerlist-objective.title", "Java Edition is better");
     }
 }

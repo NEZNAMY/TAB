@@ -18,6 +18,7 @@ public class PlayerListObjectiveConfiguration {
 
     @NotNull private final String value;
     @NotNull private final String fancyValue;
+    @NotNull private final String title;
     @NotNull private final String disableCondition;
     @NotNull private final HealthDisplay healthDisplay;
 
@@ -32,7 +33,7 @@ public class PlayerListObjectiveConfiguration {
     @NotNull
     public static PlayerListObjectiveConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "value", "fancy-value", "disable-condition"));
+        section.checkForUnknownKey(Arrays.asList("enabled", "value", "fancy-value", "title", "disable-condition"));
 
         // Check for empty value
         String value = section.getString("value", Placeholder.PING);
@@ -44,6 +45,7 @@ public class PlayerListObjectiveConfiguration {
         return new PlayerListObjectiveConfiguration(
                 value,
                 section.getString("fancy-value", "&7Ping: " + Placeholder.PING),
+                section.getString("title", "Java Edition is better"),
                 section.getString("disable-condition", "%world%=disabledworld"),
                 Arrays.asList(Placeholder.HEALTH, "%player_health%", "%player_health_rounded%").contains(value) ? HealthDisplay.HEARTS : HealthDisplay.INTEGER
         );

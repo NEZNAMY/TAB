@@ -131,6 +131,7 @@ public class TabConstants {
         public static final String PLAYER_LIST = "PlayerList";
         public static final String SPECTATOR_FIX = "SpectatorFix";
         public static final String YELLOW_NUMBER = "YellowNumber";
+        public static final String YELLOW_NUMBER_TEXT = "YellowNumberText";
         public static final String BELOW_NAME = "BelowName";
         public static final String BELOW_NAME_TEXT = "BelowNameText";
         public static final String SCOREBOARD = "ScoreBoard";

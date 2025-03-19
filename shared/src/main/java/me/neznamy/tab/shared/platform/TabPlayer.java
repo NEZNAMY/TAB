@@ -20,6 +20,7 @@ import me.neznamy.tab.shared.features.header.HeaderFooter;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
+import me.neznamy.tab.shared.features.playerlistobjective.PlayerlistObjectivePlayerData;
 import me.neznamy.tab.shared.features.playerlistobjective.YellowNumber;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -109,7 +110,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final HeaderFooter.PlayerData headerFooterData = new HeaderFooter.PlayerData();
 
     /** Data for Playerlist Objective */
-    public final YellowNumber.PlayerData playerlistObjectiveData = new YellowNumber.PlayerData();
+    public final PlayerlistObjectivePlayerData playerlistObjectiveData = new PlayerlistObjectivePlayerData();
 
     /** Data for Belowname Objective */
     public final BelowNamePlayerData belowNameData = new BelowNamePlayerData();
