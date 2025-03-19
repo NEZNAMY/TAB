@@ -33,7 +33,7 @@ public class PlayerListObjectiveConfiguration {
     @NotNull
     public static PlayerListObjectiveConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "value", "fancy-value", "title", "disable-condition"));
+        section.checkForUnknownKey(Arrays.asList("enabled", "value", "fancy-value", "title", "render-type", "disable-condition"));
 
         // Check for empty value
         String value = section.getString("value", Placeholder.PING);
@@ -42,12 +42,23 @@ public class PlayerListObjectiveConfiguration {
             value = "0";
         }
 
+        // Check the render type
+        String renderTypeString = section.getString("render-type", "INTEGER");
+        HealthDisplay healthDisplay;
+        try {
+            healthDisplay = HealthDisplay.valueOf(renderTypeString);
+        } catch (IllegalArgumentException e) {
+            section.startupWarn("\"" + renderTypeString + "\" is not a valid render type. Valid options are: " +
+                    Arrays.deepToString(HealthDisplay.values()) + ". Using INTEGER");
+            healthDisplay = HealthDisplay.INTEGER;
+        }
+
         return new PlayerListObjectiveConfiguration(
                 value,
                 section.getString("fancy-value", "&7Ping: " + Placeholder.PING),
                 section.getString("title", "Java Edition is better"),
                 section.getString("disable-condition", "%world%=disabledworld"),
-                Arrays.asList(Placeholder.HEALTH, "%player_health%", "%player_health_rounded%").contains(value) ? HealthDisplay.HEARTS : HealthDisplay.INTEGER
+                healthDisplay
         );
     }
 }

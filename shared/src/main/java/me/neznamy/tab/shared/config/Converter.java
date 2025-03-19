@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.config;
 
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.chat.TextColor;
 import me.neznamy.chat.component.TextComponent;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import org.jetbrains.annotations.NotNull;
@@ -497,7 +497,10 @@ public class Converter {
 
     /**
      * Converts config from 5.0.7 to 5.1.0.
-     * This creates the option proxy-support and remove the old enable-redisbungee-support configuration.
+     * This update:
+     * - Creates the option proxy-support and removes the old enable-redisbungee-support configuration.
+     * - Renames placeholderapi-refresh-intervals to placeholder-refresh-intervals
+     * - Adds new playerlist objective options
      *
      * @param   config
      *          Config file
@@ -513,5 +516,6 @@ public class Converter {
         }
         config.rename("placeholderapi-refresh-intervals", "placeholder-refresh-intervals");
         config.setIfMissing("playerlist-objective.title", "Java Edition is better");
+        config.setIfMissing("playerlist-objective.render-type", Arrays.asList("%health%", "%player_health%", "%player_health_rounded%").contains(config.getString("playerlist-objective.value", "")) ? "HEARTS" : "INTEGER");
     }
 }
