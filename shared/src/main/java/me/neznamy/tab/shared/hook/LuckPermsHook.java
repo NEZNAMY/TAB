@@ -85,7 +85,7 @@ public class LuckPermsHook {
     }
 
     public int getWeight(@NonNull TabPlayer tabPlayer) {
-        User user = LuckPermsProvider.get().getUserManager().getUser(tabPlayer.getUniqueId());
+        User user = tabPlayer.luckPermsUser;
         if (user == null) {
             return 0;
         }
@@ -93,7 +93,6 @@ public class LuckPermsHook {
         if (!options.isPresent()) {
             return 0;
         }
-        CachedMetaData data = user.getCachedData().getMetaData(options.get());
         String primaryGroupName = user.getPrimaryGroup();
         Group primaryGroup = LuckPermsProvider.get().getGroupManager().getGroup(primaryGroupName);
 
