@@ -223,6 +223,7 @@ public class TabConstants {
         public static final String NON_STAFF_ONLINE = "%nonstaffonline%";
         public static final String LUCKPERMS_PREFIX = "%luckperms-prefix%";
         public static final String LUCKPERMS_SUFFIX = "%luckperms-suffix%";
+        public static final String LUCKPERMS_WEIGHT = "%luckperms-weight%";
         public static final String GAMEMODE = "%gamemode%";
         public static final String BEDROCK = "%bedrock%";
 

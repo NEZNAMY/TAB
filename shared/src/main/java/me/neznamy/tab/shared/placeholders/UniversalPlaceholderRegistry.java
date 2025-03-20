@@ -65,6 +65,7 @@ public class UniversalPlaceholderRegistry {
         if (!LuckPermsHook.getInstance().isInstalled()) {
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, -1, () -> "");
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, -1, () -> "");
+            manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_WEIGHT, -1, () -> "");
         }
     }
 
@@ -122,6 +123,8 @@ public class UniversalPlaceholderRegistry {
                     p -> LuckPermsHook.getInstance().getPrefix((TabPlayer) p));
             manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, 1000,
                     p -> LuckPermsHook.getInstance().getSuffix((TabPlayer) p));
+            manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_WEIGHT, 1000,
+                    p -> String.valueOf(LuckPermsHook.getInstance().getWeight((TabPlayer) p)));
         }
         for (Entry<String, AnimationDefinition> entry : TAB.getInstance().getConfiguration().getAnimations().getAnimations().getAnimations().entrySet()) {
             Animation a = new Animation(manager, entry.getKey(), entry.getValue());

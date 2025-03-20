@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 
@@ -81,5 +82,24 @@ public class LuckPermsHook {
             value = data.getSuffix();
         }
         return value == null ? "" : value;
+    }
+
+    public int getWeight(@NonNull TabPlayer tabPlayer) {
+        User user = tabPlayer.luckPermsUser;
+        if (user == null) {
+            return 0;
+        }
+        Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
+        if (!options.isPresent()) {
+            return 0;
+        }
+        String primaryGroupName = user.getPrimaryGroup();
+        Group primaryGroup = LuckPermsProvider.get().getGroupManager().getGroup(primaryGroupName);
+
+        if (primaryGroup == null) {
+            return 0;
+        }
+
+        return primaryGroup.getWeight().orElse(0);
     }
 }
