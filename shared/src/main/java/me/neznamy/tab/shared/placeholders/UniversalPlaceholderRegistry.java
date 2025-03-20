@@ -65,6 +65,7 @@ public class UniversalPlaceholderRegistry {
         if (!LuckPermsHook.getInstance().isInstalled()) {
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, -1, () -> "");
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, -1, () -> "");
+            manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_WEIGHT, -1, () -> "");
         }
     }
 
