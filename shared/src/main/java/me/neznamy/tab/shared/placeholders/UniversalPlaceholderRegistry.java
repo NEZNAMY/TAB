@@ -25,7 +25,9 @@ import java.util.Map.Entry;
 @Getter
 public class UniversalPlaceholderRegistry {
 
-    /** Decimal formatter for 2 decimal places */
+    /**
+     * Decimal formatter for 2 decimal places
+     */
     private final DecimalFormat decimal2;
 
     /**
@@ -40,8 +42,7 @@ public class UniversalPlaceholderRegistry {
     /**
      * Registers all placeholders into placeholder manager
      *
-     * @param   manager
-     *          placeholder manager to register placeholders to
+     * @param manager placeholder manager to register placeholders to
      */
     public void registerPlaceholders(@NotNull PlaceholderManagerImpl manager) {
         registerConstants(manager);
@@ -51,17 +52,17 @@ public class UniversalPlaceholderRegistry {
 
     private void registerConstants(@NotNull PlaceholderManagerImpl manager) {
         // Player
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.BEDROCK, -1, p -> Boolean.toString(((TabPlayer)p).isBedrockPlayer()));
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.BEDROCK, -1, p -> Boolean.toString(((TabPlayer) p).isBedrockPlayer()));
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER, -1, me.neznamy.tab.api.TabPlayer::getName);
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).world);
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer)p).server);
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION, -1, p -> ((TabPlayer)p).getVersion().getFriendlyName());
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION_ID, -1, p -> PerformanceUtil.toString(((TabPlayer)p).getVersion().getNetworkId()));
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer) p).world);
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer) p).server);
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION, -1, p -> ((TabPlayer) p).getVersion().getFriendlyName());
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION_ID, -1, p -> PerformanceUtil.toString(((TabPlayer) p).getVersion().getNetworkId()));
 
         // Server
         manager.registerInternalServerPlaceholder("%%", -1, () -> "%");
-        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX, -1, () -> PerformanceUtil.toString((int) (Runtime.getRuntime().maxMemory()/1024/1024)));
-        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX_GB, -1, () -> decimal2.format((float)Runtime.getRuntime().maxMemory()/1024/1024/1024));
+        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX, -1, () -> PerformanceUtil.toString((int) (Runtime.getRuntime().maxMemory() / 1024 / 1024)));
+        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX_GB, -1, () -> decimal2.format((float) Runtime.getRuntime().maxMemory() / 1024 / 1024 / 1024));
         if (!LuckPermsHook.getInstance().isInstalled()) {
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, -1, () -> "");
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, -1, () -> "");
@@ -71,10 +72,10 @@ public class UniversalPlaceholderRegistry {
 
     private void registerServerPlaceholders(@NotNull PlaceholderManagerImpl manager) {
         PlaceholdersConfiguration placeholders = TAB.getInstance().getConfiguration().getConfig().getPlaceholders();
-        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.TIME, 500, () -> placeholders.getTimeFormat().format(new Date(System.currentTimeMillis() + (int)(placeholders.getTimeOffset() *3600000))));
-        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.DATE, 60000, () -> placeholders.getDateFormat().format(new Date(System.currentTimeMillis() + (int)(placeholders.getTimeOffset() *3600000))));
-        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_USED, 200, () -> PerformanceUtil.toString((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024)));
-        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_USED_GB, 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
+        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.TIME, 500, () -> placeholders.getTimeFormat().format(new Date(System.currentTimeMillis() + (int) (placeholders.getTimeOffset() * 3600000))));
+        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.DATE, 60000, () -> placeholders.getDateFormat().format(new Date(System.currentTimeMillis() + (int) (placeholders.getTimeOffset() * 3600000))));
+        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_USED, 200, () -> PerformanceUtil.toString((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024)));
+        manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_USED_GB, 200, () -> decimal2.format((float) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 / 1024));
         manager.registerInternalServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
@@ -101,28 +102,30 @@ public class UniversalPlaceholderRegistry {
     private void registerPlayerPlaceholders(@NotNull PlaceholderManagerImpl manager) {
         boolean proxy = TAB.getInstance().getPlatform().isProxy();
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.GROUP, -1, me.neznamy.tab.api.TabPlayer::getGroup);
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PING, 500, p -> PerformanceUtil.toString(((TabPlayer)p).getPing()));
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, p -> Boolean.toString(((TabPlayer)p).isVanished()));
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PING, 500, p -> PerformanceUtil.toString(((TabPlayer) p).getPing()));
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, p -> Boolean.toString(((TabPlayer) p).isVanished()));
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.WORLD_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (((TabPlayer)p).world.equals(player.world) && !player.isVanished()) count++;
+                if (((TabPlayer) p).world.equals(player.world) && !player.isVanished()) count++;
             }
             return PerformanceUtil.toString(count);
         });
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (((TabPlayer)p).server.equals(player.server) && !player.isVanished()) count++;
+                if (((TabPlayer) p).server.equals(player.server) && !player.isVanished()) count++;
             }
             return PerformanceUtil.toString(count);
         });
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, proxy ? -1 : 100, p -> PerformanceUtil.toString(((TabPlayer)p).getGamemode()));
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, proxy ? -1 : 100, p -> PerformanceUtil.toString(((TabPlayer) p).getGamemode()));
         if (LuckPermsHook.getInstance().isInstalled()) {
             manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, 1000,
                     p -> LuckPermsHook.getInstance().getPrefix((TabPlayer) p));
             manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, 1000,
                     p -> LuckPermsHook.getInstance().getSuffix((TabPlayer) p));
+            manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_WEIGHT, 1000,
+                    p -> String.valueOf(LuckPermsHook.getInstance().getWeight((TabPlayer) p)));
         }
         for (Entry<String, AnimationDefinition> entry : TAB.getInstance().getConfiguration().getAnimations().getAnimations().getAnimations().entrySet()) {
             Animation a = new Animation(manager, entry.getKey(), entry.getValue());
@@ -132,7 +135,7 @@ public class UniversalPlaceholderRegistry {
         for (Entry<String, ConditionDefinition> condition : TAB.getInstance().getConfiguration().getConfig().getConditions().getConditions().entrySet()) {
             ConditionDefinition def = condition.getValue();
             Condition c = new Condition(def.isType(), condition.getKey(), def.getConditions(), def.getYes(), def.getNo());
-            manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), p -> c.getText((TabPlayer)p));
+            manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), p -> c.getText((TabPlayer) p));
         }
         Condition.finishSetups();
     }

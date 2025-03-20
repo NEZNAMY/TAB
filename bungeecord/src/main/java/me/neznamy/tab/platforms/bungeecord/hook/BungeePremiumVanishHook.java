@@ -29,7 +29,7 @@ public class BungeePremiumVanishHook extends PremiumVanishHook {
             canSeeEnabled = true;
         } else {
             canSeeEnabled = false;
-            platform.logWarn(new SimpleTextComponent("Detected an outdated version of " +
+            platform.logWarn(SimpleTextComponent.text("Detected an outdated version of " +
                     "PremiumVanish with limited API. Vanish compatibility " +
                     "may not work as expected. Update PremiumVanish to version 2.7.11+ for optimal experience."));
         }

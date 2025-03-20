@@ -124,7 +124,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
-            p.getTabList().setPlayerListHeaderFooter(new SimpleTextComponent(""), new SimpleTextComponent(""));
+            p.getTabList().setPlayerListHeaderFooter(SimpleTextComponent.EMPTY, SimpleTextComponent.EMPTY);
         } else {
             sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
         }
