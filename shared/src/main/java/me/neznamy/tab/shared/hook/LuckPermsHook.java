@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.group.Group;
-import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 
 import java.util.Optional;
@@ -70,11 +69,11 @@ public class LuckPermsHook {
      * @return  Player's metadata value
      */
     private String getValue(@NonNull TabPlayer p, boolean prefix) {
-        User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
-        if (user == null) return "";
-        Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
+        if (p.luckPermsUser == null) p.luckPermsUser = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+        if (p.luckPermsUser == null) return "";
+        Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(p.luckPermsUser);
         if (!options.isPresent()) return "";
-        CachedMetaData data = user.getCachedData().getMetaData(options.get());
+        CachedMetaData data = p.luckPermsUser.getCachedData().getMetaData(options.get());
         String value;
         if (prefix) {
             value = data.getPrefix();
@@ -85,16 +84,9 @@ public class LuckPermsHook {
     }
 
     public int getWeight(@NonNull TabPlayer tabPlayer) {
-        User user = tabPlayer.luckPermsUser;
-        if (user == null) {
-            return 0;
-        }
-        Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
-        if (!options.isPresent()) {
-            return 0;
-        }
-        String primaryGroupName = user.getPrimaryGroup();
-        Group primaryGroup = LuckPermsProvider.get().getGroupManager().getGroup(primaryGroupName);
+        if (tabPlayer.luckPermsUser == null) tabPlayer.luckPermsUser = LuckPermsProvider.get().getUserManager().getUser(tabPlayer.getUniqueId());
+        if (tabPlayer.luckPermsUser == null) return 0;
+        Group primaryGroup = LuckPermsProvider.get().getGroupManager().getGroup(tabPlayer.luckPermsUser.getPrimaryGroup());
 
         if (primaryGroup == null) {
             return 0;
