@@ -28,7 +28,7 @@ public class RGBUtils {
             new BukkitFormat(),   // &x&r&r&g&g&b&b
             new CommonFormatter(Pattern.compile("\\{#[0-9a-fA-F]{6}}"), "{#"),  // CMI's {#RRGGBB}
             new CommonFormatter(Pattern.compile("§#[0-9a-fA-F]{6}"), "§#"),     // &#RRGGBB
-            new CommonFormatter(Pattern.compile("#<[0-9a-fA-F]{6}>"), "#<")     // #<RRGGBB> // "HTML"
+            new CommonFormatter(Pattern.compile("<#[0-9a-fA-F]{6}>"), "<#")     // <#RRGGBB> // "HTML"
     };
 
     /** Registered gradient patterns */
