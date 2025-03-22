@@ -41,7 +41,7 @@ public class LongLine extends ScoreboardLine {
             } else {
                 removeLine(refreshed, refreshed.scoreboardData.lineNameProperties.get(this).get());
                 String[] values = splitText(
-                        getPlayerName(lineNumber),
+                        forcedPlayerNameStart,
                         parent.getManager().getCache().get(lineProperty.get()).toLegacyText(),
                         refreshed.getVersion().getMinorVersion() >= 8 ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
                 );
@@ -57,11 +57,11 @@ public class LongLine extends ScoreboardLine {
         getScoreRefresher().registerProperties(p);
         String value = p.scoreboardData.lineProperties.get(this).get();
         if (p.getVersion().getMinorVersion() >= 13 && !TAB.getInstance().getConfiguration().getConfig().isPacketEventsCompensation()) {
-            addLine(p, playerName, value, "");
-            p.scoreboardData.lineNameProperties.put(this, new Property(this, p, playerName));
+            addLine(p, forcedPlayerNameStart, value, "");
+            p.scoreboardData.lineNameProperties.put(this, new Property(this, p, forcedPlayerNameStart));
         } else {
             String[] values = splitText(
-                    playerName,
+                    forcedPlayerNameStart,
                     parent.getManager().getCache().get(value).toLegacyText(),
                     p.getVersion().getMinorVersion() >= 8 ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
             );
@@ -88,6 +88,7 @@ public class LongLine extends ScoreboardLine {
     }
 
     @Override
+    @NotNull
     public String getPlayerName(@NonNull TabPlayer viewer) {
         return viewer.scoreboardData.lineNameProperties.get(this).get();
     }

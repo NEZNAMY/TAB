@@ -39,9 +39,9 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
     
     //scoreboard team name of player in this line
     protected final String teamName;
-    
-    //forced player name start to make lines unique & sort them by names
-    protected final String playerName;
+
+    /** Forced player name start to make lines unique & sort them by names */
+    protected final String forcedPlayerNameStart;
 
     private final ScoreRefresher scoreRefresher;
 
@@ -60,7 +60,8 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
         this.parent = parent;
         this.lineNumber = lineNumber;
         teamName = "TAB-Sidebar-" + lineNumber;
-        playerName = getPlayerName(lineNumber);
+        if (lineNumber > 99) throw new IllegalStateException("Internal code does not support more than 99 lines per scoreboard.");
+        forcedPlayerNameStart = String.format("§%d§%d§r", (lineNumber / 10) % 10, lineNumber % 10);
         scoreRefresher = new ScoreRefresher(this, numberFormat);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardScore(parent.getName(), lineNumber), scoreRefresher);
     }
@@ -82,14 +83,15 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
     public abstract void unregister(@NonNull TabPlayer p);
 
     /**
-     * Returns forced name start of this line to specified viewer
+     * Returns player name of this line for specified viewer.
      *
      * @param   viewer
-     *          Player to get forced name start for
-     * @return  forced name start of this line to specified viewer
+     *          Player to get line name for
+     * @return  Name of this line for specified viewer
      */
+    @NotNull
     public String getPlayerName(@NonNull TabPlayer viewer) {
-        return playerName;
+        return forcedPlayerNameStart;
     }
 
     /**
@@ -108,17 +110,6 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
         return new String[] {string.substring(0, splitIndex), string.substring(splitIndex)};
     }
 
-    /**
-     * Builds forced name start based on line number
-     *
-     * @param   lineNumber
-     *          ID of line
-     * @return  forced name start
-     */
-    protected String getPlayerName(int lineNumber) {
-        return String.format("§%c§r", "0123456789abcdefklmnor".charAt(lineNumber-1));
-    }
-    
     /**
      * Sends this line to player
      *

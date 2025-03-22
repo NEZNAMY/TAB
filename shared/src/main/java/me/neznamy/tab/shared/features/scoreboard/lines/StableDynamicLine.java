@@ -46,13 +46,13 @@ public class StableDynamicLine extends ScoreboardLine {
         getScoreRefresher().registerProperties(p);
         String[] prefixSuffix = replaceText(p, true, true);
         if (prefixSuffix.length == 0) return;
-        addLine(p, getPlayerName(), prefixSuffix[0], prefixSuffix[1]);
+        addLine(p, forcedPlayerNameStart, prefixSuffix[0], prefixSuffix[1]);
     }
 
     @Override
     public void unregister(@NonNull TabPlayer p) {
         if (p.scoreboardData.activeScoreboard == parent && !p.scoreboardData.lineProperties.get(this).get().isEmpty()) {
-            removeLine(p, getPlayerName());
+            removeLine(p, forcedPlayerNameStart);
         }
     }
 
@@ -81,7 +81,7 @@ public class StableDynamicLine extends ScoreboardLine {
         if (!replaced.isEmpty()) {
             if (emptyBefore) {
                 //was "", now it is not
-                addLine(p, getPlayerName(), split[0], split[1]);
+                addLine(p, forcedPlayerNameStart, split[0], split[1]);
                 parent.recalculateScores(p);
                 return EMPTY_ARRAY;
             } else {
@@ -90,7 +90,7 @@ public class StableDynamicLine extends ScoreboardLine {
         } else {
             if (!suppressToggle) {
                 //new string is "", but before it was not
-                removeLine(p, getPlayerName());
+                removeLine(p, forcedPlayerNameStart);
                 parent.recalculateScores(p);
             }
             return EMPTY_ARRAY;
