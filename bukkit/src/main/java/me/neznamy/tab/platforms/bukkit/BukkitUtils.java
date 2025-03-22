@@ -2,14 +2,10 @@ package me.neznamy.tab.platforms.bukkit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
 
 /**
  * Class containing static util methods used on Bukkit.
@@ -21,26 +17,6 @@ public class BukkitUtils {
     public static final boolean PRINT_EXCEPTIONS = false;
 
     private static boolean compatibilityIssue;
-
-    /**
-     * Returns online players from Bukkit API. This requires reflection, as return type changed in 1.8,
-     * and we want to avoid errors.
-     *
-     * @return  Online players from Bukkit API.
-     */
-    @SuppressWarnings("unchecked")
-    @SneakyThrows
-    @NotNull
-    public static Player[] getOnlinePlayers() {
-        Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
-        if (players instanceof Player[]) {
-            //1.7-
-            return (Player[]) players;
-        } else {
-            //1.8+
-            return ((Collection<Player>)players).toArray(new Player[0]);
-        }
-    }
 
     /**
      * Prints a console warn that some compatibility issue was found.

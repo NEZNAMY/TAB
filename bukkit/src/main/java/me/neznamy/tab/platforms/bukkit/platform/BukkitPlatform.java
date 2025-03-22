@@ -60,6 +60,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -244,7 +246,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void loadPlayers() {
-        for (Player p : BukkitUtils.getOnlinePlayers()) {
+        for (Player p : getOnlinePlayers()) {
             TAB.getInstance().addPlayer(new BukkitTabPlayer(this, p));
         }
     }
@@ -287,7 +289,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public TabFeature getPerWorldPlayerList(@NotNull PerWorldPlayerListConfiguration configuration) {
-        return new PerWorldPlayerList(plugin, configuration);
+        return new PerWorldPlayerList(plugin, this, configuration);
     }
 
     @Override
@@ -520,5 +522,21 @@ public class BukkitPlatform implements BackendPlatform {
             sb.append(toBukkitFormat(extra));
         }
         return sb.toString();
+    }
+
+    /**
+     * Returns online players from Bukkit API.
+     * This method may use reflections, because the return type changed in 1.8,
+     * and we want to avoid errors.
+     *
+     * @return  Online players from Bukkit API.
+     */
+    @SneakyThrows
+    @NotNull
+    public Collection<? extends Player> getOnlinePlayers() {
+        if (serverVersion.getMinorVersion() >= 8) {
+            return Bukkit.getOnlinePlayers();
+        }
+        return Arrays.asList((Player[]) Bukkit.class.getMethod("getOnlinePlayers").invoke(null));
     }
 }

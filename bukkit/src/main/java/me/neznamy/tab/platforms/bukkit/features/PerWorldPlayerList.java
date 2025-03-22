@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import me.neznamy.tab.platforms.bukkit.BukkitUtils;
+import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
@@ -26,6 +26,10 @@ import java.util.Map.Entry;
 @SuppressWarnings("deprecation")
 public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
 
+    /** Reference to platform */
+    @NotNull
+    private final BukkitPlatform platform;
+
     /** Config options */
     @NotNull
     private final PerWorldPlayerListConfiguration configuration;
@@ -35,25 +39,28 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      *
      * @param   plugin
      *          Plugin instance to register events
+     * @param   platform
+     *          Platform reference
      * @param   configuration
      *          Feature configuration
      */
-    public PerWorldPlayerList(@NotNull JavaPlugin plugin, @NotNull PerWorldPlayerListConfiguration configuration) {
+    public PerWorldPlayerList(@NotNull JavaPlugin plugin, @NotNull BukkitPlatform platform, @NotNull PerWorldPlayerListConfiguration configuration) {
         this.configuration = configuration;
+        this.platform = platform;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
     public void load() {
-        for (Player p : BukkitUtils.getOnlinePlayers()) {
+        for (Player p : platform.getOnlinePlayers()) {
             checkPlayer(p);
         }
     }
 
     @Override
     public void unload() {
-        for (Player p : BukkitUtils.getOnlinePlayers()) {
-            for (Player pl : BukkitUtils.getOnlinePlayers()) {
+        for (Player p : platform.getOnlinePlayers()) {
+            for (Player pl : platform.getOnlinePlayers()) {
                 p.showPlayer(pl);
             }
         }
@@ -95,7 +102,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      *          Player to update
      */
     private void checkPlayer(@NotNull Player p) {
-        for (Player all : BukkitUtils.getOnlinePlayers()) {
+        for (Player all : platform.getOnlinePlayers()) {
             if (all == p) continue;
             if (!shouldSee(p, all) && p.canSee(all)) p.hidePlayer(all);
             if (shouldSee(p, all) && !p.canSee(all)) p.showPlayer(all);
