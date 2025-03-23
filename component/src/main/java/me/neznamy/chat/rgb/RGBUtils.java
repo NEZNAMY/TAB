@@ -34,7 +34,7 @@ public class RGBUtils {
     /** Registered gradient patterns */
     private final GradientPattern[] gradients = {
             new CMIGradient(), //{#RRGGBB>}Text{#RRGGBB<}
-            new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>.*?</#[0-9a-fA-F]{6}>"), "<#", 2, 9, 7), //<#RRGGBB>Text</#RRGGBB> // "HTML"
+            new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>(?:(?!<#[0-9a-fA-F]{6}>).)*?</#[0-9a-fA-F]{6}>"), "<#", 2, 9, 7), //<#RRGGBB>Text</#RRGGBB> // "HTML"
             new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>.*?<\\$#[0-9a-fA-F]{6}>"), "<$", 3, 10, 7), //<$#RRGGBB>Text<$#RRGGBB> // ?
             new NexEngineGradient() // <gradient:#RRGGBB>Text</gradient:#RRGGBB>
     };
