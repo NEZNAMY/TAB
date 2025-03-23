@@ -5,11 +5,10 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.chat.component.SimpleTextComponent;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
@@ -27,32 +26,27 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
+@Getter
 public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
         CustomThreaded, ProxyFeature {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
 
-    /** Scoreboard title which is unused in java */
-    private static final TabComponent TITLE = new SimpleTextComponent("Java Edition is better"); // Unused by this objective slot (on Java, only visible on Bedrock)
-
-    @Getter
     private final StringToComponentCache cache = new StringToComponentCache("Playerlist Objective", 1000);
 
-    @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Playerlist Objective Thread");
 
-    @Getter
     private OnlinePlayers onlinePlayers;
 
     private final PlayerListObjectiveConfiguration configuration;
 
+    private final PlayerlistObjectiveTitleRefresher titleRefresher = new PlayerlistObjectiveTitleRefresher(this);
     private final DisableChecker disableChecker;
 
     @Nullable
@@ -68,34 +62,9 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.playerlistObjectiveData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER_TEXT, titleRefresher);
         if (proxy != null) {
             proxy.registerMessage("yellow-number", UpdateProxyPlayer.class, UpdateProxyPlayer::new);
-        }
-    }
-
-    /**
-     * Returns current value for specified player parsed to int
-     *
-     * @param   p
-     *          Player to get value of
-     * @return  Current value of player
-     */
-    public int getValueNumber(@NotNull TabPlayer p) {
-        String string = p.playerlistObjectiveData.valueLegacy.updateAndGet();
-        try {
-            return Integer.parseInt(string);
-        } catch (NumberFormatException e) {
-            // Not an integer (float or invalid)
-            try {
-                int value = (int) Math.round(Double.parseDouble(string));
-                // Float
-                TAB.getInstance().getConfigHelper().runtime().floatInPlayerlistObjective(p, configuration.getValue(), string);
-                return value;
-            } catch (NumberFormatException e2) {
-                // Not a float (invalid)
-                TAB.getInstance().getConfigHelper().runtime().invalidNumberForPlayerlistObjective(p, configuration.getValue(), string);
-                return 0;
-            }
         }
     }
 
@@ -104,8 +73,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : onlinePlayers.getPlayers()) {
-            loaded.playerlistObjectiveData.valueLegacy = new Property(this, loaded, configuration.getValue());
-            loaded.playerlistObjectiveData.valueModern = new Property(this, loaded, configuration.getFancyValue());
+            loadProperties(loaded);
             if (disableChecker.isDisableConditionMet(loaded)) {
                 loaded.playerlistObjectiveData.disabled.set(true);
             } else {
@@ -123,11 +91,16 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         }
     }
 
+    private void loadProperties(@NotNull TabPlayer player) {
+        player.playerlistObjectiveData.valueLegacy = new Property(this, player, configuration.getValue());
+        player.playerlistObjectiveData.valueModern = new Property(this, player, configuration.getFancyValue());
+        player.playerlistObjectiveData.title = new Property(titleRefresher, player, configuration.getTitle());
+    }
+
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
-        connectedPlayer.playerlistObjectiveData.valueLegacy = new Property(this, connectedPlayer, configuration.getValue());
-        connectedPlayer.playerlistObjectiveData.valueModern = new Property(this, connectedPlayer, configuration.getFancyValue());
+        loadProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.playerlistObjectiveData.disabled.set(true);
         } else {
@@ -190,6 +163,32 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         }
     }
 
+    /**
+     * Returns current value for specified player parsed to int
+     *
+     * @param   p
+     *          Player to get value of
+     * @return  Current value of player
+     */
+    public int getValueNumber(@NotNull TabPlayer p) {
+        String string = p.playerlistObjectiveData.valueLegacy.updateAndGet();
+        try {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            // Not an integer (float or invalid)
+            try {
+                int value = (int) Math.round(Double.parseDouble(string));
+                // Float
+                TAB.getInstance().getConfigHelper().runtime().floatInPlayerlistObjective(p, configuration.getValue(), string);
+                return value;
+            } catch (NumberFormatException e2) {
+                // Not a float (invalid)
+                TAB.getInstance().getConfigHelper().runtime().invalidNumberForPlayerlistObjective(p, configuration.getValue(), string);
+                return 0;
+            }
+        }
+    }
+
     @NotNull
     @Override
     public String getRefreshDisplayName() {
@@ -208,7 +207,13 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     }
 
     private void register(@NotNull TabPlayer player) {
-        player.getScoreboard().registerObjective(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME, TITLE, configuration.getHealthDisplay(), new SimpleTextComponent(""));
+        player.getScoreboard().registerObjective(
+                Scoreboard.DisplaySlot.PLAYER_LIST,
+                OBJECTIVE_NAME,
+                cache.get(player.playerlistObjectiveData.title.updateAndGet()),
+                configuration.getHealthDisplay(),
+                SimpleTextComponent.EMPTY
+        );
     }
 
     /**
@@ -269,21 +274,6 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     @Override
     public String getFeatureName() {
         return "Playerlist Objective";
-    }
-
-    /**
-     * Class holding header/footer data for players.
-     */
-    public static class PlayerData {
-
-        /** Player's score value */
-        public Property valueLegacy;
-
-        /** Player's score number format */
-        public Property valueModern;
-
-        /** Flag tracking whether this feature is disabled for the player with condition or not */
-        public final AtomicBoolean disabled = new AtomicBoolean();
     }
 
     /**

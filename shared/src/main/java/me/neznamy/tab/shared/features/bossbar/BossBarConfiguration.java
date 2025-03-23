@@ -95,7 +95,7 @@ public class BossBarConfiguration {
                 try {
                     BarColor.valueOf(color.toUpperCase(Locale.US));
                 } catch (IllegalArgumentException e) {
-                    section.startupWarn("Bossbar \"" + name + " has color set to \"" + color + "\", which is not one of the supported colors " +
+                    section.startupWarn("Bossbar \"" + name + "\" has color set to \"" + color + "\", which is not one of the supported colors " +
                             Arrays.toString(BarColor.values()) + " or a placeholder evaluating to one.");
                 }
             }

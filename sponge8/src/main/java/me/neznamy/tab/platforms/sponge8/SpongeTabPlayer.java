@@ -1,21 +1,17 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
-import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * TabPlayer implementation for Sponge 8+.
@@ -61,19 +57,6 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isDisguised() {
         return false;
-    }
-
-    @Override
-    @Nullable
-    public TabList.Skin getSkin() {
-        List<ProfileProperty> list = getPlayer().profile().properties();
-        if (list.isEmpty()) return null; // Offline mode
-        for (ProfileProperty property : list) {
-            if (property.name().equals(TabList.TEXTURES_PROPERTY)) {
-                return new TabList.Skin(property.value(), property.signature().orElse(null));
-            }
-        }
-        return null;
     }
 
     @Override

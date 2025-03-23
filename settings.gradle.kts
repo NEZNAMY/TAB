@@ -5,7 +5,7 @@ dependencyResolutionManagement {
         mavenCentral() // Netty, SnakeYaml, json-simple, Guava, Kyori event, bStats, AuthLib, LuckPerms
         maven("https://repo.viaversion.com/") // ViaVersion
         maven("https://repo.william278.net/releases/") // VelocityScoreboardAPI
-        maven("https://repo.papermc.io/repository/maven-public/") // Velocity
+        maven("https://repo.papermc.io/repository/maven-public/") // paperweight, Velocity
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate, Bungeecord-proxy
         maven("https://repo.purpurmc.org/snapshots") // Purpur
@@ -30,6 +30,7 @@ include(":api")
 include(":shared")
 include(":velocity")
 include(":bukkit")
+include(":bukkit:paper")
 include(":bungeecord")
 include(":component")
 include(":sponge7")

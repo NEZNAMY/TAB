@@ -1,16 +1,11 @@
 package me.neznamy.tab.platforms.fabric;
 
-import com.mojang.authlib.properties.Property;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.fabric.hook.PermissionsAPIHook;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
 
 /**
  * TabPlayer implementation for Fabric.
@@ -53,15 +48,6 @@ public class FabricTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isDisguised() {
         return false;
-    }
-
-    @Override
-    @Nullable
-    public TabList.Skin getSkin() {
-        Collection<Property> properties = getPlayer().getGameProfile().getProperties().get(TabList.TEXTURES_PROPERTY);
-        if (properties.isEmpty()) return null; // Offline mode
-        Property property = properties.iterator().next();
-        return new TabList.Skin(property.value(), property.signature());
     }
 
     @Override

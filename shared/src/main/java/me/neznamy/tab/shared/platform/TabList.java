@@ -111,6 +111,14 @@ public interface TabList {
     void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer);
 
     /**
+     * Returns player's skin data
+     *
+     * @return  player's skin
+     */
+    @Nullable
+    Skin getSkin();
+
+    /**
      * TabList action.
      */
     enum Action {

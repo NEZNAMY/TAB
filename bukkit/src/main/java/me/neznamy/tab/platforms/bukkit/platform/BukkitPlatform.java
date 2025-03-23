@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
 import com.google.common.collect.Lists;
+import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -61,6 +62,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -100,12 +104,15 @@ public class BukkitPlatform implements BackendPlatform {
 
     /** Provider for tablist implementation */
     @NotNull
-    private final FunctionWithException<BukkitTabPlayer, TabListBase> tablistProvider = findTablistProvider();
+    private final FunctionWithException<BukkitTabPlayer, TabList> tablistProvider = findTablistProvider();
 
     /** Header/footer implementation */
     @Getter
     @NotNull
     private final HeaderFooter headerFooter = findHeaderFooter();
+
+    /** Flag tracking if direct mojang-mapped code can be used or not */
+    private final boolean canUseDirectNMS = BukkitReflection.isMojangMapped() && serverVersion == ProtocolVersion.V1_21_4;
 
     /**
      * Constructs new instance with given plugin.
@@ -113,6 +120,8 @@ public class BukkitPlatform implements BackendPlatform {
      * @param   plugin
      *          Plugin
      */
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         long time = System.currentTimeMillis();
@@ -127,19 +136,28 @@ public class BukkitPlatform implements BackendPlatform {
         }
         PingRetriever.tryLoad();
         if (BukkitReflection.getMinorVersion() >= 8) {
-            BukkitPipelineInjector.tryLoad();
+            if (canUseDirectNMS) {
+                BukkitPipelineInjector.setGetChannel((FunctionWithException<BukkitTabPlayer, Channel>) Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getDeclaredField("getChannel").get(null));
+            } else {
+                BukkitPipelineInjector.tryLoad();
+            }
         }
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] §7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
     }
 
     @NotNull
+    @SneakyThrows
     private FunctionWithException<BukkitTabPlayer, Scoreboard> findScoreboardProvider() {
         final FunctionWithException<BukkitTabPlayer, Scoreboard> base;
         if (ViaVersionHook.getInstance().isInstalled()) {
             base = ViaVersionPlatform.findScoreboardProvider(serverVersion);
         } else {
             base = FunctionWithException.empty();
+        }
+        if (canUseDirectNMS) {
+            Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketScoreboard").getConstructor(BukkitTabPlayer.class);
+            return base.fallback(player -> (Scoreboard) constructor.newInstance(player));
         }
         try {
             if (BukkitReflection.getMinorVersion() >= 7) Objects.requireNonNull(componentConverter);
@@ -171,12 +189,17 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @NotNull
-    private FunctionWithException<BukkitTabPlayer, TabListBase> findTablistProvider() {
-        final FunctionWithException<BukkitTabPlayer, TabListBase> base;
+    @SneakyThrows
+    private FunctionWithException<BukkitTabPlayer, TabList> findTablistProvider() {
+        final FunctionWithException<BukkitTabPlayer, TabList> base;
         if (ViaVersionHook.getInstance().isInstalled()) {
             base = ViaVersionPlatform.findTablistProvider(serverVersion);
         } else {
             base = FunctionWithException.empty();
+        }
+        if (canUseDirectNMS) {
+            Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketTabList").getConstructor(BukkitTabPlayer.class);
+            return base.fallback(player -> (TabList) constructor.newInstance(player));
         }
         try {
             if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {
@@ -233,7 +256,11 @@ public class BukkitPlatform implements BackendPlatform {
      * @return  Instance or {@code null} if not available
      */
     @Nullable
-    public static ComponentConverter findComponentConverter() {
+    @SneakyThrows
+    public ComponentConverter findComponentConverter() {
+        if (canUseDirectNMS) {
+            return (ComponentConverter) Class.forName("me.neznamy.tab.platforms.paper.PaperComponentConverter").getConstructor().newInstance();
+        }
         try {
             if (BukkitReflection.getMinorVersion() >= 19) {
                 // 1.19+
@@ -257,7 +284,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void loadPlayers() {
-        for (Player p : BukkitUtils.getOnlinePlayers()) {
+        for (Player p : getOnlinePlayers()) {
             TAB.getInstance().addPlayer(new BukkitTabPlayer(this, p));
         }
     }
@@ -300,7 +327,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public TabFeature getPerWorldPlayerList(@NotNull PerWorldPlayerListConfiguration configuration) {
-        return new PerWorldPlayerList(plugin, configuration);
+        return new PerWorldPlayerList(plugin, this, configuration);
     }
 
     @Override
@@ -311,17 +338,19 @@ public class BukkitPlatform implements BackendPlatform {
         }
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         if (identifier.startsWith("%rel_")) {
-            //relational placeholder
-            TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, (viewer, target) ->
+            // relational placeholder
+            pl.registerRelationalPlaceholder(identifier, (viewer, target) ->
                     PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier));
         } else if (identifier.startsWith("%sync:")) {
             registerSyncPlaceholder(identifier);
+        } else if (identifier.contains("{") && identifier.contains("}")) {
+            // has nested bracket placeholders
+            pl.registerPlayerPlaceholder(identifier, p -> PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), PlaceholderAPI.setBracketPlaceholders((Player) p.getPlayer(), identifier)));
         } else if (identifier.startsWith("%server_")) {
-            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier,
-                    () -> PlaceholderAPI.setPlaceholders(null, identifier));
+            // placeholder with the same output for all players, register as server for better performance
+            pl.registerServerPlaceholder(identifier, () -> PlaceholderAPI.setPlaceholders(null, identifier));
         } else {
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier,
-                    p -> PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier));
+            pl.registerPlayerPlaceholder(identifier, p -> PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier));
         }
     }
 
@@ -337,7 +366,7 @@ public class BukkitPlatform implements BackendPlatform {
         ppl[0] = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, p -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 long time = System.nanoTime();
-                ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
+                ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), PlaceholderAPI.setBracketPlaceholders((Player) p.getPlayer(), syncedPlaceholder)) : identifier);
                 TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, System.nanoTime() - time);
             });
             return null;
@@ -373,7 +402,7 @@ public class BukkitPlatform implements BackendPlatform {
             command.setExecutor(cmd);
             command.setTabCompleter(cmd);
         } else {
-            logWarn(new SimpleTextComponent("Failed to register command, is it defined in plugin.yml?"));
+            logWarn(SimpleTextComponent.text("Failed to register command, is it defined in plugin.yml?"));
         }
     }
 
@@ -531,5 +560,21 @@ public class BukkitPlatform implements BackendPlatform {
             sb.append(toBukkitFormat(extra));
         }
         return sb.toString();
+    }
+
+    /**
+     * Returns online players from Bukkit API.
+     * This method may use reflections, because the return type changed in 1.8,
+     * and we want to avoid errors.
+     *
+     * @return  Online players from Bukkit API.
+     */
+    @SneakyThrows
+    @NotNull
+    public Collection<? extends Player> getOnlinePlayers() {
+        if (serverVersion.getMinorVersion() >= 8) {
+            return Bukkit.getOnlinePlayers();
+        }
+        return Arrays.asList((Player[]) Bukkit.class.getMethod("getOnlinePlayers").invoke(null));
     }
 }

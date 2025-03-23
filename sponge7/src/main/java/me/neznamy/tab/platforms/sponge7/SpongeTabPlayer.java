@@ -1,20 +1,15 @@
 package me.neznamy.tab.platforms.sponge7;
 
-import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.Text;
-
-import java.util.Collection;
 
 /**
  * TabPlayer implementation for Sponge 7.
@@ -58,15 +53,6 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isDisguised() {
         return false;
-    }
-
-    @Override
-    @Nullable
-    public TabList.Skin getSkin() {
-        Collection<ProfileProperty> properties = getPlayer().getProfile().getPropertyMap().get(TabList.TEXTURES_PROPERTY);
-        if (properties.isEmpty()) return null; // Offline mode
-        ProfileProperty property = properties.iterator().next();
-        return new TabList.Skin(property.getValue(), property.getSignature().orElse(null));
     }
 
     @Override

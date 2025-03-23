@@ -38,7 +38,7 @@ public class FoliaPlatform extends BukkitPlatform {
         super.loadPlayers();
 
         // Values are never updated in the API, warn users
-        logWarn(new SimpleTextComponent("Folia never updates MSPT and TPS values in the API, making " +
+        logWarn(SimpleTextComponent.text("Folia never updates MSPT and TPS values in the API, making " +
                 "%mspt% and %tps% return the default values (0 and 20)."));
 
         // Folia never calls PlayerChangedWorldEvent, this is a workaround

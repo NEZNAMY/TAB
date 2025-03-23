@@ -11,6 +11,7 @@ import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -92,6 +93,19 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
     @Override
     public boolean containsEntry(@NonNull UUID entry) {
         return player.getPlayer().tabList().entry(entry).isPresent();
+    }
+
+    @Override
+    @Nullable
+    public Skin getSkin() {
+        List<ProfileProperty> list = player.getPlayer().profile().properties();
+        if (list.isEmpty()) return null; // Offline mode
+        for (ProfileProperty property : list) {
+            if (property.name().equals(TEXTURES_PROPERTY)) {
+                return new Skin(property.value(), property.signature().orElse(null));
+            }
+        }
+        return null;
     }
 
     @Override

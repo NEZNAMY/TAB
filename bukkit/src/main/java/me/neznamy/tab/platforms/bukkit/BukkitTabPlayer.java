@@ -2,14 +2,12 @@ package me.neznamy.tab.platforms.bukkit;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
-import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabList;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -68,12 +66,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isDisguised() {
         return LibsDisguisesHook.isDisguised(this);
-    }
-
-    @Override
-    @Nullable
-    public TabList.Skin getSkin() {
-        return ((TabListBase) getTabList()).getSkin();
     }
 
     @Override

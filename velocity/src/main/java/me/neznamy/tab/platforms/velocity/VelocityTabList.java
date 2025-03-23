@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -96,6 +97,19 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
     @Override
     public boolean containsEntry(@NonNull UUID entry) {
         return player.getPlayer().getTabList().containsEntry(entry);
+    }
+
+    @Override
+    @Nullable
+    public Skin getSkin() {
+        List<GameProfile.Property> properties = player.getPlayer().getGameProfile().getProperties();
+        if (properties.isEmpty()) return null; //Offline mode
+        for (GameProfile.Property property : properties) {
+            if (property.getName().equals(TEXTURES_PROPERTY)) {
+                return new Skin(property.getValue(), property.getSignature());
+            }
+        }
+        return null;
     }
 
     @Override

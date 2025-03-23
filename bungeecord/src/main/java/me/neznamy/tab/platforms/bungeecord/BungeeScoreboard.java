@@ -113,7 +113,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         player.sendPacket(new net.md_5.bungee.protocol.packet.Team(
                 team.getName(),
                 action,
-                either(new SimpleTextComponent(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                either(SimpleTextComponent.text(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 either(team.getPrefix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 net.md_5.bungee.protocol.packet.Team.NameTagVisibility.valueOf(team.getVisibility().name()),

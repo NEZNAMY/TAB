@@ -3,25 +3,23 @@ package me.neznamy.tab.shared.features.bossbar;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.ToggleManager;
 import me.neznamy.tab.shared.features.bossbar.BossBarConfiguration.BossBarDefinition;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -33,27 +31,18 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     @Getter private final StringToComponentCache cache = new StringToComponentCache("BossBar", 1000);
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB BossBar Thread");
 
-    //default BossBars
-    private final List<String> defaultBars = new ArrayList<>();
-
     //registered BossBars
-    @Getter private final Map<String, BossBar> registeredBossBars = new LinkedHashMap<>();
-    protected BossBar[] lineValues;
+    private final Map<String, BossBarLine> registeredBossBars = new LinkedHashMap<>();
+    protected BossBarLine[] lineValues;
 
     //config options
     @Getter private final BossBarConfiguration configuration;
     private final String toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
     private final String toggleOffMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOff();
 
-    //list of currently running BossBar announcements
-    @Getter private final List<BossBar> announcedBossBars = new ArrayList<>();
-
     /** Manager for toggled players if remembering is enabled in config */
     @Nullable
     private ToggleManager toggleManager;
-
-    //time when BossBar announce ends, used for placeholder
-    private long announceEndTime;
 
     /**
      * Constructs new instance.
@@ -69,18 +58,12 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         for (Map.Entry<String, BossBarDefinition> entry : configuration.getBars().entrySet()) {
             String name = entry.getKey();
             registeredBossBars.put(name, new BossBarLine(this, name, entry.getValue()));
-            if (!entry.getValue().isAnnouncementOnly()) defaultBars.add(name);
         }
-        lineValues = registeredBossBars.values().toArray(new BossBar[0]);
+        lineValues = registeredBossBars.values().toArray(new BossBarLine[0]);
     }
 
     @Override
     public void load() {
-        TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder(TabConstants.Placeholder.COUNTDOWN, 100, () -> {
-            long seconds = TimeUnit.MILLISECONDS.toSeconds(announceEndTime - System.currentTimeMillis());
-            if (seconds < 0) return "0";
-            return Long.toString(seconds);
-        });
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
@@ -96,8 +79,8 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (!hasBossBarVisible(p)) return;
         boolean conditionResultChange = false;
-        for (BossBar line : lineValues) {
-            if (((BossBarLine)line).isConditionMet(p) != p.bossbarData.visibleBossBars.containsKey(line))
+        for (BossBarLine line : lineValues) {
+            if (line.isConditionMet(p) != p.bossbarData.visibleBossBars.containsKey(line))
                 conditionResultChange = true;
         }
         if (conditionResultChange) {
@@ -147,24 +130,19 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
      *          Player to show boss bars to
      */
     private void showBossBars(@NonNull TabPlayer p) {
-        for (String defaultBar : defaultBars) {
-            BossBarLine bar = (BossBarLine) registeredBossBars.get(defaultBar);
-            if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.containsKey(bar)) {
-                bar.addPlayer(p);
-            }
-        }
-        for (BossBar announced : announcedBossBars) {
-            BossBarLine bar = (BossBarLine) announced;
-            if (bar.isConditionMet(p) && !p.bossbarData.visibleBossBars.containsKey(bar)) {
-                bar.addPlayer(p);
+        for (BossBarLine bossbar : lineValues) {
+            if (bossbar.isConditionMet(p)) {
+                if (!bossbar.isAnnouncementBar() || bossbar.isBeingAnnounced()) {
+                    bossbar.addPlayer(p);
+                }
             }
         }
     }
 
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
-        for (BossBar line : lineValues) {
-            ((BossBarLine)line).removePlayerRaw(disconnectedPlayer);
+        for (BossBarLine line : lineValues) {
+            line.removePlayerRaw(disconnectedPlayer);
         }
     }
 
@@ -190,9 +168,9 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     public BossBar createBossBar(@NonNull String title, @NonNull String progress, @NonNull String color, @NonNull String style) {
         ensureActive();
         UUID id = UUID.randomUUID();
-        BossBar bar = new BossBarLine(this, id.toString(), new BossBarDefinition(style, color, progress, title, true, null));
+        BossBarLine bar = new BossBarLine(this, id.toString(), new BossBarDefinition(style, color, progress, title, true, null));
         registeredBossBars.put(id.toString(), bar);
-        lineValues = registeredBossBars.values().toArray(new BossBar[0]);
+        lineValues = registeredBossBars.values().toArray(new BossBarLine[0]);
         return bar;
     }
 
@@ -200,6 +178,12 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     public BossBar getBossBar(@NonNull String name) {
         ensureActive();
         return registeredBossBars.get(name);
+    }
+
+    @Override
+    @NotNull
+    public Map<String, BossBar> getRegisteredBossBars() {
+        return Collections.unmodifiableMap(registeredBossBars);
     }
 
     @Override
@@ -262,23 +246,17 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     @Override
     public void announceBossBar(@NonNull String bossBar, int duration) {
         ensureActive();
-        BossBar line = registeredBossBars.get(bossBar);
+        BossBarLine line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(this::hasBossBarVisible).collect(Collectors.toList());
-            announcedBossBars.add(line);
-            announceEndTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(duration);
-            for (TabPlayer all : players) {
-                if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);
-            }
-        }, getFeatureName(), "Adding announced BossBar"));
-        customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(this::hasBossBarVisible).collect(Collectors.toList());
-            for (TabPlayer all : players) {
-                line.removePlayer(all);
-            }
-            announcedBossBars.remove(line);
-        }, getFeatureName(), "Removing announced BossBar"), duration*1000);
+        if (!line.isAnnouncementBar()) throw new IllegalArgumentException("BossBar " + bossBar + " is not an announcement bar");
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> line.announce(duration), getFeatureName(), "Adding announced BossBar"));
+        customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), line::unAnnounce, getFeatureName(), "Removing announced BossBar"), duration*1000);
+    }
+
+    @Override
+    @NotNull
+    public List<BossBar> getAnnouncedBossBars() {
+        return registeredBossBars.values().stream().filter(BossBarLine::isBeingAnnounced).collect(Collectors.toList());
     }
 
     /**

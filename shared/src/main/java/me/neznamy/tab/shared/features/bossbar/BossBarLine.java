@@ -5,6 +5,7 @@ import lombok.NonNull;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -14,9 +15,11 @@ import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class representing a BossBar from configuration
@@ -57,6 +60,12 @@ public class BossBarLine implements BossBar {
     private final ColorRefresher colorRefresher;
     private final StyleRefresher styleRefresher;
 
+    private int announceTimeTotalSeconds;
+    private long announceEndSystemTime;
+
+    @NotNull
+    private final ServerPlaceholder announceEndPlaceholder;
+
     /**
      * Constructs new instance with given parameters
      *
@@ -87,6 +96,14 @@ public class BossBarLine implements BossBar {
                 colorRefresher = new ColorRefresher());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarStyle(name),
                 styleRefresher = new StyleRefresher());
+        announceEndPlaceholder = TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder(
+                TabConstants.Placeholder.bossbarAnnounceTotal(name), -1, () -> PerformanceUtil.toString(announceTimeTotalSeconds));
+        TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder(
+                TabConstants.Placeholder.bossbarAnnounceLeft(name), 100, () -> {
+            long seconds = TimeUnit.MILLISECONDS.toSeconds(announceEndSystemTime - System.currentTimeMillis());
+            if (seconds < 0) return "0";
+            return PerformanceUtil.toString((int) seconds);
+        });
     }
 
     /**
@@ -190,6 +207,29 @@ public class BossBarLine implements BossBar {
      */
     public void removePlayerRaw(@NotNull TabPlayer player) {
         players.remove(player);
+    }
+
+    public void announce(int timeSeconds) {
+        announceTimeTotalSeconds = timeSeconds;
+        announceEndSystemTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timeSeconds);
+        announceEndPlaceholder.update();
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (manager.hasBossBarVisible(all) && isConditionMet(all)) {
+                addPlayer(all);
+            }
+        }
+    }
+
+    public boolean isBeingAnnounced() {
+        return announceEndSystemTime > System.currentTimeMillis();
+    }
+
+    public void unAnnounce() {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (manager.hasBossBarVisible(all)) {
+                removePlayer(all);
+            }
+        }
     }
 
     // ------------------

@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A class containing various constants used everywhere in the plugin
@@ -38,7 +39,6 @@ public class TabConstants {
     public static class CpuUsageCategory {
 
         // Events
-        public static final String PLUGIN_LOAD = "Load";
         public static final String PLAYER_JOIN = "Player Join";
         public static final String PLAYER_QUIT = "Player Quit";
         public static final String WORLD_SWITCH = "World Switch";
@@ -53,12 +53,6 @@ public class TabConstants {
 
         /** Periodic task checking for current and expected display names of all entries */
         public static final String ANTI_OVERRIDE_TABLIST_PERIODIC = "Tablist anti override (periodic task)";
-
-        /** Packet listener checking for new and expected display names of all entries */
-        public static final String ANTI_OVERRIDE_TABLIST_PACKET = "Tablist anti override (packet listener)";
-
-        /** Packet listener checking for new and expected scoreboard objectives and teams */
-        public static final String ANTI_OVERRIDE_SCOREBOARDS_PACKET = "Scoreboard anti override (packet listener)";
 
         public static final String PING_CHANGE = "Processing ping change";
         public static final String NICK_PLUGIN_COMPATIBILITY = "Compatibility with nick plugins";
@@ -105,8 +99,10 @@ public class TabConstants {
 
         public static final String COMMAND_MYSQL_DOWNLOAD           = "tab.mysql.download";
         public static final String COMMAND_MYSQL_UPLOAD             = "tab.mysql.upload";
-        public static final String COMMAND_NAMETAG_TOGGLE           = "tab.nametag.toggle";
-        public static final String COMMAND_NAMETAG_TOGGLE_OTHER     = "tab.nametag.toggle.other";
+        public static final String COMMAND_NAMETAG_VISIBILITY       = "tab.nametag.visibility";
+        public static final String COMMAND_NAMETAG_VISIBILITY_OTHER = "tab.nametag.visibility.other";
+        public static final String COMMAND_NAMETAG_VIEW             = "tab.nametag.view";
+        public static final String COMMAND_NAMETAG_VIEW_OTHER       = "tab.nametag.view.other";
 
         public static final String COMMAND_SCOREBOARD_ANNOUNCE      = "tab.announce.scoreboard";
         public static final String COMMAND_SCOREBOARD_TOGGLE        = "tab.scoreboard.toggle";
@@ -135,6 +131,7 @@ public class TabConstants {
         public static final String PLAYER_LIST = "PlayerList";
         public static final String SPECTATOR_FIX = "SpectatorFix";
         public static final String YELLOW_NUMBER = "YellowNumber";
+        public static final String YELLOW_NUMBER_TEXT = "YellowNumberText";
         public static final String BELOW_NAME = "BelowName";
         public static final String BELOW_NAME_TEXT = "BelowNameText";
         public static final String SCOREBOARD = "ScoreBoard";
@@ -226,7 +223,7 @@ public class TabConstants {
         public static final String NON_STAFF_ONLINE = "%nonstaffonline%";
         public static final String LUCKPERMS_PREFIX = "%luckperms-prefix%";
         public static final String LUCKPERMS_SUFFIX = "%luckperms-suffix%";
-        public static final String COUNTDOWN = "%countdown%";
+        public static final String LUCKPERMS_WEIGHT = "%luckperms-weight%";
         public static final String GAMEMODE = "%gamemode%";
         public static final String BEDROCK = "%bedrock%";
 
@@ -252,6 +249,14 @@ public class TabConstants {
 
         public static String globalPlayerListGroup(String group) {
             return "%playerlist-group_" + group + "%";
+        }
+
+        public static String bossbarAnnounceLeft(@NotNull String name) {
+            return "%bossbar_announce_time_left_" + name + "%";
+        }
+
+        public static String bossbarAnnounceTotal(@NotNull String name) {
+            return "%bossbar_announce_time_total_" + name + "%";
         }
     }
 

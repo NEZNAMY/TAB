@@ -14,28 +14,28 @@ public class TextColor {
     /** Map of legacy colors by their character */
     public static final Map<Character, TextColor> LEGACY_COLORS = new LinkedHashMap<>();
 
-    public static final TextColor BLACK = new TextColor(EnumChatFormat.BLACK);
-    public static final TextColor DARK_BLUE = new TextColor(EnumChatFormat.DARK_BLUE);
-    public static final TextColor DARK_GREEN = new TextColor(EnumChatFormat.DARK_GREEN);
-    public static final TextColor DARK_AQUA = new TextColor(EnumChatFormat.DARK_AQUA);
-    public static final TextColor DARK_RED = new TextColor(EnumChatFormat.DARK_RED);
-    public static final TextColor DARK_PURPLE = new TextColor(EnumChatFormat.DARK_PURPLE);
-    public static final TextColor GOLD = new TextColor(EnumChatFormat.GOLD);
-    public static final TextColor GRAY = new TextColor(EnumChatFormat.GRAY);
-    public static final TextColor DARK_GRAY = new TextColor(EnumChatFormat.DARK_GRAY);
-    public static final TextColor BLUE = new TextColor(EnumChatFormat.BLUE);
-    public static final TextColor GREEN = new TextColor(EnumChatFormat.GREEN);
-    public static final TextColor AQUA = new TextColor(EnumChatFormat.AQUA);
-    public static final TextColor RED = new TextColor(EnumChatFormat.RED);
-    public static final TextColor LIGHT_PURPLE = new TextColor(EnumChatFormat.LIGHT_PURPLE);
-    public static final TextColor YELLOW = new TextColor(EnumChatFormat.YELLOW);
-    public static final TextColor WHITE = new TextColor(EnumChatFormat.WHITE);
-    public static final TextColor OBFUSCATED = new TextColor(EnumChatFormat.OBFUSCATED);
-    public static final TextColor BOLD = new TextColor(EnumChatFormat.BOLD);
-    public static final TextColor STRIKETHROUGH = new TextColor(EnumChatFormat.STRIKETHROUGH);
-    public static final TextColor UNDERLINE = new TextColor(EnumChatFormat.UNDERLINE);
-    public static final TextColor ITALIC = new TextColor(EnumChatFormat.ITALIC);
-    public static final TextColor RESET = new TextColor(EnumChatFormat.RESET);
+    public static final TextColor BLACK = new TextColor(EnumChatFormat.BLACK, 0x000000);
+    public static final TextColor DARK_BLUE = new TextColor(EnumChatFormat.DARK_BLUE, 0x0000AA);
+    public static final TextColor DARK_GREEN = new TextColor(EnumChatFormat.DARK_GREEN, 0x00AA00);
+    public static final TextColor DARK_AQUA = new TextColor(EnumChatFormat.DARK_AQUA, 0x00AAAA);
+    public static final TextColor DARK_RED = new TextColor(EnumChatFormat.DARK_RED, 0xAA0000);
+    public static final TextColor DARK_PURPLE = new TextColor(EnumChatFormat.DARK_PURPLE, 0xAA00AA);
+    public static final TextColor GOLD = new TextColor(EnumChatFormat.GOLD, 0xFFAA00);
+    public static final TextColor GRAY = new TextColor(EnumChatFormat.GRAY, 0xAAAAAA);
+    public static final TextColor DARK_GRAY = new TextColor(EnumChatFormat.DARK_GRAY, 0x555555);
+    public static final TextColor BLUE = new TextColor(EnumChatFormat.BLUE, 0x5555FF);
+    public static final TextColor GREEN = new TextColor(EnumChatFormat.GREEN, 0x55FF55);
+    public static final TextColor AQUA = new TextColor(EnumChatFormat.AQUA, 0x55FFFF);
+    public static final TextColor RED = new TextColor(EnumChatFormat.RED, 0xFF5555);
+    public static final TextColor LIGHT_PURPLE = new TextColor(EnumChatFormat.LIGHT_PURPLE, 0xFF55FF);
+    public static final TextColor YELLOW = new TextColor(EnumChatFormat.YELLOW, 0xFFFF55);
+    public static final TextColor WHITE = new TextColor(EnumChatFormat.WHITE, 0xFFFFFF);
+    public static final TextColor OBFUSCATED = new TextColor(EnumChatFormat.OBFUSCATED, 0);
+    public static final TextColor BOLD = new TextColor(EnumChatFormat.BOLD, 0);
+    public static final TextColor STRIKETHROUGH = new TextColor(EnumChatFormat.STRIKETHROUGH, 0);
+    public static final TextColor UNDERLINE = new TextColor(EnumChatFormat.UNDERLINE, 0);
+    public static final TextColor ITALIC = new TextColor(EnumChatFormat.ITALIC, 0);
+    public static final TextColor RESET = new TextColor(EnumChatFormat.RESET, 0);
 
     private static final TextColor[] legacyColorArray = LEGACY_COLORS.values().toArray(new TextColor[0]);
 
@@ -72,10 +72,10 @@ public class TextColor {
      * @param   legacyColor
      *          legacy color to construct the instance from
      */
-    private TextColor(@NotNull EnumChatFormat legacyColor) {
-        rgb = legacyColor.getRgb();
+    private TextColor(@NotNull EnumChatFormat legacyColor, int rgb) {
+        this.rgb = rgb;
         this.legacyColor = legacyColor;
-        hexCode = String.format("%06X", legacyColor.getRgb());
+        hexCode = String.format("%06X", rgb);
         LEGACY_COLORS.put(legacyColor.getCharacter(), this);
     }
 

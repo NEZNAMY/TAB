@@ -43,7 +43,7 @@ public class RuntimeErrorPrinter {
                     configuredValue, property, bossBar.getName(), output, player.getName(), expectation));
 
         } else {
-            error(String.format("BossBar \"%s\" has invalid input configured for %s (\"%s\"). Expecting a%s or a placeholder returning one.",
+            error(String.format("BossBar \"%s\" has invalid input configured for %s (\"%s\"). Expecting %s or a placeholder returning one.",
                     bossBar.getName(), property, configuredValue, expectation));
         }
     }
@@ -198,6 +198,6 @@ public class RuntimeErrorPrinter {
      *          Message to log
      */
     public void error(@NotNull String message) {
-        TAB.getInstance().getPlatform().logWarn(new SimpleTextComponent(message.replace('§', '&')));
+        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(message.replace('§', '&')));
     }
 }

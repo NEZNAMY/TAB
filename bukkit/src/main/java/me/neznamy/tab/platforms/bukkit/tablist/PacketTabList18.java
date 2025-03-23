@@ -12,6 +12,7 @@ import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,10 @@ import java.util.*;
  */
 @Setter
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class PacketTabList18 extends TabListBase {
+public class PacketTabList18 extends TrackedTabList<BukkitTabPlayer> {
+
+    @Nullable
+    protected static SkinData skinData;
 
     protected static Class<?> PlayerInfoClass;
     protected static Constructor<?> newPlayerInfo;
@@ -154,6 +158,11 @@ public class PacketTabList18 extends TabListBase {
                         entry.getLatency(), entry.getGameMode(), entry.getDisplayName(), entry.getListOrder(), entry.isShowHat()));
     }
 
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        player.getPlatform().getHeaderFooter().set(player, header, footer);
+    }
+
     /**
      * Creates packet from given parameters.
      *
@@ -241,5 +250,17 @@ public class PacketTabList18 extends TabListBase {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
             }
         }
+    }
+
+    @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return true; // TODO?
+    }
+
+    @Nullable
+    @Override
+    public Skin getSkin() {
+        if (skinData == null) return null;
+        return skinData.getSkin(player);
     }
 }

@@ -28,7 +28,7 @@ public class ConfigurationSection {
     }
 
     public void startupWarn(@NotNull String message) {
-        TAB.getInstance().getConfigHelper().startup().startupWarn("[" + file + "] " + message);
+        TAB.getInstance().getConfigHelper().startup().startupWarn("[" + file + "] " + section + ": " + message);
     }
 
     public void hint(@NotNull String message) {

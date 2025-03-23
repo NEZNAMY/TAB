@@ -40,11 +40,11 @@ public class PlayerSlot {
             data = new TabList.Entry(
                     uniqueId,
                     layout.getManager().getConfiguration().getDirection().getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
-                    player.getSkin(),
+                    player.getTabList().getSkin(),
                     true,
                     layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getConfiguration().getValue() : player.getPing(),
                     0,
-                    playerList == null || player.tablistData.disabled.get() ? new SimpleTextComponent(player.getName()) : playerList.getTabFormat(player, viewer),
+                    playerList == null || player.tablistData.disabled.get() ? SimpleTextComponent.text(player.getName()) : playerList.getTabFormat(player, viewer),
                     Integer.MAX_VALUE - layout.getManager().getConfiguration().getDirection().translateSlot(slot),
                     true
             );
@@ -56,7 +56,7 @@ public class PlayerSlot {
                     true,
                     layout.getManager().getConfiguration().getEmptySlotPing(),
                     0,
-                    new SimpleTextComponent(text),
+                    SimpleTextComponent.text(text),
                     Integer.MAX_VALUE - layout.getManager().getConfiguration().getDirection().translateSlot(slot),
                     true
             );

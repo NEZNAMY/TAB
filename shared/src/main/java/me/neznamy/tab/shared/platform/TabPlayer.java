@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.platform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.integration.VanishIntegration;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
@@ -10,7 +11,6 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.belowname.BelowNamePlayerData;
@@ -18,9 +18,9 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.header.HeaderFooter;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
-import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
-import me.neznamy.tab.shared.features.playerlistobjective.YellowNumber;
+import me.neznamy.tab.shared.features.playerlistobjective.PlayerlistObjectivePlayerData;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -97,7 +97,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final ScoreboardManagerImpl.PlayerData scoreboardData = new ScoreboardManagerImpl.PlayerData();
 
     /** Data for scoreboard team */
-    public final NameTag.PlayerData teamData = new NameTag.PlayerData();
+    public final NameTagPlayerData teamData = new NameTagPlayerData();
 
     /** Data for Layout */
     public final LayoutManagerImpl.PlayerData layoutData = new LayoutManagerImpl.PlayerData();
@@ -109,7 +109,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final HeaderFooter.PlayerData headerFooterData = new HeaderFooter.PlayerData();
 
     /** Data for Playerlist Objective */
-    public final YellowNumber.PlayerData playerlistObjectiveData = new YellowNumber.PlayerData();
+    public final PlayerlistObjectivePlayerData playerlistObjectiveData = new PlayerlistObjectivePlayerData();
 
     /** Data for Belowname Objective */
     public final BelowNamePlayerData belowNameData = new BelowNamePlayerData();
@@ -373,13 +373,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  player's ping
      */
     public abstract int getPing();
-
-    /**
-     * Returns player's skin data
-     *
-     * @return  player's skin
-     */
-    public abstract @Nullable TabList.Skin getSkin();
 
     /**
      * Sends specified component as a chat message

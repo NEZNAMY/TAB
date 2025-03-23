@@ -9,6 +9,8 @@ import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -16,6 +18,7 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import net.md_5.bungee.tab.ServerUnique;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -142,6 +145,21 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
     @Override
     public boolean containsEntry(@NonNull UUID entry) {
         return uuids.contains(entry);
+    }
+
+    @Override
+    @Nullable
+    public Skin getSkin() {
+        LoginResult loginResult = ((InitialHandler)player.getPlayer().getPendingConnection()).getLoginProfile();
+        if (loginResult == null) return null;
+        Property[] properties = loginResult.getProperties();
+        if (properties == null) return null; //Offline mode
+        for (Property property : properties) {
+            if (property.getName().equals(TEXTURES_PROPERTY)) {
+                return new Skin(property.getValue(), property.getSignature());
+            }
+        }
+        return null;
     }
 
     @NotNull
