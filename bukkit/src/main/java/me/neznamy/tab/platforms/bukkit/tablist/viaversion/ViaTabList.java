@@ -9,25 +9,31 @@ import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
+import me.neznamy.tab.platforms.bukkit.tablist.PacketTabList18;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.BitSet;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * TabList abstract handler using ViaVersion packets,
  * focused to unlock new features on older versions,
  * and also optimize packet conversion between versions.
  */
-public abstract class ViaTabList extends TabListBase {
+public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
+
+    private static final long DELAY = 500;
 
     protected final Class<? extends Protocol> protocol;
     private final PacketType playerInfoUpdate;
     private final PacketType tabList;
     /** User connection this tablist belongs to */
     protected final UserConnection connection;
+
+    private transient boolean delayed = true;
 
     /**
      *
@@ -46,6 +52,11 @@ public abstract class ViaTabList extends TabListBase {
         this.playerInfoUpdate = playerInfoUpdate;
         this.tabList = tabList;
         this.connection = Via.getManager().getConnectionManager().getConnectedClient(player.getUniqueId());
+    }
+
+    @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return true; // TODO?
     }
 
     @Override
@@ -75,7 +86,13 @@ public abstract class ViaTabList extends TabListBase {
         writeComponent(packet, header);
         writeComponent(packet, footer);
 
-        packet.scheduleSend(protocol);
+        send(packet);
+    }
+
+    @Override
+    public @Nullable Skin getSkin() {
+        if (PacketTabList18.skinData == null) return null;
+        return PacketTabList18.skinData.getSkin(player);
     }
 
     protected void sendInfoUpdate(@NonNull Action action, @NonNull UUID uniqueId, Object value) {
@@ -109,7 +126,7 @@ public abstract class ViaTabList extends TabListBase {
                 throw new IllegalArgumentException("Cannot send info update with action " + action.name());
         }
 
-        packet.scheduleSend(protocol);
+        send(packet);
     }
 
     protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);
@@ -132,5 +149,16 @@ public abstract class ViaTabList extends TabListBase {
         final BitSet bit = new BitSet(nbits);
         bit.set(fromAction, toAction);
         return bit;
+    }
+
+    protected void send(@NonNull PacketWrapper packet) {
+        if (delayed) {
+            connection.getChannel().eventLoop().schedule(() -> {
+                delayed = false;
+                packet.send(protocol);
+            }, DELAY, TimeUnit.MILLISECONDS);
+        } else {
+            packet.scheduleSend(protocol);
+        }
     }
 }

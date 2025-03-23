@@ -54,7 +54,7 @@ public class ViaScoreboard113 extends ViaScoreboard {
             packet.write(Types.VAR_INT, score.getValue());
         }
 
-        packet.scheduleSend(protocol);
+        send(packet);
     }
 
     @Override

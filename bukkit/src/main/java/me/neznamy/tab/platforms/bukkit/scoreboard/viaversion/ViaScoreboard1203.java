@@ -48,7 +48,7 @@ public class ViaScoreboard1203 extends ViaScoreboard116 {
         // Number format
         writeNumberFormat(packet, score.getNumberFormat());
 
-        packet.scheduleSend(protocol);
+        send(packet);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ViaScoreboard1203 extends ViaScoreboard116 {
         // Objective name
         packet.write(Types.OPTIONAL_STRING, score.getObjective().getName().isEmpty() ? null : score.getObjective().getName());
 
-        packet.scheduleSend(protocol);
+        send(packet);
     }
 
     @Override

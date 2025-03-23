@@ -12,6 +12,8 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Scoreboard abstract implementation using ViaVersion packets,
  * focused to unlock new features on older versions, and also
@@ -19,6 +21,7 @@ import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
  */
 public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
+    private static final long DELAY = 500;
     private static final Object DUMMY = new Object();
 
     protected final Class<? extends Protocol> protocol;
@@ -28,6 +31,8 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private final PacketType setPlayerTeam;
     /** User connection this tablist belongs to */
     protected final UserConnection connection;
+
+    private transient boolean delayed = true;
 
     /**
      * Constructs new instance with given player.
@@ -63,7 +68,7 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
         writeObjective(packet, objective);
 
-        packet.scheduleSend(protocol);
+        send(packet);
     }
 
     @Override
@@ -109,7 +114,7 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
             writeObjectiveDisplay(packet, objective);
         }
 
-        packet.scheduleSend(protocol);
+        send(packet);
     }
 
     @SuppressWarnings("fallthrough")
@@ -126,7 +131,7 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
             case TeamAction.CREATE:
             case TeamAction.UPDATE:
                 // Team display name
-                writeComponent(packet, new SimpleTextComponent(team.getName()));
+                writeComponent(packet, SimpleTextComponent.text(team.getName()));
                 // Friendly flags
                 packet.write(Types.BYTE, (byte) team.getOptions());
                 // Name tag visibility
@@ -156,7 +161,7 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                 throw new IllegalArgumentException("Invalid team update mode: " + mode);
         }
 
-        packet.scheduleSend(protocol);
+        send(packet);
     }
 
     protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);
@@ -164,4 +169,15 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     protected abstract void writeObjective(@NonNull PacketWrapper packet, @NonNull Objective objective);
 
     protected abstract void writeObjectiveDisplay(@NonNull PacketWrapper packet, @NonNull Objective objective);
+
+    protected void send(@NonNull PacketWrapper packet) {
+        if (delayed) {
+            connection.getChannel().eventLoop().schedule(() -> {
+                delayed = false;
+                packet.send(protocol);
+            }, DELAY, TimeUnit.MILLISECONDS);
+        } else {
+            packet.scheduleSend(protocol);
+        }
+    }
 }
