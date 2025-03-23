@@ -51,7 +51,7 @@ public class ViaTabList1193 extends ViaTabList116 {
         // Players
         packet.write(Types.UUID_ARRAY, new UUID[] { entry });
 
-        packet.scheduleSend(protocol);
+        send(packet);
     }
 
     @Override
