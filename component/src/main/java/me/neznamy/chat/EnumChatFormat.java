@@ -11,34 +11,31 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public enum EnumChatFormat {
 
-    BLACK('0', 0x000000),
-    DARK_BLUE('1', 0x0000AA),
-    DARK_GREEN('2', 0x00AA00),
-    DARK_AQUA('3', 0x00AAAA),
-    DARK_RED('4', 0xAA0000),
-    DARK_PURPLE('5', 0xAA00AA),
-    GOLD('6', 0xFFAA00),
-    GRAY('7', 0xAAAAAA),
-    DARK_GRAY('8', 0x555555),
-    BLUE('9', 0x5555FF),
-    GREEN('a', 0x55FF55),
-    AQUA('b', 0x55FFFF),
-    RED('c', 0xFF5555),
-    LIGHT_PURPLE('d', 0xFF55FF),
-    YELLOW('e', 0xFFFF55),
-    WHITE('f', 0xFFFFFF),
-    OBFUSCATED('k', 0),
-    BOLD('l', 0),
-    STRIKETHROUGH('m', 0),
-    UNDERLINE('n', 0),
-    ITALIC('o', 0),
-    RESET('r', 0);
+    BLACK('0'),
+    DARK_BLUE('1'),
+    DARK_GREEN('2'),
+    DARK_AQUA('3'),
+    DARK_RED('4'),
+    DARK_PURPLE('5'),
+    GOLD('6'),
+    GRAY('7'),
+    DARK_GRAY('8'),
+    BLUE('9'),
+    GREEN('a'),
+    AQUA('b'),
+    RED('c'),
+    LIGHT_PURPLE('d'),
+    YELLOW('e'),
+    WHITE('f'),
+    OBFUSCATED('k'),
+    BOLD('l'),
+    STRIKETHROUGH('m'),
+    UNDERLINE('n'),
+    ITALIC('o'),
+    RESET('r');
 
     /** Character representing the color or magic code */
     private final char character;
-
-    /** Color as a hex code, 0 for magic codes */
-    private final int rgb;
 
     /**
      * Color translation method taken from bukkit, which converts '&amp;' symbol into
