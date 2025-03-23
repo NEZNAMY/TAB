@@ -7,6 +7,7 @@ import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.function.TriFunctionWithException;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ import java.util.UUID;
 /**
  * TabList handler for 1.7- servers using packets.
  */
-public class PacketTabList17 extends TabListBase {
+public class PacketTabList17 extends TrackedTabList<BukkitTabPlayer> {
 
     private static TriFunctionWithException<String, Boolean, Integer, Object> newPacket;
     private static PacketSender packetSender;
@@ -117,6 +118,16 @@ public class PacketTabList17 extends TabListBase {
     }
 
     @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return true;
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        // Added in 1.8
+    }
+
+    @Override
     @SneakyThrows
     public void addEntry0(@NonNull Entry entry) {
         String displayName;
@@ -129,5 +140,11 @@ public class PacketTabList17 extends TabListBase {
         packetSender.sendPacket(player, newPacket.apply(displayName, true, entry.getLatency()));
         userNames.put(entry.getUniqueId(), entry.getName());
         displayNames.put(entry.getUniqueId(), displayName);
+    }
+
+    @Override
+    @Nullable
+    public Skin getSkin() {
+        return null; // Added in 1.8
     }
 }

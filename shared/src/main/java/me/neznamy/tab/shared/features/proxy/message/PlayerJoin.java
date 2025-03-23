@@ -31,14 +31,15 @@ public class PlayerJoin extends ProxyMessage {
         out.writeUTF(encodedPlayer.server);
         out.writeBoolean(encodedPlayer.isVanished());
         out.writeBoolean(encodedPlayer.hasPermission(TabConstants.Permission.STAFF));
-        out.writeBoolean(encodedPlayer.getSkin() != null);
+        TabList.Skin skin = encodedPlayer.getTabList().getSkin();
+        out.writeBoolean(skin != null);
 
         // Load skin immediately to make global playerlist stuff not too complicated
-        if (encodedPlayer.getSkin() != null) {
-            out.writeUTF(encodedPlayer.getSkin().getValue());
-            out.writeBoolean(encodedPlayer.getSkin().getSignature() != null);
-            if (encodedPlayer.getSkin().getSignature() != null) {
-                out.writeUTF(encodedPlayer.getSkin().getSignature());
+        if (skin != null) {
+            out.writeUTF(skin.getValue());
+            out.writeBoolean(skin.getSignature() != null);
+            if (skin.getSignature() != null) {
+                out.writeUTF(skin.getSignature());
             }
         }
     }

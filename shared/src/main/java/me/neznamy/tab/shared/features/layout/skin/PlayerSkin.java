@@ -27,7 +27,7 @@ public class PlayerSkin extends SkinSource {
         try {
             TabPlayer player = TAB.getInstance().getPlayer(input);
             if (player != null) {
-                Skin skin = player.getSkin();
+                Skin skin = player.getTabList().getSkin();
                 if (skin != null) {
                     TAB.getInstance().debug("Skipping downloading of PLAYER skin " + input + ", because such player is online. Taking skin from their profile instead.");
                     return skin;

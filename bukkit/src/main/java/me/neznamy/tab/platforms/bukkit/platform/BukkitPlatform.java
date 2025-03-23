@@ -103,7 +103,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     /** Provider for tablist implementation */
     @NotNull
-    private final FunctionWithException<BukkitTabPlayer, TabListBase> tablistProvider = findTablistProvider();
+    private final FunctionWithException<BukkitTabPlayer, TabList> tablistProvider = findTablistProvider();
 
     /** Header/footer implementation */
     @Getter
@@ -183,10 +183,10 @@ public class BukkitPlatform implements BackendPlatform {
 
     @NotNull
     @SneakyThrows
-    private FunctionWithException<BukkitTabPlayer, TabListBase> findTablistProvider() {
+    private FunctionWithException<BukkitTabPlayer, TabList> findTablistProvider() {
         if (canUseDirectNMS) {
             Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketTabList").getConstructor(BukkitTabPlayer.class);
-            return player -> (TabListBase) constructor.newInstance(player);
+            return player -> (TabList) constructor.newInstance(player);
         }
         try {
             if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {

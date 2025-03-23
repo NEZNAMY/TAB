@@ -40,7 +40,7 @@ public class PlayerSlot {
             data = new TabList.Entry(
                     uniqueId,
                     layout.getManager().getConfiguration().getDirection().getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
-                    player.getSkin(),
+                    player.getTabList().getSkin(),
                     true,
                     layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getConfiguration().getValue() : player.getPing(),
                     0,

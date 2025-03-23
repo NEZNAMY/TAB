@@ -21,7 +21,6 @@ import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.playerlistobjective.PlayerlistObjectivePlayerData;
-import me.neznamy.tab.shared.features.playerlistobjective.YellowNumber;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -374,13 +373,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  player's ping
      */
     public abstract int getPing();
-
-    /**
-     * Returns player's skin data
-     *
-     * @return  player's skin
-     */
-    public abstract @Nullable TabList.Skin getSkin();
 
     /**
      * Sends specified component as a chat message

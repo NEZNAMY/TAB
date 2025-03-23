@@ -6,9 +6,9 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.tablist.TabListBase;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -27,7 +27,7 @@ import java.util.*;
  * TabList implementation using direct mojang-mapped code.
  */
 @SuppressWarnings("unused") // Used via reflection
-public class PaperPacketTabList extends TabListBase {
+public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateDisplayName = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateLatency = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY);
@@ -65,14 +65,14 @@ public class PaperPacketTabList extends TabListBase {
     @Override
     public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateDisplayName, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, null, displayName == null ? null : displayName.convert(), false, 0, null
+                entry, null, false, 0, GameType.SURVIVAL, displayName == null ? null : displayName.convert(), false, 0, null
         )));
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateLatency, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, latency, null, null, false, 0, null
+                entry, null, false, latency, GameType.SURVIVAL, null, false, 0, null
         )));
     }
 
@@ -86,22 +86,27 @@ public class PaperPacketTabList extends TabListBase {
     @Override
     public void updateListed(@NonNull UUID entry, boolean listed) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateListed, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, listed, 0, null, null, false, 0, null
+                entry, null, listed, 0, GameType.SURVIVAL, null, false, 0, null
         )));
     }
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateListOrder, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, null, null, false, listOrder, null
+                entry, null, false, 0, GameType.SURVIVAL, null, false, listOrder, null
         )));
     }
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
         sendPacket(new ClientboundPlayerInfoUpdatePacket(updateHat, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, null, null, showHat, 0, null
+                entry, null, false, 0, GameType.SURVIVAL, null, showHat, 0, null
         )));
+    }
+
+    @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return true; // TODO?
     }
 
     @Override

@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.tablist;
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +13,7 @@ import java.util.UUID;
 /**
  * TabList handler using the almighty Bukkit API.
  */
-public class BukkitTabList extends TabListBase {
+public class BukkitTabList extends TrackedTabList<BukkitTabPlayer> {
 
     /**
      * Constructs new instance with given player.
@@ -65,5 +66,21 @@ public class BukkitTabList extends TabListBase {
     @Override
     public void addEntry0(@NonNull Entry entry) {
         // Shrug
+    }
+
+    @Override
+    public boolean containsEntry(@NonNull UUID entry) {
+        return true;
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        player.getPlatform().getHeaderFooter().set(player, header, footer);
+    }
+
+    @Override
+    @Nullable
+    public Skin getSkin() {
+        return null; // Shrug
     }
 }

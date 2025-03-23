@@ -1,14 +1,9 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.util.GameProfile;
 import me.neznamy.chat.component.TabComponent;
-import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * TabPlayer implementation for Velocity.
@@ -43,19 +38,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         getPlayer().sendMessage(message.toAdventure());
     }
 
-    @Override
-    @Nullable
-    public TabList.Skin getSkin() {
-        List<GameProfile.Property> properties = getPlayer().getGameProfile().getProperties();
-        if (properties.isEmpty()) return null; //Offline mode
-        for (GameProfile.Property property : properties) {
-            if (property.getName().equals(TabList.TEXTURES_PROPERTY)) {
-                return new TabList.Skin(property.getValue(), property.getSignature());
-            }
-        }
-        return null;
-    }
-    
     @Override
     @NotNull
     public Player getPlayer() {

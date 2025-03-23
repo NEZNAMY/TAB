@@ -232,7 +232,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         return new TabList.Entry(
                 p.getTablistId(),
                 p.getNickname(),
-                p.getSkin(),
+                p.getTabList().getSkin(),
                 true,
                 configuration.isUpdateLatency() ? p.getPing() : 0,
                 configuration.isOthersAsSpectators() || (configuration.isVanishedAsSpectators() && p.isVanished()) ? 3 : p.getGamemode(),

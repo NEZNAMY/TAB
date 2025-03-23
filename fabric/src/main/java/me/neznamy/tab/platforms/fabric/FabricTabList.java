@@ -92,6 +92,15 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
     }
 
     @Override
+    @Nullable
+    public Skin getSkin() {
+        Collection<Property> properties = player.getPlayer().getGameProfile().getProperties().get(TEXTURES_PROPERTY);
+        if (properties.isEmpty()) return null; // Offline mode
+        Property property = properties.iterator().next();
+        return new Skin(property.value(), property.signature());
+    }
+
+    @Override
     public void onPacketSend(@NonNull Object packet) {
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
