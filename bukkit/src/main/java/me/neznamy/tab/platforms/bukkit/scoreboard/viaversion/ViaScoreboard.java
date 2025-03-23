@@ -12,6 +12,8 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,6 +34,7 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     /** User connection this tablist belongs to */
     protected final UserConnection connection;
 
+    private transient final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private transient boolean delayed = true;
 
     /**
@@ -58,6 +61,15 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         this.setScore = setScore;
         this.setPlayerTeam = setPlayerTeam;
         this.connection = Via.getManager().getConnectionManager().getConnectedClient(player.getUniqueId());
+
+        // First-time delay
+        connection.getChannel().eventLoop().schedule(() -> {
+            Runnable task;
+            while ((task = queue.poll()) != null) {
+                task.run();
+            }
+            delayed = false;
+        }, DELAY, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -172,10 +184,7 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     protected void send(@NonNull PacketWrapper packet) {
         if (delayed) {
-            connection.getChannel().eventLoop().schedule(() -> {
-                delayed = false;
-                packet.send(protocol);
-            }, DELAY, TimeUnit.MILLISECONDS);
+            queue.add(() -> packet.send(protocol));
         } else {
             packet.scheduleSend(protocol);
         }

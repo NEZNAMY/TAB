@@ -15,7 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.BitSet;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,6 +35,7 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
     /** User connection this tablist belongs to */
     protected final UserConnection connection;
 
+    private transient final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private transient boolean delayed = true;
 
     /**
@@ -52,6 +55,15 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
         this.playerInfoUpdate = playerInfoUpdate;
         this.tabList = tabList;
         this.connection = Via.getManager().getConnectionManager().getConnectedClient(player.getUniqueId());
+
+        // First-time delay
+        connection.getChannel().eventLoop().schedule(() -> {
+            Runnable task;
+            while ((task = queue.poll()) != null) {
+                task.run();
+            }
+            delayed = false;
+        }, DELAY, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -153,10 +165,7 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
 
     protected void send(@NonNull PacketWrapper packet) {
         if (delayed) {
-            connection.getChannel().eventLoop().schedule(() -> {
-                delayed = false;
-                packet.send(protocol);
-            }, DELAY, TimeUnit.MILLISECONDS);
+            queue.add(() -> packet.send(protocol));
         } else {
             packet.scheduleSend(protocol);
         }
