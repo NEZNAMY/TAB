@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
 import com.google.common.collect.Lists;
+import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -60,6 +61,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -108,12 +110,17 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     private final HeaderFooter headerFooter = findHeaderFooter();
 
+    /** Flag tracking if direct mojang-mapped code can be used or not */
+    private final boolean canUseDirectNMS = BukkitReflection.isMojangMapped() && serverVersion == ProtocolVersion.V1_21_4;
+
     /**
      * Constructs new instance with given plugin.
      *
      * @param   plugin
      *          Plugin
      */
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         long time = System.currentTimeMillis();
@@ -128,14 +135,23 @@ public class BukkitPlatform implements BackendPlatform {
         }
         PingRetriever.tryLoad();
         if (BukkitReflection.getMinorVersion() >= 8) {
-            BukkitPipelineInjector.tryLoad();
+            if (canUseDirectNMS) {
+                BukkitPipelineInjector.setGetChannel((FunctionWithException<BukkitTabPlayer, Channel>) Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getDeclaredField("getChannel").get(null));
+            } else {
+                BukkitPipelineInjector.tryLoad();
+            }
         }
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] §7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
     }
 
     @NotNull
+    @SneakyThrows
     private FunctionWithException<BukkitTabPlayer, Scoreboard> findScoreboardProvider() {
+        if (canUseDirectNMS) {
+            Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketScoreboard").getConstructor(BukkitTabPlayer.class);
+            return player -> (Scoreboard) constructor.newInstance(player);
+        }
         try {
             if (BukkitReflection.getMinorVersion() >= 7) Objects.requireNonNull(componentConverter);
             PacketScoreboard.load();
@@ -166,7 +182,12 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @NotNull
+    @SneakyThrows
     private FunctionWithException<BukkitTabPlayer, TabListBase> findTablistProvider() {
+        if (canUseDirectNMS) {
+            Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketTabList").getConstructor(BukkitTabPlayer.class);
+            return player -> (TabListBase) constructor.newInstance(player);
+        }
         try {
             if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {
                 // 1.19.3+
@@ -222,7 +243,11 @@ public class BukkitPlatform implements BackendPlatform {
      * @return  Instance or {@code null} if not available
      */
     @Nullable
-    public static ComponentConverter findComponentConverter() {
+    @SneakyThrows
+    public ComponentConverter findComponentConverter() {
+        if (canUseDirectNMS) {
+            return (ComponentConverter) Class.forName("me.neznamy.tab.platforms.paper.PaperComponentConverter").getConstructor().newInstance();
+        }
         try {
             if (BukkitReflection.getMinorVersion() >= 19) {
                 // 1.19+

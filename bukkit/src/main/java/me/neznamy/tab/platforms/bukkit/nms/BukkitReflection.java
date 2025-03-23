@@ -38,6 +38,9 @@ public class BukkitReflection {
     private static final boolean is1_21_4Plus = serverVersion.minorVersion >= 21 &&
             ReflectionUtils.getFields(getClass("network.chat.Style", "network.chat.ChatModifier"), Integer.class).size() == 1;
 
+    @Getter
+    private static final boolean mojangMapped = ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer");
+
     @NotNull
     @SneakyThrows
     private static Method getHandle() {
