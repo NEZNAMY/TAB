@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -41,11 +42,25 @@ public class BelowNameConfiguration {
                     "due to a minecraft limitation. Placeholders will be parsed for viewing player.");
         }
 
-        // Check for empty value
+        // Check "value" for empty value
         String value = section.getString("value", TabConstants.Placeholder.HEALTH);
         if (value.isEmpty()) {
             section.startupWarn("Belowname value is set to be empty, but the configured value must evaluate to a number. Using 0.");
             value = "0";
+        }
+
+        // Check "value" for forced non-numeric input
+        String strippedValue = value;
+        for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(strippedValue)) {
+            strippedValue = strippedValue.replace(placeholder, "");
+        }
+        if (!strippedValue.isEmpty()) { // Empty value is fine; it means only a placeholder is used
+            try {
+                Integer.parseInt(strippedValue);
+            } catch (NumberFormatException e) {
+                section.startupWarn("\"value\" is set to \"" + value + "\", but this will never evaluate to a number. " +
+                        "If you want text without limits, update to 1.20.3+ and use fancy-value. If you already did, set \"value\" to 0 as it is not displayed anyway.");
+            }
         }
 
         return new BelowNameConfiguration(
