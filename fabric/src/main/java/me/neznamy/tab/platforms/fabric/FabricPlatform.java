@@ -4,15 +4,14 @@ import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.chat.component.KeybindComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
 import me.neznamy.chat.component.TranslatableComponent;
+import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -48,9 +47,6 @@ public class FabricPlatform implements BackendPlatform {
 
     /** Minecraft server reference */
     private final MinecraftServer server;
-
-    /** Server version */
-    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(SharedConstants.getCurrentVersion().getName());
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {

@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.fabric;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.fabric.hook.PermissionsAPIHook;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +22,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
      */
     public FabricTabPlayer(@NotNull FabricPlatform platform, @NotNull ServerPlayer player) {
         super(platform, player, player.getUUID(), player.getGameProfile().getName(),
-                FabricTAB.getLevelName(player.level()), platform.getServerVersion().getNetworkId());
+                FabricTAB.getLevelName(player.level()), SharedConstants.getProtocolVersion());
     }
 
     @Override
