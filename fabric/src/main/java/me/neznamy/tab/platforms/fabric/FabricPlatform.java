@@ -194,16 +194,6 @@ public class FabricPlatform implements BackendPlatform {
     }
 
     @Override
-    public boolean supportsNumberFormat() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsListOrder() {
-        return true;
-    }
-
-    @Override
     public boolean supportsScoreboards() {
         return true;
     }

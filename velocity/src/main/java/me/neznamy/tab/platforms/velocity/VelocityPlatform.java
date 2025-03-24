@@ -196,16 +196,6 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
-    public boolean supportsNumberFormat() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsListOrder() {
-        return true;
-    }
-
-    @Override
     public boolean supportsScoreboards() {
         return scoreboardAPI;
     }

@@ -2,9 +2,8 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.chat.EnumChatFormat;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -108,9 +107,7 @@ public class LayoutConfiguration {
         }
 
         public String getEntryName(@NotNull TabPlayer viewer, int slot, boolean teamsEnabled) {
-            boolean v1_21_2Plus = viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() &&
-                    TAB.getInstance().getPlatform().supportsListOrder();
-            if (viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() && !v1_21_2Plus) {
+            if (viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() && viewer.getVersion().getNetworkId() < ProtocolVersion.V1_21_2.getNetworkId()) {
                 if (teamsEnabled) {
                     return "|slot_" + (10+slotTranslator.apply(slot));
                 } else {
