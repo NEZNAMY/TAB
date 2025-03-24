@@ -1,9 +1,6 @@
 accessWidener v1 named
 
 # Scoreboard packets
-accessible field net/minecraft/network/protocol/game/ClientboundSetObjectivePacket objectiveName Ljava/lang/String;
-accessible field net/minecraft/network/protocol/game/ClientboundSetObjectivePacket method I
-accessible field net/minecraft/network/protocol/game/ClientboundSetDisplayObjectivePacket objectiveName Ljava/lang/String;
 accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket method I
 accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;
 mutable field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;

@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.fabric.hook.PermissionsAPIHook;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -80,15 +79,5 @@ public class FabricTabPlayer extends BackendTabPlayer {
     @NotNull
     public String getDisplayName() {
         return getPlayer().getGameProfile().getName(); // Will make it work properly if someone asks
-    }
-
-    /**
-     * Sends the packet to the player.
-     *
-     * @param   packet
-     *          Packet to send
-     */
-    public void sendPacket(@NotNull Packet<?> packet) {
-        getPlayer().connection.send(packet);
     }
 }

@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.game.*;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,7 +60,7 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                 objective.getName(),
                 ObjectiveCriteria.DUMMY,
                 objective.getTitle().convert(),
-                ObjectiveCriteria.RenderType.values()[objective.getHealthDisplay().ordinal()],
+                RenderType.values()[objective.getHealthDisplay().ordinal()],
                 false,
                 objective.getNumberFormat() == null ? null : objective.getNumberFormat().toFixedFormat(FixedFormat::new)
         );
@@ -77,21 +78,19 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     public void updateObjective(@NonNull Objective objective) {
         net.minecraft.world.scores.Objective obj = (net.minecraft.world.scores.Objective) objective.getPlatformObjective();
         obj.setDisplayName(objective.getTitle().convert());
-        obj.setRenderType(ObjectiveCriteria.RenderType.values()[objective.getHealthDisplay().ordinal()]);
+        obj.setRenderType(RenderType.values()[objective.getHealthDisplay().ordinal()]);
         sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE));
     }
 
     @Override
     public void setScore(@NonNull Score score) {
-        sendPacket(
-                new ClientboundSetScorePacket(
-                        score.getHolder(),
-                        score.getObjective().getName(),
-                        score.getValue(),
-                        Optional.ofNullable(score.getDisplayName() == null ? null : score.getDisplayName().convert()),
-                        Optional.ofNullable(score.getNumberFormat() == null ? null : score.getNumberFormat().toFixedFormat(FixedFormat::new))
-                )
-        );
+        sendPacket(new ClientboundSetScorePacket(
+                score.getHolder(),
+                score.getObjective().getName(),
+                score.getValue(),
+                Optional.ofNullable(score.getDisplayName() == null ? null : score.getDisplayName().convert()),
+                Optional.ofNullable(score.getNumberFormat() == null ? null : score.getNumberFormat().toFixedFormat(FixedFormat::new))
+        ));
     }
 
     @Override
@@ -152,7 +151,13 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
             players.set(team, onTeamPacket(action, team.getName(), team.getPlayers() == null ? Collections.emptyList() : team.getPlayers()));
         }
     }
-    
+
+    /**
+     * Sends the packet to the player.
+     *
+     * @param   packet
+     *          Packet to send
+     */
     private void sendPacket(@NotNull Packet<?> packet) {
         ((CraftPlayer)player.getPlayer()).getHandle().connection.sendPacket(packet);
     }
