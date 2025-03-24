@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation("com.github.johnrengelman:shadow:8.1.1")
-    implementation("io.freefair.gradle:lombok-plugin:8.6")
-    implementation("fabric-loom:fabric-loom.gradle.plugin:1.8-SNAPSHOT")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:8.3.6")
+    implementation("io.freefair.gradle:lombok-plugin:8.13")
+    implementation("fabric-loom:fabric-loom.gradle.plugin:1.10-SNAPSHOT")
 }
