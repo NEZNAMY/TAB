@@ -29,7 +29,7 @@ import java.util.*;
 public class PacketTabList18 extends TrackedTabList<BukkitTabPlayer> {
 
     @Nullable
-    protected static SkinData skinData;
+    public static SkinData skinData;
 
     protected static Class<?> PlayerInfoClass;
     protected static Constructor<?> newPlayerInfo;
