@@ -29,13 +29,13 @@ import java.util.*;
 @SuppressWarnings("unused") // Used via reflection
 public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
+    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateDisplayName = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateLatency = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateGameMode = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListed = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListOrder = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LIST_ORDER);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateHat = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT);
-    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);
 
     private static final Field entries;
 
@@ -64,44 +64,43 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @Override
     public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        sendPacket(new ClientboundPlayerInfoUpdatePacket(updateDisplayName, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, GameType.SURVIVAL, displayName == null ? null : displayName.convert(), false, 0, null
-        )));
+        sendPacket(updateDisplayName, entry, "", null, false, 0, 0, displayName, 0, false);
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
-        sendPacket(new ClientboundPlayerInfoUpdatePacket(updateLatency, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, latency, GameType.SURVIVAL, null, false, 0, null
-        )));
+        sendPacket(updateLatency, entry, "", null, false, latency, 0, null, 0, false);
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
-        sendPacket(new ClientboundPlayerInfoUpdatePacket(updateGameMode, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, GameType.byId(gameMode), null, false, 0, null
-        )));
+        sendPacket(updateGameMode, entry, "", null, false, 0, gameMode, null, 0, false);
     }
 
     @Override
     public void updateListed(@NonNull UUID entry, boolean listed) {
-        sendPacket(new ClientboundPlayerInfoUpdatePacket(updateListed, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, listed, 0, GameType.SURVIVAL, null, false, 0, null
-        )));
+        sendPacket(updateListed, entry, "", null, listed, 0, 0, null, 0, false);
     }
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        sendPacket(new ClientboundPlayerInfoUpdatePacket(updateListOrder, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, GameType.SURVIVAL, null, false, listOrder, null
-        )));
+        sendPacket(updateListOrder, entry, "", null, false, 0, 0, null, listOrder, false);
     }
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
-        sendPacket(new ClientboundPlayerInfoUpdatePacket(updateHat, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry, null, false, 0, GameType.SURVIVAL, null, showHat, 0, null
-        )));
+        sendPacket(updateHat, entry, "", null, false, 0, 0, null, 0, showHat);
+    }
+
+    @Override
+    public void addEntry0(@NonNull Entry entry) {
+        sendPacket(addPlayer, entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(), entry.getLatency(),
+                entry.getGameMode(), entry.getDisplayName(), entry.getListOrder(), entry.isShowHat());
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+        sendPacket(new ClientboundTabListPacket(header.convert(), footer.convert()));
     }
 
     @Override
@@ -110,23 +109,12 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    public void addEntry0(@NonNull Entry entry) {
-        sendPacket(new ClientboundPlayerInfoUpdatePacket(addPlayer, new ClientboundPlayerInfoUpdatePacket.Entry(
-                entry.getUniqueId(),
-                createProfile(entry.getUniqueId(), entry.getName(), entry.getSkin()),
-                entry.isListed(),
-                entry.getLatency(),
-                GameType.byId(entry.getGameMode()),
-                entry.getDisplayName() == null ? null : entry.getDisplayName().convert(),
-                entry.isShowHat(),
-                entry.getListOrder(),
-                null
-        )));
-    }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        sendPacket(new ClientboundTabListPacket(header.convert(), footer.convert()));
+    @Nullable
+    public Skin getSkin() {
+        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
+        if (properties.isEmpty()) return null; // Offline mode
+        Property property = properties.iterator().next();
+        return new Skin(property.value(), property.signature());
     }
 
     @Override
@@ -166,17 +154,35 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         }
     }
 
-    @Override
-    @Nullable
-    public Skin getSkin() {
-        Collection<Property> col = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
-        if (col.isEmpty()) return null; //offline mode
-        Property property = col.iterator().next();
-        return new TabList.Skin(property.value(), property.signature());
+    private void sendPacket(@NonNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
+                            boolean listed, int latency, int gameMode, @Nullable TabComponent displayName, int listOrder, boolean showHat) {
+        ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(action, new ClientboundPlayerInfoUpdatePacket.Entry(
+                id,
+                action.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER) ? createProfile(id, name, skin) : null,
+                listed,
+                latency,
+                GameType.byId(gameMode),
+                displayName == null ? null : displayName.convert(),
+                showHat,
+                listOrder,
+                null
+        ));
+        sendPacket(packet);
     }
 
+    /**
+     * Creates GameProfile from given parameters.
+     *
+     * @param   id
+     *          Profile ID
+     * @param   name
+     *          Profile name
+     * @param   skin
+     *          Player skin
+     * @return  GameProfile from given parameters
+     */
     @NotNull
-    private GameProfile createProfile(@NotNull UUID id, @NotNull String name, @Nullable Skin skin) {
+    private GameProfile createProfile(@NonNull UUID id, @NonNull String name, @Nullable Skin skin) {
         GameProfile profile = new GameProfile(id, name);
         if (skin != null) {
             profile.getProperties().put(TabList.TEXTURES_PROPERTY,
@@ -185,7 +191,13 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         return profile;
     }
 
+    /**
+     * Sends the packet to the player.
+     *
+     * @param   packet
+     *          Packet to send
+     */
     private void sendPacket(@NotNull Packet<?> packet) {
-        ((CraftPlayer)player.getPlayer()).getHandle().connection.sendPacket(packet);
+        ((CraftPlayer)player.getPlayer()).getHandle().connection.send(packet);
     }
 }

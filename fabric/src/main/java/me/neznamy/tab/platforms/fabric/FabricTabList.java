@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
@@ -42,7 +43,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
 
     @Override
     public void removeEntry(@NonNull UUID entry) {
-        player.sendPacket(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry)));
+        sendPacket(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry)));
     }
 
     @Override
@@ -83,7 +84,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.sendPacket(new ClientboundTabListPacket(header.convert(), footer.convert()));
+        sendPacket(new ClientboundTabListPacket(header.convert(), footer.convert()));
     }
 
     @Override
@@ -105,27 +106,37 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
             List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
+            boolean rewritePacket = false;
             for (ClientboundPlayerInfoUpdatePacket.Entry nmsData : info.entries()) {
-                GameProfile profile = nmsData.profile();
+                boolean rewriteEntry = false;
                 Component displayName = nmsData.displayName();
                 int latency = nmsData.latency();
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                    TabComponent expectedDisplayName = ((TrackedTabList<?>)player.getTabList()).getExpectedDisplayNames().get(nmsData.profileId());
-                    if (expectedDisplayName != null) displayName = expectedDisplayName.convert();
+                    TabComponent expectedDisplayName = getExpectedDisplayNames().get(nmsData.profileId());
+                    if (expectedDisplayName != null && expectedDisplayName.convert() != displayName) {
+                        displayName = expectedDisplayName.convert();
+                        rewriteEntry = rewritePacket = true;
+                    }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
-                    latency = TAB.getInstance().getFeatureManager().onLatencyChange(player, nmsData.profileId(), latency);
+                    int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, nmsData.profileId(), latency);
+                    if (newLatency != latency) {
+                        latency = newLatency;
+                        rewriteEntry = rewritePacket = true;
+                    }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
-                    TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), profile.getName());
+                    TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
                 }
-                updatedList.add(new ClientboundPlayerInfoUpdatePacket.Entry(nmsData.profileId(), profile, nmsData.listed(),
-                        latency, nmsData.gameMode(), displayName, nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()));
+                updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
+                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName,
+                        nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()
+                ) : nmsData);
             }
-            info.entries = updatedList;
+            if (rewritePacket) info.entries = updatedList;
         }
     }
-    
+
     private void sendPacket(@NonNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                             boolean listed, int latency, int gameMode, @Nullable TabComponent displayName, int listOrder, boolean showHat) {
         ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(action, Collections.emptyList());
@@ -140,7 +151,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
                 listOrder,
                 null
         ));
-        player.sendPacket(packet);
+        sendPacket(packet);
     }
 
     /**
@@ -162,5 +173,15 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
                     new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
         }
         return profile;
+    }
+
+    /**
+     * Sends the packet to the player.
+     *
+     * @param   packet
+     *          Packet to send
+     */
+    private void sendPacket(@NotNull Packet<?> packet) {
+        player.getPlayer().connection.send(packet);
     }
 }
