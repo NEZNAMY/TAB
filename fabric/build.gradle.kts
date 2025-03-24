@@ -17,7 +17,7 @@ dependencies {
     mappings(loom.officialMojangMappings())
     modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
     modImplementation("eu.pb4:placeholder-api:2.5.0+1.21.2")
-    modImplementation("net.fabricmc:fabric-loader:0.15.9")
+    modImplementation("net.fabricmc:fabric-loader:0.15.10")
     val version = "0.100.1+1.21"
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", version))
     modImplementation(fabricApi.module("fabric-networking-api-v1", version))
