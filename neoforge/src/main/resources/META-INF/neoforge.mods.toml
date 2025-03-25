@@ -1,13 +1,15 @@
 modLoader = "javafml"
 loaderVersion = "[4,)"
-issueTrackerURL = ""
+issueTrackerURL = "https://github.com/NEZNAMY/TAB/issues"
 license = "All Rights Reserved"
+displayURL = "@website@"
 
 [[mods]]
 modId = "tab"
 version = "@version@"
 displayName = "@name@"
 authors = "@author@"
+credits = "@credits@"
 description = '''@description@'''
 
 [[dependencies.tab]]
@@ -15,11 +17,11 @@ modId = "neoforge"
 type = "required"
 versionRange = "[21.4.121,)"
 ordering = "NONE"
-side = "BOTH"
+side = "SERVER"
 
 [[dependencies.tab]]
 modId = "minecraft"
 type = "required"
 versionRange = "[1.21.4,)"
 ordering = "NONE"
-side = "BOTH"
+side = "SERVER"

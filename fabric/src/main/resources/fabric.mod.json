@@ -5,6 +5,7 @@
   "name": "@name@",
   "description": "@description@",
   "authors": ["@author@"],
+  "contributors": ["credits"],
   "environment": "server",
   "entrypoints": {
     "server": ["me.neznamy.tab.platforms.fabric.FabricTAB"]
