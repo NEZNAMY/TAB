@@ -22,7 +22,8 @@ val platforms = setOf(
     projects.component,
     projects.velocity,
     projects.sponge,
-    projects.fabric
+    projects.fabric,
+    projects.neoforge
 ).map { it.dependencyProject }
 
 val special = setOf(
