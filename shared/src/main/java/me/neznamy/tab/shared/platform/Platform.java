@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +57,9 @@ public interface Platform {
      *
      * @return  Created expansion
      */
-    @NotNull TabExpansion createTabExpansion();
+    default @NotNull TabExpansion createTabExpansion() {
+        return new EmptyTabExpansion();
+    }
 
     /**
      * Creates ProxySupport feature, registers listeners and returns it
