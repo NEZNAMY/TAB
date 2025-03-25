@@ -39,5 +39,6 @@ blossom {
     replaceToken("@description@", project.description)
     replaceToken("@website@", rootProject.ext.get("website")!!.toString())
     replaceToken("@author@", rootProject.ext.get("author")!!.toString())
+    replaceToken("@credits@", rootProject.ext.get("credits")!!.toString())
     replaceTokenIn("src/main/java/me/neznamy/tab/shared/TabConstants.java")
 }
