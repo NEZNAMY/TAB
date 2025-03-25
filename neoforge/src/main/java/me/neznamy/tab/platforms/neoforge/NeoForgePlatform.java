@@ -13,8 +13,6 @@ import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
-import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -27,7 +25,6 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,12 +64,6 @@ public class NeoForgePlatform implements BackendPlatform {
     @NotNull
     public PipelineInjector createPipelineInjector() {
         return new NeoForgePipelineInjector();
-    }
-
-    @Override
-    @NotNull
-    public TabExpansion createTabExpansion() {
-        return new EmptyTabExpansion();
     }
 
     @Override
