@@ -1,4 +1,4 @@
-accessWidener v1 named
+accessWidener v2 named
 
 # Scoreboard packets
 accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket method I

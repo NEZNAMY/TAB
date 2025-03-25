@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom")
+    id("dev.architectury.loom")
 }
 
 repositories {
@@ -25,9 +25,7 @@ dependencies {
     modImplementation(fabricApi.module("fabric-command-api-v2", version))
 }
 
-loom {
-    accessWidenerPath.set(file("src/main/resources/resources/tab.accesswidener"))
-}
+loom.accessWidenerPath.set(file("src/main/resources/resources/tab.accesswidener"))
 
 tasks {
     compileJava {
