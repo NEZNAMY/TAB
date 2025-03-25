@@ -57,8 +57,8 @@ public class ForgeTabCommand {
     @SuppressWarnings("SameReturnValue") // Unused by plugin
     private int executeCommand(@NotNull CommandSourceStack source, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
-            boolean hasReloadPermission = true; //PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
-            boolean hasAdminPermission = true; //PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
+            boolean hasReloadPermission = source.hasPermission(4); //PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
+            boolean hasAdminPermission = source.hasPermission(4); //PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
                 source.sendSystemMessage(TabComponent.fromColoredText(message).convert());
             }
