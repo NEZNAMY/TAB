@@ -10,16 +10,11 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots")
     maven("https://maven.nucleoid.xyz/")
     maven("https://maven.neoforged.net/releases")
-    maven("https://maven.parchmentmc.org")
 }
 
-@Suppress("UnstableApiUsage")
 dependencies {
     minecraft("com.mojang:minecraft:1.21.4")
-    mappings(loom.layered{
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.4:2025.03.23@zip")
-    })
+    mappings(loom.officialMojangMappings())
     neoForge("net.neoforged:neoforge:21.4.123")
     api(projects.shared)
 }
