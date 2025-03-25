@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "[52,)"
 issueTrackerURL = "https://github.com/NEZNAMY/TAB/issues"
-license = "All Rights Reserved"
+license = "Apache License Version 2.0"
 
 [[mods]]
 modId = "tab"
@@ -10,6 +10,7 @@ displayName = "@name@"
 authors = "@author@"
 credits = "@credits@"
 description = '''@description@'''
+displayURL = "@website@"
 
 [[dependencies.tab]]
 modId = "forge"
