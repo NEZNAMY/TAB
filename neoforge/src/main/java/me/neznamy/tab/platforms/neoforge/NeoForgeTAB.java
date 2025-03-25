@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 @Mod(value = "tab", dist = Dist.DEDICATED_SERVER)
 public class NeoForgeTAB {
 
-	public NeoForgeTAB(final IEventBus eventBus) {
+	public NeoForgeTAB() {
 		IEventBus EVENT_BUS = NeoForge.EVENT_BUS;
 		EVENT_BUS.addListener((RegisterCommandsEvent event) -> new NeoForgeTabCommand().onRegisterCommands(event.getDispatcher()));
 		EVENT_BUS.addListener((ServerStartingEvent event) -> TAB.create(new NeoForgePlatform(event.getServer())));

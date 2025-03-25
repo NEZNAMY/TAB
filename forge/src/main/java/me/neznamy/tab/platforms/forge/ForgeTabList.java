@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.neoforge;
+package me.neznamy.tab.platforms.forge;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -19,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * TabList implementation for NeoForge using packets.
+ * TabList implementation for Forge using packets.
  */
-public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
+public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
 
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateDisplayName = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);
@@ -37,7 +37,7 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
      * @param   player
      *          Player this tablist will belong to
      */
-    public NeoForgeTabList(@NotNull NeoForgeTabPlayer player) {
+    public ForgeTabList(@NotNull ForgeTabPlayer player) {
         super(player);
     }
 

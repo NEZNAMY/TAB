@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.neoforge;
+package me.neznamy.tab.platforms.forge;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -8,7 +8,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.commands.CommandSourceStack;
@@ -19,9 +18,9 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Command handler for plugin's command for NeoForge.
+ * Command handler for plugin's command for Forge.
  */
-public class NeoForgeTabCommand {
+public class ForgeTabCommand {
 
     /**
      * Handles command register request from server and registers own command.
