@@ -5,9 +5,6 @@ accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPac
 accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;
 mutable field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;
 
-# Logger
-accessible field net/minecraft/server/MinecraftServer LOGGER Lorg/slf4j/Logger;
-
 # Tablist packet entries
 accessible field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
 mutable field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
