@@ -15,9 +15,9 @@ public class FabricTAB implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, commandBuildContext, commandSelection) -> new FabricTabCommand().onRegisterCommands(dispatcher));
         ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
-        ServerLifecycleEvents.SERVER_STOPPING.register($ -> TAB.getInstance().unload());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> TAB.getInstance().unload());
     }
 
     @NotNull

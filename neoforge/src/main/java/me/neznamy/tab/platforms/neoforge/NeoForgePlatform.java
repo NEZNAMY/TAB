@@ -83,12 +83,12 @@ public class NeoForgePlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        LogUtils.getLogger().info("[TAB] " + message.toRawText());
+	    LogUtils.getLogger().info("[TAB] {}", message.toRawText());
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        LogUtils.getLogger().warn("[TAB] " + message.toRawText());
+	    LogUtils.getLogger().warn("[TAB] {}", message.toRawText());
     }
 
     @Override

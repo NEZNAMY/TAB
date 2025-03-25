@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
+import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import lombok.Getter;
@@ -98,12 +99,12 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        MinecraftServer.LOGGER.info("[TAB] " + message.toRawText());
+	    LogUtils.getLogger().info("[TAB] {}", message.toRawText());
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        MinecraftServer.LOGGER.warn("[TAB] " + message.toRawText());
+	    LogUtils.getLogger().warn("[TAB] {}", message.toRawText());
     }
 
     @Override
