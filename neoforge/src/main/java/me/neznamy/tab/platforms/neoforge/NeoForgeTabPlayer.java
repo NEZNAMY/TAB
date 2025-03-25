@@ -26,7 +26,7 @@ public class NeoForgeTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return true; // PermissionsAPIHook.hasPermission(getPlayer(), permission);
+        return getPlayer().createCommandSourceStack().hasPermission(4); // PermissionsAPIHook.hasPermission(getPlayer(), permission);
     }
 
     @Override
