@@ -29,7 +29,7 @@ tasks {
         }
 
         registerPlatform(rootProject.projects.fabric.dependencyProject, rootProject.projects.fabric.dependencyProject.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").get())
-
+        registerPlatform(rootProject.projects.neoforge.dependencyProject, rootProject.projects.neoforge.dependencyProject.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").get())
     }
     build {
         dependsOn(shadowJar)

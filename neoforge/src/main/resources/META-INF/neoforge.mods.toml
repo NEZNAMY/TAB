@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+issueTrackerURL = ""
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "tab"
+version = "@version@"
+displayName = "@name@"
+authors = "@author@"
+description = '''@description@'''
+
+[[dependencies.tab]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.4.121,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.tab]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.4,)"
+ordering = "NONE"
+side = "BOTH"
