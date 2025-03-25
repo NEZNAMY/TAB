@@ -3,8 +3,6 @@ package me.neznamy.tab.platforms.fabric;
 import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.chat.component.KeybindComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
@@ -41,13 +39,10 @@ import java.util.Collections;
 
 /**
  * Platform implementation for Fabric
+ *
+ * @param server Minecraft server reference
  */
-@RequiredArgsConstructor
-@Getter
-public class FabricPlatform implements BackendPlatform {
-
-    /** Minecraft server reference */
-    private final MinecraftServer server;
+public record FabricPlatform(MinecraftServer server) implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -99,12 +94,12 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-	    LogUtils.getLogger().info("[TAB] {}", message.toRawText());
+        LogUtils.getLogger().info("[TAB] {}", message.toRawText());
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-	    LogUtils.getLogger().warn("[TAB] {}", message.toRawText());
+        LogUtils.getLogger().warn("[TAB] {}", message.toRawText());
     }
 
     @Override
