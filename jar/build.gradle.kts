@@ -15,7 +15,8 @@ val platforms = setOf(
 
 val moddedPlatforms = setOf(
     rootProject.projects.fabric,
-    rootProject.projects.neoforge
+    rootProject.projects.neoforge,
+    rootProject.projects.forge
 ).map { it.dependencyProject }
 
 tasks {

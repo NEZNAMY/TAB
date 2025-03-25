@@ -1,8 +1,6 @@
-package me.neznamy.tab.platforms.neoforge;
+package me.neznamy.tab.platforms.forge;
 
 import com.mojang.logging.LogUtils;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.chat.component.KeybindComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
@@ -25,7 +23,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,13 +33,10 @@ import java.util.Collections;
 
 /**
  * Platform implementation for NeoForge
+ *
+ * @param server Minecraft server reference
  */
-@RequiredArgsConstructor
-@Getter
-public class NeoForgePlatform implements BackendPlatform {
-
-    /** Minecraft server reference */
-    private final MinecraftServer server;
+public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -51,7 +46,7 @@ public class NeoForgePlatform implements BackendPlatform {
     @Override
     public void loadPlayers() {
         for (ServerPlayer player : getOnlinePlayers()) {
-            TAB.getInstance().addPlayer(new NeoForgeTabPlayer(this, player));
+            TAB.getInstance().addPlayer(new ForgeTabPlayer(this, player));
         }
     }
 
@@ -63,7 +58,7 @@ public class NeoForgePlatform implements BackendPlatform {
     @Override
     @NotNull
     public PipelineInjector createPipelineInjector() {
-        return new NeoForgePipelineInjector();
+        return new ForgePipelineInjector();
     }
 
     @Override
@@ -74,23 +69,23 @@ public class NeoForgePlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-	    LogUtils.getLogger().info("[TAB] {}", message.toRawText());
+        LogUtils.getLogger().info("[TAB] {}", message.toRawText());
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-	    LogUtils.getLogger().warn("[TAB] {}", message.toRawText());
+        LogUtils.getLogger().warn("[TAB] {}", message.toRawText());
     }
 
     @Override
     @NotNull
     public String getServerVersionInfo() {
-        return "[NeoForge] " + SharedConstants.getCurrentVersion().getName();
+        return "[Forge] " + SharedConstants.getCurrentVersion().getName();
     }
 
     @Override
     public void registerListener() {
-        new NeoForgeEventListener().register();
+        new ForgeEventListener().register();
     }
 
     @Override
@@ -150,19 +145,19 @@ public class NeoForgePlatform implements BackendPlatform {
     @Override
     @NotNull
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
-        return new NeoForgeScoreboard((NeoForgeTabPlayer) player);
+        return new ForgeScoreboard((ForgeTabPlayer) player);
     }
 
     @Override
     @NotNull
     public BossBar createBossBar(@NotNull TabPlayer player) {
-        return new NeoForgeBossBar((NeoForgeTabPlayer) player);
+        return new ForgeBossBar((ForgeTabPlayer) player);
     }
 
     @Override
     @NotNull
     public TabList createTabList(@NotNull TabPlayer player) {
-        return new NeoForgeTabList((NeoForgeTabPlayer) player);
+        return new ForgeTabList((ForgeTabPlayer) player);
     }
 
     @Override
