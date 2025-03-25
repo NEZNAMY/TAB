@@ -13,6 +13,11 @@ val platforms = setOf(
     rootProject.projects.sponge8
 ).map { it.dependencyProject }
 
+val moddedPlatforms = setOf(
+    rootProject.projects.fabric,
+    rootProject.projects.neoforge
+).map { it.dependencyProject }
+
 tasks {
     shadowJar {
         archiveFileName.set("TAB-${project.version}.jar")
@@ -28,10 +33,9 @@ tasks {
             registerPlatform(it, it.tasks.named<ShadowJar>("shadowJar").get())
         }
 
-        registerPlatform(rootProject.projects.fabric.dependencyProject, rootProject.projects.fabric.dependencyProject.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").get())
-        registerPlatform(rootProject.projects.neoforge.dependencyProject, rootProject.projects.neoforge.dependencyProject.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").get())
+        moddedPlatforms.forEach {
+            registerPlatform(it, it.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").get())
+        }
     }
-    build {
-        dependsOn(shadowJar)
-    }
+    build.get().dependsOn(shadowJar)
 }
