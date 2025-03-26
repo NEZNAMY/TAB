@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.protocol.DefinedPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +54,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
-        getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
+        Server server = getPlayer().getServer();
+        if (server != null) server.sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
     }
 
     /**
