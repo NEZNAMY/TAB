@@ -57,6 +57,7 @@ playerlist-objective:
   value: "%ping%"
   fancy-value: "&7Ping: %ping%"
   title: "Java Edition is better" # Only visible on Bedrock Edition
+  render-type: INTEGER
   disable-condition: '%world%=disabledworld'
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname
