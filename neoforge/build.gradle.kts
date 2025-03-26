@@ -13,9 +13,9 @@ repositories {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.4")
+    minecraft("com.mojang:minecraft:1.21.5")
     mappings(loom.officialMojangMappings())
-    neoForge("net.neoforged:neoforge:21.4.123")
+    neoForge("net.neoforged:neoforge:21.5.2-beta")
     api(projects.shared)
 }
 
