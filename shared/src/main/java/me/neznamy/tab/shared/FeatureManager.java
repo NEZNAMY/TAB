@@ -569,20 +569,18 @@ public class FeatureManager {
 
         // Load the feature first, because it will be processed in main thread (to make it run before feature threads)
         if (config.isEnableProxySupport()) {
-            String type = config.getConfig().getString("proxy-support.type");
-            ProxySupport proxy;
+            String type = config.getConfig().getString("proxy-support.type", "PLUGIN");
+            ProxySupport proxy = null;
             if (type.equalsIgnoreCase("PLUGIN")) {
                 String plugin = config.getConfig().getString("proxy-support.plugin.name", "RedisBungee");
                 proxy = TAB.getInstance().getPlatform().getProxySupport(plugin);
             } else if (type.equalsIgnoreCase("REDIS")) {
-                String url = config.getConfig().getString("proxy-support.redis.url");
+                String url = config.getConfig().getString("proxy-support.redis.url", "redis://:password@localhost:6379/0");
                 proxy = new ProxyMessengerSupport(() -> RedisBroker.of(url));
             } else if (type.equalsIgnoreCase("RABBITMQ")) {
-                String exchange = config.getConfig().getString("proxy-support.rabbitmq.exchange");
-                String url = config.getConfig().getString("proxy-support.rabbitmq.url");
+                String exchange = config.getConfig().getString("proxy-support.rabbitmq.exchange", "plugin");
+                String url = config.getConfig().getString("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
                 proxy = new ProxyMessengerSupport(() -> RabbitMQBroker.of(url, exchange));
-            } else {
-                proxy = null;
             }
             if (proxy != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PROXY_SUPPORT, proxy);
         }
