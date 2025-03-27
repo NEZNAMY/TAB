@@ -9,11 +9,11 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
-val version = "1.21.4-R0.1-SNAPSHOT"
+val version = "1.21.5-R0.1-SNAPSHOT"
 
 dependencies {
     implementation(projects.bukkit)
-    paperweight.paperDevBundle(version)
+    paperweight.paperDevBundle("1.21.5-no-moonrise-SNAPSHOT") // Just temporary
     compileOnly("io.papermc.paper:paper-api:${version}")
 }
 

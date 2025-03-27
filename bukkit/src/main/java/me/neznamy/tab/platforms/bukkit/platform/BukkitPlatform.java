@@ -112,7 +112,8 @@ public class BukkitPlatform implements BackendPlatform {
     private final HeaderFooter headerFooter = findHeaderFooter();
 
     /** Flag tracking if direct mojang-mapped code can be used or not */
-    private final boolean canUseDirectNMS = BukkitReflection.isMojangMapped() && serverVersion == ProtocolVersion.V1_21_4;
+    private final boolean canUseDirectNMS = BukkitReflection.isMojangMapped() &&
+            (serverVersion == ProtocolVersion.V1_21_4 || serverVersion == ProtocolVersion.V1_21_5);
 
     /**
      * Constructs new instance with given plugin.
