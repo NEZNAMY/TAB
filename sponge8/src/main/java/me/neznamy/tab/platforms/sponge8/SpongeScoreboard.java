@@ -91,13 +91,13 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     @Override
     public void setScore(@NonNull Score score) {
         org.spongepowered.api.scoreboard.objective.Objective obj = (org.spongepowered.api.scoreboard.objective.Objective) score.getObjective().getPlatformObjective();
-        SpongeMultiVersion.findOrCreateScore(obj, score.getHolder()).setScore(score.getValue());
+        obj.findOrCreateScore(score.getHolder()).setScore(score.getValue());
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
         org.spongepowered.api.scoreboard.objective.Objective obj = (org.spongepowered.api.scoreboard.objective.Objective) score.getObjective().getPlatformObjective();
-        obj.removeScore(SpongeMultiVersion.findOrCreateScore(obj, score.getHolder()));
+        obj.removeScore(score.getHolder());
     }
 
     @Override

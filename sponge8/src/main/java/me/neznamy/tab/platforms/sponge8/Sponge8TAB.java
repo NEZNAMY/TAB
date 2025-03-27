@@ -2,12 +2,15 @@ package me.neznamy.tab.platforms.sponge8;
 
 import com.google.inject.Inject;
 import lombok.Getter;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.apache.logging.log4j.Logger;
 import org.bstats.sponge.Metrics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -29,6 +32,7 @@ public class Sponge8TAB {
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;
     @Inject private PluginContainer container;
     @Inject private Metrics.Factory metricsFactory;
+    @Inject private Logger logger;
 
     /**
      * Enables the plugin.
@@ -38,6 +42,13 @@ public class Sponge8TAB {
      */
     @Listener
     public void onServerStart(@Nullable StartingEngineEvent<Server> event) {
+        ProtocolVersion serverVersion = ProtocolVersion.fromNetworkId(Sponge.platform().minecraftVersion().protocolVersion());
+        if (serverVersion.getNetworkId() < ProtocolVersion.V1_20_6.getNetworkId()) {
+            logger.warn("====================================================================================================");
+            logger.warn("This plugin version was made for Minecraft version 1.20.6 and above.");
+            logger.warn("====================================================================================================");
+            return;
+        }
         TAB.create(new SpongePlatform(this));
     }
 
@@ -60,6 +71,6 @@ public class Sponge8TAB {
      */
     @Listener
     public void onServerStop(@Nullable StoppingEngineEvent<Server> event) {
-        TAB.getInstance().unload();
+        if (TAB.getInstance() != null) TAB.getInstance().unload();
     }
 }

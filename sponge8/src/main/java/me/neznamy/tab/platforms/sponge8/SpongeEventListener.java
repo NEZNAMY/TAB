@@ -14,6 +14,9 @@ import org.spongepowered.api.event.entity.ChangeEntityWorldEvent;
 import org.spongepowered.api.event.entity.living.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
+import org.spongepowered.api.profile.GameProfile;
+
+import java.util.UUID;
 
 /**
  * Event listener for Sponge 8 to forward events to enabled features.
@@ -29,7 +32,7 @@ public class SpongeEventListener implements EventListener<ServerPlayer> {
     @Listener
     @SneakyThrows
     public void onQuit(ServerSideConnectionEvent.Disconnect event) {
-        quit(SpongeMultiVersion.getUniqueId.apply(event));
+        quit(event.profile().map(GameProfile::uuid).orElse(new UUID(0, 0)));
     }
 
     /**

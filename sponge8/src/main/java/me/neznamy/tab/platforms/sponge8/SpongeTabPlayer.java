@@ -10,6 +10,7 @@ import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.network.ServerConnectionState;
 
 import java.util.Collections;
 
@@ -38,7 +39,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @Override
     @SneakyThrows
     public int getPing() {
-        return SpongeMultiVersion.getPing.apply(getPlayer());
+        return getPlayer().connection().state().map(c -> ((ServerConnectionState.Game)c).latency()).orElse(0);
     }
 
     @Override
