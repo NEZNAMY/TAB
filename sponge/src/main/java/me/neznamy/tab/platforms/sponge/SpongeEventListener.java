@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge8;
+package me.neznamy.tab.platforms.sponge;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
@@ -19,7 +19,7 @@ import org.spongepowered.api.profile.GameProfile;
 import java.util.UUID;
 
 /**
- * Event listener for Sponge 8 to forward events to enabled features.
+ * Event listener for Sponge to forward events to enabled features.
  */
 public class SpongeEventListener implements EventListener<ServerPlayer> {
 

@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge8;
+package me.neznamy.tab.platforms.sponge;
 
 import lombok.SneakyThrows;
 import me.neznamy.chat.component.TabComponent;
@@ -15,7 +15,7 @@ import org.spongepowered.api.network.ServerConnectionState;
 import java.util.Collections;
 
 /**
- * TabPlayer implementation for Sponge 8+.
+ * TabPlayer implementation for Sponge.
  */
 public class SpongeTabPlayer extends BackendTabPlayer {
 

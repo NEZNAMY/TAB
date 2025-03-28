@@ -1,9 +1,10 @@
-package me.neznamy.tab.platforms.sponge7;
+package me.neznamy.tab.platforms.sponge;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
@@ -15,29 +16,30 @@ import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
+import net.kyori.adventure.text.Component;
+import org.bstats.charts.SimplePie;
+import org.bstats.sponge.Metrics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 import java.io.File;
 
 /**
- * Platform implementation for Sponge 7 and lower
+ * Platform implementation for Sponge.
  */
 @RequiredArgsConstructor
 public class SpongePlatform implements BackendPlatform {
 
-    /** Plugin reference */
+    /** Main class reference */
     @NotNull
-    private final Sponge7TAB plugin;
+    private final SpongeTAB plugin;
 
     /** Server version */
     @Getter
-    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Sponge.getGame().getPlatform().getMinecraftVersion().getName());
+    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Sponge.game().platform().minecraftVersion().name());
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -46,7 +48,7 @@ public class SpongePlatform implements BackendPlatform {
 
     @Override
     public void loadPlayers() {
-        for (Player player : Sponge.getServer().getOnlinePlayers()) {
+        for (ServerPlayer player : Sponge.server().onlinePlayers()) {
             TAB.getInstance().addPlayer(new SpongeTabPlayer(this, player));
         }
     }
@@ -71,49 +73,47 @@ public class SpongePlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        plugin.getLogger().info(message.toLegacyText());
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(message.toAdventure()));
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        plugin.getLogger().warn("§c" + message.toLegacyText());
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(message.toAdventure()));
     }
 
     @Override
     @NotNull
     public String getServerVersionInfo() {
-        return "[Sponge] " + Sponge.getPlatform().getMinecraftVersion().getName();
+        return "[Sponge] " + Sponge.platform().minecraftVersion().name();
     }
 
     @Override
     public void registerListener() {
-        Sponge.getGame().getEventManager().registerListeners(plugin, new SpongeEventListener());
+        Sponge.game().eventManager().registerListeners(plugin.getContainer(), new SpongeEventListener());
     }
 
     @Override
     public void registerCommand() {
-        SpongeTabCommand cmd = new SpongeTabCommand();
-        Sponge.getGame().getCommandManager().register(plugin, CommandSpec.builder()
-                .arguments(cmd, GenericArguments.remainingJoinedStrings(Text.of("arguments"))) // GenericArguments.none() doesn't work, so rip no-arg
-                .executor(cmd)
-                .build(), getCommand());
+        // Must be registered in main class event listener
     }
 
     @Override
     public void startMetrics() {
-        // Not available
+        Metrics metrics = plugin.getMetricsFactory().make(TabConstants.BSTATS_PLUGIN_ID_SPONGE);
+        metrics.startup(null);
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, serverVersion::getFriendlyName));
     }
 
     @Override
     @NotNull
     public File getDataFolder() {
-        return plugin.getConfigDir();
+        return plugin.getConfigDir().toFile();
     }
 
     @Override
     @NotNull
-    public Text convertComponent(@NotNull TabComponent component) {
-        return Text.of(component.toLegacyText());
+    public Component convertComponent(@NotNull TabComponent component) {
+        return component.toAdventure();
     }
 
     @Override
@@ -125,7 +125,7 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     @NotNull
     public BossBar createBossBar(@NotNull TabPlayer player) {
-        return new SpongeBossBar((SpongeTabPlayer) player);
+        return new AdventureBossBar(player);
     }
 
     @Override
@@ -141,11 +141,11 @@ public class SpongePlatform implements BackendPlatform {
 
     @Override
     public double getTPS() {
-        return Sponge.getServer().getTicksPerSecond();
+        return Sponge.server().ticksPerSecond();
     }
 
     @Override
     public double getMSPT() {
-        return -1; // Not available
+        return Sponge.server().averageTickTime();
     }
 }

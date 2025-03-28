@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge8;
+package me.neznamy.tab.platforms.sponge;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Command processor for plugin's command for Sponge 8.
+ * Command processor for plugin's command for Sponge.
  */
 public class SpongeTabCommand implements Command.Raw {
 

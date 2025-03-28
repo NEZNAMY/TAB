@@ -51,7 +51,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      * Not needed for platforms which support pipeline injection.
      */
     public void checkDisplayNames() {
-        // Empty by default, overridden by Sponge7, Sponge8 and Velocity
+        // Empty by default, overridden Sponge and Velocity
     }
 
     /**

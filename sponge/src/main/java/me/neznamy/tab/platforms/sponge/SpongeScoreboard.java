@@ -1,50 +1,50 @@
-package me.neznamy.tab.platforms.sponge7;
+package me.neznamy.tab.platforms.sponge;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.scoreboard.CollisionRules;
 import org.spongepowered.api.scoreboard.Visibilities;
 import org.spongepowered.api.scoreboard.Visibility;
-import org.spongepowered.api.scoreboard.critieria.Criteria;
+import org.spongepowered.api.scoreboard.criteria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMode;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
-import org.spongepowered.api.text.Text;
 
 /**
- * Scoreboard implementation for Sponge 7 using its API.
+ * Scoreboard implementation for Sponge using its API.
  */
 public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
 
     /** Collision rule array for fast access */
     private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = {
-            CollisionRules.ALWAYS,
-            CollisionRules.NEVER,
-            CollisionRules.PUSH_OTHER_TEAMS,
-            CollisionRules.PUSH_OWN_TEAM
+            CollisionRules.ALWAYS.get(),
+            CollisionRules.NEVER.get(),
+            CollisionRules.PUSH_OTHER_TEAMS.get(),
+            CollisionRules.PUSH_OWN_TEAM.get()
     };
 
     /** Visibility array for fast access */
     private static final Visibility[] visibilities = {
-            Visibilities.ALWAYS,
-            Visibilities.NEVER,
-            Visibilities.HIDE_FOR_OTHER_TEAMS,
-            Visibilities.HIDE_FOR_OWN_TEAM
+            Visibilities.ALWAYS.get(),
+            Visibilities.NEVER.get(),
+            Visibilities.HIDE_FOR_OTHER_TEAMS.get(),
+            Visibilities.HIDE_FOR_OWN_TEAM.get()
     };
 
     /** DisplaySlot array for fast access */
     private static final org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] displaySlots = {
-            DisplaySlots.LIST,
-            DisplaySlots.SIDEBAR,
-            DisplaySlots.BELOW_NAME
+            DisplaySlots.LIST.get(),
+            DisplaySlots.SIDEBAR.get(),
+            DisplaySlots.BELOW_NAME.get()
     };
 
     /** Health display array for fast access */
     private static final ObjectiveDisplayMode[] healthDisplays = {
-            ObjectiveDisplayModes.INTEGER,
-            ObjectiveDisplayModes.HEARTS
+            ObjectiveDisplayModes.INTEGER.get(),
+            ObjectiveDisplayModes.HEARTS.get()
     };
 
     /** Scoreboard of the player */
@@ -67,7 +67,7 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         org.spongepowered.api.scoreboard.objective.Objective obj = org.spongepowered.api.scoreboard.objective.Objective.builder()
                 .name(objective.getName())
-                .displayName(Text.of(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)))
+                .displayName(objective.getTitle().toAdventure())
                 .objectiveDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()])
                 .criterion(Criteria.DUMMY)
                 .build();
@@ -78,25 +78,26 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
 
     @Override
     public void unregisterObjective(@NonNull Objective objective) {
-        sb.removeObjective(((org.spongepowered.api.scoreboard.objective.Objective)objective.getPlatformObjective()));
+        sb.removeObjective((org.spongepowered.api.scoreboard.objective.Objective) objective.getPlatformObjective());
     }
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
-        org.spongepowered.api.scoreboard.objective.Objective obj = ((org.spongepowered.api.scoreboard.objective.Objective)objective.getPlatformObjective());
-        obj.setDisplayName(Text.of(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
+        org.spongepowered.api.scoreboard.objective.Objective obj = (org.spongepowered.api.scoreboard.objective.Objective) objective.getPlatformObjective();
+        obj.setDisplayName(objective.getTitle().toAdventure());
         obj.setDisplayMode(healthDisplays[objective.getHealthDisplay().ordinal()]);
     }
 
     @Override
     public void setScore(@NonNull Score score) {
-        ((org.spongepowered.api.scoreboard.objective.Objective)score.getObjective().getPlatformObjective())
-                .getOrCreateScore(Text.of(score.getHolder())).setScore(score.getValue());
+        org.spongepowered.api.scoreboard.objective.Objective obj = (org.spongepowered.api.scoreboard.objective.Objective) score.getObjective().getPlatformObjective();
+        obj.findOrCreateScore(score.getHolder()).setScore(score.getValue());
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
-        ((org.spongepowered.api.scoreboard.objective.Objective)score.getObjective().getPlatformObjective()).removeScore(Text.of(score.getHolder()));
+        org.spongepowered.api.scoreboard.objective.Objective obj = (org.spongepowered.api.scoreboard.objective.Objective) score.getObjective().getPlatformObjective();
+        obj.removeScore(score.getHolder());
     }
 
     @Override
@@ -109,19 +110,20 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     public void registerTeam(@NonNull Team team) {
         org.spongepowered.api.scoreboard.Team spongeTeam = org.spongepowered.api.scoreboard.Team.builder()
                 .name(team.getName())
-                .displayName(Text.of(team.getName()))
-                .prefix(Text.of(cutTo(team.getPrefix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)))
-                .suffix(Text.of(cutTo(team.getSuffix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)))
+                .displayName(Component.text(team.getName()))
+                .prefix(team.getPrefix().toAdventure())
+                .suffix(team.getSuffix().toAdventure())
+                .color(NamedTextColor.NAMES.valueOr(team.getColor().getLegacyColor().name(), NamedTextColor.WHITE))
                 .allowFriendlyFire((team.getOptions() & 0x01) != 0)
                 .canSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0)
                 .collisionRule(collisionRules[team.getCollision().ordinal()])
                 .nameTagVisibility(visibilities[team.getVisibility().ordinal()])
                 .build();
         for (String member : team.getPlayers()) {
-            spongeTeam.addMember(Text.of(member));
+            spongeTeam.addMember(Component.text(member));
         }
         sb.registerTeam(spongeTeam);
-        team.setPlatformTeam(sb);
+        team.setPlatformTeam(spongeTeam);
     }
 
     @Override
@@ -132,9 +134,10 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     @Override
     public void updateTeam(@NonNull Team team) {
         org.spongepowered.api.scoreboard.Team spongeTeam = (org.spongepowered.api.scoreboard.Team) team.getPlatformTeam();
-        spongeTeam.setDisplayName(Text.of(team.getName()));
-        spongeTeam.setPrefix(Text.of(cutTo(team.getPrefix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
-        spongeTeam.setSuffix(Text.of(cutTo(team.getSuffix().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13)));
+        spongeTeam.setDisplayName(Component.text(team.getName()));
+        spongeTeam.setPrefix(team.getPrefix().toAdventure());
+        spongeTeam.setSuffix(team.getSuffix().toAdventure());
+        spongeTeam.setColor(NamedTextColor.NAMES.valueOr(team.getColor().getLegacyColor().name(), NamedTextColor.WHITE));
         spongeTeam.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         spongeTeam.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
         spongeTeam.setCollisionRule(collisionRules[team.getCollision().ordinal()]);

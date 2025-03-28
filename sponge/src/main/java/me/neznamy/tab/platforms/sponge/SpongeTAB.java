@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge8;
+package me.neznamy.tab.platforms.sponge;
 
 import com.google.inject.Inject;
 import lombok.Getter;
@@ -23,11 +23,11 @@ import org.spongepowered.plugin.builtin.jvm.Plugin;
 import java.nio.file.Path;
 
 /**
- * Main class for Sponge 8.
+ * Main class for Sponge.
  */
 @Getter
 @Plugin(TabConstants.PLUGIN_ID)
-public class Sponge8TAB {
+public class SpongeTAB {
 
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;
     @Inject private PluginContainer container;

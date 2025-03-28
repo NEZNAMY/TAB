@@ -9,8 +9,7 @@ val platforms = setOf(
     rootProject.projects.bukkit.paper,
     rootProject.projects.bungeecord,
     rootProject.projects.velocity,
-    rootProject.projects.sponge7,
-    rootProject.projects.sponge8
+    rootProject.projects.sponge
 ).map { it.dependencyProject }
 
 tasks {

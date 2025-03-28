@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge8;
+package me.neznamy.tab.platforms.sponge;
 
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * TabList implementation for Sponge 8 and up
+ * TabList implementation for Sponge.
  */
 public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
 
