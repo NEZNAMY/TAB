@@ -18,8 +18,8 @@ public class FabricEventListener implements EventListener<ServerPlayer> {
      * Registers all event listeners.
      */
     public void register() {
-        ServerPlayConnectionEvents.DISCONNECT.register((connection, $) -> quit(connection.player.getUUID()));
-        ServerPlayConnectionEvents.JOIN.register((connection, $, $$) -> join(connection.player));
+        ServerPlayConnectionEvents.DISCONNECT.register((connection, server) -> quit(connection.player.getUUID()));
+        ServerPlayConnectionEvents.JOIN.register((connection, sender, server) -> join(connection.player));
         //TODO command preprocess
         ServerPlayerEvents.AFTER_RESPAWN.register(
                 (oldPlayer, newPlayer, alive) -> {

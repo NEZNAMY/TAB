@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom")
+    id("dev.architectury.loom")
 }
 
 repositories {
@@ -12,12 +12,12 @@ repositories {
 }
 
 dependencies {
-    api(projects.shared)
     minecraft("com.mojang:minecraft:1.21.5")
     mappings(loom.officialMojangMappings())
+    api(projects.shared)
     modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
     modImplementation("eu.pb4:placeholder-api:2.5.0+1.21.2")
-    modImplementation("net.fabricmc:fabric-loader:0.15.9")
+    modImplementation("net.fabricmc:fabric-loader:0.15.10")
     val version = "0.100.1+1.21"
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", version))
     modImplementation(fabricApi.module("fabric-networking-api-v1", version))
@@ -25,9 +25,7 @@ dependencies {
     modImplementation(fabricApi.module("fabric-command-api-v2", version))
 }
 
-loom {
-    accessWidenerPath.set(file("src/main/resources/resources/tab.accesswidener"))
-}
+loom.accessWidenerPath.set(file("src/main/resources/resources/tab.accesswidener"))
 
 tasks {
     compileJava {

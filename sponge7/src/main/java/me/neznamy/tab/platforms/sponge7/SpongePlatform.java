@@ -9,8 +9,6 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
-import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -55,12 +53,6 @@ public class SpongePlatform implements BackendPlatform {
     @Nullable
     public PipelineInjector createPipelineInjector() {
         return null;
-    }
-
-    @Override
-    @NotNull
-    public TabExpansion createTabExpansion() {
-        return new EmptyTabExpansion();
     }
 
     @Override
