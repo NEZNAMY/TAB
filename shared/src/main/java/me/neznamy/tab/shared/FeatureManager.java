@@ -576,11 +576,11 @@ public class FeatureManager {
                 proxy = TAB.getInstance().getPlatform().getProxySupport(plugin);
             } else if (type.equalsIgnoreCase("REDIS")) {
                 String url = config.getConfig().getString("proxy-support.redis.url", "redis://:password@localhost:6379/0");
-                proxy = new ProxyMessengerSupport(() -> RedisBroker.of(url));
+                proxy = new ProxyMessengerSupport("Redis", () -> RedisBroker.of(url));
             } else if (type.equalsIgnoreCase("RABBITMQ")) {
                 String exchange = config.getConfig().getString("proxy-support.rabbitmq.exchange", "plugin");
                 String url = config.getConfig().getString("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
-                proxy = new ProxyMessengerSupport(() -> RabbitMQBroker.of(url, exchange));
+                proxy = new ProxyMessengerSupport("RabbitMQ", () -> RabbitMQBroker.of(url, exchange));
             }
             if (proxy != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PROXY_SUPPORT, proxy);
         }
