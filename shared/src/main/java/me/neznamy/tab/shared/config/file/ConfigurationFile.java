@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,17 +18,17 @@ import java.util.Map.Entry;
 /**
  * Abstract class for configuration file
  */
+@Getter
 @SuppressWarnings("unchecked")
 public abstract class ConfigurationFile {
 
-    /** Comments on top of the file */
-    protected List<String> header;
-
     /** Configuration file content */
-    @Getter @Setter protected Map<Object, Object> values;
+    @Setter
+    protected Map<Object, Object> values;
 
     /** File to use */
-    @Getter protected final File file;
+    @NotNull
+    protected final File file;
 
     /**
      * Constructs new instance and attempts to load specified configuration file.
@@ -69,6 +70,7 @@ public abstract class ConfigurationFile {
      *          Value to be inserted and returned if option is not present
      * @return  value from configuration file
      */
+    @Nullable
     public Object getObject(@NonNull String path, @Nullable Object defaultValue) {
         if (path.isEmpty()) return values;
         Object value = values;
@@ -108,10 +110,10 @@ public abstract class ConfigurationFile {
      * @return  Value at specified path
      */
     @Nullable
-    public Object getObject(String[] path) {
+    public Object getObject(@NonNull String[] path) {
         Object value = values;
         for (String section : path) {
-            if (section == null || !(value instanceof Map)) {
+            if (!(value instanceof Map)) {
                 return null;
             }
             value = getIgnoreCase((Map<Object, Object>) value, section);
@@ -129,6 +131,7 @@ public abstract class ConfigurationFile {
      *          case-insensitive key name
      * @return  map value from case-insensitive key
      */
+    @Nullable
     private Object getIgnoreCase(@NonNull Map<Object, Object> map, @NonNull String key) {
         try {
             for (Entry<Object, Object> entry : map.entrySet()) {
@@ -142,18 +145,6 @@ public abstract class ConfigurationFile {
     }
 
     /**
-     * Returns config option with specified path as {@code String}. Returns {@code null} if
-     * option is not present.
-     *
-     * @param   path
-     *          Path to the option with sections separated with "{@code .}"
-     * @return  value from file or null if not present
-     */
-    public String getString(@NonNull String path) {
-        return getString(path, null);
-    }
-
-    /**
      * Returns config option with specified path as {@code String}. If the option is not present
      * and {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} called
      * and {@code defaultValue} returned.
@@ -164,23 +155,11 @@ public abstract class ConfigurationFile {
      *          Value to be inserted and returned if option is not present
      * @return  value from configuration file as {@code String}
      */
+    @Contract("_, !null -> !null")
     public String getString(@NonNull String path, @Nullable String defaultValue) {
         Object value = getObject(path, defaultValue);
         if (value == null) return defaultValue;
         return String.valueOf(value);
-    }
-
-    /**
-     * Returns config option with specified path as {@code List<String>}. Returns {@code null} if
-     * option is not present.
-     *
-     * @param   path
-     *          Path to the option with sections separated with "{@code .}"
-     * @return  value from file or null if not present
-     */
-    @Nullable
-    public List<String> getStringList(@NonNull String path) {
-        return getStringList(path, null);
     }
 
     /**
@@ -194,6 +173,7 @@ public abstract class ConfigurationFile {
      *          Value to be inserted and returned if option is not present
      * @return  value from configuration file as {@code List<String>}
      */
+    @Contract("_, !null -> !null")
     public List<String> getStringList(@NonNull String path, @Nullable List<String> defaultValue) {
         Object value = getObject(path, defaultValue);
         if (value == null) return defaultValue;
@@ -208,18 +188,6 @@ public abstract class ConfigurationFile {
     }
 
     /**
-     * Returns config option with specified path as {@code Integer}. Returns {@code null} if
-     * option is not present.
-     *
-     * @param   path
-     *          Path to the option with sections separated with "{@code .}"
-     * @return  value from file or null if not present
-     */
-    public Integer getInt(@NonNull String path) {
-        return getInt(path, null);
-    }
-
-    /**
      * Returns config option with specified path as {@code Integer}. If the option is not present
      * and {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} called
      * and {@code defaultValue} returned.
@@ -230,6 +198,7 @@ public abstract class ConfigurationFile {
      *          Value to be inserted and returned if option is not present
      * @return  value from configuration file as {@code Integer}
      */
+    @Contract("_, !null -> !null")
     public Integer getInt(@NonNull String path, @Nullable Integer defaultValue) {
         Object value = getObject(path, defaultValue);
         if (value == null) return defaultValue;
@@ -255,27 +224,6 @@ public abstract class ConfigurationFile {
         Object value = getObject(path, defaultValue);
         if (value == null) return defaultValue;
         return Boolean.parseBoolean(value.toString());
-    }
-
-    /**
-     * Returns config option with specified path as {@code Double}. If the option is not present
-     * and {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} called
-     * and {@code defaultValue} returned.
-     *
-     * @param   path
-     *          Path to the option with sections separated with "{@code .}"
-     * @param   defaultValue
-     *          Value to be inserted and returned if option is not present
-     * @return  value from configuration file as {@code Double}
-     */
-    public Double getDouble(@NonNull String path, double defaultValue) {
-        Object value = getObject(path, defaultValue);
-        if (value == null) return defaultValue;
-        try {
-            return Double.parseDouble(value.toString());
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
     }
 
     /**
@@ -337,6 +285,7 @@ public abstract class ConfigurationFile {
      *          Value to save
      * @return  the first argument to allow chaining
      */
+    @NotNull
     private Map<Object, Object> set(@NonNull Map<Object, Object> map, @NonNull String path, @Nullable Object value) {
         if (path.contains(".")) {
             String keyWord = getRealKey(map, path.split("\\.")[0]);
@@ -365,6 +314,7 @@ public abstract class ConfigurationFile {
      *          Key to find
      * @return  The real key name
      */
+    @NotNull
     private String getRealKey(@NonNull Map<?, ?> map, @NonNull String key) {
         for (Object mapKey : map.keySet()) {
             if (mapKey.toString().equalsIgnoreCase(key)) return mapKey.toString();

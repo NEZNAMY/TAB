@@ -249,8 +249,8 @@ public class Converter {
 
     private void convertHeaderFooter(@NotNull ConfigurationFile oldConfig, @NotNull ConfigurationFile newConfig) {
         newConfig.set("header-footer.enabled", oldConfig.getBoolean("enable-header-footer", true));
-        newConfig.set("header-footer.header", oldConfig.getStringList("header"));
-        newConfig.set("header-footer.footer", oldConfig.getStringList("footer"));
+        newConfig.set("header-footer.header", oldConfig.getStringList("header", Collections.emptyList()));
+        newConfig.set("header-footer.footer", oldConfig.getStringList("footer", Collections.emptyList()));
         newConfig.set("header-footer.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.header-footer", Collections.singletonList("disabledworld")));
         if (TAB.getInstance().getPlatform().isProxy())
             newConfig.set("header-footer.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.header-footer", Collections.singletonList("disabledserver")));
@@ -337,7 +337,7 @@ public class Converter {
     }
 
     private String translateWorldGroup(@NotNull ConfigurationFile oldConfig, @NotNull String group) {
-        String oldSeparator = oldConfig.hasConfigOption("multi-world-separator") ? oldConfig.getString("multi-world-separator") : "-";
+        String oldSeparator = oldConfig.getString("multi-world-separator", "-");
         return group.replace(oldSeparator, ";");
     }
 
