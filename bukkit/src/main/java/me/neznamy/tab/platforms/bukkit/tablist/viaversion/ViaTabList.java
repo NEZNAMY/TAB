@@ -5,6 +5,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
@@ -18,6 +19,7 @@ import java.util.BitSet;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
 
-    private static final long DELAY = 500;
+    private static final long CHECK_DELAY = 100;
 
     protected final Class<? extends Protocol> protocol;
     private final PacketType playerInfoUpdate;
@@ -35,8 +37,8 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
     /** User connection this tablist belongs to */
     protected final UserConnection connection;
 
-    private transient final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
-    private transient boolean delayed = true;
+    private transient ScheduledFuture<?> task;
+    private transient final Queue<PacketWrapper> queuedPackets = new ConcurrentLinkedQueue<>();
 
     /**
      *
@@ -56,14 +58,17 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
         this.tabList = tabList;
         this.connection = Via.getManager().getConnectionManager().getConnectedClient(player.getUniqueId());
 
-        // First-time delay
-        connection.getChannel().eventLoop().schedule(() -> {
-            Runnable task;
-            while ((task = queue.poll()) != null) {
-                task.run();
+        // Queue packets until connection is available
+        // Is important to use scheduleWithFixedDelay() to avoid task overlap
+        task = connection.getChannel().eventLoop().scheduleWithFixedDelay(() -> {
+            if (connection.getProtocolInfo().getClientState() == State.PLAY) {
+                PacketWrapper packet;
+                while ((packet = queuedPackets.poll()) != null) {
+                    packet.send(protocol);
+                }
+                task.cancel(true);
             }
-            delayed = false;
-        }, DELAY, TimeUnit.MILLISECONDS);
+        }, 0L, CHECK_DELAY, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -164,8 +169,8 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     protected void send(@NonNull PacketWrapper packet) {
-        if (delayed) {
-            queue.add(() -> packet.send(protocol));
+        if (!task.isCancelled()) {
+            queuedPackets.add(packet);
         } else {
             packet.scheduleSend(protocol);
         }
