@@ -26,7 +26,6 @@ import java.util.*;
 /**
  * TabList implementation using direct mojang-mapped code.
  */
-@SuppressWarnings("unused") // Used via reflection
 public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);

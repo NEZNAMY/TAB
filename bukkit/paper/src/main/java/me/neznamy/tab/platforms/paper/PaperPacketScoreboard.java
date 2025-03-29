@@ -24,7 +24,6 @@ import java.util.Optional;
 /**
  * Scoreboard implementation using direct mojang-mapped code.
  */
-@SuppressWarnings("unused") // Used via reflection
 public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     private static final ChatFormatting[] formats = ChatFormatting.values();

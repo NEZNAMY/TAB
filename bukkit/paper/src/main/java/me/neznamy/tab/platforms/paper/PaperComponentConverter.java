@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Component converter using direct mojang-mapped code.
  */
-@SuppressWarnings("unused") // Used via reflection
 public class PaperComponentConverter extends ComponentConverter {
 
     @Override

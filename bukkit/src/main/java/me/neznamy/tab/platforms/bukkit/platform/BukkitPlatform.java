@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
-import com.google.common.collect.Lists;
-import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -15,14 +13,9 @@ import me.neznamy.tab.platforms.bukkit.header.*;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
-import me.neznamy.tab.platforms.bukkit.nms.converter.LegacyComponentConverter;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ModerateComponentConverter;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ModernComponentConverter;
-import me.neznamy.tab.platforms.bukkit.scoreboard.BukkitScoreboard;
-import me.neznamy.tab.platforms.bukkit.scoreboard.PaperScoreboard;
-import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
-import me.neznamy.tab.platforms.bukkit.tablist.*;
+import me.neznamy.tab.platforms.bukkit.provider.BukkitImplementationProvider;
+import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
+import me.neznamy.tab.platforms.bukkit.provider.ViaVersionImplementationProvider;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -33,7 +26,6 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
-import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
@@ -43,10 +35,8 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.impl.DummyBossBar;
-import me.neznamy.tab.shared.platform.impl.DummyScoreboard;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import me.neznamy.tab.shared.util.function.FunctionWithException;
 import net.kyori.adventure.audience.Audience;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
@@ -62,10 +52,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -94,26 +82,22 @@ public class BukkitPlatform implements BackendPlatform {
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
-    /** Component converter from TAB to minecraft components */
-    @Nullable
-    private final ComponentConverter componentConverter = findComponentConverter();
-
-    /** Provider for scoreboard implementation */
-    @NotNull
-    private final FunctionWithException<BukkitTabPlayer, Scoreboard> scoreboardProvider = findScoreboardProvider();
-
-    /** Provider for tablist implementation */
-    @NotNull
-    private final FunctionWithException<BukkitTabPlayer, TabList> tablistProvider = findTablistProvider();
-
     /** Header/footer implementation */
     @Getter
     @NotNull
-    private final HeaderFooter headerFooter = findHeaderFooter();
+    private final HeaderFooter headerFooter;
 
     /** Flag tracking if direct mojang-mapped code can be used or not */
     private final boolean canUseDirectNMS = BukkitReflection.isMojangMapped() &&
             (serverVersion == ProtocolVersion.V1_21_4 || serverVersion == ProtocolVersion.V1_21_5);
+
+    /** Implementation for creating new instances using content available on the server */
+    @NotNull
+    private final ImplementationProvider serverImplementationProvider;
+
+    /** Implementation for sending new content to new players on old servers */
+    @NotNull
+    private final ViaVersionImplementationProvider viaVersionImplementationProvider = new ViaVersionImplementationProvider(serverVersion);
 
     /**
      * Constructs new instance with given plugin.
@@ -122,7 +106,6 @@ public class BukkitPlatform implements BackendPlatform {
      *          Plugin
      */
     @SneakyThrows
-    @SuppressWarnings("unchecked")
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         long time = System.currentTimeMillis();
@@ -135,105 +118,23 @@ public class BukkitPlatform implements BackendPlatform {
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             new BukkitPremiumVanishHook().register();
         }
-        PingRetriever.tryLoad();
-        if (BukkitReflection.getMinorVersion() >= 8) {
-            if (canUseDirectNMS) {
-                BukkitPipelineInjector.setGetChannel((FunctionWithException<BukkitTabPlayer, Channel>) Class.forName("me.neznamy.tab.platforms.paper.PaperLoader").getDeclaredField("getChannel").get(null));
-            } else {
-                BukkitPipelineInjector.tryLoad();
-            }
+        if (canUseDirectNMS) {
+            serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper.PaperImplementationProvider").getConstructor().newInstance();
+        } else {
+            serverImplementationProvider = new BukkitImplementationProvider();
         }
+        headerFooter = findHeaderFooter();
+        PingRetriever.tryLoad();
+        BukkitPipelineInjector.setGetChannel(serverImplementationProvider.getChannelFunction());
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] §7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
-    }
-
-    @NotNull
-    @SneakyThrows
-    private FunctionWithException<BukkitTabPlayer, Scoreboard> findScoreboardProvider() {
-        final FunctionWithException<BukkitTabPlayer, Scoreboard> base;
-        if (ViaVersionHook.getInstance().isInstalled()) {
-            base = ViaVersionPlatform.findScoreboardProvider(serverVersion);
-        } else {
-            base = FunctionWithException.empty();
-        }
-        if (canUseDirectNMS) {
-            Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketScoreboard").getConstructor(BukkitTabPlayer.class);
-            return base.fallback(player -> (Scoreboard) constructor.newInstance(player));
-        }
-        try {
-            if (BukkitReflection.getMinorVersion() >= 7) Objects.requireNonNull(componentConverter);
-            PacketScoreboard.load();
-            return base.fallback(PacketScoreboard::new);
-        } catch (Exception e) {
-            if (PaperScoreboard.isAvailable()) {
-                BukkitUtils.compatibilityError(e, "Scoreboards", "Paper API", "Compatibility with other plugins being reduced");
-                return base.fallback(PaperScoreboard::new);
-            } else if (BukkitScoreboard.isAvailable()) {
-                List<String> missingFeatures = Lists.newArrayList(
-                        "Compatibility with other plugins being reduced",
-                        "Features receiving new artificial character limits"
-                );
-                if (BukkitReflection.is1_20_3Plus()) {
-                    missingFeatures.add("1.20.3+ visuals not working due to lack of API"); // soontm?
-                }
-                BukkitUtils.compatibilityError(e, "Scoreboards", "Bukkit API", missingFeatures.toArray(new String[0]));
-                return base.fallback(BukkitScoreboard::new);
-            } else if (BukkitReflection.getMinorVersion() >= 5) {
-                BukkitUtils.compatibilityError(e, "Scoreboards", null,
-                        "Scoreboard feature will not work",
-                        "Belowname feature will not work",
-                        "Player objective feature will not work",
-                        "Scoreboard teams feature will not work (nametags & sorting)");
-            }
-        }
-        return base.fallback(DummyScoreboard::new);
-    }
-
-    @NotNull
-    @SneakyThrows
-    private FunctionWithException<BukkitTabPlayer, TabList> findTablistProvider() {
-        final FunctionWithException<BukkitTabPlayer, TabList> base;
-        if (ViaVersionHook.getInstance().isInstalled()) {
-            base = ViaVersionPlatform.findTablistProvider(serverVersion);
-        } else {
-            base = FunctionWithException.empty();
-        }
-        if (canUseDirectNMS) {
-            Constructor<?> constructor = Class.forName("me.neznamy.tab.platforms.paper.PaperPacketTabList").getConstructor(BukkitTabPlayer.class);
-            return base.fallback(player -> (TabList) constructor.newInstance(player));
-        }
-        try {
-            if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {
-                // 1.19.3+
-                Objects.requireNonNull(componentConverter);
-                PacketTabList1193.loadNew();
-                return base.fallback(PacketTabList1193::new);
-            } else if (BukkitReflection.getMinorVersion() >= 8) {
-                // 1.8 - 1.19.2
-                Objects.requireNonNull(componentConverter);
-                PacketTabList18.load();
-                return base.fallback(PacketTabList18::new);
-            } else {
-                // 1.7.10 and lower
-                PacketTabList17.load();
-                return base.fallback(PacketTabList17::new);
-            }
-        } catch (Exception e) {
-            BukkitUtils.compatibilityError(e, "tablist entry management", "Bukkit API",
-                    "Layout feature will not work",
-                    "Prevent-spectator-effect feature will not work",
-                    "Ping spoof feature will not work",
-                    "Tablist formatting missing anti-override",
-                    "Tablist formatting not supporting relational placeholders");
-            return base.fallback(BukkitTabList::new);
-        }
     }
 
     @NotNull
     private HeaderFooter findHeaderFooter() {
         if (BukkitReflection.getMinorVersion() >= 8) {
             try {
-                Objects.requireNonNull(componentConverter);
+                Objects.requireNonNull(serverImplementationProvider.getComponentConverter());
                 return new PacketHeaderFooter();
             } catch (Exception e) {
                 if (PaperHeaderFooter.isAvailable()) return new PaperHeaderFooter();
@@ -249,38 +150,6 @@ public class BukkitPlatform implements BackendPlatform {
             }
         }
         return new DummyHeaderFooter();
-    }
-
-    /**
-     * Attempts to load component converter.
-     *
-     * @return  Instance or {@code null} if not available
-     */
-    @Nullable
-    @SneakyThrows
-    public ComponentConverter findComponentConverter() {
-        if (canUseDirectNMS) {
-            return (ComponentConverter) Class.forName("me.neznamy.tab.platforms.paper.PaperComponentConverter").getConstructor().newInstance();
-        }
-        try {
-            if (BukkitReflection.getMinorVersion() >= 19) {
-                // 1.19+
-                return new ModernComponentConverter();
-            } else if (BukkitReflection.getMinorVersion() >= 16) {
-                // 1.16 - 1.18.2
-                return new ModerateComponentConverter();
-            } else {
-                // 1.7 - 1.15.2
-                return new LegacyComponentConverter();
-            }
-        } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage("§c[TAB] Failed to initialize converter from TAB components to Minecraft components. " +
-                    "This will negatively impact most features, see below.");
-            if (BukkitUtils.PRINT_EXCEPTIONS) {
-                e.printStackTrace();
-            }
-            return null;
-        }
     }
 
     @Override
@@ -425,8 +294,8 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public Object convertComponent(@NotNull TabComponent component) {
-        if (componentConverter != null) {
-            return componentConverter.convert(component);
+        if (serverImplementationProvider.getComponentConverter() != null) {
+            return serverImplementationProvider.getComponentConverter().convert(component);
         } else {
             return component;
         }
@@ -436,7 +305,9 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     @SneakyThrows
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
-        return scoreboardProvider.apply((BukkitTabPlayer) player);
+        Scoreboard scoreboard = viaVersionImplementationProvider.newScoreboard((BukkitTabPlayer) player);
+        if (scoreboard != null) return scoreboard;
+        return serverImplementationProvider.newScoreboard((BukkitTabPlayer) player);
     }
 
     @Override
@@ -459,7 +330,9 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     @SneakyThrows
     public TabList createTabList(@NotNull TabPlayer player) {
-        return tablistProvider.apply((BukkitTabPlayer) player);
+        TabList tabList = viaVersionImplementationProvider.newTabList((BukkitTabPlayer) player);
+        if (tabList != null) return tabList;
+        return serverImplementationProvider.newTabList((BukkitTabPlayer) player);
     }
 
     @Override
