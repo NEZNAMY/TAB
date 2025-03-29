@@ -5,6 +5,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
 import me.neznamy.chat.component.SimpleTextComponent;
@@ -14,6 +15,7 @@ import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
-    private static final long DELAY = 500;
+    private static final long CHECK_DELAY = 100;
     private static final Object DUMMY = new Object();
 
     protected final Class<? extends Protocol> protocol;
@@ -31,11 +33,11 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private final PacketType setObjective;
     protected final PacketType setScore;
     private final PacketType setPlayerTeam;
-    /** User connection this tablist belongs to */
+    /** User connection this scoreboard belongs to */
     protected final UserConnection connection;
 
-    private transient final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
-    private transient boolean delayed = true;
+    private transient ScheduledFuture<?> task;
+    private transient final Queue<PacketWrapper> queuedPackets = new ConcurrentLinkedQueue<>();
 
     /**
      * Constructs new instance with given player.
@@ -62,14 +64,17 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         this.setPlayerTeam = setPlayerTeam;
         this.connection = Via.getManager().getConnectionManager().getConnectedClient(player.getUniqueId());
 
-        // First-time delay
-        connection.getChannel().eventLoop().schedule(() -> {
-            Runnable task;
-            while ((task = queue.poll()) != null) {
-                task.run();
+        // Queue packets until connection is available
+        // Is important to use scheduleWithFixedDelay() to avoid task overlap
+        task = connection.getChannel().eventLoop().scheduleWithFixedDelay(() -> {
+            if (connection.getProtocolInfo().getClientState() == State.PLAY) {
+                PacketWrapper packet;
+                while ((packet = queuedPackets.poll()) != null) {
+                    packet.send(protocol);
+                }
+                task.cancel(true);
             }
-            delayed = false;
-        }, DELAY, TimeUnit.MILLISECONDS);
+        }, 0L, CHECK_DELAY, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -183,8 +188,8 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     protected abstract void writeObjectiveDisplay(@NonNull PacketWrapper packet, @NonNull Objective objective);
 
     protected void send(@NonNull PacketWrapper packet) {
-        if (delayed) {
-            queue.add(() -> packet.send(protocol));
+        if (!task.isCancelled()) {
+            queuedPackets.add(packet);
         } else {
             packet.scheduleSend(protocol);
         }
