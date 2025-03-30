@@ -44,6 +44,10 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     @Override
     public void registerObjective(@NonNull Objective objective) {
         sendObjectivePacket(objective, (byte) ObjectiveAction.REGISTER);
+    }
+
+    @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
         player.sendPacket(new ScoreboardDisplay(objective.getDisplaySlot().ordinal(), objective.getName()));
     }
 

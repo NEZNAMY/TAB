@@ -113,6 +113,10 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void registerObjective(@NonNull Objective objective) {
         packetSender.sendPacket(player, newObjectivePacket(ObjectiveAction.REGISTER, objective));
+    }
+
+    @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
         packetSender.sendPacket(player, displayPacketData.setDisplaySlot(objective.getDisplaySlot().ordinal(), newObjective(objective)));
     }
 

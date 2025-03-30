@@ -208,12 +208,12 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
 
     private void register(@NotNull TabPlayer player) {
         player.getScoreboard().registerObjective(
-                Scoreboard.DisplaySlot.BELOW_NAME,
                 OBJECTIVE_NAME,
                 cache.get(player.belowNameData.text.updateAndGet()),
                 Scoreboard.HealthDisplay.INTEGER,
                 cache.get(player.belowNameData.defaultNumberFormat.updateAndGet())
         );
+        player.getScoreboard().setDisplaySlot(OBJECTIVE_NAME, Scoreboard.DisplaySlot.BELOW_NAME);
     }
 
     /**

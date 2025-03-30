@@ -57,15 +57,27 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     private boolean antiOverrideScoreboard;
 
     @Override
-    public synchronized void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull TabComponent title,
+    public synchronized void registerObjective(@NonNull String objectiveName, @NonNull TabComponent title,
                                         @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {
-        Objective objective = new Objective(displaySlot, objectiveName, title, display, numberFormat, null);
+        Objective objective = new Objective(objectiveName, title, display, numberFormat, null);
         if (objectives.put(objectiveName, objective) != null) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
         }
         if (frozen) return;
         registerObjective(objective);
+    }
+
+    @Override
+    public synchronized void setDisplaySlot(@NonNull String objectiveName, @NonNull DisplaySlot displaySlot) {
+        Objective objective = objectives.get(objectiveName);
+        if (objective == null) {
+            error("Tried to set display slot for non-existing objective %s to player ", objectiveName);
+            return;
+        }
+        objective.setDisplaySlot(displaySlot);
+        if (frozen) return;
+        setDisplaySlot(objective);
     }
 
     @Override
@@ -202,6 +214,9 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     public synchronized void resend() {
         for (Objective objective : objectives.values()) {
             registerObjective(objective);
+            if (objective.getDisplaySlot() != null) {
+                setDisplaySlot(objective);
+            }
             for (Score score : objective.getScores().values()) {
                 setScore(score);
             }
@@ -371,6 +386,14 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     public abstract void registerObjective(@NonNull Objective objective);
 
     /**
+     * Sets display slot for an objective
+     *
+     * @param   objective
+     *          Objective to set display slot for
+     */
+    public abstract void setDisplaySlot(@NonNull Objective objective);
+
+    /**
      * Unregisters an objective
      *
      * @param   objective
@@ -439,12 +462,11 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     /**
      * Structure holding objective data.
      */
-    @AllArgsConstructor
     @Getter
     @Setter
     public static class Objective {
 
-        @NonNull private final DisplaySlot displaySlot;
+        @Nullable private DisplaySlot displaySlot;
         @NonNull private final String name;
         @NonNull private TabComponent title;
         @NonNull private HealthDisplay healthDisplay;
@@ -453,6 +475,15 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
 
         /** Platform's objective object (if it has one) for fast access */
         @Nullable private Object platformObjective;
+
+        private Objective(@NonNull String name, @NonNull TabComponent title,
+                         @NonNull HealthDisplay healthDisplay, @Nullable TabComponent numberFormat, @Nullable Object platformObjective) {
+            this.name = name;
+            this.title = title;
+            this.healthDisplay = healthDisplay;
+            this.numberFormat = numberFormat;
+            this.platformObjective = platformObjective;
+        }
 
         private void update(@NonNull TabComponent title, @NonNull HealthDisplay healthDisplay, @Nullable TabComponent numberFormat) {
             this.title = title;

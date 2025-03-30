@@ -41,7 +41,6 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
     public void registerObjective(@NonNull Objective objective) {
         try {
             ProxyObjective.Builder builder = scoreboard.objectiveBuilder(objective.getName())
-                    .displaySlot(com.velocitypowered.api.scoreboard.DisplaySlot.valueOf(objective.getDisplaySlot().name()))
                     .healthDisplay(com.velocitypowered.api.scoreboard.HealthDisplay.valueOf(objective.getHealthDisplay().name()))
                     .title(objective.getTitle().toTextHolder(textHolderFunction))
                     .numberFormat(objective.getNumberFormat() == null ? null : NumberFormat.fixed(objective.getNumberFormat().toAdventure()));
@@ -49,6 +48,11 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().printError("Failed to register objective " + objective.getName() + " for player " + player.getName(), e);
         }
+    }
+
+    @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
+        ((ProxyObjective)objective.getPlatformObjective()).setDisplaySlot(com.velocitypowered.api.scoreboard.DisplaySlot.valueOf(objective.getDisplaySlot().name()));
     }
 
     @Override

@@ -29,7 +29,7 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final Object DUMMY = new Object();
 
     protected final Class<? extends Protocol> protocol;
-    private final PacketType setDisplayObjective;
+    protected final PacketType setDisplayObjective;
     private final PacketType setObjective;
     protected final PacketType setScore;
     private final PacketType setPlayerTeam;
@@ -80,12 +80,6 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void registerObjective(@NonNull Objective objective) {
         sendObjectiveUpdate(ObjectiveAction.REGISTER, objective);
-
-        final PacketWrapper packet = PacketWrapper.create(setDisplayObjective, null, connection);
-
-        writeObjective(packet, objective);
-
-        send(packet);
     }
 
     @Override
@@ -182,8 +176,6 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);
-
-    protected abstract void writeObjective(@NonNull PacketWrapper packet, @NonNull Objective objective);
 
     protected abstract void writeObjectiveDisplay(@NonNull PacketWrapper packet, @NonNull Objective objective);
 

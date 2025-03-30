@@ -52,7 +52,11 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         obj.a(IScoreboardCriteria.EnumScoreboardHealthDisplay.valueOf(objective.getHealthDisplay().name()));
         objective.setPlatformObjective(obj);
         sendPacket(new PacketPlayOutScoreboardObjective(obj, ObjectiveAction.REGISTER));
-        sendPacket(new PacketPlayOutScoreboardDisplayObjective(objective.getDisplaySlot().ordinal(), obj));
+    }
+
+    @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
+        sendPacket(new PacketPlayOutScoreboardDisplayObjective(objective.getDisplaySlot().ordinal(), (ScoreboardObjective) objective.getPlatformObjective()));
     }
 
     @Override

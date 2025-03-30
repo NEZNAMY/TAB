@@ -34,6 +34,16 @@ public class ViaScoreboard1203 extends ViaScoreboard116 {
     }
 
     @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
+        PacketWrapper packet = PacketWrapper.create(setDisplayObjective, null, connection);
+
+        packet.write(Types.VAR_INT, objective.getDisplaySlot().ordinal());
+        packet.write(Types.STRING, objective.getName());
+
+        send(packet);
+    }
+
+    @Override
     public void setScore(@NonNull Score score) {
         final PacketWrapper packet = PacketWrapper.create(setScore, null, connection);
 
@@ -66,12 +76,6 @@ public class ViaScoreboard1203 extends ViaScoreboard116 {
     @Override
     protected void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component) {
         packet.write(Types.TAG, component.toViaVersionTag());
-    }
-
-    @Override
-    protected void writeObjective(@NonNull PacketWrapper packet, @NonNull Objective objective) {
-        packet.write(Types.VAR_INT, objective.getDisplaySlot().ordinal());
-        packet.write(Types.STRING, objective.getName());
     }
 
     @Override

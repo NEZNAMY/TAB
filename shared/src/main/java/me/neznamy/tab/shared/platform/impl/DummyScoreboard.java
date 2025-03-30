@@ -26,6 +26,11 @@ public class DummyScoreboard extends SafeScoreboard<TabPlayer> {
     }
 
     @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
+        // Do nothing
+    }
+
+    @Override
     public void unregisterObjective(@NonNull Objective objective) {
         // Do nothing
     }

@@ -48,7 +48,11 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         );
         objective.setPlatformObjective(obj);
         sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
-        sendPacket(new ClientboundSetDisplayObjectivePacket(net.minecraft.world.scores.DisplaySlot.values()[objective.getDisplaySlot().ordinal()], obj));
+    }
+
+    @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
+        sendPacket(new ClientboundSetDisplayObjectivePacket(net.minecraft.world.scores.DisplaySlot.values()[objective.getDisplaySlot().ordinal()], (net.minecraft.world.scores.Objective) objective.getPlatformObjective()));
     }
 
     @Override

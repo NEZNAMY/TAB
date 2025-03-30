@@ -20,8 +20,6 @@ public interface Scoreboard {
     /**
      * Registers new scoreboard objective.
      *
-     * @param   displaySlot
-     *          Display slot
      * @param   objectiveName
      *          Objective name
      * @param   title
@@ -31,8 +29,16 @@ public interface Scoreboard {
      * @param   numberFormat
      *          Default number format for all scores in this objective (1.20.3+)
      */
-    void registerObjective(@NonNull DisplaySlot displaySlot, @NonNull String objectiveName, @NonNull TabComponent title,
-                           @NonNull HealthDisplay display, @Nullable TabComponent numberFormat);
+    void registerObjective(@NonNull String objectiveName, @NonNull TabComponent title, @NonNull HealthDisplay display, @Nullable TabComponent numberFormat);
+
+    /**
+     * Sets display slot of an objective.
+     * @param   objectiveName
+     *          Objective name
+     * @param   displaySlot
+     *          Display slot
+     */
+    void setDisplaySlot(@NonNull String objectiveName, @NonNull DisplaySlot displaySlot);
 
     /**
      * Unregisters scoreboard objective.

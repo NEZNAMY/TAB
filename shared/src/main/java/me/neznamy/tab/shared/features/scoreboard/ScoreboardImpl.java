@@ -150,12 +150,12 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         if (p.scoreboardData.activeScoreboard == this) return; // already registered
         p.scoreboardData.titleProperty = new Property(this, p, title);
         p.getScoreboard().registerObjective(
-                Scoreboard.DisplaySlot.SIDEBAR,
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 manager.getCache().get(p.scoreboardData.titleProperty.get()),
                 Scoreboard.HealthDisplay.INTEGER,
                 SimpleTextComponent.EMPTY
         );
+        p.getScoreboard().setDisplaySlot(ScoreboardManagerImpl.OBJECTIVE_NAME, Scoreboard.DisplaySlot.SIDEBAR);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }

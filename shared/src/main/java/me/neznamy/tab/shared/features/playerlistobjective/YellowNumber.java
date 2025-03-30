@@ -208,12 +208,12 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
 
     private void register(@NotNull TabPlayer player) {
         player.getScoreboard().registerObjective(
-                Scoreboard.DisplaySlot.PLAYER_LIST,
                 OBJECTIVE_NAME,
                 cache.get(player.playerlistObjectiveData.title.updateAndGet()),
                 configuration.getHealthDisplay(),
                 SimpleTextComponent.EMPTY
         );
+        player.getScoreboard().setDisplaySlot(OBJECTIVE_NAME, Scoreboard.DisplaySlot.PLAYER_LIST);
     }
 
     /**

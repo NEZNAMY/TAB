@@ -72,8 +72,12 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
                 .criterion(Criteria.DUMMY)
                 .build();
         sb.addObjective(obj);
-        sb.updateDisplaySlot(obj, displaySlots[objective.getDisplaySlot().ordinal()]);
         objective.setPlatformObjective(obj);
+    }
+
+    @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
+        sb.updateDisplaySlot((org.spongepowered.api.scoreboard.objective.Objective) objective.getPlatformObjective(), displaySlots[objective.getDisplaySlot().ordinal()]);
     }
 
     @Override

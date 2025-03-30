@@ -41,7 +41,7 @@ import java.util.concurrent.CountDownLatch;
  *      making per-player view of teams, especially sidebar not working.
  */
 // Throw the NPE if something is not as expected, parent class should ensure it anyway
-@SuppressWarnings({"deprecation", "DataFlowIssue"})
+@SuppressWarnings("deprecation")
 public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     /** Version in which team colors were added */
@@ -100,8 +100,14 @@ public class BukkitScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         checkPlayerScoreboard();
         org.bukkit.scoreboard.Objective obj = newObjective(objective.getName(), "dummy", objective.getTitle(), objective.getHealthDisplay());
         setObjectiveNumberFormat(obj, objective.getNumberFormat());
-        obj.setDisplaySlot(slots[objective.getDisplaySlot().ordinal()]);
         objective.setPlatformObjective(obj);
+    }
+
+    @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
+        checkPlayerScoreboard();
+        org.bukkit.scoreboard.Objective obj = (org.bukkit.scoreboard.Objective) objective.getPlatformObjective();
+        obj.setDisplaySlot(slots[objective.getDisplaySlot().ordinal()]);
     }
 
     @Override

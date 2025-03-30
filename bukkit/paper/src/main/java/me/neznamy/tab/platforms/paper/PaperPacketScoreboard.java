@@ -18,6 +18,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -30,17 +31,8 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final net.minecraft.world.scores.Team.CollisionRule[] collisions = net.minecraft.world.scores.Team.CollisionRule.values();
     private static final net.minecraft.world.scores.Team.Visibility[] visibilities = net.minecraft.world.scores.Team.Visibility.values();
     private static final Scoreboard dummyScoreboard = new Scoreboard();
-    private static final Field method;
-    private static final Field players;
-
-    static {
-        try {
-            method = ReflectionUtils.setAccessible(ClientboundSetPlayerTeamPacket.class.getDeclaredField("method"));
-            players = ReflectionUtils.setAccessible(ClientboundSetPlayerTeamPacket.class.getDeclaredField("players"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private static final Field method = ReflectionUtils.getInstanceFields(ClientboundSetPlayerTeamPacket.class, int.class).getFirst();
+    private static final Field players = ReflectionUtils.getOnlyField(ClientboundSetPlayerTeamPacket.class, Collection.class);
 
     /**
      * Constructs new instance with given player.
@@ -65,7 +57,14 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         );
         objective.setPlatformObjective(obj);
         sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
-        sendPacket(new ClientboundSetDisplayObjectivePacket(net.minecraft.world.scores.DisplaySlot.values()[objective.getDisplaySlot().ordinal()], obj));
+    }
+
+    @Override
+    public void setDisplaySlot(@NonNull Objective objective) {
+        sendPacket(new ClientboundSetDisplayObjectivePacket(
+                net.minecraft.world.scores.DisplaySlot.values()[objective.getDisplaySlot().ordinal()],
+                (net.minecraft.world.scores.Objective) objective.getPlatformObjective()
+        ));
     }
 
     @Override
