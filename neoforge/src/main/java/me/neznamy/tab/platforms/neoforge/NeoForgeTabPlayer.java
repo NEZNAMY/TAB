@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.neoforge;
 
 import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.platforms.neoforge.hook.LuckPermsAPIHook;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +27,7 @@ public class NeoForgeTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return getPlayer().createCommandSourceStack().hasPermission(4); // PermissionsAPIHook.hasPermission(getPlayer(), permission);
+        return LuckPermsAPIHook.hasPermission(getPlayer().createCommandSourceStack(), permission);
     }
 
     @Override

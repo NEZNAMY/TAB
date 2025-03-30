@@ -17,6 +17,7 @@ dependencies {
     mappings(loom.officialMojangMappings())
     forge("net.minecraftforge:forge:1.21.5-55.0.3")
     api(projects.shared)
+    compileOnly("net.luckperms:api:5.4")
 }
 
 loom.forge.accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))

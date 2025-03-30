@@ -7,6 +7,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import me.neznamy.tab.platforms.neoforge.hook.LuckPermsAPIHook;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.chat.component.TabComponent;
@@ -58,8 +59,8 @@ public class NeoForgeTabCommand {
     @SuppressWarnings("SameReturnValue") // Unused by plugin
     private int executeCommand(@NotNull CommandSourceStack source, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
-            boolean hasReloadPermission = source.hasPermission(4); //PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
-            boolean hasAdminPermission = source.hasPermission(4); //PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
+            boolean hasReloadPermission = LuckPermsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
+            boolean hasAdminPermission = LuckPermsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
                 source.sendSystemMessage(TabComponent.fromColoredText(message).convert());
             }

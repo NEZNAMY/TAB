@@ -17,6 +17,7 @@ dependencies {
     mappings(loom.officialMojangMappings())
     neoForge("net.neoforged:neoforge:21.5.2-beta")
     api(projects.shared)
+    compileOnly("net.luckperms:api:5.4")
 }
 
 loom.neoForge.accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
