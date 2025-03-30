@@ -120,6 +120,10 @@ public class BukkitPlatform implements BackendPlatform {
         }
         if (canUseDirectNMS) {
             serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper.PaperImplementationProvider").getConstructor().newInstance();
+        } else if ("v1_12_R1".equals(BukkitReflection.getServerVersion().getServerPackage())) {
+            serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.v1_12_R1.NMSImplementationProvider").getConstructor().newInstance();
+        } else if ("v1_8_R3".equals(BukkitReflection.getServerVersion().getServerPackage())) {
+            serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.v1_8_R3.NMSImplementationProvider").getConstructor().newInstance();
         } else {
             serverImplementationProvider = new BukkitImplementationProvider();
         }

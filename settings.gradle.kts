@@ -12,6 +12,7 @@ dependencyResolutionManagement {
         maven("https://repo.spongepowered.org/repository/maven-public/") // Sponge
         maven("https://jitpack.io") // PremiumVanish, Vault, YamlAssist, RedisBungee
         maven("https://repo.md-5.net/content/groups/public/") // LibsDisguises
+        maven("https://repo.codemc.org/repository/nms/") // CraftBukkit + NMS
     }
 }
 
@@ -31,6 +32,8 @@ include(":shared")
 include(":velocity")
 include(":bukkit")
 include(":bukkit:paper")
+include(":bukkit:v1_8_R3")
+include(":bukkit:v1_12_R1")
 include(":bungeecord")
 include(":component")
 include(":sponge")

@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.util.function.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ public class BukkitReflection {
     public static final Method CraftPlayer_getHandle = getHandle();
 
     /** Server version data */
+    @Getter
     private static final ServerVersion serverVersion = detectServerVersion();
 
     /** Flag determining whether the server version is at least 1.20.2 or not */
@@ -59,11 +61,12 @@ public class BukkitReflection {
                 ClassLoader loader = BukkitReflection.class.getClassLoader();
                 classFunction = name -> loader.loadClass("net.minecraft.server." + serverPackage + "." + name);
             }
+            return new ServerVersion(classFunction, minorVersion, serverPackage);
         } else {
             // Paper without CB relocation
             minorVersion = Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]);
+            return new ServerVersion(classFunction, minorVersion, null);
         }
-        return new ServerVersion(classFunction, minorVersion);
     }
 
     /**
@@ -102,9 +105,12 @@ public class BukkitReflection {
      */
     @RequiredArgsConstructor
     @Getter
-    private static class ServerVersion {
+    public static class ServerVersion {
 
         private final FunctionWithException<String, Class<?>> getClass;
         private final int minorVersion;
+
+        @Nullable
+        private final String serverPackage;
     }
 }
