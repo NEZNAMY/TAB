@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
 
-    private static final long CHECK_DELAY = 100;
+    private static final long CHECK_DELAY = 50;
 
     protected final Class<? extends Protocol> protocol;
     private final PacketType playerInfoUpdate;

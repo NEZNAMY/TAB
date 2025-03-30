@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
-    private static final long CHECK_DELAY = 100;
+    private static final long CHECK_DELAY = 50;
     private static final Object DUMMY = new Object();
 
     protected final Class<? extends Protocol> protocol;
