@@ -1,23 +1,25 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
-import java.util.*;
-
 import lombok.Getter;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
-import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Feature handler for global PlayerList feature.
@@ -184,6 +186,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         // TODO fix players potentially not appearing on rapid server switching (if anyone reports it)
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (!changed.isOnline()) return; // Player disconnected in the meantime
             for (TabPlayer all : onlinePlayers.getPlayers()) {
                 // Remove for everyone and add back if visible, easy solution to display-others-as-spectators option
                 // Also do not remove/add players from the same server, let backend handle it
