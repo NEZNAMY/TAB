@@ -18,3 +18,10 @@ mandatory = true
 versionRange = "*"
 ordering = "NONE"
 side = "SERVER"
+
+[[dependencies.tab]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.21.4,)"
+ordering = "NONE"
+side = "SERVER"
