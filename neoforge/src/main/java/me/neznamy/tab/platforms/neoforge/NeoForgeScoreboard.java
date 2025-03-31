@@ -48,7 +48,6 @@ public class NeoForgeScoreboard extends SafeScoreboard<NeoForgeTabPlayer> {
         );
         objective.setPlatformObjective(obj);
         sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
-        sendPacket(new ClientboundSetDisplayObjectivePacket(net.minecraft.world.scores.DisplaySlot.values()[objective.getDisplaySlot().ordinal()], obj));
     }
 
     @Override

@@ -15,6 +15,6 @@ displayURL = "@website@"
 [[dependencies.tab]]
 modId = "forge"
 mandatory = true
-versionRange = "[52.0.20,)"
+versionRange = "*"
 ordering = "NONE"
 side = "SERVER"

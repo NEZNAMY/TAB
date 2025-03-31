@@ -15,13 +15,11 @@ description = '''@description@'''
 [[dependencies.tab]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.4.121,)"
 ordering = "NONE"
 side = "SERVER"
 
 [[dependencies.tab]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.4,)"
 ordering = "NONE"
 side = "SERVER"
