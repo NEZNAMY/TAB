@@ -21,6 +21,6 @@ side = "SERVER"
 [[dependencies.tab]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.4,]"
+versionRange = "[1.21.4,1.21.5]"
 ordering = "NONE"
 side = "SERVER"
