@@ -10,6 +10,7 @@ allprojects {
     ext.set("id", "tab")
     ext.set("website", "https://github.com/NEZNAMY/TAB")
     ext.set("author", "NEZNAMY")
+    ext.set("credits", "Joseph T. McQuigg (JT122406)")
 }
 
 val platforms = setOf(
@@ -21,7 +22,9 @@ val platforms = setOf(
     projects.component,
     projects.velocity,
     projects.sponge,
-    projects.fabric
+    projects.fabric,
+    projects.neoforge,
+    projects.forge
 ).map { it.dependencyProject }
 
 val special = setOf(

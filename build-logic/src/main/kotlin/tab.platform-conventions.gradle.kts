@@ -1,6 +1,6 @@
 plugins {
     id("tab.standard-conventions")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 tasks.withType<Zip>().configureEach {

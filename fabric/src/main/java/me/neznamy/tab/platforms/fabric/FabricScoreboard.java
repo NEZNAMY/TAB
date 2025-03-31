@@ -132,7 +132,7 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
         }
         if (isAntiOverrideTeams() && packet instanceof ClientboundSetPlayerTeamPacket team) {
             if (team.method == TeamAction.UPDATE) return;
-            team.players = onTeamPacket(team.method, team.getName(), team.players);
+            team.players = onTeamPacket(team.method, team.getName(), team.getPlayers());
         }
     }
 

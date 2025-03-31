@@ -20,6 +20,7 @@ pluginManagement {
     includeBuild("build-logic")
     repositories {
         maven("https://repo.spongepowered.org/repository/maven-public/")
+        maven("https://maven.architectury.dev/")
         gradlePluginPortal()
         mavenCentral()
     }
@@ -38,4 +39,6 @@ include(":bungeecord")
 include(":component")
 include(":sponge")
 include(":fabric")
+include(":neoforge")
+include(":forge")
 include(":jar")
