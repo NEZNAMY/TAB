@@ -96,8 +96,10 @@ public class BukkitPlatform implements BackendPlatform {
     private final ImplementationProvider serverImplementationProvider;
 
     /** Implementation for sending new content to new players on old servers */
-    @NotNull
-    private final ViaVersionImplementationProvider viaVersionImplementationProvider = new ViaVersionImplementationProvider(serverVersion);
+    @Nullable
+    private final ViaVersionImplementationProvider viaVersionImplementationProvider =
+            ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3") ?
+                    new ViaVersionImplementationProvider(serverVersion) : null;
 
     /**
      * Constructs new instance with given plugin.
@@ -307,8 +309,10 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     @SneakyThrows
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
-        Scoreboard scoreboard = viaVersionImplementationProvider.newScoreboard((BukkitTabPlayer) player);
-        if (scoreboard != null) return scoreboard;
+        if (viaVersionImplementationProvider != null) {
+            Scoreboard scoreboard = viaVersionImplementationProvider.newScoreboard((BukkitTabPlayer) player);
+            if (scoreboard != null) return scoreboard;
+        }
         return serverImplementationProvider.newScoreboard((BukkitTabPlayer) player);
     }
 
@@ -332,8 +336,10 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     @SneakyThrows
     public TabList createTabList(@NotNull TabPlayer player) {
-        TabList tabList = viaVersionImplementationProvider.newTabList((BukkitTabPlayer) player);
-        if (tabList != null) return tabList;
+        if (viaVersionImplementationProvider != null) {
+            TabList tabList = viaVersionImplementationProvider.newTabList((BukkitTabPlayer) player);
+            if (tabList != null) return tabList;
+        }
         return serverImplementationProvider.newTabList((BukkitTabPlayer) player);
     }
 

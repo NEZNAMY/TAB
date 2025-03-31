@@ -12,7 +12,6 @@ import me.neznamy.tab.platforms.bukkit.tablist.viaversion.ViaTabList1214;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,13 +43,11 @@ public class ViaVersionImplementationProvider {
         SCOREBOARD_IMPLEMENTATIONS.put(ProtocolVersion.V1_13, ViaScoreboard113::new);
     }
 
+    @NotNull
     private final ProtocolVersion serverVersion;
 
     @Nullable
     public Scoreboard newScoreboard(@NotNull BukkitTabPlayer player) {
-        if (!ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3")) {
-            return null;
-        }
         int serverVer = serverVersion.getNetworkId();
         int playerVer = player.getVersion().getNetworkId();
         for (Map.Entry<ProtocolVersion, Function<BukkitTabPlayer, Scoreboard>> entry : SCOREBOARD_IMPLEMENTATIONS.entrySet()) {
@@ -63,9 +60,6 @@ public class ViaVersionImplementationProvider {
 
     @Nullable
     public TabList newTabList(@NotNull BukkitTabPlayer player) {
-        if (!ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_21_2to1_21_4.Protocol1_21_2To1_21_4")) {
-            return null;
-        }
         int serverVer = serverVersion.getNetworkId();
         int playerVer = player.getVersion().getNetworkId();
         for (Map.Entry<ProtocolVersion, Function<BukkitTabPlayer, TabList>> entry : TABLIST_IMPLEMENTATIONS.entrySet()) {
