@@ -275,14 +275,14 @@ if __name__ == "__main__":
     )
 
     release = "5.2.0"
-    download_image(f"https://img.shields.io/badge/Release-{release}-blue.png", "Badge_Release.png")
+    download_image(f"https://img.shields.io/badge/Release-{release}-blue.svg", "Badge_Release.svg")
 
     minecraft = "1.5 - 1.21.5".replace(" ", "%20").replace("-", "--")
-    download_image(f"https://img.shields.io/badge/Minecraft-{minecraft}-blue.png", "Badge_Minecraft.png")
+    download_image(f"https://img.shields.io/badge/Minecraft-{minecraft}-blue.svg", "Badge_Minecraft.svg")
 
     java = "8+"
-    download_image(f"https://img.shields.io/badge/Java-{java}-blue.png", "Badge_Java.png")
+    download_image(f"https://img.shields.io/badge/Java-{java}-blue.svg", "Badge_Java.svg")
 
-    download_image(f"https://img.shields.io/badge/GitHub-Source%20code-yellow.png", "Badge_SourceCode.png")
+    download_image(f"https://img.shields.io/badge/GitHub-Source%20code-yellow.svg", "Badge_SourceCode.svg")
 
-    download_image(f"https://img.shields.io/badge/Documentation-Wiki-yellow.png", "Badge_Documentation.png")
+    download_image(f"https://img.shields.io/badge/Documentation-Wiki-yellow.svg", "Badge_Documentation.svg")
