@@ -8,22 +8,23 @@ Commands have required permissions associated with them.
 
 # Content
 * [Configuration](#configuration-commands)
-  * [/tab \<player/group/playeruuid\> \<name\> \<property\> [value] [options]](#tab-playergroupplayeruuid-name-property-value-options)
+  * [/tab \<player/group/playeruuid\> \<name\> \<property\> \[value\] \[options\]](#tab-playergroupplayeruuid-name-property-value-options)
   * [/tab \<player/group/playeruuid\> \<name\> remove](#tab-playergroupplayeruuid-name-remove)
   * [/tab reload](#tab-reload)
-  * [/tab debug [player]](#tab-debug-player)
+  * [/tab debug \[player\]](#tab-debug-player)
   * [/tab group \<group\>](#tab-group-group)
   * [/tab groups](#tab-groups)
 * [Bossbar](#bossbar)
   * [/tab bossbar send \<name\> \[player\]](#tab-bossbar-show-name-player)
-  * [/tab bossbar [on/off/toggle] [player] [options]](#tab-bossbar-onofftoggle-player-options)
+  * [/tab bossbar \[on/off/toggle\] \[player\] \[options\]](#tab-bossbar-onofftoggle-player-options)
   * [/tab bossbar announce \<name\> \<length\>](#tab-bossbar-announce-name-duration)
 * [Scoreboard](#scoreboard)
   * [/tab scoreboard show \<name\> \[player\]](#tab-scoreboard-show-name-player)
-  * [/tab scoreboard [on/off/toggle] [player] [options]](#tab-scoreboard-onofftoggle-player-options)
+  * [/tab scoreboard \[on/off/toggle\] \[player\] \[options\]](#tab-scoreboard-onofftoggle-player-options)
   * [/tab scoreboard announce \<name\> \<length\>](#tab-scoreboard-announce-name-duration)
 * [Nametags / Teams](#nametags--teams)
-  * [/tab nametag toggle](#tab-nametag-toggle)
+  * [/tab nametag <show/hide/toggle> \[player\] \[viewer\] \[options\]](#tab-nametag-showhidetoggle-player-viewer-options)
+  * [/tab nametag <showview/hideview/toggleview> \[viewer\] \[options\]](#tab-nametag-showviewhideviewtoggleview-viewer-options)
   * [/tab setcollision <player> <true/false>](#tab-setcollision-player-truefalse)
 * [MySQL](#mysql)
   * [/tab mysql upload](#tab-mysql-upload)
@@ -34,7 +35,7 @@ Commands have required permissions associated with them.
 * [Additional permissions](#additional-permissions)
 
 # Configuration commands
-## /tab \<player/group/playeruuid\> \<name\> \<property\> [value] [options]
+## /tab \<player/group/playeruuid\> \<name\> \<property\> \[value\] \[options\]
 * **Permission:** `tab.change.<property>`
 * **Description:** Changes a property of a group/player to the given value. No value argument will result in that property being deleted.
 
@@ -83,7 +84,7 @@ Commands have required permissions associated with them.
 * **Permission:** `tab.scoreboard.show` for showing to yourself, `tab.scoreboard.show.other` for showing to others.
 * **Description:** Shows the scoreboard with the given `name`, either to yourself if no `player` was given, or to the given `player`.
 
-## /tab scoreboard [on/off/toggle] [player] [options]
+## /tab scoreboard \[on/off/toggle\] \[player\] \[options\]
 * **Permission:** `tab.scoreboard.toggle` for toggling for yourself, `tab.scoreboard.toggle.other` for toggling for others.
 * **Description:** Shows / hides / toggles scoreboard of specified player. If no player was given, command affects the sender.
 * **Options:**
@@ -98,7 +99,7 @@ Commands have required permissions associated with them.
 * **Permission:** `tab.bossbar.show` for showing to yourself, `tab.bossbar.show.other` for showing to others.
 * **Description:** Shows the bossbar with the given `name`, either to yourself if no `player` was given, or to the given `player`.
 
-## /tab bossbar [on/off/toggle] [player] [options]
+## /tab bossbar \[on/off/toggle\] \[player\] \[options\]
 * **Permission:** `tab.bossbar.toggle` for toggling for yourself, `tab.bossbar.toggle.other` for toggling for others.
 * **Description:** Shows / hides / toggles bossbar of specified player. If no player was given, command affects the sender.
 * **Options:**
@@ -109,9 +110,17 @@ Commands have required permissions associated with them.
 * **Description:** Shows the bossbar with the given `name` to every player on the server for the given `duration`, in seconds.
 
 # Nametags / Teams
-## /tab nametag toggle
-* **Permission:** `tab.nametag.toggle`
-* **Description:** Toggles nametag visibility on all players for player who ran the command. Running the command again will make nametags visible again.
+## /tab nametag <show/hide/toggle> \[player\] \[viewer\] \[options\]
+* **Permission:** `tab.nametag.visibility` (`tab.nametag.visibility.other` for toggling for other players)
+* **Description:** Shows / hides / toggles nametag of a specified player. If viewer is specified, view is only affected for the viewer.
+* **Options:**
+  * `-s` for silent toggling (no chat message for affected player)
+
+## /tab nametag <showview/hideview/toggleview> \[viewer\] \[options\]
+* **Permission:** `tab.nametag.view` (`tab.nametag.view.other` for toggling for other players)
+* **Description:** Shows / hides / toggles nametag VIEW a specified player.
+* **Options:**
+  * `-s` for silent toggling (no chat message for affected player)
 
 ## /tab setcollision \<player\> \<true|false\>
 * **Permission:** `tab.setcollision`

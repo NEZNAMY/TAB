@@ -36,7 +36,7 @@ You can use a tool like [this one](https://htmlcolorcodes.com/) to easily find s
 ## Magic codes
 Just like with legacy colors, use color first, then magic codes (in any order). For example with **bold**: `#00FFFF&lText`.
 
-For gradients, put the magic codes at the beginning of text. For example `<#00FF00>&lBold gradient text</#FF00FF>`.
+For gradients, put the magic codes inside the text. Example: `<#00FF00>&lBold gradient text</#FF00FF>`.
 
 # Invalid code handling
 In case you accidentally use invalid hex color code, the plugin will simply ignore it and keep it in raw format.

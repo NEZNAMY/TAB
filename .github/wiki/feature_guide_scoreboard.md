@@ -51,10 +51,6 @@ Will give you the following:
 ![image](https://github.com/NEZNAMY/TAB/assets/6338394/785e4e66-935c-4233-8a16-f3e34386cfd0)
 
 The right side text will not be visible at 1.20.2 and lower, and numbers will be displayed instead.
-To properly see the right side, not only the client has to be 1.20.3+, but the server as well,
-since the plugin cannot send a packet that does not exist (on older versions).
-Proxies always include new content and therefore count as the latest version.
-This can be used to send new content to new players while having an outdated server version.
 
 ### Alignment
 The left side of the text is automatically aligned to the left,
@@ -119,9 +115,9 @@ time - number of seconds to display the scoreboard for
 
 # Limitations
 * [1.5 - 1.12.2] The title is limited to 32 characters (including color codes).
-* [1.5 - 1.12.2] Line length is limited to 28 characters (including color codes) (68 on lines with static text / [Longer lines](#longer-lines)).
+* [1.5 - 1.12.2] Line length is limited to 28 characters (including color codes) (64 on lines with static text / [Longer lines](#longer-lines)).
 * [1.5 - 1.20.2] The red numbers on the right really cannot be removed from the plugin side (a client modification / resource pack is necessary).
-* The client only displays up to 15 lines. If a plugin sends more, only the top 15 scores will be displayed. Changing this would require a client modification.
+* The client only displays up to 15 lines. If a plugin sends more, only the top 15 scores will be displayed. Changing this would require a client modification (on versions below 1.8 the scoreboard won't appear at all if more than 15 lines are displayed).
 
 # Longer lines
 To make sure the scoreboard never flickers, it's only using prefix/suffix components to display text.

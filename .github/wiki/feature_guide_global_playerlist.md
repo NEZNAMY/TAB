@@ -7,8 +7,8 @@
 * [Compatibility with vanish plugins](#compatibility-with-vanish-plugins)
 
 # About
-This feature allows you to see players from other servers under a bungeecord network, instead of only seeing players on the same server.  
-To use this feature, you need [TAB installed on bungeecord](https://github.com/NEZNAMY/TAB/wiki/Installation#bungeecord). This option is not available on bukkit and will not be added.
+This feature allows you to see players from other servers, instead of only seeing players on the same server.  
+If TAB is installed on a backend server, you'll need to set up [Multi server support](https://github.com/NEZNAMY/TAB/wiki/Feature-info:-Multi-server-support) for proper linking of servers. On proxy installation, this is not required.
 
 # Configuration
 | Option name                            | Default value | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |

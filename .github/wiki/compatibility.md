@@ -7,6 +7,7 @@
   * [Bukkit](#bukkit)
   * [BungeeCord](#bungeecord)
   * [Fabric](#fabric)
+  * [Forge / NeoForge](#forge--neoforge)
   * [Sponge](#sponge)
   * [Velocity](#velocity)
 * [Compatibility issues](#compatibility-issues)
@@ -28,42 +29,44 @@ It is compiled with Java 8 and therefore supports any version of 8 and above.
         <tr>
             <td rowspan=2>Vanilla</td>
             <td rowspan=1><a href="https://getbukkit.org/">Bukkit</a> (+forge hybrids)</td>
-            <td>✔ (1.5 - 1.21.4)</td>
+            <td>✔ (1.5 - 1.21.5)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>
-            <td>✔ (1.9<sup>1</sup> - 1.21.4)</td>
+            <td>✔ (1.20.6 - 1.21.5)</td>
         </tr>
     </tbody>
     <tbody>
         <tr>
-            <td rowspan=2>Modded</td>
+            <td rowspan=3>Modded</td>
             <td rowspan=1><a href="https://fabricmc.net">Fabric</a></td>
-            <td>✔ (1.14 - 1.21.4)</td>
+            <td>✔ (1.21.4 - 1.21.5)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://minecraftforge.net">Forge</a></td>
-            <td>❌</td>
+            <td>✔ (1.21.4 - 1.21.5)</td>
+        </tr>
+        <tr>
+            <td rowspan=1><a href="https://neoforged.net/">NeoForge</a></td>
+            <td>✔ (1.21.4 - 1.21.5)</td>
         </tr>
     </tbody>
     <tbody>
         <tr>
             <td rowspan=2>Proxies</td>
             <td rowspan=1><a href="https://ci.md-5.net/job/BungeeCord/">BungeeCord</a></td>
-            <td>✔ (latest only<sup>2</sup>)</td>
+            <td>✔ (latest only<sup>1</sup>)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.velocitypowered.com/">Velocity</a></td>
-            <td>✔ (latest only<sup>2</sup>)</td>
+            <td>✔ (latest only<sup>1</sup>)</td>
         </tr>
     </tbody>
 </table>
-<sup>1</sup> Due to a bug in Sponge 7, it cannot coexist in the same jar with classes compiled with Java higher than 8, which is required by some other platforms. To get the plugin to run on Sponge 7, you will need to do one of the following:  
 
-* Compile the plugin yourself and use the jar from `sponge7/build/libs`, which only contains sponge support instead of the universal jar from `jar/build/libs`.
-* Unzip the plugin jar, go to `me/neznamy/tab/platforms/` and delete everything except `sponge7`.
+Modded platforms only support the latest MC version(s). If you need a backport and no older version of TAB supports your desired server version, you'll need to edit it in the source code. Customers can ask for a backport on the customer discord.
 
-<sup>2</sup> Latest only doesn't mean only the latest build will work,
+<sup>1</sup> Latest only doesn't mean only the latest build will work,
 it means the plugin was made to be compatible with the latest version/build.
 Since breaking changes don't happen too often, it means a wide range of versions is usually supported.
 When a breaking change occurs, the plugin is updated to support the new version,
@@ -72,19 +75,19 @@ Since proxies support all client versions, there is never a reason to stay outda
 so you can always safely update to new version/build of your proxy software if the plugin requires it.
 
 # Supported features per platform
-| Feature \ Platform | Bukkit / Hybrid | Sponge | Fabric | BungeeCord | Velocity |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname) | ✔ | ✔ | ✔ | ✔ | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
-| [BossBar](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar) | ✔ | ✔ | ✔ | ✔ | ✔ |
-| [Global Playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) | ❌ | ❌ | ❌ | ✔ | ✔ |
-| [Header/Footer](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer) | ✔ | ✔ | ✔ | ✔ | ✔ |
-| [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) | ✔ | ✔ | ✔ | ✔ | ✔ |
-| [Nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) & [Sorting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist) | ✔ |  ❗ | ✔ | ✔ | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
-| [Per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist) | ✔ | ❌ | ❌ | ❌ | ❌ |
-| [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective) | ✔ | ✔ | ✔ | ✔ | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
-| [Scoreboard](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard) | ✔ | ❗ | ✔ | ✔ | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
-| [Spectator fix](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix) | ✔ | ✔ | ✔ | ✔ | ✔ |
-| [Tablist names](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting) | ✔ | ✔ | ✔ | ✔ | ✔ |
+| Feature \ Platform                                                                                                                                                 | Bukkit / Hybrid | Sponge | Fabric / Forge / NeoForge | BungeeCord | Velocity                                                                   |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|--------|---------------------------|------------|----------------------------------------------------------------------------|
+| [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)                                                                                          | ✔               | ✔      | ✔                         | ✔          | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
+| [BossBar](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar)                                                                                              | ✔               | ✔      | ✔                         | ✔          | ✔                                                                          |
+| [Global Playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist)                                                                          | ✔               | ✔      | ✔                         | ✔          | ✔                                                                          |
+| [Header/Footer](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer)                                                                                | ✔               | ✔      | ✔                         | ✔          | ✔                                                                          |
+| [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout)                                                                                                | ✔               | ✔      | ✔                         | ✔          | ✔                                                                          |
+| [Nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) & [Sorting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist) | ✔               |  ❗     | ✔                         | ✔          | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
+| [Per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist)                                                                    | ✔               | ❌      | ❌                         | ❌          | ❌                                                                          |
+| [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)                                                                    | ✔               | ✔      | ✔                         | ✔          | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
+| [Scoreboard](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard)                                                                                        | ✔               | ❗      | ✔                         | ✔          | ✔ (via [VSAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)) |
+| [Spectator fix](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix)                                                                                  | ✔               | ✔      | ✔                         | ✔          | ✔                                                                          |
+| [Tablist names](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting)                                                                        | ✔               | ✔      | ✔                         | ✔          | ✔                                                                          |
 
 ✔ = Fully functional  
  ❗ = NameTags: Anti-override missing, Scoreboard: [compatibility with other plugins](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard#compatibility-with-other-plugins) missing.  
@@ -112,7 +115,11 @@ Supporting PremiumVanish's vanishing levels instead of using a basic compatibili
 Communicating with other proxies to properly display visuals on players on another proxy.
 
 ## Fabric
-[**fabric-permissions-api**](https://github.com/lucko/fabric-permissions-api) - Supporting permission nodes instead of OP levels.
+[**fabric-permissions-api**](https://github.com/lucko/fabric-permissions-api) - Supporting permission nodes instead of OP levels.  
+[**placeholder-api**](https://modrinth.com/mod/placeholder-api) - Displaying placeholders from that mod and offering TAB's placeholders into it.
+
+## Forge / NeoForge
+[**LuckPerms**](https://github.com/LuckPerms/LuckPerms) - Permission checks with a string instead of using vanilla OP levels.
 
 ## Sponge
 *None*
@@ -131,7 +138,7 @@ Sending scoreboard packets (scoreboard-teams, belowname-objective, playerlist-ob
 * **SkBee** (skript addon) sends empty scoreboard, causing TAB's to not show sometimes.
 * **Waterfall**'s `disable_tab_list_rewrite: true` **may** cause tablist to use offline UUIDs while TAB expects online uuids, causing various problems (most notably tablist formatting not working). Checking for this option is not an option either, because tablist rewrite might still be enabled despite being disabled (don't ask how, I have no idea). Set the option to `false` if you are experiencing issues.
 * **ViaVersion on proxy and TAB on backend** acts like a client-sided protocol hack, making it impossible for TAB to know player's real version and causing issues related to it, see [Per-version experience](https://github.com/NEZNAMY/TAB/wiki/Additional-information#per-version-experience) for more info. Avoid this combination. Either install ViaVersion on all backend servers instead or install TAB on the proxy as well.
-* **ViaVersion**'s `hide-scoreboard-numbers` and **Nexo**'s `hide_scoreboard_numbers` config options (may apply to ItemsAdder and Oraxen as well) make [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)'s `value` and [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)'s `value` not visible for 1.20.3+ clients on <1.20.3 server when enabled. When using this setup, you'll need to keep the option disabled (sadly scoreboard numbers will not be hidden, solving this would require an implementation on ViaVersion's side).
+* **Nexo**'s `hide_scoreboard_numbers` config option (may apply to ItemsAdder and Oraxen as well) makes [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)'s `value` and [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)'s `value` not visible. When using these features, you'll need to keep the option disabled.
 * **Custom clients / resource packs** - Unofficially modified minecraft clients often tend to break things. Just Lunar client has tons of bugs that can be reproduced with TAB. Resource packs may also contain modifications you are not aware of, making things not look the way you want them to. If you are experiencing any visual issue and are using a custom client or resource pack, try it with a clean vanilla client. If it works there, it's an issue with the client / resource pack and TAB cannot do anything about it.  
   For example, here are a few bugs in LunarClient / FeatherClient that you may run into when using TAB:
   * They add their icon to players in tablist, but don't widen the entries. This results in player names overlapping with latency bar. You can avoid this by configuring some spaces in tabsuffix.

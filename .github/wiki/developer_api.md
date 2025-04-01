@@ -1,4 +1,5 @@
 # Page content
+* [About](#about)
 * [Adding the dependency](#adding-the-dependency)
 * [Getting started](#getting-started)
 * [Lifespan of API calls](#lifespan-of-api-calls)
@@ -13,22 +14,31 @@
 * [Tablist name formatting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting#api)
 * [Placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#api)
 
+# About
+This page explains how to import TAB's API into your project and together with other pages everything you can do with it.
+
+Before starting please seriously reconsider if you really need this and cannot already achieve it using existing features (such as registering placeholders into PlaceholderAPI instead of TAB, using display conditions for scoreboards, ...). If not, consider making a request.
+
 # Adding the dependency
 
 For Maven users, you can add the API dependency like this:
 
 ```xml
-<repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-</repository>
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
 
-<dependency>
-    <groupId>com.github.NEZNAMY</groupId>
-    <artifactId>TAB-API</artifactId>
-    <version>5.0.7</version>
-    <scope>provided</scope>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>com.github.NEZNAMY</groupId>
+        <artifactId>TAB-API</artifactId>
+        <version>5.2.0</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
  ```
 
 Or, for Gradle users, here are a few examples:
@@ -40,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.NEZNAMY:TAB-API:5.0.7'
+    compileOnly 'com.github.NEZNAMY:TAB-API:5.2.0'
 }
 ```
 
@@ -51,7 +61,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.NEZNAMY", "TAB-API", "5.0.7")
+    compileOnly("com.github.NEZNAMY", "TAB-API", "5.2.0")
 }
 ```
 

@@ -2,12 +2,12 @@
 TAB is an all-in-one plugin for displaying information in various places, which aims to outperform all similar plugins in terms of features, compatibility and performance.
 The compact configuration allows you to get the plugin to work the way you want regardless of how simple or complex you want it to be or how experienced you are. The default configuration already contains useful values and examples to give you a better understanding and get you started quickly with instant results. The extensive [URL='https://github.com/NEZNAMY/TAB/wiki']wiki[/URL] answers any of your questions.
 
-[IMG]https://img.shields.io/badge/Release-5.0.7-blue.svg[/IMG]
-[IMG]https://img.shields.io/badge/Minecraft-1.5%20--%201.21.4-blue.svg[/IMG]
-[IMG]https://img.shields.io/badge/Java-8+-blue.svg[/IMG]
-[URL='https://github.com/NEZNAMY/TAB'][IMG]https://img.shields.io/badge/GitHub-Source%20code-yellow.svg[/IMG][/URL]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Release.svg[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Minecraft.svg[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Java.svg[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_SourceCode.svg[/IMG]
 [URL='https://github.com/NEZNAMY/TAB/issues'][IMG]https://img.shields.io/github/issues/neznamy/tab?label=Issues[/IMG][/URL]
-[URL='https://github.com/NEZNAMY/TAB/wiki'][IMG]https://img.shields.io/badge/Documentation-Wiki-yellow.svg[/IMG][/URL]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Documentation.svg[/IMG]
 [CENTER][B][SIZE=7]Discord?[/SIZE][/B][/CENTER]
 Official support by me is no longer provided to free users due to limited time and extreme inefficiency (see [URL='https://github.com/NEZNAMY/TAB?tab=readme-ov-file#provided-services']provided services[/URL] for more info).
 However, you can join this [URL='https://discord.gg/YPqXt63YQj']fresh new community discord[/URL] made by a nice person who promises to help everyone with all plugins, including TAB.
@@ -15,164 +15,20 @@ However, you can join this [URL='https://discord.gg/YPqXt63YQj']fresh new commun
 Before you consider requiring assistance, check out the [URL='https://github.com/NEZNAMY/TAB/wiki']wiki[/URL] first. It will answer any questions you may have and is also constantly getting improved.
 
 [CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Features.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_HeaderFooter.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_HeaderFooter.png[/IMG][/CENTER]
-[LIST]
-[*]Per-world / per-server support
-[*]Per-group / per-player support
-[*]Disable if a specified condition is met
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_NameTags.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_NameTags.png[/IMG][/CENTER]
-[LIST]
-[*]Configurable prefix and suffix
-[*]Per-world / per-server support
-[*]Per-group / per-player support
-[*]Disable if a specified condition is met
-[*]Make nametags completely invisible
-[*]Control collision rule
-[*]Automatic compensation for 1.8.x client sided bug making nametags of invisible players still visible
-[*]Anti-override to prevent other plugins from overriding this one
-[/LIST]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Sorting.png[/IMG]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_Sorting.png[/IMG][/CENTER]
-[LIST]
-[*]Sorting by primary permission group
-[*]Sorting by permission nodes
-[*]Sorting by a numeric placeholder from lowest to highest or highest to lowest
-[*]Alphabetically by a placeholder (A-Z or Z-A)
-[*]Sorting by pre-defined placeholder values
-[*]Combination of multiple sorting types
-[*]Enable / disable case-sensitive sorting
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_TablistFormatting.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_TablistFormatting.png[/IMG][/CENTER]
-[LIST]
-[*]Configurable prefix, name and suffix
-[*]Per-world / per-server support
-[*]Per-group / per-player support
-[*]Disable if a specified condition is met
-[*]Anti-override to prevent other plugins from overriding this one
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_PlayerlistObjective.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveNumber.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveHealth.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_PlayerlistObjectiveFancy.png[/IMG][/CENTER]
-[LIST]
-[*]Display value of any numeric placeholder or hearts
-[*]Display any text on 1.20.3+
-[*]Disable if a specified condition is met
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Belowname.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_BelownameComparison.png[/IMG][/CENTER]
-[LIST]
-[*]Display value of any numeric placeholder (<1.20.3) or any text (1.20.3+)
-[*]Configurable text
-[*]Disable if a specified condition is met
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Bossbar.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_BossBar.png[/IMG][/CENTER]
-[LIST]
-[*]Configurable text, progress, color and style
-[*]Define display condition to see a bossbar
-[*]Announce defined bossbar for specified amount of time
-[*]Configurable toggle command and message
-[*]Option to remember toggle choice between logins
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_GlobalPlayerlist.png[/IMG][/CENTER]
-[LIST]
-[*]Display players from all servers on a proxy network in tablist
-[*]Configurable server groups to share playerlist instead of with all servers
-[*]Ability to create isolated servers
-[*]Servers where people will see everyone
-[*]Compatible with vanish plugins
-[*]Option to display players from other servers as spectators
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Layout.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_Layout.png[/IMG][/CENTER]
-[LIST]
-[*]Customize all 80 tablist slots
-[*]Create static slots with any text and skin
-[*]Create player groups based on conditions
-[*]Multiple layouts based on conditions
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_Scoreboard.png[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Example_ScoreboardComparison.png[/IMG][/CENTER]
-[LIST]
-[*]Display up to 15 lines
-[*]Option to show 0 (or any other static number) in every line instead of 1-15
-[*]Fully configurable text on right side of lines on 1.20.3+
-[*]Displaying different scoreboards based on conditions (output of placeholder, permissions)
-[*]Up to 64 characters per line for <1.13, unlimited for 1.13+ clients
-[*]Customizable toggle command and message
-[*]Option to remember toggle choice between logins
-[*]Automatic detection of scoreboards from other plugins to hide own and show it again once other plugin hides its scoreboard
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_PerWorldPlayerlist.png[/IMG][/CENTER]
-[LIST]
-[*]Only display players from current world in tablist
-[*]Group worlds which should share players
-[*]Worlds where players see everyone
-[*]Option to see all players in all worlds for players with permission
-[/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Section_API.png[/IMG][/CENTER]
-[LIST]
-[*]Change player prefix/name/suffix in tablist
-[*]Change header/footer
-[*]Change nametag prefix / suffix
-[*]Change player collision rule and nametag visibility
-[*]Change sorting priority
-[*]Create custom scoreboards, show different scoreboard, toggle scoreboard
-[*]Create custom placeholders
-[*]Create custom boss bars, toggle bossbar visibility, announce bossbar
-[*]... and more!
-[/LIST]
-[LIST]
-[*]Placeholder support
-[LIST]
-[*]Internal placeholders with customizable output
-[*]Create and use custom animations
-[*]All placeholders and animations are supported in all features
-[*]Full PlaceholderAPI support including relational placeholders
-[*]PlaceholderAPI support on BungeeCord
-[/LIST]
-[*]Placeholder output replacements
-[LIST]
-[*]Modify output of any placeholder, including PlaceholderAPI placeholders
-[*]Replace exact text with another text
-[*]Change output if it's in a number interval
-[*]Set value if none of the above is met
-[*]Use original placeholder's output in new one
-[*]Support for nested placeholders
-[*]Can be used in other plugins as well
-[/LIST]
-[*]RGB Support
-[LIST]
-[*]5 supported RGB patterns
-[*]4 supported gradient patterns
-[*]Automatically display closest color to legacy clients
-[*]Configurable color for legacy clients
-[*]Supported in all features [B]where possible[/B]
-[/LIST]
-[*]Conditional placeholders
-[LIST]
-[*]Conditions based on placeholder output (comparing numeric value, exact output)
-[*]Conditions based on permission node
-[*]Combine conditions with AND or OR
-[*]Configurable output of both cases when condition is and isn't met
-[*]Placeholder support in condition output
-[/LIST]
-[*]High performance
-[LIST]
-[*]Full control of CPU usage by optimizing configuration and disabling unwanted features
-[*]Fully asynchronous - no impact on TPS
-[*]Check plugin's CPU usage using /tab cpu
-[/LIST]
-[*]RedisBungee support
-[*]MySQL support
-[*]Fully client-sided, server-side stays unaffected (scoreboards with their teams and objectives, bossbar entities, armor stands)
-[*]Disable vanilla feature making players in spectator gamemode appear on the bottom of tablist
-[*]Possible errors moved into a separate file to not spam your console
-[*]Yaml error assistant for more user-friendly messages and fix suggestions
-[*]Many misconfiguration checks to help solve issues much faster
-[/LIST]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_HeaderFooter.png[/IMG][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_NameTags.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_Sorting.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_TablistFormatting.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_PlayerlistObjective.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_Belowname.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_Bossbar.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_GlobalPlayerlist.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_Layout.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_Scoreboard.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_PerWorldPlayerlist.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_API.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_Placeholders.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_PlaceholderOutputReplacements.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_RGB.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_ConditionalPlaceholders.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_HighPerformance.png[/IMG]
+[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/refs/heads/master/.github/description/images/Generated_More.png[/IMG][/CENTER]

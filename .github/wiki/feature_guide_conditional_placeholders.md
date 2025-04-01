@@ -25,21 +25,21 @@ They have 2 main uses in the plugin:
 
 # Condition types
 ## Number comparations
-| Operation         | Description         | Example |
-|-------------------|---------------------|---------|
-| `>=` | Greater than or equal to | `%ping%>=100` will pass if the player's ping is greater than or equal to `100` |
-| `>` | Greater than | `%ping%>100` will pass if the player's ping is greater than `100` |
-| `<=` | Less than or equal to | `%ping%<=100` will pass if the player's ping is less than or equal to `100` |
-| `<` | Less than | `%ping%<100` will pass if the player's ping is less than `100` |
+| Operation | Description              | Example                                                                        |
+|-----------|--------------------------|--------------------------------------------------------------------------------|
+| `>=`      | Greater than or equal to | `%ping%>=100` will pass if the player's ping is greater than or equal to `100` |
+| `>`       | Greater than             | `%ping%>100` will pass if the player's ping is greater than `100`              |
+| `<=`      | Less than or equal to    | `%ping%<=100` will pass if the player's ping is less than or equal to `100`    |
+| `<`       | Less than                | `%ping%<100` will pass if the player's ping is less than `100`                 |
 
 ## Text operations
-| Operation         | Description         | Example |
-|-------------------|---------------------|---------|
-| `=` | Equal to | `%world%=world` will pass if player is in world `world` |
-| `!=` | Not equal to | `%world%!=world` will pass if player is in any world except `world` |
-| `<-` | Contains (left side for full text, right side text to contain) | `%world%<-lobby-` will pass if player is in any world that contains `lobby-` (such as `lobby-1` etc.) |
-| `\|-` | Starts with (left side for full text, right side text to start with) | `%world%\|-lobby-` will pass if player is in any world that starts with `lobby-` (such as `lobby-1` etc.) |
-| `-\|` | Ends with (left side for full text, right side text to end with) | `%world%-\|nether` will pass if player is in any world that ends with `nether` (such as `world_nether` etc.) |
+| Operation | Description                                                          | Example                                                                                                      |
+|-----------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| `=`       | Equal to                                                             | `%world%=world` will pass if player is in world `world`                                                      |
+| `!=`      | Not equal to                                                         | `%world%!=world` will pass if player is in any world except `world`                                          |
+| `<-`      | Contains (left side for full text, right side text to contain)       | `%world%<-lobby-` will pass if player is in any world that contains `lobby-` (such as `lobby-1` etc.)        |
+| `\|-`     | Starts with (left side for full text, right side text to start with) | `%world%\|-lobby-` will pass if player is in any world that starts with `lobby-` (such as `lobby-1` etc.)    |
+| `-\|`     | Ends with (left side for full text, right side text to end with)     | `%world%-\|nether` will pass if player is in any world that ends with `nether` (such as `world_nether` etc.) |
 
 > [!NOTE]
 > For `=` and `!=` you can check for empty output of a placeholder using `%my_placeholder%=` and `%my_placeholder%!=`.
@@ -51,8 +51,8 @@ condition must contain the altered output.
 To see the exact output of a placeholder including color codes, use `/tab parse <player> <placeholder>`.
 
 ## Permission
-| Operation         | Description         | Example |
-|-------------------|---------------------|---------|
+| Operation            | Description            | Example                                                                       |
+|----------------------|------------------------|-------------------------------------------------------------------------------|
 | `permission:<value>` | Permission requirement | `permission:my.permission` will pass if player has `my.permission` permission |
 
 # Multiple condition requirements

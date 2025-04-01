@@ -11,19 +11,19 @@ This is a collection of random information about the plugin not necessarily limi
 * [Debug config option](#debug-config-option)
 
 # Vanish detection
-Although TAB does not manage vanishing players in any way,
-it checks vanish status for features to be properly compatible.
+TAB is not a vanish plugin and does not manage vanishing players in any way, therefore, is not responsible for removing vanished players from the tablist.
+However, it checks vanish status for features to be properly compatible.
 At the moment, vanishing detection is used for:
 * `%vanished%` placeholder (used for internal functionality, but can be used to display vanish status if one wants to)
 * `%online%`, `%serveronline%`, `%worldonline%` and `%staffonline%` will not count vanished players
 * [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) makes vanish plugins unable to remove players on other servers from tablist, vanish check will make TAB remove vanished players.
 * Hide vanished players from [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout).
-* Unregister teams of vanished players to players who cannot see them to prevent third party client exploits from seeing vanished players.
+* [Unregister teams of vanished players](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags#additional-note-6---vanish-hook) to players who cannot see them to prevent third party client exploits from seeing vanished players.
 
 Permission `tab.seevanished` allows players to:
 * See vanished players in [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist).
 * See vanished players in [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout).
-* Not have teams of vanished players unregistered, which would make them not appear sorted properly and have no nametag prefix/suffix.
+* Not have [teams of vanished players unregistered](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags#additional-note-6---vanish-hook), which would make them not appear sorted properly and have no nametag prefix/suffix.
 
 For a player to be detected, player has to have `vanished` metadata flag set to `true`.
 Most, (if not all) vanish plugins do this, including, but not limited to CMI,

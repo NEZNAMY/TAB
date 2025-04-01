@@ -18,7 +18,7 @@
   * [Example 1 - Per-server columns](#example-1---per-server-columns)
 
 # About
-This feature allows you to customize all 80 tablist slots. Displaying less than 4 columns is currently not supported. This feature can be enabled and configured in **config.yml** file under **layout** section.
+This feature allows you to customize all 80 tablist slots. Displaying less than 4 columns is currently not supported ([here's why](https://gist.github.com/NEZNAMY/3dfcbf7d44283735d3c18266a2851651)). This feature can be enabled and configured in **config.yml** file under **layout** section.
 
 This feature is only available for versions **1.8** and up due to massive tablist changes, which would make 1.7- compatibility require a complete rewrite of the functionality and could still cause all kinds of visual issues, including, but not limited to compatibility with other plugins adding/removing players from the tablist.
 
@@ -170,10 +170,6 @@ Layout feature is capable of working with all online players connected to the se
 From 1.19.3 until 1.21.1 (inclusive), entries will also appear in chat complete.
 The mechanic used to hide them on <1.19.3 can no longer be used since 1.19.3.
 1.21.2 has added a new way of sorting players, which is being taken advantage of to restore empty chat complete.
-> [!NOTE]
-> To hide entries from chat complete on 1.21.2+,
-the server also has to be 1.21.2+ so TAB can send the new content to the players
-(having TAB installed on proxy counts as using the latest version).
 
 ## Additional note 4 - Per world playerlist incompatibility
 Layout works by adding 80 fake players into the tablist, pushing real player entries out of view.
@@ -241,7 +237,7 @@ as a result, you won't see the second layers of skins.
 This can only be fixed by actually letting the real entries display in the tablist,
 which would require a rework of the feature, which is not planned.  
 **1.21.4 has added a new tablist option called "show hats", which layout sets to true.
-They will be visible for 1.21.4+ players on 1.21.4+ servers (using a proxy counts as being latest).**
+They will be visible for 1.21.4+ players.**
 
 # Examples
 ## Example 1 - Per-server columns

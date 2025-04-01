@@ -1,5 +1,5 @@
 # About
-This folder contains the plugin's description as advertised on various marketplaces which use various syntaxes
+This folder contains the plugin's description as advertised on various marketplaces where each one uses a different syntax.
 (bbcode, markdown).  
   
 While this is not an accurate folder to have this stored in (`.github`),

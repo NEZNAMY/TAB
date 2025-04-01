@@ -23,11 +23,11 @@ instead of using placeholders to take those values from your permission plugin.
 # #2 - [All platforms] Placeholder refresh intervals
 Some placeholders take a long time to process and result in high cpu usage. However, this can be optimized by configuring refresh interval of placeholders.
 
-This only works for PlaceholderAPI placeholders. Internal ones have an interval hardcoded already with values I found the most appropriate.
+Internal placeholders use a value hardcoded into the plugin by default. PlaceholderAPI placeholders use `default-refresh-interval`.
 
 To begin, find this part in your config
 ```yml
-placeholderapi-refresh-intervals:
+placeholder-refresh-intervals:
   default-refresh-interval: 500
   "%server_uptime%": 1000
   "%server_tps_1_colored%": 1000

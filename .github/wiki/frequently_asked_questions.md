@@ -24,7 +24,7 @@ See [Citizens FAQ](https://wiki.citizensnpcs.co/Frequently_Asked_Questions#Why_a
 ## #2 - How to make TAB work with LuckPerms?
 * If you want to take prefixes/suffixes, check [this guide](https://github.com/NEZNAMY/TAB/wiki/Mini-guides-collection#taking-prefixessuffixes-from-permission-plugin) and use `%luckperms-prefix%` & `%luckperms-suffix%`.
 * Sorting:
-  First, [Configure weights correctly in LuckPerms](https://github.com/NEZNAMY/TAB/wiki/How-to-setup-weights-priorities#luckperms). Then, you have 2 options:
+  First, configure weights correctly in LuckPerms. Then, you have 2 options:
   * Configure [sorting by groups](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#groups) (recommended).
   * Sorting by weights directly: `PLACEHOLDER_HIGH_TO_LOW:%luckperms_highest_group_weight%`.
 

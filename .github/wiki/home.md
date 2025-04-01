@@ -1,5 +1,5 @@
 # About the wiki
-The wiki explains the functionality of the plugin as of version **5.0.7**.
+The wiki explains the functionality of the plugin as of version **5.2.0**.
 If your config looks different or is missing some features, you are using an old version of the plugin.
 To get the latest version, check [releases](https://github.com/NEZNAMY/TAB/releases/).  
 Wiki for older plugin versions is not available.
