@@ -3,14 +3,11 @@ package me.neznamy.tab.platforms.bukkit.scoreboard.packet;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.function.BiFunctionWithException;
 import me.neznamy.tab.shared.util.function.QuintFunction;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.Optional;
 
 /**
@@ -31,8 +28,7 @@ public class ScorePacketData {
         Class<?> SetScorePacket = BukkitReflection.getClass(
                 "network.protocol.game.ClientboundSetScorePacket", // Mojang mapped
                 "network.protocol.game.PacketPlayOutScoreboardScore", // Bukkit 1.17+
-                "PacketPlayOutScoreboardScore", // 1.7 - 1.16.5
-                "Packet207SetScoreboardScore" // 1.5 - 1.6.4
+                "PacketPlayOutScoreboardScore" // 1.7 - 1.16.5
         );
         if (BukkitReflection.is1_20_3Plus()) {
             QuintFunction<String, String, Integer, Object, Object, Object> setScore0;
@@ -50,39 +46,12 @@ public class ScorePacketData {
             setScore = setScore0;
             Constructor<?> newResetScore = BukkitReflection.getClass("network.protocol.game.ClientboundResetScorePacket").getConstructor(String.class, String.class);
             removeScore = (objective, holder) -> newResetScore.newInstance(holder, objective);
-        } else if (BukkitReflection.getMinorVersion() >= 13) {
+        } else {
             Class<?> actionClass = BukkitReflection.getClass("server.ServerScoreboard$Method", "server.ScoreboardServer$Action", "ScoreboardServer$Action");
             Constructor<?> newSetScore = SetScorePacket.getConstructor(actionClass, String.class, String.class, int.class);
             Enum<?>[] scoreboardActions = (Enum<?>[]) actionClass.getMethod("values").invoke(null);
             setScore = (objective, holder, score, displayName, numberFormat) -> newSetScore.newInstance(scoreboardActions[0], objective, holder, score);
             removeScore = (objective, holder) -> newSetScore.newInstance(scoreboardActions[1], objective, holder, 0);
-        } else {
-            Class<?> ScoreboardScore = BukkitReflection.getClass("ScoreboardScore");
-            Constructor<?> newResetScore = SetScorePacket.getConstructor(String.class);
-            Field SetScorePacket_SCORE = ReflectionUtils.getFields(SetScorePacket, int.class).get(0);
-            Constructor<?> newScoreboardScore = ScoreboardScore.getConstructor(PacketScoreboard.Scoreboard, PacketScoreboard.ScoreboardObjective, String.class);
-            Constructor<?> newSetScore;
-            if (BukkitReflection.getMinorVersion() >= 8) {
-                newSetScore = SetScorePacket.getConstructor(ScoreboardScore);
-            } else {
-                newSetScore = SetScorePacket.getConstructor(ScoreboardScore, int.class);
-            }
-            setScore = (objective, holder, score, displayName, numberFormat) -> {
-                Object scoreboardScore = newScoreboardScore.newInstance(
-                        PacketScoreboard.emptyScoreboard,
-                        PacketScoreboard.newScoreboardObjective.newInstance(PacketScoreboard.emptyScoreboard, objective, PacketScoreboard.IScoreboardCriteria_dummy),
-                        holder
-                );
-                Object packet;
-                if (BukkitReflection.getMinorVersion() >= 8) {
-                    packet = newSetScore.newInstance(scoreboardScore);
-                } else {
-                    packet = newSetScore.newInstance(scoreboardScore, Scoreboard.ScoreAction.CHANGE);
-                }
-                SetScorePacket_SCORE.set(packet, score);
-                return packet;
-            };
-            removeScore = (objective, holder) -> newResetScore.newInstance(holder);
         }
     }
 

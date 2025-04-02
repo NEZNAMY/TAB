@@ -28,7 +28,7 @@ public class PingRetriever {
                 getPing = p -> p.getPlayer().getPing();
             } else {
                 Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
-                Field PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
+                Field PING = ReflectionUtils.getField(EntityPlayer, "ping");
                 getPing = player -> PING.getInt(player.getHandle());
             }
         } catch (Exception e) {

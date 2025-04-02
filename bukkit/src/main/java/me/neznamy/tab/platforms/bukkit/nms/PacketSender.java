@@ -22,20 +22,13 @@ public class PacketSender {
      * Constructs new instance and attempts to load required classes, fields and methods.
      * If something fails, error is thrown.
      *
-     * @throws  ReflectiveOperationException
-     *          If something fails
      */
-    public PacketSender() throws ReflectiveOperationException {
+    public PacketSender() {
         Class<?> Packet = BukkitReflection.getClass("network.protocol.Packet", "Packet");
         Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
         Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl", "server.network.PlayerConnection", "PlayerConnection");
         Field PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
-        Method sendPacket;
-        if (BukkitReflection.getMinorVersion() >= 7) {
-            sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
-        } else {
-            sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
-        }
+        Method sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         send = (player, packet) -> {
             if (player.connection == null) player.connection = PLAYER_CONNECTION.get(player.getHandle());
             sendPacket.invoke(player.connection, packet);

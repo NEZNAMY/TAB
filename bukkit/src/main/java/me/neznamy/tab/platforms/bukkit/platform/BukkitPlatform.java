@@ -189,7 +189,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
-        return BukkitReflection.getMinorVersion() >= 8 && BukkitPipelineInjector.isAvailable() ? new BukkitPipelineInjector() : null;
+        return BukkitPipelineInjector.isAvailable() ? new BukkitPipelineInjector() : null;
     }
 
     @Override

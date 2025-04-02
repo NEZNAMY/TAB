@@ -33,8 +33,7 @@ public class DisplayPacketData {
         DisplayObjectiveClass = BukkitReflection.getClass(
                 "network.protocol.game.ClientboundSetDisplayObjectivePacket", // Mojang mapped
                 "network.protocol.game.PacketPlayOutScoreboardDisplayObjective", // Bukkit 1.17+
-                "PacketPlayOutScoreboardDisplayObjective", // Bukkit 1.7 - 1.16.5
-                "Packet208SetScoreboardDisplayObjective" // Bukkit 1.5 - 1.6.4
+                "PacketPlayOutScoreboardDisplayObjective" // Bukkit 1.7 - 1.16.5
         );
         DisplayObjective_OBJECTIVE_NAME = ReflectionUtils.getOnlyField(DisplayObjectiveClass, String.class);
         if (BukkitReflection.is1_20_2Plus()) {

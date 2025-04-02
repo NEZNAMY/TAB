@@ -8,7 +8,6 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
-import me.neznamy.tab.platforms.bukkit.nms.converter.LegacyComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.converter.ModerateComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.converter.ModernComponentConverter;
 import me.neznamy.tab.platforms.bukkit.scoreboard.BukkitScoreboard;
@@ -16,7 +15,6 @@ import me.neznamy.tab.platforms.bukkit.scoreboard.PaperScoreboard;
 import me.neznamy.tab.platforms.bukkit.scoreboard.packet.PacketScoreboard;
 import me.neznamy.tab.platforms.bukkit.tablist.BukkitTabList;
 import me.neznamy.tab.platforms.bukkit.tablist.PacketTabList1193;
-import me.neznamy.tab.platforms.bukkit.tablist.PacketTabList17;
 import me.neznamy.tab.platforms.bukkit.tablist.PacketTabList18;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -83,29 +81,23 @@ public class BukkitImplementationProvider implements ImplementationProvider {
             if (BukkitReflection.getMinorVersion() >= 19) {
                 // 1.19+
                 return new ModernComponentConverter();
-            } else if (BukkitReflection.getMinorVersion() >= 16) {
+            } else {
                 // 1.16 - 1.18.2
                 return new ModerateComponentConverter();
-            } else {
-                // 1.7 - 1.15.2
-                return new LegacyComponentConverter();
             }
         } catch (Exception e) {
             if (BukkitReflection.getMinorVersion() >= 8) {
                 Bukkit.getConsoleSender().sendMessage("§c[TAB] Failed to initialize converter from TAB components to Minecraft components. " +
                         "This will negatively impact most features, see below.");
-                if (BukkitUtils.PRINT_EXCEPTIONS) {
-                    e.printStackTrace();
-                }
             }
-            return null;
         }
+        return null;
     }
 
     @NotNull
     private Function<BukkitTabPlayer, Scoreboard> findScoreboardProvider() {
         try {
-            if (BukkitReflection.getMinorVersion() >= 7) Objects.requireNonNull(componentConverter);
+            Objects.requireNonNull(componentConverter);
             PacketScoreboard.load();
             return PacketScoreboard::new;
         } catch (Exception e) {
@@ -125,7 +117,7 @@ public class BukkitImplementationProvider implements ImplementationProvider {
                 }
 
                 return BukkitScoreboard::new;
-            } else if (BukkitReflection.getMinorVersion() >= 5) {
+            } else {
                 BukkitUtils.compatibilityError(e, "Scoreboards", null,
                         "Scoreboard feature will not work",
                         "Belowname feature will not work",
@@ -140,20 +132,15 @@ public class BukkitImplementationProvider implements ImplementationProvider {
     @SneakyThrows
     private Function<BukkitTabPlayer, TabList> findTablistProvider() {
         try {
+            Objects.requireNonNull(componentConverter);
             if (ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket")) {
                 // 1.19.3+
-                Objects.requireNonNull(componentConverter);
                 PacketTabList1193.loadNew();
                 return PacketTabList1193::new;
-            } else if (BukkitReflection.getMinorVersion() >= 8) {
+            } else {
                 // 1.8 - 1.19.2
-                Objects.requireNonNull(componentConverter);
                 PacketTabList18.load();
                 return PacketTabList18::new;
-            } else {
-                // 1.7.10 and lower
-                PacketTabList17.load();
-                return PacketTabList17::new;
             }
         } catch (Exception e) {
             if (BukkitReflection.getMinorVersion() >= 8) {

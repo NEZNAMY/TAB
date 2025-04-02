@@ -55,8 +55,8 @@ public class BukkitUtils {
      */
     public static void sendCompatibilityMessage() {
         if (!compatibilityIssue) return;
-        Bukkit.getConsoleSender().sendMessage("§c[TAB] Please update the plugin to " +
-                "a version with native support for your server version for optimal experience. This plugin version " +
-                "was made for " + ProtocolVersion.V1_5.getFriendlyName() + " - " + ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName() + ".");
+        Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
+                "a plugin version with full support for your server version for optimal experience. This plugin version " +
+                "has full support for 1.8.8, 1.12.2 and 1.16 - " + ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName() + ".");
     }
 }

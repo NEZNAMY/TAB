@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * TabList handler for 1.8 - 1.19.2 servers using packets.
+ * TabList handler for 1.16 - 1.19.2 servers using packets.
  */
 @Setter
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -69,8 +69,7 @@ public class PacketTabList18 extends TrackedTabList<BukkitTabPlayer> {
         ActionClass = (Class<Enum>) BukkitReflection.getClass(
                 "network.protocol.game.ClientboundPlayerInfoPacket$Action", // Mojang 1.17 - 1.19.2
                 "network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", // Bukkit 1.17 - 1.19.2
-                "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", // Bukkit 1.8.1 - 1.16.5
-                "EnumPlayerInfoAction" // Bukkit 1.8.0
+                "PacketPlayOutPlayerInfo$EnumPlayerInfoAction" // Bukkit 1.8.1 - 1.16.5
         );
         PlayerInfoClass = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoUpdatePacket",
                 "network.protocol.game.ClientboundPlayerInfoPacket",
@@ -78,8 +77,7 @@ public class PacketTabList18 extends TrackedTabList<BukkitTabPlayer> {
         Class<?> playerInfoDataClass = BukkitReflection.getClass(
                 "network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate", // Mojang 1.17 - 1.19.2
                 "network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData", // Bukkit 1.17 - 1.19.2
-                "PacketPlayOutPlayerInfo$PlayerInfoData", // Bukkit 1.8.1 - 1.16.5
-                "PlayerInfoData" // Bukkit 1.8.0
+                "PacketPlayOutPlayerInfo$PlayerInfoData" // Bukkit 1.8.1 - 1.16.5
         );
 
         Class<?> classType = BukkitReflection.getMinorVersion() >= 17 ? Collection.class : Iterable.class;
@@ -88,10 +86,10 @@ public class PacketTabList18 extends TrackedTabList<BukkitTabPlayer> {
 
         loadSharedContent(playerInfoDataClass, EnumGamemodeClass);
 
-        newPlayerInfoData = playerInfoDataClass.getConstructors()[0]; // #1105, a specific 1.8.8 fork has 2 constructors
+        newPlayerInfoData = playerInfoDataClass.getConstructors()[0];
     }
 
-    protected static void loadSharedContent(Class<?> infoData, Class<Enum> gameMode) throws ReflectiveOperationException {
+    protected static void loadSharedContent(Class<?> infoData, Class<Enum> gameMode) {
         Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         PlayerInfoData_Profile = ReflectionUtils.getOnlyField(infoData, GameProfile.class);
