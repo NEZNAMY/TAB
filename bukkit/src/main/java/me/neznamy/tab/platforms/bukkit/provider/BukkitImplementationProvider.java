@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.platform.impl.DummyScoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,14 +49,17 @@ public class BukkitImplementationProvider implements ImplementationProvider {
     @NotNull
     private final Function<BukkitTabPlayer, TabList> tablistProvider = findTablistProvider();
 
+    @NotNull
+    private final Function<BukkitTabPlayer, Integer> pingProvider = ReflectionUtils.methodExists(Player.class, "getPing") ? p -> p.getPlayer().getPing() : p -> -1;
+
     @Nullable
     private FunctionWithException<BukkitTabPlayer, Channel> findChannelFunction() {
         if (BukkitReflection.getMinorVersion() < 8) return null;
         try {
-            Class<?> NetworkManager = BukkitReflection.getClass("network.Connection", "network.NetworkManager", "NetworkManager");
+            Class<?> NetworkManager = BukkitReflection.getClass("network.Connection", "network.NetworkManager");
             Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl",
-                    "server.network.PlayerConnection", "PlayerConnection");
-            Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer", "EntityPlayer");
+                    "server.network.PlayerConnection");
+            Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer");
             Field PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
             Field NETWORK_MANAGER;
             if (BukkitReflection.is1_20_2Plus()) {
@@ -82,7 +86,7 @@ public class BukkitImplementationProvider implements ImplementationProvider {
                 // 1.19+
                 return new ModernComponentConverter();
             } else {
-                // 1.16 - 1.18.2
+                // 1.17 - 1.18.2
                 return new ModerateComponentConverter();
             }
         } catch (Exception e) {
@@ -138,7 +142,7 @@ public class BukkitImplementationProvider implements ImplementationProvider {
                 PacketTabList1193.loadNew();
                 return PacketTabList1193::new;
             } else {
-                // 1.8 - 1.19.2
+                // 1.17 - 1.19.2
                 PacketTabList18.load();
                 return PacketTabList18::new;
             }
@@ -165,5 +169,10 @@ public class BukkitImplementationProvider implements ImplementationProvider {
     @NotNull
     public TabList newTabList(@NotNull BukkitTabPlayer player) {
         return tablistProvider.apply(player);
+    }
+
+    @Override
+    public int getPing(@NotNull BukkitTabPlayer player) {
+        return pingProvider.apply(player);
     }
 }

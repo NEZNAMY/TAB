@@ -58,7 +58,7 @@ public class PacketTabList1193 extends PacketTabList18 {
      *          If something goes wrong
      */
     public static void loadNew() throws ReflectiveOperationException {
-        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
+        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent");
         Class<?> RemoteChatSession$Data = BukkitReflection.getClass("network.chat.RemoteChatSession$Data", "network.chat.RemoteChatSession$a");
         Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType", "world.level.EnumGamemode");
         ActionClass = (Class<Enum>) BukkitReflection.getClass(

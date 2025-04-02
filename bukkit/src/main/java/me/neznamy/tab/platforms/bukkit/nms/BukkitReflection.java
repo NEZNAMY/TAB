@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.nms;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.util.function.FunctionWithException;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -50,22 +49,13 @@ public class BukkitReflection {
     }
 
     private static ServerVersion detectServerVersion() {
-        FunctionWithException<String, Class<?>> classFunction = name -> Class.forName("net.minecraft." + name);
         String[] array = CRAFTBUKKIT_PACKAGE.split("\\.");
-        int minorVersion;
         if (array.length > 3) {
             // Normal packaging
-            String serverPackage = array[3];
-            minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
-            if (minorVersion < 17) {
-                ClassLoader loader = BukkitReflection.class.getClassLoader();
-                classFunction = name -> loader.loadClass("net.minecraft.server." + serverPackage + "." + name);
-            }
-            return new ServerVersion(classFunction, minorVersion, serverPackage);
+            return new ServerVersion(Integer.parseInt(array[3].split("_")[1]), array[3]);
         } else {
             // Paper without CB relocation
-            minorVersion = Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]);
-            return new ServerVersion(classFunction, minorVersion, null);
+            return new ServerVersion(Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]), null);
         }
     }
 
@@ -79,8 +69,8 @@ public class BukkitReflection {
     }
 
     /**
-     * Returns class with given potential names in same order. For 1.17+ it takes packaged class names
-     * without "net.minecraft." prefix, for <1.17 it takes class name only.
+     * Returns class with given potential names in same order. It takes packaged class names
+     * without "net.minecraft." prefix.
      *
      * @param   names
      *          possible class names
@@ -92,7 +82,7 @@ public class BukkitReflection {
     public static Class<?> getClass(@NotNull String... names) {
         for (String name : names) {
             try {
-                return serverVersion.getClass.apply(name);
+                return Class.forName("net.minecraft." + name);
             } catch (ClassNotFoundException | NullPointerException ignored) {
                 // not the first class name in array
             }
@@ -107,7 +97,6 @@ public class BukkitReflection {
     @Getter
     public static class ServerVersion {
 
-        private final FunctionWithException<String, Class<?>> getClass;
         private final int minorVersion;
 
         @Nullable

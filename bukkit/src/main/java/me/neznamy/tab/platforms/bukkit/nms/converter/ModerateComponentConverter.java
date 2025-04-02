@@ -11,25 +11,25 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * Class for converting TAB components into NMS components for versions 1.16 - 1.18.2.
+ * Class for converting TAB components into NMS components for versions 1.17 - 1.18.2.
  */
 public class ModerateComponentConverter extends ComponentConverter {
 
-    private final Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
-    private final Class<?> ChatBaseComponent = BukkitReflection.getClass("network.chat.BaseComponent", "network.chat.ChatBaseComponent", "ChatBaseComponent");
-    private final Class<?> TextColor = BukkitReflection.getClass("network.chat.TextColor", "network.chat.ChatHexColor", "ChatHexColor");
-    private final Class<?> ResourceLocation = BukkitReflection.getClass("resources.ResourceLocation", "resources.MinecraftKey", "MinecraftKey");
+    private final Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent");
+    private final Class<?> ChatBaseComponent = BukkitReflection.getClass("network.chat.BaseComponent", "network.chat.ChatBaseComponent");
+    private final Class<?> TextColor = BukkitReflection.getClass("network.chat.TextColor", "network.chat.ChatHexColor");
+    private final Class<?> ResourceLocation = BukkitReflection.getClass("resources.ResourceLocation", "resources.MinecraftKey");
 
-    private final Constructor<?> newTextComponent = BukkitReflection.getClass("network.chat.TextComponent", "network.chat.ChatComponentText", "ChatComponentText").getConstructor(String.class);
-    private final Constructor<?> newTranslatableComponent = BukkitReflection.getClass("network.chat.TranslatableComponent", "network.chat.ChatMessage", "ChatMessage").getConstructor(String.class, Object[].class);
-    private final Constructor<?> newKeybindComponent = BukkitReflection.getClass("network.chat.KeybindComponent", "network.chat.ChatComponentKeybind", "ChatComponentKeybind").getConstructor(String.class);
+    private final Constructor<?> newTextComponent = BukkitReflection.getClass("network.chat.TextComponent", "network.chat.ChatComponentText").getConstructor(String.class);
+    private final Constructor<?> newTranslatableComponent = BukkitReflection.getClass("network.chat.TranslatableComponent", "network.chat.ChatMessage").getConstructor(String.class, Object[].class);
+    private final Constructor<?> newKeybindComponent = BukkitReflection.getClass("network.chat.KeybindComponent", "network.chat.ChatComponentKeybind").getConstructor(String.class);
 
-    private final Class<?> ChatModifierClass = BukkitReflection.getClass("network.chat.Style", "network.chat.ChatModifier", "ChatModifier");
+    private final Class<?> ChatModifierClass = BukkitReflection.getClass("network.chat.Style", "network.chat.ChatModifier");
     private final Constructor<?> newChatModifier = ReflectionUtils.setAccessible(ChatModifierClass.getDeclaredConstructor(
             TextColor,
             Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
-            BukkitReflection.getClass("network.chat.ClickEvent", "network.chat.ChatClickable", "ChatClickable"),
-            BukkitReflection.getClass("network.chat.HoverEvent", "network.chat.ChatHoverable", "ChatHoverable"),
+            BukkitReflection.getClass("network.chat.ClickEvent", "network.chat.ChatClickable"),
+            BukkitReflection.getClass("network.chat.HoverEvent", "network.chat.ChatHoverable"),
             String.class,
             ResourceLocation
     ));

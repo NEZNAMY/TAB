@@ -35,7 +35,7 @@ public class BukkitTabList extends TrackedTabList<BukkitTabPlayer> {
     public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
         Player p = Bukkit.getPlayer(entry);
         if (p == null) return;
-        p.setPlayerListName(displayName == null ? null : displayName.toLegacyText());
+        p.setPlayerListName(displayName == null ? null : player.getPlatform().toBukkitFormat(displayName));
     }
 
     @Override

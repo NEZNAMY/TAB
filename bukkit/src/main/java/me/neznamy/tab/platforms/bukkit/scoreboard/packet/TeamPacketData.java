@@ -26,22 +26,20 @@ import java.util.Set;
 public class TeamPacketData {
 
     // Classes
-    private final Class<?> Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
+    private final Class<?> Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent");
     private final Class<?> EnumChatFormatClass = BukkitReflection.getClass("ChatFormatting", "EnumChatFormat");
-    private final Class<?> ScoreboardClass = BukkitReflection.getClass("world.scores.Scoreboard", "Scoreboard");
-    private final Class<?> ScoreboardTeamClass = BukkitReflection.getClass("world.scores.PlayerTeam", "world.scores.ScoreboardTeam", "ScoreboardTeam");
+    private final Class<?> ScoreboardClass = BukkitReflection.getClass("world.scores.Scoreboard");
+    private final Class<?> ScoreboardTeamClass = BukkitReflection.getClass("world.scores.PlayerTeam", "world.scores.ScoreboardTeam");
     private final Class<?> TeamPacketClass = BukkitReflection.getClass(
             "network.protocol.game.ClientboundSetPlayerTeamPacket", // Mojang mapped
-            "network.protocol.game.PacketPlayOutScoreboardTeam", // Bukkit 1.17+
-            "PacketPlayOutScoreboardTeam" // Bukkit 1.7 - 1.16.5
+            "network.protocol.game.PacketPlayOutScoreboardTeam" // Bukkit
     );
     private final Class<?> enumNameTagVisibility = BukkitReflection.getClass(
             "world.scores.Team$Visibility", // Mojang mapped
-            "world.scores.ScoreboardTeamBase$EnumNameTagVisibility", // Bukkit 1.17+
-            "ScoreboardTeamBase$EnumNameTagVisibility" // Bukkit 1.8.1 - 1.16.5
+            "world.scores.ScoreboardTeamBase$EnumNameTagVisibility" // Bukkit
     );
     private final Class<?> enumTeamPush = BukkitReflection.getClass("world.scores.Team$CollisionRule",
-            "world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
+            "world.scores.ScoreboardTeamBase$EnumTeamPush");
 
     // Constructors
     private final Constructor<?> newScoreboardTeam = ScoreboardTeamClass.getConstructor(ScoreboardClass, String.class);
@@ -79,19 +77,11 @@ public class TeamPacketData {
      *          If anything fails
      */
     public TeamPacketData() throws ReflectiveOperationException {
-        // Packet constructors
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            Method TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, ScoreboardTeamClass);
-            Method TeamPacketConstructor_ofBoolean = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, ScoreboardTeamClass, boolean.class);
-            newRegisterTeamPacket = (team, version) -> TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
-            newUnregisterTeamPacket = team -> TeamPacketConstructor_of.invoke(null, team.getPlatformTeam());
-            newUpdateTeamPacket = (team, version) -> TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), false);
-        } else {
-            Constructor<?> newTeamPacket = TeamPacketClass.getConstructor(ScoreboardTeamClass, int.class);
-            newRegisterTeamPacket = (team, version) -> newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.CREATE);
-            newUnregisterTeamPacket = team -> newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.REMOVE);
-            newUpdateTeamPacket = (team, version) -> newTeamPacket.newInstance(team.getPlatformTeam(), TeamAction.UPDATE);
-        }
+        Method TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, ScoreboardTeamClass);
+        Method TeamPacketConstructor_ofBoolean = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, ScoreboardTeamClass, boolean.class);
+        newRegisterTeamPacket = (team, version) -> TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
+        newUnregisterTeamPacket = team -> TeamPacketConstructor_of.invoke(null, team.getPlatformTeam());
+        newUpdateTeamPacket = (team, version) -> TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), false);
     }
 
     /**

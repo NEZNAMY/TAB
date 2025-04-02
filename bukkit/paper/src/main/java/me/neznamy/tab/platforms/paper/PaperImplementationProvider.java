@@ -37,4 +37,9 @@ public class PaperImplementationProvider implements ImplementationProvider {
     public FunctionWithException<BukkitTabPlayer, Channel> getChannelFunction() {
         return player -> ((CraftPlayer)player.getPlayer()).getHandle().connection.connection.channel;
     }
+
+    @Override
+    public int getPing(@NotNull BukkitTabPlayer player) {
+        return player.getPlayer().getPing();
+    }
 }

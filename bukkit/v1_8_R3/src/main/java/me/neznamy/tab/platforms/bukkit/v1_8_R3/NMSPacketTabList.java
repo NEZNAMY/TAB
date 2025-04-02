@@ -11,20 +11,24 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.PlayerInfoData;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * TabList implementation using direct NMS code.
  */
 public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
-    private static final Field ACTION = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, PacketPlayOutPlayerInfo.EnumPlayerInfoAction.class);
+    private static final Field ACTION = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, EnumPlayerInfoAction.class);
     private static final Field PLAYERS = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, List.class);
 
     private static final Field PlayerInfoData_Latency = ReflectionUtils.getFields(PlayerInfoData.class, int.class).get(0);
@@ -45,22 +49,22 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @SneakyThrows
     public void removeEntry(@NonNull UUID entry) {
-        sendPacket(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entry, "", null, 0, 0, null);
+        sendPacket(EnumPlayerInfoAction.REMOVE_PLAYER, entry, "", null, 0, 0, null);
     }
 
     @Override
     public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        sendPacket(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, entry, "", null, 0, 0, displayName);
+        sendPacket(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, entry, "", null, 0, 0, displayName);
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
-        sendPacket(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_LATENCY, entry, "", null, latency, 0, null);
+        sendPacket(EnumPlayerInfoAction.UPDATE_LATENCY, entry, "", null, latency, 0, null);
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
-        sendPacket(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, entry, "", null, 0, gameMode, null);
+        sendPacket(EnumPlayerInfoAction.UPDATE_GAME_MODE, entry, "", null, 0, gameMode, null);
     }
 
     @Override
@@ -70,17 +74,17 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        // Added in 1.20.2
+        // Added in 1.21.2
     }
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
-        // Added in 1.20.4
+        // Added in 1.21.4
     }
 
     @Override
     public void addEntry0(@NonNull Entry entry) {
-        sendPacket(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.getLatency(),
+        sendPacket(EnumPlayerInfoAction.ADD_PLAYER, entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.getLatency(),
                 entry.getGameMode(), entry.getDisplayName());
     }
 
@@ -111,29 +115,29 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @SuppressWarnings("unchecked")
     public void onPacketSend(@NonNull Object packet) {
         if (!(packet instanceof PacketPlayOutPlayerInfo)) return;
-        String action = ACTION.get(packet).toString();
+        EnumPlayerInfoAction action = (EnumPlayerInfoAction) ACTION.get(packet);
         for (PlayerInfoData nmsData : (List<PlayerInfoData>) PLAYERS.get(packet)) {
             GameProfile profile = nmsData.a();
             UUID id = profile.getId();
-            if (action.equals(Action.UPDATE_DISPLAY_NAME.name()) || action.equals(Action.ADD_PLAYER.name())) {
+            if (action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || action == EnumPlayerInfoAction.ADD_PLAYER) {
                 TabComponent expectedName = getExpectedDisplayNames().get(id);
                 if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
             }
-            if (action.equals(Action.UPDATE_LATENCY.name()) || action.equals(Action.ADD_PLAYER.name())) {
+            if (action == EnumPlayerInfoAction.UPDATE_LATENCY || action == EnumPlayerInfoAction.ADD_PLAYER) {
                 int oldLatency = PlayerInfoData_Latency.getInt(nmsData);
                 int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, oldLatency);
                 if (oldLatency != newLatency) {
                     PlayerInfoData_Latency.set(nmsData, newLatency);
                 }
             }
-            if (action.equals(Action.ADD_PLAYER.name())) {
+            if (action == EnumPlayerInfoAction.ADD_PLAYER) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
             }
         }
     }
 
     @SneakyThrows
-    private void sendPacket(@NonNull PacketPlayOutPlayerInfo.EnumPlayerInfoAction action, @NonNull UUID id, @NonNull String name,
+    private void sendPacket(@NonNull EnumPlayerInfoAction action, @NonNull UUID id, @NonNull String name,
                             @Nullable Skin skin, int latency, int gameMode, @Nullable TabComponent displayName) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(action);
         PLAYERS.set(packet, Collections.singletonList(packet.new PlayerInfoData(

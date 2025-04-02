@@ -5,12 +5,10 @@ import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketSender;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.util.function.BiFunctionWithException;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 
 /**
  * Header/footer sender that uses NMS to send packets. Available
@@ -28,23 +26,11 @@ public class PacketHeaderFooter extends HeaderFooter {
      *          If something went wrong
      */
     public PacketHeaderFooter() throws ReflectiveOperationException {
-        Class<?> Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
+        Class<?> Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent");
         Class<?> HeaderFooterClass = BukkitReflection.getClass("network.protocol.game.ClientboundTabListPacket",
-                "network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
-        if (BukkitReflection.getMinorVersion() >= 17) {
-            Constructor<?> newHeaderFooter = HeaderFooterClass.getConstructor(Component, Component);
-            createPacket = newHeaderFooter::newInstance;
-        } else {
-            Constructor<?> newHeaderFooter = HeaderFooterClass.getConstructor();
-            Field HEADER = ReflectionUtils.getFields(HeaderFooterClass, Component).get(0);
-            Field FOOTER = ReflectionUtils.getFields(HeaderFooterClass, Component).get(1);
-            createPacket = (header, footer) -> {
-                Object packet = newHeaderFooter.newInstance();
-                HEADER.set(packet, header);
-                FOOTER.set(packet, footer);
-                return packet;
-            };
-        }
+                "network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
+        Constructor<?> newHeaderFooter = HeaderFooterClass.getConstructor(Component, Component);
+        createPacket = newHeaderFooter::newInstance;
     }
 
     @Override

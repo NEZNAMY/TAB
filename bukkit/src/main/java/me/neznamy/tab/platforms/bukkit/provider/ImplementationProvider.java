@@ -22,4 +22,6 @@ public interface ImplementationProvider {
 
     @Nullable
     FunctionWithException<BukkitTabPlayer, Channel> getChannelFunction();
+
+    int getPing(@NotNull BukkitTabPlayer player);
 }

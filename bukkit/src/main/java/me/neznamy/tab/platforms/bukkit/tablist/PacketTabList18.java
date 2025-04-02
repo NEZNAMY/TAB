@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * TabList handler for 1.16 - 1.19.2 servers using packets.
+ * TabList handler for 1.17 - 1.19.2 servers using packets.
  */
 @Setter
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -64,24 +64,21 @@ public class PacketTabList18 extends TrackedTabList<BukkitTabPlayer> {
      *          If something goes wrong
      */
     public static void load() throws ReflectiveOperationException {
-        Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType",
-                "world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode");
+        Class<Enum> EnumGamemodeClass = (Class<Enum>) BukkitReflection.getClass("world.level.GameType", "world.level.EnumGamemode");
         ActionClass = (Class<Enum>) BukkitReflection.getClass(
-                "network.protocol.game.ClientboundPlayerInfoPacket$Action", // Mojang 1.17 - 1.19.2
-                "network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", // Bukkit 1.17 - 1.19.2
-                "PacketPlayOutPlayerInfo$EnumPlayerInfoAction" // Bukkit 1.8.1 - 1.16.5
+                "network.protocol.game.ClientboundPlayerInfoPacket$Action", // Mojang
+                "network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction" // Bukkit
         );
-        PlayerInfoClass = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoUpdatePacket",
-                "network.protocol.game.ClientboundPlayerInfoPacket",
-                "network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo");
+        PlayerInfoClass = BukkitReflection.getClass(
+                "network.protocol.game.ClientboundPlayerInfoPacket", // Mojang
+                "network.protocol.game.PacketPlayOutPlayerInfo" // Bukkit
+        );
         Class<?> playerInfoDataClass = BukkitReflection.getClass(
-                "network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate", // Mojang 1.17 - 1.19.2
-                "network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData", // Bukkit 1.17 - 1.19.2
-                "PacketPlayOutPlayerInfo$PlayerInfoData" // Bukkit 1.8.1 - 1.16.5
+                "network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate", // Mojang
+                "network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData" // Bukkit
         );
 
-        Class<?> classType = BukkitReflection.getMinorVersion() >= 17 ? Collection.class : Iterable.class;
-        newPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, classType);
+        newPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, Collection.class);
         ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
 
         loadSharedContent(playerInfoDataClass, EnumGamemodeClass);
@@ -90,7 +87,7 @@ public class PacketTabList18 extends TrackedTabList<BukkitTabPlayer> {
     }
 
     protected static void loadSharedContent(Class<?> infoData, Class<Enum> gameMode) {
-        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent", "IChatBaseComponent");
+        Class<?> IChatBaseComponent = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent");
         PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         PlayerInfoData_Profile = ReflectionUtils.getOnlyField(infoData, GameProfile.class);
         PlayerInfoData_Latency = ReflectionUtils.getFields(infoData, int.class).get(0);

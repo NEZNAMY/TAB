@@ -1,4 +1,4 @@
 dependencies {
     implementation(projects.bukkit)
-    compileOnly("org.spigotmc:spigot:1.12-R0.1-SNAPSHOT")
+    compileOnly("org.bukkit:craftbukkit:1.12.2-R0.1-SNAPSHOT")
 }

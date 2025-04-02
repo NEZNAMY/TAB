@@ -37,4 +37,9 @@ public class NMSImplementationProvider implements ImplementationProvider {
     public FunctionWithException<BukkitTabPlayer, Channel> getChannelFunction() {
         return player -> ((CraftPlayer)player.getPlayer()).getHandle().playerConnection.networkManager.channel;
     }
+
+    @Override
+    public int getPing(@NotNull BukkitTabPlayer player) {
+        return ((CraftPlayer)player.getPlayer()).getHandle().ping;
+    }
 }

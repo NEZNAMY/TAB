@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.v1_12_R1;
+package me.neznamy.tab.platforms.bukkit.v1_16_R3;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -8,11 +8,11 @@ import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Implementation provider using direct NMS code for 1.12.2.
+ * Implementation provider using direct NMS code for 1.16.5.
  */
 @Getter
 public class NMSImplementationProvider implements ImplementationProvider {

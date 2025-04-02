@@ -12,7 +12,6 @@ import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.header.*;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.PingRetriever;
 import me.neznamy.tab.platforms.bukkit.provider.BukkitImplementationProvider;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.platforms.bukkit.provider.ViaVersionImplementationProvider;
@@ -125,6 +124,8 @@ public class BukkitPlatform implements BackendPlatform {
         }
         if (canUseDirectNMS) {
             serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper.PaperImplementationProvider").getConstructor().newInstance();
+        } else if ("v1_16_R3".equals(BukkitReflection.getServerVersion().getServerPackage())) {
+            serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.v1_16_R3.NMSImplementationProvider").getConstructor().newInstance();
         } else if ("v1_12_R1".equals(BukkitReflection.getServerVersion().getServerPackage())) {
             serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.v1_12_R1.NMSImplementationProvider").getConstructor().newInstance();
         } else if ("v1_8_R3".equals(BukkitReflection.getServerVersion().getServerPackage())) {
@@ -133,7 +134,6 @@ public class BukkitPlatform implements BackendPlatform {
             serverImplementationProvider = new BukkitImplementationProvider();
         }
         headerFooter = findHeaderFooter();
-        PingRetriever.tryLoad();
         BukkitPipelineInjector.setGetChannel(serverImplementationProvider.getChannelFunction());
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] §7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");

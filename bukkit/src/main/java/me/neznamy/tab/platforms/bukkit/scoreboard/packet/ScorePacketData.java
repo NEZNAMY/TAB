@@ -27,8 +27,7 @@ public class ScorePacketData {
     public ScorePacketData() throws ReflectiveOperationException {
         Class<?> SetScorePacket = BukkitReflection.getClass(
                 "network.protocol.game.ClientboundSetScorePacket", // Mojang mapped
-                "network.protocol.game.PacketPlayOutScoreboardScore", // Bukkit 1.17+
-                "PacketPlayOutScoreboardScore" // 1.7 - 1.16.5
+                "network.protocol.game.PacketPlayOutScoreboardScore" // Bukkit
         );
         if (BukkitReflection.is1_20_3Plus()) {
             QuintFunction<String, String, Integer, Object, Object, Object> setScore0;
