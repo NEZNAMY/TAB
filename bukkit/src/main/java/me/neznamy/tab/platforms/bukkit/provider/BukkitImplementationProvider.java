@@ -91,10 +91,12 @@ public class BukkitImplementationProvider implements ImplementationProvider {
                 return new LegacyComponentConverter();
             }
         } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage("§c[TAB] Failed to initialize converter from TAB components to Minecraft components. " +
-                    "This will negatively impact most features, see below.");
-            if (BukkitUtils.PRINT_EXCEPTIONS) {
-                e.printStackTrace();
+            if (BukkitReflection.getMinorVersion() >= 8) {
+                Bukkit.getConsoleSender().sendMessage("§c[TAB] Failed to initialize converter from TAB components to Minecraft components. " +
+                        "This will negatively impact most features, see below.");
+                if (BukkitUtils.PRINT_EXCEPTIONS) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }
@@ -111,14 +113,17 @@ public class BukkitImplementationProvider implements ImplementationProvider {
                 BukkitUtils.compatibilityError(e, "Scoreboards", "Paper API", "Compatibility with other plugins being reduced");
                 return PaperScoreboard::new;
             } else if (BukkitScoreboard.isAvailable()) {
-                List<String> missingFeatures = Lists.newArrayList(
-                        "Compatibility with other plugins being reduced",
-                        "Features receiving new artificial character limits"
-                );
-                if (BukkitReflection.is1_20_3Plus()) {
-                    missingFeatures.add("1.20.3+ visuals not working due to lack of API"); // soontm?
+                if (BukkitReflection.getMinorVersion() >= 8) {
+                    List<String> missingFeatures = Lists.newArrayList(
+                            "Compatibility with other plugins being reduced",
+                            "Features receiving new artificial character limits"
+                    );
+                    if (BukkitReflection.is1_20_3Plus()) {
+                        missingFeatures.add("1.20.3+ visuals not working due to lack of API"); // soontm?
+                    }
+                    BukkitUtils.compatibilityError(e, "Scoreboards", "Bukkit API", missingFeatures.toArray(new String[0]));
                 }
-                BukkitUtils.compatibilityError(e, "Scoreboards", "Bukkit API", missingFeatures.toArray(new String[0]));
+
                 return BukkitScoreboard::new;
             } else if (BukkitReflection.getMinorVersion() >= 5) {
                 BukkitUtils.compatibilityError(e, "Scoreboards", null,
@@ -151,12 +156,14 @@ public class BukkitImplementationProvider implements ImplementationProvider {
                 return PacketTabList17::new;
             }
         } catch (Exception e) {
-            BukkitUtils.compatibilityError(e, "tablist entry management", "Bukkit API",
-                    "Layout feature will not work",
-                    "Prevent-spectator-effect feature will not work",
-                    "Ping spoof feature will not work",
-                    "Tablist formatting missing anti-override",
-                    "Tablist formatting not supporting relational placeholders");
+            if (BukkitReflection.getMinorVersion() >= 8) {
+                BukkitUtils.compatibilityError(e, "tablist entry management", "Bukkit API",
+                        "Layout feature will not work",
+                        "Prevent-spectator-effect feature will not work",
+                        "Ping spoof feature will not work",
+                        "Tablist formatting missing anti-override",
+                        "Tablist formatting not supporting relational placeholders");
+            }
             return BukkitTabList::new;
         }
     }
