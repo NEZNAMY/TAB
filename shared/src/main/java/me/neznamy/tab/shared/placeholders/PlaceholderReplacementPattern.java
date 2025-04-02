@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 import lombok.Getter;
 import me.neznamy.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Placeholder replacement pattern class for placeholder output replacements
@@ -50,7 +50,7 @@ public class PlaceholderReplacementPattern {
             String key = String.valueOf(entry.getKey());
             String value = String.valueOf(entry.getValue()).replace(identifier, "%value%");
             replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
-            replacements.put(key, EnumChatFormat.color(value));
+            replacements.put(key, value);
             nestedPlaceholders.addAll(PlaceholderManagerImpl.detectPlaceholders(value));
             nestedPlaceholders.remove("%value%"); //not a real placeholder
             //snakeyaml converts yes & no to booleans, making them not work when used without "
