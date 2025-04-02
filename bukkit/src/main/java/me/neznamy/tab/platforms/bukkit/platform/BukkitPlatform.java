@@ -101,6 +101,8 @@ public class BukkitPlatform implements BackendPlatform {
             ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3") ?
                     new ViaVersionImplementationProvider(serverVersion) : null;
 
+    private final boolean modernOnlinePlayers;
+
     /**
      * Constructs new instance with given plugin.
      *
@@ -110,6 +112,7 @@ public class BukkitPlatform implements BackendPlatform {
     @SneakyThrows
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
+        modernOnlinePlayers = Bukkit.class.getMethod("getOnlinePlayers").getReturnType() == Collection.class;
         long time = System.currentTimeMillis();
         try {
             Object server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
@@ -436,7 +439,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     /**
      * Returns online players from Bukkit API.
-     * This method may use reflections, because the return type changed in 1.8,
+     * This method may use reflections, because the return type changed in 1.7.10,
      * and we want to avoid errors.
      *
      * @return  Online players from Bukkit API.
@@ -444,7 +447,7 @@ public class BukkitPlatform implements BackendPlatform {
     @SneakyThrows
     @NotNull
     public Collection<? extends Player> getOnlinePlayers() {
-        if (serverVersion.getMinorVersion() >= 8) {
+        if (modernOnlinePlayers) {
             return Bukkit.getOnlinePlayers();
         }
         return Arrays.asList((Player[]) Bukkit.class.getMethod("getOnlinePlayers").invoke(null));
