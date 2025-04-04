@@ -61,9 +61,6 @@ public abstract class TabPlaceholder implements Placeholder {
         this.refresh = refresh;
         Map<Object, Object> map = TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues().get(identifier);
         replacements = map == null ? PlaceholderReplacementPattern.EMPTY : PlaceholderReplacementPattern.create(identifier, map);
-        for (String nested : getNestedPlaceholders("")) {
-            TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
-        }
         for (String nested : replacements.getNestedPlaceholders()) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
         }
@@ -83,18 +80,6 @@ public abstract class TabPlaceholder implements Placeholder {
     @NotNull
     public String set(@NonNull String string, @Nullable TabPlayer player) {
         return replace(string, identifier, setPlaceholders(getLastValue(player), player));
-    }
-
-    /**
-     * Returns all nested placeholders in provided output. If no placeholders are detected,
-     * returns empty list.
-     *
-     * @param   output
-     *          output to check
-     * @return  List of nested placeholders in provided output
-     */
-    public List<String> getNestedPlaceholders(@NonNull String output) {
-        return PlaceholderManagerImpl.detectPlaceholders(output);
     }
 
     /**
@@ -129,7 +114,7 @@ public abstract class TabPlaceholder implements Placeholder {
     protected @NotNull String setPlaceholders(@NonNull String text, @Nullable TabPlayer p) {
         if (identifier.equals(text)) return text;
         String replaced = text;
-        for (String s : getNestedPlaceholders(text)) {
+        for (String s : PlaceholderManagerImpl.detectPlaceholders(text)) {
             if (s.equals(identifier) || (identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s)) || s.startsWith("%rel_")) continue;
             TabPlaceholder nested = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
             nested.addParent(identifier);
