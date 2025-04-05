@@ -60,7 +60,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
-        // TODO once velocity adds it
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setShowHat(showHat));
     }
 
     @Override
@@ -75,8 +75,8 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
                 .gameMode(entry.getGameMode())
                 .listed(entry.isListed())
                 .listOrder(entry.getListOrder())
+                .showHat(entry.isShowHat())
                 .build();
-        // TODO showHat once velocity adds it
 
         // Remove entry because:
         // #1 - If player is 1.8 - 1.19.2, KeyedVelocityTabList#addEntry will throw IllegalArgumentException
