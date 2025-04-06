@@ -67,6 +67,6 @@ tasks {
         options.release.set(17)
     }
     validateAccessWidener {
-        enabled = true
+        enabled = false // It contains multiple versions for easier backporting
     }
 }

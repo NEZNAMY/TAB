@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[50,)"
+loaderVersion = "[47,)"
 issueTrackerURL = "https://github.com/NEZNAMY/TAB/issues"
 license = "Apache License Version 2.0"
 
