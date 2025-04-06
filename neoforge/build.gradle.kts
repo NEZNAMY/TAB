@@ -12,10 +12,27 @@ repositories {
     maven("https://maven.neoforged.net/releases")
 }
 
+val minecraftVersion = "1.21.5"
+
+// NeoForge API versions for each Minecraft version for easier backporting
+val neoforgeApiVersions = mapOf(
+    "1.21.5" to "21.5.26-beta",
+    "1.21.4" to "21.4.124",
+    "1.21.3" to "21.3.66",
+    "1.21.2" to "21.2.1-beta",
+    "1.21.1" to "21.1.144",
+    "1.21" to "21.0.167",
+    "1.20.6" to "20.6.125",
+    "1.20.5" to "20.5.21-beta",
+    "1.20.4" to "20.4.239",
+    "1.20.3" to "20.3.8-beta",
+    "1.20.2" to "20.2.88"
+)
+
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.5")
+    minecraft("com.mojang:minecraft:${minecraftVersion}")
     mappings(loom.officialMojangMappings())
-    neoForge("net.neoforged:neoforge:21.5.2-beta")
+    neoForge("net.neoforged:neoforge:${neoforgeApiVersions[minecraftVersion]}")
     api(projects.shared)
     compileOnly("net.luckperms:api:5.4")
 }
