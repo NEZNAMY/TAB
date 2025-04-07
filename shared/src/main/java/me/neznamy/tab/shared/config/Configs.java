@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -109,9 +109,10 @@ public class Configs {
      *          Element to find
      * @return  Group containing the element or element itself if not found
      */
-    @Contract("_, null -> null; _, !null -> !null")
+    @NotNull
     public String getGroup(@NonNull Collection<String> serverGroups, @Nullable String element) {
-        if (serverGroups.isEmpty() || element == null) return element;
+        if (element == null) return "null";
+        if (serverGroups.isEmpty()) return element;
         for (Object worldGroup : serverGroups) {
             for (String definedWorld : worldGroup.toString().split(";")) {
                 if (definedWorld.endsWith("*")) {
@@ -137,7 +138,7 @@ public class Configs {
      *          Server to find
      * @return  Group containing the element or element itself if not found
      */
-    @Contract("_, null -> null; _, !null -> !null")
+    @NotNull
     public String getServerGroup(@NonNull Collection<String> serverGroups, @Nullable String server) {
         String globalGroup = tryServerGroup(serverGroups, server);
         if (globalGroup != null) return globalGroup;
