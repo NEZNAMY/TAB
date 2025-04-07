@@ -1,20 +1,20 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The main condition class. It allows users to configure different
@@ -65,6 +65,10 @@ public class Condition {
         conditionTypes.put("-|", line -> new StringCondition(splitAndTrim(line, "-\\|"), String::endsWith)::isMet);
         conditionTypes.put("!=", line -> new StringCondition(splitAndTrim(line, "!="), (left, right) -> !left.equals(right))::isMet);
         conditionTypes.put("=", line -> new StringCondition(splitAndTrim(line, "="), String::equals)::isMet);
+        conditionTypes.put("!permission:", line -> {
+            String node = splitAndTrim(line, ":")[1];
+            return p -> !p.hasPermission(node);
+        });
         conditionTypes.put("permission:", line -> {
             String node = splitAndTrim(line, ":")[1];
             return p -> p.hasPermission(node);
@@ -105,7 +109,7 @@ public class Condition {
             }
         }
         for (String subCondition : conditions) {
-            if (subCondition.startsWith("permission:")) {
+            if (subCondition.contains("permission:")) {
                 int permissionRefresh = TAB.getInstance().getConfiguration().getConfig().getPermissionRefreshInterval();
                 if (refresh > permissionRefresh || refresh == -1) refresh = permissionRefresh;
             } else {
