@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.config;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import org.jetbrains.annotations.NotNull;
@@ -89,56 +90,68 @@ public class MessageFile extends YamlConfigurationFile {
         super(MessageFile.class.getClassLoader().getResourceAsStream("config/messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));
     }
 
-    public @NotNull String getBossBarNotFound(@NotNull String name) {
+    @NotNull
+    public String getBossBarNotFound(@NonNull String name) {
         return getString("bossbar-not-found", "&cNo bossbar found with the name \"%name%\"").replace("%name%", name);
     }
 
-    public @NotNull String getGroupDataRemoved(@NotNull String group) {
+    @NotNull
+    public String getGroupDataRemoved(@NonNull String group) {
         return getString("group-data-removed", "&3[TAB] All data has been successfully removed from group &e%group%").replace("%group%", group);
     }
 
-    public @NotNull String getGroupValueAssigned(@NotNull String property, @NotNull String value, @NotNull String group) {
+    @NotNull
+    public String getGroupValueAssigned(@NonNull String property, @NonNull String value, @NonNull String group) {
         return getString("group-value-assigned", "&3[TAB] %property% '&r%value%&r&3' has been successfully assigned to group &e%group%")
                 .replace("%property%", property).replace("%value%", value).replace("%group%", group);
     }
 
-    public @NotNull String getGroupValueRemoved(@NotNull String property, @NotNull String group) {
+    @NotNull
+    public String getGroupValueRemoved(@NonNull String property, @NonNull String group) {
         return getString("group-value-removed", "&3[TAB] %property% has been successfully removed from group &e%group%")
                 .replace("%property%", property).replace("%group%", group);
     }
 
-    public @NotNull String getPlayerDataRemoved(@NotNull String player) {
+    @NotNull
+    public String getPlayerDataRemoved(@NonNull String player) {
         return getString("user-data-removed", "&3[TAB] All data has been successfully removed from player &e%player%").replace("%player%", player);
     }
 
-    public @NotNull String getPlayerValueAssigned(@NotNull String property, @NotNull String value, @NotNull String player) {
+    @NotNull
+    public String getPlayerValueAssigned(@NonNull String property, @NonNull String value, @NonNull String player) {
         return getString("user-value-assigned", "&3[TAB] %property% '&r%value%&r&3' has been successfully assigned to player &e%player%")
                 .replace("%property%", property).replace("%value%", value).replace("%player%", player);
     }
 
-    public @NotNull String getPlayerValueRemoved(@NotNull String property, @NotNull String player) {
+    @NotNull
+    public String getPlayerValueRemoved(@NonNull String property, @NonNull String player) {
         return getString("user-value-removed", "&3[TAB] %property% has been successfully removed from player &e%player%")
                 .replace("%property%", property).replace("%player%", player);
     }
 
-    public @NotNull String getPlayerNotFound(@NotNull String name) {
+    @NotNull
+    public String getPlayerNotFound(@NonNull String name) {
         return getString("player-not-online", "&cNo online player found with the name \"%player%\"").replace("%player%", name);
     }
 
-    public @NotNull String getInvalidNumber(@NotNull String input) {
+    @NotNull
+    public String getInvalidNumber(@NonNull String input) {
         return getString("invalid-number", "\"%input%\" is not a number!").replace("%input%", input);
     }
 
-    public @NotNull String getScoreboardNotFound(@NotNull String name) {
+    @NotNull
+    public String getScoreboardNotFound(@NonNull String name) {
         return getString("scoreboard-not-found", "&cNo scoreboard found with the name \"%name%\"").replace("%name%", name);
     }
 
-    public @NotNull String getBossBarAnnouncementSuccess(@NotNull String bar, int length) {
+    @NotNull
+    public String getBossBarAnnouncementSuccess(@NonNull String bar, int length) {
         return getString("bossbar-announcement-success", "&aAnnouncing bossbar &6%bossbar% &afor %length% seconds.")
                 .replace("%bossbar%", bar).replace("%length%", String.valueOf(length));
     }
 
-    public @NotNull String getBossBarSendSuccess(@NotNull String player, @NotNull String bar, int length) {
+    @NotNull
+    public String getBossBarSendSuccess(@NonNull String player, @NonNull String bar, int length) {
         return getString("bossbar-send-success", "&aSending bossbar &6%bossbar% &ato player &6%player% &afor %length% seconds.")
                 .replace("%player%", player).replace("%bossbar%", bar).replace("%length%", String.valueOf(length));
     }

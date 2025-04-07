@@ -77,7 +77,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
             new Yaml(options).dump(values, writer);
             writer.close();
         } catch (IOException e) {
-            TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text("Failed to save yaml file " + file.getPath() + " with content " + values.toString() + ": " + e.getMessage()));
+            TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text("Failed to save yaml file " + file.getPath() + " with content " + values + ": " + e.getMessage()));
         }
     }
 }

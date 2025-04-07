@@ -24,6 +24,7 @@ public abstract class ConfigurationFile {
 
     /** Configuration file content */
     @Setter
+    @NotNull
     protected Map<Object, Object> values;
 
     /** File to use */
@@ -330,7 +331,7 @@ public abstract class ConfigurationFile {
      * @param   value
      *          Value to insert if missing
      */
-    public void setIfMissing(@NotNull String key, @NotNull String value) {
+    public void setIfMissing(@NonNull String key, @NonNull String value) {
         if (!hasConfigOption(key)) set(key, value);
     }
 
@@ -342,7 +343,7 @@ public abstract class ConfigurationFile {
      *          Key to remove
      * @return  {@code true} if option was present and removed, {@code false} if not.
      */
-    public boolean removeOption(@NotNull String key) {
+    public boolean removeOption(@NonNull String key) {
         if (hasConfigOption(key)) {
             set(key, null);
             return true;
@@ -360,7 +361,7 @@ public abstract class ConfigurationFile {
      *          New path to the option
      * @return  {@code true} if option was renamed successfully, {@code false} if not.
      */
-    public boolean rename(@NotNull String oldPath, @NotNull String newPath) {
+    public boolean rename(@NonNull String oldPath, @NonNull String newPath) {
         if (hasConfigOption(oldPath)) {
             set(newPath, getObject(oldPath));
             set(oldPath, null);
@@ -377,7 +378,7 @@ public abstract class ConfigurationFile {
      * @return  Configuration section from given path
      */
     @NotNull
-    public ConfigurationSection getConfigurationSection(@NotNull String path) {
+    public ConfigurationSection getConfigurationSection(@NonNull String path) {
         return new ConfigurationSection(file.getName(), path, getMap(path));
     }
 }

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.config.mysql;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -14,11 +15,11 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class MySQLConfiguration {
     
-    @NotNull private final String host;
+    @NonNull private final String host;
     private final int port;
-    @NotNull private final String database;
-    @NotNull private final String username;
-    @NotNull private final String password;
+    @NonNull private final String database;
+    @NonNull private final String username;
+    @NonNull private final String password;
     private final boolean useSSL;
 
     /**
@@ -30,7 +31,7 @@ public class MySQLConfiguration {
      * @return  Loaded instance from given configuration section
      */
     @NotNull
-    public static MySQLConfiguration fromSection(@NotNull ConfigurationSection section) {
+    public static MySQLConfiguration fromSection(@NonNull ConfigurationSection section) {
         // Check keys
         section.checkForUnknownKey(Arrays.asList("enabled", "host", "port", "database", "username", "password", "useSSL"));
 

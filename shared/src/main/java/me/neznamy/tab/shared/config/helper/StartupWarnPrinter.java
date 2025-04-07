@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.config.helper;
 
-import me.neznamy.tab.shared.TAB;
+import lombok.NonNull;
 import me.neznamy.chat.component.SimpleTextComponent;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Set;
@@ -24,26 +24,26 @@ public class StartupWarnPrinter {
      * @param   definition
      *          Configured skin definition
      */
-    public void invalidLayoutSkinDefinition(@NotNull String definition) {
+    public void invalidLayoutSkinDefinition(@NonNull String definition) {
         startupWarn("Invalid skin definition: \"" + definition + "\". Supported patterns are:",
                 "#1 - \"player:<name>\" for skin of player with specified name",
                 "#2 - \"mineskin:<id>\" for UUID of chosen skin from mineskin.org",
                 "#3 - \"texture:<texture>\" for raw texture string");
     }
 
-    public void invalidSortingTypeElement(@NotNull String element, @NotNull Set<String> validTypes) {
+    public void invalidSortingTypeElement(@NonNull String element, @NonNull Set<String> validTypes) {
         startupWarn("\"" + element + "\" is not a valid sorting type element. Valid options are: " + validTypes + ".");
     }
 
-    public void invalidSortingPlaceholder(@NotNull String placeholder, @NotNull SortingType type) {
+    public void invalidSortingPlaceholder(@NonNull String placeholder, @NonNull SortingType type) {
         startupWarn("\"" + placeholder + "\" is not a valid placeholder for " + type.getClass().getSimpleName() + " sorting type");
     }
 
-    public void invalidConditionPattern(@NotNull String conditionName, @NotNull String line) {
+    public void invalidConditionPattern(@NonNull String conditionName, @NonNull String line) {
         startupWarn("Line \"" + line + "\" in condition " + conditionName + " is not a valid condition pattern.");
     }
 
-    public void incompleteSortingLine(@NotNull String configuredLine) {
+    public void incompleteSortingLine(@NonNull String configuredLine) {
         startupWarn("Sorting line \"" + configuredLine + "\" is incomplete.");
     }
 
@@ -53,14 +53,14 @@ public class StartupWarnPrinter {
      * @param   messages
      *          messages to print into console
      */
-    public void startupWarn(@NotNull String... messages) {
+    public void startupWarn(@NonNull String... messages) {
         warnCount++;
         for (String message : messages) {
             TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(message));
         }
     }
 
-    public void startupWarn(@NotNull File file, @NotNull String message) {
+    public void startupWarn(@NonNull File file, @NonNull String message) {
         warnCount++;
         TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text("[" + file.getName() + "] " + message));
     }

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.config.files;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.Converter;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
@@ -136,7 +137,7 @@ public class Config {
      */
     @SuppressWarnings("unchecked")
     @NotNull
-    private <T> T getSecretOption(@NotNull String path, @NotNull T defaultValue) {
+    private <T> T getSecretOption(@NonNull String path, @NonNull T defaultValue) {
         Object value = config.getObject(path);
         return value == null ? defaultValue : (T) value;
     }

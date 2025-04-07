@@ -44,6 +44,7 @@ public class MySQL {
         }
     }
 
+    @NotNull
     private PreparedStatement prepareStatement(@NonNull String query, @Nullable Object... vars) throws SQLException {
         if (!isConnected()) openConnection();
         PreparedStatement ps = con.prepareStatement(query);
@@ -57,6 +58,7 @@ public class MySQL {
         return ps;
     }
 
+    @NotNull
     public CachedRowSet getCRS(@NonNull String query, @NonNull Object... vars) throws SQLException {
         PreparedStatement ps = prepareStatement(query, vars);
         ResultSet rs = ps.executeQuery();

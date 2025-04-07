@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.config;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.FeatureManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -13,7 +14,7 @@ import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -83,6 +84,7 @@ public class Configs {
      *
      * @return  playerdata.yml file
      */
+    @Nullable
     public ConfigurationFile getPlayerDataFile() {
         if (playerdata == null) {
             File file = new File(TAB.getInstance().getDataFolder(), "playerdata.yml");
@@ -107,7 +109,8 @@ public class Configs {
      *          Element to find
      * @return  Group containing the element or element itself if not found
      */
-    public String getGroup(@NotNull Collection<String> serverGroups, @Nullable String element) {
+    @Contract("_, null -> null; _, !null -> !null")
+    public String getGroup(@NonNull Collection<String> serverGroups, @Nullable String element) {
         if (serverGroups.isEmpty() || element == null) return element;
         for (Object worldGroup : serverGroups) {
             for (String definedWorld : worldGroup.toString().split(";")) {
@@ -134,7 +137,8 @@ public class Configs {
      *          Server to find
      * @return  Group containing the element or element itself if not found
      */
-    public String getServerGroup(@NotNull Collection<String> serverGroups, @Nullable String server) {
+    @Contract("_, null -> null; _, !null -> !null")
+    public String getServerGroup(@NonNull Collection<String> serverGroups, @Nullable String server) {
         String globalGroup = tryServerGroup(serverGroups, server);
         if (globalGroup != null) return globalGroup;
 
@@ -142,7 +146,8 @@ public class Configs {
         return getGroup(serverGroups, server);
     }
 
-    private @Nullable String tryServerGroup(@NotNull Collection<String> serverGroups, @Nullable String server) {
+    @Nullable
+    private String tryServerGroup(@NonNull Collection<String> serverGroups, @Nullable String server) {
         if (serverGroups.isEmpty() || server == null) return null;
 
         // Check global-playerlist server-groups for this server
