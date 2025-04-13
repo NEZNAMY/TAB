@@ -57,6 +57,6 @@ public class BukkitUtils {
         if (!compatibilityIssue) return;
         Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
                 "a plugin version with full support for your server version for optimal experience. This plugin version " +
-                "has full support for 1.8.8, 1.12.2 and 1.16.5 - " + ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName() + ".");
+                "has full support for 1.8.8, 1.12.2, 1.16.5, 1.17.1, 1.18.2 and 1.19 - " + ProtocolVersion.LATEST_KNOWN_VERSION.getFriendlyName() + ".");
     }
 }
