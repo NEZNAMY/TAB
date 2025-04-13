@@ -1,11 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.bossbar;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BossBar;
 import org.jetbrains.annotations.NotNull;
@@ -17,8 +19,12 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class BukkitBossBar extends SafeBossBar<BossBar> {
 
+    /** Flag indicating whether this class is available or not */
+    @Getter
+    private static final boolean available = ReflectionUtils.classExists("org.bukkit.boss.BossBar");
+
     /** Style array because names do not match */
-    private static final org.bukkit.boss.BarStyle[] styles = org.bukkit.boss.BarStyle.values();
+    private static final org.bukkit.boss.BarStyle[] styles = available ? org.bukkit.boss.BarStyle.values() : null;
 
     /** Player this handler belongs to */
     @NotNull
