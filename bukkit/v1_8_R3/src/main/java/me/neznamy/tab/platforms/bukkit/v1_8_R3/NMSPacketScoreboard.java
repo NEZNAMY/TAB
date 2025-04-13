@@ -66,11 +66,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         ScoreboardObjective obj = (ScoreboardObjective) objective.getPlatformObjective();
-        String title = objective.getTitle().toLegacyText();
-        if (player.getVersion().getMinorVersion() < 13 || TAB.getInstance().getConfiguration().getConfig().isPacketEventsCompensation()) {
-            title = cutTo(title, Limitations.SCOREBOARD_TITLE_PRE_1_13);
-        }
-        obj.setDisplayName(title);
+        obj.setDisplayName(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
         obj.a(IScoreboardCriteria.EnumScoreboardHealthDisplay.valueOf(objective.getHealthDisplay().name()));
         sendPacket(new PacketPlayOutScoreboardObjective(obj, ObjectiveAction.UPDATE));
     }
