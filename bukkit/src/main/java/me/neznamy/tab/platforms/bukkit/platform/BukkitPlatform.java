@@ -123,8 +123,9 @@ public class BukkitPlatform implements BackendPlatform {
             return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper.PaperImplementationProvider").getConstructor().newInstance();
         }
 
-        if (Arrays.asList("v1_8_R3", "v1_12_R1", "v1_16_R3", "v1_17_R1", "v1_18_R2").contains(BukkitReflection.getServerVersion().getServerPackage())) {
-            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + BukkitReflection.getServerVersion().getServerPackage() + ".NMSImplementationProvider").getConstructor().newInstance();
+        String serverPackage = BukkitReflection.getServerVersion().getServerPackage();
+        if (Arrays.asList("v1_8_R3", "v1_12_R1", "v1_16_R3", "v1_17_R1", "v1_18_R2", "v1_19_R1").contains(serverPackage) && serverVersion != ProtocolVersion.V1_19) {
+            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
         }
 
         try {
@@ -157,7 +158,7 @@ public class BukkitPlatform implements BackendPlatform {
                 }
                 Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
                         "a plugin version with full support for your server version for optimal experience. This plugin version " +
-                        "has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x and 1.18.2 - 1.21.5.");
+                        "has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x, 1.18.2 and 1.19.1 - 1.21.5.");
             }
             return new BukkitImplementationProvider();
         }

@@ -10,7 +10,7 @@ import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.provider.reflection.PacketTabList18;
+import me.neznamy.tab.platforms.bukkit.provider.reflection.PacketTabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -109,7 +109,7 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @Nullable
     public Skin getSkin() {
-        return PacketTabList18.getSkin(player);
+        return PacketTabList.getSkin(player);
     }
 
     protected void sendInfoUpdate(@NonNull Action action, @NonNull UUID uniqueId, Object value) {
