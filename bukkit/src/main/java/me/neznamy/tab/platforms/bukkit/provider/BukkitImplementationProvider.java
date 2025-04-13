@@ -8,7 +8,6 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ModerateComponentConverter;
 import me.neznamy.tab.platforms.bukkit.nms.converter.ModernComponentConverter;
 import me.neznamy.tab.platforms.bukkit.scoreboard.BukkitScoreboard;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PaperScoreboard;
@@ -79,16 +78,9 @@ public class BukkitImplementationProvider implements ImplementationProvider {
     }
 
     @Nullable
-    @SneakyThrows
     private ComponentConverter findComponentConverter() {
         try {
-            if (BukkitReflection.getMinorVersion() >= 19) {
-                // 1.19+
-                return new ModernComponentConverter();
-            } else {
-                // 1.17 - 1.18.2
-                return new ModerateComponentConverter();
-            }
+            return new ModernComponentConverter();
         } catch (Exception e) {
             if (BukkitReflection.getMinorVersion() >= 8) {
                 Bukkit.getConsoleSender().sendMessage("§c[TAB] Failed to initialize converter from TAB components to Minecraft components. " +
@@ -142,7 +134,7 @@ public class BukkitImplementationProvider implements ImplementationProvider {
                 PacketTabList1193.loadNew();
                 return PacketTabList1193::new;
             } else {
-                // 1.17 - 1.19.2
+                // 1.19 - 1.19.2
                 PacketTabList18.load();
                 return PacketTabList18::new;
             }

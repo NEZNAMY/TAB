@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.v1_12_R1;
+package me.neznamy.tab.platforms.bukkit.v1_18_R2;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -8,11 +8,11 @@ import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Implementation provider using direct NMS code for 1.12.x.
+ * Implementation provider using direct NMS code for 1.18.2.
  */
 @Getter
 public class NMSImplementationProvider implements ImplementationProvider {
@@ -35,11 +35,11 @@ public class NMSImplementationProvider implements ImplementationProvider {
     @Override
     @NotNull
     public FunctionWithException<BukkitTabPlayer, Channel> getChannelFunction() {
-        return player -> ((CraftPlayer)player.getPlayer()).getHandle().playerConnection.networkManager.channel;
+        return player -> ((CraftPlayer)player.getPlayer()).getHandle().b.a.m;
     }
 
     @Override
     public int getPing(@NotNull BukkitTabPlayer player) {
-        return ((CraftPlayer)player.getPlayer()).getHandle().ping;
+        return player.getPlayer().getPing();
     }
 }

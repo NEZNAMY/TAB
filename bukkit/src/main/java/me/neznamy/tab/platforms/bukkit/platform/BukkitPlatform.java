@@ -122,21 +122,25 @@ public class BukkitPlatform implements BackendPlatform {
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             new BukkitPremiumVanishHook().register();
         }
-        if (canUseDirectNMS) {
-            serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper.PaperImplementationProvider").getConstructor().newInstance();
-        } else if ("v1_16_R3".equals(BukkitReflection.getServerVersion().getServerPackage())) {
-            serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.v1_16_R3.NMSImplementationProvider").getConstructor().newInstance();
-        } else if ("v1_12_R1".equals(BukkitReflection.getServerVersion().getServerPackage())) {
-            serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.v1_12_R1.NMSImplementationProvider").getConstructor().newInstance();
-        } else if ("v1_8_R3".equals(BukkitReflection.getServerVersion().getServerPackage())) {
-            serverImplementationProvider = (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.v1_8_R3.NMSImplementationProvider").getConstructor().newInstance();
-        } else {
-            serverImplementationProvider = new BukkitImplementationProvider();
-        }
+        serverImplementationProvider = findImplementationProvider();
         headerFooter = findHeaderFooter();
         BukkitPipelineInjector.setGetChannel(serverImplementationProvider.getChannelFunction());
         BukkitUtils.sendCompatibilityMessage();
         Bukkit.getConsoleSender().sendMessage("[TAB] §7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
+    }
+
+    @NotNull
+    @SneakyThrows
+    private ImplementationProvider findImplementationProvider() {
+        if (canUseDirectNMS) {
+            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper.PaperImplementationProvider").getConstructor().newInstance();
+        }
+
+        if (Arrays.asList("v1_8_R3", "v1_12_R1", "v1_16_R3", "v1_17_R1", "v1_18_R2").contains(BukkitReflection.getServerVersion().getServerPackage())) {
+            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + BukkitReflection.getServerVersion().getServerPackage() + ".NMSImplementationProvider").getConstructor().newInstance();
+        }
+
+        return new BukkitImplementationProvider();
     }
 
     @NotNull
@@ -215,7 +219,6 @@ public class BukkitPlatform implements BackendPlatform {
             registerDummyPlaceholder(identifier);
             return;
         }
-        PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         if (identifier.startsWith("%rel_")) {
             //relational placeholder
             TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, (viewer, target) ->

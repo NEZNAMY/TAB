@@ -196,7 +196,7 @@ public class PacketTabList18 extends TrackedTabList<BukkitTabPlayer> {
         parameters.add(latency);
         parameters.add(gameModes[gameMode]);
         parameters.add(displayName == null ? null : displayName.convert());
-        if (BukkitReflection.getMinorVersion() >= 19) parameters.add(null);
+        parameters.add(null);
         PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(parameters.toArray())));
         return packet;
     }
