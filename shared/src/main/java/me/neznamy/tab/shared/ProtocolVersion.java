@@ -86,9 +86,6 @@ public enum ProtocolVersion {
     /** Array to iterate over to prevent new array creation each time */
     private static final ProtocolVersion[] VALUES = values();
 
-    /** Newest MC version this plugin jar knows */
-    public static final ProtocolVersion LATEST_KNOWN_VERSION = V1_21_5;
-
     /** Version's network id found at <a href="https://wiki.vg/Protocol_version_numbers">wiki.vg</a> */
     private final int networkId;
 

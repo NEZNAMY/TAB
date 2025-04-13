@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.provider;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.function.FunctionWithException;

@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.v1_12_R1;
 
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
+import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import net.minecraft.server.v1_12_R1.*;
 import org.jetbrains.annotations.NotNull;
 

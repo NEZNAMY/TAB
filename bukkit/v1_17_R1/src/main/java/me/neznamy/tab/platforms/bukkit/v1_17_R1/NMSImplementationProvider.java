@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.v1_17_R1;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.converter.ComponentConverter;
+import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;

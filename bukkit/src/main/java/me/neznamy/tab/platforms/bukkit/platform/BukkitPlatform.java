@@ -9,12 +9,12 @@ import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
-import me.neznamy.tab.platforms.bukkit.header.*;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
-import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.provider.BukkitImplementationProvider;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
-import me.neznamy.tab.platforms.bukkit.provider.ViaVersionImplementationProvider;
+import me.neznamy.tab.platforms.bukkit.provider.bukkit.BukkitImplementationProvider;
+import me.neznamy.tab.platforms.bukkit.provider.bukkit.PaperScoreboard;
+import me.neznamy.tab.platforms.bukkit.provider.reflection.ReflectionImplementationProvider;
+import me.neznamy.tab.platforms.bukkit.provider.viaversion.ViaVersionProvider;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -51,9 +51,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
+import java.util.List;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -81,24 +82,15 @@ public class BukkitPlatform implements BackendPlatform {
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
-    /** Header/footer implementation */
-    @Getter
-    @NotNull
-    private final HeaderFooter headerFooter;
-
-    /** Flag tracking if direct mojang-mapped code can be used or not */
-    private final boolean canUseDirectNMS = BukkitReflection.isMojangMapped() &&
-            (serverVersion == ProtocolVersion.V1_21_4 || serverVersion == ProtocolVersion.V1_21_5);
-
     /** Implementation for creating new instances using content available on the server */
     @NotNull
-    private final ImplementationProvider serverImplementationProvider;
+    private final ImplementationProvider serverImplementationProvider = findImplementationProvider();
 
     /** Implementation for sending new content to new players on old servers */
     @Nullable
-    private final ViaVersionImplementationProvider viaVersionImplementationProvider =
+    private final ViaVersionProvider viaVersionProvider =
             ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3") ?
-                    new ViaVersionImplementationProvider(serverVersion) : null;
+                    new ViaVersionProvider(serverVersion) : null;
 
     private final boolean modernOnlinePlayers;
 
@@ -112,7 +104,6 @@ public class BukkitPlatform implements BackendPlatform {
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         modernOnlinePlayers = Bukkit.class.getMethod("getOnlinePlayers").getReturnType() == Collection.class;
-        long time = System.currentTimeMillis();
         try {
             Object server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
             recentTps = ((double[]) server.getClass().getField("recentTps").get(server));
@@ -122,17 +113,13 @@ public class BukkitPlatform implements BackendPlatform {
         if (Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             new BukkitPremiumVanishHook().register();
         }
-        serverImplementationProvider = findImplementationProvider();
-        headerFooter = findHeaderFooter();
-        BukkitPipelineInjector.setGetChannel(serverImplementationProvider.getChannelFunction());
-        BukkitUtils.sendCompatibilityMessage();
-        Bukkit.getConsoleSender().sendMessage("[TAB] §7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms");
     }
 
     @NotNull
     @SneakyThrows
     private ImplementationProvider findImplementationProvider() {
-        if (canUseDirectNMS) {
+        if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer") &&
+                (serverVersion == ProtocolVersion.V1_21_4 || serverVersion == ProtocolVersion.V1_21_5)) {
             return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper.PaperImplementationProvider").getConstructor().newInstance();
         }
 
@@ -140,29 +127,40 @@ public class BukkitPlatform implements BackendPlatform {
             return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + BukkitReflection.getServerVersion().getServerPackage() + ".NMSImplementationProvider").getConstructor().newInstance();
         }
 
-        return new BukkitImplementationProvider();
-    }
+        try {
+            return new ReflectionImplementationProvider();
+        } catch (Throwable e) {
+            if (serverVersion.getMinorVersion() >= 8) {
+                List<String> missingFeatures = new ArrayList<>();
 
-    @NotNull
-    private HeaderFooter findHeaderFooter() {
-        if (BukkitReflection.getMinorVersion() >= 8) {
-            try {
-                Objects.requireNonNull(serverImplementationProvider.getComponentConverter());
-                return new PacketHeaderFooter();
-            } catch (Exception e) {
-                if (PaperHeaderFooter.isAvailable()) return new PaperHeaderFooter();
-                if (BukkitHeaderFooter.isAvailable()) {
-                    BukkitUtils.compatibilityError(e, "sending Header/Footer", "Bukkit API",
-                            "Header/Footer having drastically increased CPU usage",
-                            "Header/Footer not supporting fonts (1.16+)");
-                    return new BukkitHeaderFooter();
-                } else {
-                    BukkitUtils.compatibilityError(e, "sending Header/Footer", null,
-                            "Header/Footer feature not working");
+                // Scoreboard
+                missingFeatures.add("Compatibility with other scoreboard plugins being reduced");
+                if (!PaperScoreboard.isAvailable()) {
+                    missingFeatures.add("Features receiving new artificial character limits");
+                    missingFeatures.add("1.20.3+ scoreboard visuals not working due to lack of API");
                 }
+                missingFeatures.add("Anti-override for nametags not working");
+
+                // Tablist
+                missingFeatures.add("Layout feature will not work");
+                missingFeatures.add("Prevent-spectator-effect feature will not work");
+                missingFeatures.add("Ping spoof feature will not work");
+                missingFeatures.add("Tablist formatting missing anti-override");
+                missingFeatures.add("Tablist formatting not supporting relational placeholders");
+                missingFeatures.add("Compatibility with nickname plugins changing player names will not work");
+                missingFeatures.add("Anti-override for tablist not working");
+                missingFeatures.add("Header/Footer may be limited or not work at all"); // Maybe add some checks for a more accurate message
+
+                Bukkit.getConsoleSender().sendMessage("§c[TAB] Your server version is not fully supported. This will result in:");
+                for (String message : missingFeatures) {
+                    Bukkit.getConsoleSender().sendMessage("§c[TAB] - " + message);
+                }
+                Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
+                        "a plugin version with full support for your server version for optimal experience. This plugin version " +
+                        "has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x and 1.18.2 - 1.21.5.");
             }
+            return new BukkitImplementationProvider();
         }
-        return new DummyHeaderFooter();
     }
 
     @Override
@@ -193,7 +191,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
-        return BukkitPipelineInjector.isAvailable() ? new BukkitPipelineInjector() : null;
+        return serverImplementationProvider.getChannelFunction() != null ? new BukkitPipelineInjector() : null;
     }
 
     @Override
@@ -292,7 +290,7 @@ public class BukkitPlatform implements BackendPlatform {
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM,
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
-                () -> "1." + BukkitReflection.getMinorVersion() + ".x"));
+                () -> "1." + serverVersion.getMinorVersion() + ".x"));
     }
 
     @Override
@@ -315,8 +313,8 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     @SneakyThrows
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
-        if (viaVersionImplementationProvider != null) {
-            Scoreboard scoreboard = viaVersionImplementationProvider.newScoreboard((BukkitTabPlayer) player);
+        if (viaVersionProvider != null) {
+            Scoreboard scoreboard = viaVersionProvider.newScoreboard((BukkitTabPlayer) player);
             if (scoreboard != null) return scoreboard;
         }
         return serverImplementationProvider.newScoreboard((BukkitTabPlayer) player);
@@ -342,8 +340,8 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     @SneakyThrows
     public TabList createTabList(@NotNull TabPlayer player) {
-        if (viaVersionImplementationProvider != null) {
-            TabList tabList = viaVersionImplementationProvider.newTabList((BukkitTabPlayer) player);
+        if (viaVersionProvider != null) {
+            TabList tabList = viaVersionProvider.newTabList((BukkitTabPlayer) player);
             if (tabList != null) return tabList;
         }
         return serverImplementationProvider.newTabList((BukkitTabPlayer) player);
