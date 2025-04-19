@@ -15,6 +15,7 @@ import java.util.*;
  *          Platform's player class
  */
 @RequiredArgsConstructor
+@Getter
 public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     /** Player this tablist belongs to */
@@ -22,11 +23,9 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     /** Tablist display name anti-override flag */
     @Setter
-    @Getter
     private boolean antiOverride;
 
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
-    @Getter
     private final Map<UUID, TabComponent> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override

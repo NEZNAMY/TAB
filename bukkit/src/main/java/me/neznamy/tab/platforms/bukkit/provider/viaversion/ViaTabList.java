@@ -10,7 +10,9 @@ import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.provider.reflection.PacketTabList;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -144,6 +146,11 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
         }
 
         send(packet);
+    }
+
+    @Override
+    public void onPacketSend(@NonNull Object packet) {
+        ((BukkitPlatform) TAB.getInstance().getPlatform()).getServerImplementationProvider().onPacketSend(packet, this);
     }
 
     protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);

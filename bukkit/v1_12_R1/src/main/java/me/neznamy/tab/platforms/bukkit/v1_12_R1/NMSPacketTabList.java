@@ -42,6 +42,31 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static final Field HEADER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(0);
     private static final Field FOOTER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(1);
 
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public static void onPacketSend(@NonNull Object packet, @NonNull TrackedTabList<BukkitTabPlayer> tabList) {
+        if (!(packet instanceof PacketPlayOutPlayerInfo)) return;
+        EnumPlayerInfoAction action = (EnumPlayerInfoAction) ACTION.get(packet);
+        for (Object nmsData : (List<Object>) PLAYERS.get(packet)) {
+            GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
+            UUID id = profile.getId();
+            if (action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || action == EnumPlayerInfoAction.ADD_PLAYER) {
+                TabComponent expectedName = tabList.getExpectedDisplayNames().get(id);
+                if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
+            }
+            if (action == EnumPlayerInfoAction.UPDATE_LATENCY || action == EnumPlayerInfoAction.ADD_PLAYER) {
+                int oldLatency = PlayerInfoData_Latency.getInt(nmsData);
+                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(tabList.getPlayer(), id, oldLatency);
+                if (oldLatency != newLatency) {
+                    PlayerInfoData_Latency.set(nmsData, newLatency);
+                }
+            }
+            if (action == EnumPlayerInfoAction.ADD_PLAYER) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(tabList.getPlayer(), id, profile.getName());
+            }
+        }
+    }
+
     /**
      * Constructs new instance.
      *
@@ -118,29 +143,8 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
     public void onPacketSend(@NonNull Object packet) {
-        if (!(packet instanceof PacketPlayOutPlayerInfo)) return;
-        EnumPlayerInfoAction action = (EnumPlayerInfoAction) ACTION.get(packet);
-        for (Object nmsData : (List<Object>) PLAYERS.get(packet)) {
-            GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
-            UUID id = profile.getId();
-            if (action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || action == EnumPlayerInfoAction.ADD_PLAYER) {
-                TabComponent expectedName = getExpectedDisplayNames().get(id);
-                if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
-            }
-            if (action == EnumPlayerInfoAction.UPDATE_LATENCY || action == EnumPlayerInfoAction.ADD_PLAYER) {
-                int oldLatency = PlayerInfoData_Latency.getInt(nmsData);
-                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, oldLatency);
-                if (oldLatency != newLatency) {
-                    PlayerInfoData_Latency.set(nmsData, newLatency);
-                }
-            }
-            if (action == EnumPlayerInfoAction.ADD_PLAYER) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
-            }
-        }
+        onPacketSend(packet, this);
     }
 
     @SneakyThrows

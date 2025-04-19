@@ -136,6 +136,21 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         }
     }
 
+    @SneakyThrows
+    public static void onPacketSend(@NonNull Object packet, @NonNull SafeScoreboard<BukkitTabPlayer> scoreboard) {
+        if (scoreboard.isAntiOverrideScoreboard()) {
+            if (DisplayObjectiveClass.isInstance(packet)) {
+                TAB.getInstance().getFeatureManager().onDisplayObjective(scoreboard.getPlayer(), packetToSlot.apply(packet),
+                        (String) DisplayObjective_OBJECTIVE_NAME.get(packet));
+            }
+            if (ObjectivePacketClass.isInstance(packet))  {
+                TAB.getInstance().getFeatureManager().onObjective(scoreboard.getPlayer(),
+                        Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
+            }
+        }
+        if (scoreboard.isAntiOverrideTeams()) teamPacketData.onPacketSend(scoreboard.getPlayer(), packet);
+    }
+
     /**
      * Constructs new instance with given player.
      *
@@ -214,19 +229,8 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
-        if (isAntiOverrideScoreboard()) {
-            if (DisplayObjectiveClass.isInstance(packet)) {
-                TAB.getInstance().getFeatureManager().onDisplayObjective(player, packetToSlot.apply(packet),
-                        (String) DisplayObjective_OBJECTIVE_NAME.get(packet));
-            }
-            if (ObjectivePacketClass.isInstance(packet))  {
-                TAB.getInstance().getFeatureManager().onObjective(player,
-                        Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
-            }
-        }
-        if (isAntiOverrideTeams()) teamPacketData.onPacketSend(player, packet);
+        onPacketSend(packet, this);
     }
 
     @SneakyThrows
@@ -259,14 +263,14 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Nullable
     @SneakyThrows
-    private static Object toFixedFormat(@NonNull TabComponent component) {
+    private Object toFixedFormat(@NonNull TabComponent component) {
         if (newFixedFormat == null) return null;
-        return component.toFixedFormat(PacketScoreboard::convertFixedFormat);
+        return component.toFixedFormat(this::convertFixedFormat);
     }
 
     @NotNull
     @SneakyThrows
-    private static Object convertFixedFormat(@NotNull Object nmsComponent) {
+    private Object convertFixedFormat(@NotNull Object nmsComponent) {
         return newFixedFormat.newInstance(nmsComponent);
     }
 }

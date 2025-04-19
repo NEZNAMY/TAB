@@ -34,6 +34,23 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final Field method = ReflectionUtils.getInstanceFields(ClientboundSetPlayerTeamPacket.class, int.class).getFirst();
     private static final Field players = ReflectionUtils.getOnlyField(ClientboundSetPlayerTeamPacket.class, Collection.class);
 
+    @SneakyThrows
+    public static void onPacketSend(@NonNull Object packet, @NonNull SafeScoreboard<BukkitTabPlayer> scoreboard) {
+        if (scoreboard.isAntiOverrideScoreboard()) {
+            if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
+                TAB.getInstance().getFeatureManager().onDisplayObjective(scoreboard.getPlayer(), display.getSlot().ordinal(), display.getObjectiveName());
+            }
+            if (packet instanceof ClientboundSetObjectivePacket objective) {
+                TAB.getInstance().getFeatureManager().onObjective(scoreboard.getPlayer(), objective.getMethod(), objective.getObjectiveName());
+            }
+        }
+        if (scoreboard.isAntiOverrideTeams() && packet instanceof ClientboundSetPlayerTeamPacket team) {
+            int action = method.getInt(team);
+            if (action == TeamAction.UPDATE) return;
+            players.set(team, scoreboard.onTeamPacket(action, team.getName(), team.getPlayers() == null ? Collections.emptyList() : team.getPlayers()));
+        }
+    }
+
     /**
      * Constructs new instance with given player.
      *
@@ -133,21 +150,8 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
-        if (isAntiOverrideScoreboard()) {
-            if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
-                TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getSlot().ordinal(), display.getObjectiveName());
-            }
-            if (packet instanceof ClientboundSetObjectivePacket objective) {
-                TAB.getInstance().getFeatureManager().onObjective(player, objective.getMethod(), objective.getObjectiveName());
-            }
-        }
-        if (isAntiOverrideTeams() && packet instanceof ClientboundSetPlayerTeamPacket team) {
-            int action = method.getInt(team);
-            if (action == TeamAction.UPDATE) return;
-            players.set(team, onTeamPacket(action, team.getName(), team.getPlayers() == null ? Collections.emptyList() : team.getPlayers()));
-        }
+        onPacketSend(packet, this);
     }
 
     /**

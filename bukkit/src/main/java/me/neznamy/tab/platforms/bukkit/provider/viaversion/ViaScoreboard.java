@@ -11,6 +11,8 @@ import lombok.NonNull;
 import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 
 import java.util.Queue;
@@ -173,6 +175,11 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         }
 
         send(packet);
+    }
+
+    @Override
+    public void onPacketSend(@NonNull Object packet) {
+        ((BukkitPlatform) TAB.getInstance().getPlatform()).getServerImplementationProvider().onPacketSend(packet, this);
     }
 
     protected abstract void writeComponent(@NonNull PacketWrapper packet, @NonNull TabComponent component);

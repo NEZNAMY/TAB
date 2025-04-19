@@ -2,9 +2,12 @@ package me.neznamy.tab.platforms.bukkit.provider.bukkit;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
+import me.neznamy.tab.platforms.bukkit.provider.viaversion.ViaScoreboard;
+import me.neznamy.tab.platforms.bukkit.provider.viaversion.ViaTabList;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.impl.DummyScoreboard;
@@ -35,6 +38,16 @@ public class BukkitImplementationProvider implements ImplementationProvider {
         } else {
             return new DummyScoreboard(player);
         }
+    }
+
+    @Override
+    public void onPacketSend(@NonNull Object packet, @NonNull ViaScoreboard scoreboard) {
+        // Do nothing
+    }
+
+    @Override
+    public void onPacketSend(@NonNull Object packet, @NonNull ViaTabList tabList) {
+        // Do nothing
     }
 
     @Override

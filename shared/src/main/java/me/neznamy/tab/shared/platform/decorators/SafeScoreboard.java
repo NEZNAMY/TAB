@@ -31,6 +31,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     private static String lastTeamOverrideMessage;
 
     /** Player this scoreboard belongs to */
+    @Getter
     protected final T player;
 
     /** Map of blocked team adds, key is player and value is team name */
