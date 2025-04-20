@@ -520,4 +520,20 @@ public class Converter {
         config.setIfMissing("playerlist-objective.title", "Java Edition is better");
         config.setIfMissing("playerlist-objective.render-type", Arrays.asList("%health%", "%player_health%", "%player_health_rounded%").contains(config.getString("playerlist-objective.value", "")) ? "HEARTS" : "INTEGER");
     }
+
+    /**
+     * Converts config from 5.2.0 to 5.2.1
+     * This update:
+     * - Creates the option proxy-support and removes the old enable-redisbungee-support configuration.
+     * - Renames placeholderapi-refresh-intervals to placeholder-refresh-intervals
+     * - Adds new playerlist objective options
+     *
+     * @param   config
+     *          Config file
+     */
+    public void convert520to521(@NotNull ConfigurationFile config) {
+        if (!config.hasConfigOption("new-tablist-sorting")) {
+            config.set("new-tablist-sorting", false);
+        }
+    }
 }

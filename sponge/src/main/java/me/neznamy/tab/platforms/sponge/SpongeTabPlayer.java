@@ -94,4 +94,9 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     public String getDisplayName() {
         return PlainTextComponentSerializer.plainText().serialize(getPlayer().displayName().get());
     }
+
+    @Override
+    public void setTabPosition(int position) {
+        throw new RuntimeException("Not implemented");
+    }
 }

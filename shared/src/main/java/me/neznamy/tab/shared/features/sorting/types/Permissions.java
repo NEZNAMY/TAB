@@ -42,6 +42,11 @@ public class Permissions extends SortingType {
 
     @Override
     public String getChars(@NotNull TabPlayer p) {
+        return String.valueOf((char) (getPosition(p) + 47));
+    }
+
+    @Override
+    public int getPosition(@NotNull TabPlayer p) {
         int position = 0;
         for (String permission : sortedGroups.keySet()) {
             if (p.hasPermission(permission)) {
@@ -58,6 +63,6 @@ public class Permissions extends SortingType {
             position = sortedGroups.size()+1;
             p.sortingData.teamNameNote += "\n-> &cPlayer does not have any of the defined permissions. &r";
         }
-        return String.valueOf((char) (position + 47));
+        return position;
     }
 }

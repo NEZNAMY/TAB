@@ -28,4 +28,12 @@ public class PlaceholderLowToHigh extends SortingType {
         p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\". &r";
         return compressNumber(DEFAULT_NUMBER + parseDouble(sortingPlaceholder, output, 0, p));
     }
+
+    @Override
+    public int getPosition(@NotNull TabPlayer p) {
+        if (!valid) return 0;
+        String output = setPlaceholders(p);
+        p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\". &r";
+        return (int) (DEFAULT_NUMBER - parseDouble(sortingPlaceholder, output, 0, p));
+    }
 }

@@ -80,6 +80,7 @@ public class Config {
         converter.convert419to500(config);
         converter.convert501to502(config);
         converter.convert507to510(config);
+        converter.convert520to521(config);
 
         conditions = ConditionsSection.fromSection(config.getConfigurationSection("conditions"));
         refresh = PlaceholderRefreshConfiguration.fromSection(config.getConfigurationSection("placeholder-refresh-intervals"));
@@ -95,7 +96,7 @@ public class Config {
         if (config.getBoolean("ping-spoof.enabled", false)) pingSpoof = PingSpoofConfiguration.fromSection(config.getConfigurationSection("ping-spoof"));
         if (config.getBoolean("playerlist-objective.enabled", true)) playerlistObjective = PlayerListObjectiveConfiguration.fromSection(config.getConfigurationSection("playerlist-objective"));
         if (config.getBoolean("scoreboard.enabled", false)) scoreboard = ScoreboardConfiguration.fromSection(config.getConfigurationSection("scoreboard"));
-        if (config.getBoolean("scoreboard-teams.enabled", true) || config.getBoolean("layout.enabled", false)) sorting = SortingConfiguration.fromSection(config.getConfigurationSection("scoreboard-teams"));
+        if (config.getBoolean("scoreboard-teams.enabled", true) || config.getBoolean("layout.enabled", false) || config.getBoolean("new-tablist-sorting", false)) sorting = SortingConfiguration.fromSection(config.getConfigurationSection("scoreboard-teams"), config.getBoolean("new-tablist-sorting", false));
         if (config.getBoolean("tablist-name-formatting.enabled", false)) tablistFormatting = TablistFormattingConfiguration.fromSection(config.getConfigurationSection("tablist-name-formatting"));
         if (config.getBoolean("scoreboard-teams.enabled", false)) teams = TeamConfiguration.fromSection(config.getConfigurationSection("scoreboard-teams"));
 

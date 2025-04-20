@@ -57,4 +57,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
             // java.lang.IllegalStateException: Not connected to server!
         }
     }
+
+    @Override
+    public void setTabPosition(int position) {
+        getPlayer().getTabList().getEntry(getPlayer().getUniqueId()).ifPresent(entry -> entry.setListOrder(position));
+    }
 }

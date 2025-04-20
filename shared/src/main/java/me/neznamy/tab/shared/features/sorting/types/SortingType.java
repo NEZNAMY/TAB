@@ -144,4 +144,13 @@ public abstract class SortingType {
      * @return  an as-short-as-possible character sequence for unique sorting
      */
     public abstract String getChars(@NotNull TabPlayer p);
+
+    /**
+     * Returns current sorting position of this sorting type for specified player
+     *
+     * @param   p
+     *          player to get position for
+     * @return  an integer representing the tab list position
+     */
+    public abstract int getPosition(@NotNull TabPlayer p);
 }

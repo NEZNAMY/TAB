@@ -17,6 +17,7 @@ public class SortingConfiguration {
 
     private final boolean caseSensitiveSorting;
     private final List<String> sortingTypes;
+    private final boolean newTabListSorting;
 
     /**
      * Returns instance of this class created from given configuration section. If there are
@@ -27,10 +28,11 @@ public class SortingConfiguration {
      * @return  Loaded instance from given configuration section
      */
     @NotNull
-    public static SortingConfiguration fromSection(@NotNull ConfigurationSection section) {
+    public static SortingConfiguration fromSection(@NotNull ConfigurationSection section, boolean newTabListSorting) {
         return new SortingConfiguration(
                 section.getBoolean("case-sensitive-sorting", true),
-                section.getStringList("sorting-types", Collections.emptyList())
+                section.getStringList("sorting-types", Collections.emptyList()),
+                newTabListSorting
         );
     }
 }

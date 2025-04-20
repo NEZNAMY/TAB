@@ -37,4 +37,30 @@ public class PlaceholderZtoA extends SortingType {
         String s = new String(chars);
         return sorting.getConfiguration().isCaseSensitiveSorting() ? s : s.toLowerCase();
     }
+
+    @Override
+    public int getPosition(@NotNull TabPlayer p) {
+        String s = getChars(p);
+
+        double weight = 0.0;
+        double factor = 1.0;
+
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int value;
+
+            if (Character.isUpperCase(c)) {
+                value = 'Z' - c + 1; // Z = 1, ..., A = 26
+            } else if (Character.isLowerCase(c)) {
+                value = 'z' - c + 27; // z = 27, ..., a = 52
+            } else {
+                value = 0; // other chars are ignored
+            }
+
+            factor /= 53.0;
+            weight += value * factor;
+        }
+
+        return (int) weight * 10000000;
+    }
 }

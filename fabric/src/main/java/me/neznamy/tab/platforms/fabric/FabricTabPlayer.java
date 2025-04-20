@@ -81,4 +81,9 @@ public class FabricTabPlayer extends BackendTabPlayer {
     public String getDisplayName() {
         return getPlayer().getGameProfile().getName(); // Will make it work properly if someone asks
     }
+
+    @Override
+    public void setTabPosition(int position) {
+        throw new RuntimeException("Not implemented");
+    }
 }

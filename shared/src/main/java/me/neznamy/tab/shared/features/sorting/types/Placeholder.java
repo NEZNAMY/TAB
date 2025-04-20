@@ -61,6 +61,12 @@ public class Placeholder extends SortingType {
     @Override
     public String getChars(@NotNull TabPlayer p) {
         if (!valid) return "";
+        return String.valueOf((char) (getPosition(p) + 47));
+    }
+
+    @Override
+    public int getPosition(@NotNull TabPlayer p) {
+        if (!valid) return 0;
         String output = EnumChatFormat.color(setPlaceholders(p));
         p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\"";
         int position;
@@ -73,6 +79,6 @@ public class Placeholder extends SortingType {
             position = sortingMap.get(cleanOutput);
             p.sortingData.teamNameNote += "&r &a(#" + position + " in list). &r";
         }
-        return String.valueOf((char) (position + 47));
+        return position;
     }
 }

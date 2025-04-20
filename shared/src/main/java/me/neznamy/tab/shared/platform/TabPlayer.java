@@ -397,4 +397,12 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  Server platform
      */
     public abstract Platform getPlatform();
+
+    /**
+     * Set the tab position. Only possible from 1.21.2
+     *
+     * @param   position
+     *          The position to set. The greater the value, the higher in the tab list
+     */
+    public abstract void setTabPosition(int position);
 }

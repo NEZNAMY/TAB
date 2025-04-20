@@ -67,11 +67,15 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        String previousShortName = p.sortingData.shortTeamName;
-        constructTeamNames(p);
-        if (!p.sortingData.shortTeamName.equals(previousShortName)) {
-            if (nameTags != null) nameTags.updateTeamName(p, p.sortingData.getShortTeamName());
-            if (layout != null) layout.updateTeamName(p, p.sortingData.getFullTeamName());
+        if(configuration.isNewTabListSorting()) {
+            updatePosition(p);
+        } else {
+            String previousShortName = p.sortingData.shortTeamName;
+            constructTeamNames(p);
+            if (!p.sortingData.shortTeamName.equals(previousShortName)) {
+                if (nameTags != null) nameTags.updateTeamName(p, p.sortingData.getShortTeamName());
+                if (layout != null) layout.updateTeamName(p, p.sortingData.getFullTeamName());
+            }
         }
     }
 
@@ -88,7 +92,11 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
     
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        constructTeamNames(connectedPlayer);
+        if(configuration.isNewTabListSorting()) {
+            updatePosition(connectedPlayer);
+        } else {
+            constructTeamNames(connectedPlayer);
+        }
     }
     
     /**
@@ -176,6 +184,20 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
             }
             id++;
         }
+    }
+
+    /**
+     * Updates the player's position in the tab list using the new sorting feature
+     * @param p
+     *        player to update the position
+     */
+    public void updatePosition(@NotNull TabPlayer p) {
+        p.sortingData.teamNameNote = "";
+        int position = 0;
+        for (SortingType type : usedSortingTypes) {
+            position += type.getPosition(p);
+        }
+        p.setTabPosition(position);
     }
     
     /**

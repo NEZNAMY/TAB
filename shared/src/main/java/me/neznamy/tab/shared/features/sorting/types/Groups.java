@@ -31,6 +31,11 @@ public class Groups extends SortingType {
 
     @Override
     public String getChars(@NotNull TabPlayer p) {
+        return String.valueOf((char) (getPosition(p) + 47));
+    }
+
+    @Override
+    public int getPosition(@NotNull TabPlayer p) {
         String group = p.getGroup().toLowerCase();
         int position;
         if (!sortedGroups.containsKey(group)) {
@@ -41,6 +46,6 @@ public class Groups extends SortingType {
             position = sortedGroups.get(group);
             p.sortingData.teamNameNote += "\n-> Primary group (&e" + p.getGroup() + "&r) is &a#" + position + "&r in sorting list.";
         }
-        return String.valueOf((char) (position + 47));
+        return position;
     }
 }

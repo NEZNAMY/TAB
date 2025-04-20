@@ -68,4 +68,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public void sendPacket(@NotNull DefinedPacket packet) {
         ((UserConnection)getPlayer()).sendPacketQueued(packet);
     }
+
+    @Override
+    public void setTabPosition(int position) {
+        throw new RuntimeException("Not implemented");
+    }
 }

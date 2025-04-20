@@ -2,15 +2,20 @@ package me.neznamy.tab.platforms.bukkit;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * TabPlayer implementation for Bukkit platform
@@ -99,5 +104,18 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @NotNull
     public String getDisplayName() {
         return getPlayer().getDisplayName();
+    }
+
+    @Override
+    public void setTabPosition(int position) {
+        try {
+            Method m = getPlayer().getClass().getMethod("setPlayerListOrder", int.class);
+            //m.setAccessible(true); // Why is this needed? The method is public!
+            m.invoke(getPlayer(), position);
+        } catch (NoSuchMethodException e) {
+            TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text("Couldn't find the method setPlayerListOrder. Did you enable the new-tablist-sorting while being in a version inferior to 1.21.2 ?"));
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
