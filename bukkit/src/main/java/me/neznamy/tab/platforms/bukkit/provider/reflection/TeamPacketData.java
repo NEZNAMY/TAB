@@ -93,7 +93,7 @@ public class TeamPacketData {
         ScoreboardTeam_allowFriendlyFire.set(nmsTeam, (team.getOptions() & 0x1) > 0);
         ScoreboardTeam_seeFriendlyInvisibles.set(nmsTeam, (team.getOptions() & 0x2) > 0);
         ScoreboardTeam_prefix.set(nmsTeam, team.getPrefix().convert());
-        ScoreboardTeam_suffix.set(nmsTeam, team.getPrefix().convert());
+        ScoreboardTeam_suffix.set(nmsTeam, team.getSuffix().convert());
         ScoreboardTeam_setColor.invoke(nmsTeam, chatFormats[team.getColor().getLegacyColor().ordinal()]);
         ScoreboardTeam_nameTagVisibility.set(nmsTeam, nameVisibilities[team.getVisibility().ordinal()]);
         ScoreboardTeam_setCollisionRule.invoke(nmsTeam, collisionRules[team.getCollision().ordinal()]);
