@@ -3,10 +3,12 @@ package me.neznamy.tab.platforms.forge;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
@@ -16,6 +18,7 @@ import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -30,7 +33,9 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListed = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListOrder = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LIST_ORDER);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateHat = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT);
-    
+
+    private static final Field entries = ReflectionUtils.getOnlyField(ClientboundPlayerInfoUpdatePacket.class, List.class);
+
     /**
      * Constructs new instance.
      *
@@ -102,6 +107,7 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
     }
 
     @Override
+    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
@@ -133,14 +139,15 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
                         nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()
                 ) : nmsData);
             }
-            if (rewritePacket) info.entries = updatedList;
+            if (rewritePacket) entries.set(info, updatedList);
         }
     }
 
+    @SneakyThrows
     private void sendPacket(@NonNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                             boolean listed, int latency, int gameMode, @Nullable TabComponent displayName, int listOrder, boolean showHat) {
         ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(action, Collections.emptyList());
-        packet.entries = Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
+        entries.set(packet, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
                 id,
                 action.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER) ? createProfile(id, name, skin) : null,
                 listed,
@@ -150,7 +157,7 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
                 showHat,
                 listOrder,
                 null
-        ));
+        )));
         sendPacket(packet);
     }
 
