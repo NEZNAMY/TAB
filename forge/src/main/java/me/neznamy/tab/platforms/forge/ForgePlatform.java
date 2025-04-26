@@ -109,16 +109,12 @@ public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
     @NotNull
     public Component convertComponent(@NotNull TabComponent component) {
         // Component type
-        MutableComponent nmsComponent;
-        if (component instanceof TextComponent) {
-            nmsComponent = Component.literal(((TextComponent) component).getText());
-        } else if (component instanceof TranslatableComponent) {
-            nmsComponent = Component.translatable(((TranslatableComponent) component).getKey());
-        } else if (component instanceof KeybindComponent) {
-            nmsComponent = Component.keybind(((KeybindComponent) component).getKeybind());
-        } else {
-            throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
-        }
+        MutableComponent nmsComponent = switch (component) {
+            case TextComponent text -> Component.literal(text.getText());
+            case TranslatableComponent translatable -> Component.translatable(translatable.getKey());
+            case KeybindComponent keybind -> Component.keybind(keybind.getKeybind());
+            default -> throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
+        };
 
         // Component style
         ChatModifier modifier = component.getModifier();

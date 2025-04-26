@@ -65,9 +65,9 @@ loom.accessWidenerPath.set(file("src/main/resources/resources/tab.accesswidener"
 
 tasks {
     compileJava {
-        options.release.set(17)
+        options.release.set(21)
     }
     validateAccessWidener {
-        enabled = false // It contains multiple versions for easier backporting
+        enabled = true
     }
 }
