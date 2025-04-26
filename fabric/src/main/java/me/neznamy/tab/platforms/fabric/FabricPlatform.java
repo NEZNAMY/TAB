@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.fabric;
 import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
+import me.neznamy.chat.ChatModifier;
 import me.neznamy.chat.component.KeybindComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
@@ -145,19 +146,17 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
         }
 
         // Component style
-        nmsComponent.setStyle(new Style(
-                component.getModifier().getColor() == null ? null : TextColor.fromRgb(component.getModifier().getColor().getRgb()),
-                component.getModifier().getShadowColor(),
-                component.getModifier().getBold(),
-                component.getModifier().getItalic(),
-                component.getModifier().getUnderlined(),
-                component.getModifier().getStrikethrough(),
-                component.getModifier().getObfuscated(),
-                null,
-                null,
-                null,
-                component.getModifier().getFont() == null ? null : ResourceLocation.tryParse(component.getModifier().getFont())
-        ));
+        ChatModifier modifier = component.getModifier();
+        Style style = Style.EMPTY
+                .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
+                .withBold(modifier.getBold())
+                .withItalic(modifier.getItalic())
+                .withUnderlined(modifier.getUnderlined())
+                .withStrikethrough(modifier.getStrikethrough())
+                .withObfuscated(modifier.getObfuscated())
+                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
+        if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor());
+        nmsComponent.setStyle(style);
 
         // Extra
         for (TabComponent extra : component.getExtra()) {
