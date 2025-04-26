@@ -12,7 +12,6 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bstats.velocity.Metrics;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -54,13 +53,14 @@ public class VelocityTAB {
      */
     @Subscribe
     public void onProxyInitialization(@Nullable ProxyInitializeEvent event) {
-        if (!ReflectionUtils.methodExists(TabListEntry.class, "setShowHat", int.class)) {
+        try {
+            TabListEntry.class.getMethod("setShowHat", boolean.class);
+            TAB.create(new VelocityPlatform(this));
+        } catch (ReflectiveOperationException e) {
             logger.warn("====================================================================================================");
             logger.warn("The plugin requires Velocity build #485 (released on March 30th, 2025) and up to work.");
             logger.warn("====================================================================================================");
-            return;
         }
-        TAB.create(new VelocityPlatform(this));
     }
     
     /**
