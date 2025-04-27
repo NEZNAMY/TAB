@@ -131,8 +131,23 @@ public class NeoForgeScoreboard extends SafeScoreboard<NeoForgeTabPlayer> {
             }
         }
         if (isAntiOverrideTeams() && packet instanceof ClientboundSetPlayerTeamPacket team) {
-            if (team.method == TeamAction.UPDATE) return;
-            team.players = onTeamPacket(team.method, team.getName(), team.getPlayers());
+            int method = getMethod(team);
+            if (method == TeamAction.UPDATE) return;
+            team.players = onTeamPacket(method, team.getName(), team.getPlayers());
+        }
+    }
+
+    private int getMethod(@NonNull ClientboundSetPlayerTeamPacket team) {
+        if (team.getTeamAction() == ClientboundSetPlayerTeamPacket.Action.ADD) {
+            return 0;
+        } else if (team.getTeamAction() == ClientboundSetPlayerTeamPacket.Action.REMOVE) {
+            return 1;
+        } else if (team.getPlayerAction() == ClientboundSetPlayerTeamPacket.Action.ADD) {
+            return 3;
+        } else if (team.getPlayerAction() == ClientboundSetPlayerTeamPacket.Action.REMOVE) {
+            return 4;
+        } else {
+            return 2;
         }
     }
 
