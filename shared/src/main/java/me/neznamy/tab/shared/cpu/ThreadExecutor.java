@@ -15,6 +15,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ThreadExecutor {
 
+    /** Timeout for finishing tasks when shutting down thread executor */
+    private static final int SHUTDOWN_TIMEOUT = 2000;
+
     private final String threadName;
     private final ScheduledExecutorService executor;
 
@@ -35,8 +38,8 @@ public class ThreadExecutor {
     @SneakyThrows
     public void shutdown() {
         executor.shutdown();
-        if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-            TAB.getInstance().getErrorManager().printError("Soft shutdown of thread " + threadName + " exceeded time limit of 500ms, forcing shutdown. This may cause issues.", null);
+        if (!executor.awaitTermination(SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)) {
+            TAB.getInstance().getErrorManager().printError("Soft shutdown of thread " + threadName + " exceeded time limit of " + SHUTDOWN_TIMEOUT + "ms, forcing shutdown. This may cause issues.", null);
             executor.shutdownNow();
         }
     }
