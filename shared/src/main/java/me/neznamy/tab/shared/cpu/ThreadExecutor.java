@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.cpu;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,12 +34,15 @@ public class ThreadExecutor {
     /**
      * Shuts down the executor.
      */
-    @SneakyThrows
     public void shutdown() {
         executor.shutdown();
-        if (!executor.awaitTermination(SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)) {
-            TAB.getInstance().getErrorManager().printError("Soft shutdown of thread " + threadName + " exceeded time limit of " + SHUTDOWN_TIMEOUT + "ms, forcing shutdown. This may cause issues.", null);
-            executor.shutdownNow();
+        try {
+            if (!executor.awaitTermination(SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                TAB.getInstance().getErrorManager().printError("Soft shutdown of thread " + threadName + " exceeded time limit of " + SHUTDOWN_TIMEOUT + "ms, forcing shutdown. This may cause issues.", null);
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException ignored) {
+            // Shutdown successful (?)
         }
     }
 
