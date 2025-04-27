@@ -73,6 +73,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
             if (proxy != null) {
+                TAB.getInstance().debug("Sending nametag join (on load) of proxy player " + all.getName());
                 proxy.sendMessage(new NameTagUpdateProxyPlayer(
                         this,
                         all.getTablistId(),
@@ -163,6 +164,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         prefix.getLastColor()
                 );
             }
+            TAB.getInstance().debug("Sending nametag join of proxy player " + connectedPlayer.getName());
             proxy.sendMessage(new NameTagUpdateProxyPlayer(
                     this,
                     connectedPlayer.getTablistId(),
@@ -265,14 +267,17 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     prefix.getLastColor()
             );
         }
-        if (proxy != null) proxy.sendMessage(new NameTagUpdateProxyPlayer(
-                this,
-                player.getTablistId(),
-                player.teamData.teamName,
-                player.teamData.prefix.get(),
-                player.teamData.suffix.get(),
-                getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
-        ));
+        if (proxy != null) {
+            TAB.getInstance().debug("Sending nametag update (prefix / suffix) of proxy player " + player.getName());
+            proxy.sendMessage(new NameTagUpdateProxyPlayer(
+                    this,
+                    player.getTablistId(),
+                    player.teamData.teamName,
+                    player.teamData.prefix.get(),
+                    player.teamData.suffix.get(),
+                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+            ));
+        }
     }
 
     /**
@@ -313,14 +318,17 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
                 );
             }
-            if (proxy != null) proxy.sendMessage(new NameTagUpdateProxyPlayer(
-                    this,
-                    player.getTablistId(),
-                    player.teamData.teamName,
-                    player.teamData.prefix.get(),
-                    player.teamData.suffix.get(),
-                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
-            ));
+            if (proxy != null) {
+                TAB.getInstance().debug("Sending nametag update (visibility) of proxy player " + player.getName());
+                proxy.sendMessage(new NameTagUpdateProxyPlayer(
+                        this,
+                        player.getTablistId(),
+                        player.teamData.teamName,
+                        player.teamData.prefix.get(),
+                        player.teamData.suffix.get(),
+                        getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+                ));
+            }
         }, getFeatureName(), "Updating visibility"));
     }
 
@@ -396,14 +404,17 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 viewer.getScoreboard().renameTeam(player.teamData.teamName, newTeamName);
             }
             player.teamData.teamName = newTeamName;
-            if (proxy != null) proxy.sendMessage(new NameTagUpdateProxyPlayer(
-                    this,
-                    player.getTablistId(),
-                    player.teamData.teamName,
-                    player.teamData.prefix.get(),
-                    player.teamData.suffix.get(),
-                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
-            ));
+            if (proxy != null) {
+                TAB.getInstance().debug("Sending nametag update (team name) of proxy player " + player.getName());
+                proxy.sendMessage(new NameTagUpdateProxyPlayer(
+                        this,
+                        player.getTablistId(),
+                        player.teamData.teamName,
+                        player.teamData.prefix.get(),
+                        player.teamData.suffix.get(),
+                        getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+                ));
+            }
         }, getFeatureName(), "Updating team name"));
     }
 
@@ -413,6 +424,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     public void onProxyLoadRequest() {
+        TAB.getInstance().debug("Sending nametag load of all proxy players as requested by another proxy");
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             proxy.sendMessage(new NameTagUpdateProxyPlayer(
                     this,

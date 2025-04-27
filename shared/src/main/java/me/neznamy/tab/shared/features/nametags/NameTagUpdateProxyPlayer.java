@@ -58,12 +58,10 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
     public void process(@NotNull ProxySupport proxySupport) {
         ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
         if (target == null) {
-            TAB.getInstance().getErrorManager().printError("Unable to process nametag update of proxy player " + playerId + ", because no such player exists", null);
+            TAB.getInstance().getErrorManager().printError("[Proxy Support] Unable to process nametag update of proxy player " + playerId + ", because no such player exists", null);
             return;
         }
-        if (target.getTeamName() == null) {
-            TAB.getInstance().debug("Processing nametag join of proxy player " + target.getName());
-        }
+        TAB.getInstance().debug("[Proxy Support] Processing nametag update of proxy player " + target.getName());
         // Nametag is already being processed by connected player
         if (TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
             TAB.getInstance().debug("The player " + target.getName() + " is already connected");
