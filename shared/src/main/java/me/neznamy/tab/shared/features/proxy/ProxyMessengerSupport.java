@@ -61,7 +61,7 @@ public class ProxyMessengerSupport extends ProxySupport {
         messenger.clear();
     }
 
-    private class Messenger extends AbstractMessenger implements DelayedExecutor<ScheduledFuture<?>> {
+    private class Messenger extends AbstractMessenger implements Broker.Logger, DelayedExecutor<ScheduledFuture<?>> {
 
         private final Broker broker;
 
@@ -72,6 +72,53 @@ public class ProxyMessengerSupport extends ProxySupport {
         @Override
         protected @NotNull Broker loadBroker() {
             return broker;
+        }
+
+        @Override
+        public void log(int level, @NotNull String msg) {
+            switch (level) {
+                case 1:
+                case 2:
+                    TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(msg));
+                    break;
+                case 3:
+                    TAB.getInstance().getPlatform().logInfo(SimpleTextComponent.text(msg));
+                    break;
+                case 4:
+                    TAB.getInstance().debug(msg);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void log(int level, @NotNull String msg, @NotNull Throwable throwable) {
+            switch (level) {
+                case 1:
+                case 2:
+                    TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(msg));
+                    for (String line : TAB.getInstance().getErrorManager().throwableToList(throwable, false)) {
+                        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(line));
+                    }
+                    break;
+                case 3:
+                    TAB.getInstance().getPlatform().logInfo(SimpleTextComponent.text(msg));
+                    for (String line : TAB.getInstance().getErrorManager().throwableToList(throwable, false)) {
+                        TAB.getInstance().getPlatform().logInfo(SimpleTextComponent.text(line));
+                    }
+                    break;
+                case 4:
+                    TAB.getInstance().debug(msg);
+                    if (TAB.getInstance().getConfiguration().getConfig().isDebugMode()) {
+                        for (String line : TAB.getInstance().getErrorManager().throwableToList(throwable, false)) {
+                            TAB.getInstance().debug(line);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
         @NotNull
