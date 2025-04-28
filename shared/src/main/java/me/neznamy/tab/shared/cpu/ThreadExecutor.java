@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -56,9 +57,9 @@ public class ThreadExecutor {
         executor.execute(task);
     }
 
-    public void executeLater(@NotNull TimedCaughtTask task, int delayMillis) {
-        if (executor.isShutdown()) return;
-        executor.schedule(task, delayMillis, TimeUnit.MILLISECONDS);
+    public ScheduledFuture<?> executeLater(@NotNull TimedCaughtTask task, long delayMillis) {
+        if (executor.isShutdown()) return EmptyFuture.INSTANCE;
+        return executor.schedule(task, delayMillis, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -68,9 +69,14 @@ public class ThreadExecutor {
      *          Task to run periodically
      * @param   intervalMilliseconds
      *          How often should the task run
+     * @return
      */
-    public void repeatTask(@NotNull TimedCaughtTask task, int intervalMilliseconds) {
-        if (executor.isShutdown()) return;
-        executor.scheduleAtFixedRate(task, intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
+    public ScheduledFuture<?> repeatTask(@NotNull TimedCaughtTask task, long intervalMilliseconds) {
+        return repeatTask(task, intervalMilliseconds, intervalMilliseconds);
+    }
+
+    public ScheduledFuture<?> repeatTask(@NotNull TimedCaughtTask task, long initialMilliseconds, long intervalMilliseconds) {
+        if (executor.isShutdown()) return EmptyFuture.INSTANCE;
+        return executor.scheduleAtFixedRate(task, initialMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 }
