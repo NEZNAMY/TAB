@@ -31,8 +31,6 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateLatency = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateGameMode = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListed = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED);
-    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListOrder = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LIST_ORDER);
-    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateHat = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT);
 
     private static final Field entries = ReflectionUtils.getOnlyField(ClientboundPlayerInfoUpdatePacket.class, List.class);
 
@@ -73,12 +71,12 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        sendPacket(updateListOrder, entry, "", null, false, 0, 0, null, listOrder, false);
+
     }
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
-        sendPacket(updateHat, entry, "", null, false, 0, 0, null, 0, showHat);
+
     }
 
     @Override
@@ -103,7 +101,7 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
         Collection<Property> properties = player.getPlayer().getGameProfile().getProperties().get(TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
         Property property = properties.iterator().next();
-        return new Skin(property.value(), property.signature());
+        return new Skin(property.getValue(), property.getSignature());
     }
 
     @Override
@@ -136,7 +134,7 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
                         nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName,
-                        nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()
+                        nmsData.chatSession()
                 ) : nmsData);
             }
             if (rewritePacket) entries.set(info, updatedList);
@@ -154,8 +152,6 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
                 latency,
                 GameType.byId(gameMode),
                 displayName == null ? null : displayName.convert(),
-                showHat,
-                listOrder,
                 null
         )));
         sendPacket(packet);

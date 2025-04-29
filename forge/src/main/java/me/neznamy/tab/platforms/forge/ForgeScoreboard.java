@@ -4,16 +4,17 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.numbers.FixedFormat;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
+import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 /**
  * Scoreboard implementation for Forge using packets.
@@ -42,9 +43,7 @@ public class ForgeScoreboard extends SafeScoreboard<ForgeTabPlayer> {
                 objective.getName(),
                 ObjectiveCriteria.DUMMY,
                 objective.getTitle().convert(),
-                RenderType.values()[objective.getHealthDisplay().ordinal()],
-                false,
-                objective.getNumberFormat() == null ? null : objective.getNumberFormat().toFixedFormat(FixedFormat::new)
+                RenderType.values()[objective.getHealthDisplay().ordinal()]
         );
         objective.setPlatformObjective(obj);
         sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
@@ -52,7 +51,7 @@ public class ForgeScoreboard extends SafeScoreboard<ForgeTabPlayer> {
 
     @Override
     public void setDisplaySlot(@NonNull Objective objective) {
-        sendPacket(new ClientboundSetDisplayObjectivePacket(net.minecraft.world.scores.DisplaySlot.values()[objective.getDisplaySlot().ordinal()], (net.minecraft.world.scores.Objective) objective.getPlatformObjective()));
+        sendPacket(new ClientboundSetDisplayObjectivePacket(objective.getDisplaySlot().ordinal(), (net.minecraft.world.scores.Objective) objective.getPlatformObjective()));
     }
 
     @Override
@@ -71,17 +70,21 @@ public class ForgeScoreboard extends SafeScoreboard<ForgeTabPlayer> {
     @Override
     public void setScore(@NonNull Score score) {
         sendPacket(new ClientboundSetScorePacket(
-                score.getHolder(),
+                ServerScoreboard.Method.CHANGE,
                 score.getObjective().getName(),
-                score.getValue(),
-                Optional.ofNullable(score.getDisplayName() == null ? null : score.getDisplayName().convert()),
-                Optional.ofNullable(score.getNumberFormat() == null ? null : score.getNumberFormat().toFixedFormat(FixedFormat::new))
+                score.getHolder(),
+                score.getValue()
         ));
     }
 
     @Override
     public void removeScore(@NonNull Score score) {
-        sendPacket(new ClientboundResetScorePacket(score.getHolder(), score.getObjective().getName()));
+        sendPacket(new ClientboundSetScorePacket(
+                ServerScoreboard.Method.REMOVE,
+                score.getObjective().getName(),
+                score.getHolder(),
+                score.getValue()
+        ));
     }
 
     @Override
@@ -124,7 +127,7 @@ public class ForgeScoreboard extends SafeScoreboard<ForgeTabPlayer> {
     public void onPacketSend(@NonNull Object packet) {
         if (isAntiOverrideScoreboard()) {
             if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
-                TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getSlot().ordinal(), display.getObjectiveName());
+                TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getSlot(), display.getObjectiveName());
             }
             if (packet instanceof ClientboundSetObjectivePacket objective) {
                 TAB.getInstance().getFeatureManager().onObjective(player, objective.getMethod(), objective.getObjectiveName());

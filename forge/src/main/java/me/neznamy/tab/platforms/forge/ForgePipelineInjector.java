@@ -20,6 +20,6 @@ public class ForgePipelineInjector extends NettyPipelineInjector {
     @Override
     @NotNull
     protected Channel getChannel(@NotNull TabPlayer player) {
-        return ((ForgeTabPlayer)player).getPlayer().connection.getConnection().channel();
+        return ((ForgeTabPlayer)player).getPlayer().connection.connection.channel();
     }
 }

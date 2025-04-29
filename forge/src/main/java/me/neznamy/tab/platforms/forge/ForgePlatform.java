@@ -126,7 +126,6 @@ public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
                 .withStrikethrough(modifier.getStrikethrough())
                 .withObfuscated(modifier.getObfuscated())
                 .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
-        if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor());
         nmsComponent.setStyle(style);
 
         // Extra
@@ -169,6 +168,6 @@ public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
 
     @Override
     public double getMSPT() {
-        return (float) server.getAverageTickTimeNanos() / 1000000;
+        return server.getAverageTickTime();
     }
 }

@@ -32,7 +32,7 @@ public class ForgeTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getPing() {
-        return getPlayer().connection.latency();
+        return getPlayer().latency;
     }
 
     @Override
