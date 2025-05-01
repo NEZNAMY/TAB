@@ -212,7 +212,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     public void registerTeam(@NonNull Team team) {
         teamPacketData.ScoreboardTeam_players.set(team.getPlatformTeam(), new HashSet<>(team.getPlayers()));
         teamPacketData.updateTeamData(team);
-        packetSender.sendPacket(player, teamPacketData.newRegisterTeamPacket.apply(team, player.getVersion()));
+        packetSender.sendPacket(player, teamPacketData.newRegisterTeamPacket.apply(team));
     }
 
     @Override
@@ -225,7 +225,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @SneakyThrows
     public void updateTeam(@NonNull Team team) {
         teamPacketData.updateTeamData(team);
-        packetSender.sendPacket(player, teamPacketData.newUpdateTeamPacket.apply(team, player.getVersion()));
+        packetSender.sendPacket(player, teamPacketData.newUpdateTeamPacket.apply(team));
     }
 
     @Override

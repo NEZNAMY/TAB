@@ -3,13 +3,11 @@ package me.neznamy.tab.platforms.bukkit.provider.reflection;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitReflection;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.platform.Scoreboard.TeamAction;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard.Team;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import me.neznamy.tab.shared.util.function.BiFunctionWithException;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
 
 import java.lang.reflect.Constructor;
@@ -67,9 +65,9 @@ public class TeamPacketData {
     private final Method TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, ScoreboardTeamClass);
     private final Method TeamPacketConstructor_ofBoolean = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, ScoreboardTeamClass, boolean.class);
     public final FunctionWithException<String, Object> createTeam = name -> newScoreboardTeam.newInstance(emptyScoreboard, name);
-    public final BiFunctionWithException<Team, ProtocolVersion, Object> newRegisterTeamPacket = (team, version) -> TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);;
-    public final FunctionWithException<Team, Object> newUnregisterTeamPacket = team -> TeamPacketConstructor_of.invoke(null, team.getPlatformTeam());;
-    public final BiFunctionWithException<Team, ProtocolVersion, Object> newUpdateTeamPacket = (team, version) -> TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), false);;
+    public final FunctionWithException<Team, Object> newRegisterTeamPacket = team -> TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), true);
+    public final FunctionWithException<Team, Object> newUnregisterTeamPacket = team -> TeamPacketConstructor_of.invoke(null, team.getPlatformTeam());
+    public final FunctionWithException<Team, Object> newUpdateTeamPacket = team -> TeamPacketConstructor_ofBoolean.invoke(null, team.getPlatformTeam(), false);
 
     /**
      * Constructs new instance and loads all required NMS classes, fields, and methods.
