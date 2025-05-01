@@ -77,7 +77,6 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     public void sendJoinPluginMessage() {
         bridgeConnected = false; // Reset on server switch
         sendPluginMessage(new PlayerJoin(
-                getVersion().getNetworkId(),
                 TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                     !TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions(),
                 TAB.getInstance().getPlaceholderManager().getBridgePlaceholders(),

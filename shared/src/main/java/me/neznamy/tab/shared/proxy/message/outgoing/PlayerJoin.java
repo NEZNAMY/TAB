@@ -12,7 +12,6 @@ import java.util.Map;
 @SuppressWarnings("UnstableApiUsage")
 public class PlayerJoin implements OutgoingMessage {
 
-    private int protocolVersion;
     private boolean forwardGroup;
     private Map<String, Integer> placeholders;
     private Map<String, Map<Object, Object>> replacements;
@@ -22,7 +21,7 @@ public class PlayerJoin implements OutgoingMessage {
     public ByteArrayDataOutput write() {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("PlayerJoin");
-        out.writeInt(protocolVersion);
+        out.writeInt(0); // Protocol version, which is no longer used, write to not have to break protocol
         out.writeBoolean(forwardGroup);
         out.writeInt(placeholders.size());
         for (Map.Entry<String, Integer> entry : placeholders.entrySet()) {
