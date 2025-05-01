@@ -24,7 +24,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final Scoreboard dummyScoreboard = new Scoreboard();
 
     private static final Field TeamPacket_NAME = ReflectionUtils.getFields(PacketPlayOutScoreboardTeam.class, String.class).get(0);
-    private static final Field TeamPacket_ACTION = ReflectionUtils.getInstanceFields(PacketPlayOutScoreboardTeam.class, int.class).get(1);
+    private static final Field TeamPacket_ACTION = ReflectionUtils.getInstanceFields(PacketPlayOutScoreboardTeam.class, int.class).get(0);
     private static final Field TeamPacket_PLAYERS = ReflectionUtils.getOnlyField(PacketPlayOutScoreboardTeam.class, Collection.class);
 
     private static final Field Objective_OBJECTIVE_NAME = ReflectionUtils.getFields(PacketPlayOutScoreboardObjective.class, String.class).get(0);

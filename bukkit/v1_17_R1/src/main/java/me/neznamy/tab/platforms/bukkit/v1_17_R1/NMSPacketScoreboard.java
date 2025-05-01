@@ -57,11 +57,25 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
             }
         }
         if (scoreboard.isAntiOverrideTeams() && packet instanceof PacketPlayOutScoreboardTeam) {
-            int action = TeamPacket_ACTION.getInt(packet);
+            int action = getMethod((PacketPlayOutScoreboardTeam) packet);
             if (action == TeamAction.UPDATE) return;
             Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
             if (players == null) players = Collections.emptyList();
             TeamPacket_PLAYERS.set(packet, scoreboard.onTeamPacket(action, ((PacketPlayOutScoreboardTeam)packet).d(), players));
+        }
+    }
+
+    private static int getMethod(@NonNull PacketPlayOutScoreboardTeam team) {
+        if (team.c() == PacketPlayOutScoreboardTeam.a.a) {
+            return 0;
+        } else if (team.c() == PacketPlayOutScoreboardTeam.a.b) {
+            return 1;
+        } else if (team.b() == PacketPlayOutScoreboardTeam.a.a) {
+            return 3;
+        } else if (team.b() == PacketPlayOutScoreboardTeam.a.b) {
+            return 4;
+        } else {
+            return 2;
         }
     }
 
