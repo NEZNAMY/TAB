@@ -119,7 +119,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
      */
     public void updatePlayer(@NotNull TabPlayer player, boolean format) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) continue;
             //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             UUID tablistId = getTablistUUID(player, viewer);
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
@@ -165,7 +164,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             }
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.tablistData.disabled.get()) continue;
                 //if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
@@ -177,7 +175,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     @Override
     public void unload() {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.tablistData.disabled.get()) continue;
                 //if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
@@ -192,11 +189,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
         TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (!all.tablistData.disabled.get() && p.getVersion().getMinorVersion() >= 8
+                if (!all.tablistData.disabled.get()
                         //&& p.getTabList().containsEntry(all.getTablistId())
                 )
                     p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
-                if (all != p && !p.tablistData.disabled.get() && all.getVersion().getMinorVersion() >= 8
+                if (all != p && !p.tablistData.disabled.get()
                         //&& all.getTabList().containsEntry(p.getTablistId())
                 )
                     all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
@@ -267,7 +264,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         } else {
             updatePlayer(connectedPlayer, true);
         }
-        if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
         Runnable r = () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; // Already updated above
@@ -293,7 +289,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         if (player.isVanished() || player.tablistData.disabled.get()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) continue;
             //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
             viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
         }
@@ -388,7 +383,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onVanishStatusChange(@NotNull ProxyPlayer player) {
         if (player.isVanished()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) continue;
             viewer.getTabList().updateDisplayName(player.getUniqueId(), player.getTabFormat());
         }
     }

@@ -30,6 +30,9 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
+        if (player.getVersion().getMinorVersion() < 8) {
+            return; // Display names are not supported on 1.7 and below
+        }
         if (antiOverride) expectedDisplayNames.put(entry, displayName);
         updateDisplayName0(entry, displayName);
     }

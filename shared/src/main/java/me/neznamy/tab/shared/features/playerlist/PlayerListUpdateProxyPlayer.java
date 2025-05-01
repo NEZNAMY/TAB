@@ -50,7 +50,6 @@ public class PlayerListUpdateProxyPlayer extends ProxyMessage {
         TAB.getInstance().debug("[Proxy Support] Processing tablist formatting update of proxy player " + player + " to " + format);
         target.setTabFormat(feature.getCache().get(format));
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8) continue;
             viewer.getTabList().updateDisplayName(target.getUniqueId(), target.getTabFormat());
         }
     }

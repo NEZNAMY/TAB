@@ -70,7 +70,7 @@ public class PlayerSlot {
         if (player != null) {
             setPlayer(null);
         } else {
-            if (layout.getViewer().getVersion().getMinorVersion() < 8 || layout.getViewer().isBedrockPlayer()) return;
+            if (layout.getViewer().isBedrockPlayer()) return;
             layout.getViewer().getTabList().updateDisplayName(uniqueId, cache.get(text));
         }
     }
