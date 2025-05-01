@@ -1,5 +1,6 @@
 # Content
 * [Requirements](#requirements)
+  * [Java](#java)
 * [Supported server software and versions](#supported-server-software-and-versions)
 * [Supported features per platform](#supported-features-per-platform)
 * [Plugin hooks](#plugin-hooks)
@@ -13,8 +14,13 @@
 * [Compatibility issues](#compatibility-issues)
 
 # Requirements
-TAB does not depend on any other plugins.  
-It is compiled with Java 8 and therefore supports any version of 8 and above.
+TAB does not depend on any other plugins. The experience can however be enhanced by installing other plugins, see below.
+
+## Java
+TAB's shared module is compiled with Java 8. For the platforms themselves, TAB does have a higher requirement, however, it does not require a Java version higher than the server software itself does. Specifically:
+* Sponge, Fabric, Forge and NeoForge require Java 21
+* Velocity requires Java 17
+* Bukkit and BungeeCord are ok with Java 8
 
 # Supported server software and versions
 <table>
@@ -64,7 +70,7 @@ It is compiled with Java 8 and therefore supports any version of 8 and above.
     </tbody>
 </table>
 
-Modded platforms only support the latest MC version(s). If you need a backport and no older version of TAB supports your desired server version, you'll need to edit it in the source code. Customers can ask for a backport on the customer discord.
+Modded platforms only support the latest MC version(s). For older MC versions try [modrinth](https://modrinth.com/plugin/tab-was-taken)'s version download filter. If you need a backport and no older version of TAB supports your desired server version, you'll need to edit it in the source code. Customers can ask for a backport on the customer discord.
 
 <sup>1</sup> Latest only doesn't mean only the latest build will work,
 it means the plugin was made to be compatible with the latest version/build.

@@ -7,6 +7,8 @@
 * [Fonts](#fonts)
   * [Usage](#usage-1)
   * [Compatibility with RGB and gradients](#compatibility-with-rgb-and-gradients)
+* [Tips & Tricks](#tips--tricks)
+  * [Tip 1 - Manually defining legacy color](#tip-1---manually-defining-legacy-color)
 
 # Introduction
 As of 1.16, mojang introduced RGB color support.
@@ -70,3 +72,21 @@ When trying to use both font and RGB or gradients, font must be outside and RGB/
 
 **Result**  
 ![image](https://github.com/NEZNAMY/TAB/assets/6338394/81da5bc4-1920-4dad-bcf5-002b5de741f8)
+
+# Tips & Tricks
+## Tip 1 - Manually defining legacy color
+For features that don't depend on any other players (header/footer, bossbar, scoreboard), you can easily specify legacy color instead of automatic rounding for <1.16 players. This can be done using [conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders).
+
+Check for `%player-version-id%`, which returns network protocol id of the version, which can be easily compared to. 1.16's version is `735`. Final condition may look like this:
+
+```
+conditions:
+  rgb:
+    conditions:
+    - '%player-version-id%>=735'
+    yes: "#00FF00 RGB text"
+    no: "&a Legacy text"
+```
+Then, use this condition with `%condition:rgb%`.
+
+This will not work in nametags and tablist formatting, because this would parse the condition for target player, not the viewer. To achieve this, you'll need a custom made [relational placeholder](https://github.com/NEZNAMY/TAB/wiki/Placeholders#relational-placeholders) that checks for viewer's version.

@@ -21,6 +21,7 @@
   * [Example 1 - Per-world scoreboards](#example-1---per-world-scoreboards)
   * [Example 2 - Periodical scoreboard switching](#example-2---periodical-scoreboard-switching)
   * [Example 3 - Per-version scoreboards](#example-3---per-version-scoreboards)
+  * [Example 4 - Conditional lines](#example-4---conditional-lines)
 
 # About
 Scoreboard objective with SIDEBAR display slot.
@@ -109,7 +110,7 @@ time - number of seconds to display the scoreboard for
 | toggle-command             | /sb           | Command that can be used to toggle scoreboard for the player running the command. Players need `tab.scoreboard.toggle` permission to use it. <br />**Note:** This command will not appear in command auto-complete, because it's not a real registered command. Registered commands must be defined in plugin jar directly and cannot be dynamic. If you want to solve this, you can try getting a dummy private plugin made which registers that command. |
 | remember-toggle-choice     | false         | When enabled, toggling decision is saved into a file to remember it even after reloads/restarts/reconnects                                                                                                                                                                                                                                                                                                                                                 |
 | hidden-by-default          | false         | If enabled, scoreboard will automatically be hidden on join until toggle command is used to show it.                                                                                                                                                                                                                                                                                                                                                       |
-| use-numbers                | false         | If enabled, numbers 1-15 will be used in the scoreboard. If disabled, `static-number` is shown everywhere.                                                                                                                                                                                                                                                                                                                                                 |
+| use-numbers                | false         | If enabled, numbers 1-15 will be used in the scoreboard. If disabled, `static-number` is shown everywhere. Will not be visible for 1.20.3+ players, instead, you can configure any text to show using `\|\|text` in the lines (scroll up for more info).                                                                                                                                                                                                   |
 | static-number              | 0             | If `use-numbers` is disabled, this is number to be in all lines.                                                                                                                                                                                                                                                                                                                                                                                           |
 | delay-on-join-milliseconds | 0             | Delay in milliseconds to send scoreboard after joining.                                                                                                                                                                                                                                                                                                                                                                                                    |
 
@@ -118,6 +119,7 @@ time - number of seconds to display the scoreboard for
 * [1.5 - 1.12.2] Line length is limited to 28 characters (including color codes) (64 on lines with static text / [Longer lines](#longer-lines)).
 * [1.5 - 1.20.2] The red numbers on the right really cannot be removed from the plugin side (a client modification / resource pack is necessary).
 * The client only displays up to 15 lines. If a plugin sends more, only the top 15 scores will be displayed. Changing this would require a client modification (on versions below 1.8 the scoreboard won't appear at all if more than 15 lines are displayed).
+* [Bedrock] Scoreboard lines may be cut off and show `...`, this can be bypassed by using [GeyserOptionalPack](https://github.com/GeyserMC/GeyserOptionalPack)
 
 # Longer lines
 To make sure the scoreboard never flickers, it's only using prefix/suffix components to display text.
@@ -281,7 +283,7 @@ We don't need to define display condition for the second scoreboard,
 since if animation is not on the first frame, it has to be on the second one.
 If using more than 2, you will need to define display condition for all of them (except the last one).
 
-# Example 3 - Per-version scoreboards
+## Example 3 - Per-version scoreboards
 1.20.3 has added new features to scoreboards, which are not visible to older clients. If you want to use new features for new players while still displaying things properly for older players, you'll need to create 2 different scoreboards.  
 You'll find 2 placeholders useful for this:
 * `%player-version-id%` - Returns network ID of player's protocol version. Unlike with version names, you can perform numerical comparisons with these. You can find all version IDs [here](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/ProtocolVersion.java). For example, 1.20.3 is 765.
@@ -312,3 +314,28 @@ Let's go ahead and set it up (with proper spacing):
         - "* &bPing&7: &f%ping%&8ms"
         - "* &bWorld&7: &f%world%"
 ```
+
+## Example 4 - Conditional lines
+Sometimes you may want a dynamic line that only shows sometimes. TAB is already made to hide lines if they only consist of a placeholder that returned empty value. However, you may want to add more text around it, such as
+```
+- "Faction: %factionsuuid_faction_name%"
+```
+Now, even if the placeholder returns empty string, text `Faction: ` will remain, and as such, the line will stay. In order to avoid this, create a [conditional placeholder](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders). If the placeholder returned empty value, show empty value. Otherwise, show result of the placeholder with the static text:
+```
+conditions:
+  faction:
+    conditions:
+    - '%factionsuuid_faction_name%='
+    yes: "" # No faction, return empty string to hide the line
+    no: "Faction: %factionsuuid_faction_name%" # Player has a faction, show the static text before it as well
+```
+> [!WARNING]
+> DO NOT JUST RANDOMLY PASTE THIS ENTIRE "CONDITIONS" SECTION INTO YOUR CONFIG!
+> INSTEAD, EDIT YOUR EXISTING CONDITIONS SECTION TO PREVENT HAVING THE SECTION TWICE,
+> HAVING SECOND ONE COMPLETELY OVERRIDE THE FIRST ONE!
+
+Now, configure your scoreboard line as:
+```
+- "%condition:faction%"
+```
+and it will only display if the placeholder returned non-empty value.

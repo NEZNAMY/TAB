@@ -8,7 +8,7 @@
 
 # About
 This feature allows you to see players from other servers, instead of only seeing players on the same server.  
-If TAB is installed on a backend server, you'll need to set up [Multi server support](https://github.com/NEZNAMY/TAB/wiki/Feature-info:-Multi-server-support) for proper linking of servers. On proxy installation, this is not required.
+If TAB is installed on a backend server, you'll need to set up [Multi server support](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Multi-server-support) for proper linking of servers. On proxy installation, this is not required.
 
 # Configuration
 | Option name                            | Default value | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |

@@ -14,7 +14,7 @@
 * [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist)
 * [Header/Footer](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer)
 * [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout)
-* [Multi server support](https://github.com/NEZNAMY/TAB/wiki/Feature-info:-Multi-server-support)
+* [Multi server support](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Multi-server-support)
 * [Nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags)
 * [Per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist)
 * [Ping spoof](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Ping-Spoof)
