@@ -27,7 +27,7 @@ val platforms = setOf(
     projects.velocity,
     projects.sponge,
     projects.fabric,
-    projects.neoforge,
+    //projects.neoforge,
     projects.forge
 ).map { it.dependencyProject }
 
