@@ -134,12 +134,16 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @NotNull
     public Component convertComponent(@NotNull TabComponent component) {
         // Component type
-        MutableComponent nmsComponent = switch (component) {
-            case TextComponent text -> Component.literal(text.getText());
-            case TranslatableComponent translatable -> Component.translatable(translatable.getKey());
-            case KeybindComponent keybind -> Component.keybind(keybind.getKeybind());
-            default -> throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
-        };
+        MutableComponent nmsComponent;
+        if (component instanceof TextComponent text) {
+            nmsComponent = Component.literal(text.getText());
+        } else if (component instanceof TranslatableComponent translatable) {
+            nmsComponent = Component.translatable(translatable.getKey());
+        } else if (component instanceof KeybindComponent keybind) {
+            nmsComponent = Component.keybind(keybind.getKeybind());
+        } else {
+            throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
+        }
 
         // Component style
         ChatModifier modifier = component.getModifier();
