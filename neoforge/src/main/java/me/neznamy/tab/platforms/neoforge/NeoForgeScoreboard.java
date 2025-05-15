@@ -1,8 +1,10 @@
 package me.neznamy.tab.platforms.neoforge;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.numbers.FixedFormat;
 import net.minecraft.network.protocol.Packet;
@@ -13,6 +15,8 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -24,6 +28,7 @@ public class NeoForgeScoreboard extends SafeScoreboard<NeoForgeTabPlayer> {
     private static final net.minecraft.world.scores.Team.CollisionRule[] collisions = net.minecraft.world.scores.Team.CollisionRule.values();
     private static final net.minecraft.world.scores.Team.Visibility[] visibilities = net.minecraft.world.scores.Team.Visibility.values();
     private static final Scoreboard dummyScoreboard = new Scoreboard();
+    private static final Field players = ReflectionUtils.getOnlyField(ClientboundSetPlayerTeamPacket.class, Collection.class);
 
     /**
      * Constructs new instance with given player.
@@ -121,6 +126,7 @@ public class NeoForgeScoreboard extends SafeScoreboard<NeoForgeTabPlayer> {
     }
 
     @Override
+    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
         if (isAntiOverrideScoreboard()) {
             if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
@@ -133,7 +139,7 @@ public class NeoForgeScoreboard extends SafeScoreboard<NeoForgeTabPlayer> {
         if (isAntiOverrideTeams() && packet instanceof ClientboundSetPlayerTeamPacket team) {
             int method = getMethod(team);
             if (method == TeamAction.UPDATE) return;
-            team.players = onTeamPacket(method, team.getName(), team.getPlayers());
+            players.set(team, onTeamPacket(method, team.getName(), team.getPlayers()));
         }
     }
 

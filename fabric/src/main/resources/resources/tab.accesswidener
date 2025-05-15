@@ -1,9 +1,5 @@
 accessWidener v2 named
 
-# Scoreboard packets
-accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;
-mutable field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;
-
 # Channel
 accessible field net/minecraft/server/network/ServerCommonPacketListenerImpl connection Lnet/minecraft/network/Connection;
 accessible field net/minecraft/network/Connection channel Lio/netty/channel/Channel;
