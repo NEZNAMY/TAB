@@ -103,6 +103,7 @@ public class VelocityEventListener implements EventListener<Player> {
     @Subscribe
     public void onCommand(@NotNull CommandExecuteEvent e) {
         if (TAB.getInstance().isPluginDisabled()) return;
+        if (!e.getResult().isAllowed()) return;
         String command = TAB.getInstance().getPlatform().getCommand();
         BossBarManagerImpl bossBarManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
         if (bossBarManager != null && bossBarManager.getCommand().substring(1).equals(e.getCommand())) {

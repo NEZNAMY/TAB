@@ -58,8 +58,9 @@ public class BukkitEventListener implements EventListener<Player>, Listener {
      * @param   e
      *          Command event
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH) // HIGH sounds about fair
     public void onCommand(PlayerCommandPreprocessEvent e) {
+        if (e.isCancelled()) return;
         if (command(e.getPlayer().getUniqueId(), e.getMessage())) e.setCancelled(true);
     }
 
