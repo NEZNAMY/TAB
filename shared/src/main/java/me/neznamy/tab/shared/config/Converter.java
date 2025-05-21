@@ -517,7 +517,7 @@ public class Converter {
             config.set("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
         }
         config.rename("placeholderapi-refresh-intervals", "placeholder-refresh-intervals");
-        config.setIfMissing("playerlist-objective.title", "Java Edition is better");
+        config.setIfMissing("playerlist-objective.title", "TAB");
         config.setIfMissing("playerlist-objective.render-type", Arrays.asList("%health%", "%player_health%", "%player_health_rounded%").contains(config.getString("playerlist-objective.value", "")) ? "HEARTS" : "INTEGER");
     }
 }

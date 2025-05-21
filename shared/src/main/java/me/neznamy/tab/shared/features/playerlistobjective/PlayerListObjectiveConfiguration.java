@@ -71,7 +71,7 @@ public class PlayerListObjectiveConfiguration {
         return new PlayerListObjectiveConfiguration(
                 value,
                 section.getString("fancy-value", "&7Ping: " + Placeholder.PING),
-                section.getString("title", "Java Edition is better"),
+                section.getString("title", "TAB"),
                 section.getString("disable-condition", "%world%=disabledworld"),
                 healthDisplay
         );
