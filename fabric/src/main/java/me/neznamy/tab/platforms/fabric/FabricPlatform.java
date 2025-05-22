@@ -106,7 +106,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @Override
     @NotNull
     public String getServerVersionInfo() {
-        return "[Fabric] " + SharedConstants.getCurrentVersion().name();
+        return "[Fabric] " + SharedConstants.getCurrentVersion().getName();
     }
 
     @Override
