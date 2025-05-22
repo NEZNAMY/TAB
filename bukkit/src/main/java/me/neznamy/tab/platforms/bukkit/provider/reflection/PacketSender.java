@@ -29,7 +29,7 @@ public class PacketSender {
         Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer");
         Class<?> PlayerConnection = BukkitReflection.getClass("server.network.ServerGamePacketListenerImpl", "server.network.PlayerConnection");
         Field PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
-        Method sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
+        Method sendPacket = ReflectionUtils.getPublicMethods(PlayerConnection, void.class, Packet).get(0);
         send = (player, packet) -> {
             if (player.connection == null) player.connection = PLAYER_CONNECTION.get(player.getHandle());
             sendPacket.invoke(player.connection, packet);
