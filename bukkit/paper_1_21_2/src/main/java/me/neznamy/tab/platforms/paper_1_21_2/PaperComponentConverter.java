@@ -1,8 +1,11 @@
-package me.neznamy.tab.platforms.paper;
+package me.neznamy.tab.platforms.paper_1_21_2;
 
 import me.neznamy.chat.ChatModifier;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +42,6 @@ public class PaperComponentConverter extends ComponentConverter {
                 .withStrikethrough(modifier.getStrikethrough())
                 .withObfuscated(modifier.getObfuscated())
                 .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
-        if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor()); // withShadowColor takes int instead of Integer, bug?
         ((MutableComponent)nmsComponent).setStyle(style);
     }
 

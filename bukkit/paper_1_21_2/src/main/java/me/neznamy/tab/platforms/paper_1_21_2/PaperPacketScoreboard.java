@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.paper;
+package me.neznamy.tab.platforms.paper_1_21_2;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;

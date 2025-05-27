@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.paper;
+package me.neznamy.tab.platforms.paper_1_20_5;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -33,8 +33,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateLatency = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateGameMode = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListed = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED);
-    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListOrder = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LIST_ORDER);
-    private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateHat = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT);
 
     private static final Field entries = ReflectionUtils.getOnlyField(ClientboundPlayerInfoUpdatePacket.class, List.class);
 
@@ -67,7 +65,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
                         nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName,
-                        nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()
+                        nmsData.chatSession()
                 ) : nmsData);
             }
             if (rewritePacket) entries.set(info, updatedList);
@@ -91,38 +89,38 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @Override
     public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        sendPacket(updateDisplayName, entry, "", null, false, 0, 0, displayName, 0, false);
+        sendPacket(updateDisplayName, entry, "", null, false, 0, 0, displayName);
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
-        sendPacket(updateLatency, entry, "", null, false, latency, 0, null, 0, false);
+        sendPacket(updateLatency, entry, "", null, false, latency, 0, null);
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
-        sendPacket(updateGameMode, entry, "", null, false, 0, gameMode, null, 0, false);
+        sendPacket(updateGameMode, entry, "", null, false, 0, gameMode, null);
     }
 
     @Override
     public void updateListed(@NonNull UUID entry, boolean listed) {
-        sendPacket(updateListed, entry, "", null, listed, 0, 0, null, 0, false);
+        sendPacket(updateListed, entry, "", null, listed, 0, 0, null);
     }
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        sendPacket(updateListOrder, entry, "", null, false, 0, 0, null, listOrder, false);
+        // Added in 1.21.2
     }
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
-        sendPacket(updateHat, entry, "", null, false, 0, 0, null, 0, showHat);
+        // Added in 1.21.4
     }
 
     @Override
     public void addEntry0(@NonNull Entry entry) {
         sendPacket(addPlayer, entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(), entry.getLatency(),
-                entry.getGameMode(), entry.getDisplayName(), entry.getListOrder(), entry.isShowHat());
+                entry.getGameMode(), entry.getDisplayName());
     }
 
     @Override
@@ -150,7 +148,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     private void sendPacket(@NonNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
-                            boolean listed, int latency, int gameMode, @Nullable TabComponent displayName, int listOrder, boolean showHat) {
+                            boolean listed, int latency, int gameMode, @Nullable TabComponent displayName) {
         ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(action, new ClientboundPlayerInfoUpdatePacket.Entry(
                 id,
                 action.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER) ? createProfile(id, name, skin) : null,
@@ -158,8 +156,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 latency,
                 GameType.byId(gameMode),
                 displayName == null ? null : displayName.convert(),
-                showHat,
-                listOrder,
                 null
         ));
         sendPacket(packet);

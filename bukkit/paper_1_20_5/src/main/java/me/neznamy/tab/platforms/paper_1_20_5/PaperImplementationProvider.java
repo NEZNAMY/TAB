@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.paper;
+package me.neznamy.tab.platforms.paper_1_20_5;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Implementation provider using direct Mojang-mapped NMS code (1.20.5+).
+ * Implementation provider using direct Mojang-mapped NMS code for versions 1.20.5 - 1.21.1.
  */
 @Getter
 public class PaperImplementationProvider implements ImplementationProvider {
