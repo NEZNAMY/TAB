@@ -267,7 +267,9 @@ public class BukkitPlatform implements BackendPlatform {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 long time = System.nanoTime();
                 ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
-                TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, System.nanoTime() - time);
+                long totalTime =  System.nanoTime()-time;
+                TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, totalTime);
+                TAB.getInstance().getCpu().addTime(TAB.getInstance().getPlaceholderManager().getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REQUEST, totalTime);
             });
             return null;
         });
@@ -407,6 +409,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public double getMSPT() {
+        System.out.println("Bukkit MSPT");
         if (paperMspt) return Bukkit.getAverageTickTime();
         return -1;
     }
