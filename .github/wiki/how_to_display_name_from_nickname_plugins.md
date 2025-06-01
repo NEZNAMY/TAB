@@ -42,7 +42,13 @@ Most notably, it breaks all name-bound features,
 especially [nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) and [sorting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist).
 For that reason, TAB must detect name change.
 This is done automatically on Bukkit, BungeeCord and Fabric.
-This detection is not available on Sponge and Velocity.
+**This detection is not available on Sponge and Velocity**.
+
+> [!WARNING]
+> If you have TAB installed on backend server and a proxy plugin changes nickname, TAB is not able to detect this change, since the modified packets never actually go through the backend server where TAB is installed.
+
+> [!TIP]
+> If automatic detection is not working for you (either you use TAB on Sponge / Velocity, or use proxy plugin for changing names while TAB is on backend), you can use [this API method](https://github.com/NEZNAMY/TAB/blob/master/api/src/main/java/me/neznamy/tab/api/TabPlayer.java#L88) to let TAB know player's name changed.
 
 In order for TAB to properly detect name change, player UUID must remain the same,
 otherwise it's a random entry with a random uuid and random name, which TAB isn't able to match with actual players.

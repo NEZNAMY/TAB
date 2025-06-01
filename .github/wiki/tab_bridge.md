@@ -1,12 +1,12 @@
 # About
-When TAB is installed on BungeeCord, the plugin has very limited access to information. It is unable to retrieve internal server data, as well as hook into backend plugins, because it's a different server.  
-Bridge is a backend plugin that sends this data to the proxy, allowing TAB to work better when installed on BungeeCord.  
+When TAB is installed on BungeeCord / Velocity, the plugin has very limited access to information. It is unable to retrieve internal server data, as well as hook into backend plugins, because it's a different server.  
+Bridge is a backend plugin that sends this data to the proxy, allowing TAB to work better when installed on a proxy.  
 You can download it from [GitHub](https://github.com/NEZNAMY/TAB-Bridge/releases) or [Spigot](https://www.spigotmc.org/resources/83966).
 
 # Installation
 Installation is as simple as it can be.
 Put it into the plugins folder of your backend servers.
-Bridge is NOT a BungeeCord plugin!
+Bridge is NOT a proxy plugin!
 Bridge itself has no config file, as everything is configured in the main plugin.
 
 # Features
@@ -20,7 +20,7 @@ Bridge itself has no config file, as everything is configured in the main plugin
 * Forward player's gamemode for spectator fix feature to work
 
 # Compatibility
-Just like with Minecraft, when there is a change in the communication protocol,
+Just like with Minecraft, when there is a change in the communication protocol between TAB <-> TAB-Bridge,
 older software will not be compatible with the new one.
 You should always be running the latest versions of both TAB and Bridge.
 

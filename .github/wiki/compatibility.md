@@ -70,7 +70,7 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
     </tbody>
 </table>
 
-Modded platforms only support the latest MC version(s). For older MC versions try [modrinth](https://modrinth.com/plugin/tab-was-taken)'s version download filter. If you need a backport and no older version of TAB supports your desired server version, you'll need to edit it in the source code. Customers can ask for a backport on the customer discord.
+Modded platforms only support the latest MC version(s). For older MC versions try [modrinth](https://modrinth.com/plugin/tab-was-taken)'s version download filter.
 
 <sup>1</sup> Latest only doesn't mean only the latest build will work,
 it means the plugin was made to be compatible with the latest version/build.

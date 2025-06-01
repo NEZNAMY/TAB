@@ -28,7 +28,7 @@ Basic placeholders provided by the plugin. Most of these placeholders were added
 
 Placeholders must be refreshed.
 All internal placeholders have a manually defined refresh interval,
-which I found the most optimal. You can [override the refresh intervals](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---all-platforms-placeholder-refresh-intervals) if want to.
+which I found the most optimal. You can [override the refresh intervals](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---all-platforms-placeholder-refresh-intervals) if you want to.
 Time is in milliseconds.
 `-1` is used for placeholders which are in fact constants (such as %player%),
 or fire an event each time they change, which can be listened to (such as %world%) and value updated.

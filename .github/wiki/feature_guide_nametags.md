@@ -157,12 +157,9 @@ To avoid it, make their names not match any online player and use holograms to d
 Since 1.9 teams affect tamed animals as well, displaying prefix/suffix on them as well and if nametags are set to be invisible, they will be completely invisible as well. If you want to avoid it, install [this plugin](https://www.spigotmc.org/resources/109466/).
 
 ## Additional note 3 - Changing name itself
-Teams do not allow to change the nametag name itself.
-Changing name is a complicated process which is slightly out of scope of the plugin as well,
-this is what nick plugins are about.
-On top of that, it's a pain
-requiring a ton of different packets which change their structure every version and with how many versions the plugin supports,
-it doesn't sound like fun doing.
+Teams do not allow to change the nametag name itself. The only way to achieve this goal is to send & modify packets to replace the player's actual profile name with a fake one. This is very complicated and can have a lot of side effects. This is out of scope of TAB and is in fact something nick plugins are trying to achieve. As such, **TAB does not offer this**.
+
+Once you find a nick plugin that supports this, you will need to [make sure TAB properly detects this](https://github.com/NEZNAMY/TAB/wiki/How-to-display-name-from-nickname-plugins#proper-compatibility-with-plugins-that-change-profile-name) to make name-bound features (such as nametags) work properly for nicked players.
 
 ## Additional note 4 - F1 view
 Using teams causes player nametags to remain visible when using F1 view.

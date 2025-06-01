@@ -89,4 +89,4 @@ conditions:
 ```
 Then, use this condition with `%condition:rgb%`.
 
-This will not work in nametags and tablist formatting, because this would parse the condition for target player, not the viewer. To achieve this, you'll need a custom made [relational placeholder](https://github.com/NEZNAMY/TAB/wiki/Placeholders#relational-placeholders) that checks for viewer's version.
+This will not work in nametags and tablist formatting, because this would parse the condition for target player, not the viewer. To achieve this, you'll need a custom-made [relational placeholder](https://github.com/NEZNAMY/TAB/wiki/Placeholders#relational-placeholders) that checks for viewer's version.

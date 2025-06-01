@@ -51,9 +51,10 @@ condition must contain the altered output.
 To see the exact output of a placeholder including color codes, use `/tab parse <player> <placeholder>`.
 
 ## Permission
-| Operation            | Description            | Example                                                                       |
-|----------------------|------------------------|-------------------------------------------------------------------------------|
-| `permission:<value>` | Permission requirement | `permission:my.permission` will pass if player has `my.permission` permission |
+| Operation             | Description                     | Example                                                                                      |
+|-----------------------|---------------------------------|----------------------------------------------------------------------------------------------|
+| `permission:<value>`  | Permission requirement          | `permission:my.permission` will pass if player has `my.permission` permission                |
+| `!permission:<value>` | Negative permission requirement | `!permission:my.permission` will pass if player **does not have** `my.permission` permission |
 
 # Multiple condition requirements
 Each condition has a `conditions` parameter, which a list of conditions. If you define more than 1 condition, you must specify the condition type.  

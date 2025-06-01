@@ -33,8 +33,7 @@ install [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI
 > With proxy installation, use **/btab** command instead of **/tab**.
 
 Advantages of proxy installation compared to installing on all backend servers instead:
-* Can use the [Global player list](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) and [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) can work with all players connected to the proxy
-* Can use new content for new clients even if a backend server version is old (1.16+ RGB codes, 1.20.3+ scoreboard features)
+* Can use the [Global player list](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) without requiring Redis set up and [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) can work with all players connected to the proxy
 * Avoid [header/footer](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer#additional-note-1---not-resetting-on-server-switch) and [bossbar](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar#additional-note-2---not-hiding-on-server-switch) not disappearing on server switch
 * Configuration files in a single place for easier editing / no need to use MySQL for syncing data
 
