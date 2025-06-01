@@ -55,7 +55,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             );
         }
         if (proxy != null) {
-            proxy.registerMessage("tabformat", PlayerListUpdateProxyPlayer.class, () -> new PlayerListUpdateProxyPlayer(this));
+            proxy.registerMessage(PlayerListUpdateProxyPlayer.class, () -> new PlayerListUpdateProxyPlayer(this));
         }
     }
 

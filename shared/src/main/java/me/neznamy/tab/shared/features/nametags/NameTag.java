@@ -51,7 +51,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         if (proxy != null) {
-            proxy.registerMessage("teams", NameTagUpdateProxyPlayer.class, () -> new NameTagUpdateProxyPlayer(this));
+            proxy.registerMessage(NameTagUpdateProxyPlayer.class, () -> new NameTagUpdateProxyPlayer(this));
         }
     }
 

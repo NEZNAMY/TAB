@@ -37,16 +37,16 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
     @NotNull private final UUID proxy = UUID.randomUUID();
 
     private EventHandler<TabPlaceholderRegisterEvent> eventHandler;
-    @NotNull private final Map<String, Supplier<ProxyMessage>> messages = new HashMap<>();
-    @NotNull private final Map<Class<? extends ProxyMessage>, String> classStringMap = new HashMap<>();
+    @NotNull private final Map<String, Supplier<ProxyMessage>> stringToClass = new HashMap<>();
+    @NotNull private final Map<Class<? extends ProxyMessage>, String> classToString = new HashMap<>();
 
     protected ProxySupport() {
-        registerMessage("load", Load.class, Load::new);
-        registerMessage("loadrequest", LoadRequest.class, LoadRequest::new);
-        registerMessage("join", PlayerJoin.class, PlayerJoin::new);
-        registerMessage("quit", PlayerQuit.class, PlayerQuit::new);
-        registerMessage("server", ServerSwitch.class, ServerSwitch::new);
-        registerMessage("vanish", UpdateVanishStatus.class, UpdateVanishStatus::new);
+        registerMessage(Load.class, Load::new);
+        registerMessage(LoadRequest.class, LoadRequest::new);
+        registerMessage(PlayerJoin.class, PlayerJoin::new);
+        registerMessage(PlayerQuit.class, PlayerQuit::new);
+        registerMessage(ServerSwitch.class, ServerSwitch::new);
+        registerMessage(UpdateVanishStatus.class, UpdateVanishStatus::new);
     }
 
     @NotNull
@@ -62,19 +62,20 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
      *          json message to process
      */
     public void processMessage(@NotNull String msg) {
-        // Queue the task to make sure it does not execute before load does, causing NPE
+        ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
+        String proxy = in.readUTF();
+        if (proxy.equals(this.proxy.toString())) return; // Message coming from current proxy
+        String action = in.readUTF();
+        Supplier<ProxyMessage> supplier = stringToClass.get(action);
+        if (supplier == null) {
+            TAB.getInstance().getErrorManager().unknownProxyMessage(action);
+            return;
+        }
+        ProxyMessage proxyMessage = supplier.get();
+        proxyMessage.read(in);
+
+        // Queue the task to make sure it does not execute before plugin fully loads, causing NPE
         TAB.getInstance().getCpu().runMeasuredTask(getFeatureName(), CpuUsageCategory.PROXY_MESSAGE, () -> {
-            ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
-            String proxy = in.readUTF();
-            if (proxy.equals(this.proxy.toString())) return; // Message coming from current proxy
-            String action = in.readUTF();
-            Supplier<ProxyMessage> supplier = messages.get(action);
-            if (supplier == null) {
-                TAB.getInstance().getErrorManager().unknownProxyMessage(action);
-                return;
-            }
-            ProxyMessage proxyMessage = supplier.get();
-            proxyMessage.read(in);
             if (proxyMessage.getCustomThread() != null) {
                 proxyMessage.getCustomThread().execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> proxyMessage.process(this), getFeatureName(), CpuUsageCategory.PROXY_MESSAGE));
             } else {
@@ -190,7 +191,7 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
     public void sendMessage(@NotNull ProxyMessage message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(proxy.toString());
-        out.writeUTF(classStringMap.get(message.getClass()));
+        out.writeUTF(classToString.get(message.getClass()));
         message.write(out);
         sendMessage(Base64.getEncoder().encodeToString(out.toByteArray()));
     }
@@ -198,16 +199,14 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
     /**
      * Registers proxy message.
      *
-     * @param   name
-     *          Message name
      * @param   clazz
      *          Message class
      * @param   supplier
      *          Message supplier
      */
-    public void registerMessage(@NotNull String name, @NotNull Class<? extends ProxyMessage> clazz, @NotNull Supplier<ProxyMessage> supplier) {
-        messages.put(name, supplier);
-        classStringMap.put(clazz, name);
+    public void registerMessage(@NotNull Class<? extends ProxyMessage> clazz, @NotNull Supplier<ProxyMessage> supplier) {
+        stringToClass.put(clazz.getSimpleName(), supplier);
+        classToString.put(clazz, clazz.getSimpleName());
     }
 
     @Override

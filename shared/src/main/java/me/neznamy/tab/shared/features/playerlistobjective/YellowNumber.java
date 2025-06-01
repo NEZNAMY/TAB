@@ -64,7 +64,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER_TEXT, titleRefresher);
         if (proxy != null) {
-            proxy.registerMessage("yellow-number", UpdateProxyPlayer.class, UpdateProxyPlayer::new);
+            proxy.registerMessage(UpdateProxyPlayer.class, UpdateProxyPlayer::new);
         }
     }
 

@@ -58,7 +58,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
         if (proxy != null) {
-            proxy.registerMessage("belowname", BelowNameUpdateProxyPlayer.class, () -> new BelowNameUpdateProxyPlayer(this));
+            proxy.registerMessage(BelowNameUpdateProxyPlayer.class, () -> new BelowNameUpdateProxyPlayer(this));
         }
     }
 
