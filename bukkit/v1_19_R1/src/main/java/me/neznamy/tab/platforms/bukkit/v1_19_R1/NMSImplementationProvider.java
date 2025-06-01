@@ -15,7 +15,7 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Implementation provider using direct NMS code for 1.19 - 1.19.2.
+ * Implementation provider using direct NMS code for 1.19.1 - 1.19.2.
  */
 @Getter
 public class NMSImplementationProvider implements ImplementationProvider {
