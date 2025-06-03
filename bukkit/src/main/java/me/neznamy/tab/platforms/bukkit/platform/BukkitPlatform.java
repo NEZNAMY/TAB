@@ -409,7 +409,6 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public double getMSPT() {
-        System.out.println("Bukkit MSPT");
         if (paperMspt) return Bukkit.getAverageTickTime();
         return -1;
     }
