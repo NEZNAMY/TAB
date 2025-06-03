@@ -119,27 +119,9 @@ public class BukkitPlatform implements BackendPlatform {
     @SneakyThrows
     private ImplementationProvider findImplementationProvider() {
         // Check for mojang-mapped paper (1.20.5+)
-        if (ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer")) {
-            String paperPackage = null;
-            switch (serverVersion) {
-                case V1_20_5:
-                case V1_20_6:
-                case V1_21:
-                case V1_21_1:
-                    paperPackage = "1_20_5";
-                    break;
-                case V1_21_2:
-                case V1_21_3:
-                    paperPackage = "1_21_2";
-                    break;
-                case V1_21_4:
-                case V1_21_5:
-                    paperPackage = "1_21_4";
-                    break;
-            }
-            if (paperPackage != null) {
-                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper_" + paperPackage + ".PaperImplementationProvider").getConstructor().newInstance();
-            }
+        String paperModule = getPaperModule();
+        if (paperModule != null) {
+            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
         }
 
         // Check for direct NMS on some supported versions
@@ -183,6 +165,32 @@ public class BukkitPlatform implements BackendPlatform {
             }
             return new BukkitImplementationProvider();
         }
+    }
+
+    /**
+     * Returns name of the paper module that can be used on this server.
+     * If this server is not using paper or no module is available for any other reason,
+     * {@code null} is returned.
+     *
+     * @return  Name of the available paper module or {@code null} if not available
+     */
+    @Nullable
+    private String getPaperModule() {
+        if (!ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer")) return null;
+        switch (serverVersion) {
+            case V1_20_5:
+            case V1_20_6:
+            case V1_21:
+            case V1_21_1:
+                return "1_20_5";
+            case V1_21_2:
+            case V1_21_3:
+                return "1_21_2";
+            case V1_21_4:
+            case V1_21_5:
+                return "1_21_4";
+        }
+        return null;
     }
 
     @Override
