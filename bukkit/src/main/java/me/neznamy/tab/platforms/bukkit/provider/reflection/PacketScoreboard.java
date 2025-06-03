@@ -138,17 +138,15 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @SneakyThrows
     public static void onPacketSend(@NonNull Object packet, @NonNull SafeScoreboard<BukkitTabPlayer> scoreboard) {
-        if (scoreboard.isAntiOverrideScoreboard()) {
-            if (DisplayObjectiveClass.isInstance(packet)) {
-                TAB.getInstance().getFeatureManager().onDisplayObjective(scoreboard.getPlayer(), packetToSlot.apply(packet),
-                        (String) DisplayObjective_OBJECTIVE_NAME.get(packet));
-            }
-            if (ObjectivePacketClass.isInstance(packet))  {
-                TAB.getInstance().getFeatureManager().onObjective(scoreboard.getPlayer(),
-                        Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
-            }
+        if (DisplayObjectiveClass.isInstance(packet)) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(scoreboard.getPlayer(), packetToSlot.apply(packet),
+                    (String) DisplayObjective_OBJECTIVE_NAME.get(packet));
         }
-        if (scoreboard.isAntiOverrideTeams()) teamPacketData.onPacketSend(scoreboard.getPlayer(), packet);
+        if (ObjectivePacketClass.isInstance(packet))  {
+            TAB.getInstance().getFeatureManager().onObjective(scoreboard.getPlayer(),
+                    Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
+        }
+        teamPacketData.onPacketSend(scoreboard.getPlayer(), packet);
     }
 
     /**

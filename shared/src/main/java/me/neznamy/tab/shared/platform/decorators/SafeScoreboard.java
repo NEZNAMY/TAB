@@ -49,14 +49,6 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     /** Registered teams */
     private final Map<String, Team> teams = new ConcurrentHashMap<>();
 
-    /** Flag tracking anti-override value for teams */
-    @Getter
-    private boolean antiOverrideTeams;
-
-    /** Flag tracking other plugin detection for Scoreboards */
-    @Getter
-    private boolean antiOverrideScoreboard;
-
     @Override
     public synchronized void registerObjective(@NonNull String objectiveName, @NonNull TabComponent title,
                                         @NonNull HealthDisplay display, @Nullable TabComponent numberFormat) {

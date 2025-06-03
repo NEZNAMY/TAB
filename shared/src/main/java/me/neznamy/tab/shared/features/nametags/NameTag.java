@@ -61,7 +61,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         collisionManager.load();
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            ((SafeScoreboard<?>)all.getScoreboard()).setAntiOverrideTeams(configuration.isAntiOverride());
             loadProperties(all);
             if (configuration.isInvisibleNameTags()) {
                 all.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
@@ -125,7 +124,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
-        ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideTeams(configuration.isAntiOverride());
         loadProperties(connectedPlayer);
         if (configuration.isInvisibleNameTags()) {
             connectedPlayer.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);

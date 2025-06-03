@@ -35,15 +35,13 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @SneakyThrows
     public static void onPacketSend(@NonNull Object packet, @NonNull SafeScoreboard<BukkitTabPlayer> scoreboard) {
-        if (scoreboard.isAntiOverrideScoreboard()) {
-            if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
-                TAB.getInstance().getFeatureManager().onDisplayObjective(scoreboard.getPlayer(), display.getSlot().ordinal(), display.getObjectiveName());
-            }
-            if (packet instanceof ClientboundSetObjectivePacket objective) {
-                TAB.getInstance().getFeatureManager().onObjective(scoreboard.getPlayer(), objective.getMethod(), objective.getObjectiveName());
-            }
+        if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(scoreboard.getPlayer(), display.getSlot().ordinal(), display.getObjectiveName());
         }
-        if (scoreboard.isAntiOverrideTeams() && packet instanceof ClientboundSetPlayerTeamPacket team) {
+        if (packet instanceof ClientboundSetObjectivePacket objective) {
+            TAB.getInstance().getFeatureManager().onObjective(scoreboard.getPlayer(), objective.getMethod(), objective.getObjectiveName());
+        }
+        if (packet instanceof ClientboundSetPlayerTeamPacket team) {
             int action = getMethod(team);
             if (action == TeamAction.UPDATE) return;
             players.set(team, scoreboard.onTeamPacket(action, team.getName(), team.getPlayers() == null ? Collections.emptyList() : team.getPlayers()));

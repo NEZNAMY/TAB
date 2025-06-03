@@ -130,17 +130,15 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
     @Override
     public void onPacketSend(@NonNull Object packet) {
-        if (isAntiOverrideScoreboard()) {
-            if (packet instanceof ScoreboardDisplay) {
-                ScoreboardDisplay display = (ScoreboardDisplay) packet;
-                TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getPosition(), display.getName());
-            }
-            if (packet instanceof ScoreboardObjective) {
-                ScoreboardObjective objective = (ScoreboardObjective) packet;
-                TAB.getInstance().getFeatureManager().onObjective(player, objective.getAction(), objective.getName());
-            }
+        if (packet instanceof ScoreboardDisplay) {
+            ScoreboardDisplay display = (ScoreboardDisplay) packet;
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getPosition(), display.getName());
         }
-        if (isAntiOverrideTeams() && packet instanceof net.md_5.bungee.protocol.packet.Team) {
+        if (packet instanceof ScoreboardObjective) {
+            ScoreboardObjective objective = (ScoreboardObjective) packet;
+            TAB.getInstance().getFeatureManager().onObjective(player, objective.getAction(), objective.getName());
+        }
+        if (packet instanceof net.md_5.bungee.protocol.packet.Team) {
             net.md_5.bungee.protocol.packet.Team team = (net.md_5.bungee.protocol.packet.Team) packet;
             if (team.getMode() == TeamAction.UPDATE) return;
             List<String> players = team.getPlayers() == null ? Collections.emptyList() : Lists.newArrayList(team.getPlayers());

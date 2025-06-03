@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features.playerlist;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +14,6 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class TablistFormattingConfiguration {
 
-    private final boolean antiOverride;
     @NotNull private final String disableCondition;
 
     /**
@@ -29,15 +27,8 @@ public class TablistFormattingConfiguration {
     @NotNull
     public static TablistFormattingConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "anti-override", "disable-condition"));
-        
-        // Check anti-override
-        boolean antiOverride = section.getBoolean("anti-override", true);
-        if (!antiOverride) {
-            TAB.getInstance().getConfigHelper().startup().startupWarn("anti-override for tablist-name-formatting is disabled in config. " +
-                    "This is usually a mistake. If you notice the feature randomly breaking, enable it back.");
-        }
-        
-        return new TablistFormattingConfiguration(antiOverride, section.getString("disable-condition", "%world%=disabledworld"));
+        section.checkForUnknownKey(Arrays.asList("enabled", "disable-condition"));
+
+        return new TablistFormattingConfiguration(section.getString("disable-condition", "%world%=disabledworld"));
     }
 }

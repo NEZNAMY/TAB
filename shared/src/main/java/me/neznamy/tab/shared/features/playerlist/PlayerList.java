@@ -46,14 +46,11 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.tablistData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
-        if (configuration.isAntiOverride()) {
-            TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-                        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                            ((TrackedTabList<?>)p.getTabList()).checkDisplayNames();
-                        }
-                    }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC), 500
-            );
-        }
+        TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                ((TrackedTabList<?>)p.getTabList()).checkDisplayNames();
+            }
+        }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC), 500);
         if (proxy != null) {
             proxy.registerMessage(PlayerListUpdateProxyPlayer.class, () -> new PlayerListUpdateProxyPlayer(this));
         }
@@ -154,7 +151,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             TAB.getInstance().debug("[Proxy Support] Sending tablist update of all players on load");
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            ((TrackedTabList<?>)all.getTabList()).setAntiOverride(configuration.isAntiOverride());
             loadProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
                 all.tablistData.disabled.set(true);
@@ -257,7 +253,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        ((TrackedTabList<?>)connectedPlayer.getTabList()).setAntiOverride(configuration.isAntiOverride());
         loadProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.tablistData.disabled.set(true);
@@ -277,7 +272,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             }
         };
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-        if (!configuration.isAntiOverride() || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) {
+        if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) {
             TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(),
                     r, getFeatureName(), CpuUsageCategory.PLAYER_JOIN), 300);
         } else {

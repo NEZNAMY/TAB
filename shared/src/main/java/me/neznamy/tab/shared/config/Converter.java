@@ -108,7 +108,6 @@ public class Converter {
     private void convertTeamOptions(@NonNull ConfigurationFile oldConfig, @NonNull ConfigurationFile newConfig, @Nullable ConfigurationFile premiumConfig) {
         newConfig.set("scoreboard-teams.enabled", oldConfig.getBoolean("change-nametag-prefix-suffix", true));
         newConfig.set("scoreboard-teams.invisible-nametags", oldConfig.getBoolean("invisible-nametags", false));
-        newConfig.set("scoreboard-teams.anti-override", oldConfig.getBoolean("anti-override.scoreboard-teams", true));
         newConfig.set("scoreboard-teams.enable-collision", oldConfig.getBoolean("enable-collision", true));
         newConfig.set("scoreboard-teams.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.nametag", Collections.singletonList("disabledworld")));
         if (TAB.getInstance().getPlatform().isProxy()) {
@@ -152,7 +151,6 @@ public class Converter {
 
     private void convertTabListFormatting(@NonNull ConfigurationFile oldConfig, @NonNull ConfigurationFile newConfig) {
         newConfig.set("tablist-name-formatting.enabled", oldConfig.getBoolean("change-tablist-prefix-suffix", true));
-        newConfig.set("tablist-name-formatting.anti-override", oldConfig.getBoolean("anti-override.tablist-names", true));
         newConfig.set("tablist-name-formatting.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.tablist-names", Collections.singletonList("disabledworld")));
         if (TAB.getInstance().getPlatform().isProxy())
             newConfig.set("tablist-name-formatting.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.tablist-names", Collections.singletonList("disabledserver")));
@@ -519,5 +517,20 @@ public class Converter {
         config.rename("placeholderapi-refresh-intervals", "placeholder-refresh-intervals");
         config.setIfMissing("playerlist-objective.title", "TAB");
         config.setIfMissing("playerlist-objective.render-type", Arrays.asList("%health%", "%player_health%", "%player_health_rounded%").contains(config.getString("playerlist-objective.value", "")) ? "HEARTS" : "INTEGER");
+    }
+
+    /**
+     * Converts config from 5.2.1 to 5.2.2.
+     * This update:
+     * - Removes anti-override settings from scoreboard-teams and tablist-name-formatting
+     *
+     * @param   config
+     *          Config file
+     */
+    public void convert521to522(@NonNull ConfigurationFile config) {
+        if (config.removeOption("scoreboard-teams.anti-override")) {
+            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 5.2.1 to 5.2.2", TextColor.YELLOW));
+        }
+        config.removeOption("tablist-name-formatting.anti-override");
     }
 }

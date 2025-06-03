@@ -128,15 +128,13 @@ public class FabricScoreboard extends SafeScoreboard<FabricTabPlayer> {
     @Override
     @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
-        if (isAntiOverrideScoreboard()) {
-            if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
-                TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getSlot().ordinal(), display.getObjectiveName());
-            }
-            if (packet instanceof ClientboundSetObjectivePacket objective) {
-                TAB.getInstance().getFeatureManager().onObjective(player, objective.getMethod(), objective.getObjectiveName());
-            }
+        if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getSlot().ordinal(), display.getObjectiveName());
         }
-        if (isAntiOverrideTeams() && packet instanceof ClientboundSetPlayerTeamPacket team) {
+        if (packet instanceof ClientboundSetObjectivePacket objective) {
+            TAB.getInstance().getFeatureManager().onObjective(player, objective.getMethod(), objective.getObjectiveName());
+        }
+        if (packet instanceof ClientboundSetPlayerTeamPacket team) {
             int method = getMethod(team);
             if (method == TeamAction.UPDATE) return;
             team.getPlayers();

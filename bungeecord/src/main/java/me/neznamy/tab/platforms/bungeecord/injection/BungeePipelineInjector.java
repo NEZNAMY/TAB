@@ -28,7 +28,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     public BungeePipelineInjector() {
         super("inbound-boss");
         Config config = TAB.getInstance().getConfiguration().getConfig();
-        byteBufDeserialization = (config.getTeams() != null && config.getTeams().isAntiOverride()) || config.getScoreboard() != null;
+        byteBufDeserialization = (config.getTeams() != null) || config.getScoreboard() != null;
     }
 
     @Override

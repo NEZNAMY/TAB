@@ -21,10 +21,6 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     /** Player this tablist belongs to */
     protected final P player;
 
-    /** Tablist display name anti-override flag */
-    @Setter
-    private boolean antiOverride;
-
     /** Expected names based on configuration, saving to restore them if another plugin overrides them */
     private final Map<UUID, TabComponent> expectedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -33,13 +29,13 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
         if (player.getVersion().getMinorVersion() < 8) {
             return; // Display names are not supported on 1.7 and below
         }
-        if (antiOverride) expectedDisplayNames.put(entry, displayName);
+        expectedDisplayNames.put(entry, displayName);
         updateDisplayName0(entry, displayName);
     }
 
     @Override
     public void addEntry(@NonNull Entry entry) {
-        if (antiOverride) expectedDisplayNames.put(entry.getUniqueId(), entry.getDisplayName());
+        expectedDisplayNames.put(entry.getUniqueId(), entry.getDisplayName());
         addEntry0(entry);
         if (player.getVersion().getMinorVersion() == 8) {
             // Compensation for 1.8.0 client sided bug

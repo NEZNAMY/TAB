@@ -39,23 +39,21 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public static void onPacketSend(@NonNull Object packet, @NonNull SafeScoreboard<BukkitTabPlayer> scoreboard) {
-        if (scoreboard.isAntiOverrideScoreboard()) {
-            if (packet instanceof PacketPlayOutScoreboardDisplayObjective) {
-                TAB.getInstance().getFeatureManager().onDisplayObjective(
-                        scoreboard.getPlayer(),
-                        ((PacketPlayOutScoreboardDisplayObjective)packet).b(),
-                        ((PacketPlayOutScoreboardDisplayObjective)packet).c()
-                );
-            }
-            if (packet instanceof PacketPlayOutScoreboardObjective) {
-                TAB.getInstance().getFeatureManager().onObjective(
-                        scoreboard.getPlayer(),
-                        ((PacketPlayOutScoreboardObjective)packet).d(),
-                        ((PacketPlayOutScoreboardObjective)packet).b()
-                );
-            }
+        if (packet instanceof PacketPlayOutScoreboardDisplayObjective) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(
+                    scoreboard.getPlayer(),
+                    ((PacketPlayOutScoreboardDisplayObjective)packet).b(),
+                    ((PacketPlayOutScoreboardDisplayObjective)packet).c()
+            );
         }
-        if (scoreboard.isAntiOverrideTeams() && packet instanceof PacketPlayOutScoreboardTeam) {
+        if (packet instanceof PacketPlayOutScoreboardObjective) {
+            TAB.getInstance().getFeatureManager().onObjective(
+                    scoreboard.getPlayer(),
+                    ((PacketPlayOutScoreboardObjective)packet).d(),
+                    ((PacketPlayOutScoreboardObjective)packet).b()
+            );
+        }
+        if (packet instanceof PacketPlayOutScoreboardTeam) {
             int action = getMethod((PacketPlayOutScoreboardTeam) packet);
             if (action == TeamAction.UPDATE) return;
             Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);

@@ -34,7 +34,6 @@ header-footer:
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting
 tablist-name-formatting:
   enabled: true
-  anti-override: true
   disable-condition: '%world%=disabledworld'
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags
@@ -42,7 +41,6 @@ scoreboard-teams:
   enabled: true
   enable-collision: true
   invisible-nametags: false
-  anti-override: true
   # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist
   sorting-types:
     - "GROUPS:owner,admin,mod,helper,builder,vip,default"

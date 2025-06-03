@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,7 +94,6 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        ((SafeScoreboard<?>)connectedPlayer.getScoreboard()).setAntiOverrideScoreboard(true);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(connectedPlayer, "");
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(connectedPlayer, false);
         if (toggleManager != null) toggleManager.convert(connectedPlayer);

@@ -68,9 +68,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                 if (player.getVersion().getMinorVersion() >= 8) {
                     ((TrackedTabList<?>)player.getTabList()).onPacketSend(packet);
                 }
-                if (((SafeScoreboard<?>)player.getScoreboard()).isAntiOverrideTeams() || ((SafeScoreboard<?>)player.getScoreboard()).isAntiOverrideScoreboard()) {
-                    ((SafeScoreboard<?>)player.getScoreboard()).onPacketSend(packet);
-                }
+                ((SafeScoreboard<?>)player.getScoreboard()).onPacketSend(packet);
             } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }
