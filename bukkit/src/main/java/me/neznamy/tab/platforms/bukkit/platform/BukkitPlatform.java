@@ -142,37 +142,36 @@ public class BukkitPlatform implements BackendPlatform {
             return new ReflectionImplementationProvider();
         } catch (Throwable e) {
             if (serverVersion.getMinorVersion() >= 8) {
-                logCompatibilityWarning();
+                List<String> missingFeatures = new ArrayList<>();
+
+                // Scoreboard
+                missingFeatures.add("Compatibility with other scoreboard plugins being reduced");
+                if (!PaperScoreboard.isAvailable()) {
+                    missingFeatures.add("Features receiving new artificial character limits");
+                    missingFeatures.add("1.20.3+ scoreboard visuals not working due to lack of API");
+                }
+                missingFeatures.add("Anti-override for nametags not working");
+
+                // Tablist
+                missingFeatures.add("Layout feature will not work");
+                missingFeatures.add("Prevent-spectator-effect feature will not work");
+                missingFeatures.add("Ping spoof feature will not work");
+                missingFeatures.add("Tablist formatting missing anti-override");
+                missingFeatures.add("Tablist formatting not supporting relational placeholders");
+                missingFeatures.add("Compatibility with nickname plugins changing player names will not work");
+                missingFeatures.add("Anti-override for tablist not working");
+                missingFeatures.add("Header/Footer may be limited or not work at all"); // Maybe add some checks for a more accurate message
+
+                Bukkit.getConsoleSender().sendMessage("§c[TAB] Your server version is not fully supported. This will result in:");
+                for (String message : missingFeatures) {
+                    Bukkit.getConsoleSender().sendMessage("§c[TAB] - " + message);
+                }
+                Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
+                        "a plugin version with full support for your server version for optimal experience. This plugin version " +
+                        "has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x, 1.18.2 and 1.19.1 - 1.21.5.");
             }
             return new BukkitImplementationProvider();
         }
-    }
-
-    /**
-     * Logs compatibility warning for unsupported server versions
-     */
-    private void logCompatibilityWarning() {
-        List<String> missingFeatures = Arrays.asList(
-            "Compatibility with other scoreboard plugins being reduced",
-            "Features receiving new artificial character limits",
-            "1.20.3+ scoreboard visuals not working due to lack of API",
-            "Anti-override for nametags not working",
-            "Layout feature will not work",
-            "Prevent-spectator-effect feature will not work",
-            "Ping spoof feature will not work",
-            "Tablist formatting missing anti-override",
-            "Tablist formatting not supporting relational placeholders",
-            "Compatibility with nickname plugins changing player names will not work",
-            "Anti-override for tablist not working",
-            "Header/Footer may be limited or not work at all"
-        );
-        
-        Bukkit.getConsoleSender().sendMessage("§c[TAB] Your server version is not fully supported. This will result in:");
-        for (String message : missingFeatures) {
-            Bukkit.getConsoleSender().sendMessage("§c[TAB] - " + message);
-        }
-        Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use a plugin version with full support for your server version for optimal experience. " +
-            "This plugin version has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x, 1.18.2 and 1.19.1 - 1.21.5.");
     }
 
     /**
@@ -223,7 +222,7 @@ public class BukkitPlatform implements BackendPlatform {
             }
         }
         // Override for the PAPI placeholder to prevent console errors on unsupported server versions when ping field changes
-        manager.registerPlayerPlaceholder("%player_ping%", p -> PerformanceUtil.toString(p.getPing()));
+        manager.registerPlayerPlaceholder("%player_ping%", p -> PerformanceUtil.toString(((TabPlayer) p).getPing()));
         BackendPlatform.super.registerPlaceholders();
     }
 
