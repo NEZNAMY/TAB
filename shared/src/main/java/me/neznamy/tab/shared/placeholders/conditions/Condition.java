@@ -253,17 +253,22 @@ public class Condition {
     }
 
     /**
-     * Compiles condition from condition line. This includes detection
+     * Compiles condition from condition pattern. This includes detection
      * what kind of condition it is and creating it.
      *
-     * @param   line
-     *          condition line
+     * @param   pattern
+     *          condition pattern
      * @return  compiled condition or null if no valid pattern was found
      */
-    private static Function<TabPlayer, Boolean> compile(String line) {
+    private static Function<TabPlayer, Boolean> compile(String pattern) {
+        // Avoid wrong condition type detection if placeholder contains a symbol that is used in condition patterns (#1503)
+        String noPlaceholders = pattern;
+        for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(pattern)) {
+            noPlaceholders = noPlaceholders.replace(placeholder, "");
+        }
         for (Map.Entry<String, Function<String, Function<TabPlayer, Boolean>>> entry : conditionTypes.entrySet()) {
-            if (line.contains(entry.getKey())) {
-                return entry.getValue().apply(line);
+            if (noPlaceholders.contains(entry.getKey())) {
+                return entry.getValue().apply(pattern);
             }
         }
         return null;
