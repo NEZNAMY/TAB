@@ -74,11 +74,44 @@ public class Condition {
             return p -> p.hasPermission(node);
         });
     }
-    
+
     @NotNull
     private static String[] splitAndTrim(@NotNull String string, @NonNull String delimiter) {
-        return Arrays.stream(string.split(delimiter)).map(String::trim).toArray(String[]::new);
+        List<String> result = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean insidePercentBlock = false;
+        int i = 0;
+        int len = string.length();
+        int delimiterLength = delimiter.length();
+
+        while (i < len) {
+            // Check for '%' toggling
+            if (string.charAt(i) == '%') {
+                insidePercentBlock = !insidePercentBlock;
+                current.append('%');
+                i++;
+                continue;
+            }
+
+            // Check for delimiter match
+            if (!insidePercentBlock && i + delimiterLength <= len &&
+                    string.regionMatches(i, delimiter, 0, delimiterLength)) {
+                // Split here
+                result.add(current.toString().trim());
+                current.setLength(0);
+                i += delimiterLength;
+            } else {
+                current.append(string.charAt(i));
+                i++;
+            }
+        }
+
+        // Add last part
+        result.add(current.toString().trim());
+
+        return result.toArray(new String[0]);
     }
+
 
     /**
      * Constructs new instance with given parameters and registers
