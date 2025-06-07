@@ -84,7 +84,7 @@ public class ErrorManager {
      *          Whether this throwable is nested or not
      * @return  List of lines from given throwable
      */
-    private List<String> throwableToList(@NotNull Throwable t, boolean nested) {
+    public List<String> throwableToList(@NotNull Throwable t, boolean nested) {
         List<String> list = new ArrayList<>();
         String causedText = nested ? "Caused by: " : "";
         list.add(causedText + t.getClass().getName() + ": " + t.getMessage());
