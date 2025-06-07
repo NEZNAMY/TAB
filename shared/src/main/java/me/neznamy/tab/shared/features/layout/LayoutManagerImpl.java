@@ -78,7 +78,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
         if (highest == null) return;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            p.getTabList().updateDisplayName(all.getTablistId(), null);
+            p.getTabList().updateDisplayName(all, null);
         }
     }
 

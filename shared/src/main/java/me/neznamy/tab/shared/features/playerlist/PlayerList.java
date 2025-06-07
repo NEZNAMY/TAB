@@ -116,7 +116,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
      */
     public void updatePlayer(@NotNull TabPlayer player, boolean format) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
+            if (!viewer.canSee(player)) continue;
             UUID tablistId = getTablistUUID(player, viewer);
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
                     tablistId.getMostSignificantBits() == 0 ? SimpleTextComponent.text(player.getName()) : null);
@@ -162,7 +162,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.tablistData.disabled.get()) continue;
-                //if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
+                if (!viewer.canSee(target)) continue;
                 viewer.getTabList().updateDisplayName(getTablistUUID(target, viewer), getTabFormat(target, viewer));
             }
         }
@@ -173,7 +173,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.tablistData.disabled.get()) continue;
-                //if (!viewer.getTabList().containsEntry(target.getTablistId())) continue;
+                if (!viewer.canSee(target)) continue;
                 viewer.getTabList().updateDisplayName(getTablistUUID(target, target), null);
             }
         }
@@ -185,13 +185,9 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
         TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (!all.tablistData.disabled.get()
-                        //&& p.getTabList().containsEntry(all.getTablistId())
-                )
+                if (!all.tablistData.disabled.get() && p.canSee(all))
                     p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
-                if (all != p && !p.tablistData.disabled.get()
-                        //&& all.getTabList().containsEntry(p.getTablistId())
-                )
+                if (all != p && !p.tablistData.disabled.get() && all.canSee(p))
                     all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
             }
             if (proxy != null) {
@@ -263,6 +259,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; // Already updated above
                 if (all.tablistData.disabled.get()) continue;
+                if (!connectedPlayer.canSee(all)) continue;
                 connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
             }
             if (proxy != null) {
@@ -284,7 +281,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         if (player.isVanished() || player.tablistData.disabled.get()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            //if (!viewer.getTabList().containsEntry(player.getTablistId())) continue;
+            if (!viewer.canSee(player)) continue;
             viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
         }
     }

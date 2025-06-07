@@ -34,6 +34,18 @@ public interface TabList {
     void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName);
 
     /**
+     * Updates display name of specified player. Using {@code null} makes it undefined and
+     * scoreboard team prefix/suffix will be visible instead. If the viewer cannot see the player,
+     * the action will not be sent to the client.
+     *
+     * @param   player
+     *          Player to safely update display name of
+     * @param   displayName
+     *          New display name
+     */
+    void updateDisplayName(@NonNull TabPlayer player, @Nullable TabComponent displayName);
+
+    /**
      * Updates latency of specified entry.
      *
      * @param   entry
@@ -44,6 +56,17 @@ public interface TabList {
     void updateLatency(@NonNull UUID entry, int latency);
 
     /**
+     * Updates latency of specified player. If the viewer cannot see the player,
+     * the action will not be sent to the client.
+     *
+     * @param   player
+     *          Player to safely update latency of
+     * @param   latency
+     *          New latency
+     */
+    void updateLatency(@NonNull TabPlayer player, int latency);
+
+    /**
      * Updates game mode of specified entry.
      *
      * @param   entry
@@ -52,6 +75,17 @@ public interface TabList {
      *          New game mode
      */
     void updateGameMode(@NonNull UUID entry, int gameMode);
+
+    /**
+     * Updates game mode of specified player. If the viewer cannot see the player,
+     * the action will not be sent to the client.
+     *
+     * @param   player
+     *          Player to safely update gamemode of
+     * @param   gameMode
+     *          New game mode
+     */
+    void updateGameMode(@NonNull TabPlayer player, int gameMode);
 
     /**
      * Updates listed flag of specified entry (1.19.3+).

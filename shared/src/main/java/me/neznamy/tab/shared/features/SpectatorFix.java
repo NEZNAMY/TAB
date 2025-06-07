@@ -35,10 +35,10 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             if (viewer == target) continue;
             if (target.getGamemode() == 3 && !viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) {
-                viewer.getTabList().updateGameMode(target.getTablistId(), realGameMode ? target.getGamemode() : 0);
+                viewer.getTabList().updateGameMode(target, realGameMode ? target.getGamemode() : 0);
             }
             if (mutually && viewer.getGamemode() == 3 && !target.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) {
-                target.getTabList().updateGameMode(viewer.getTablistId(), realGameMode ? viewer.getGamemode() : 0);
+                target.getTabList().updateGameMode(viewer, realGameMode ? viewer.getGamemode() : 0);
             }
         }
     }
@@ -49,7 +49,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
             if (player != viewer && player.server.equals(viewer.server)) {
-                viewer.getTabList().updateGameMode(player.getTablistId(), 0);
+                viewer.getTabList().updateGameMode(player, 0);
             }
         }
     }
@@ -90,7 +90,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         if (changed.getGamemode() != 3) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer == changed || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-            viewer.getTabList().updateGameMode(changed.getTablistId(), 0);
+            viewer.getTabList().updateGameMode(changed, 0);
         }
     }
 
@@ -99,7 +99,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         if (player.isVanished() || player.getGamemode() != 3) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer == player || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-            viewer.getTabList().updateGameMode(player.getTablistId(), 0);
+            viewer.getTabList().updateGameMode(player, 0);
         }
     }
 

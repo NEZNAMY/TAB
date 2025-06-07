@@ -249,7 +249,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (!player.server.equals(viewer.server)) {
-                viewer.getTabList().updateGameMode(player.getTablistId(), configuration.isOthersAsSpectators() ? 3 : player.getGamemode());
+                viewer.getTabList().updateGameMode(player, configuration.isOthersAsSpectators() ? 3 : player.getGamemode());
             }
         }
     }
@@ -284,7 +284,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         //player ping changed, must manually update latency for players on other servers
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (viewer.globalPlayerListData.serverGroup == refreshed.globalPlayerListData.serverGroup && !refreshed.server.equals(viewer.server)) {
-                viewer.getTabList().updateLatency(refreshed.getTablistId(), refreshed.getPing());
+                viewer.getTabList().updateLatency(refreshed, refreshed.getPing());
             }
         }
     }
