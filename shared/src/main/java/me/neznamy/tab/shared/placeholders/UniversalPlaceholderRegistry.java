@@ -64,7 +64,9 @@ public class UniversalPlaceholderRegistry {
         manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MEMORY_MAX_GB, -1, () -> decimal2.format((float)Runtime.getRuntime().maxMemory()/1024/1024/1024));
         if (!LuckPermsHook.getInstance().isInstalled()) {
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, -1, () -> "");
+            manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIXES, -1, () -> "");
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, -1, () -> "");
+            manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIXES, -1, () -> "");
             manager.registerInternalServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_WEIGHT, -1, () -> "");
         }
     }
@@ -121,10 +123,14 @@ public class UniversalPlaceholderRegistry {
         if (LuckPermsHook.getInstance().isInstalled()) {
             manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, 1000,
                     p -> LuckPermsHook.getInstance().getPrefix((TabPlayer) p));
+            manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIXES, 1000,
+                    p -> LuckPermsHook.getInstance().getPrefixes((TabPlayer) p));
             manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, 1000,
                     p -> LuckPermsHook.getInstance().getSuffix((TabPlayer) p));
+            manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIXES, 1000,
+                    p -> LuckPermsHook.getInstance().getSuffixes((TabPlayer) p));
             manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_WEIGHT, 1000,
-                    p -> String.valueOf(LuckPermsHook.getInstance().getWeight((TabPlayer) p)));
+                    p -> PerformanceUtil.toString(LuckPermsHook.getInstance().getWeight((TabPlayer) p)));
         }
         for (Entry<String, AnimationDefinition> entry : TAB.getInstance().getConfiguration().getAnimations().getAnimations().getAnimations().entrySet()) {
             Animation a = new Animation(manager, entry.getKey(), entry.getValue());
