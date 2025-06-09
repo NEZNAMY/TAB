@@ -43,8 +43,8 @@ public class StartupWarnPrinter {
         startupWarn("Line \"" + line + "\" in condition " + conditionName + " is not a valid condition pattern.");
     }
 
-    public void incompleteSortingLine(@NonNull String configuredLine) {
-        startupWarn("Sorting line \"" + configuredLine + "\" is incomplete.");
+    public void invalidSortingLine(@NonNull String configuredLine, @NonNull String message) {
+        startupWarn("Sorting line \"" + configuredLine + "\" is invalid: " + message);
     }
 
     /**

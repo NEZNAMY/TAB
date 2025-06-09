@@ -51,7 +51,10 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         this.configuration = configuration;
         types.put("GROUPS", Groups::new);
         types.put("PERMISSIONS", Permissions::new);
-        types.put("PLACEHOLDER", Placeholder::new);
+        types.put("PLACEHOLDER", (sorting, value) -> {
+            Placeholder.PlaceholderSplitResult split = Placeholder.splitValue(value);
+            return split == null ? null : new Placeholder(sorting, split);
+        });
         types.put("PLACEHOLDER_A_TO_Z", PlaceholderAtoZ::new);
         types.put("PLACEHOLDER_Z_TO_A", PlaceholderZtoA::new);
         types.put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
@@ -103,7 +106,10 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
             if (!types.containsKey(arr[0].toUpperCase())) {
                 TAB.getInstance().getConfigHelper().startup().invalidSortingTypeElement(arr[0].toUpperCase(), types.keySet());
             } else {
-                list.add(types.get(arr[0].toUpperCase()).apply(this, arr.length == 1 ? "" : element.substring(arr[0].length() + 1)));
+                SortingType type = types.get(arr[0].toUpperCase()).apply(this, arr.length == 1 ? "" : element.substring(arr[0].length() + 1));
+                if (type != null) {
+                    list.add(type);
+                }
             }
         }
         return list.toArray(new SortingType[0]);
