@@ -61,8 +61,8 @@ public class Condition {
         conditionTypes.put("<=", line -> new NumericCondition(splitAndTrim(line, "<="), (left, right) -> left <= right)::isMet);
         conditionTypes.put("<-", line -> new StringCondition(splitAndTrim(line, "<-"), String::contains)::isMet);
         conditionTypes.put("<", line -> new NumericCondition(splitAndTrim(line, "<"), (left, right) -> left < right)::isMet);
-        conditionTypes.put("|-", line -> new StringCondition(splitAndTrim(line, "\\|-"), String::startsWith)::isMet);
-        conditionTypes.put("-|", line -> new StringCondition(splitAndTrim(line, "-\\|"), String::endsWith)::isMet);
+        conditionTypes.put("|-", line -> new StringCondition(splitAndTrim(line, "|-"), String::startsWith)::isMet);
+        conditionTypes.put("-|", line -> new StringCondition(splitAndTrim(line, "-|"), String::endsWith)::isMet);
         conditionTypes.put("!=", line -> new StringCondition(splitAndTrim(line, "!="), (left, right) -> !left.equals(right))::isMet);
         conditionTypes.put("=", line -> new StringCondition(splitAndTrim(line, "="), String::equals)::isMet);
         conditionTypes.put("!permission:", line -> {
