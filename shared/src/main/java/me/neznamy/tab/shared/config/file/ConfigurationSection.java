@@ -6,10 +6,7 @@ import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
@@ -22,7 +19,7 @@ public class ConfigurationSection {
 
     public void checkForUnknownKey(@NonNull List<String> validProperties) {
         for (Object mapKey : map.keySet()) {
-            if (!validProperties.contains(mapKey.toString())) {
+            if (!validProperties.contains(mapKey.toString().toLowerCase(Locale.US))) {
                 startupWarn(String.format("Configuration section \"%s\" has unknown key \"%s\". Valid keys: %s", section, mapKey, validProperties));
             }
         }
