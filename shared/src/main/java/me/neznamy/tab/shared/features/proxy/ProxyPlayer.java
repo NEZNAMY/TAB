@@ -1,11 +1,13 @@
 package me.neznamy.tab.shared.features.proxy;
 
-import lombok.*;
-import me.neznamy.tab.shared.TabConstants.Permission;
+import lombok.Getter;
+import lombok.Setter;
 import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.TabConstants.Permission;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -16,9 +18,13 @@ import java.util.UUID;
 @Setter
 public class ProxyPlayer {
 
-    /** Tablist UUID of the player */
+    /** Real UUID of the player */
     @NotNull
     private final UUID uniqueId;
+
+    /** Tablist UUID of the player */
+    @NotNull
+    private final UUID tablistId;
 
     /** Player's real name */
     @NotNull
@@ -42,62 +48,100 @@ public class ProxyPlayer {
     private int belowNameNumber;
 
     /** Belowname NumberFormat for 1.20.3+ */
+    @Nullable
     private TabComponent belowNameFancy;
 
     /** Player's skin for global playerlist */
-    private TabList.Skin skin;
+    @Nullable
+    private final TabList.Skin skin;
 
     /** Tablist display name */
+    @Nullable
     private TabComponent tabFormat;
 
     /** Scoreboard team name */
+    @Nullable
     private String teamName;
 
     /** Nametag prefix */
-    private String tagPrefix;
+    @Nullable
+    private TabComponent tagPrefix;
 
     /** Nametag suffix */
-    private String tagSuffix;
+    @Nullable
+    private TabComponent tagSuffix;
 
     /** Nametag visibility rule */
+    @Nullable
     private Scoreboard.NameVisibility nameVisibility;
 
     /** Playerlist objective number for 1.20.2- */
     private int playerlistNumber;
 
     /** Playerlist objective NumberFormat for 1.20.3+ */
+    @Nullable
     private TabComponent playerlistFancy;
 
     /** Global playerlist server group of server this player is on */
+    @Nullable
     public Object serverGroup;
+
+    /** Player's connection state */
+    @NotNull
+    private ConnectionState connectionState = ConnectionState.QUEUED;
 
     /**
      * Constructs new instance with given parameters.
      *
      * @param   uniqueId
+     *          Player's real UUID
+     * @param   tablistId
      *          Player's tablist UUID
      * @param   name
      *          Player's real name
-     * @param   nickname
-     *          Player's nickname in game profile
      * @param   server
      *          Player's server
      * @param   vanished
      *          Whether player is vanished or not
      * @param   staff
      *          Whether player has {@link Permission#STAFF} permission or not
+     * @param   skin
+     *          Player's skin for global playerlist, null if not set
      */
-    public ProxyPlayer(@NotNull UUID uniqueId, @NotNull String name, @NotNull String nickname, @NotNull String server, boolean vanished, boolean staff) {
+    public ProxyPlayer(@NotNull UUID uniqueId, @NotNull UUID tablistId, @NotNull String name,
+                       @NotNull String server, boolean vanished, boolean staff, @Nullable TabList.Skin skin) {
         this.uniqueId = uniqueId;
+        this.tablistId = tablistId;
         this.name = name;
-        this.nickname = nickname;
+        nickname = name;
         this.server = server;
         this.vanished = vanished;
         this.staff = staff;
+        this.skin = skin;
     }
 
+    /**
+     * Creates a new entry for this player to be used in tablist.
+     *
+     * @return  TabList.Entry representing this player
+     */
     @NotNull
     public TabList.Entry asEntry() {
         return new TabList.Entry(uniqueId, nickname, skin, true, 0, 0, tabFormat, 0, true);
+    }
+
+    /**
+     * Enum representing connection state of a proxy player.
+     */
+    public enum ConnectionState {
+
+        /** The connection is accepted and player is being displayed to others */
+        CONNECTED,
+
+        /** The player is queued, because the actual player is still connected to this server */
+        QUEUED,
+
+        /** The player has disconnected */
+        DISCONNECTED
     }
 }

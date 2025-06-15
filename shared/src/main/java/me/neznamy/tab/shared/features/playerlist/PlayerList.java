@@ -52,7 +52,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             }
         }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC), 500);
         if (proxy != null) {
-            proxy.registerMessage(PlayerListUpdateProxyPlayer.class, () -> new PlayerListUpdateProxyPlayer(this));
+            proxy.registerMessage(PlayerListUpdateProxyPlayer.class, in -> new PlayerListUpdateProxyPlayer(in, this));
         }
     }
 
@@ -147,9 +147,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void load() {
-        if (proxy != null) {
-            TAB.getInstance().debug("[Proxy Support] Sending tablist update of all players on load");
-        }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             loadProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
@@ -192,7 +189,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             }
             if (proxy != null) {
                 for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
-                    p.getTabList().updateDisplayName(proxied.getUniqueId(), proxied.getTabFormat());
+                    p.getTabList().updateDisplayName(proxied.getTablistId(), proxied.getTabFormat());
                 }
             }
         }, getFeatureName(), CpuUsageCategory.PLAYER_JOIN), 300);
@@ -264,7 +261,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             }
             if (proxy != null) {
                 for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
-                    connectedPlayer.getTabList().updateDisplayName(proxied.getUniqueId(), proxied.getTabFormat());
+                    connectedPlayer.getTabList().updateDisplayName(proxied.getTablistId(), proxied.getTabFormat());
                 }
             }
         };
@@ -365,7 +362,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onProxyLoadRequest() {
-        TAB.getInstance().debug("[Proxy Support] Sending tablist update of all players as requested by another proxy");
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             proxy.sendMessage(new PlayerListUpdateProxyPlayer(this, all.getTablistId(), all.getName(), all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get()));
         }
@@ -373,9 +369,19 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onVanishStatusChange(@NotNull ProxyPlayer player) {
+        updatePlayer(player);
+    }
+
+    @Override
+    public void onJoin(@NotNull ProxyPlayer player) {
+        updatePlayer(player);
+    }
+
+    public void updatePlayer(@NotNull ProxyPlayer player) {
         if (player.isVanished()) return;
+        if (player.getTabFormat() == null) return; // Player not loaded yet
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            viewer.getTabList().updateDisplayName(player.getUniqueId(), player.getTabFormat());
+            viewer.getTabList().updateDisplayName(player.getTablistId(), player.getTabFormat());
         }
     }
 

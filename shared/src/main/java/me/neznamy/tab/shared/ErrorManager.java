@@ -328,4 +328,8 @@ public class ErrorManager {
     public void redisBungeeMessageSendFail(@NotNull Exception e) {
         printError("Failed to deliver message through RedisBungee due to an error ", e, false, errorLog);
     }
+
+    public void proxyMessageUnknownPlayer(@NotNull String playerId, @NotNull String action) {
+        printError("[Proxy Support] Unable to process " + action + " of proxy player " + playerId + ", because no such player exists", Collections.emptyList(), false, errorLog);
+    }
 }

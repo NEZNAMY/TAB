@@ -2,8 +2,7 @@ package me.neznamy.tab.shared.features.proxy.message;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
@@ -11,68 +10,79 @@ import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-@NoArgsConstructor
+/**
+ * Message sent by another proxy when a player joins.
+ */
+@ToString
 public class PlayerJoin extends ProxyMessage {
 
-    @Getter private ProxyPlayer decodedPlayer;
-    private TabPlayer encodedPlayer;
+    @NotNull private final UUID uniqueId;
+    @NotNull private final UUID tablistId;
+    @NotNull private final String name;
+    @NotNull private final String server;
+    private final boolean vanished;
+    private final boolean staff;
+    @Nullable private final TabList.Skin skin;
 
+    /**
+     * Creates new instance from given player data.
+     *
+     * @param   encodedPlayer
+     *          Player data to encode
+     */
     public PlayerJoin(@NotNull TabPlayer encodedPlayer) {
-        this.encodedPlayer = encodedPlayer;
+        uniqueId = encodedPlayer.getUniqueId();
+        tablistId = encodedPlayer.getTablistId();
+        name = encodedPlayer.getName();
+        server = encodedPlayer.server;
+        vanished = encodedPlayer.isVanished();
+        staff = encodedPlayer.hasPermission(TabConstants.Permission.STAFF);
+        skin = encodedPlayer.getTabList().getSkin();
+    }
+
+    /**
+     * Creates new instance and reads data from byte input.
+     *
+     * @param   in
+     *          Input stream to read from
+     */
+    public PlayerJoin(@NotNull ByteArrayDataInput in) {
+        uniqueId = readUUID(in);
+        tablistId = readUUID(in);
+        name = in.readUTF();
+        server = in.readUTF();
+        vanished = in.readBoolean();
+        staff = in.readBoolean();
+        skin = readSkin(in);
     }
 
     @Override
     public void write(@NotNull ByteArrayDataOutput out) {
-        writeUUID(out, encodedPlayer.getTablistId());
-        out.writeUTF(encodedPlayer.getName());
-        out.writeUTF(encodedPlayer.server);
-        out.writeBoolean(encodedPlayer.isVanished());
-        out.writeBoolean(encodedPlayer.hasPermission(TabConstants.Permission.STAFF));
-        TabList.Skin skin = encodedPlayer.getTabList().getSkin();
-        out.writeBoolean(skin != null);
-
-        // Load skin immediately to make global playerlist stuff not too complicated
-        if (skin != null) {
-            out.writeUTF(skin.getValue());
-            out.writeBoolean(skin.getSignature() != null);
-            if (skin.getSignature() != null) {
-                out.writeUTF(skin.getSignature());
-            }
-        }
-    }
-
-    @Override
-    public void read(@NotNull ByteArrayDataInput in) {
-        UUID uniqueId = readUUID(in);
-        String name = in.readUTF();
-        String server = in.readUTF();
-        boolean vanished = in.readBoolean();
-        boolean staff = in.readBoolean();
-        decodedPlayer = new ProxyPlayer(uniqueId, name, name, server, vanished, staff);
-
-        // Load skin immediately to make global playerlist stuff not too complicated
-        if (in.readBoolean()) {
-            String value = in.readUTF();
-            String signature = null;
-            if (in.readBoolean()) {
-                signature = in.readUTF();
-            }
-            decodedPlayer.setSkin(new TabList.Skin(value, signature));
-        }
+        writeUUID(out, uniqueId);
+        writeUUID(out, tablistId);
+        out.writeUTF(name);
+        out.writeUTF(server);
+        out.writeBoolean(vanished);
+        out.writeBoolean(staff);
+        writeSkin(out, skin);
     }
 
     @Override
     public void process(@NotNull ProxySupport proxySupport) {
-        TAB.getInstance().debug("Processing join of proxy player " + decodedPlayer.getName() + " (" + decodedPlayer.getUniqueId() + ")");
-        // Do not create duplicated player
-        if (TAB.getInstance().isPlayerConnected(decodedPlayer.getUniqueId())) {
-            TAB.getInstance().debug("The player " + decodedPlayer.getName() + " is already connected");
+        ProxyPlayer decodedPlayer = new ProxyPlayer(uniqueId, tablistId, name, server, vanished, staff, skin);
+        if (proxySupport.getProxyPlayers().containsKey(decodedPlayer.getUniqueId())) {
+            TAB.getInstance().debug("[Proxy Support] The proxy player " + decodedPlayer.getName() + " is already connected, cannot process join.");
             return;
         }
         proxySupport.getProxyPlayers().put(decodedPlayer.getUniqueId(), decodedPlayer);
-        TAB.getInstance().getFeatureManager().onJoin(decodedPlayer);
+        if (TAB.getInstance().getPlayer(decodedPlayer.getUniqueId()) != null) {
+            // Already connected as normal player (did not disconnect yet)
+        } else {
+            TAB.getInstance().getFeatureManager().onJoin(decodedPlayer);
+        }
     }
 }

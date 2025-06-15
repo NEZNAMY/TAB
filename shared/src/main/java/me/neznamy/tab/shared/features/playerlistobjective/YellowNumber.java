@@ -4,7 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
@@ -270,6 +270,25 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         }
     }
 
+    @Override
+    public void onJoin(@NotNull ProxyPlayer player) {
+        updatePlayer(player);
+    }
+
+    public void updatePlayer(@NotNull ProxyPlayer player) {
+        if (player.getPlayerlistFancy() == null) return; // Player not loaded yet
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            if (viewer.playerlistObjectiveData.disabled.get()) continue;
+            viewer.getScoreboard().setScore(
+                    OBJECTIVE_NAME,
+                    player.getNickname(),
+                    player.getPlayerlistNumber(),
+                    null, // Unused by this objective slot
+                    player.getPlayerlistFancy()
+            );
+        }
+    }
+
     @NotNull
     @Override
     public String getFeatureName() {
@@ -279,13 +298,25 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     /**
      * Proxy message to update playerlist objective data of a player.
      */
-    @NoArgsConstructor
     @AllArgsConstructor
+    @ToString
     private class UpdateProxyPlayer extends ProxyMessage {
 
-        private UUID playerId;
-        private int value;
-        private String fancyValue;
+        @NotNull private final UUID playerId;
+        private final int value;
+        @NotNull private final String fancyValue;
+
+        /**
+         * Creates new instance and reads data from byte input.
+         *
+         * @param   in
+         *          Input stream to read from
+         */
+        private UpdateProxyPlayer(@NotNull ByteArrayDataInput in) {
+            playerId = readUUID(in);
+            value = in.readInt();
+            fancyValue = in.readUTF();
+        }
 
         @NotNull
         public ThreadExecutor getCustomThread() {
@@ -300,38 +331,16 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         }
 
         @Override
-        public void read(@NotNull ByteArrayDataInput in) {
-            playerId = readUUID(in);
-            value = in.readInt();
-            fancyValue = in.readUTF();
-        }
-
-        @Override
         public void process(@NotNull ProxySupport proxySupport) {
             ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
             if (target == null) {
-                TAB.getInstance().getErrorManager().printError("Unable to process Playerlist objective update of proxy player " + playerId + ", because no such player exists", null);
-                return;
-            }
-            if (target.getPlayerlistFancy() == null) {
-                TAB.getInstance().debug("Processing playerlist objective join of proxy player " + target.getName());
-            }
-            // Yellow number is already being processed by connected player
-            if (TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
-                TAB.getInstance().debug("The player " + target.getName() + " is already connected");
+                TAB.getInstance().getErrorManager().proxyMessageUnknownPlayer(playerId.toString(), "playerlist objective update");
                 return;
             }
             target.setPlayerlistNumber(value);
             target.setPlayerlistFancy(cache.get(fancyValue));
-            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-                if (viewer.playerlistObjectiveData.disabled.get()) continue;
-                viewer.getScoreboard().setScore(
-                        OBJECTIVE_NAME,
-                        target.getNickname(),
-                        target.getPlayerlistNumber(),
-                        null, // Unused by this objective slot
-                        target.getPlayerlistFancy()
-                );
+            if (target.getConnectionState() == ProxyPlayer.ConnectionState.CONNECTED) {
+                updatePlayer(target);
             }
         }
     }

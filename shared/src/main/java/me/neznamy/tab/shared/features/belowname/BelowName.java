@@ -58,7 +58,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
         if (proxy != null) {
-            proxy.registerMessage(BelowNameUpdateProxyPlayer.class, () -> new BelowNameUpdateProxyPlayer(this));
+            proxy.registerMessage(BelowNameUpdateProxyPlayer.class, in -> new BelowNameUpdateProxyPlayer(in, this));
         }
     }
 
@@ -290,6 +290,25 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         onlinePlayers.removePlayer(disconnectedPlayer);
+    }
+
+    @Override
+    public void onJoin(@NotNull ProxyPlayer player) {
+        updatePlayer(player);
+    }
+
+    public void updatePlayer(@NotNull ProxyPlayer player) {
+        if (player.getBelowNameFancy() == null) return; // Player not loaded yet
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            if (viewer.belowNameData.disabled.get()) continue;
+            viewer.getScoreboard().setScore(
+                    OBJECTIVE_NAME,
+                    player.getNickname(),
+                    player.getBelowNameNumber(),
+                    null, // Unused by this objective slot
+                    player.getBelowNameFancy()
+            );
+        }
     }
 
     // ------------------

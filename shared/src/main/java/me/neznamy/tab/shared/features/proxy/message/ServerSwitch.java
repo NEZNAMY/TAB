@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.proxy.message;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
@@ -11,12 +11,26 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-@NoArgsConstructor
+/**
+ * Message sent from another proxy to switch a player to a different server.
+ */
 @AllArgsConstructor
+@ToString
 public class ServerSwitch extends ProxyMessage {
 
-    private UUID playerId;
-    private String newServer;
+    @NotNull private final UUID playerId;
+    @NotNull private final String newServer;
+
+    /**
+     * Creates new instance and reads data from byte input.
+     *
+     * @param   in
+     *          Input stream to read from
+     */
+    public ServerSwitch(@NotNull ByteArrayDataInput in) {
+        playerId = readUUID(in);
+        newServer = in.readUTF();
+    }
 
     @Override
     public void write(@NotNull ByteArrayDataOutput out) {
@@ -25,21 +39,10 @@ public class ServerSwitch extends ProxyMessage {
     }
 
     @Override
-    public void read(@NotNull ByteArrayDataInput in) {
-        playerId = readUUID(in);
-        newServer = in.readUTF();
-    }
-
-    @Override
     public void process(@NotNull ProxySupport proxySupport) {
         ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
         if (target == null) {
-            TAB.getInstance().getErrorManager().printError("Unable to process server switch of proxy player " + playerId + ", because no such player exists", null);
-            return;
-        }
-        TAB.getInstance().debug("Processing server switch of proxy player " + target.getName());
-        if (TAB.getInstance().isPlayerConnected(target.getUniqueId())) {
-            TAB.getInstance().debug("The player " + target.getName() + " is already connected");
+            TAB.getInstance().getErrorManager().proxyMessageUnknownPlayer(playerId.toString(), "server switch");
             return;
         }
         target.setServer(newServer);

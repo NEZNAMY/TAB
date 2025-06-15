@@ -52,7 +52,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
             if (proxyPlayer == null) return;
             if (!proxyPlayer.getNickname().equals(name)) {
                 proxyPlayer.setNickname(name);
-                TAB.getInstance().debug("Processing name change of proxy player " + proxyPlayer.getName() + " to " + name);
+                TAB.getInstance().debug("[Proxy Support] Processing name change of proxy player " + proxyPlayer.getName() + " to " + name);
                 processNameChange(proxyPlayer);
             }
         }
@@ -94,11 +94,11 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 String teamName = player.getTeamName();
                 for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
                     viewer.getScoreboard().unregisterTeam(teamName);
-                    TabComponent prefix = nameTags.getCache().get(player.getTagPrefix());
+                    TabComponent prefix = player.getTagPrefix();
                     viewer.getScoreboard().registerTeam(
                             teamName,
                             prefix,
-                            nameTags.getCache().get(player.getTagSuffix()),
+                            player.getTagSuffix(),
                             player.getNameVisibility(),
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(player.getNickname()),
