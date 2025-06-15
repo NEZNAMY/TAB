@@ -325,6 +325,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  {@code true} if can see, {@code false} if not.
      */
     public boolean canSee(@NotNull TabPlayer target) {
+        if (target == this) return true;
         if (!VanishIntegration.getHandlers().isEmpty()) {
             try {
                 for (VanishIntegration i : VanishIntegration.getHandlers()) {
