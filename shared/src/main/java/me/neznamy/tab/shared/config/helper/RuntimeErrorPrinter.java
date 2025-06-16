@@ -91,8 +91,12 @@ public class RuntimeErrorPrinter {
         // Placeholders are not initialized, because bridge did not respond yet (typically on join)
         if (target instanceof ProxyTabPlayer && !((ProxyTabPlayer)target).isBridgeConnected()) return;
 
-        error(String.format("Belowname value is configured to show \"%s\", but returned \"%s\" for player %s, which cannot be evaluated to a number.",
-                configuredValue, output, target.getName()));
+        String msg = String.format("Belowname value is configured to show \"%s\", but returned \"%s\" for player %s, which cannot be evaluated to a number.",
+                configuredValue, output, target.getName());
+        if (output.contains("%")) {
+            msg += " Did you perhaps forget to download a PlaceholderAPI expansion?";
+        }
+        error(msg);
     }
 
     public void floatInBelowName(@NonNull TabPlayer target, @NonNull String configuredValue, @NonNull String output) {
@@ -108,8 +112,12 @@ public class RuntimeErrorPrinter {
         // Placeholders are not initialized, because bridge did not respond yet (typically on join)
         if (target instanceof ProxyTabPlayer && !((ProxyTabPlayer)target).isBridgeConnected()) return;
 
-        error(String.format("Playerlist objective value is configured to show \"%s\", but returned \"%s\" for player %s, which cannot be evaluated to a number.",
-                configuredValue, output, target.getName()));
+        String msg = String.format("Playerlist objective value is configured to show \"%s\", but returned \"%s\" for player %s, which cannot be evaluated to a number.",
+                configuredValue, output, target.getName());
+        if (output.contains("%")) {
+            msg += " Did you perhaps forget to download a PlaceholderAPI expansion?";
+        }
+        error(msg);
     }
 
     public void floatInPlayerlistObjective(@NonNull TabPlayer target, @NonNull String configuredValue, @NonNull String output) {
