@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.config.helper;
 
 import lombok.NonNull;
-import me.neznamy.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 
@@ -56,13 +56,13 @@ public class StartupWarnPrinter {
     public void startupWarn(@NonNull String... messages) {
         warnCount++;
         for (String message : messages) {
-            TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(message));
+            TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(message));
         }
     }
 
     public void startupWarn(@NonNull File file, @NonNull String message) {
         warnCount++;
-        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text("[" + file.getName() + "] " + message));
+        TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText("[" + file.getName() + "] " + message));
     }
 
     /**
@@ -70,7 +70,7 @@ public class StartupWarnPrinter {
      */
     public void printWarnCount() {
         if (warnCount == 0) return;
-        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text("Found a total of " + warnCount + " issues."));
+        TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText("Found a total of " + warnCount + " issues."));
         // Reset after printing to prevent count going up on each reload
         warnCount = 0;
     }

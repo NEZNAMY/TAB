@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features.playerlist;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.shared.Property;
@@ -119,7 +118,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             if (!viewer.canSee(player)) continue;
             UUID tablistId = getTablistUUID(player, viewer);
             viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
-                    tablistId.getMostSignificantBits() == 0 ? SimpleTextComponent.text(player.getName()) : null);
+                    tablistId.getMostSignificantBits() == 0 ? TabComponent.legacyText(player.getName()) : null);
         }
         if (proxy != null) proxy.sendMessage(new PlayerListUpdateProxyPlayer(this, player.getUniqueId(), player.getName(), player.tablistData.prefix.get() +
                 player.tablistData.name.get() + player.tablistData.suffix.get()));

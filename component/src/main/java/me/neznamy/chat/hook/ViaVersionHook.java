@@ -6,7 +6,7 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.ComponentUtil;
 import me.neznamy.chat.ChatModifier;
 import me.neznamy.chat.component.KeybindComponent;
-import me.neznamy.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.LegacyTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
 import me.neznamy.chat.component.TranslatableComponent;
@@ -18,7 +18,7 @@ public class ViaVersionHook {
 
     @NotNull
     public static JsonElement convert(@NotNull TabComponent component) {
-        if (component instanceof SimpleTextComponent) {
+        if (component instanceof LegacyTextComponent) {
             return ComponentUtil.legacyToJson(component.toLegacyText());
         }
 

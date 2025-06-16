@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.util.cache;
 
 import me.neznamy.chat.TextColor;
-import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.rgb.RGBUtils;
 import me.neznamy.chat.util.TriFunction;
@@ -59,7 +58,7 @@ public class StringToComponentCache extends Cache<String, TabComponent> {
             }
             return text.contains("#") || text.contains("§x") || text.contains("<") ?
                     TabComponent.fromColoredText(text) : //contains RGB colors or font
-                    SimpleTextComponent.text(text); //no RGB
+                    TabComponent.legacyText(text); //no RGB
         });
     }
 

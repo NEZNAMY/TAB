@@ -1,11 +1,11 @@
 package me.neznamy.tab.shared.features.header;
 
 import lombok.Getter;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.header.HeaderFooterConfiguration.HeaderFooterPair;
 import me.neznamy.tab.shared.features.types.*;
@@ -124,7 +124,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
-            p.getTabList().setPlayerListHeaderFooter(SimpleTextComponent.EMPTY, SimpleTextComponent.EMPTY);
+            p.getTabList().setPlayerListHeaderFooter(TabComponent.empty(), TabComponent.empty());
         } else {
             sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
         }

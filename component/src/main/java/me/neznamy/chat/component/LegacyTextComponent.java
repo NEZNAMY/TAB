@@ -1,6 +1,5 @@
 package me.neznamy.chat.component;
 
-import lombok.NonNull;
 import me.neznamy.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,31 +8,15 @@ import org.jetbrains.annotations.Nullable;
  * An implementation that only uses the "text" field with legacy colors in it, without using
  * any component style or extra.
  */
-public class SimpleTextComponent extends TextComponent {
+public class LegacyTextComponent extends TextComponent {
 
-    /** Empty component to avoid recreating one over and over */
-    public static final SimpleTextComponent EMPTY = new SimpleTextComponent("");
-
-    /**
-     * Creates a new instance with given text.
-     * 
-     * @param   text
-     *          Component text, including color codes
-     * @return  Component with given text
-     */
-    @NotNull
-    public static SimpleTextComponent text(@NonNull String text) {
-        if (text.isEmpty()) return EMPTY;
-        return new SimpleTextComponent(text);
-    }
-    
     /**
      * Constructs new instance with given text.
      *
      * @param   text
      *          Component text
      */
-    private SimpleTextComponent(@NotNull String text) {
+    protected LegacyTextComponent(@NotNull String text) {
         super(text);
     }
 

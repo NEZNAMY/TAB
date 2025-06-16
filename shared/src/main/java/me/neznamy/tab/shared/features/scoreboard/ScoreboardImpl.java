@@ -2,12 +2,12 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
 import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
@@ -153,7 +153,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 manager.getCache().get(p.scoreboardData.titleProperty.get()),
                 Scoreboard.HealthDisplay.INTEGER,
-                SimpleTextComponent.EMPTY
+                TabComponent.empty()
         );
         p.getScoreboard().setDisplaySlot(ScoreboardManagerImpl.OBJECTIVE_NAME, Scoreboard.DisplaySlot.SIDEBAR);
         for (Line s : lines) {
@@ -208,7 +208,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 manager.getCache().get(refreshed.scoreboardData.titleProperty.updateAndGet()),
                 Scoreboard.HealthDisplay.INTEGER,
-                SimpleTextComponent.EMPTY
+                TabComponent.empty()
         );
     }
 
@@ -271,7 +271,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
                     ScoreboardManagerImpl.OBJECTIVE_NAME,
                     manager.getCache().get(p.scoreboardData.titleProperty.get()),
                     Scoreboard.HealthDisplay.INTEGER,
-                    SimpleTextComponent.EMPTY
+                    TabComponent.empty()
             );
         }
     }

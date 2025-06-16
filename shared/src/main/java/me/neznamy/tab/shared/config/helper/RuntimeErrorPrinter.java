@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.config.helper;
 
 import lombok.NonNull;
-import me.neznamy.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
@@ -206,6 +206,6 @@ public class RuntimeErrorPrinter {
      *          Message to log
      */
     public void error(@NonNull String message) {
-        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(message.replace('§', '&')));
+        TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(message.replace('§', '&')));
     }
 }

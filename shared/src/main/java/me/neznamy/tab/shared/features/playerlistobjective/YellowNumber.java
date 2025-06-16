@@ -5,7 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import me.neznamy.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -211,7 +211,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
                 OBJECTIVE_NAME,
                 cache.get(player.playerlistObjectiveData.title.updateAndGet()),
                 configuration.getHealthDisplay(),
-                SimpleTextComponent.EMPTY
+                TabComponent.empty()
         );
         player.getScoreboard().setDisplaySlot(OBJECTIVE_NAME, Scoreboard.DisplaySlot.PLAYER_LIST);
     }

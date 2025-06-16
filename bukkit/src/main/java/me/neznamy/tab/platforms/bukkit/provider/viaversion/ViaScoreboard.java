@@ -8,7 +8,6 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Types;
 import lombok.NonNull;
-import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
@@ -144,7 +143,7 @@ public abstract class ViaScoreboard extends SafeScoreboard<BukkitTabPlayer> {
             case TeamAction.CREATE:
             case TeamAction.UPDATE:
                 // Team display name
-                writeComponent(packet, SimpleTextComponent.text(team.getName()));
+                writeComponent(packet, TabComponent.legacyText(team.getName()));
                 // Friendly flags
                 packet.write(Types.BYTE, (byte) team.getOptions());
                 // Name tag visibility

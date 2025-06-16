@@ -2,11 +2,10 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.google.common.collect.Lists;
 import lombok.NonNull;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.chat.component.SimpleTextComponent;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.Either;
@@ -117,7 +116,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         player.sendPacket(new net.md_5.bungee.protocol.packet.Team(
                 team.getName(),
                 action,
-                either(SimpleTextComponent.text(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
+                either(TabComponent.legacyText(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 either(team.getPrefix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 net.md_5.bungee.protocol.packet.Team.NameTagVisibility.valueOf(team.getVisibility().name()),

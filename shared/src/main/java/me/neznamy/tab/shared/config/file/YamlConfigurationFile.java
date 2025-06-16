@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.config.file;
 
 import lombok.NonNull;
 import me.neznamy.chat.TextColor;
-import me.neznamy.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.yamlassist.YamlAssist;
@@ -55,7 +55,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
             if (input != null) input.close();
             TAB tab = TAB.getInstance();
             tab.setBrokenFile(destination.getName());
-            tab.getPlatform().logWarn(SimpleTextComponent.text("File " + destination + " has broken syntax."));
+            tab.getPlatform().logWarn(TabComponent.legacyText("File " + destination + " has broken syntax."));
             tab.getPlatform().logInfo(new TextComponent("Error message from yaml parser: " + e.getMessage(), TextColor.GOLD));
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
@@ -77,7 +77,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
             new Yaml(options).dump(values, writer);
             writer.close();
         } catch (IOException e) {
-            TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(String.format(
+            TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(String.format(
                     "Failed to save yaml file %s: %s: %s",
                     file.getPath(), e.getClass().getName(), e.getMessage()
             )));

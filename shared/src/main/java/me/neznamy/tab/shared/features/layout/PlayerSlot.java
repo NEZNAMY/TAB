@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -44,7 +44,7 @@ public class PlayerSlot {
                     true,
                     layout.getManager().getPingSpoof() != null ? layout.getManager().getPingSpoof().getConfiguration().getValue() : player.getPing(),
                     0,
-                    playerList == null || player.tablistData.disabled.get() ? SimpleTextComponent.text(player.getName()) : playerList.getTabFormat(player, viewer),
+                    playerList == null || player.tablistData.disabled.get() ? TabComponent.legacyText(player.getName()) : playerList.getTabFormat(player, viewer),
                     Integer.MAX_VALUE - layout.getManager().getConfiguration().getDirection().translateSlot(slot),
                     true
             );
@@ -56,7 +56,7 @@ public class PlayerSlot {
                     true,
                     layout.getManager().getConfiguration().getEmptySlotPing(),
                     0,
-                    SimpleTextComponent.text(text),
+                    TabComponent.legacyText(text),
                     Integer.MAX_VALUE - layout.getManager().getConfiguration().getDirection().translateSlot(slot),
                     true
             );

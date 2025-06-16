@@ -4,6 +4,7 @@ import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.util.ComponentUtil;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.chat.ChatModifier;
@@ -17,7 +18,9 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +29,9 @@ import java.util.regex.Pattern;
  * Base class for managing minecraft components.
  */
 public abstract class TabComponent {
+
+    /** Empty component to avoid recreating one over and over */
+    public static final LegacyTextComponent EMPTY_LEGACY_TEXT = new LegacyTextComponent("");
 
     /** Function for converting this class into platform's actual component */
     @Nullable
@@ -421,5 +427,49 @@ public abstract class TabComponent {
             if ("0123456789AaBbCcDdEeFf".indexOf(string.charAt(i)) == -1) return false;
         }
         return true;
+    }
+
+    /**
+     * Returns an empty component of "text" type.
+     * This is used to avoid creating new empty components over and over.
+     *
+     * @return  Empty legacy text component
+     */
+    public static TabComponent empty() {
+        return EMPTY_LEGACY_TEXT;
+    }
+
+    /**
+     * Creates a new component of "text" type with given legacy text.
+     *
+     * @param   text
+     *          Text to use in the component
+     * @return  New legacy text component with given text
+     */
+    public static LegacyTextComponent legacyText(@NonNull String text) {
+        if (text.isEmpty()) return EMPTY_LEGACY_TEXT;
+        return new LegacyTextComponent(text);
+    }
+
+    /**
+     * Creates a new component of "translatable" type with given key.
+     *
+     * @param   key
+     *          Translatable to use in the component
+     * @return  New translatable component with given key
+     */
+    public static TranslatableComponent translatable(@NonNull String key) {
+        return new TranslatableComponent(key);
+    }
+
+    /**
+     * Creates a new component of "keybind" type with given key.
+     *
+     * @param   keybind
+     *          Key to use in the component
+     * @return  New keybind text component with given key
+     */
+    public static KeybindComponent keybind(@NonNull String keybind) {
+        return new KeybindComponent(keybind);
     }
 }

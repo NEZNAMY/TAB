@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.playerlistobjective;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.chat.component.SimpleTextComponent;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -36,7 +36,7 @@ public class PlayerlistObjectiveTitleRefresher extends RefreshableFeature implem
                 YellowNumber.OBJECTIVE_NAME,
                 feature.getCache().get(refreshed.playerlistObjectiveData.title.updateAndGet()),
                 feature.getConfiguration().getHealthDisplay(),
-                SimpleTextComponent.EMPTY
+                TabComponent.empty()
         );
     }
 

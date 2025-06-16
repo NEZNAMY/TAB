@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
+import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.api.event.TabEvent;
-import me.neznamy.chat.component.SimpleTextComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -117,13 +117,13 @@ public class ErrorManager {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
                         buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + message + System.lineSeparator());
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().getConfig().isDebugMode())
-                        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(message));
+                        TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(message));
                 }
                 for (String line : error) {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
                         buf.write(dateFormat.format(new Date()) + line + System.lineSeparator());
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().getConfig().isDebugMode())
-                        TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(line));
+                        TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(line));
                 }
             }
         } catch (IOException ex) {
@@ -133,7 +133,7 @@ public class ErrorManager {
             lines.add("Original error: " + message);
             lines.addAll(error);
             for (String line : lines) {
-                TAB.getInstance().getPlatform().logWarn(SimpleTextComponent.text(line));
+                TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(line));
             }
         }
     }

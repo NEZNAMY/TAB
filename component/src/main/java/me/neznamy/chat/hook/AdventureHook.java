@@ -97,9 +97,9 @@ public class AdventureHook {
         if (component instanceof net.kyori.adventure.text.TextComponent) {
             tabComponent = new TextComponent(((net.kyori.adventure.text.TextComponent) component).content());
         } else if (component instanceof net.kyori.adventure.text.TranslatableComponent) {
-            tabComponent = new TranslatableComponent(((net.kyori.adventure.text.TranslatableComponent) component).key());
+            tabComponent = TabComponent.translatable(((net.kyori.adventure.text.TranslatableComponent) component).key());
         } else if (component instanceof net.kyori.adventure.text.KeybindComponent) {
-            tabComponent = new KeybindComponent(((net.kyori.adventure.text.KeybindComponent) component).keybind());
+            tabComponent = TabComponent.keybind(((net.kyori.adventure.text.KeybindComponent) component).keybind());
         } else {
             throw new UnsupportedOperationException(component.getClass().getName() + " component type is not supported");
         }
