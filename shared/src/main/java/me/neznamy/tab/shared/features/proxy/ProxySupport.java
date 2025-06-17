@@ -64,7 +64,7 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
      * @param   msg
      *          json message to process
      */
-    public void processMessage(@NotNull String msg) {
+    public synchronized void processMessage(@NotNull String msg) {
         ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
         String proxy = in.readUTF();
         if (proxy.equals(this.proxy.toString())) return; // Message coming from current proxy
