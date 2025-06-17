@@ -8,10 +8,12 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.QueuedData;
 import me.neznamy.tab.shared.features.proxy.message.ProxyMessage;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -65,7 +67,12 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
     public void process(@NotNull ProxySupport proxySupport) {
         ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
         if (target == null) {
-            TAB.getInstance().getErrorManager().proxyMessageUnknownPlayer(playerId.toString(), "nametag update update");
+            unknownPlayer(playerId.toString(), "nametag update update");
+            QueuedData data = proxySupport.getQueuedData().computeIfAbsent(playerId, k -> new QueuedData());
+            data.setTeamName(checkTeamName(null, teamName.substring(0, teamName.length()-1)));
+            data.setTagPrefix(feature.getCache().get(prefix));
+            data.setTagSuffix(feature.getCache().get(suffix));
+            data.setNameVisibility(nameVisibility);
             return;
         }
         String oldTeamName = target.getTeamName();
@@ -107,7 +114,7 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
     }
 
     @NotNull
-    private String checkTeamName(@NotNull ProxyPlayer player, @NotNull String currentName15) {
+    private String checkTeamName(@Nullable ProxyPlayer player, @NotNull String currentName15) {
         char id = 'A';
         while (true) {
             String potentialTeamName = currentName15 + id;

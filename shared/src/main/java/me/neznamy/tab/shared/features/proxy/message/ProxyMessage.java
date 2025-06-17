@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.proxy.message;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.platform.TabList;
@@ -51,4 +52,8 @@ public abstract class ProxyMessage {
     public abstract void write(@NotNull ByteArrayDataOutput out);
 
     public abstract void process(@NotNull ProxySupport proxySupport);
+
+    public void unknownPlayer(@NotNull String playerId, @NotNull String action) {
+        TAB.getInstance().debug("[Proxy Support] Unable to process " + action + " of proxy player " + playerId + ", because no such player exists. Queueing data.");
+    }
 }

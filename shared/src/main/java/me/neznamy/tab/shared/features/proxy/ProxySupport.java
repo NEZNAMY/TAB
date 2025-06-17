@@ -36,6 +36,9 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
     /** Proxy players on other proxies by their UUID */
     @NotNull protected final Map<UUID, ProxyPlayer> proxyPlayers = new ConcurrentHashMap<>();
 
+    /** Queued data of players on other proxies by their UUID */
+    @NotNull private final Map<UUID, QueuedData> queuedData = new ConcurrentHashMap<>();
+
     /** UUID of this proxy to ignore messages coming from the same proxy */
     @NotNull private final UUID proxy = UUID.randomUUID();
 

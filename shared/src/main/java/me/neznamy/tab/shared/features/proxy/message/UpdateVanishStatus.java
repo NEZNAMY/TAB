@@ -7,6 +7,7 @@ import lombok.ToString;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.QueuedData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -42,7 +43,9 @@ public class UpdateVanishStatus extends ProxyMessage {
     public void process(@NotNull ProxySupport proxySupport) {
         ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
         if (target == null) {
-            TAB.getInstance().getErrorManager().proxyMessageUnknownPlayer(playerId.toString(), "vanish status update");
+            unknownPlayer(playerId.toString(), "vanish status update");
+            QueuedData data = proxySupport.getQueuedData().computeIfAbsent(playerId, k -> new QueuedData());
+            data.setVanished(vanished);
             return;
         }
         target.setVanished(vanished);

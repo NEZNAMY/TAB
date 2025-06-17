@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.QueuedData;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -79,9 +80,20 @@ public class PlayerJoin extends ProxyMessage {
             return;
         }
         proxySupport.getProxyPlayers().put(decodedPlayer.getUniqueId(), decodedPlayer);
-        if (TAB.getInstance().getPlayer(decodedPlayer.getUniqueId()) != null) {
-            // Already connected as normal player (did not disconnect yet)
-        } else {
+        QueuedData data = proxySupport.getQueuedData().remove(decodedPlayer.getUniqueId());
+        if (data != null) {
+            decodedPlayer.setBelowNameNumber(data.getBelowNameNumber());
+            decodedPlayer.setBelowNameFancy(data.getBelowNameFancy());
+            decodedPlayer.setTabFormat(data.getTabFormat());
+            decodedPlayer.setTeamName(data.getTeamName());
+            decodedPlayer.setTagPrefix(data.getTagPrefix());
+            decodedPlayer.setTagSuffix(data.getTagSuffix());
+            decodedPlayer.setNameVisibility(data.getNameVisibility());
+            decodedPlayer.setPlayerlistNumber(data.getPlayerlistNumber());
+            decodedPlayer.setPlayerlistFancy(data.getPlayerlistFancy());
+            decodedPlayer.setVanished(data.isVanished());
+        }
+        if (TAB.getInstance().getPlayer(decodedPlayer.getUniqueId()) == null) {
             TAB.getInstance().getFeatureManager().onJoin(decodedPlayer);
         }
     }

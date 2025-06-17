@@ -442,6 +442,7 @@ public class FeatureManager {
         // Delay to let server remove the player from tablist, and then we can potentially add the player back
         // No delay could cause the server to send tablist remove packet of real player AFTER we sent add, removing the player
         TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (connectedPlayer.getConnectionState() == ProxyPlayer.ConnectionState.DISCONNECTED) return; // Player immediately disconnected in the meantime
             connectedPlayer.setConnectionState(ProxyPlayer.ConnectionState.CONNECTED);
             for (TabFeature f : values) {
                 if (!(f instanceof ProxyFeature)) continue;
@@ -452,6 +453,9 @@ public class FeatureManager {
                 } else {
                     task.run();
                 }
+            }
+            if (connectedPlayer.isVanished()) {
+                onVanishStatusChange(connectedPlayer);
             }
         }, getFeature(TabConstants.Feature.PROXY_SUPPORT).getFeatureName(), CpuUsageCategory.PLAYER_JOIN), 200);
     }
@@ -482,6 +486,7 @@ public class FeatureManager {
      *          Player who left
      */
     public void onQuit(@NotNull ProxyPlayer disconnectedPlayer) {
+        disconnectedPlayer.setConnectionState(ProxyPlayer.ConnectionState.DISCONNECTED);
         for (TabFeature f : values) {
             if (!(f instanceof ProxyFeature)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),

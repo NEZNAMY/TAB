@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.QueuedData;
 import me.neznamy.tab.shared.features.proxy.message.ProxyMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -334,7 +335,10 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         public void process(@NotNull ProxySupport proxySupport) {
             ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
             if (target == null) {
-                TAB.getInstance().getErrorManager().proxyMessageUnknownPlayer(playerId.toString(), "playerlist objective update");
+                unknownPlayer(playerId.toString(), "playerlist objective update");
+                QueuedData data = proxySupport.getQueuedData().computeIfAbsent(playerId, k -> new QueuedData());
+                data.setPlayerlistNumber(value);
+                data.setPlayerlistFancy(cache.get(fancyValue));
                 return;
             }
             target.setPlayerlistNumber(value);

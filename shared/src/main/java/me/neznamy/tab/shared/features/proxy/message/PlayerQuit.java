@@ -39,7 +39,9 @@ public class PlayerQuit extends ProxyMessage {
     public void process(@NotNull ProxySupport proxySupport) {
         ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
         if (target == null) {
-            TAB.getInstance().getErrorManager().proxyMessageUnknownPlayer(playerId.toString(), "disconnect");
+            // This will not actually properly handle it, let's hope no one will ever run into this
+            unknownPlayer(playerId.toString(), "disconnect");
+            proxySupport.getQueuedData().remove(playerId);
             return;
         }
         TAB.getInstance().getFeatureManager().onQuit(target);
