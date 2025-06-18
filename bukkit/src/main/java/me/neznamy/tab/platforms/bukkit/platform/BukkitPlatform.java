@@ -161,7 +161,7 @@ public class BukkitPlatform implements BackendPlatform {
                 }
                 Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
                         "a plugin version with full support for your server version for optimal experience. This plugin version " +
-                        "has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x, 1.18.2 and 1.19.1 - 1.21.5.");
+                        "has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x, 1.18.2 and 1.19.1 - 1.21.6.");
             }
             return new BukkitImplementationProvider();
         }
@@ -188,9 +188,11 @@ public class BukkitPlatform implements BackendPlatform {
                 return "1_21_2";
             case V1_21_4:
             case V1_21_5:
+            case V1_21_6:
                 return "1_21_4";
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override
