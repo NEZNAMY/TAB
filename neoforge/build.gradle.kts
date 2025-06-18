@@ -12,21 +12,22 @@ repositories {
     maven("https://maven.neoforged.net/releases")
 }
 
-val minecraftVersion = "1.21.5"
+val minecraftVersion = "1.21.6"
 
 // NeoForge API versions for each Minecraft version for easier backporting
 val neoforgeApiVersions = mapOf(
-    "1.21.5" to "21.5.26-beta",
-    "1.21.4" to "21.4.124",
-    "1.21.3" to "21.3.66",
+    "1.21.6" to "21.6.5-beta",
+    "1.21.5" to "21.5.77",
+    "1.21.4" to "21.4.138",
+    "1.21.3" to "21.3.77",
     "1.21.2" to "21.2.1-beta",
-    "1.21.1" to "21.1.144",
+    "1.21.1" to "21.1.180",
     "1.21" to "21.0.167",
-    "1.20.6" to "20.6.125",
+    "1.20.6" to "20.6.135",
     "1.20.5" to "20.5.21-beta",
-    "1.20.4" to "20.4.239",
+    "1.20.4" to "20.4.248",
     "1.20.3" to "20.3.8-beta",
-    "1.20.2" to "20.2.88"
+    "1.20.2" to "20.2.93"
 )
 
 dependencies {
