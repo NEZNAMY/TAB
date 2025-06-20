@@ -58,6 +58,12 @@ public class BukkitImplementationProvider implements ImplementationProvider {
 
     @Override
     @Nullable
+    public TabList.Skin getSkin(@NotNull BukkitTabPlayer player) {
+        return null; // Shrug
+    }
+
+    @Override
+    @Nullable
     public ComponentConverter getComponentConverter() {
         return null;
     }

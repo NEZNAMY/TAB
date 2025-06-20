@@ -73,6 +73,14 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         }
     }
 
+    @Nullable
+    public static Skin getSkin(@NotNull BukkitTabPlayer player) {
+        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
+        if (properties.isEmpty()) return null; // Offline mode
+        Property property = properties.iterator().next();
+        return new Skin(property.value(), property.signature());
+    }
+
     /**
      * Constructs new instance.
      *
@@ -137,10 +145,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @Nullable
     public Skin getSkin() {
-        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
-        if (properties.isEmpty()) return null; // Offline mode
-        Property property = properties.iterator().next();
-        return new Skin(property.value(), property.signature());
+        return getSkin(player);
     }
 
     @Override

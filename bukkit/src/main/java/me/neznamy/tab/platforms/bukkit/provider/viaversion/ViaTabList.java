@@ -11,7 +11,6 @@ import lombok.NonNull;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
-import me.neznamy.tab.platforms.bukkit.provider.reflection.PacketTabList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
@@ -111,7 +110,7 @@ public abstract class ViaTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @Nullable
     public Skin getSkin() {
-        return PacketTabList.getSkin(player);
+        return ((BukkitPlatform) TAB.getInstance().getPlatform()).getServerImplementationProvider().getSkin(player);
     }
 
     protected void sendInfoUpdate(@NonNull Action action, @NonNull UUID uniqueId, Object value) {

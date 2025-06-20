@@ -61,6 +61,14 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         }
     }
 
+    @Nullable
+    public static Skin getSkin(@NonNull BukkitTabPlayer player) {
+        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
+        if (properties.isEmpty()) return null; // Offline mode
+        Property property = properties.iterator().next();
+        return new Skin(property.getValue(), property.getSignature());
+    }
+
     /**
      * Constructs new instance.
      *
@@ -127,10 +135,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @Nullable
     public Skin getSkin() {
-        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
-        if (properties.isEmpty()) return null; // Offline mode
-        Property property = properties.iterator().next();
-        return new Skin(property.getValue(), property.getSignature());
+        return getSkin(player);
     }
 
     @Override

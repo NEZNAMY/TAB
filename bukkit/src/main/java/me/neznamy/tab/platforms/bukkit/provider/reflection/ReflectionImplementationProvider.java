@@ -81,6 +81,12 @@ public class ReflectionImplementationProvider implements ImplementationProvider 
     }
 
     @Override
+    @Nullable
+    public TabList.Skin getSkin(@NotNull BukkitTabPlayer player) {
+        return PacketTabList.getSkin(player);
+    }
+
+    @Override
     public int getPing(@NotNull BukkitTabPlayer player) {
         return player.getPlayer().getPing();
     }

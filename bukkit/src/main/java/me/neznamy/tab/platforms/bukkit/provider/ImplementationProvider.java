@@ -24,6 +24,9 @@ public interface ImplementationProvider {
     TabList newTabList(@NotNull BukkitTabPlayer player);
 
     @Nullable
+    TabList.Skin getSkin(@NotNull BukkitTabPlayer player);
+
+    @Nullable
     ComponentConverter getComponentConverter();
 
     @Nullable

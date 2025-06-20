@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation provider using direct Mojang-mapped NMS code for versions 1.20.5 - 1.21.1.
@@ -43,6 +44,12 @@ public class PaperImplementationProvider implements ImplementationProvider {
     @NotNull
     public TabList newTabList(@NotNull BukkitTabPlayer player) {
         return new PaperPacketTabList(player);
+    }
+
+    @Override
+    @Nullable
+    public TabList.Skin getSkin(@NotNull BukkitTabPlayer player) {
+        return PaperPacketTabList.getSkin(player);
     }
 
     @Override

@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation provider using direct NMS code for 1.12.x.
@@ -43,6 +44,12 @@ public class NMSImplementationProvider implements ImplementationProvider {
     @NotNull
     public TabList newTabList(@NotNull BukkitTabPlayer player) {
         return new NMSPacketTabList(player);
+    }
+
+    @Override
+    @Nullable
+    public TabList.Skin getSkin(@NotNull BukkitTabPlayer player) {
+        return NMSPacketTabList.getSkin(player);
     }
 
     @Override
