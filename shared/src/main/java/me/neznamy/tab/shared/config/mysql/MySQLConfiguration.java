@@ -33,7 +33,7 @@ public class MySQLConfiguration {
     @NotNull
     public static MySQLConfiguration fromSection(@NonNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "host", "port", "database", "username", "password", "useSSL"));
+        section.checkForUnknownKey(Arrays.asList("enabled", "host", "port", "database", "username", "password", "usessl"));
 
         return new MySQLConfiguration(
                 section.getString("host", "127.0.0.1"),
