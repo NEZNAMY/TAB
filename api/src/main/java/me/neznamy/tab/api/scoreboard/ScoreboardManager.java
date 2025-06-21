@@ -1,12 +1,12 @@
 package me.neznamy.tab.api.scoreboard;
 
-import java.util.List;
-import java.util.Map;
-
 import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Interface allowing work with scoreboards, such as creating,
@@ -54,6 +54,29 @@ public interface ScoreboardManager {
      * @return  map of registered scoreboards
      */
     @NotNull Map<String, Scoreboard> getRegisteredScoreboards();
+
+    /**
+     * Removes scoreboard with specified name from list of scoreboards. If it was displayed to anyone,
+     * it will be removed from their display as well. Then, those players will receive a new scoreboard based
+     * on configuration.
+     *
+     * @param   name    Name of scoreboard to remove
+     * @throws  IllegalArgumentException
+     *          if scoreboard with such name does not exist
+     */
+    void removeScoreboard(@NonNull String name);
+
+    /**
+     * Removes scoreboard from list of scoreboards. If it was displayed to anyone,
+     * it will be removed from their display as well. Then, those players will receive a new scoreboard based
+     * on configuration.
+     *
+     * @param   scoreboard
+     *          Scoreboard to remove
+     * @throws  IllegalArgumentException
+     *          if specified scoreboard is not registered
+     */
+    void removeScoreboard(@NonNull Scoreboard scoreboard);
     
     /**
      * Displays scoreboard to defined player. This will disable all display

@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 /**
  * Feature handler for scoreboard feature.
  */
+@Getter
 public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
         CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable,
         QuitListener, CustomThreaded, ServerSwitchListener {
@@ -31,18 +32,17 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
-    @Getter
     private final StringToComponentCache cache = new StringToComponentCache("Scoreboard", 1000);
 
-    @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Scoreboard Thread");
 
-    @Getter
     private final ScoreboardConfiguration configuration;
 
-    //defined scoreboards
-    @Getter private final Map<String, me.neznamy.tab.api.scoreboard.Scoreboard> registeredScoreboards = new LinkedHashMap<>();
-    private me.neznamy.tab.api.scoreboard.Scoreboard[] definedScoreboards;
+    /** All registered scoreboards, both in config and using the API */
+    private final Map<String, ScoreboardImpl> registeredScoreboards = new LinkedHashMap<>();
+
+    /** Scoreboards defined in the config. This does not include scoreboards creating using API. */
+    private ScoreboardImpl[] definedScoreboards;
 
     /** Manager for toggled players if remembering is enabled in config */
     @Nullable
@@ -73,7 +73,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             registeredScoreboards.put(scoreboardName, sb);
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(scoreboardName), sb);
         }
-        definedScoreboards = registeredScoreboards.values().stream().filter(s -> !((ScoreboardImpl)s).isApi()).toArray(me.neznamy.tab.api.scoreboard.Scoreboard[]::new);
+        definedScoreboards = registeredScoreboards.values().stream().filter(s -> !s.isApi()).toArray(ScoreboardImpl[]::new);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
@@ -151,8 +151,8 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
      */
     public @Nullable me.neznamy.tab.api.scoreboard.Scoreboard detectHighestScoreboard(@NonNull TabPlayer p) {
         if (p.scoreboardData.forcedScoreboard != null) return p.scoreboardData.forcedScoreboard;
-        for (me.neznamy.tab.api.scoreboard.Scoreboard sb : definedScoreboards) {
-            if (((ScoreboardImpl)sb).isConditionMet(p)) return sb;
+        for (ScoreboardImpl sb : definedScoreboards) {
+            if (sb.isConditionMet(p)) return sb;
         }
         return null;
     }
@@ -212,6 +212,35 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         ScoreboardImpl sb = new ScoreboardImpl(this, name, new ScoreboardDefinition(null, title, lines), true, true);
         registeredScoreboards.put(name, sb);
         return sb;
+    }
+
+    @Override
+    public void removeScoreboard(@NonNull String name) {
+        ScoreboardImpl removed = registeredScoreboards.remove(name);
+        if (removed == null) {
+            throw new IllegalArgumentException("No registered scoreboard found with name " + name);
+        }
+
+        Set<TabPlayer> players = removed.getPlayers();
+        removed.unregister();
+        for (TabPlayer p : players) {
+            p.scoreboardData.forcedScoreboard = null;
+            sendHighestScoreboard(p);
+        }
+    }
+
+    @Override
+    public void removeScoreboard(@NonNull me.neznamy.tab.api.scoreboard.Scoreboard scoreboard) {
+        if (!registeredScoreboards.remove(scoreboard.getName(), (ScoreboardImpl) scoreboard)) {
+            throw new IllegalArgumentException("This scoreboard (" + scoreboard.getName() + ") is not registered.");
+        }
+
+        Set<TabPlayer> players = ((ScoreboardImpl)scoreboard).getPlayers();
+        scoreboard.unregister();
+        for (TabPlayer p : players) {
+            p.scoreboardData.forcedScoreboard = null;
+            sendHighestScoreboard(p);
+        }
     }
 
     @Override
@@ -350,6 +379,11 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             changed.scoreboardData.otherPluginScoreboard = null;
             sendHighestScoreboard(changed);
         }
+    }
+
+    @NotNull
+    public Map<String, me.neznamy.tab.api.scoreboard.Scoreboard> getRegisteredScoreboards() {
+        return Collections.unmodifiableMap(registeredScoreboards);
     }
 
     /**

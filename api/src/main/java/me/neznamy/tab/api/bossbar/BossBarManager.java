@@ -1,13 +1,13 @@
 package me.neznamy.tab.api.bossbar;
 
-import java.util.List;
-import java.util.Map;
-
 import lombok.NonNull;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * An interface allowing work with BossBars such as creating, sending
@@ -77,6 +77,28 @@ public interface BossBarManager {
      * @return  all registered BossBars
      */
     @NotNull Map<String, BossBar> getRegisteredBossBars();
+
+    /**
+     * Removes BossBar with specified name from the manager, making it no longer available.
+     * If BossBar was displayed to any players, it is removed.
+     *
+     * @param   name
+     *          Name of registered BossBar to remove
+     * @throws  IllegalArgumentException
+     *          if no BossBar with specified name exists
+     */
+    void removeBossBar(@NonNull String name);
+
+    /**
+     * Removes BossBar from the manager, making it no longer available.
+     * If BossBar was displayed to any players, it is removed.
+     *
+     * @param   bossBar
+     *          BossBar to remove
+     * @throws  IllegalArgumentException
+     *          if specified BossBar is not registered
+     */
+    void removeBossBar(@NonNull BossBar bossBar);
 
     /**
      * Toggles BossBar for this player and sends toggle message if {@code sendToggleMessage} is true.

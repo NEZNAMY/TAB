@@ -187,6 +187,32 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     }
 
     @Override
+    public void removeBossBar(@NonNull String name) {
+        ensureActive();
+        BossBar bar = registeredBossBars.remove(name);
+        if (bar == null) throw new IllegalArgumentException("No registered BossBar found with name " + name);
+        lineValues = registeredBossBars.values().toArray(new BossBarLine[0]);
+        for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            bar.removePlayer(player);
+            player.bossbarData.visibleBossBars.remove(bar);
+        }
+    }
+
+    @Override
+    public void removeBossBar(@NonNull BossBar bossBar) {
+        ensureActive();
+        BossBarLine bar = (BossBarLine) bossBar;
+        if (!registeredBossBars.remove(bar.getName(), bar)) {
+            throw new IllegalArgumentException("This bossbar (" + bar.getName() + ") is not registered.");
+        }
+        lineValues = registeredBossBars.values().toArray(new BossBarLine[0]);
+        for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            bar.removePlayer(player);
+            player.bossbarData.visibleBossBars.remove(bar);
+        }
+    }
+
+    @Override
     public void toggleBossBar(@NonNull me.neznamy.tab.api.TabPlayer player, boolean sendToggleMessage) {
         ensureActive();
         setBossBarVisible(player, !hasBossBarVisible(player), sendToggleMessage);
