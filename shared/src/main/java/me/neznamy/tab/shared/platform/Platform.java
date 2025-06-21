@@ -181,6 +181,15 @@ public interface Platform {
     boolean supportsScoreboards();
 
     /**
+     * Returns {@code true} if server supports list order option (1.21.2+), {@code false} if not.
+     *
+     * @return   {@code true} if server supports list order option (1.21.2+), {@code false} if not
+     */
+    default boolean supportsListOrder() {
+        return true;
+    }
+
+    /**
      * Returns {@code true} if the server is safe from being affected by the packetevents bug with limitations, {@code false} if not.
      *
      * @return  {@code true} if server is safe, {@code false} if not

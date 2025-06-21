@@ -86,11 +86,17 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     private final ImplementationProvider serverImplementationProvider = findImplementationProvider();
 
-    /** Implementation for sending new content to new players on old servers */
+    /**
+     * Implementation for sending new content to new players on old servers.
+     * Currently, it is disabled and will most likely be removed in the future.
+     * Further explanation is available at https://github.com/NEZNAMY/TAB/pull/1443#issuecomment-2993496689
+     * Keeping it here for now in case something drastic changes (e.g. ViaVersion magically fixing the issue introduced in build 1144).
+     */
     @Nullable
     private final ViaVersionProvider viaVersionProvider =
-            ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3") ?
-                    new ViaVersionProvider(serverVersion) : null;
+                    //ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3") ?
+                    //new ViaVersionProvider(serverVersion) :
+                    null;
 
     private final boolean modernOnlinePlayers;
 
@@ -382,6 +388,11 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     public boolean supportsScoreboards() {
         return true;
+    }
+
+    @Override
+    public boolean supportsListOrder() {
+        return serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId();
     }
 
     @Override

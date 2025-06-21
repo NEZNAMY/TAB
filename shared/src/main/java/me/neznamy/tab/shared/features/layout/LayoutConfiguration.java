@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.chat.EnumChatFormat;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -107,14 +108,16 @@ public class LayoutConfiguration {
         }
 
         public String getEntryName(@NotNull TabPlayer viewer, int slot, boolean teamsEnabled) {
-            if (viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() && viewer.getVersion().getNetworkId() < ProtocolVersion.V1_21_2.getNetworkId()) {
+            boolean legacySorting = viewer.getVersion().getNetworkId() < ProtocolVersion.V1_19_3.getNetworkId();
+            boolean modernSorting = viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() && TAB.getInstance().getPlatform().supportsListOrder();
+            if (legacySorting || modernSorting) {
+                return "";
+            } else {
                 if (teamsEnabled) {
                     return "|slot_" + (10+slotTranslator.apply(slot));
                 } else {
                     return " slot_" + (10+slotTranslator.apply(slot));
                 }
-            } else {
-                return "";
             }
         }
     }
