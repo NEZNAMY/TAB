@@ -23,6 +23,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @NotNull
     @SneakyThrows
     protected Channel getChannel(@NotNull TabPlayer player) {
-        return ((BukkitPlatform)player.getPlatform()).getServerImplementationProvider().getChannelFunction().apply((BukkitTabPlayer) player);
+        return ((BukkitPlatform)player.getPlatform()).getImplementationProvider().getChannelFunction().apply((BukkitTabPlayer) player);
     }
 }

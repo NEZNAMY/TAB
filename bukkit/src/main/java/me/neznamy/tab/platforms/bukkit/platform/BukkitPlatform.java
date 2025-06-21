@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.chat.component.*;
@@ -14,7 +15,6 @@ import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.platforms.bukkit.provider.bukkit.BukkitImplementationProvider;
 import me.neznamy.tab.platforms.bukkit.provider.bukkit.PaperScoreboard;
 import me.neznamy.tab.platforms.bukkit.provider.reflection.ReflectionImplementationProvider;
-import me.neznamy.tab.platforms.bukkit.provider.viaversion.ViaVersionProvider;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -67,7 +67,6 @@ public class BukkitPlatform implements BackendPlatform {
     private final JavaPlugin plugin;
 
     /** Server version */
-    @Getter
     private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
 
     /** Variables checking presence of other plugins to hook into */
@@ -84,19 +83,8 @@ public class BukkitPlatform implements BackendPlatform {
 
     /** Implementation for creating new instances using content available on the server */
     @NotNull
-    private final ImplementationProvider serverImplementationProvider = findImplementationProvider();
-
-    /**
-     * Implementation for sending new content to new players on old servers.
-     * Currently, it is disabled and will most likely be removed in the future.
-     * Further explanation is available at https://github.com/NEZNAMY/TAB/pull/1443#issuecomment-2993496689
-     * Keeping it here for now in case something drastic changes (e.g. ViaVersion magically fixing the issue introduced in build 1144).
-     */
-    @Nullable
-    private final ViaVersionProvider viaVersionProvider =
-                    //ReflectionUtils.classExists("com.viaversion.viaversion.protocols.v1_20_2to1_20_3.Protocol1_20_2To1_20_3") ?
-                    //new ViaVersionProvider(serverVersion) :
-                    null;
+    @Setter
+    private ImplementationProvider implementationProvider = findImplementationProvider();
 
     private final boolean modernOnlinePlayers;
 
@@ -229,7 +217,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
-        return serverImplementationProvider.getChannelFunction() != null ? new BukkitPipelineInjector() : null;
+        return implementationProvider.getChannelFunction() != null ? new BukkitPipelineInjector() : null;
     }
 
     @Override
@@ -342,8 +330,8 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public Object convertComponent(@NotNull TabComponent component) {
-        if (serverImplementationProvider.getComponentConverter() != null) {
-            return serverImplementationProvider.getComponentConverter().convert(component);
+        if (implementationProvider.getComponentConverter() != null) {
+            return implementationProvider.getComponentConverter().convert(component);
         } else {
             return component;
         }
@@ -352,11 +340,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
-        if (viaVersionProvider != null) {
-            Scoreboard scoreboard = viaVersionProvider.newScoreboard((BukkitTabPlayer) player);
-            if (scoreboard != null) return scoreboard;
-        }
-        return serverImplementationProvider.newScoreboard((BukkitTabPlayer) player);
+        return implementationProvider.newScoreboard((BukkitTabPlayer) player);
     }
 
     @Override
@@ -378,11 +362,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public TabList createTabList(@NotNull TabPlayer player) {
-        if (viaVersionProvider != null) {
-            TabList tabList = viaVersionProvider.newTabList((BukkitTabPlayer) player);
-            if (tabList != null) return tabList;
-        }
-        return serverImplementationProvider.newTabList((BukkitTabPlayer) player);
+        return implementationProvider.newTabList((BukkitTabPlayer) player);
     }
 
     @Override

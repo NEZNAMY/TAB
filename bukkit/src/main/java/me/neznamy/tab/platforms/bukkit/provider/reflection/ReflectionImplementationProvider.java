@@ -2,13 +2,10 @@ package me.neznamy.tab.platforms.bukkit.provider.reflection;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
-import me.neznamy.tab.platforms.bukkit.provider.viaversion.ViaScoreboard;
-import me.neznamy.tab.platforms.bukkit.provider.viaversion.ViaTabList;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -65,25 +62,9 @@ public class ReflectionImplementationProvider implements ImplementationProvider 
     }
 
     @Override
-    public void onPacketSend(@NonNull Object packet, @NonNull ViaScoreboard scoreboard) {
-        PacketScoreboard.onPacketSend(packet, scoreboard);
-    }
-
-    @Override
-    public void onPacketSend(@NonNull Object packet, @NonNull ViaTabList tabList) {
-        PacketTabList.onPacketSend(packet, tabList);
-    }
-
-    @Override
     @NotNull
     public TabList newTabList(@NotNull BukkitTabPlayer player) {
         return new PacketTabList(player);
-    }
-
-    @Override
-    @Nullable
-    public TabList.Skin getSkin(@NotNull BukkitTabPlayer player) {
-        return PacketTabList.getSkin(player);
     }
 
     @Override

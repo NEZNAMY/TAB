@@ -33,35 +33,6 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final Scoreboard dummyScoreboard = new Scoreboard();
     private static final Field players = ReflectionUtils.getOnlyField(ClientboundSetPlayerTeamPacket.class, Collection.class);
 
-    @SneakyThrows
-    public static void onPacketSend(@NonNull Object packet, @NonNull SafeScoreboard<BukkitTabPlayer> scoreboard) {
-        if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
-            TAB.getInstance().getFeatureManager().onDisplayObjective(scoreboard.getPlayer(), display.getSlot().ordinal(), display.getObjectiveName());
-        }
-        if (packet instanceof ClientboundSetObjectivePacket objective) {
-            TAB.getInstance().getFeatureManager().onObjective(scoreboard.getPlayer(), objective.getMethod(), objective.getObjectiveName());
-        }
-        if (packet instanceof ClientboundSetPlayerTeamPacket team) {
-            int action = getMethod(team);
-            if (action == TeamAction.UPDATE) return;
-            players.set(team, scoreboard.onTeamPacket(action, team.getName(), team.getPlayers() == null ? Collections.emptyList() : team.getPlayers()));
-        }
-    }
-
-    private static int getMethod(@NonNull ClientboundSetPlayerTeamPacket team) {
-        if (team.getTeamAction() == ClientboundSetPlayerTeamPacket.Action.ADD) {
-            return 0;
-        } else if (team.getTeamAction() == ClientboundSetPlayerTeamPacket.Action.REMOVE) {
-            return 1;
-        } else if (team.getPlayerAction() == ClientboundSetPlayerTeamPacket.Action.ADD) {
-            return 3;
-        } else if (team.getPlayerAction() == ClientboundSetPlayerTeamPacket.Action.REMOVE) {
-            return 4;
-        } else {
-            return 2;
-        }
-    }
-
     /**
      * Constructs new instance with given player.
      *
@@ -161,8 +132,33 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @Override
+    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
-        onPacketSend(packet, this);
+        if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getSlot().ordinal(), display.getObjectiveName());
+        }
+        if (packet instanceof ClientboundSetObjectivePacket objective) {
+            TAB.getInstance().getFeatureManager().onObjective(player, objective.getMethod(), objective.getObjectiveName());
+        }
+        if (packet instanceof ClientboundSetPlayerTeamPacket team) {
+            int action = getMethod(team);
+            if (action == TeamAction.UPDATE) return;
+            players.set(team, onTeamPacket(action, team.getName(), team.getPlayers() == null ? Collections.emptyList() : team.getPlayers()));
+        }
+    }
+
+    private static int getMethod(@NonNull ClientboundSetPlayerTeamPacket team) {
+        if (team.getTeamAction() == ClientboundSetPlayerTeamPacket.Action.ADD) {
+            return 0;
+        } else if (team.getTeamAction() == ClientboundSetPlayerTeamPacket.Action.REMOVE) {
+            return 1;
+        } else if (team.getPlayerAction() == ClientboundSetPlayerTeamPacket.Action.ADD) {
+            return 3;
+        } else if (team.getPlayerAction() == ClientboundSetPlayerTeamPacket.Action.REMOVE) {
+            return 4;
+        } else {
+            return 2;
+        }
     }
 
     /**

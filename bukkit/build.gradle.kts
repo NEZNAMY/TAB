@@ -15,6 +15,4 @@ dependencies {
         exclude("net.md-5", "bungeecord-chat")
     }
     compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.8.8")
-    compileOnlyApi("com.viaversion:viaversion-api:5.2.1")
-    compileOnly("com.viaversion:viaversion-common:5.2.1")
 }

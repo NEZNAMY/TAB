@@ -37,38 +37,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static final Field PlayerInfoData_Latency = ReflectionUtils.getFields(PlayerInfoData.class, int.class).get(0);
     private static final Field PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(PlayerInfoData.class, IChatBaseComponent.class);
 
-    @SneakyThrows
-    public static void onPacketSend(@NonNull Object packet, @NonNull TrackedTabList<BukkitTabPlayer> tabList) {
-        if (!(packet instanceof PacketPlayOutPlayerInfo)) return;
-        EnumPlayerInfoAction action = ((PacketPlayOutPlayerInfo)packet).c();
-        for (PlayerInfoData nmsData : ((PacketPlayOutPlayerInfo)packet).b()) {
-            GameProfile profile = nmsData.a();
-            UUID id = profile.getId();
-            if (action == EnumPlayerInfoAction.d || action == EnumPlayerInfoAction.a) {
-                TabComponent expectedName = tabList.getExpectedDisplayNames().get(id);
-                if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
-            }
-            if (action == EnumPlayerInfoAction.c || action == EnumPlayerInfoAction.a) {
-                int oldLatency = nmsData.b();
-                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(tabList.getPlayer(), id, oldLatency);
-                if (oldLatency != newLatency) {
-                    PlayerInfoData_Latency.set(nmsData, newLatency);
-                }
-            }
-            if (action == EnumPlayerInfoAction.a) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(tabList.getPlayer(), id, profile.getName());
-            }
-        }
-    }
-
-    @Nullable
-    public static Skin getSkin(@NonNull BukkitTabPlayer player) {
-        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
-        if (properties.isEmpty()) return null; // Offline mode
-        Property property = properties.iterator().next();
-        return new Skin(property.getValue(), property.getSignature());
-    }
-
     /**
      * Constructs new instance.
      *
@@ -135,12 +103,35 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @Nullable
     public Skin getSkin() {
-        return getSkin(player);
+        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
+        if (properties.isEmpty()) return null; // Offline mode
+        Property property = properties.iterator().next();
+        return new Skin(property.getValue(), property.getSignature());
     }
 
     @Override
+    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
-        onPacketSend(packet, this);
+        if (!(packet instanceof PacketPlayOutPlayerInfo)) return;
+        EnumPlayerInfoAction action = ((PacketPlayOutPlayerInfo)packet).c();
+        for (PlayerInfoData nmsData : ((PacketPlayOutPlayerInfo)packet).b()) {
+            GameProfile profile = nmsData.a();
+            UUID id = profile.getId();
+            if (action == EnumPlayerInfoAction.d || action == EnumPlayerInfoAction.a) {
+                TabComponent expectedName = getExpectedDisplayNames().get(id);
+                if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
+            }
+            if (action == EnumPlayerInfoAction.c || action == EnumPlayerInfoAction.a) {
+                int oldLatency = nmsData.b();
+                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, oldLatency);
+                if (oldLatency != newLatency) {
+                    PlayerInfoData_Latency.set(nmsData, newLatency);
+                }
+            }
+            if (action == EnumPlayerInfoAction.a) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
+            }
+        }
     }
 
     @SneakyThrows

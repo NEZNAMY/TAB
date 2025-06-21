@@ -2,18 +2,14 @@ package me.neznamy.tab.platforms.bukkit.v1_8_R3;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
-import me.neznamy.tab.platforms.bukkit.provider.viaversion.ViaScoreboard;
-import me.neznamy.tab.platforms.bukkit.provider.viaversion.ViaTabList;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.util.function.FunctionWithException;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation provider using direct NMS code for 1.8.8.
@@ -31,25 +27,9 @@ public class NMSImplementationProvider implements ImplementationProvider {
     }
 
     @Override
-    public void onPacketSend(@NonNull Object packet, @NonNull ViaScoreboard scoreboard) {
-        NMSPacketScoreboard.onPacketSend(packet, scoreboard);
-    }
-
-    @Override
-    public void onPacketSend(@NonNull Object packet, @NonNull ViaTabList tabList) {
-        NMSPacketTabList.onPacketSend(packet, tabList);
-    }
-
-    @Override
     @NotNull
     public TabList newTabList(@NotNull BukkitTabPlayer player) {
         return new NMSPacketTabList(player);
-    }
-
-    @Override
-    @Nullable
-    public TabList.Skin getSkin(@NotNull BukkitTabPlayer player) {
-        return NMSPacketTabList.getSkin(player);
     }
 
     @Override

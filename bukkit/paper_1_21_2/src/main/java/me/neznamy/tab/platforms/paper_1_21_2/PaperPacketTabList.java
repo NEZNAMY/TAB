@@ -37,50 +37,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     private static final Field entries = ReflectionUtils.getOnlyField(ClientboundPlayerInfoUpdatePacket.class, List.class);
 
-    @SneakyThrows
-    public static void onPacketSend(@NonNull Object packet, TrackedTabList<BukkitTabPlayer> tabList) {
-        if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
-            EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
-            List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
-            boolean rewritePacket = false;
-            for (ClientboundPlayerInfoUpdatePacket.Entry nmsData : info.entries()) {
-                boolean rewriteEntry = false;
-                Component displayName = nmsData.displayName();
-                int latency = nmsData.latency();
-                if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                    TabComponent expectedDisplayName = tabList.getExpectedDisplayNames().get(nmsData.profileId());
-                    if (expectedDisplayName != null && expectedDisplayName.convert() != displayName) {
-                        displayName = expectedDisplayName.convert();
-                        rewriteEntry = rewritePacket = true;
-                    }
-                }
-                if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
-                    int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(tabList.getPlayer(), nmsData.profileId(), latency);
-                    if (newLatency != latency) {
-                        latency = newLatency;
-                        rewriteEntry = rewritePacket = true;
-                    }
-                }
-                if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
-                    TAB.getInstance().getFeatureManager().onEntryAdd(tabList.getPlayer(), nmsData.profileId(), nmsData.profile().getName());
-                }
-                updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
-                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName,
-                        nmsData.listOrder(), nmsData.chatSession()
-                ) : nmsData);
-            }
-            if (rewritePacket) entries.set(info, updatedList);
-        }
-    }
-
-    @Nullable
-    public static Skin getSkin(@NotNull BukkitTabPlayer player) {
-        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
-        if (properties.isEmpty()) return null; // Offline mode
-        Property property = properties.iterator().next();
-        return new Skin(property.value(), property.signature());
-    }
-
     /**
      * Constructs new instance.
      *
@@ -145,12 +101,47 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @Nullable
     public Skin getSkin() {
-        return getSkin(player);
+        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
+        if (properties.isEmpty()) return null; // Offline mode
+        Property property = properties.iterator().next();
+        return new Skin(property.value(), property.signature());
     }
 
     @Override
+    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
-        onPacketSend(packet, this);
+        if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
+            EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
+            List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
+            boolean rewritePacket = false;
+            for (ClientboundPlayerInfoUpdatePacket.Entry nmsData : info.entries()) {
+                boolean rewriteEntry = false;
+                Component displayName = nmsData.displayName();
+                int latency = nmsData.latency();
+                if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
+                    TabComponent expectedDisplayName = getExpectedDisplayNames().get(nmsData.profileId());
+                    if (expectedDisplayName != null && expectedDisplayName.convert() != displayName) {
+                        displayName = expectedDisplayName.convert();
+                        rewriteEntry = rewritePacket = true;
+                    }
+                }
+                if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
+                    int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, nmsData.profileId(), latency);
+                    if (newLatency != latency) {
+                        latency = newLatency;
+                        rewriteEntry = rewritePacket = true;
+                    }
+                }
+                if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
+                }
+                updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
+                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName,
+                        nmsData.listOrder(), nmsData.chatSession()
+                ) : nmsData);
+            }
+            if (rewritePacket) entries.set(info, updatedList);
+        }
     }
 
     private void sendPacket(@NonNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,

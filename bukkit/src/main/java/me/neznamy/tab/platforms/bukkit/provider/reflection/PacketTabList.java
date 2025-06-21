@@ -157,52 +157,6 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
         }
     }
 
-    @SneakyThrows
-    public static void onPacketSend(@NonNull Object packet, @NonNull TrackedTabList<BukkitTabPlayer> tabList) {
-        if (!(PlayerInfoClass.isInstance(packet))) return;
-        EnumSet<?> actions = (EnumSet<?>) ACTION.get(packet);
-        List<Object> updatedList = new ArrayList<>();
-        boolean rewritePacket = false;
-        for (Object nmsData : (List<?>) PLAYERS.get(packet)) {
-            boolean rewriteEntry = false;
-            UUID id = (UUID) PlayerInfoData_UUID.get(nmsData);
-            GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
-            Object displayName = PlayerInfoData_DisplayName.get(nmsData);
-            int latency = PlayerInfoData_Latency.getInt(nmsData);
-            int listOrder = v1_21_2Plus ? PlayerInfoData_ListOrder.getInt(nmsData) : 0;
-            boolean showHat = v1_21_4Plus && PlayerInfoData_ShowHat.getBoolean(nmsData);
-            if (actions.contains(actionUpdateDisplayName)) {
-                TabComponent expectedName = tabList.getExpectedDisplayNames().get(id);
-                if (expectedName != null && expectedName.convert() != displayName) {
-                    displayName = expectedName.convert();
-                    rewriteEntry = rewritePacket = true;
-                }
-            }
-            if (actions.contains(actionUpdateLatency)) {
-                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(tabList.getPlayer(), id, latency);
-                if (newLatency != latency) {
-                    latency = newLatency;
-                    rewriteEntry = rewritePacket = true;
-                }
-            }
-            if (actions.contains(actionAddPlayer)) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(tabList.getPlayer(), id, profile.getName());
-            }
-            // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
-            updatedList.add(rewriteEntry ? newPlayerInfoData(
-                    id,
-                    profile,
-                    PlayerInfoData_Listed.getBoolean(nmsData),
-                    latency,
-                    PlayerInfoData_GameMode.get(nmsData),
-                    displayName,
-                    showHat,
-                    listOrder,
-                    PlayerInfoData_RemoteChatSession.get(nmsData)) : nmsData);
-        }
-        if (rewritePacket) PLAYERS.set(packet, updatedList);
-    }
-
     @Override
     @SneakyThrows
     public void removeEntry(@NonNull UUID entry) {
@@ -282,8 +236,50 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
+    @SneakyThrows
     public void onPacketSend(@NonNull Object packet) {
-        onPacketSend(packet, this);
+        if (!(PlayerInfoClass.isInstance(packet))) return;
+        EnumSet<?> actions = (EnumSet<?>) ACTION.get(packet);
+        List<Object> updatedList = new ArrayList<>();
+        boolean rewritePacket = false;
+        for (Object nmsData : (List<?>) PLAYERS.get(packet)) {
+            boolean rewriteEntry = false;
+            UUID id = (UUID) PlayerInfoData_UUID.get(nmsData);
+            GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
+            Object displayName = PlayerInfoData_DisplayName.get(nmsData);
+            int latency = PlayerInfoData_Latency.getInt(nmsData);
+            int listOrder = v1_21_2Plus ? PlayerInfoData_ListOrder.getInt(nmsData) : 0;
+            boolean showHat = v1_21_4Plus && PlayerInfoData_ShowHat.getBoolean(nmsData);
+            if (actions.contains(actionUpdateDisplayName)) {
+                TabComponent expectedName = getExpectedDisplayNames().get(id);
+                if (expectedName != null && expectedName.convert() != displayName) {
+                    displayName = expectedName.convert();
+                    rewriteEntry = rewritePacket = true;
+                }
+            }
+            if (actions.contains(actionUpdateLatency)) {
+                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, latency);
+                if (newLatency != latency) {
+                    latency = newLatency;
+                    rewriteEntry = rewritePacket = true;
+                }
+            }
+            if (actions.contains(actionAddPlayer)) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
+            }
+            // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
+            updatedList.add(rewriteEntry ? newPlayerInfoData(
+                    id,
+                    profile,
+                    PlayerInfoData_Listed.getBoolean(nmsData),
+                    latency,
+                    PlayerInfoData_GameMode.get(nmsData),
+                    displayName,
+                    showHat,
+                    listOrder,
+                    PlayerInfoData_RemoteChatSession.get(nmsData)) : nmsData);
+        }
+        if (rewritePacket) PLAYERS.set(packet, updatedList);
     }
 
     @NotNull
@@ -327,13 +323,8 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @Nullable
     @Override
-    public Skin getSkin() {
-        return getSkin(player);
-    }
-
-    @Nullable
     @SneakyThrows
-    public static Skin getSkin(@NotNull BukkitTabPlayer player) {
+    public Skin getSkin() {
         Collection<Property> col = ((GameProfile) getProfile.invoke(player.getHandle())).getProperties().get(TabList.TEXTURES_PROPERTY);
         if (col.isEmpty()) return null; //offline mode
         Property property = col.iterator().next();

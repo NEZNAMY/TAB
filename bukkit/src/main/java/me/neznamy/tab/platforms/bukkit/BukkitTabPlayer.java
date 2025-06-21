@@ -48,7 +48,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getPing() {
-        return getPlatform().getServerImplementationProvider().getPing(this);
+        return getPlatform().getImplementationProvider().getPing(this);
     }
 
     @Override

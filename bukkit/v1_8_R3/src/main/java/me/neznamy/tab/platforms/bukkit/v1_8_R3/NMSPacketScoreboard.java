@@ -33,26 +33,6 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final Field DisplayObjective_OBJECTIVE_NAME = ReflectionUtils.getOnlyField(PacketPlayOutScoreboardDisplayObjective.class, String.class);
     private static final Field DisplayObjective_POSITION = ReflectionUtils.getOnlyField(PacketPlayOutScoreboardDisplayObjective.class, int.class);
 
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    public static void onPacketSend(@NonNull Object packet, @NonNull SafeScoreboard<BukkitTabPlayer> scoreboard) {
-        if (packet instanceof PacketPlayOutScoreboardDisplayObjective) {
-            TAB.getInstance().getFeatureManager().onDisplayObjective(scoreboard.getPlayer(), DisplayObjective_POSITION.getInt(packet),
-                    (String) DisplayObjective_OBJECTIVE_NAME.get(packet));
-        }
-        if (packet instanceof PacketPlayOutScoreboardObjective) {
-            TAB.getInstance().getFeatureManager().onObjective(scoreboard.getPlayer(),
-                    Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
-        }
-        if (packet instanceof PacketPlayOutScoreboardTeam) {
-            int action = TeamPacket_ACTION.getInt(packet);
-            if (action == TeamAction.UPDATE) return;
-            Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
-            if (players == null) players = Collections.emptyList();
-            TeamPacket_PLAYERS.set(packet, scoreboard.onTeamPacket(action, (String) TeamPacket_NAME.get(packet), players));
-        }
-    }
-
     /**
      * Constructs new instance with given player.
      *
@@ -66,7 +46,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void registerObjective(@NonNull Objective objective) {
         ScoreboardObjective obj = new ScoreboardObjective(dummyScoreboard, objective.getName(), IScoreboardCriteria.b);
-        obj.setDisplayName(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
+        obj.setDisplayName(maybeCut(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
         obj.a(IScoreboardCriteria.EnumScoreboardHealthDisplay.valueOf(objective.getHealthDisplay().name()));
         objective.setPlatformObjective(obj);
         sendPacket(new PacketPlayOutScoreboardObjective(obj, ObjectiveAction.REGISTER));
@@ -85,7 +65,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     public void updateObjective(@NonNull Objective objective) {
         ScoreboardObjective obj = (ScoreboardObjective) objective.getPlatformObjective();
-        obj.setDisplayName(cutTo(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
+        obj.setDisplayName(maybeCut(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
         obj.a(IScoreboardCriteria.EnumScoreboardHealthDisplay.valueOf(objective.getHealthDisplay().name()));
         sendPacket(new PacketPlayOutScoreboardObjective(obj, ObjectiveAction.UPDATE));
     }
@@ -132,13 +112,29 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         t.setCanSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
         t.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
-        t.setPrefix(cutTo(team.getPrefix().toLegacyText(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
-        t.setSuffix(cutTo(team.getSuffix().toLegacyText(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
+        t.setPrefix(maybeCut(team.getPrefix().toLegacyText(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
+        t.setSuffix(maybeCut(team.getSuffix().toLegacyText(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13));
     }
 
     @Override
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
     public void onPacketSend(@NonNull Object packet) {
-        onPacketSend(packet, this);
+        if (packet instanceof PacketPlayOutScoreboardDisplayObjective) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player, DisplayObjective_POSITION.getInt(packet),
+                    (String) DisplayObjective_OBJECTIVE_NAME.get(packet));
+        }
+        if (packet instanceof PacketPlayOutScoreboardObjective) {
+            TAB.getInstance().getFeatureManager().onObjective(player,
+                    Objective_METHOD.getInt(packet), (String) Objective_OBJECTIVE_NAME.get(packet));
+        }
+        if (packet instanceof PacketPlayOutScoreboardTeam) {
+            int action = TeamPacket_ACTION.getInt(packet);
+            if (action == TeamAction.UPDATE) return;
+            Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
+            if (players == null) players = Collections.emptyList();
+            TeamPacket_PLAYERS.set(packet, onTeamPacket(action, (String) TeamPacket_NAME.get(packet), players));
+        }
     }
 
     /**
@@ -149,5 +145,13 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      */
     private void sendPacket(@NotNull Packet<?> packet) {
         ((CraftPlayer)player.getPlayer()).getHandle().playerConnection.sendPacket(packet);
+    }
+
+    @NotNull
+    private String maybeCut(@NonNull String string, int length) {
+        if (player.getVersion().getMinorVersion() < 13 || TAB.getInstance().getConfiguration().getConfig().isPacketEventsCompensation()) {
+            return cutTo(string, length);
+        }
+        return string;
     }
 }
