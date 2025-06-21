@@ -665,7 +665,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     @NotNull
-    public String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    public String getOriginalRawPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
@@ -674,11 +674,41 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     @Override
     @NotNull
-    public String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    public String getOriginalRawSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
         p.ensureLoaded();
         return p.teamData.suffix.getOriginalRawValue();
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalReplacedPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return p.teamData.prefix.getOriginalReplacedValue();
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalReplacedSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return p.teamData.suffix.getOriginalReplacedValue();
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return getOriginalRawPrefix(player);
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return getOriginalRawSuffix(player);
     }
 
     @Override

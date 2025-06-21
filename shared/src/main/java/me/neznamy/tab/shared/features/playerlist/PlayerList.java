@@ -335,24 +335,69 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     }
 
     @Override
-    public @NotNull String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    @NotNull
+    public String getOriginalPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return getOriginalRawPrefix(player);
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return getOriginalRawName(player);
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return getOriginalRawSuffix(player);
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalRawPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).tablistData.prefix.getOriginalRawValue();
     }
 
     @Override
-    public @NotNull String getOriginalName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    @NotNull
+    public String getOriginalRawName(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).tablistData.name.getOriginalRawValue();
     }
 
     @Override
-    public @NotNull String getOriginalSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    @NotNull
+    public String getOriginalRawSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         return ((TabPlayer)player).tablistData.suffix.getOriginalRawValue();
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalReplacedPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        ((TabPlayer)player).ensureLoaded();
+        return ((TabPlayer)player).tablistData.prefix.getOriginalReplacedValue();
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalReplacedName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        ((TabPlayer)player).ensureLoaded();
+        return ((TabPlayer)player).tablistData.name.getOriginalReplacedValue();
+    }
+
+    @Override
+    @NotNull
+    public String getOriginalReplacedSuffix(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        ((TabPlayer)player).ensureLoaded();
+        return ((TabPlayer)player).tablistData.suffix.getOriginalReplacedValue();
     }
 
     // ------------------

@@ -134,7 +134,7 @@ public interface NameTagManager {
      * @param   prefix
      *          new prefix value
      * @see     #getCustomPrefix(TabPlayer)
-     * @see     #getOriginalPrefix(TabPlayer)
+     * @see     #getOriginalRawPrefix(TabPlayer)
      */
     void setPrefix(@NonNull TabPlayer player, @Nullable String prefix);
 
@@ -148,7 +148,7 @@ public interface NameTagManager {
      * @param   suffix
      *          new suffix value
      * @see     #getCustomSuffix(TabPlayer)
-     * @see     #getOriginalSuffix(TabPlayer)
+     * @see     #getOriginalRawSuffix(TabPlayer)
      */
     void setSuffix(@NonNull TabPlayer player, @Nullable String suffix);
 
@@ -160,7 +160,7 @@ public interface NameTagManager {
      *          Player to get custom prefix of
      * @return  Custom prefix assigned using the API.
      * @see     #setPrefix(TabPlayer, String)
-     * @see     #getOriginalPrefix(TabPlayer)
+     * @see     #getOriginalRawPrefix(TabPlayer)
      */
     @Nullable
     String getCustomPrefix(@NonNull TabPlayer player);
@@ -173,7 +173,7 @@ public interface NameTagManager {
      *          Player to get custom suffix of
      * @return  Custom suffix assigned using the API.
      * @see     #setSuffix(TabPlayer, String)
-     * @see     #getOriginalSuffix(TabPlayer)
+     * @see     #getOriginalRawSuffix(TabPlayer)
      */
     @Nullable
     String getCustomSuffix(@NonNull TabPlayer player);
@@ -186,7 +186,7 @@ public interface NameTagManager {
      * @see     #getCustomPrefix(TabPlayer)
      */
     @NotNull
-    String getOriginalPrefix(@NonNull TabPlayer player);
+    String getOriginalRawPrefix(@NonNull TabPlayer player);
 
     /**
      * Returns original suffix assigned by the plugin using internal logic.
@@ -195,6 +195,50 @@ public interface NameTagManager {
      * @return  Original suffix assigned by the plugin's internal logic.
      * @see     #getCustomSuffix(TabPlayer)
      */
+    @NotNull
+    String getOriginalRawSuffix(@NonNull TabPlayer player);
+
+    /**
+     * Returns original prefix assigned by the plugin using internal logic with all placeholders replaced.
+     * @param   player
+     *          Player to get replaced original prefix of
+     * @return  Original prefix assigned by the plugin's internal logic.
+     * @see     #getCustomPrefix(TabPlayer)
+     */
+    @NotNull
+    String getOriginalReplacedPrefix(@NonNull TabPlayer player);
+
+    /**
+     * Returns original suffix assigned by the plugin using internal logic with all placeholders replaced.
+     * @param   player
+     *          Player to get replaced original suffix of
+     * @return  Original suffix assigned by the plugin's internal logic.
+     * @see     #getCustomSuffix(TabPlayer)
+     */
+    @NotNull
+    String getOriginalReplacedSuffix(@NonNull TabPlayer player);
+
+    /**
+     * Returns original suffix assigned by the plugin using internal logic.
+     * @param   player
+     *          Player to get replaced original prefix of
+     * @return  Original prefix assigned by the plugin's internal logic.
+     * @see     #getCustomPrefix(TabPlayer)
+     * @deprecated  Use {@link #getOriginalRawPrefix(TabPlayer)} instead.
+     */
+    @Deprecated
+    @NotNull
+    String getOriginalPrefix(@NonNull TabPlayer player);
+
+    /**
+     * Returns original suffix assigned by the plugin using internal logic.
+     * @param   player
+     *          Player to get replaced original suffix of
+     * @return  Original suffix assigned by the plugin's internal logic.
+     * @see     #getCustomSuffix(TabPlayer)
+     * @deprecated  Use {@link #getOriginalRawSuffix(TabPlayer)} instead.
+     */
+    @Deprecated
     @NotNull
     String getOriginalSuffix(@NonNull TabPlayer player);
 
