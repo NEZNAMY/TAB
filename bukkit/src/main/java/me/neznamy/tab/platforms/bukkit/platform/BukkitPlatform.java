@@ -345,7 +345,6 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     @NotNull
-    @SneakyThrows
     public Scoreboard createScoreboard(@NotNull TabPlayer player) {
         if (viaVersionProvider != null) {
             Scoreboard scoreboard = viaVersionProvider.newScoreboard((BukkitTabPlayer) player);
@@ -372,7 +371,6 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     @NotNull
-    @SneakyThrows
     public TabList createTabList(@NotNull TabPlayer player) {
         if (viaVersionProvider != null) {
             TabList tabList = viaVersionProvider.newTabList((BukkitTabPlayer) player);
