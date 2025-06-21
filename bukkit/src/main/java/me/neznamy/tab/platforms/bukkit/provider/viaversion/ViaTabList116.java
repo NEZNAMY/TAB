@@ -103,7 +103,7 @@ public class ViaTabList116 extends ViaTabList {
             // Properties size
             packet.write(Types.VAR_INT, 1);
             // Properties
-            packet.write(Types.STRING, entry.getName());
+            packet.write(Types.STRING, TEXTURES_PROPERTY);
             packet.write(Types.STRING, entry.getSkin().getValue());
             packet.write(Types.OPTIONAL_STRING, entry.getSkin().getSignature());
         }
