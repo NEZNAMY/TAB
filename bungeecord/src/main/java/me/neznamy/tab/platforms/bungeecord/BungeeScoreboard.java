@@ -10,10 +10,8 @@ import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.Either;
 import net.md_5.bungee.protocol.NumberFormat;
-import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-import net.md_5.bungee.protocol.packet.ScoreboardObjective;
-import net.md_5.bungee.protocol.packet.ScoreboardScore;
-import net.md_5.bungee.protocol.packet.ScoreboardScoreReset;
+import net.md_5.bungee.protocol.packet.*;
+import net.md_5.bungee.protocol.packet.Team.NameTagVisibility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,12 +117,30 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
                 either(TabComponent.legacyText(team.getName()), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 either(team.getPrefix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
-                net.md_5.bungee.protocol.packet.Team.NameTagVisibility.valueOf(team.getVisibility().name()),
-                net.md_5.bungee.protocol.packet.Team.CollisionRule.valueOf(team.getCollision().name()),
+                convertVisibility(team.getVisibility()),
+                convertCollision(team.getCollision()),
                 player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().getLegacyColor().ordinal() : 0,
                 (byte) team.getOptions(),
                 team.getPlayers().toArray(new String[0])
         ));
+    }
+
+    @NotNull
+    private Either<String, NameTagVisibility> convertVisibility(@NotNull NameVisibility visibility) {
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_5.getNetworkId()) {
+            return Either.right(NameTagVisibility.valueOf(visibility.name()));
+        } else {
+            return Either.left(visibility.toString());
+        }
+    }
+
+    @NotNull
+    private Either<String, net.md_5.bungee.protocol.packet.Team.CollisionRule> convertCollision(@NotNull CollisionRule collision) {
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_5.getNetworkId()) {
+            return Either.right(net.md_5.bungee.protocol.packet.Team.CollisionRule.valueOf(collision.name()));
+        } else {
+            return Either.left(collision.toString());
+        }
     }
 
     @Override
