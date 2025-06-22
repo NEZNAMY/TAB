@@ -93,6 +93,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setBossBarVisible(connectedPlayer, false);
         if (toggleManager != null) toggleManager.convert(connectedPlayer);
         setBossBarVisible(connectedPlayer, configuration.isHiddenByDefault() == (toggleManager != null && toggleManager.contains(connectedPlayer)), false);
     }
