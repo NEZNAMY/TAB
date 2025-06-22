@@ -12,7 +12,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.Property;
-import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
@@ -47,7 +46,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        player.sendPacket(new PlayerListHeaderFooter(toComponent(header), toComponent(footer)));
+        player.getPlayer().setTabHeader(toComponent(header), toComponent(footer));
     }
 
     /**
