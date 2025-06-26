@@ -6,11 +6,8 @@ api-version: 1.13 # Defining to avoid legacy plugin warn
 load: POSTWORLD
 author: @author@
 website: "@website@"
-depend: []
 softdepend: [PlaceholderAPI, LuckPerms, LibsDisguises, ViaVersion, ViaRewind, floodgate, Vault]
-loadbefore: []
 prefix: TAB
-libraries: []
 folia-supported: true
 commands:
   tab:
