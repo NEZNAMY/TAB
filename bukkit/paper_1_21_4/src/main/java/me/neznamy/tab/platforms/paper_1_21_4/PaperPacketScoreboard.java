@@ -168,6 +168,6 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      *          Packet to send
      */
     private void sendPacket(@NotNull Packet<?> packet) {
-        ((CraftPlayer)player.getPlayer()).getHandle().connection.sendPacket(packet);
+        ((CraftPlayer)player.getPlayer()).getHandle().connection.send(packet);
     }
 }

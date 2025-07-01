@@ -12,10 +12,12 @@ repositories {
     maven("https://maven.neoforged.net/releases")
 }
 
-val minecraftVersion = "1.21.6"
+val minecraftVersion = "1.21.7"
 
 // Forge API versions for each Minecraft version for easier backporting
+// Official website (for updating in the future): https://files.minecraftforge.net/net/minecraftforge/forge/
 val forgeApiVersions = mapOf(
+    "1.21.7" to "1.21.7-57.0.0",
     "1.21.6" to "1.21.6-56.0.0",
     "1.21.5" to "1.21.5-55.0.3",
     "1.21.4" to "1.21.4-54.1.3",

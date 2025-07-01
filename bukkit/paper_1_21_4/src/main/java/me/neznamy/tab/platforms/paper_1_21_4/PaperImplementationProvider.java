@@ -12,7 +12,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Implementation provider using direct Mojang-mapped NMS code for versions 1.21.4 - 1.21.6.
+ * Implementation provider using direct Mojang-mapped NMS code for versions 1.21.4 - 1.21.7.
  */
 @Getter
 public class PaperImplementationProvider implements ImplementationProvider {
