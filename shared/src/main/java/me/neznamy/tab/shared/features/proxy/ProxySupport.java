@@ -77,8 +77,14 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
             TAB.getInstance().getErrorManager().unknownProxyMessage(action);
             return;
         }
-        ProxyMessage proxyMessage = function.apply(in);
-        TAB.getInstance().debug("[Proxy Support] Decoded message " + proxyMessage);
+        ProxyMessage proxyMessage;
+        try {
+            proxyMessage = function.apply(in);
+            TAB.getInstance().debug("[Proxy Support] Decoded message " + proxyMessage);
+        } catch (Exception e) {
+            TAB.getInstance().getErrorManager().printError("Failed to decode proxy message \"" + new String(Base64.getDecoder().decode(msg)) + "\" ", e);
+            return;
+        }
 
         // Queue the task to make sure it does not execute before plugin fully loads, causing NPE
         TAB.getInstance().getCpu().runMeasuredTask(getFeatureName(), CpuUsageCategory.PROXY_MESSAGE, () -> {
