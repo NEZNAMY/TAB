@@ -79,6 +79,7 @@ If you want health to display health as 0-10 instead of 0-20, you can achieve it
 # Limitations
 * [1.5 - 1.12.2] Title length is limited to 32 characters (including color codes).
 * [1.5 - 1.20.2] `value` is limited to a white number.
+* [Bedrock] Doesn't support 1.20.3+ features (`fancy-value`), `value` will be displayed instead, just like on <1.20.3
 * The format is a **[score] + space + shared title**. No, the space cannot be removed.
 * The title is the same on all players, therefore, it cannot be personalized (such as player's faction). Only [score] can be per-player.
 * It appears on all entities of player type. **This includes player NPCs.**

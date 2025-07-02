@@ -5,9 +5,9 @@ The compact configuration allows you to get the plugin to work the way you want 
 [IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Release.svg[/IMG]
 [IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Minecraft.svg[/IMG]
 [IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Java.svg[/IMG]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_SourceCode.svg[/IMG]
+[URL='https://github.com/NEZNAMY/TAB'][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_SourceCode.svg[/IMG][/URL]
 [URL='https://github.com/NEZNAMY/TAB/issues'][IMG]https://img.shields.io/github/issues/neznamy/tab?label=Issues[/IMG][/URL]
-[IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Documentation.svg[/IMG]
+[URL='https://github.com/NEZNAMY/TAB/wiki'][IMG]https://raw.githubusercontent.com/NEZNAMY/TAB/master/.github/description/images/Badge_Documentation.svg[/IMG][/URL]
 [CENTER][B][SIZE=7]Discord?[/SIZE][/B][/CENTER]
 Official support by me is no longer provided to free users due to limited time and extreme inefficiency (see [URL='https://github.com/NEZNAMY/TAB?tab=readme-ov-file#provided-services']provided services[/URL] for more info).
 However, you can join this [URL='https://discord.gg/YPqXt63YQj']fresh new community discord[/URL] made by a nice person who promises to help everyone with all plugins, including TAB.

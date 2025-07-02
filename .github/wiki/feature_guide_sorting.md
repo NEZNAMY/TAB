@@ -205,11 +205,8 @@ In other words, only one plugin can handle teams at a time.
 Having multiple plugins handling teams is supposed to end in a disaster.
 
 Fortunately, TAB contains a function that prevents other plugins from assigning players into teams.
-This can be enabled/disabled by toggling `anti-override` setting under `scoreboard-teams`.
-This is, however, highly recommended to keep enabled, unless all of your plugins are configured correctly.
 When a plugin tries to override TAB's teams, this action is logged into `anti-override.log` file.
-If your file is empty / does not exist, it means you have no conflicting plugins / settings and can disable this option,
-slightly boosting performance.
+If your file is empty / does not exist, it means you have no conflicting plugins / settings.
 If the file exists, most of the time you can guess where the teams come from by their name.  
 Here are a few common teams and their sources (`xxxx` means any, usually random character sequence):
 * `collideRule_xxxx` - this comes from Paper. Not going to explain why as that would be quite long, but the way you can avoid is by setting `enable-player-collisions: true` in paper config and `enable-collision: false` in TAB config (yes, collisions will be disabled).
@@ -229,7 +226,6 @@ For that reason, let's call it list of mistakes made when following this page.
 
 The most common mistakes include:
 * Disabling both teams and layout, not realizing it disables sorting as well.
-* Disabling anti-override without disabling teams in other plugins.
 * Mistaking `primary-group-finding-list` for the sorting list, despite that list having nothing to do with sorting and by default even having a comment above it saying it has nothing to do with sorting.
 * Not configuring primary groups correctly. This can have multiple reasons, such as
   * Not configuring group weights in LuckPerms.

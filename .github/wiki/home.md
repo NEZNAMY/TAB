@@ -1,5 +1,5 @@
 # About the wiki
-The wiki explains the functionality of the plugin as of version **5.2.1**.
+The wiki explains the functionality of the plugin as of version **5.2.4**.
 If your config looks different or is missing some features, you are using an old version of the plugin.
 To get the latest version, check [releases](https://github.com/NEZNAMY/TAB/releases/).  
 Wiki for older plugin versions is not available.
@@ -11,7 +11,7 @@ This will give you knowledge to do things you had no idea were possible, giving 
 A lot of examples on the wiki use PlaceholderAPI placeholders without explaining its installation step by step. If you are going to use the examples and aren't familiar with the plugin, check out [Quick PlaceholderAPI startup guide](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide).
 
 # Limitations of plugins
-TAB is a plugin.
+TAB is a plugin (even on modded platforms, it is only a server-sided mod).
 It only modifies the server behavior to your liking.
 It does not add anything into the game.
 Because of that, you'll need

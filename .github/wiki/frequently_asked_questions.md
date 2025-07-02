@@ -99,10 +99,15 @@ Using `''` will result in the text being display literally, not as a code.
 **Note:** Minecraft does not support every single UTF symbol and displays unsupported symbols as a box. You can try sending your symbol into chat and see if it works or not. If not, it's not supported by MC.
 
 ## #14 - Is there a way to remove all players from tablist?
-For a player to be visible in game, they must be in the tablist as well.
-Remember the NPC in tablist issue?
-If you don't mind players not appearing in the game, get a plugin that hides all players.
-If you want to see them in the game, however, your only choice is to put a lot of empty lines into header,
+In Minecraft, for a player to be visible in-game, they also need to appear in the tablist.
+Remember the issue with NPCs showing up in the tablist? It's the same underlying mechanic.
+
+If you're okay with players not being visible in the world, you can use a plugin that hides all players completely.
+
+Since Minecraft 1.19.3, this limitation has been lifted — it's now possible to have entities in the game without showing them in the tablist.
+However, the TAB plugin does **not** support removing all players from the tablist in any version of Minecraft.
+
+An alternative solution using TAB is putting a lot of empty lines into header,
 which will push all players out of the screen.
 
 ## #15 - How to add images to tablist?
@@ -114,8 +119,8 @@ Kind of.
 MiniMessage support **is** included; however, this doesn't mean it is guaranteed to work.
 MiniMessage library must be included in your server software.
 TAB does not include this library.
-* It **is** included in **Paper 1.18.2** and higher, **Velocity** and **Sponge 8**.
-* It **is not** included in **Spigot**, any server software for 1.18.1 and lower, **BungeeCord**, **Sponge 7** and **Fabric**.
+* It **is** included in **Paper 1.18.2** and higher, **Velocity** and **Sponge**.
+* It **is not** included in **Spigot**, any server software for 1.18.1 and lower, **BungeeCord**, **Fabric**, **Forge** and **NeoForge**.
 
 If you believe MiniMessage should be supported on your server but doesn't work, open a bug report.
 

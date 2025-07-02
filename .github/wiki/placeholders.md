@@ -56,6 +56,8 @@ These placeholders are available on all platforms.
 | %player-version-id%                       | -1               | Network ID of player's version. You can see the full version map on [fan wiki](https://wiki.vg/Protocol_version_numbers) for all versions or [TAB's source code](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/ProtocolVersion.java) for releases only. Useful for conditions to create per-version results. |
 | %luckperms-prefix%                        | 1000             | Prefix from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                                         |
 | %luckperms-suffix%                        | 1000             | Suffix from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                                         |
+| %luckperms-prefixes%                      | 1000             | All prefixes combined from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                          |
+| %luckperms-suffixes%                      | 1000             | All suffixes combined from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                          |
 | %displayname%                             | 500              | Display name variable set by permission plugin, typically prefix + name + suffix                                                                                                                                                                                                                                                                     |
 | %group%                                   | 1000             | Returns player's primary group name. Created for internal functionality, but can be used as a display placeholder as well.                                                                                                                                                                                                                           |
 | %vanished%                                | 1000             | Returns `true`/`false` based on player's vanish status. Created for internal functionality, but can be used as a display placeholder as well.                                                                                                                                                                                                        |
@@ -70,8 +72,8 @@ These placeholders only work when TAB is installed on a backend server (Bukkit /
 | ------------- | ------------- | ------------- | ------------- |
 | %health% | 100 | Player's health, rounded up to match Minecraft's heart display. | %player_health_rounded% |
 | %displayname% | 500 | Player's display name value set by permission plugin. | %player_displayname% |
-| %tps%               | 1000 | TPS of server from the last minute (measured by server, not available on Fabric as it doesn't measure the value) | %server_tps_1% |
-| %mspt%              | 1000 | Server's current milliseconds per tick (Paper / Sponge 8+ / Fabric only) | - |
+| %tps%               | 1000 | TPS of server from the last minute. Measured by the server. Not directly available on Fabric, Forge and Neoforge. Primitive approximation using MSPT (TPS = 1000/MSPT, max 20) is used there. | %server_tps_1% |
+| %mspt%              | 1000 | Server's current milliseconds per tick (not available on Spigot) | - |
 
 ## BungeeCord only
 | Identifier                   | Refresh interval | Description                                                                                                                                                                   |
@@ -112,8 +114,7 @@ Full list of placeholders:
 | %tab_scoreboard_name% | Returns name of player's currently displayed scoreboard or empty string if none is displayed due to no display condition being met |
 | %tab_scoreboard_visible% | "Enabled" if visible, "Disabled" if not |
 | %tab_bossbar_visible% | "Enabled" if visible, "Disabled" if not |
-| %tab_nametag_preview% | "Enabled" if previewing armor stands using /tab nametag preview, "Disabled" if not |
-| %tab_nametag_visibility% | "Enabled" if player can see nametags, "Disabled" if disabled using /tab nametag toggle |
+| %tab_nametag_visibility% | "Enabled" if player can see nametags, "Disabled" if disabled using `/tab nametag toggleview` |
 | %tab_replace_\<placeholder\>% | Applies [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) to a PlaceholderAPI placeholder (for example %tab_replace_essentials_vanished%) |
 | %tab_placeholder_\<placeholder\>% | returns value of tab's internal placeholder (such as %tab_placeholder_animation:name% for %animation:name%) |
 

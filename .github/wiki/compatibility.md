@@ -35,7 +35,7 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
         <tr>
             <td rowspan=2>Vanilla</td>
             <td rowspan=1><a href="https://getbukkit.org/">Bukkit</a> (+forge hybrids)</td>
-            <td>✔ (1.5 - 1.21.5)</td>
+            <td>✔ (1.5 - 1.21.7)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>
@@ -46,33 +46,33 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
         <tr>
             <td rowspan=3>Modded</td>
             <td rowspan=1><a href="https://fabricmc.net">Fabric</a></td>
-            <td>✔ (1.21.4 - 1.21.5)</td>
+            <td>✔ (1.21.6 - 1.21.7)<sup>1</sup></td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://minecraftforge.net">Forge</a></td>
-            <td>✔ (1.21.4 - 1.21.5)</td>
+            <td>✔ (1.21.6 - 1.21.7)<sup>1</sup></td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://neoforged.net/">NeoForge</a></td>
-            <td>✔ (1.21.4 - 1.21.5)</td>
+            <td>✔ (1.21.6 - 1.21.7)<sup>1</sup></td>
         </tr>
     </tbody>
     <tbody>
         <tr>
             <td rowspan=2>Proxies</td>
             <td rowspan=1><a href="https://ci.md-5.net/job/BungeeCord/">BungeeCord</a></td>
-            <td>✔ (latest only<sup>1</sup>)</td>
+            <td>✔ (latest only)<sup>2</sup></td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.velocitypowered.com/">Velocity</a></td>
-            <td>✔ (latest only<sup>1</sup>)</td>
+            <td>✔ (latest only)<sup>2</sup></td>
         </tr>
     </tbody>
 </table>
 
-Modded platforms only support the latest MC version(s). For older MC versions try [modrinth](https://modrinth.com/plugin/tab-was-taken)'s version download filter.
+<sup>1</sup> Modded platforms only support the latest MC version(s). For older MC versions try [modrinth](https://modrinth.com/plugin/tab-was-taken)'s version download filter. If your desired version is not available, you may request it.
 
-<sup>1</sup> Latest only doesn't mean only the latest build will work,
+<sup>2</sup> Latest only doesn't mean only the latest build will work,
 it means the plugin was made to be compatible with the latest version/build.
 Since breaking changes don't happen too often, it means a wide range of versions is usually supported.
 When a breaking change occurs, the plugin is updated to support the new version,

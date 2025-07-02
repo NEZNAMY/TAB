@@ -4,6 +4,7 @@
   * [Groups and users](#groups-and-users)
   * [Per-world / per-server](#per-world--per-server)
   * [Priority system](#priority-system)
+  * [Name color](#name-color)
   * [Placeholder support](#placeholder-support)
   * [Additional settings](#additional-settings)
 * [Tips & Tricks](#tips--tricks)
@@ -115,6 +116,13 @@ This means you can set per-world tagprefix, but only keep one global tagsuffix, 
 You can see the source of a value displayed on player by using `/tab debug <player>` and checking "source"
 part of the value you are looking for.
 
+## Name color
+On versions 1.12.2 and below, name color follows the last color of prefix. This also includes magic codes. On 1.13+, this is no longer the case. Instead, a new field called "team color" was created. This is an enum constant, where we need to pick from 22 options - 16 colors, 5 magic codes and reset. **As you can see, it doesn't allow for RGB colors**. This also means name can no longer have color and magic codes simultaneously.
+
+TAB does not have an option for configuring team color to avoid complexity, such as per-version configuration, or having to configure an additional field, while people are used to putting some color code at the end of prefix and expect the name to take it. For that reason, TAB detects the last used color code and uses that for team color.
+> [!CAUTION]
+> An exception is when using MiniMessage syntax / using RGB codes on server which has MiniMessage library. In this scenario, it is not possible to detect reset (`&r`) as last used "color", because in minecraft components it is not a color, rather, it resets formatting by setting all magic codes to false / color to null. If you use `&r` (`<reset>`) and notice it not working, replace it with `&f` (`<white>`) (or add it after the reset to be safe). There seems to be no difference between setting color to `WHITE` versus `RESET`.
+
 ## Placeholder support
 All values fully support [TAB's internal placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#internal-placeholders) and [PlaceholderAPI placeholders](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders) including relational placeholders.
 The number of placeholders is not limited, and they can be used in combination with static text as well.
@@ -125,7 +133,6 @@ The number of placeholders is not limited, and they can be used in combination w
 | enabled                     | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | enable-collision            | true                  | Controls collision rule. Available values are: <br />- `true` - Collision will be enabled permanently. <br />- `false` - Collision will be disabled permanently. <br /> - *Conditional expression* - Collision will be enabled if player meets the condition (for example `%world%=world` will result in collision only being enabled for players in world `world`). <br /> - *Condition name* - Uses name of a [defined condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for a player to have collision enabled. |
 | invisible-nametags          | false                 | When enabled, everyone will have invisible nametag all the time. Option to hide nametags was added in minecraft **1.8**, therefore it will not work on 1.7 and lower.                                                                                                                                                                                                                                                                                                                                                                                                     |
-| anti-override               | true                  | While enabled, prevents other plugins from assigning online players into teams and making TAB not work correctly. They should be configured to not use teams, however many users fail to disable features in other plugins that they don't want, making this option required. Some plugins don't even say they use teams to achieve their goals. Did you know even Paper uses teams?                                                                                                                                                                                      |
 | can-see-friendly-invisibles | false                 | Controlling value of the team flag. It allows you to see invisible players in the same team as transparent instead of completely invisible. Since TAB places each player into an individual team, this option will only take effect in combination with plugins that spawn a dummy clone of the player (sit or disguise plugins).                                                                                                                                                                                                                                         |
 | disable-condition           | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever.                                                                                                                                                                                                                                                                                                                                                                       |
 
@@ -154,7 +161,7 @@ To avoid it, make their names not match any online player and use holograms to d
 (Citizens plugin has an option for this).
 
 ## Additional note 2 - Prefix/suffix on pets
-Since 1.9 teams affect tamed animals as well, displaying prefix/suffix on them as well and if nametags are set to be invisible, they will be completely invisible as well. If you want to avoid it, install [this plugin](https://www.spigotmc.org/resources/109466/).
+Since Minecraft 1.9, teams affect tamed animals as well, displaying prefix/suffix on them as well and if nametags are set to be invisible, they will be completely invisible as well. If you want to avoid it, install [this plugin](https://www.spigotmc.org/resources/109466/).
 
 ## Additional note 3 - Changing name itself
 Teams do not allow to change the nametag name itself. The only way to achieve this goal is to send & modify packets to replace the player's actual profile name with a fake one. This is very complicated and can have a lot of side effects. This is out of scope of TAB and is in fact something nick plugins are trying to achieve. As such, **TAB does not offer this**.
@@ -205,8 +212,10 @@ To get custom values previously set using the API (they will return `null` if no
 * `NameTagManager#getCustomSuffix(TabPlayer)`
 
 To get the original value set by the plugin based on configuration:
-* `NameTagManager#getOriginalPrefix(TabPlayer)`
-* `NameTagManager#getOriginalSuffix(TabPlayer)`
+* `NameTagManager#getOriginalRawPrefix(TabPlayer)` - Prefix with raw placeholder identifiers
+* `NameTagManager#getOriginalRawSuffix(TabPlayer)` - Suffix with raw placeholder identifiers
+* `NameTagManager#getOriginalReplacedPrefix(TabPlayer)` - Prefix with all placeholders parsed
+* `NameTagManager#getOriginalReplacedSuffix(TabPlayer)` - Suffix with all placeholders parsed
 
 > [!NOTE]
 > These values are only temporary,

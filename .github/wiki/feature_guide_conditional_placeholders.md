@@ -1,7 +1,7 @@
 # Content
 * [About](#about)
 * [Condition types](#condition-types)
-  * [Number comparations](#number-comparations)
+  * [Number comparisons](#number-comparisons)
   * [Text operations](#text-operations)
   * [Permission](#permission)
 * [Multiple condition requirements](#multiple-condition-requirements)
@@ -15,6 +15,7 @@
 * [Examples](#examples)
   * [Example 1 - Chaining conditional placeholders](#example-1---chaining-conditional-placeholders)
   * [Example 2 - Conditions in conditions](#example-2---conditions-in-conditions)
+  * [Example 3 - Negating expressions](#example-3---negating-expressions)
 
 # About
 Conditions / conditional placeholders allow you
@@ -24,7 +25,7 @@ They have 2 main uses in the plugin:
 * Conditional placeholders which return defined outputs in both cases if the condition passes or fails
 
 # Condition types
-## Number comparations
+## Number comparisons
 | Operation | Description              | Example                                                                        |
 |-----------|--------------------------|--------------------------------------------------------------------------------|
 | `>=`      | Greater than or equal to | `%ping%>=100` will pass if the player's ping is greater than or equal to `100` |
@@ -188,7 +189,7 @@ conditions:
 Finally, we can use this ping placeholder using `%condition:ping%`.  
 This example chained 2 conditions, but more can be used. There is no limit.
 
-# Example 2 - Conditions in conditions
+## Example 2 - Conditions in conditions
 If you want to use a condition in another one,
 for example, to use both "AND" and "OR" types, create 2 conditions and use one in the other one.  
 For example, if we want to check that player is in server `lobby` **and** in worlds **either** `world1` or `world2`,
@@ -206,4 +207,35 @@ conditions:
       - "%server%=lobby"
     type: AND
 ```
-Then, use condition `main` as the display condition. Note that `yes`/`no` values were not defined, as such, they default to `true` and `false`, respectively. Therefore, we use the placeholder from the condition and check if the result is `true`. Then, check if player is also in the specified server.  
+Then, use condition `main` as the display condition. Note that `yes`/`no` values were not defined, as such, they default to `true` and `false`, respectively. Therefore, we use the placeholder from the condition and check if the result is `true`. Then, check if player is also in the specified server.
+
+## Example 3 - Negating expressions
+Most condition types contain their opposites, such as:
+* `=` -> `!=`
+* `permission:` -> `!permission:`
+* `>=` -> `<`
+* `>` -> `<=`
+
+However, some of them don't, as things could get too complicated. This includes:
+* `|-` starts with
+* `-|` ends with
+* `<-` contains
+
+You can achieve this by creating a full condition and check if it returned false.  
+**Example:**  
+Original:
+```
+display-condition: "%server%|-lobby"
+```
+Negated:
+```
+conditions:
+  lobby:
+    conditions:
+      - "%server%|-lobby"
+```
+...
+```
+display-condition: "%condition:lobby%=false"
+```
+This way, the display condition will pass if the nested condition returned `false` (player is not in any lobby).

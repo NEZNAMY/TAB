@@ -126,7 +126,6 @@ The number of placeholders is not limited, and they can be used in combination w
 | Option name       | Default value         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 |-------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | enabled           | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| anti-override     | true                  | When enabled, prevents other plugins from overriding TAB. This results in slightly higher CPU usage, but will make sure the function works as expected. <br />Unlike with teams, attempts to override TAB are not logged into anti-override.log file. This is due to high amount of false positives from TAB's own features, as well as bungeecord server switch, higher CPU usage and more. Whether you need this or not depends on how properly your plugins are configured. Some of them attempt to format tablist even if you'd not expect it from such plugin. Keep this enabled to stay safe. |
 | disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever.                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 # Tips & Tricks
@@ -156,8 +155,11 @@ To get custom values previously set using the API (they will return `null` if no
 * `TabListFormatManager#getCustomSuffix(TabPlayer)`
 
 To get the original value set by the plugin based on configuration:
-* `TabListFormatManager#getOriginalPrefix(TabPlayer)`
-* `TabListFormatManager#getOriginalName(TabPlayer)`
-* `TabListFormatManager#getOriginalSuffix(TabPlayer)`
+* `TabListFormatManager#getOriginalRawPrefix(TabPlayer)` - Prefix with raw placeholder identifiers
+* `TabListFormatManager#getOriginalRawName(TabPlayer)` - Name with raw placeholder identifiers
+* `TabListFormatManager#getOriginalRawSuffix(TabPlayer)` - Suffix with raw placeholder identifiers
+* `TabListFormatManager#getOriginalReplacedPrefix(TabPlayer)` - Prefix with all placeholders parsed
+* `TabListFormatManager#getOriginalReplacedName(TabPlayer)` - Name with all placeholders parsed
+* `TabListFormatManager#getOriginalReplacedSuffix(TabPlayer)` - Suffix with all placeholders parsed
 
 **Note**: These values are only temporary, meaning they won't get saved anywhere and will get reset on player quit or plugin reload. If you wish to save these values into file, use [commands](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-playergroupplayeruuid-name-property-value-options).  

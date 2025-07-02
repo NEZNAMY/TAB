@@ -168,7 +168,7 @@ and you'll need
 to use [Conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) instead
 to achieve colored ping.
 
-# Example 3 - Using both original and replaced output
+## Example 3 - Using both original and replaced output
 Once configured, replacements are applied as the placeholder output everywhere. It is not directly possible to use original output in one place and replaced in another.
 
 If you need this, you should consider [conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) instead.  
