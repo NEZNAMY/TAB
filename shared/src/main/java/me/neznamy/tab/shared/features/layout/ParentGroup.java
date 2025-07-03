@@ -34,10 +34,14 @@ public class ParentGroup {
     public void tick(@NotNull List<TabPlayer> remainingPlayers) {
         players.clear();
         List<TabPlayer> meetingCondition = new ArrayList<>();
-        for (TabPlayer p : remainingPlayers) {
-            if (condition == null || condition.isMet(p)) meetingCondition.add(p);
-        }
-        remainingPlayers.removeAll(meetingCondition);
+
+        // High-performance way to filter players
+        remainingPlayers.removeIf(p -> {
+            boolean met = (condition == null || condition.isMet(p));
+            if (met) meetingCondition.add(p);
+            return met;
+        });
+
         for (int index = 0; index < slots.length; index++) {
             int slot = slots[index];
             if (layout.getManager().getConfiguration().isRemainingPlayersTextEnabled() && index == slots.length - 1 && playerSlots.size() < meetingCondition.size()) {
