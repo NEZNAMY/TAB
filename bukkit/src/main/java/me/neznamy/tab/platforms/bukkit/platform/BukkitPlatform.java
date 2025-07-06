@@ -318,8 +318,8 @@ public class BukkitPlatform implements BackendPlatform {
         Metrics metrics = new Metrics(plugin, TabConstants.BSTATS_PLUGIN_ID_BUKKIT);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM,
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
-                () -> "1." + serverVersion.getMinorVersion() + ".x"));
+        String version = serverVersion == ProtocolVersion.UNKNOWN ? "Unknown" : "1." + serverVersion.getMinorVersion() + ".x";
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> version));
     }
 
     @Override
