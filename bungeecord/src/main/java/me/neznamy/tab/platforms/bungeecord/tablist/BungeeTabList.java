@@ -11,7 +11,7 @@ import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
-import net.md_5.bungee.protocol.Property;
+import net.md_5.bungee.protocol.data.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;

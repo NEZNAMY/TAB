@@ -8,10 +8,13 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.protocol.Either;
-import net.md_5.bungee.protocol.NumberFormat;
-import net.md_5.bungee.protocol.packet.*;
+import net.md_5.bungee.protocol.data.NumberFormat;
+import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+import net.md_5.bungee.protocol.packet.ScoreboardObjective;
+import net.md_5.bungee.protocol.packet.ScoreboardScore;
+import net.md_5.bungee.protocol.packet.ScoreboardScoreReset;
 import net.md_5.bungee.protocol.packet.Team.NameTagVisibility;
+import net.md_5.bungee.protocol.util.Either;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
