@@ -22,16 +22,20 @@ public class SpongeScoreboard extends SafeScoreboard<SpongeTabPlayer> {
     private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = {
             CollisionRules.ALWAYS.get(),
             CollisionRules.NEVER.get(),
-            CollisionRules.PUSH_OTHER_TEAMS.get(),
-            CollisionRules.PUSH_OWN_TEAM.get()
+            // Commenting these out to avoid 1.21.5+ error
+            // org.spongepowered.api.registry.ValueNotFoundException: No value was found for key 'sponge:hide_for_own_team'!
+            // They are not used by TAB anyway, so not a problem
+            // Also literally no one uses sponge anymore anyway
+            //CollisionRules.PUSH_OTHER_TEAMS.get(),
+            //CollisionRules.PUSH_OWN_TEAM.get()
     };
 
     /** Visibility array for fast access */
     private static final Visibility[] visibilities = {
             Visibilities.ALWAYS.get(),
             Visibilities.NEVER.get(),
-            Visibilities.HIDE_FOR_OTHER_TEAMS.get(),
-            Visibilities.HIDE_FOR_OWN_TEAM.get()
+            //Visibilities.HIDE_FOR_OTHER_TEAMS.get(),
+            //Visibilities.HIDE_FOR_OWN_TEAM.get()
     };
 
     /** DisplaySlot array for fast access */
