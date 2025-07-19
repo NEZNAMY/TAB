@@ -56,7 +56,7 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
 
     @Override
     public void updateListed(@NonNull UUID entry, boolean listed) {
-        // TODO
+        player.getPlayer().tabList().entry(entry).ifPresent(e -> e.setListed(listed));
     }
 
     @Override
@@ -74,13 +74,14 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile = profile.withProperty(ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
-        //TODO listed, listOrder, showHat
+        //TODO listOrder, showHat
         TabListEntry tabListEntry = TabListEntry.builder()
                 .list(player.getPlayer().tabList())
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(gameModes[entry.getGameMode()])
                 .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventure())
+                .listed(entry.isListed())
                 .build();
         player.getPlayer().tabList().addEntry(tabListEntry);
     }
