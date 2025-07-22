@@ -45,7 +45,7 @@ public class BelowNameConfiguration {
         }
 
         // Check "value" for empty value
-        String value = section.getString("value", TabConstants.Placeholder.HEALTH);
+        String value = section.getObject("value", TabConstants.Placeholder.HEALTH).toString(); // Support both String and Integer
         if (value.isEmpty()) {
             section.startupWarn("Belowname value is set to be empty, but the configured value must evaluate to a number. Using 0.");
             value = "0";
