@@ -462,6 +462,12 @@ public class Converter {
         config.removeOption("tablist-name-formatting.character-width-overrides");
     }
 
+    public void convert412to413(@NonNull ConfigurationFile config) {
+        if (config.setIfMissing("placeholders.register-tab-expansion", false)) {
+            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 4.1.2 to 4.1.3", TextColor.YELLOW));
+        }
+    }
+
     /**
      * Converts config from 4.1.9 to 5.0.0.
      * This removes unlimited nametag mode option from config, which got removed and adds update-latency option to global playerlist.

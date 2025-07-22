@@ -330,9 +330,14 @@ public abstract class ConfigurationFile {
      *          Map key
      * @param   value
      *          Value to insert if missing
+     * @return  {@code true} if value was set, {@code false} if key already exists
      */
-    public void setIfMissing(@NonNull String key, @NonNull String value) {
-        if (!hasConfigOption(key)) set(key, value);
+    public boolean setIfMissing(@NonNull String key, @NonNull Object value) {
+        if (!hasConfigOption(key)) {
+            set(key, value);
+            return true;
+        }
+        return false;
     }
 
     /**

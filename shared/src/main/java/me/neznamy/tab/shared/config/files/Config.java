@@ -77,6 +77,7 @@ public class Config {
         converter.convert301to302(config);
         converter.convert332to400(config);
         converter.convert409to410(config);
+        converter.convert412to413(config);
         converter.convert419to500(config);
         converter.convert501to502(config);
         converter.convert507to510(config);
