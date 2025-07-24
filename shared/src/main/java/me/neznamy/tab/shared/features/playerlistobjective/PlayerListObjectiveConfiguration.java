@@ -37,7 +37,7 @@ public class PlayerListObjectiveConfiguration {
         section.checkForUnknownKey(Arrays.asList("enabled", "value", "fancy-value", "title", "render-type", "disable-condition"));
 
         // Check "value" for empty value
-        String value = section.getString("value", Placeholder.PING);
+        String value = section.getObject("value", Placeholder.PING).toString(); // Support both String and Integer
         if (value.isEmpty()) {
             section.startupWarn("Playerlist objective value is set to be empty, but the configured value must evaluate to a number. Using 0.");
             value = "0";
