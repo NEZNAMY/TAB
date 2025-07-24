@@ -274,10 +274,10 @@ if __name__ == "__main__":
                  ]
     )
 
-    release = "5.2.4"
+    release = "5.2.5"
     download_image(f"https://img.shields.io/badge/Release-{release}-blue.svg", "Badge_Release.svg")
 
-    minecraft = "1.5 - 1.21.7".replace(" ", "%20").replace("-", "--")
+    minecraft = "1.5 - 1.21.8".replace(" ", "%20").replace("-", "--")
     download_image(f"https://img.shields.io/badge/Minecraft-{minecraft}-blue.svg", "Badge_Minecraft.svg")
 
     java = "8+"
