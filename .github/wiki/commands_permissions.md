@@ -2,9 +2,11 @@
 This page lists all the commands and permissions that are available with TAB.
 Commands have required permissions associated with them.
 
-**BungeeCord / Velocity users:**
-* If you have TAB installed **on the proxy**, use **/btab** instead of /tab. Permissions are the same.
+**BungeeCord / Velocity users who installed TAB on the proxy:**
+* Use **/btab** instead of /tab. Permissions are the same.
 * Permission nodes are checked on the server where the plugin is installed (by default). This means that with TAB on BungeeCord, permission nodes are checked on BungeeCord, and therefore you'll need a permission plugin there as well. If you wish to take permission groups and checks from backend servers instead, set `use-bukkit-permissions-manager: true` in config.
+* Giving yourself OP on the backend server does not give you permissions on the proxy. It's a completely different server. You'll need to give yourself permissions using a permission plugin installed on the proxy.
+* You are not able to execute proxy commands using a backend plugin (for example some menu plugin). If you want to achieve this, you'll need to find an updated plugin that allows you to send commands to the proxy.
 
 # Content
 * [Configuration](#configuration-commands)

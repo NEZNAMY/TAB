@@ -41,7 +41,7 @@ this has lots of side effects.
 Most notably, it breaks all name-bound features,
 especially [nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) and [sorting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist).
 For that reason, TAB must detect name change.
-This is done automatically on Bukkit, BungeeCord and Fabric.
+This is done automatically on Bukkit, BungeeCord and modded platforms.
 **This detection is not available on Sponge and Velocity**.
 
 > [!WARNING]

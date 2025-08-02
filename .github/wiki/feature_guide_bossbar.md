@@ -15,9 +15,10 @@
     * [Additional note 1 - Hiding bar itself](#additional-note-1---hiding-bar-itself)
     * [Additional note 2 - Not hiding on server switch](#additional-note-2---not-hiding-on-server-switch)
 * [API](#api)
-* [Tips & Tricks](#tips--tricks)
-    * [Tip 1 - Animated bossbar color](#tip-1---animated-bossbar-color)
-    * [Tip 2 - Switching between bossbars with condition](#tip-2---switching-between-bossbars-with-condition)
+* [Examples](#examples)
+    * [Example 1 - Animated bossbar color](#example-1---animated-bossbar-color)
+    * [Example 2 - Switching between bossbars with condition](#example-2---switching-between-bossbars-with-condition)
+    * [Example 3 - Periodical appearing and disappearing](#example-3---periodical-appearing-and-disappearing)
 
 # About
 ![](https://images-ext-2.discordapp.net/external/0H5v5gcK12jm-O_kljlx-iYdJ1Q3wBsY_Dch7Jr_aAk/https/image.prntscr.com/image/x4VewIuiRwO-XLGTvDxfWw.png)  
@@ -175,8 +176,8 @@ Methods in `BossBar`:
 * `BossBar#containsPlayer(TabPlayer)` - Returns `true` if player can see this bossbar, `false` if not.
 * `BossBar#isAnnouncementBar()` - Returns `true` if this bossbar is defined as announcement bar in config, `false` if visible permanently.
 
-# Tips & Tricks
-## Tip 1 - Animated bossbar color
+# Examples
+## Example 1 - Animated bossbar color
 You can animate the color of a bossbar using [animations](https://github.com/NEZNAMY/TAB/wiki/Animations).  
 First, create an animation in **animations.yml**, such as
 ```
@@ -198,7 +199,7 @@ Then, use the animation in bossbar configuration
 This bossbar will change color every second between blue and yellow colors.  
 You can do the same with progress, style and text as well.
 
-## Tip 2 - Switching between bossbars with condition
+## Example 2 - Switching between bossbars with condition
 If you want the plugin to switch between bossbars based on a condition, first consider using condition for text itself
 (or some other property).
 If this is not an option (you want text, color, style and progress to be different, which would result in 4 conditions),
@@ -221,3 +222,26 @@ For number comparisons, negate `<` using `>=` and so on.
       text: "&cYou took damage"
       display-condition: "%health%!=20"
 ```
+
+## Example 3 - Periodical appearing and disappearing
+This can be achieved using [animations](https://github.com/NEZNAMY/TAB/wiki/Animations) and [conditions](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders). We will create an animation with 2 frames and check if it's on the first one, then display the bossbar. Otherwise, don't display it.  
+To get started, create an animation in **animations.yml**:
+```
+animations:
+  bossbar-toggle:
+    change-interval: 10000
+    texts:
+      - "ON"
+      - "OFF"
+```
+Then, create a display condition that checks if the animation is on the first frame (`ON`):
+```
+  bars:
+    ServerInfo:
+      display-condition: "%animation:bossbar-toggle%=ON" # Check for the first frame of the animation
+      style: "PROGRESS"
+      color: "%animation:barcolors%"
+      progress: "100" # in %
+      text: "&fWebsite: &bwww.domain.com"
+```
+Now, the bossbar will appear and disappear every 10 seconds.

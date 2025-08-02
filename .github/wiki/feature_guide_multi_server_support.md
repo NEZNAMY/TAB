@@ -19,7 +19,7 @@ Pick your desired way and configure it. I don't know anything about redis or rab
 
 > [!IMPORTANT]
 > **BACKEND INSTALLATION ONLY**  
-> You should also add this into your config and configure it:
+> You should also add this into your **config.yml** and configure it:
 > ```
 > server-name: "server"
 > ```

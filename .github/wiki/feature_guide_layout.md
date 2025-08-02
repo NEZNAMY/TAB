@@ -108,40 +108,16 @@ layouts:
 In this example, players with `tab.staff` permission will see `staff` layout, others will see `default` layout.
 
 # Skins
-In slots where players are, their skin is displayed. For fixed slots, if their skin is defined, it is used, otherwise `default-skin` is used. It is also used if invalid skin is specified anywhere.
+*If you're wondering how to enable / disable heads in the tablist, see [FAQ](https://github.com/NEZNAMY/TAB/wiki/Frequently-Asked-Questions#6---how-to-make-player-heads-visible-in-tablist).*  
+In slots which display a connected player, their skin is displayed.  
+For fixed slots, if their skin is defined, it is used, otherwise `default-skin` is used. It is also used if invalid skin is specified.
 
 ## Format
 Currently, TAB supports 3 skin formats:
-* `mineskin:<ID>` - takes UUID from [MineSkin](https://mineskin.org). You can find some pre-uploaded skins at the bottom of this page.
-* `player:<name>` - displays skin of player `name`
+* `mineskin:<UUID>` - takes UUID from [MineSkin](https://mineskin.org). You can find some pre-uploaded skins at the bottom of this page.
+* `player:<name>` - displays skin of player with the `name`
 * `texture:<texture>` - uses literal skin texture. This lets you use heads from [Minecraft-Heads](https://minecraft-heads.com/custom-heads) by taking the texture in the `Minecraft-URL` field.    
   ![](https://cdn.discordapp.com/attachments/817789229479624728/916373892237512715/unknown.png)
-
-Some pre-uploaded Mineskin skins:
-```yml
-BTLP's balance.png: 510604280
-BTLP's clock.png: 2053951237
-BTLP's server.png: 604037953
-BTLP's ping.png: 796704708
-BTLP's players.png: 1160612233
-BTLP's rank.png: 527763880
-Aqua: 1749359849
-Black: 1551047136
-Blue: 1870064311
-Dark Aqua: 1893783461
-Dark Blue: 899643609
-Dark Gray: 383747683
-Dark Green: 588254656
-Dark Purple: 2061328517
-Dark Red: 924139093
-Gold: 1074335506
-Gray: 745109047
-Green: 224445819
-Pink: 1818936290
-Red: 1160568696
-White: 1105851698
-Yellow: 1307755006
-```
 
 # Additional settings
 | Option name                   | Default value        | Description                                                                                                                                                                                                                                                                |
