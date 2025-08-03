@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
@@ -251,7 +252,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      * @return  {@code true} if players are in the same server and world, {@code false} otherwise
      */
     private boolean sameServerAndWorld(@NotNull TabPlayer player1, @NotNull TabPlayer player2) {
-        return player1.server.equals(player2.server) && player1.world.equals(player2.world);
+        return player1.server.equals(player2.server) && player1.world == player2.world;
     }
 
     @Override
@@ -260,7 +261,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     }
 
     @Override
-    public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+    public void onWorldChange(@NotNull TabPlayer changed, @NotNull World from, @NotNull World to) {
         updatePlayer(changed);
     }
 

@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.header.HeaderFooterConfiguration.HeaderFooterPair;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -76,7 +77,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     }
 
     @Override
-    public void onWorldChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
+    public void onWorldChange(@NotNull TabPlayer p, @NotNull World from, @NotNull World to) {
         if (updateProperties(p)) {
             sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
         }
@@ -144,7 +145,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
             return value[0];
         }
         List<String> lines = null;
-        HeaderFooterPair pair = configuration.getPerWorld().get(TAB.getInstance().getConfiguration().getGroup(configuration.getPerWorld().keySet(), p.world));
+        HeaderFooterPair pair = configuration.getPerWorld().get(TAB.getInstance().getConfiguration().getGroup(configuration.getPerWorld().keySet(), p.world.getName()));
         if (pair != null) {
             lines = property.equals("header") ? pair.getHeader() : pair.getFooter();
         }

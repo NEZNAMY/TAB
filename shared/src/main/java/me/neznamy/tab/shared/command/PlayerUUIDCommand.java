@@ -1,12 +1,13 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.List;
-
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.data.World;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Handler for "/tab playeruuid" subcommand
@@ -52,7 +53,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
     }
 
     @Override
-    public void saveEntity(@Nullable TabPlayer sender, @NotNull String playerName, @NotNull String type, @NotNull String value, String server, String world) {
+    public void saveEntity(@Nullable TabPlayer sender, @NotNull String playerName, @NotNull String type, @NotNull String value, String server, World world) {
         TabPlayer player = TAB.getInstance().getPlayer(playerName);
         if (!value.isEmpty()) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, playerName + "(" + player.getUniqueId() + ")"));

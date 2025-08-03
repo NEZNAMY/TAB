@@ -7,7 +7,9 @@ import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.config.files.Config;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
-import me.neznamy.tab.shared.features.*;
+import me.neznamy.tab.shared.data.World;
+import me.neznamy.tab.shared.features.NickCompatibility;
+import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.belowname.BelowName;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
@@ -220,12 +222,12 @@ public class FeatureManager {
      * @param   playerUUID
      *          UUID of player who switched worlds
      * @param   to
-     *          New world name
+     *          New world
      */
-    public void onWorldChange(@NotNull UUID playerUUID, @NotNull String to) {
+    public void onWorldChange(@NotNull UUID playerUUID, @NotNull World to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
-        String from = changed.world;
+        World from = changed.world;
         changed.world = to;
         for (TabFeature f : values) {
             if (!(f instanceof WorldSwitchListener)) continue;
@@ -237,7 +239,7 @@ public class FeatureManager {
                 task.run();
             }
         }
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to.getName());
     }
 
     /**

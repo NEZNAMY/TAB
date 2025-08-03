@@ -51,9 +51,9 @@ public class UniversalPlaceholderRegistry {
 
     private void registerConstants(@NotNull PlaceholderManagerImpl manager) {
         // Player
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.BEDROCK, -1, p -> Boolean.toString(((TabPlayer)p).isBedrockPlayer()));
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.BEDROCK, -1, p -> Boolean.toString(p.isBedrockPlayer()));
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER, -1, me.neznamy.tab.api.TabPlayer::getName);
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).world);
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).world.getName());
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer)p).server);
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION, -1, p -> ((TabPlayer)p).getVersion().getFriendlyName());
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION_ID, -1, p -> PerformanceUtil.toString(((TabPlayer)p).getVersion().getNetworkId()));
@@ -108,7 +108,7 @@ public class UniversalPlaceholderRegistry {
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.WORLD_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (((TabPlayer)p).world.equals(player.world) && !player.isVanished()) count++;
+                if (((TabPlayer)p).world == player.world && !player.isVanished()) count++;
             }
             return PerformanceUtil.toString(count);
         });

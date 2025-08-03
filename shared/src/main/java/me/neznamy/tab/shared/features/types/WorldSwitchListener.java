@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,9 +15,9 @@ public interface WorldSwitchListener {
      * @param   changed
      *          Player who changed world
      * @param   from
-     *          Name of previous world
+     *          Previous world
      * @param   to
-     *          Name of new world
+     *          New world
      */
-    void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to);
+    void onWorldChange(@NotNull TabPlayer changed, @NotNull World from, @NotNull World to);
 }

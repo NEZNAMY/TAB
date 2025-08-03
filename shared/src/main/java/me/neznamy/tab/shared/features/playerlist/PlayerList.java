@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
@@ -195,7 +196,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     }
 
     @Override
-    public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+    public void onWorldChange(@NotNull TabPlayer changed, @NotNull World from, @NotNull World to) {
         if (updateProperties(changed) && !changed.tablistData.disabled.get()) updatePlayer(changed, true);
     }
 

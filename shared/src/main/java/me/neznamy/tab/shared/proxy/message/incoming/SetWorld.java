@@ -2,16 +2,17 @@ package me.neznamy.tab.shared.proxy.message.incoming;
 
 import com.google.common.io.ByteArrayDataInput;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 public class SetWorld implements IncomingMessage {
 
-    private String world;
+    private World world;
 
     @Override
     public void read(@NotNull ByteArrayDataInput in) {
-        world = in.readUTF();
+        world = World.byName(in.readUTF());
     }
 
     @Override

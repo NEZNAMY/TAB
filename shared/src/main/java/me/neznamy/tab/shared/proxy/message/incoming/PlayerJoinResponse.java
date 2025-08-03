@@ -5,6 +5,7 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -15,14 +16,14 @@ import java.util.Map;
 
 public class PlayerJoinResponse implements IncomingMessage {
 
-    private String world;
+    private World world;
     private String group;
     private Map<String, Object> placeholders;
     private int gameMode;
 
     @Override
     public void read(@NotNull ByteArrayDataInput in) {
-        world = in.readUTF();
+        world = World.byName(in.readUTF());
         if (TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                 !TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions()) group = in.readUTF();
         placeholders = new HashMap<>();

@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.config.mysql;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     private final MySQL mysql;
 
     private final WeakHashMap<TabPlayer, Map<String, Object>> values = new WeakHashMap<>();
-    private final Map<String, WeakHashMap<TabPlayer, Map<String, Object>>> perWorld = new HashMap<>();
+    private final Map<World, WeakHashMap<TabPlayer, Map<String, Object>>> perWorld = new HashMap<>();
     private final Map<String, WeakHashMap<TabPlayer, Map<String, Object>>> perServer = new HashMap<>();
 
     public MySQLUserConfiguration(@NonNull MySQL mysql) throws SQLException {
@@ -25,7 +26,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public void setProperty(@NonNull String user, @NonNull String property, @Nullable String server, @Nullable String world, @Nullable String value) {
+    public void setProperty(@NonNull String user, @NonNull String property, @Nullable String server, @Nullable World world, @Nullable String value) {
         TabPlayer p = getPlayer(user);
         String lowercaseUser = user.toLowerCase();
         try {
@@ -43,7 +44,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
         return isNull ? "is" : "=";
     }
 
-    private void setProperty0(@NonNull TabPlayer user, @NonNull String property, @Nullable String server, @Nullable String world, @Nullable String value) {
+    private void setProperty0(@NonNull TabPlayer user, @NonNull String property, @Nullable String server, @Nullable World world, @Nullable String value) {
         checkProperty("MySQL", "player", user.getName(), property, server, world, false);
         if (world != null) {
             perWorld.computeIfAbsent(world, w -> new WeakHashMap<>()).computeIfAbsent(user, g -> new HashMap<>()).put(property, value);
@@ -55,7 +56,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public String[] getProperty(@NonNull String user, @NonNull String property, @Nullable String server, @Nullable String world) {
+    public String[] getProperty(@NonNull String user, @NonNull String property, @Nullable String server, @Nullable World world) {
         TabPlayer p = getPlayer(user);
         Object value;
         if ((value = perWorld.getOrDefault(world, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
@@ -137,7 +138,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
                     String world = crs.getString("world");
                     String server = crs.getString("server");
                     TAB.getInstance().debug("Loaded user line: " + String.format("%s, %s, %s, %s, %s", user, property, value, world, server));
-                    setProperty0(player, property, server, world, value);
+                    setProperty0(player, property, server, World.byName(world), value);
                 }
                 CachedRowSet crs2 = mysql.getCRS("select * from `tab_users` where `user` = ?", player.getUniqueId().toString());
                 while (crs2.next()) {
@@ -147,7 +148,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
                     String world = crs2.getString("world");
                     String server = crs2.getString("server");
                     TAB.getInstance().debug("Loaded user line: " + String.format("%s, %s, %s, %s, %s", user, property, value, world, server));
-                    setProperty0(player, property, server, world, value);
+                    setProperty0(player, property, server, World.byName(world), value);
                 }
                 TAB.getInstance().debug("Loaded MySQL data of " + player.getName());
                 if (crs.size() > 0 || crs2.size() > 0) {

@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.MessageFile;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
@@ -195,7 +196,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     }
 
     @Override
-    public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+    public void onWorldChange(@NotNull TabPlayer changed, @NotNull World from, @NotNull World to) {
         if (updateProperties(changed) && !changed.teamData.isDisabled()) updatePrefixSuffix(changed);
     }
 

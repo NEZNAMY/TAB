@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
@@ -85,7 +86,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     }
 
     @Override
-    public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+    public void onWorldChange(@NotNull TabPlayer changed, @NotNull World from, @NotNull World to) {
         // Some server versions may resend gamemode on world switch, resend false value again
         if (changed.getGamemode() != 3) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {

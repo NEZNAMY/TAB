@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.task.PluginMessageDecodeTask;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +52,7 @@ public interface EventListener<T> {
     default void worldChange(@NotNull UUID player, @NotNull String world) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onWorldChange(player, world));
+                TAB.getInstance().getFeatureManager().onWorldChange(player, World.byName(world)));
     }
 
     /**

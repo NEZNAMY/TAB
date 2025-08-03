@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.config.PropertyConfiguration;
+import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -66,13 +67,15 @@ public class MySQLCommand extends SubCommand {
                 YamlPropertyConfigurationFile userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
                 CachedRowSet crs = mysql.getCRS("select * from tab_groups");
                 while (crs.next()) {
+                    String world = crs.getString("world");
                     groupFile.setProperty(crs.getString("group"), crs.getString("property"),
-                            crs.getString("server"), crs.getString("world"), crs.getString("value"));
+                            crs.getString("server"), world == null ? null : World.byName(world), crs.getString("value"));
                 }
                 crs = mysql.getCRS("select * from tab_users");
                 while (crs.next()) {
+                    String world = crs.getString("world");
                     userFile.setProperty(crs.getString("user"), crs.getString("property"),
-                            crs.getString("server"), crs.getString("world"), crs.getString("value"));
+                            crs.getString("server"), world == null ? null : World.byName(world), crs.getString("value"));
                 }
                 sendMessage(sender, getMessages().getMySQLDownloadSuccess());
             } catch (YAMLException | IOException | SQLException e) {
@@ -110,7 +113,7 @@ public class MySQLCommand extends SubCommand {
             for (Map.Entry<String, Map<String, Object>> world : file.getPerWorldSettings(name).entrySet()) {
                 if (world.getValue() == null) continue;
                 for (Map.Entry<String, Object> property : world.getValue().entrySet()) {
-                    mysqlTable.setProperty(name, property.getKey(), null, world.getKey(), toString(property.getValue()));
+                    mysqlTable.setProperty(name, property.getKey(), null, World.byName(world.getKey()), toString(property.getValue()));
                 }
             }
             for (Map.Entry<String, Map<String, Object>> server : file.getPerServerSettings(name).entrySet()) {
