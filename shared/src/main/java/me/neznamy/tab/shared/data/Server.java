@@ -1,7 +1,9 @@
 package me.neznamy.tab.shared.data;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +14,7 @@ import java.util.Map;
  * Class storing information about a server. Instances are re-used,
  * so identity comparison is available to see if two servers are the same.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Server {
 
@@ -21,23 +24,6 @@ public class Server {
     /** Name of the server */
     @NonNull
     private final String name;
-
-    /** Lowercase version of the server name for case-insensitive comparisons */
-    @NonNull
-    private final String nameLowerCase;
-
-    /**
-     * Constructs new instance with given name.
-     * This constructor is private to ensure that instances are only created through
-     * the {@link #byName(String)} method, which manages the server instances.
-     *
-     * @param   name
-     *          Name of the server
-     */
-    private Server(@NonNull String name) {
-        this.name = name;
-        nameLowerCase = name.toLowerCase();
-    }
 
     /**
      * Returns server with given name, creating it if it does not exist.

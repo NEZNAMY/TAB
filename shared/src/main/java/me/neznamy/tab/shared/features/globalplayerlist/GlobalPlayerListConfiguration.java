@@ -20,7 +20,7 @@ public class GlobalPlayerListConfiguration {
     private final boolean vanishedAsSpectators;
     private final boolean isolateUnlistedServers;
     private final boolean updateLatency;
-    @NotNull private final List<String> spyServers;
+    @NotNull private final List<Server> spyServers;
     @NotNull private final Map<String, List<Server>> sharedServers;
 
     /**
@@ -59,7 +59,7 @@ public class GlobalPlayerListConfiguration {
                 section.getBoolean("display-vanished-players-as-spectators", true),
                 section.getBoolean("isolate-unlisted-servers", false),
                 section.getBoolean("update-latency", false),
-                section.getStringList("spy-servers", Collections.singletonList("spyserver1")).stream().map(String::toLowerCase).collect(Collectors.toList()),
+                section.getStringList("spy-servers", Collections.singletonList("spyserver1")).stream().map(Server::byName).collect(Collectors.toList()),
                 sharedServers
         );
     }
