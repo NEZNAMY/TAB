@@ -46,7 +46,11 @@ public class StringToComponentCache extends Cache<String, TabComponent> {
                     String sequence = "§" + format.getLegacyColor().getCharacter();
                     if (mmFormatted.contains(sequence)) {
                         String colorName = format == TextColor.UNDERLINE ? "underlined" : format.getLegacyColor().name().toLowerCase(Locale.US);
-                        mmFormatted = mmFormatted.replace(sequence, "<" + colorName + ">");
+                        if (format.getLegacyColor().isColor()) {
+                            mmFormatted = mmFormatted.replace(sequence, "<bold:false><italic:false><underlined:false><strikethrough:false><obfuscated:false><" + colorName + ">");
+                        } else {
+                            mmFormatted = mmFormatted.replace(sequence, "<" + colorName + ">");
+                        }
                     }
                 }
 

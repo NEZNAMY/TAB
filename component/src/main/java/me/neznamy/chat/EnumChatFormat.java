@@ -11,31 +11,34 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public enum EnumChatFormat {
 
-    BLACK('0'),
-    DARK_BLUE('1'),
-    DARK_GREEN('2'),
-    DARK_AQUA('3'),
-    DARK_RED('4'),
-    DARK_PURPLE('5'),
-    GOLD('6'),
-    GRAY('7'),
-    DARK_GRAY('8'),
-    BLUE('9'),
-    GREEN('a'),
-    AQUA('b'),
-    RED('c'),
-    LIGHT_PURPLE('d'),
-    YELLOW('e'),
-    WHITE('f'),
-    OBFUSCATED('k'),
-    BOLD('l'),
-    STRIKETHROUGH('m'),
-    UNDERLINE('n'),
-    ITALIC('o'),
-    RESET('r');
+    BLACK('0', true),
+    DARK_BLUE('1', true),
+    DARK_GREEN('2', true),
+    DARK_AQUA('3', true),
+    DARK_RED('4', true),
+    DARK_PURPLE('5', true),
+    GOLD('6', true),
+    GRAY('7', true),
+    DARK_GRAY('8', true),
+    BLUE('9', true),
+    GREEN('a', true),
+    AQUA('b', true),
+    RED('c', true),
+    LIGHT_PURPLE('d', true),
+    YELLOW('e', true),
+    WHITE('f', true),
+    OBFUSCATED('k', false),
+    BOLD('l', false),
+    STRIKETHROUGH('m', false),
+    UNDERLINE('n', false),
+    ITALIC('o', false),
+    RESET('r', false);
 
     /** Character representing the color or magic code */
     private final char character;
+
+    /** Flag tracking whether this is a color code or not */
+    private final boolean color;
 
     /**
      * Color translation method taken from bukkit, which converts '&amp;' symbol into
