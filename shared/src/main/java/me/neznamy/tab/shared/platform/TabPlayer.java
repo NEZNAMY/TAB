@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
@@ -68,7 +69,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Server the player is currently in, {@code "N/A"} if TAB is installed on backend */
     @Getter
-    public String server;
+    @NotNull
+    public Server server;
 
     /** Player's permission group defined in permission plugin or with permission nodes */
     @Getter
@@ -173,7 +175,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         this.player = player;
         this.uniqueId = uniqueId;
         this.name = name;
-        this.server = server;
+        this.server = Server.byName(server);
         this.world = World.byName(world);
         nickname = name;
         version = ProtocolVersion.fromNetworkId(protocolVersion);

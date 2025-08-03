@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
@@ -49,7 +50,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         if (player.getGamemode() != 3) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-            if (player != viewer && player.server.equals(viewer.server)) {
+            if (player != viewer && player.server == viewer.server) {
                 viewer.getTabList().updateGameMode(player, 0);
             }
         }
@@ -76,7 +77,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     }
 
     @Override
-    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+    public void onServerChange(@NotNull TabPlayer changed, @NotNull Server from, @NotNull Server to) {
         // 200ms delay for global playerlist, taking extra time
         customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

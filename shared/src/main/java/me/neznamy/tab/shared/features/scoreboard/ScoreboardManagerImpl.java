@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.ToggleManager;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
@@ -374,7 +375,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     }
 
     @Override
-    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+    public void onServerChange(@NotNull TabPlayer changed, @NotNull Server from, @NotNull Server to) {
         if (changed.scoreboardData.otherPluginScoreboard != null) {
             changed.scoreboardData.otherPluginScoreboard = null;
             sendHighestScoreboard(changed);

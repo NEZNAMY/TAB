@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.shared.TabConstants.Permission;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,7 @@ public class ProxyPlayer {
 
     /** Name of server the player is connected to */
     @NotNull
-    public String server;
+    public Server server;
 
     /** Whether player is vanished or not */
     private boolean vanished;
@@ -109,7 +110,7 @@ public class ProxyPlayer {
      *          Player's skin for global playerlist, null if not set
      */
     public ProxyPlayer(@NotNull UUID uniqueId, @NotNull UUID tablistId, @NotNull String name,
-                       @NotNull String server, boolean vanished, boolean staff, @Nullable TabList.Skin skin) {
+                       @NotNull Server server, boolean vanished, boolean staff, @Nullable TabList.Skin skin) {
         this.uniqueId = uniqueId;
         this.tablistId = tablistId;
         this.name = name;

@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.features.proxy.message.*;
 import me.neznamy.tab.shared.features.types.*;
@@ -127,14 +128,15 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
         eventHandler = event -> {
             String identifier = event.getIdentifier();
             if (identifier.startsWith("%online_")) {
-                String server = identifier.substring(8, identifier.length()-1);
+                String serverName = identifier.substring(8, identifier.length()-1);
+                Server server = Server.byName(serverName);
                 event.setServerPlaceholder(() -> {
                     int count = 0;
                     for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                        if (player.server.equals(server) && !player.isVanished()) count++;
+                        if (player.server == server && !player.isVanished()) count++;
                     }
                     for (ProxyPlayer player : proxyPlayers.values()) {
-                        if (player.server.equals(server) && !player.isVanished()) count++;
+                        if (player.server == server && !player.isVanished()) count++;
                     }
                     return PerformanceUtil.toString(count);
                 });
@@ -163,10 +165,10 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
         TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (((TabPlayer)p).server.equals(player.server) && !player.isVanished()) count++;
+                if (((TabPlayer)p).server == player.server && !player.isVanished()) count++;
             }
             for (ProxyPlayer player : proxyPlayers.values()) {
-                if (((TabPlayer)p).server.equals(player.server) && !player.isVanished()) count++;
+                if (((TabPlayer)p).server == player.server && !player.isVanished()) count++;
             }
             return PerformanceUtil.toString(count);
         });
@@ -185,7 +187,7 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
     }
 
     @Override
-    public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
+    public void onServerChange(@NotNull TabPlayer p, @NotNull Server from, @NotNull Server to) {
         sendMessage(new ServerSwitch(p.getTablistId(), to));
     }
 

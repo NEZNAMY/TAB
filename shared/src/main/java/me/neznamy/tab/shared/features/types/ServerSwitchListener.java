@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,5 +19,5 @@ public interface ServerSwitchListener {
      * @param   to
      *          Name of new server
      */
-    void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to);
+    void onServerChange(@NotNull TabPlayer changed, @NotNull Server from, @NotNull Server to);
 }

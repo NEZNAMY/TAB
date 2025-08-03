@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +51,7 @@ public class PlayerCommand extends PropertyCommand {
     }
 
     @Override
-    public void saveEntity(@Nullable TabPlayer sender, @NotNull String player, @NotNull String type, @NotNull String value, @Nullable String server, @Nullable World world) {
+    public void saveEntity(@Nullable TabPlayer sender, @NotNull String player, @NotNull String type, @NotNull String value, @Nullable Server server, @Nullable World world) {
         if (!value.isEmpty()) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player));
         } else {

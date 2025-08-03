@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
@@ -177,7 +178,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     }
 
     @Override
-    public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
+    public void onServerChange(@NotNull TabPlayer p, @NotNull Server from, @NotNull Server to) {
         if (updateProperties(p) && !p.tablistData.disabled.get()) updatePlayer(p, true);
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
         TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {

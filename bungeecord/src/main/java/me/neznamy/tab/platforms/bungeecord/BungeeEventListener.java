@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
@@ -66,7 +67,7 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
                 }
                 tab.getFeatureManager().onJoin(player);
             } else {
-                tab.getFeatureManager().onServerChange(player.getUniqueId(), e.getPlayer().getServer().getInfo().getName());
+                tab.getFeatureManager().onServerChange(player.getUniqueId(), Server.byName(e.getPlayer().getServer().getInfo().getName()));
                 if (player.getVersion().getNetworkId() < ProtocolVersion.V1_20_2.getNetworkId()) {
                     // For versions below 1.20.2 the tablist is already clean when this event is called
                     // For 1.20.2+ this event is called before, so we listen to Login packet instead

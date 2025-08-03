@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.config.files.Config;
 import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -139,16 +140,16 @@ public class Configs {
      * @return  Group containing the element or element itself if not found
      */
     @NotNull
-    public String getServerGroup(@NonNull Collection<String> serverGroups, @Nullable String server) {
+    public String getServerGroup(@NonNull Collection<String> serverGroups, @Nullable Server server) {
         String globalGroup = tryServerGroup(serverGroups, server);
         if (globalGroup != null) return globalGroup;
 
         // Use existing logic to check config key for server group (separated by ';')
-        return getGroup(serverGroups, server);
+        return getGroup(serverGroups, server == null ? null : server.getName());
     }
 
     @Nullable
-    private String tryServerGroup(@NonNull Collection<String> serverGroups, @Nullable String server) {
+    private String tryServerGroup(@NonNull Collection<String> serverGroups, @Nullable Server server) {
         if (serverGroups.isEmpty() || server == null) return null;
 
         // Check global-playerlist server-groups for this server

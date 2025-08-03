@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.proxy;
 import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,5 +55,5 @@ public class QueuedData {
 
     /** Name of server the player is connected to */
     @NotNull
-    public String server;
+    public Server server;
 }

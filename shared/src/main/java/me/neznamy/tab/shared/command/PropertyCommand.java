@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public abstract class PropertyCommand extends SubCommand {
         String property = args[1].toLowerCase();
         if (PropertyConfiguration.VALID_PROPERTIES.contains(property)) {
             if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
-                saveEntity(sender, args[0], property, value, server, world == null ? null : World.byName(world));
+                saveEntity(sender, args[0], property, value, Server.byName(server), World.byName(world));
             } else {
                 sendMessage(sender, getMessages().getNoPermission());
             }
@@ -58,5 +59,5 @@ public abstract class PropertyCommand extends SubCommand {
     }
 
     public abstract void saveEntity(@Nullable TabPlayer sender, @NotNull String name, @NotNull String property,
-                                    @NotNull String value, @Nullable String server, @Nullable World world);
+                                    @NotNull String value, @Nullable Server server, @Nullable World world);
 }

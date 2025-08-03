@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.proxy.QueuedData;
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class ServerSwitch extends ProxyMessage {
 
     @NotNull private final UUID playerId;
-    @NotNull private final String newServer;
+    @NotNull private final Server newServer;
 
     /**
      * Creates new instance and reads data from byte input.
@@ -30,13 +31,13 @@ public class ServerSwitch extends ProxyMessage {
      */
     public ServerSwitch(@NotNull ByteArrayDataInput in) {
         playerId = readUUID(in);
-        newServer = in.readUTF();
+        newServer = Server.byName(in.readUTF());
     }
 
     @Override
     public void write(@NotNull ByteArrayDataOutput out) {
         writeUUID(out, playerId);
-        out.writeUTF(newServer);
+        out.writeUTF(newServer.getName());
     }
 
     @Override

@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.chat.TextColor;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.platform.BossBar;
@@ -111,11 +112,12 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     public void registerPlaceholders() {
         super.registerPlaceholders();
-        for (RegisteredServer server : plugin.getServer().getAllServers()) {
-            TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder("%online_" + server.getServerInfo().getName() + "%", 1000, () -> {
+        for (RegisteredServer registeredServer : plugin.getServer().getAllServers()) {
+            Server server = Server.byName(registeredServer.getServerInfo().getName());
+            TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder("%online_" + server.getName() + "%", 1000, () -> {
                 int count = 0;
                 for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                    if (player.server.equals(server.getServerInfo().getName()) && !player.isVanished()) count++;
+                    if (player.server == server && !player.isVanished()) count++;
                 }
                 return PerformanceUtil.toString(count);
             });

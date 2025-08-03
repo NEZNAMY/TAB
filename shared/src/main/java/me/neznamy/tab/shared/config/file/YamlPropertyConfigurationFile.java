@@ -4,6 +4,7 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
                 for (String server : serverGroups) {
                     for (String name : this.<String, Object>getMap(PER_SERVER + "." + server).keySet()) {
                         for (String property : this.<String, Object>getMap(PER_SERVER + "." + server + "." + name).keySet()) {
-                            checkProperty(destination.getName(), category, name, property, server, null, true);
+                            checkProperty(destination.getName(), category, name, property, Server.byName(server), null, true);
                         }
                     }
                 }
@@ -73,19 +74,20 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     }
 
     @Override
-    public void setProperty(@NonNull String name, @NonNull String property, @Nullable String server, @Nullable World world, @Nullable String value) {
+    public void setProperty(@NonNull String name, @NonNull String property, @Nullable Server server, @Nullable World world, @Nullable String value) {
         if (world != null) {
             set(String.format("%s.%s.%s.%s", PER_WORLD, world.getName(), name, property), fromString(value));
         } else if (server != null) {
-            set(String.format("%s.%s.%s.%s", PER_SERVER, server, name, property), fromString(value));
+            set(String.format("%s.%s.%s.%s", PER_SERVER, server.getName(), name, property), fromString(value));
         } else {
             set(String.format("%s.%s", name, property), fromString(value));
         }
     }
 
     @Override
-    public String[] getProperty(@NonNull String name, @NonNull String property, @Nullable String server, @Nullable World world) {
+    public String[] getProperty(@NonNull String name, @NonNull String property, @Nullable Server server, @Nullable World world) {
         String worldName = world == null ? null : world.getName();
+        String serverName = server == null ? null : server.getName();
         Object value;
         if ((value = getObject(new String[] {PER_WORLD, TAB.getInstance().getConfiguration().getGroup(worldGroups, worldName), name, property})) != null) {
             return new String[] {toString(value), category + "=" + name + ", world=" + worldName};
@@ -94,10 +96,10 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
             return new String[] {toString(value), category + "=" + TabConstants.DEFAULT_GROUP + ", world=" + worldName};
         }
         if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getServerGroup(serverGroups, server), name, property})) != null) {
-            return new String[] {toString(value), category + "=" + name + ", server=" + server};
+            return new String[] {toString(value), category + "=" + name + ", server=" + serverName};
         }
         if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getServerGroup(serverGroups, server), TabConstants.DEFAULT_GROUP, property})) != null) {
-            return new String[] {toString(value), category + "=" + TabConstants.DEFAULT_GROUP + ", server=" + server};
+            return new String[] {toString(value), category + "=" + TabConstants.DEFAULT_GROUP + ", server=" + serverName};
         }
         if ((value = getObject(new String[] {name, property})) != null) {
             return new String[] {toString(value), category + "=" + name};

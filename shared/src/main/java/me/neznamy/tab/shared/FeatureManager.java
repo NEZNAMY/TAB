@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.config.files.Config;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.SpectatorFix;
@@ -250,10 +251,10 @@ public class FeatureManager {
      * @param   to
      *          New server name
      */
-    public void onServerChange(@NotNull UUID playerUUID, @NotNull String to) {
+    public void onServerChange(@NotNull UUID playerUUID, @NotNull Server to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
-        String from = changed.server;
+        Server from = changed.server;
         changed.server = to;
         ((ProxyTabPlayer)changed).sendJoinPluginMessage();
         for (TabFeature f : values) {
@@ -266,7 +267,7 @@ public class FeatureManager {
                 task.run();
             }
         }
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to.getName());
     }
 
     /**
