@@ -47,7 +47,7 @@ permissions:
     description: Allows player to change property using command
     default: op
   tab.announce.bar:
-    description: Allows player to run /tab announce bar
+    description: Allows player to run /tab bossbar announce
     default: op
   tab.bossbar.toggle:
     description: Allows player to run /tab bossbar

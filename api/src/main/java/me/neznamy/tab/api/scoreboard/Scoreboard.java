@@ -17,7 +17,7 @@ public interface Scoreboard {
     /**
      * Returns internal name of this scoreboard. Name is defined in registration,
      * scoreboards from config use name they were defined with. This value is
-     * used internally and in /tab announce scoreboard command.
+     * used internally and in /tab scoreboard announce command.
      * 
      * @return  custom name of this scoreboard
      */

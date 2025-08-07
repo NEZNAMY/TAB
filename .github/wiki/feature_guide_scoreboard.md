@@ -99,7 +99,7 @@ If a player meets both conditions (has defined permission and is in defined worl
 # Announce command
 This takes priority over the current scoreboard.
 Once the announcement is over, the previous scoreboard is restored.  
-`/tab announce scoreboard <name> <time>`  
+`/tab scoreboard announce <name> <time>`  
 name - name of scoreboard to be displayed  
 time - number of seconds to display the scoreboard for
 

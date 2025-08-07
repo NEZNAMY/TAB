@@ -14,9 +14,8 @@ import java.util.List;
 @Getter
 public class MessageFile extends YamlConfigurationFile {
 
-    private final String announceCommandUsage = getString("announce-command-usage", "Usage: /tab announce <type> <name> <length>\nCurrently supported types: &lbar, scoreboard");
     private final String bossBarNotEnabled = getString("bossbar-feature-not-enabled", "&cThis command requires the bossbar feature to be enabled.");
-    private final String bossBarAnnounceCommandUsage = getString("bossbar-announce-command-usage", "Usage: /tab announce bar <bar name> <length>");
+    private final String bossBarAnnounceCommandUsage = getString("bossbar-announce-command-usage", "Usage: /tab bossbar announce <bar name> <length>");
     private final String bossBarAlreadyAnnounced = getString("bossbar-already-announced", "&cThis bossbar is already being announced");
     private final String parseCommandUsage = getString("parse-command-usage", "Usage: /tab parse <player> <placeholder>");
     private final String sendCommandUsage = getString("send-command-usage", "Usage: /tab send <type> <player> <bar name> <length>\nCurrently supported types: &lbar");
