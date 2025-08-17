@@ -164,7 +164,7 @@ public class FeatureManager {
             }
         }
         TAB.getInstance().removePlayer(disconnectedPlayer);
-        removeExpectedDisplayName(disconnectedPlayer.getTablistId());
+        removeforcedDisplayName(disconnectedPlayer.getTablistId());
         TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 
         ProxySupport proxy = getFeature(TabConstants.Feature.PROXY_SUPPORT);
@@ -176,7 +176,7 @@ public class FeatureManager {
         }
     }
 
-    private void removeExpectedDisplayName(@NotNull UUID id) {
+    private void removeforcedDisplayName(@NotNull UUID id) {
         ProxySupport proxy = getFeature(TabConstants.Feature.PROXY_SUPPORT);
         if (proxy != null) {
             ProxyPlayer proxyPlayer = proxy.getProxyPlayers().get(id);
@@ -187,7 +187,7 @@ public class FeatureManager {
 
         // Player is actually not online anymore, remove to avoid memory leak
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            ((TrackedTabList<?>)all.getTabList()).getExpectedDisplayNames().remove(id);
+            ((TrackedTabList<?>)all.getTabList()).getForcedDisplayNames().remove(id);
         }
     }
 
@@ -500,7 +500,7 @@ public class FeatureManager {
                 task.run();
             }
         }
-        removeExpectedDisplayName(disconnectedPlayer.getTablistId());
+        removeforcedDisplayName(disconnectedPlayer.getTablistId());
     }
 
     /**

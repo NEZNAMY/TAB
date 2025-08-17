@@ -115,7 +115,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
     @Override
     public void checkDisplayNames() {
         for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            TabComponent expectedComponent = getExpectedDisplayNames().get(entry.getProfile().getId());
+            TabComponent expectedComponent = getForcedDisplayNames().get(entry.getProfile().getId());
             if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent.toAdventure()) {
                 entry.setDisplayName(expectedComponent.toAdventure());
             }

@@ -127,7 +127,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
             UUID id = profile.getId();
             if (action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || action == EnumPlayerInfoAction.ADD_PLAYER) {
-                TabComponent expectedName = getExpectedDisplayNames().get(id);
+                TabComponent expectedName = getForcedDisplayNames().get(id);
                 if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
             }
             if (action == EnumPlayerInfoAction.UPDATE_LATENCY || action == EnumPlayerInfoAction.ADD_PLAYER) {

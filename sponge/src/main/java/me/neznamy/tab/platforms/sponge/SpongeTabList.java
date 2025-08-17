@@ -112,7 +112,7 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
     @Override
     public void checkDisplayNames() {
         for (TabListEntry entry : player.getPlayer().tabList().entries()) {
-            TabComponent expectedComponent = getExpectedDisplayNames().get(entry.profile().uniqueId());
+            TabComponent expectedComponent = getForcedDisplayNames().get(entry.profile().uniqueId());
             if (expectedComponent != null && entry.displayName().orElse(null) != expectedComponent.toAdventure()) {
                 entry.setDisplayName(expectedComponent.toAdventure());
             }

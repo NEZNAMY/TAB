@@ -45,7 +45,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             GameProfile profile = nmsData.a();
             UUID id = profile.getId();
             if (action == EnumPlayerInfoAction.d || action == EnumPlayerInfoAction.a) {
-                TabComponent expectedName = tabList.getExpectedDisplayNames().get(id);
+                TabComponent expectedName = tabList.getForcedDisplayNames().get(id);
                 if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
             }
             if (action == EnumPlayerInfoAction.c || action == EnumPlayerInfoAction.a) {
@@ -147,7 +147,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             GameProfile profile = nmsData.a();
             UUID id = profile.getId();
             if (action == EnumPlayerInfoAction.d || action == EnumPlayerInfoAction.a) {
-                TabComponent expectedName = getExpectedDisplayNames().get(id);
+                TabComponent expectedName = getForcedDisplayNames().get(id);
                 if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
             }
             if (action == EnumPlayerInfoAction.c || action == EnumPlayerInfoAction.a) {

@@ -119,9 +119,9 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 Component displayName = nmsData.displayName();
                 int latency = nmsData.latency();
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
-                    TabComponent expectedDisplayName = getExpectedDisplayNames().get(nmsData.profileId());
-                    if (expectedDisplayName != null && expectedDisplayName.convert() != displayName) {
-                        displayName = expectedDisplayName.convert();
+                    TabComponent forcedDisplayName = getForcedDisplayNames().get(nmsData.profileId());
+                    if (forcedDisplayName != null && forcedDisplayName.convert() != displayName) {
+                        displayName = forcedDisplayName.convert();
                         rewriteEntry = rewritePacket = true;
                     }
                 }

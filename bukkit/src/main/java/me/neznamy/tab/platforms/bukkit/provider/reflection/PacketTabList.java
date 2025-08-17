@@ -251,7 +251,7 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
             int listOrder = v1_21_2Plus ? PlayerInfoData_ListOrder.getInt(nmsData) : 0;
             boolean showHat = v1_21_4Plus && PlayerInfoData_ShowHat.getBoolean(nmsData);
             if (actions.contains(actionUpdateDisplayName)) {
-                TabComponent expectedName = getExpectedDisplayNames().get(id);
+                TabComponent expectedName = getForcedDisplayNames().get(id);
                 if (expectedName != null && expectedName.convert() != displayName) {
                     displayName = expectedName.convert();
                     rewriteEntry = rewritePacket = true;

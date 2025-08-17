@@ -114,8 +114,8 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    TabComponent expectedDisplayName = getExpectedDisplayNames().get(item.getUuid());
-                    if (expectedDisplayName != null) item.setDisplayName(toComponent(expectedDisplayName));
+                    TabComponent forcedDisplayName = getForcedDisplayNames().get(item.getUuid());
+                    if (forcedDisplayName != null) item.setDisplayName(toComponent(forcedDisplayName));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
@@ -128,8 +128,8 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    TabComponent expectedDisplayName = getExpectedDisplayNames().get(item.getUuid());
-                    if (expectedDisplayName != null) item.setDisplayName(toComponent(expectedDisplayName));
+                    TabComponent forcedDisplayName = getForcedDisplayNames().get(item.getUuid());
+                    if (forcedDisplayName != null) item.setDisplayName(toComponent(forcedDisplayName));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
