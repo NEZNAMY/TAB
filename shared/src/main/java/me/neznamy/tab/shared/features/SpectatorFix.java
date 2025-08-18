@@ -1,14 +1,13 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
-import me.neznamy.tab.shared.data.Server;
-import me.neznamy.tab.shared.data.World;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,8 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * in players not being able to clip through walls.
  */
 @Getter
-public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable,
-        ServerSwitchListener, WorldSwitchListener, VanishListener, CustomThreaded {
+public class SpectatorFix extends TabFeature implements JoinListener, Loadable, UnLoadable, CustomThreaded {
 
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Spectator Fix Thread");
 
@@ -46,24 +44,17 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     }
 
     @Override
-    public void onGameModeChange(@NotNull TabPlayer player) {
-        if (player.getGamemode() != 3) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-            if (player != viewer && player.server == viewer.server) {
-                viewer.getTabList().updateGameMode(player, 0);
-            }
-        }
-    }
-
-    @Override
     public void onJoin(@NotNull TabPlayer p) {
-        customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> updatePlayer(p, false, true),
-                getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN), 100);
+        updatePlayer(p, false, true);
     }
 
     @Override
     public void load() {
+        TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                ((TrackedTabList<?>)p.getTabList()).checkGameModes();
+            }
+        }, getFeatureName(), TabConstants.CpuUsageCategory.PERIODIC_TASK), 500);
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             updatePlayer(viewer, false, false);
         }
@@ -73,35 +64,6 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     public void unload() {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             updatePlayer(viewer, true, false);
-        }
-    }
-
-    @Override
-    public void onServerChange(@NotNull TabPlayer changed, @NotNull Server from, @NotNull Server to) {
-        // 200ms delay for global playerlist, taking extra time
-        customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                updatePlayer(all, false, true);
-            }
-        }, getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH), 300);
-    }
-
-    @Override
-    public void onWorldChange(@NotNull TabPlayer changed, @NotNull World from, @NotNull World to) {
-        // Some server versions may resend gamemode on world switch, resend false value again
-        if (changed.getGamemode() != 3) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer == changed || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-            viewer.getTabList().updateGameMode(changed, 0);
-        }
-    }
-
-    @Override
-    public void onVanishStatusChange(@NotNull TabPlayer player) {
-        if (player.isVanished() || player.getGamemode() != 3) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer == player || viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-            viewer.getTabList().updateGameMode(player, 0);
         }
     }
 

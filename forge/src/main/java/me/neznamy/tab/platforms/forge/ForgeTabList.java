@@ -116,11 +116,19 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
             for (ClientboundPlayerInfoUpdatePacket.Entry nmsData : info.entries()) {
                 boolean rewriteEntry = false;
                 Component displayName = nmsData.displayName();
+                int gameMode = nmsData.gameMode().getId();
                 int latency = nmsData.latency();
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
                     TabComponent forcedDisplayName = getForcedDisplayNames().get(nmsData.profileId());
                     if (forcedDisplayName != null && forcedDisplayName.convert() != displayName) {
                         displayName = forcedDisplayName.convert();
+                        rewriteEntry = rewritePacket = true;
+                    }
+                }
+                if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE)) {
+                    Integer forcedGameMode = getForcedGameModes().get(nmsData.profileId());
+                    if (forcedGameMode != null && forcedGameMode != gameMode) {
+                        gameMode = forcedGameMode;
                         rewriteEntry = rewritePacket = true;
                     }
                 }
@@ -135,7 +143,7 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
                     TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
-                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, nmsData.gameMode(), displayName,
+                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, GameType.byId(gameMode), displayName,
                         nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()
                 ) : nmsData);
             }

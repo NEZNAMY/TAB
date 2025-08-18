@@ -118,4 +118,21 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
             }
         }
     }
+
+    @Override
+    public void checkGameModes() {
+        for (TabListEntry entry : player.getPlayer().tabList().entries()) {
+            Integer forcedGameMode = getForcedGameModes().get(entry.profile().uniqueId());
+            if (forcedGameMode != null && getGamemode(entry.gameMode()) != forcedGameMode) {
+                entry.setGameMode(gameModes[forcedGameMode]);
+            }
+        }
+    }
+
+    private int getGamemode(@NonNull GameMode gameMode) {
+        if (gameMode == GameModes.CREATIVE.get()) return 1;
+        if (gameMode == GameModes.ADVENTURE.get()) return 2;
+        if (gameMode == GameModes.SPECTATOR.get()) return 3;
+        return 0;
+    }
 }

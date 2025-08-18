@@ -24,6 +24,9 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     /** Forced display names based on configuration, saving to restore them if another plugin overrides them */
     private final Map<UUID, TabComponent> forcedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
+    /** Forced game modes by spectator fix, saving to restore them on packet sends */
+    private final Map<UUID, Integer> forcedGameModes = Collections.synchronizedMap(new WeakHashMap<>());
+
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         if (player.getVersion().getMinorVersion() < 8) {
@@ -59,6 +62,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     @Override
     public void updateGameMode(@NonNull TabPlayer player, int gameMode) {
+        forcedGameModes.put(player.getTablistId(), gameMode);
         if (this.player.canSee(player)) {
             updateGameMode(player.getTablistId(), gameMode);
         }
@@ -70,7 +74,16 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      * Not needed for platforms which support pipeline injection.
      */
     public void checkDisplayNames() {
-        // Empty by default, overridden Sponge and Velocity
+        // Empty by default, overridden by Sponge and Velocity
+    }
+
+    /**
+     * Checks if all entries have game modes as configured and if not,
+     * they are forced. Only works on platforms with a full TabList API.
+     * Not needed for platforms which support pipeline injection.
+     */
+    public void checkGameModes() {
+        // Empty by default, overridden by Sponge and Velocity
     }
 
     /**
@@ -80,7 +93,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      *          Packet to process
      */
     public void onPacketSend(@NonNull Object packet) {
-        // Empty by default, overridden by Bukkit, BungeeCord and Fabric
+        // Empty by default, overridden by Bukkit, BungeeCord, Fabric, Forge and NeoForge
     }
 
     /**

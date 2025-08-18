@@ -33,6 +33,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     private static final Field PlayerInfoData_Latency = ReflectionUtils.getFields(PlayerInfoData.class, int.class).get(0);
     private static final Field PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(PlayerInfoData.class, IChatBaseComponent.class);
+    private static final Field PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(PlayerInfoData.class, WorldSettings.EnumGamemode.class);
 
     private static final Field FOOTER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(1);
 
@@ -122,6 +123,10 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             if (action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || action == EnumPlayerInfoAction.ADD_PLAYER) {
                 TabComponent expectedName = getForcedDisplayNames().get(id);
                 if (expectedName != null) PlayerInfoData_DisplayName.set(nmsData, expectedName.convert());
+            }
+            if (action == EnumPlayerInfoAction.UPDATE_GAME_MODE || action == EnumPlayerInfoAction.ADD_PLAYER) {
+                Integer forcedGameMode = getForcedGameModes().get(id);
+                if (forcedGameMode != null) PlayerInfoData_GameMode.set(nmsData, forcedGameMode);
             }
             if (action == EnumPlayerInfoAction.UPDATE_LATENCY || action == EnumPlayerInfoAction.ADD_PLAYER) {
                 int oldLatency = PlayerInfoData_Latency.getInt(nmsData);

@@ -39,6 +39,12 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static Field PlayerInfoData_Profile;
     private static Field PlayerInfoData_Latency;
     private static Field PlayerInfoData_DisplayName;
+    private static Field PlayerInfoData_UUID;
+    private static Field PlayerInfoData_GameMode;
+    private static Field PlayerInfoData_Listed;
+    private static Field PlayerInfoData_ShowHat;
+    private static Field PlayerInfoData_ListOrder;
+    private static Field PlayerInfoData_RemoteChatSession;
 
     private static Object[] gameModes;
 
@@ -50,15 +56,9 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static Enum actionAddPlayer;
     private static Enum actionUpdateDisplayName;
     private static Enum actionUpdateLatency;
+    private static Enum actionUpdateGameMode;
 
     private static Constructor<?> newRemovePacket;
-
-    private static Field PlayerInfoData_UUID;
-    private static Field PlayerInfoData_GameMode;
-    private static Field PlayerInfoData_Listed;
-    private static Field PlayerInfoData_ShowHat;
-    private static Field PlayerInfoData_ListOrder;
-    private static Field PlayerInfoData_RemoteChatSession;
 
     private static EnumSet<?> ADD_PLAYER;
     private static EnumSet<?> UPDATE_GAME_MODE;
@@ -127,9 +127,10 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
         actionAddPlayer = Enum.valueOf(actionClass, Action.ADD_PLAYER.name());
         actionUpdateDisplayName = Enum.valueOf(actionClass, Action.UPDATE_DISPLAY_NAME.name());
         actionUpdateLatency = Enum.valueOf(actionClass, Action.UPDATE_LATENCY.name());
+        actionUpdateGameMode = Enum.valueOf(actionClass, Action.UPDATE_GAME_MODE.name());
 
         ADD_PLAYER = EnumSet.allOf(actionClass);
-        UPDATE_GAME_MODE = EnumSet.of(Enum.valueOf(actionClass, Action.UPDATE_GAME_MODE.name()));
+        UPDATE_GAME_MODE = EnumSet.of(actionUpdateGameMode);
         UPDATE_DISPLAY_NAME = EnumSet.of(actionUpdateDisplayName);
         UPDATE_LATENCY = EnumSet.of(actionUpdateLatency);
         UPDATE_LISTED = EnumSet.of(Enum.valueOf(actionClass, Action.UPDATE_LISTED.name()));
@@ -248,12 +249,20 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
             Object displayName = PlayerInfoData_DisplayName.get(nmsData);
             int latency = PlayerInfoData_Latency.getInt(nmsData);
+            int gameMode = ((Enum<?>)PlayerInfoData_GameMode.get(nmsData)).ordinal();
             int listOrder = v1_21_2Plus ? PlayerInfoData_ListOrder.getInt(nmsData) : 0;
             boolean showHat = v1_21_4Plus && PlayerInfoData_ShowHat.getBoolean(nmsData);
             if (actions.contains(actionUpdateDisplayName)) {
                 TabComponent expectedName = getForcedDisplayNames().get(id);
                 if (expectedName != null && expectedName.convert() != displayName) {
                     displayName = expectedName.convert();
+                    rewriteEntry = rewritePacket = true;
+                }
+            }
+            if (actions.contains(actionUpdateGameMode)) {
+                Integer forcedGameMode = getForcedGameModes().get(id);
+                if (forcedGameMode != null && forcedGameMode != gameMode) {
+                    gameMode = forcedGameMode;
                     rewriteEntry = rewritePacket = true;
                 }
             }
@@ -273,7 +282,7 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
                     profile,
                     PlayerInfoData_Listed.getBoolean(nmsData),
                     latency,
-                    PlayerInfoData_GameMode.get(nmsData),
+                    gameModes[gameMode],
                     displayName,
                     showHat,
                     listOrder,

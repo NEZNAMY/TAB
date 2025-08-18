@@ -54,6 +54,8 @@ public class TabConstants {
         /** Periodic task checking for current and expected display names of all entries */
         public static final String ANTI_OVERRIDE_TABLIST_PERIODIC = "Tablist anti override (periodic task)";
 
+        public static final String PERIODIC_TASK = "Periodic task";
+
         public static final String PING_CHANGE = "Processing ping change";
         public static final String NICK_PLUGIN_COMPATIBILITY = "Compatibility with nick plugins";
         public static final String BYTE_BUF = "ByteBuf";
