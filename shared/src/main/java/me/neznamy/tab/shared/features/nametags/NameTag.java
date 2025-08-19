@@ -382,7 +382,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
 
     public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (p.teamData.hasHiddenNametag()) return false; // At least 1 reason for invisible nametag exists
-        if (p.teamData.hasHiddenNametag(viewer.getUniqueId())) return false; // At least 1 reason for invisible nametag for this viewer exists
+        if (p.teamData.hasHiddenNametag(viewer)) return false; // At least 1 reason for invisible nametag for this viewer exists
         if (viewer.teamData.invisibleNameTagView) return false; // Viewer does not want to see nametags
         if (viewer.getVersion().getMinorVersion() == 8 && p.hasInvisibilityPotion()) return false;
         return true;
@@ -483,7 +483,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                             @NonNull String cpuReason, boolean sendMessage) {
         ensureActive();
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            if (player.teamData.hideNametag(viewer.getUniqueId(), reason)) {
+            if (player.teamData.hideNametag(viewer, reason)) {
                 updateVisibility(player, viewer);
             }
             if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
@@ -505,7 +505,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                             @NonNull String cpuReason, boolean sendMessage) {
         ensureActive();
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            if (player.teamData.showNametag(viewer.getUniqueId(), reason)) {
+            if (player.teamData.showNametag(viewer, reason)) {
                 updateVisibility(player, viewer);
             }
             if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
@@ -531,11 +531,11 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                               @NonNull String cpuReason, boolean sendMessage) {
         ensureActive();
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            if (player.teamData.hasHiddenNametag(viewer.getUniqueId(), reason)) {
-                player.teamData.showNametag(viewer.getUniqueId(), reason);
+            if (player.teamData.hasHiddenNametag(viewer, reason)) {
+                player.teamData.showNametag(viewer, reason);
                 if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
             } else {
-                player.teamData.hideNametag(viewer.getUniqueId(), reason);
+                player.teamData.hideNametag(viewer, reason);
                 if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
             }
             updateVisibility(player, viewer);
@@ -575,7 +575,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         ensureActive();
-        return ((TabPlayer)player).teamData.hasHiddenNametag(viewer.getUniqueId(), NameTagInvisibilityReason.API_HIDE);
+        return ((TabPlayer)player).teamData.hasHiddenNametag((TabPlayer) viewer, NameTagInvisibilityReason.API_HIDE);
     }
 
     @Override

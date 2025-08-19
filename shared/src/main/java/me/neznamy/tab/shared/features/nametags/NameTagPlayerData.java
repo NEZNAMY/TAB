@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.nametags;
 
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +47,7 @@ public class NameTagPlayerData {
 
     /** Reasons why player's nametag is hidden for specific players */
     @NotNull
-    private final Map<UUID, EnumSet<NameTagInvisibilityReason>> nameTagInvisibilityReasonsRelational = new HashMap<>();
+    private final Map<TabPlayer, EnumSet<NameTagInvisibilityReason>> nameTagInvisibilityReasonsRelational = new WeakHashMap<>();
 
     /**
      * Returns current collision rule. If forced using API, the forced value is returned.
@@ -120,7 +121,7 @@ public class NameTagPlayerData {
      *          Reason for hiding nametag
      * @return  Whether the state has changed as a result of this call
      */
-    public boolean hideNametag(@NotNull UUID viewer, @NotNull NameTagInvisibilityReason reason) {
+    public boolean hideNametag(@NotNull TabPlayer viewer, @NotNull NameTagInvisibilityReason reason) {
         return nameTagInvisibilityReasonsRelational.computeIfAbsent(viewer, v -> EnumSet.noneOf(NameTagInvisibilityReason.class)).add(reason);
     }
 
@@ -133,7 +134,7 @@ public class NameTagPlayerData {
      *          Reason for showing nametag
      * @return  Whether the state has changed as a result of this call
      */
-    public boolean showNametag(@NotNull UUID viewer, @NotNull NameTagInvisibilityReason reason) {
+    public boolean showNametag(@NotNull TabPlayer viewer, @NotNull NameTagInvisibilityReason reason) {
         return nameTagInvisibilityReasonsRelational.computeIfAbsent(viewer, v -> EnumSet.noneOf(NameTagInvisibilityReason.class)).remove(reason);
     }
 
@@ -146,8 +147,11 @@ public class NameTagPlayerData {
      *          Reason to check
      * @return  {@code true} if nametag is hidden for specified reason, {@code false} if not
      */
-    public boolean hasHiddenNametag(@NotNull UUID viewer, @NotNull NameTagInvisibilityReason reason) {
-        return nameTagInvisibilityReasonsRelational.computeIfAbsent(viewer, v -> EnumSet.noneOf(NameTagInvisibilityReason.class)).contains(reason);
+    public boolean hasHiddenNametag(@NotNull TabPlayer viewer, @NotNull NameTagInvisibilityReason reason) {
+        if (!nameTagInvisibilityReasonsRelational.containsKey(viewer)) {
+            return false;
+        }
+        return nameTagInvisibilityReasonsRelational.get(viewer).contains(reason);
     }
 
     /**
@@ -158,7 +162,10 @@ public class NameTagPlayerData {
      *          Viewer who nametag might be hidden for
      * @return  {@code true} if nametag should be hidden, {@code false} if not
      */
-    public boolean hasHiddenNametag(@NotNull UUID viewer) {
-        return !nameTagInvisibilityReasonsRelational.computeIfAbsent(viewer, v -> EnumSet.noneOf(NameTagInvisibilityReason.class)).isEmpty();
+    public boolean hasHiddenNametag(@NotNull TabPlayer viewer) {
+        if (!nameTagInvisibilityReasonsRelational.containsKey(viewer)) {
+            return false;
+        }
+        return !nameTagInvisibilityReasonsRelational.get(viewer).isEmpty();
     }
 }
