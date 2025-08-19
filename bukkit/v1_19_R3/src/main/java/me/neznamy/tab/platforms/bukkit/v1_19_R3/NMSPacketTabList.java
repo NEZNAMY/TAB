@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.v1_19_R2;
+package me.neznamy.tab.platforms.bukkit.v1_19_R3;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -16,7 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.world.level.EnumGamemode;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -120,7 +120,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     public void onPacketSend(@NonNull Object packet) {
         if (!(packet instanceof ClientboundPlayerInfoUpdatePacket info)) return;
-        EnumSet<ClientboundPlayerInfoUpdatePacket.a> actions = info.b();
+        EnumSet<ClientboundPlayerInfoUpdatePacket.a> actions = info.a();
         List<ClientboundPlayerInfoUpdatePacket.b> updatedList = new ArrayList<>();
         boolean rewritePacket = false;
         for (ClientboundPlayerInfoUpdatePacket.b nmsData : info.c()) {
