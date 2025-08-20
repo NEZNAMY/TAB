@@ -26,10 +26,6 @@ public class BukkitReflection {
     @Getter
     private static final ServerVersion serverVersion = detectServerVersion();
 
-    /** Flag determining whether the server version is at least 1.20.2 or not */
-    @Getter
-    private static final boolean is1_20_2Plus = ReflectionUtils.classExists("net.minecraft.world.scores.DisplaySlot");
-
     /** Flag determining whether the server version is at least 1.21.4 or not */
     @Getter
     private static final boolean is1_21_4Plus = serverVersion.minorVersion >= 21 &&

@@ -45,12 +45,7 @@ public class ReflectionImplementationProvider implements ImplementationProvider 
                 "server.network.PlayerConnection");
         Class<?> EntityPlayer = BukkitReflection.getClass("server.level.ServerPlayer", "server.level.EntityPlayer");
         Field PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
-        Field NETWORK_MANAGER;
-        if (BukkitReflection.is1_20_2Plus()) {
-            NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection.getSuperclass(), NetworkManager);
-        } else {
-            NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection, NetworkManager);
-        }
+        Field NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection.getSuperclass(), NetworkManager);
         Field CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
         return player -> (Channel) CHANNEL.get(NETWORK_MANAGER.get(PLAYER_CONNECTION.get(player.getHandle())));
     }

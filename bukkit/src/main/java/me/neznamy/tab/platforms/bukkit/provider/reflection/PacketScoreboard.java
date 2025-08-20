@@ -92,18 +92,11 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                 "network.protocol.game.PacketPlayOutScoreboardDisplayObjective" // Bukkit
         );
         DisplayObjective_OBJECTIVE_NAME = ReflectionUtils.getOnlyField(DisplayObjectiveClass, String.class);
-        if (BukkitReflection.is1_20_2Plus()) {
-            Class<?> DisplaySlot = BukkitReflection.getClass("world.scores.DisplaySlot");
-            displaySlots = (Object[]) DisplaySlot.getDeclaredMethod("values").invoke(null);
-            Field DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, DisplaySlot);
-            newDisplayObjective = DisplayObjectiveClass.getConstructor(DisplaySlot, ScoreboardObjective);
-            packetToSlot = packet -> ((Enum<?>)DisplayObjective_POSITION.get(packet)).ordinal();
-        } else {
-            displaySlots = new Object[]{0, 1, 2};
-            Field DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, int.class);
-            newDisplayObjective = DisplayObjectiveClass.getConstructor(int.class, ScoreboardObjective);
-            packetToSlot = DisplayObjective_POSITION::getInt;
-        }
+        Class<?> DisplaySlot = BukkitReflection.getClass("world.scores.DisplaySlot");
+        displaySlots = (Object[]) DisplaySlot.getDeclaredMethod("values").invoke(null);
+        Field DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, DisplaySlot);
+        newDisplayObjective = DisplayObjectiveClass.getConstructor(DisplaySlot, ScoreboardObjective);
+        packetToSlot = packet -> ((Enum<?>)DisplayObjective_POSITION.get(packet)).ordinal();
     }
 
     private static void loadScorePacketData() throws ReflectiveOperationException {
@@ -120,7 +113,7 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                         newSetScore.newInstance(holder, objective, score, Optional.ofNullable(displayName), Optional.ofNullable(numberFormat));
             } catch (ReflectiveOperationException e) {
                 // 1.20.3 - 1.20.4
-                Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, PacketScoreboard.Component, PacketScoreboard.NumberFormat);
+                Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, Component, NumberFormat);
                 setScore0 = (objective, holder, score, displayName, numberFormat) ->
                         newSetScore.newInstance(holder, objective, score, displayName, numberFormat);
             }

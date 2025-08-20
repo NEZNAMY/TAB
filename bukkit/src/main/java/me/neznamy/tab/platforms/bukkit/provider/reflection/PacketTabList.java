@@ -337,13 +337,9 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
         Collection<Property> col = ((GameProfile) getProfile.invoke(player.getHandle())).getProperties().get(TabList.TEXTURES_PROPERTY);
         if (col.isEmpty()) return null; //offline mode
         Property property = col.iterator().next();
-        if (BukkitReflection.is1_20_2Plus()) {
-            return new TabList.Skin(
-                    (String) property.getClass().getMethod("value").invoke(property),
-                    (String) property.getClass().getMethod("signature").invoke(property)
-            );
-        } else {
-            return new TabList.Skin(property.getValue(), property.getSignature());
-        }
+        return new Skin(
+                (String) property.getClass().getMethod("value").invoke(property),
+                (String) property.getClass().getMethod("signature").invoke(property)
+        );
     }
 }
