@@ -27,11 +27,7 @@ import java.util.Optional;
  */
 public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
-    private static final boolean is1_20_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundResetScorePacket");
-
-    private static Class<?> Component;
     private static Object emptyScoreboard;
-    private static Class<?> NumberFormat;
     private static Constructor<?> newFixedFormat;
 
     // Objective packet
@@ -69,16 +65,13 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         Objective_METHOD = list.get(list.size()-1);
         newObjectivePacket = ObjectivePacketClass.getConstructor(scoreboardObjective, int.class);
         newScoreboardObjective = ReflectionUtils.getOnlyConstructor(scoreboardObjective);
-        Component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent");
+        Class<?> component = BukkitReflection.getClass("network.chat.Component", "network.chat.IChatBaseComponent");
         Class<?> EnumScoreboardHealthDisplay = BukkitReflection.getClass(
                 "world.scores.criteria.ObjectiveCriteria$RenderType",
                 "world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay"
         );
         healthDisplays = (Enum<?>[]) EnumScoreboardHealthDisplay.getMethod("values").invoke(null);
-        if (is1_20_3Plus) {
-            NumberFormat = BukkitReflection.getClass("network.chat.numbers.NumberFormat");
-            newFixedFormat = BukkitReflection.getClass("network.chat.numbers.FixedFormat").getConstructor(Component);
-        }
+        newFixedFormat = BukkitReflection.getClass("network.chat.numbers.FixedFormat").getConstructor(component);
         loadDisplayPacketData();
         loadScorePacketData();
         teamPacketData = new TeamPacketData();
@@ -104,29 +97,11 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
                 "network.protocol.game.ClientboundSetScorePacket", // Mojang mapped
                 "network.protocol.game.PacketPlayOutScoreboardScore" // Bukkit
         );
-        if (is1_20_3Plus) {
-            QuintFunction<String, String, Integer, Object, Object, Object> setScore0;
-            try {
-                // 1.20.5+
-                Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, Optional.class, Optional.class);
-                setScore0 = (objective, holder, score, displayName, numberFormat) ->
-                        newSetScore.newInstance(holder, objective, score, Optional.ofNullable(displayName), Optional.ofNullable(numberFormat));
-            } catch (ReflectiveOperationException e) {
-                // 1.20.3 - 1.20.4
-                Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, Component, NumberFormat);
-                setScore0 = (objective, holder, score, displayName, numberFormat) ->
-                        newSetScore.newInstance(holder, objective, score, displayName, numberFormat);
-            }
-            setScore = setScore0;
-            Constructor<?> newResetScore = BukkitReflection.getClass("network.protocol.game.ClientboundResetScorePacket").getConstructor(String.class, String.class);
-            removeScore = (objective, holder) -> newResetScore.newInstance(holder, objective);
-        } else {
-            Class<?> actionClass = BukkitReflection.getClass("server.ServerScoreboard$Method", "server.ScoreboardServer$Action", "ScoreboardServer$Action");
-            Constructor<?> newSetScore = SetScorePacket.getConstructor(actionClass, String.class, String.class, int.class);
-            Enum<?>[] scoreboardActions = (Enum<?>[]) actionClass.getMethod("values").invoke(null);
-            setScore = (objective, holder, score, displayName, numberFormat) -> newSetScore.newInstance(scoreboardActions[0], objective, holder, score);
-            removeScore = (objective, holder) -> newSetScore.newInstance(scoreboardActions[1], objective, holder, 0);
-        }
+        Constructor<?> newSetScore = SetScorePacket.getConstructor(String.class, String.class, int.class, Optional.class, Optional.class);
+        setScore = (objective, holder, score, displayName, numberFormat) ->
+                newSetScore.newInstance(holder, objective, score, Optional.ofNullable(displayName), Optional.ofNullable(numberFormat));
+        Constructor<?> newResetScore = BukkitReflection.getClass("network.protocol.game.ClientboundResetScorePacket").getConstructor(String.class, String.class);
+        removeScore = (objective, holder) -> newResetScore.newInstance(holder, objective);
     }
 
     /**
@@ -228,23 +203,14 @@ public class PacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @SneakyThrows
     private Object newObjective(@NonNull Objective objective) {
-        if (is1_20_3Plus) {
-            return newScoreboardObjective.newInstance(
-                    emptyScoreboard,
-                    objective.getName(),
-                    null, // Criteria
-                    objective.getTitle().convert(),
-                    healthDisplays[objective.getHealthDisplay().ordinal()],
-                    false, // Auto update
-                    objective.getNumberFormat() == null ? null : toFixedFormat(objective.getNumberFormat())
-            );
-        }
         return newScoreboardObjective.newInstance(
                 emptyScoreboard,
                 objective.getName(),
                 null, // Criteria
                 objective.getTitle().convert(),
-                healthDisplays[objective.getHealthDisplay().ordinal()]
+                healthDisplays[objective.getHealthDisplay().ordinal()],
+                false, // Auto update
+                objective.getNumberFormat() == null ? null : toFixedFormat(objective.getNumberFormat())
         );
     }
 
