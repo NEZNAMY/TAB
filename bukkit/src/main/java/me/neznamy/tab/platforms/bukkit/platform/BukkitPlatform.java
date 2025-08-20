@@ -128,7 +128,8 @@ public class BukkitPlatform implements BackendPlatform {
                 "v1_18_R2",
                 "v1_19_R1",
                 "v1_19_R2",
-                "v1_19_R3"
+                "v1_19_R3",
+                "v1_20_R1"
         );
         if (supportedVersions.contains(serverPackage) && serverVersion != ProtocolVersion.V1_19) {
             return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();

@@ -17,6 +17,7 @@ val platforms = setOf(
     rootProject.projects.bukkit.v119R1,
     rootProject.projects.bukkit.v119R2,
     rootProject.projects.bukkit.v119R3,
+    rootProject.projects.bukkit.v120R1,
     rootProject.projects.bungeecord,
     rootProject.projects.velocity,
     rootProject.projects.sponge
