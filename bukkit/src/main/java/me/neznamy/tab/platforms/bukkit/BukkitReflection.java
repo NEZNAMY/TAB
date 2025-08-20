@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,11 +24,6 @@ public class BukkitReflection {
     /** Server version data */
     @Getter
     private static final ServerVersion serverVersion = detectServerVersion();
-
-    /** Flag determining whether the server version is at least 1.21.4 or not */
-    @Getter
-    private static final boolean is1_21_4Plus = serverVersion.minorVersion >= 21 &&
-            ReflectionUtils.getFields(getClass("network.chat.Style", "network.chat.ChatModifier"), Integer.class).size() == 1;
 
     @NotNull
     @SneakyThrows

@@ -42,15 +42,8 @@ public class ModernComponentConverter extends ComponentConverter {
     public ModernComponentConverter() throws ReflectiveOperationException {
         Class<?> chatClickable = BukkitReflection.getClass("network.chat.ClickEvent", "network.chat.ChatClickable");
         Class<?> chatHoverable = BukkitReflection.getClass("network.chat.HoverEvent", "network.chat.ChatHoverable");
-        if (BukkitReflection.is1_21_4Plus()) {
-            // 1.21.4+
-            newChatModifier = ReflectionUtils.setAccessible(ChatModifierClass.getDeclaredConstructor(TextColor, Integer.class, Boolean.class, Boolean.class,
-                    Boolean.class, Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
-        } else {
-            // 1.21.3-
-            newChatModifier = ReflectionUtils.setAccessible(ChatModifierClass.getDeclaredConstructor(TextColor, Boolean.class, Boolean.class, Boolean.class,
-                    Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
-        }
+        newChatModifier = ReflectionUtils.setAccessible(ChatModifierClass.getDeclaredConstructor(TextColor, Integer.class, Boolean.class, Boolean.class,
+                Boolean.class, Boolean.class, Boolean.class, chatClickable, chatHoverable, String.class, ResourceLocation));
     }
 
     @Override
@@ -77,34 +70,19 @@ public class ModernComponentConverter extends ComponentConverter {
     @Override
     @SneakyThrows
     public void applyStyle(@NotNull Object nmsComponent, @NotNull ChatModifier style) {
-        if (BukkitReflection.is1_21_4Plus()) {
-            Component_modifier.set(nmsComponent, newChatModifier.newInstance(
-                    style.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, style.getColor().getRgb()),
-                    style.getShadowColor(),
-                    style.getBold(),
-                    style.getItalic(),
-                    style.getUnderlined(),
-                    style.getStrikethrough(),
-                    style.getObfuscated(),
-                    null,
-                    null,
-                    null,
-                    style.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, style.getFont())
-            ));
-        } else {
-            Component_modifier.set(nmsComponent, newChatModifier.newInstance(
-                    style.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, style.getColor().getRgb()),
-                    style.getBold(),
-                    style.getItalic(),
-                    style.getUnderlined(),
-                    style.getStrikethrough(),
-                    style.getObfuscated(),
-                    null,
-                    null,
-                    null,
-                    style.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, style.getFont())
-            ));
-        }
+        Component_modifier.set(nmsComponent, newChatModifier.newInstance(
+                style.getColor() == null ? null : ChatHexColor_fromRGB.invoke(null, style.getColor().getRgb()),
+                style.getShadowColor(),
+                style.getBold(),
+                style.getItalic(),
+                style.getUnderlined(),
+                style.getStrikethrough(),
+                style.getObfuscated(),
+                null,
+                null,
+                null,
+                style.getFont() == null ? null : ResourceLocation_tryParse.invoke(null, style.getFont())
+        ));
     }
 
     @Override

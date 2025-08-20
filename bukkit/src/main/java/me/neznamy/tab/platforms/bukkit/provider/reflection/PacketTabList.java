@@ -50,9 +50,6 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     private static PacketSender packetSender;
 
-    private static boolean v1_21_2Plus;
-    private static boolean v1_21_4Plus;
-
     private static Enum actionAddPlayer;
     private static Enum actionUpdateDisplayName;
     private static Enum actionUpdateLatency;
@@ -122,6 +119,8 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
         PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
         PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
         PlayerInfoData_UUID = ReflectionUtils.getOnlyField(playerInfoDataClass, UUID.class);
+        PlayerInfoData_ListOrder = ReflectionUtils.getFields(playerInfoDataClass, int.class).get(1);
+        PlayerInfoData_ShowHat = ReflectionUtils.getFields(playerInfoDataClass, boolean.class).get(1);
         newRemovePacket = BukkitReflection.getClass("network.protocol.game.ClientboundPlayerInfoRemovePacket").getConstructor(List.class);
 
         actionAddPlayer = Enum.valueOf(actionClass, Action.ADD_PLAYER.name());
@@ -134,28 +133,11 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
         UPDATE_DISPLAY_NAME = EnumSet.of(actionUpdateDisplayName);
         UPDATE_LATENCY = EnumSet.of(actionUpdateLatency);
         UPDATE_LISTED = EnumSet.of(Enum.valueOf(actionClass, Action.UPDATE_LISTED.name()));
+        UPDATE_LIST_ORDER = EnumSet.of(Enum.valueOf(actionClass, Action.UPDATE_LIST_ORDER.name()));
+        UPDATE_HAT = EnumSet.of(Enum.valueOf(actionClass, Action.UPDATE_HAT.name()));
 
-        try {
-            UPDATE_LIST_ORDER = EnumSet.of(Enum.valueOf(actionClass, Action.UPDATE_LIST_ORDER.name()));
-            PlayerInfoData_ListOrder = ReflectionUtils.getFields(playerInfoDataClass, int.class).get(1);
-            v1_21_2Plus = true;
-            try {
-                // 1.21.4+
-                UPDATE_HAT = EnumSet.of(Enum.valueOf(actionClass, Action.UPDATE_HAT.name()));
-                PlayerInfoData_ShowHat = ReflectionUtils.getFields(playerInfoDataClass, boolean.class).get(1);
-                newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
-                        EnumGamemodeClass, IChatBaseComponent, boolean.class, int.class, RemoteChatSession$Data);
-                v1_21_4Plus = true;
-            } catch (Exception e) {
-                // 1.21.2 - 1.21.3
-                newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
-                        EnumGamemodeClass, IChatBaseComponent, int.class, RemoteChatSession$Data);
-            }
-        } catch (Exception e) {
-            // 1.21.1-, should have a better check
-            newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
-                    EnumGamemodeClass, IChatBaseComponent, RemoteChatSession$Data);
-        }
+        newPlayerInfoData = playerInfoDataClass.getConstructor(UUID.class, GameProfile.class, boolean.class, int.class,
+                EnumGamemodeClass, IChatBaseComponent, boolean.class, int.class, RemoteChatSession$Data);
     }
 
     @Override
@@ -190,18 +172,14 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        if (v1_21_2Plus) {
-            packetSender.sendPacket(player,
-                    createPacket(UPDATE_LIST_ORDER, entry, "", null, false, 0, 0, null, listOrder, false));
-        }
+        packetSender.sendPacket(player,
+                createPacket(UPDATE_LIST_ORDER, entry, "", null, false, 0, 0, null, listOrder, false));
     }
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
-        if (v1_21_4Plus) {
-            packetSender.sendPacket(player,
-                    createPacket(UPDATE_HAT, entry, "", null, false, 0, 0, null, 0, showHat));
-        }
+        packetSender.sendPacket(player,
+                createPacket(UPDATE_HAT, entry, "", null, false, 0, 0, null, 0, showHat));
     }
 
     @Override
@@ -250,8 +228,8 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
             Object displayName = PlayerInfoData_DisplayName.get(nmsData);
             int latency = PlayerInfoData_Latency.getInt(nmsData);
             int gameMode = ((Enum<?>)PlayerInfoData_GameMode.get(nmsData)).ordinal();
-            int listOrder = v1_21_2Plus ? PlayerInfoData_ListOrder.getInt(nmsData) : 0;
-            boolean showHat = v1_21_4Plus && PlayerInfoData_ShowHat.getBoolean(nmsData);
+            int listOrder = PlayerInfoData_ListOrder.getInt(nmsData);
+            boolean showHat = PlayerInfoData_ShowHat.getBoolean(nmsData);
             if (actions.contains(actionUpdateDisplayName)) {
                 TabComponent expectedName = getForcedDisplayNames().get(id);
                 if (expectedName != null && expectedName.convert() != displayName) {
@@ -295,13 +273,7 @@ public class PacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @SneakyThrows
     private static Object newPlayerInfoData(@NotNull UUID id, @Nullable GameProfile profile, boolean listed, int latency,
                                             @Nullable Object gameMode, @Nullable Object displayName, boolean showHat, int listOrder, @Nullable Object chatSession) {
-        if (v1_21_4Plus) {
-            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName, showHat, listOrder, chatSession);
-        } else if (v1_21_2Plus) {
-            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName,          listOrder, chatSession);
-        } else {
-            return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName,                     chatSession);
-        }
+        return newPlayerInfoData.newInstance(id, profile, listed, latency, gameMode, displayName, showHat, listOrder, chatSession);
     }
 
     /**
