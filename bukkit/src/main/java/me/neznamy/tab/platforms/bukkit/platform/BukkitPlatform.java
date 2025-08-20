@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.chat.component.*;
+import me.neznamy.chat.component.KeybindComponent;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.chat.component.TextComponent;
+import me.neznamy.chat.component.TranslatableComponent;
 import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
@@ -14,7 +17,6 @@ import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.platforms.bukkit.provider.bukkit.BukkitImplementationProvider;
 import me.neznamy.tab.platforms.bukkit.provider.bukkit.PaperScoreboard;
-import me.neznamy.tab.platforms.bukkit.provider.reflection.ReflectionImplementationProvider;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -118,7 +120,7 @@ public class BukkitPlatform implements BackendPlatform {
             return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
         }
 
-        // Check for direct NMS on some supported versions
+        // Check for direct NMS on supported versions
         try {
             if (serverVersion != ProtocolVersion.V1_19) {
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + BukkitReflection.getServerVersion().getServerPackage() + ".NMSImplementationProvider").getConstructor().newInstance();
@@ -127,41 +129,36 @@ public class BukkitPlatform implements BackendPlatform {
             // Adapter not available
         }
 
-        // Try reflection
-        try {
-            return new ReflectionImplementationProvider();
-        } catch (Throwable e) {
-            if (serverVersion.getMinorVersion() >= 8) {
-                List<String> missingFeatures = new ArrayList<>();
+        if (serverVersion.getMinorVersion() >= 8) {
+            List<String> missingFeatures = new ArrayList<>();
 
-                // Scoreboard
-                missingFeatures.add("Compatibility with other scoreboard plugins being reduced");
-                if (!PaperScoreboard.isAvailable()) {
-                    missingFeatures.add("Features receiving new artificial character limits");
-                    missingFeatures.add("1.20.3+ scoreboard visuals not working due to lack of API");
-                }
-                missingFeatures.add("Anti-override for nametags not working");
-
-                // Tablist
-                missingFeatures.add("Layout feature will not work");
-                missingFeatures.add("Prevent-spectator-effect feature will not work");
-                missingFeatures.add("Ping spoof feature will not work");
-                missingFeatures.add("Tablist formatting missing anti-override");
-                missingFeatures.add("Tablist formatting not supporting relational placeholders");
-                missingFeatures.add("Compatibility with nickname plugins changing player names will not work");
-                missingFeatures.add("Anti-override for tablist not working");
-                missingFeatures.add("Header/Footer may be limited or not work at all"); // Maybe add some checks for a more accurate message
-
-                Bukkit.getConsoleSender().sendMessage("§c[TAB] Your server version is not fully supported. This will result in:");
-                for (String message : missingFeatures) {
-                    Bukkit.getConsoleSender().sendMessage("§c[TAB] - " + message);
-                }
-                Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
-                        "a plugin version with full support for your server version for optimal experience. This plugin version " +
-                        "has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x, 1.18.2 and 1.19.1 - 1.21.8.");
+            // Scoreboard
+            missingFeatures.add("Compatibility with other scoreboard plugins being reduced");
+            if (!PaperScoreboard.isAvailable()) {
+                missingFeatures.add("Features receiving new artificial character limits");
+                missingFeatures.add("1.20.3+ scoreboard visuals not working due to lack of API");
             }
-            return new BukkitImplementationProvider();
+            missingFeatures.add("Anti-override for nametags not working");
+
+            // Tablist
+            missingFeatures.add("Layout feature will not work");
+            missingFeatures.add("Prevent-spectator-effect feature will not work");
+            missingFeatures.add("Ping spoof feature will not work");
+            missingFeatures.add("Tablist formatting missing anti-override");
+            missingFeatures.add("Tablist formatting not supporting relational placeholders");
+            missingFeatures.add("Compatibility with nickname plugins changing player names will not work");
+            missingFeatures.add("Anti-override for tablist not working");
+            missingFeatures.add("Header/Footer may be limited or not work at all"); // Maybe add some checks for a more accurate message
+
+            Bukkit.getConsoleSender().sendMessage("§c[TAB] Your server version is not fully supported. This will result in:");
+            for (String message : missingFeatures) {
+                Bukkit.getConsoleSender().sendMessage("§c[TAB] - " + message);
+            }
+            Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
+                    "a plugin version with full support for your server version for optimal experience. This plugin version " +
+                    "has full support for 1.8.8, 1.12.x, 1.16.5, 1.17.x, 1.18.2 and 1.19.1 - 1.21.8.");
         }
+        return new BukkitImplementationProvider();
     }
 
     /**
