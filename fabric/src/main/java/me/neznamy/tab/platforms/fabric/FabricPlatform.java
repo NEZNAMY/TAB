@@ -21,10 +21,8 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.contents.ObjectContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -135,7 +133,10 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
             case TextComponent text -> Component.literal(text.getText());
             case TranslatableComponent translatable -> Component.translatable(translatable.getKey());
             case KeybindComponent keybind -> Component.keybind(keybind.getKeybind());
-            case ObjectComponent object -> Component.literal(object.toLegacyText()); // TODO once released
+            case ObjectComponent object -> MutableComponent.create(new ObjectContents(new ObjectContents.AtlasSprite(
+                    ResourceLocation.parse(object.getAtlas()),
+                    ResourceLocation.parse(object.getSprite())
+            )));
             default -> throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         };
 
@@ -148,7 +149,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
                 .withUnderlined(modifier.getUnderlined())
                 .withStrikethrough(modifier.getStrikethrough())
                 .withObfuscated(modifier.getObfuscated())
-                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
+                .withFont(modifier.getFont() == null ? null : new FontDescription.Resource(ResourceLocation.parse(modifier.getFont())));
         if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor());
         nmsComponent.setStyle(style);
 
