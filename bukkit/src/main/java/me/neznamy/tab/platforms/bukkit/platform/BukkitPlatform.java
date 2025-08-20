@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.chat.component.KeybindComponent;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.chat.component.TextComponent;
-import me.neznamy.chat.component.TranslatableComponent;
+import me.neznamy.chat.component.*;
 import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
@@ -457,6 +454,8 @@ public class BukkitPlatform implements BackendPlatform {
             sb.append(((TranslatableComponent) component).getKey());
         } else if (component instanceof KeybindComponent) {
             sb.append(((KeybindComponent) component).getKeybind());
+        } else if (component instanceof ObjectComponent) {
+            sb.append(component.toLegacyText());
         } else {
             throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         }
