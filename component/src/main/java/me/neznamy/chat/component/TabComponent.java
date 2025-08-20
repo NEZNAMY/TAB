@@ -100,6 +100,8 @@ public abstract class TabComponent {
     /** Pattern for detecting fonts */
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
 
+    private static final Pattern ATLAS_SPRITE_PATTERN = Pattern.compile("<atlassprite:([^,]+),([^>]+)>");
+
     @Nullable
     private Object converted;
 
@@ -309,13 +311,40 @@ public abstract class TabComponent {
     }
 
     @NotNull
-    private static List<TextComponent> toComponentArray(@NotNull String originalText, @Nullable String font) {
+    private static List<TabComponent> toComponentArray(@NotNull String originalText, @Nullable String font) {
         String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText), TABGradientFormatter, TABRGBFormatter);
-        List<TextComponent> components = new ArrayList<>();
+        List<TabComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         TextComponent component = new TextComponent();
         component.modifier.setFont(font);
         for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == '<') {
+                Matcher matcher = ATLAS_SPRITE_PATTERN.matcher(text.substring(i));
+                if (matcher.find() && matcher.start() == 0) {
+                    // flush current builder
+                    if (builder.length() > 0) {
+                        component.setText(builder.toString());
+                        components.add(component);
+                        component = new TextComponent(component);
+                        component.setText("");
+                        component.modifier.setFont(font);
+                        builder = new StringBuilder();
+                    }
+                    String atlas = matcher.group(1);
+                    String sprite = matcher.group(2);
+                    components.add(object(atlas, sprite));
+
+                    // skip
+                    i += matcher.group(0).length() - 1;
+
+                    // reset formatting component safely
+                    component = new TextComponent(component);
+                    component.setText("");
+                    component.modifier.setFont(font);
+                    continue;
+                }
+            }
+
             char c = text.charAt(i);
             if (c == '§') {
                 i++;
