@@ -4,10 +4,7 @@ import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.KeybindComponent;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.chat.component.TextComponent;
-import me.neznamy.chat.component.TranslatableComponent;
+import me.neznamy.chat.component.*;
 import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -134,16 +131,13 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @NotNull
     public Component convertComponent(@NotNull TabComponent component) {
         // Component type
-        MutableComponent nmsComponent;
-        if (component instanceof TextComponent text) {
-            nmsComponent = Component.literal(text.getText());
-        } else if (component instanceof TranslatableComponent translatable) {
-            nmsComponent = Component.translatable(translatable.getKey());
-        } else if (component instanceof KeybindComponent keybind) {
-            nmsComponent = Component.keybind(keybind.getKeybind());
-        } else {
-            throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
-        }
+        MutableComponent nmsComponent = switch (component) {
+            case TextComponent text -> Component.literal(text.getText());
+            case TranslatableComponent translatable -> Component.translatable(translatable.getKey());
+            case KeybindComponent keybind -> Component.keybind(keybind.getKeybind());
+            case ObjectComponent object -> Component.literal(object.toLegacyText()); // TODO once released
+            default -> throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
+        };
 
         // Component style
         ChatModifier modifier = component.getModifier();

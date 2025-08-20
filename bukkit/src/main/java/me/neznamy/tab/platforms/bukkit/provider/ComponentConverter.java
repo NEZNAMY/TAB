@@ -1,10 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.provider;
 
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.KeybindComponent;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.chat.component.TextComponent;
-import me.neznamy.chat.component.TranslatableComponent;
+import me.neznamy.chat.component.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -29,6 +26,8 @@ public abstract class ComponentConverter {
             nmsComponent = newTranslatableComponent(((TranslatableComponent) component).getKey());
         } else if (component instanceof KeybindComponent) {
             nmsComponent = newKeybindComponent(((KeybindComponent)component).getKeybind());
+        } else if (component instanceof ObjectComponent) {
+            nmsComponent = newObjectComponent(((ObjectComponent) component).getAtlas(), ((ObjectComponent) component).getSprite());
         } else {
             throw new IllegalArgumentException("Unexpected component type: " + component.getClass().getName());
         }
@@ -73,6 +72,18 @@ public abstract class ComponentConverter {
      */
     @NotNull
     public abstract Object newKeybindComponent(@NotNull String keybind);
+
+    /**
+     * Creates a new object component with given atlas and sprite.
+     *
+     * @param   atlas
+     *          Atlas to use
+     * @param   sprite
+     *          Sprite to use
+     * @return  Object component with given atlas and sprite
+     */
+    @NotNull
+    public abstract Object newObjectComponent(@NotNull String atlas, @NotNull String sprite);
 
     /**
      * Converts given chat modifier to minecraft style and applies it to the component.

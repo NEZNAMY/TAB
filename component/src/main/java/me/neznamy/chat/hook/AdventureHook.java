@@ -1,10 +1,7 @@
 package me.neznamy.chat.hook;
 
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.KeybindComponent;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.chat.component.TextComponent;
-import me.neznamy.chat.component.TranslatableComponent;
+import me.neznamy.chat.component.*;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
@@ -73,6 +70,9 @@ public class AdventureHook {
         }
         if (component instanceof KeybindComponent) {
             return Component.keybind(((KeybindComponent) component).getKeybind(), style.build()).children(list);
+        }
+        if (component instanceof ObjectComponent) {
+            return Component.text(component.toLegacyText()); // TODO once added
         }
         throw new UnsupportedOperationException(component.getClass().getName() + " component type is not supported");
     }

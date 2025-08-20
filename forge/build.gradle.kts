@@ -64,6 +64,6 @@ loom.forge.accessTransformer(file("src/main/resources/META-INF/accesstransformer
 
 tasks {
     compileJava {
-        options.release.set(17)
+        options.release.set(21)
     }
 }

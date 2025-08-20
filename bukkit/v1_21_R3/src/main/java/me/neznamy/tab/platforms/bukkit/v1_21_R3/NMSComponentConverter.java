@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.v1_21_R3;
 
 import me.neznamy.chat.ChatModifier;
+import me.neznamy.chat.component.ObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.MinecraftKey;
@@ -27,6 +28,12 @@ public class NMSComponentConverter extends ComponentConverter {
     @NotNull
     public Object newKeybindComponent(@NotNull String keybind) {
         return IChatBaseComponent.d(keybind);
+    }
+
+    @Override
+    @NotNull
+    public Object newObjectComponent(@NotNull String atlas, @NotNull String sprite) {
+        return IChatBaseComponent.b(ObjectComponent.ERROR_MESSAGE);
     }
 
     @Override

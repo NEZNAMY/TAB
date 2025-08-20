@@ -2,10 +2,8 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.KeybindComponent;
-import me.neznamy.chat.component.TabComponent;
 import me.neznamy.chat.component.TextComponent;
-import me.neznamy.chat.component.TranslatableComponent;
+import me.neznamy.chat.component.*;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
 import me.neznamy.tab.platforms.bungeecord.hook.BungeePremiumVanishHook;
 import me.neznamy.tab.platforms.bungeecord.injection.BungeePipelineInjector;
@@ -190,6 +188,8 @@ public class BungeePlatform extends ProxyPlatform {
             bComponent = new net.md_5.bungee.api.chat.TranslatableComponent(((TranslatableComponent) component).getKey());
         } else if (component instanceof KeybindComponent) {
             bComponent = new net.md_5.bungee.api.chat.KeybindComponent(((KeybindComponent) component).getKeybind());
+        } else if (component instanceof ObjectComponent) {
+            bComponent = new net.md_5.bungee.api.chat.TextComponent(component.toLegacyText()); // TODO once added
         } else {
             throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         }

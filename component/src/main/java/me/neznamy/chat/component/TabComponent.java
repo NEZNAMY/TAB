@@ -439,4 +439,17 @@ public abstract class TabComponent {
     public static KeybindComponent keybind(@NonNull String keybind) {
         return new KeybindComponent(keybind);
     }
+
+    /**
+     * Creates a new component of "object" type with given atlas and sprite.
+     *
+     * @param   atlas
+     *          Atlas to use in the component
+     * @param   sprite
+     *          Sprite to use in the component
+     * @return  New object component with given atlas and sprite
+     */
+    public static ObjectComponent object(@NonNull String atlas, @NonNull String sprite) {
+        return new ObjectComponent(atlas, sprite);
+    }
 }

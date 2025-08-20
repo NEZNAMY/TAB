@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.v1_8_R3;
 
 import me.neznamy.chat.ChatModifier;
+import me.neznamy.chat.component.ObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.ChatMessage;
@@ -28,7 +29,13 @@ public class NMSComponentConverter extends ComponentConverter {
     @Override
     @NotNull
     public Object newKeybindComponent(@NotNull String keybind) {
-        throw new UnsupportedOperationException("Keybind components were added in 1.12");
+        return new ChatComponentText("<Keybind components were added in 1.12>");
+    }
+
+    @Override
+    @NotNull
+    public Object newObjectComponent(@NotNull String atlas, @NotNull String sprite) {
+        return new ChatComponentText(ObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
