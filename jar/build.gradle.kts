@@ -11,6 +11,8 @@ val platforms = setOf(
     rootProject.projects.bukkit.paper1214,
     rootProject.projects.bukkit.v18R3,
     rootProject.projects.bukkit.v112R1,
+    rootProject.projects.bukkit.v116R1,
+    rootProject.projects.bukkit.v116R2,
     rootProject.projects.bukkit.v116R3,
     rootProject.projects.bukkit.v117R1,
     rootProject.projects.bukkit.v118R1,
