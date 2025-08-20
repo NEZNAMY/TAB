@@ -119,23 +119,12 @@ public class BukkitPlatform implements BackendPlatform {
         }
 
         // Check for direct NMS on some supported versions
-        String serverPackage = BukkitReflection.getServerVersion().getServerPackage();
-        List<String> supportedVersions = Arrays.asList(
-                "v1_8_R3",
-                "v1_12_R1",
-                "v1_16_R3",
-                "v1_17_R1",
-                "v1_18_R2",
-                "v1_19_R1",
-                "v1_19_R2",
-                "v1_19_R3",
-                "v1_20_R1",
-                "v1_20_R2",
-                "v1_20_R3",
-                "v1_20_R4"
-        );
-        if (supportedVersions.contains(serverPackage) && serverVersion != ProtocolVersion.V1_19) {
-            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
+        try {
+            if (serverVersion != ProtocolVersion.V1_19) {
+                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + BukkitReflection.getServerVersion().getServerPackage() + ".NMSImplementationProvider").getConstructor().newInstance();
+            }
+        } catch (ClassNotFoundException ignored) {
+            // Adapter not available
         }
 
         // Try reflection
