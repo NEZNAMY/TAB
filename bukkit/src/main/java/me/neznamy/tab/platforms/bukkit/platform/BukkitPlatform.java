@@ -121,9 +121,12 @@ public class BukkitPlatform implements BackendPlatform {
         }
 
         // Check for direct NMS on supported versions
+        String CRAFTBUKKIT_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
+        String[] array = CRAFTBUKKIT_PACKAGE.split("\\.");
+        String serverPackage = array.length > 3 ? array[3] : null;
         try {
-            if (serverVersion != ProtocolVersion.V1_19) {
-                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + BukkitReflection.getServerVersion().getServerPackage() + ".NMSImplementationProvider").getConstructor().newInstance();
+            if (serverPackage != null && serverVersion != ProtocolVersion.V1_19) {
+                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
             }
         } catch (ClassNotFoundException ignored) {
             // Adapter not available

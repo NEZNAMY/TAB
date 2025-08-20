@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
 import me.neznamy.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
@@ -10,22 +8,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * TabPlayer implementation for Bukkit platform
  */
 @SuppressWarnings("deprecation")
 public class BukkitTabPlayer extends BackendTabPlayer {
-
-    /** NMS handle of this player */
-    @NotNull
-    @Getter
-    private final Object handle;
-
-    /** Player's connection for sending packets */
-    @Nullable
-    public Object connection;
 
     /**
      * Constructs new instance with given bukkit player
@@ -35,10 +23,8 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      * @param   p
      *          bukkit player
      */
-    @SneakyThrows
     public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
         super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName(), platform.getServerVersion().getNetworkId());
-        handle = BukkitReflection.CraftPlayer_getHandle.invoke(p);
     }
 
     @Override
