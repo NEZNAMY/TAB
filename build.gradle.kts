@@ -30,6 +30,7 @@ val platforms = setOf(
     projects.bukkit.v120R2,
     projects.bukkit.v120R3,
     projects.bukkit.v120R4,
+    projects.bukkit.v121R1,
     projects.bungeecord,
     projects.component,
     projects.velocity,
