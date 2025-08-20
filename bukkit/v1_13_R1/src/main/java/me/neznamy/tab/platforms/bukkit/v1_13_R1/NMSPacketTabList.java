@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.v1_16_R2;
+package me.neznamy.tab.platforms.bukkit.v1_13_R1;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -10,9 +10,9 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.minecraft.server.v1_16_R2.*;
-import net.minecraft.server.v1_16_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
+import net.minecraft.server.v1_13_R1.*;
+import net.minecraft.server.v1_13_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import org.bukkit.craftbukkit.v1_13_R1.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,8 +96,8 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @SneakyThrows
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
         PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
-        packet.header = header.convert();
-        packet.footer = footer.convert();
+        packet.a = header.convert();
+        packet.b = footer.convert();
         sendPacket(packet);
     }
 

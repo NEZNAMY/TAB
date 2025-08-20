@@ -156,7 +156,7 @@ public class BukkitPlatform implements BackendPlatform {
             }
             Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
                     "a plugin version with full support for your server version for optimal experience. This plugin version " +
-                    "has full support for 1.8.8, 1.12.x and 1.15 - 1.21.8.");
+                    "has full support for 1.8.8 and 1.12 - 1.21.8.");
         }
         return new BukkitImplementationProvider();
     }
