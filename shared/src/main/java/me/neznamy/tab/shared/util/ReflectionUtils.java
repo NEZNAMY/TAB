@@ -75,103 +75,6 @@ public class ReflectionUtils {
     }
 
     /**
-     * Returns all methods from class which return specified class type and have specified parameter types.
-     *
-     * @param   clazz
-     *          Class to get methods from
-     * @param   returnType
-     *          Return type of methods
-     * @param   parameterTypes
-     *          Parameter types of methods
-     * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
-     */
-    @NotNull
-    public static List<Method> getMethods(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
-        List<Method> list = new ArrayList<>();
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (!returnType.isAssignableFrom(m.getReturnType()) || m.getParameterCount() != parameterTypes.length) continue;
-            Class<?>[] types = m.getParameterTypes();
-            boolean valid = true;
-            for (int i=0; i<types.length; i++) {
-                if (types[i] != parameterTypes[i]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) list.add(m);
-        }
-        return list;
-    }
-
-    /**
-     * Returns all methods from class which return specified class type and have specified parameter types.
-     *
-     * @param   clazz
-     *          Class to get methods from
-     * @param   returnType
-     *          Return type of methods
-     * @param   parameterTypes
-     *          Parameter types of methods
-     * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
-     */
-    @NotNull
-    public static List<Method> getPublicMethods(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
-        List<Method> list = new ArrayList<>();
-        for (Method m : clazz.getMethods()) {
-            if (!returnType.isAssignableFrom(m.getReturnType()) || m.getParameterCount() != parameterTypes.length) continue;
-            Class<?>[] types = m.getParameterTypes();
-            boolean valid = true;
-            for (int i=0; i<types.length; i++) {
-                if (types[i] != parameterTypes[i]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) list.add(m);
-        }
-        return list;
-    }
-
-    /**
-     * Returns method with specified possible names and parameters. Throws exception if no such method was found
-     *
-     * @param   clazz
-     *          class to get method from
-     * @param   names
-     *          possible method names
-     * @param   parameterTypes
-     *          parameter types of the method
-     * @return  method with specified name and parameters
-     * @throws  NoSuchMethodException
-     *          if no such method exists
-     */
-    @NotNull
-    public static Method getMethod(@NotNull Class<?> clazz, @NotNull String[] names, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
-        List<String> list = new ArrayList<>();
-        for (Method m : clazz.getMethods()) {
-            if (m.getParameterCount() != parameterTypes.length) continue;
-            Class<?>[] types = m.getParameterTypes();
-            boolean valid = true;
-            for (int i=0; i<types.length; i++) {
-                if (types[i] != parameterTypes[i]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) {
-                for (String name : names) {
-                    if (m.getName().equals(name)) return m;
-                    String[] array = m.getName().split("_");
-                    if (array.length > 2 && array[2].equals(name)) return m; // Bukkit/Forge hybrids may sometimes use these mappings
-                }
-                list.add(m.getName());
-            }
-        }
-        throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " +
-                Arrays.toString(parameterTypes) + " in class " + clazz.getName() + ". Methods with matching parameters: " + list);
-    }
-
-    /**
      * Returns list of instance fields matching class type
      *
      * @param   clazz
@@ -249,32 +152,6 @@ public class ReflectionUtils {
         if (list.size() != 1) {
             throw new IllegalStateException("Class " + clazz.getName() + " is expected to have 1 field of type " + type.getName() + ", but has " +
                     list.size() + ": " + list.stream().map(Field::getName).collect(Collectors.toList()));
-
-        }
-        return list.get(0);
-    }
-
-    /**
-     * Returns the one and only method of class with defined return type and parameters. Throws
-     * IllegalStateException if more than 1 or no methods were found.
-     *
-     * @param   clazz
-     *          class to check fields of
-     * @param   returnType
-     *          field type to check for
-     * @param   parameterTypes
-     *          Parameter types
-     * @return  The one and only method with defined return type and parameter
-     * @throws  IllegalStateException
-     *          If more than 1 methods meets the criteria or if none do.
-     */
-    @NotNull
-    public static Method getOnlyMethod(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
-        List<Method> list = getMethods(clazz, returnType, parameterTypes);
-        if (list.size() != 1) {
-            throw new IllegalStateException("Class " + clazz.getName() + " is expected to have 1 method with return type " +
-                    returnType.getName() + " and parameters " + Arrays.toString(parameterTypes) + ", but has " +
-                    list.size() + ": \n" + list.stream().map(Method::toString).collect(Collectors.joining("\n")));
 
         }
         return list.get(0);
