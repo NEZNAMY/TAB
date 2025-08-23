@@ -257,23 +257,6 @@ public abstract class TabComponent {
     }
 
     /**
-     * Converts this component into a string that only consists of text without any formatting.
-     *
-     * @return  String containing text of the component and extras
-     */
-    @NotNull
-    public String toRawText() {
-        StringBuilder builder = new StringBuilder();
-        if (this instanceof TextComponent) builder.append(((TextComponent)this).getText());
-        for (TabComponent extra : getExtra()) {
-            if (extra instanceof TextComponent) {
-                builder.append(((TextComponent) extra).getText());
-            }
-        }
-        return builder.toString();
-    }
-
-    /**
      * Returns organized component from colored text
      *
      * @param   originalText

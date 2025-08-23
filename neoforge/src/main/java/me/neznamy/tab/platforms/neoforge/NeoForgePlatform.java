@@ -67,12 +67,12 @@ public record NeoForgePlatform(MinecraftServer server) implements BackendPlatfor
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        LogUtils.getLogger().info("[TAB] {}", message.toRawText());
+        LogUtils.getLogger().info("[TAB] {}", ((Component) message.convert()).getString());
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        LogUtils.getLogger().warn("[TAB] {}", message.toRawText());
+        LogUtils.getLogger().warn("[TAB] {}", ((Component) message.convert()).getString());
     }
 
     @Override
