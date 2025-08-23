@@ -144,9 +144,8 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 }
             }
             if (actions.contains(UPDATE_LATENCY)) {
-                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, profileId, latency);
-                if (newLatency != latency) {
-                    latency = newLatency;
+                if (getForcedLatency() != null) {
+                    latency = getForcedLatency();
                     rewriteEntry = rewritePacket = true;
                 }
             }

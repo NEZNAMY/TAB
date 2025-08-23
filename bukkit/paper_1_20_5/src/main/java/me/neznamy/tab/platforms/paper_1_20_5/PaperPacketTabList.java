@@ -133,9 +133,8 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                     }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY)) {
-                    int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, nmsData.profileId(), latency);
-                    if (newLatency != latency) {
-                        latency = newLatency;
+                    if (getForcedLatency() != null) {
+                        latency = getForcedLatency();
                         rewriteEntry = rewritePacket = true;
                     }
                 }

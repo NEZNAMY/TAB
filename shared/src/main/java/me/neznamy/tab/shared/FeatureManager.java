@@ -50,9 +50,6 @@ public class FeatureManager {
     @NotNull
     private TabFeature[] values = new TabFeature[0];
 
-    /** Flag tracking presence of a feature listening to latency change for faster check with better performance */
-    private boolean hasLatencyChangeListener;
-
     /** Flag tracking presence of a feature listening to command preprocess for faster check with better performance */
     private boolean hasCommandListener;
 
@@ -379,29 +376,6 @@ public class FeatureManager {
     }
 
     /**
-     * Forwards latency change to all features and returns new latency to use.
-     *
-     * @param   packetReceiver
-     *          Player who received the packet
-     * @param   id
-     *          UUID of player whose ping changed
-     * @param   latency
-     *          Latency in the packet
-     * @return  New latency to use
-     */
-    public int onLatencyChange(TabPlayer packetReceiver, UUID id, int latency) {
-        if (!hasLatencyChangeListener) return latency;
-        int newLatency = latency;
-        for (TabFeature f : values) {
-            if (!(f instanceof LatencyListener)) continue;
-            long time = System.nanoTime();
-            newLatency = ((LatencyListener)f).onLatencyChange(packetReceiver, id, newLatency);
-            TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), CpuUsageCategory.PING_CHANGE, System.nanoTime() - time);
-        }
-        return newLatency;
-    }
-
-    /**
      * Forwards tablist clear to all enabled features.
      *
      * @param   packetReceiver
@@ -539,9 +513,6 @@ public class FeatureManager {
         }
         if (featureHandler instanceof GameModeListener) {
             TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.GAMEMODE);
-        }
-        if (featureHandler instanceof LatencyListener) {
-            hasLatencyChangeListener = true;
         }
         if (featureHandler instanceof CommandListener) {
             hasCommandListener = true;

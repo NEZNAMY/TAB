@@ -18,6 +18,11 @@ import java.util.*;
 @Getter
 public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
+    /** Forced latency for all entries*/
+    @Getter
+    @Setter
+    private static Integer forcedLatency;
+
     /** Player this tablist belongs to */
     protected final P player;
 

@@ -132,10 +132,8 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 if (forcedGameMode != null) PlayerInfoData_GameMode.set(nmsData, forcedGameMode);
             }
             if (action == UPDATE_LATENCY || action == ADD_PLAYER) {
-                int oldLatency = nmsData.b();
-                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, oldLatency);
-                if (oldLatency != newLatency) {
-                    PlayerInfoData_Latency.set(nmsData, newLatency);
+                if (getForcedLatency() != null) {
+                    PlayerInfoData_Latency.set(nmsData, getForcedLatency());
                 }
             }
             if (action == ADD_PLAYER) {

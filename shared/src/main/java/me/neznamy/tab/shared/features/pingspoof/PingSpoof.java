@@ -6,9 +6,8 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.UUID;
 
 /**
  * This feature hides real ping of players in connection bar and
@@ -16,7 +15,7 @@ import java.util.UUID;
  */
 @Getter
 @RequiredArgsConstructor
-public class PingSpoof extends TabFeature implements JoinListener, LatencyListener, Loadable, UnLoadable, CustomThreaded {
+public class PingSpoof extends TabFeature implements JoinListener, Loadable, UnLoadable, CustomThreaded {
 
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Ping Spoof Thread");
@@ -25,18 +24,14 @@ public class PingSpoof extends TabFeature implements JoinListener, LatencyListen
     private final PingSpoofConfiguration configuration;
 
     @Override
-    public int onLatencyChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id, int latency) {
-        if (TAB.getInstance().getPlayerByTabListUUID(id) != null) return configuration.getValue();
-        return latency;
-    }
-
-    @Override
     public void load() {
+        TrackedTabList.setForcedLatency(configuration.getValue());
         updateAll(false);
     }
 
     @Override
     public void unload() {
+        TrackedTabList.setForcedLatency(null);
         updateAll(true);
     }
 

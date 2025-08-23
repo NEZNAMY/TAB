@@ -122,7 +122,9 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
                     if (forcedGameMode != null) item.setGamemode(forcedGameMode);
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
+                    if (getForcedLatency() != null) {
+                        item.setPing(getForcedLatency());
+                    }
                 }
                 if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(player, item.getUuid(), item.getUsername());
@@ -140,7 +142,9 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
                     if (forcedGameMode != null) item.setGamemode(forcedGameMode);
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
-                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(player, item.getUuid(), item.getPing()));
+                    if (getForcedLatency() != null) {
+                        item.setPing(getForcedLatency());
+                    }
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(player, item.getUuid(), item.getUsername());

@@ -134,10 +134,8 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 if (forcedGameMode != null) PlayerInfoData_GameMode.set(nmsData, forcedGameMode);
             }
             if (action == EnumPlayerInfoAction.UPDATE_LATENCY || action == EnumPlayerInfoAction.ADD_PLAYER) {
-                int oldLatency = PlayerInfoData_Latency.getInt(nmsData);
-                int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(player, id, oldLatency);
-                if (oldLatency != newLatency) {
-                    PlayerInfoData_Latency.set(nmsData, newLatency);
+                if (getForcedLatency() != null) {
+                    PlayerInfoData_Latency.set(nmsData, getForcedLatency());
                 }
             }
             if (action == EnumPlayerInfoAction.ADD_PLAYER) {
@@ -150,8 +148,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private void sendPacket(@NonNull EnumPlayerInfoAction action, @NonNull UUID id, @NonNull String name,
                             @Nullable Skin skin, int latency, int gameMode, @Nullable TabComponent displayName) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(action);
-        PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(
-                packet,
+        PLAYERS.set(packet, Collections.singletonList(packet.new PlayerInfoData(
                 createProfile(id, name, skin),
                 latency,
                 WorldSettings.EnumGamemode.values()[gameMode],
