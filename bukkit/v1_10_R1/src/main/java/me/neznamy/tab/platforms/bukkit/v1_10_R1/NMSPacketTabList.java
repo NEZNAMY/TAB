@@ -18,10 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * TabList implementation using direct NMS code.
@@ -29,7 +26,7 @@ import java.util.UUID;
 public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     // PlayerInfoData subclass is broken, using reflection to get it
-    private static final Class<?> PlayerInfoData = PacketPlayOutPlayerInfo.class.getDeclaredClasses()[0];
+    private static final Class<?> PlayerInfoData = Arrays.stream(PacketPlayOutPlayerInfo.class.getDeclaredClasses()).filter(c -> !c.isEnum() && c.getConstructors().length > 0).findFirst().get();
     private static final Constructor<?> newPlayerInfoData = ReflectionUtils.getOnlyConstructor(PlayerInfoData);
 
     private static final Field ACTION = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, EnumPlayerInfoAction.class);
