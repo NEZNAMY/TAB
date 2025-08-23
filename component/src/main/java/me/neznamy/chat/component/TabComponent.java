@@ -463,6 +463,9 @@ public abstract class TabComponent {
      * @return  New object component with given atlas and sprite
      */
     public static ObjectComponent object(@NonNull String atlas, @NonNull String sprite) {
-        return new ObjectComponent(atlas.toLowerCase(Locale.US), sprite.toLowerCase(Locale.US));
+        return new ObjectComponent(
+                atlas.toLowerCase(Locale.US).replace(" ", "_"),
+                sprite.toLowerCase(Locale.US).replace(" ", "_")
+        );
     }
 }
