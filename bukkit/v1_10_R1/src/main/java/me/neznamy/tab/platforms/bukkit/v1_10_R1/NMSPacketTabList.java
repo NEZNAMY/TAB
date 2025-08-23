@@ -40,7 +40,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static final Field PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(PlayerInfoData, IChatBaseComponent.class);
     private static final Field PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(PlayerInfoData, EnumGamemode.class);
 
-    private static final Field HEADER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(0);
     private static final Field FOOTER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(1);
 
     /**
@@ -98,8 +97,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @SneakyThrows
     public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
-        HEADER.set(packet, header.convert());
+        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(header.convert());
         FOOTER.set(packet, footer.convert());
         sendPacket(packet);
     }

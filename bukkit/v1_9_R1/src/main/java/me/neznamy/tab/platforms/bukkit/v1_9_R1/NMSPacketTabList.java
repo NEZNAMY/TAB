@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.v1_11_R1;
+package me.neznamy.tab.platforms.bukkit.v1_9_R1;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -10,13 +10,13 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.minecraft.server.v1_11_R1.*;
-import net.minecraft.server.v1_11_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import net.minecraft.server.v1_9_R1.*;
+import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo.PlayerInfoData;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,17 +28,13 @@ import java.util.UUID;
  */
 public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
-    // PlayerInfoData subclass is broken, using reflection to get it
-    private static final Class<?> PlayerInfoData = PacketPlayOutPlayerInfo.class.getDeclaredClasses()[0];
-    private static final Constructor<?> newPlayerInfoData = ReflectionUtils.getOnlyConstructor(PlayerInfoData);
-
     private static final Field ACTION = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, EnumPlayerInfoAction.class);
     private static final Field PLAYERS = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, List.class);
 
-    private static final Field PlayerInfoData_Profile = ReflectionUtils.getOnlyField(PlayerInfoData, GameProfile.class);
-    private static final Field PlayerInfoData_Latency = ReflectionUtils.getFields(PlayerInfoData, int.class).get(0);
-    private static final Field PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(PlayerInfoData, IChatBaseComponent.class);
-    private static final Field PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(PlayerInfoData, EnumGamemode.class);
+    private static final Field PlayerInfoData_Profile = ReflectionUtils.getOnlyField(PlayerInfoData.class, GameProfile.class);
+    private static final Field PlayerInfoData_Latency = ReflectionUtils.getFields(PlayerInfoData.class, int.class).get(0);
+    private static final Field PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(PlayerInfoData.class, IChatBaseComponent.class);
+    private static final Field PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(PlayerInfoData.class, WorldSettings.EnumGamemode.class);
 
     private static final Field FOOTER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(1);
 
@@ -150,11 +146,10 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private void sendPacket(@NonNull EnumPlayerInfoAction action, @NonNull UUID id, @NonNull String name,
                             @Nullable Skin skin, int latency, int gameMode, @Nullable TabComponent displayName) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(action);
-        PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(
-                packet,
+        PLAYERS.set(packet, Collections.singletonList(packet.new PlayerInfoData(
                 createProfile(id, name, skin),
                 latency,
-                EnumGamemode.values()[gameMode],
+                WorldSettings.EnumGamemode.values()[gameMode],
                 displayName == null ? null : displayName.convert())
         ));
         sendPacket(packet);

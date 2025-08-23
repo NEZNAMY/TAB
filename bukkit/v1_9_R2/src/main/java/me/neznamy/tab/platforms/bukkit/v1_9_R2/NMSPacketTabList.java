@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.v1_11_R1;
+package me.neznamy.tab.platforms.bukkit.v1_9_R2;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -10,9 +10,9 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.minecraft.server.v1_11_R1.*;
-import net.minecraft.server.v1_11_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +38,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static final Field PlayerInfoData_Profile = ReflectionUtils.getOnlyField(PlayerInfoData, GameProfile.class);
     private static final Field PlayerInfoData_Latency = ReflectionUtils.getFields(PlayerInfoData, int.class).get(0);
     private static final Field PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(PlayerInfoData, IChatBaseComponent.class);
-    private static final Field PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(PlayerInfoData, EnumGamemode.class);
+    private static final Field PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(PlayerInfoData, WorldSettings.EnumGamemode.class);
 
     private static final Field FOOTER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(1);
 
@@ -154,7 +154,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 packet,
                 createProfile(id, name, skin),
                 latency,
-                EnumGamemode.values()[gameMode],
+                WorldSettings.EnumGamemode.values()[gameMode],
                 displayName == null ? null : displayName.convert())
         ));
         sendPacket(packet);
