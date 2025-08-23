@@ -5,15 +5,16 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.chat.component.*;
-import me.neznamy.tab.platforms.bukkit.*;
+import me.neznamy.tab.platforms.bukkit.BukkitEventListener;
+import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
+import me.neznamy.tab.platforms.bukkit.BukkitTabCommand;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
-import me.neznamy.tab.platforms.bukkit.provider.bukkit.BukkitImplementationProvider;
-import me.neznamy.tab.platforms.bukkit.provider.bukkit.PaperScoreboard;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -50,10 +51,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -111,54 +110,27 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     @SneakyThrows
     private ImplementationProvider findImplementationProvider() {
-        // Check for mojang-mapped paper (1.20.5+)
-        String paperModule = getPaperModule();
-        if (paperModule != null) {
-            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
-        }
-
-        // Check for direct NMS on supported versions
         String CRAFTBUKKIT_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
         String[] array = CRAFTBUKKIT_PACKAGE.split("\\.");
         String serverPackage = array.length > 3 ? array[3] : null;
-        try {
-            if (serverPackage != null && serverVersion != ProtocolVersion.V1_19) {
+
+        if (serverPackage == null) {
+            // Paper 1.20.5+, check for available module
+            String paperModule = getPaperModule();
+            if (paperModule != null) {
+                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
+            }
+        } else {
+            // Paper <1.20.5 or Spigot
+            try {
+                // Does not actually support flat 1.19, but whatever, no one is using it anyway
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
+            } catch (ClassNotFoundException ignored) {
+
             }
-        } catch (ClassNotFoundException ignored) {
-            // Adapter not available
         }
 
-        if (serverVersion.getMinorVersion() >= 8) {
-            List<String> missingFeatures = new ArrayList<>();
-
-            // Scoreboard
-            missingFeatures.add("Compatibility with other scoreboard plugins being reduced");
-            if (!PaperScoreboard.isAvailable()) {
-                missingFeatures.add("Features receiving new artificial character limits");
-                missingFeatures.add("1.20.3+ scoreboard visuals not working due to lack of API");
-            }
-            missingFeatures.add("Anti-override for nametags not working");
-
-            // Tablist
-            missingFeatures.add("Layout feature will not work");
-            missingFeatures.add("Prevent-spectator-effect feature will not work");
-            missingFeatures.add("Ping spoof feature will not work");
-            missingFeatures.add("Tablist formatting missing anti-override");
-            missingFeatures.add("Tablist formatting not supporting relational placeholders");
-            missingFeatures.add("Compatibility with nickname plugins changing player names will not work");
-            missingFeatures.add("Anti-override for tablist not working");
-            missingFeatures.add("Header/Footer may be limited or not work at all"); // Maybe add some checks for a more accurate message
-
-            Bukkit.getConsoleSender().sendMessage("§c[TAB] Your server version is not fully supported. This will result in:");
-            for (String message : missingFeatures) {
-                Bukkit.getConsoleSender().sendMessage("§c[TAB] - " + message);
-            }
-            Bukkit.getConsoleSender().sendMessage("§c[TAB] Please use " +
-                    "a plugin version with full support for your server version for optimal experience. This plugin version " +
-                    "has full support for 1.7 - 1.21.8.");
-        }
-        return new BukkitImplementationProvider();
+        throw new UnsupportedOperationException();
     }
 
     /**
