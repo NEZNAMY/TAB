@@ -148,7 +148,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private void sendPacket(@NonNull EnumPlayerInfoAction action, @NonNull UUID id, @NonNull String name,
                             @Nullable Skin skin, int latency, int gameMode, @Nullable TabComponent displayName) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(action);
-        PLAYERS.set(packet, Collections.singletonList(packet.new PlayerInfoData(
+        PLAYERS.set(packet, Collections.singletonList(newPlayerInfoData.newInstance(
                 createProfile(id, name, skin),
                 latency,
                 WorldSettings.EnumGamemode.values()[gameMode],
