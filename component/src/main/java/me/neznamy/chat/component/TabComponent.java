@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -479,6 +480,6 @@ public abstract class TabComponent {
      * @return  New object component with given atlas and sprite
      */
     public static ObjectComponent object(@NonNull String atlas, @NonNull String sprite) {
-        return new ObjectComponent(atlas, sprite);
+        return new ObjectComponent(atlas.toLowerCase(Locale.US), sprite.toLowerCase(Locale.US));
     }
 }
