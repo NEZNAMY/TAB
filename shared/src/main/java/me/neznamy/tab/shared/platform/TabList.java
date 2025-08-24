@@ -153,36 +153,6 @@ public interface TabList {
     Skin getSkin();
 
     /**
-     * TabList action.
-     */
-    enum Action {
-
-        /** Adds player into the TabList */
-        ADD_PLAYER,
-
-        /** Removes player from the TabList */
-        REMOVE_PLAYER,
-
-        /** Updates game mode*/
-        UPDATE_GAME_MODE,
-
-        /** Updates listed flag (1.19.3+) */
-        UPDATE_LISTED,
-
-        /** Updates latency */
-        UPDATE_LATENCY,
-
-        /** Updates display name */
-        UPDATE_DISPLAY_NAME,
-
-        /** Updates list order (1.21.2+) */
-        UPDATE_LIST_ORDER,
-
-        /** Updates hat flag (1.21.4+) */
-        UPDATE_HAT
-    }
-
-    /**
      * A subclass representing player list entry
      */
     @Getter
