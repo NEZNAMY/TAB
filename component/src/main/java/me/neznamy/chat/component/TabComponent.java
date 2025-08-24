@@ -101,7 +101,7 @@ public abstract class TabComponent {
     /** Pattern for detecting fonts */
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
 
-    private static final Pattern ATLAS_SPRITE_PATTERN = Pattern.compile("<atlassprite:([^,]+),([^>]+)>");
+    private static final Pattern SPRITE_PATTERN = Pattern.compile("<sprite:(?:\"([^\"]+)\"|([^:]+)):(?:\"([^\"]+)\"|([^>]+))>");;
 
     @Nullable
     private Object converted;
@@ -303,7 +303,7 @@ public abstract class TabComponent {
         component.modifier.setFont(font);
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '<') {
-                Matcher matcher = ATLAS_SPRITE_PATTERN.matcher(text.substring(i));
+                Matcher matcher = SPRITE_PATTERN.matcher(text.substring(i));
                 if (matcher.find() && matcher.start() == 0) {
                     // flush current builder
                     if (builder.length() > 0) {
@@ -314,8 +314,8 @@ public abstract class TabComponent {
                         component.modifier.setFont(font);
                         builder = new StringBuilder();
                     }
-                    String atlas = matcher.group(1);
-                    String sprite = matcher.group(2);
+                    String atlas = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+                    String sprite = matcher.group(3) != null ? matcher.group(3) : matcher.group(4);
                     components.add(object(atlas, sprite));
 
                     // skip
