@@ -34,10 +34,10 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
+        forcedDisplayNames.put(entry, displayName);
         if (player.getVersion().getMinorVersion() < 8) {
             return; // Display names are not supported on 1.7 and below
         }
-        forcedDisplayNames.put(entry, displayName);
         updateDisplayName0(entry, displayName);
     }
 
@@ -53,8 +53,12 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     @Override
     public void updateDisplayName(@NonNull TabPlayer player, @Nullable TabComponent displayName) {
+        forcedDisplayNames.put(player.getTablistId(), displayName);
+        if (player.getVersion().getMinorVersion() < 8) {
+            return; // Display names are not supported on 1.7 and below
+        }
         if (containsEntry(player.getTablistId()) && this.player.canSee(player)) {
-            updateDisplayName(player.getTablistId(), displayName);
+            updateDisplayName0(player.getTablistId(), displayName);
         }
     }
 
