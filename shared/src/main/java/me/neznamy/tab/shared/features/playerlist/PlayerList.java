@@ -22,7 +22,6 @@ import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -57,27 +56,15 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         }
     }
 
-    /**
-     * Returns UUID of tablist entry representing this player. If layout feature
-     * is enabled, returns UUID of the layout slot where the player should be.
-     * When it's not enabled, returns player's TabList UUID, which may not match
-     * with player's actual UUID due to velocity.
-     *
-     * @param   p
-     *          Player to get tablist UUID of
-     * @param   viewer
-     *          TabList viewer
-     * @return  UUID of TabList entry representing requested player
-     */
-    @NotNull
-    public UUID getTablistUUID(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
+    private void updateDisplayName(@NotNull TabPlayer viewer, @NotNull TabPlayer target, @Nullable TabComponent displayName) {
         if (viewer.layoutData.currentLayout != null) {
-            PlayerSlot slot = viewer.layoutData.currentLayout.view.getSlot(p);
+            PlayerSlot slot = viewer.layoutData.currentLayout.view.getSlot(target);
             if (slot != null) {
-                return slot.getUniqueId();
+                viewer.getTabList().updateDisplayName(slot.getUniqueId(), displayName);
+                return;
             }
         }
-        return p.getTablistId(); //layout not enabled or player not visible to viewer
+        viewer.getTabList().updateDisplayName(target, displayName);
     }
 
     /**
@@ -118,9 +105,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void updatePlayer(@NotNull TabPlayer player, boolean format) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (!viewer.canSee(player)) continue;
-            UUID tablistId = getTablistUUID(player, viewer);
-            viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
-                    tablistId.getMostSignificantBits() == 0 ? TabComponent.legacyText(player.getName()) : null);
+            // TODO This probably needs some layout check to make sure it does not use layout entry names for player names
+            updateDisplayName(viewer, player, format ? getTabFormat(player, viewer) : null);
         }
         if (proxy != null) proxy.sendMessage(new PlayerListUpdateProxyPlayer(this, player.getUniqueId(), player.getName(), player.tablistData.prefix.get() +
                 player.tablistData.name.get() + player.tablistData.suffix.get()));
@@ -161,7 +147,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.tablistData.disabled.get()) continue;
                 if (!viewer.canSee(target)) continue;
-                viewer.getTabList().updateDisplayName(getTablistUUID(target, viewer), getTabFormat(target, viewer));
+                updateDisplayName(viewer, target, getTabFormat(target, viewer));
             }
         }
     }
@@ -172,7 +158,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (target.tablistData.disabled.get()) continue;
                 if (!viewer.canSee(target)) continue;
-                viewer.getTabList().updateDisplayName(getTablistUUID(target, target), null);
+                updateDisplayName(viewer, target, null);
             }
         }
     }
@@ -184,9 +170,9 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (!all.tablistData.disabled.get() && p.canSee(all))
-                    p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
+                    updateDisplayName(p, all, getTabFormat(all, p));
                 if (all != p && !p.tablistData.disabled.get() && all.canSee(p))
-                    all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
+                    updateDisplayName(all, p, getTabFormat(p, all));
             }
             if (proxy != null) {
                 for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
@@ -258,7 +244,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                 if (all == connectedPlayer) continue; // Already updated above
                 if (all.tablistData.disabled.get()) continue;
                 if (!connectedPlayer.canSee(all)) continue;
-                connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
+                updateDisplayName(connectedPlayer, all, getTabFormat(all, connectedPlayer));
             }
             if (proxy != null) {
                 for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
@@ -280,7 +266,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         if (player.isVanished() || player.tablistData.disabled.get()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (!viewer.canSee(player)) continue;
-            viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
+            viewer.getTabList().updateDisplayName(player, getTabFormat(player, viewer));
         }
     }
 

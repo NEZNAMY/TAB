@@ -53,14 +53,14 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     @Override
     public void updateDisplayName(@NonNull TabPlayer player, @Nullable TabComponent displayName) {
-        if (this.player.canSee(player)) {
+        if (containsEntry(player.getTablistId()) && this.player.canSee(player)) {
             updateDisplayName(player.getTablistId(), displayName);
         }
     }
 
     @Override
     public void updateLatency(@NonNull TabPlayer player, int latency) {
-        if (this.player.canSee(player)) {
+        if (containsEntry(player.getTablistId()) && this.player.canSee(player)) {
             updateLatency(player.getTablistId(), latency);
         }
     }
@@ -68,7 +68,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     @Override
     public void updateGameMode(@NonNull TabPlayer player, int gameMode) {
         forcedGameModes.put(player.getTablistId(), gameMode);
-        if (this.player.canSee(player)) {
+        if (containsEntry(player.getTablistId()) && this.player.canSee(player)) {
             updateGameMode(player.getTablistId(), gameMode);
         }
     }
