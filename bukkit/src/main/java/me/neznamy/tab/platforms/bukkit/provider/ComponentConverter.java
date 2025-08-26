@@ -1,7 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.provider;
 
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.*;
+import me.neznamy.chat.component.KeybindComponent;
+import me.neznamy.chat.component.TabComponent;
+import me.neznamy.chat.component.TextComponent;
+import me.neznamy.chat.component.TranslatableComponent;
+import me.neznamy.chat.component.object.AtlasSprite;
+import me.neznamy.chat.component.object.ObjectComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -27,7 +32,12 @@ public abstract class ComponentConverter {
         } else if (component instanceof KeybindComponent) {
             nmsComponent = newKeybindComponent(((KeybindComponent)component).getKeybind());
         } else if (component instanceof ObjectComponent) {
-            nmsComponent = newObjectComponent(((ObjectComponent) component).getAtlas(), ((ObjectComponent) component).getSprite());
+            if ((((ObjectComponent) component).getContents() instanceof AtlasSprite)) {
+                AtlasSprite sprite = (AtlasSprite) ((ObjectComponent) component).getContents();
+                nmsComponent = newObjectAtlasSpriteComponent(sprite.getAtlas(), sprite.getSprite());
+            } else {
+                throw new IllegalArgumentException("Unexpected object component type: " + ((ObjectComponent) component).getContents().getClass().getName());
+            }
         } else {
             throw new IllegalArgumentException("Unexpected component type: " + component.getClass().getName());
         }
@@ -83,7 +93,7 @@ public abstract class ComponentConverter {
      * @return  Object component with given atlas and sprite
      */
     @NotNull
-    public abstract Object newObjectComponent(@NotNull String atlas, @NotNull String sprite);
+    public abstract Object newObjectAtlasSpriteComponent(@NotNull String atlas, @NotNull String sprite);
 
     /**
      * Converts given chat modifier to minecraft style and applies it to the component.

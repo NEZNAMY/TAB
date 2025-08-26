@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.paper_1_20_5;
 
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.ObjectComponent;
+import me.neznamy.chat.component.object.ObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +32,7 @@ public class PaperComponentConverter extends ComponentConverter {
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull String atlas, @NotNull String sprite) {
+    public Object newObjectAtlasSpriteComponent(@NotNull String atlas, @NotNull String sprite) {
         return Component.literal(ObjectComponent.ERROR_MESSAGE);
     }
 

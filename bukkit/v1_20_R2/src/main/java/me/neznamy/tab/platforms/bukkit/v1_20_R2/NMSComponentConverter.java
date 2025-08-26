@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.v1_20_R2;
 
 import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.ObjectComponent;
+import me.neznamy.chat.component.object.ObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.MinecraftKey;
@@ -32,7 +32,7 @@ public class NMSComponentConverter extends ComponentConverter {
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull String atlas, @NotNull String sprite) {
+    public Object newObjectAtlasSpriteComponent(@NotNull String atlas, @NotNull String sprite) {
         return IChatBaseComponent.b(ObjectComponent.ERROR_MESSAGE);
     }
 

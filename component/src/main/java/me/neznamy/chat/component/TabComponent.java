@@ -7,6 +7,8 @@ import lombok.SneakyThrows;
 import me.neznamy.chat.ChatModifier;
 import me.neznamy.chat.EnumChatFormat;
 import me.neznamy.chat.TextColor;
+import me.neznamy.chat.component.object.AtlasSprite;
+import me.neznamy.chat.component.object.ObjectComponent;
 import me.neznamy.chat.hook.AdventureHook;
 import me.neznamy.chat.rgb.RGBUtils;
 import me.neznamy.chat.util.TriFunction;
@@ -316,7 +318,7 @@ public abstract class TabComponent {
                     }
                     String atlas = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
                     String sprite = matcher.group(3) != null ? matcher.group(3) : matcher.group(4);
-                    components.add(object(atlas, sprite));
+                    components.add(objectAtlasSprite(atlas, sprite));
 
                     // skip
                     i += matcher.group(0).length() - 1;
@@ -462,10 +464,10 @@ public abstract class TabComponent {
      *          Sprite to use in the component
      * @return  New object component with given atlas and sprite
      */
-    public static ObjectComponent object(@NonNull String atlas, @NonNull String sprite) {
-        return new ObjectComponent(
+    public static ObjectComponent objectAtlasSprite(@NonNull String atlas, @NonNull String sprite) {
+        return new ObjectComponent(new AtlasSprite(
                 atlas.toLowerCase(Locale.US).replace(" ", "_"),
                 sprite.toLowerCase(Locale.US).replace(" ", "_")
-        );
+        ));
     }
 }

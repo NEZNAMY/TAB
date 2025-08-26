@@ -5,6 +5,8 @@ import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import me.neznamy.chat.ChatModifier;
 import me.neznamy.chat.component.*;
+import me.neznamy.chat.component.object.AtlasSprite;
+import me.neznamy.chat.component.object.ObjectComponent;
 import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -133,10 +135,15 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
             case TextComponent text -> Component.literal(text.getText());
             case TranslatableComponent translatable -> Component.translatable(translatable.getKey());
             case KeybindComponent keybind -> Component.keybind(keybind.getKeybind());
-            case ObjectComponent object -> MutableComponent.create(new ObjectContents(new ObjectContents.AtlasSprite(
-                    ResourceLocation.parse(object.getAtlas()),
-                    ResourceLocation.parse(object.getSprite())
-            )));
+            case ObjectComponent object -> {
+                if (object.getContents() instanceof AtlasSprite) {
+                    yield MutableComponent.create(new ObjectContents(new net.minecraft.network.chat.contents.objects.AtlasSprite(
+                            ResourceLocation.parse(((AtlasSprite) object.getContents()).getAtlas()),
+                            ResourceLocation.parse(((AtlasSprite) object.getContents()).getSprite())
+                    )));
+                }
+                throw new IllegalStateException("Unexpected object component type: " + object.getContents().getClass().getName());
+            }
             default -> throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         };
 

@@ -100,7 +100,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
     @Override
     @Nullable
     public Skin getSkin() {
-        Collection<Property> properties = player.getPlayer().getGameProfile().getProperties().get(TEXTURES_PROPERTY);
+        Collection<Property> properties = player.getPlayer().getGameProfile().properties().get(TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
         Property property = properties.iterator().next();
         return new Skin(property.value(), property.signature());
@@ -139,7 +139,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
                     }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
-                    TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
+                    TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().name());
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
                         nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, GameType.byId(gameMode), displayName,
@@ -183,7 +183,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
     private GameProfile createProfile(@NonNull UUID id, @NonNull String name, @Nullable Skin skin) {
         GameProfile profile = new GameProfile(id, name);
         if (skin != null) {
-            profile.getProperties().put(TabList.TEXTURES_PROPERTY,
+            profile.properties().put(TabList.TEXTURES_PROPERTY,
                     new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
         }
         return profile;

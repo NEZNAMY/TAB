@@ -2,6 +2,7 @@ package me.neznamy.chat.hook;
 
 import me.neznamy.chat.ChatModifier;
 import me.neznamy.chat.component.*;
+import me.neznamy.chat.component.object.ObjectComponent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;

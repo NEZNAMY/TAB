@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.chat.component.*;
+import me.neznamy.chat.component.object.ObjectComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitEventListener;
 import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
 import me.neznamy.tab.platforms.bukkit.BukkitTabCommand;
