@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition;
-import me.neznamy.tab.shared.features.layout.skin.SkinManager;
 import me.neznamy.tab.shared.features.pingspoof.PingSpoof;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.types.*;
@@ -25,7 +24,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         UnLoadable, TabListClearListener {
 
     private final LayoutConfiguration configuration;
-    private final SkinManager skinManager;
+    private final LayoutSkinManager skinManager;
     private final Map<Integer, UUID> uuids = new HashMap<>();
     private final Map<String, LayoutPattern> layouts = new LinkedHashMap<>();
     private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(p -> p.layoutData.sortingString)));
@@ -41,7 +40,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
      */
     public LayoutManagerImpl(@NotNull LayoutConfiguration configuration) {
         this.configuration = configuration;
-        skinManager = new SkinManager(configuration.getDefaultSkin(), configuration.getDefaultSkinHashMap());
+        skinManager = new LayoutSkinManager(TAB.getInstance().getConfiguration().getSkinManager(), configuration.getDefaultSkin(), configuration.getDefaultSkinHashMap());
         for (int slot=1; slot<=80; slot++) {
             uuids.put(slot, new UUID(0, configuration.getDirection().translateSlot(slot)));
         }

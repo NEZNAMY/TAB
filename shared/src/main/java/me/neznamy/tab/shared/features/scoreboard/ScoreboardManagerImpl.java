@@ -62,7 +62,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public ScoreboardManagerImpl(@NotNull ScoreboardConfiguration configuration) {
         this.configuration = configuration;
         if (configuration.isRememberToggleChoice()) {
-            toggleManager = new ToggleManager(TAB.getInstance().getConfiguration().getPlayerDataFile(), "scoreboard-off");
+            toggleManager = new ToggleManager(TAB.getInstance().getConfiguration().getPlayerData(), "scoreboard-off");
         }
     }
 

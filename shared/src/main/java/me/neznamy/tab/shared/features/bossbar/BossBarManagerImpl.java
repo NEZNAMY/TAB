@@ -53,7 +53,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
     public BossBarManagerImpl(@NonNull BossBarConfiguration configuration) {
         this.configuration = configuration;
         if (configuration.isRememberToggleChoice()) {
-            toggleManager = new ToggleManager( TAB.getInstance().getConfiguration().getPlayerDataFile(), "bossbar-off");
+            toggleManager = new ToggleManager(TAB.getInstance().getConfiguration().getPlayerData(), "bossbar-off");
         }
         for (Map.Entry<String, BossBarDefinition> entry : configuration.getBars().entrySet()) {
             String name = entry.getKey();

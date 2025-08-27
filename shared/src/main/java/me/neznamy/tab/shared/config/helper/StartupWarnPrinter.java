@@ -24,11 +24,14 @@ public class StartupWarnPrinter {
      * @param   definition
      *          Configured skin definition
      */
-    public void invalidLayoutSkinDefinition(@NonNull String definition) {
-        startupWarn("Invalid skin definition: \"" + definition + "\". Supported patterns are:",
+    public void invalidSkinDefinition(@NonNull String definition) {
+        startupWarn(
+                "Invalid skin definition: \"" + definition + "\". Supported patterns are:",
                 "#1 - \"player:<name>\" for skin of player with specified name",
                 "#2 - \"mineskin:<id>\" for UUID of chosen skin from mineskin.org",
-                "#3 - \"texture:<texture>\" for raw texture string");
+                "#3 - \"texture:<texture>\" for raw texture string",
+                "#4 - \"signed_texture:<texture>;<signature>\" for raw texture string with signature"
+        );
     }
 
     public void invalidSortingTypeElement(@NonNull String element, @NonNull Set<String> validTypes) {

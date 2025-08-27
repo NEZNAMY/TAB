@@ -13,12 +13,14 @@ import me.neznamy.tab.shared.config.files.Config;
 import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import me.neznamy.tab.shared.config.skin.SkinManager;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -40,7 +42,18 @@ public class Configs {
     private final MessageFile messages = new MessageFile();
 
     //playerdata.yml, used for bossbar & scoreboard toggle saving
-    private ConfigurationFile playerdata;
+    private final ConfigurationFile playerData = new YamlConfigurationFile(
+            new ByteArrayInputStream(new byte[0]),
+            new File(TAB.getInstance().getDataFolder(), "playerdata.yml")
+    );
+
+    /** Skin cache file for Layout and Head components */
+    private final ConfigurationFile skinCache = new YamlConfigurationFile(
+            new ByteArrayInputStream(new byte[0]),
+            new File(TAB.getInstance().getDataFolder(), "skincache.yml")
+    );
+
+    private final SkinManager skinManager = new SkinManager(skinCache);
 
     private PropertyConfiguration groups;
 
@@ -78,26 +91,6 @@ public class Configs {
         }
         groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
         users = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
-    }
-
-    /**
-     * Returns playerdata.yml file used for storing feature toggle status.
-     *
-     * @return  playerdata.yml file
-     */
-    @Nullable
-    public ConfigurationFile getPlayerDataFile() {
-        if (playerdata == null) {
-            File file = new File(TAB.getInstance().getDataFolder(), "playerdata.yml");
-            try {
-                if (file.exists() || file.createNewFile()) {
-                    playerdata = new YamlConfigurationFile(null, file);
-                }
-            } catch (IOException e) {
-                TAB.getInstance().getErrorManager().criticalError("Failed to load playerdata.yml", e);
-            }
-        }
-        return playerdata;
     }
 
     /**

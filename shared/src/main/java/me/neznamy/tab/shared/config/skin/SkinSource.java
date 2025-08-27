@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features.layout.skin;
+package me.neznamy.tab.shared.config.skin;
 
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.platform.TabList.Skin;
