@@ -45,10 +45,6 @@ public class MiniMessageHook {
     @Nullable
     public static TabComponent parseText(@NotNull String text) {
         if (mm == null) return null;
-        if (text.contains("§")) {
-            TAB.getInstance().getErrorManager().printError("Cannot convert \"" + text + "\" into a MiniMessage component, because it contains legacy colors", null);
-            return null;
-        }
         try {
             return AdventureHook.convert(mm.deserialize(text));
         } catch (Throwable t) {

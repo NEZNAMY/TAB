@@ -43,13 +43,19 @@ public class StringToComponentCache extends Cache<String, TabComponent> {
 
                 // Convert legacy codes into kyori format
                 for (TextColor format : TextColor.LEGACY_COLORS.values()) {
-                    String sequence = "§" + format.getLegacyColor().getCharacter();
-                    if (mmFormatted.contains(sequence)) {
-                        String colorName = format == TextColor.UNDERLINE ? "underlined" : format.getLegacyColor().name().toLowerCase(Locale.US);
-                        if (format.getLegacyColor().isColor()) {
-                            mmFormatted = mmFormatted.replace(sequence, "<bold:false><italic:false><underlined:false><strikethrough:false><obfuscated:false><" + colorName + ">");
-                        } else {
-                            mmFormatted = mmFormatted.replace(sequence, "<" + colorName + ">");
+                    char legacyChar = format.getLegacyColor().getCharacter();
+                    String colorName = format == TextColor.UNDERLINE
+                            ? "underlined"
+                            : format.getLegacyColor().name().toLowerCase(Locale.US);
+
+                    for (char c : new char[]{legacyChar, Character.toUpperCase(legacyChar)}) {
+                        String sequence = "§" + c;
+                        if (mmFormatted.contains(sequence)) {
+                            if (format.getLegacyColor().isColor()) {
+                                mmFormatted = mmFormatted.replace(sequence, "<bold:false><italic:false><underlined:false><strikethrough:false><obfuscated:false><" + colorName + ">");
+                            } else {
+                                mmFormatted = mmFormatted.replace(sequence, "<" + colorName + ">");
+                            }
                         }
                     }
                 }
