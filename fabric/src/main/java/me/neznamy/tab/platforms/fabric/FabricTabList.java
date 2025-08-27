@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.fabric;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.chat.component.TabComponent;
@@ -181,12 +183,12 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
      */
     @NotNull
     private GameProfile createProfile(@NonNull UUID id, @NonNull String name, @Nullable Skin skin) {
-        GameProfile profile = new GameProfile(id, name);
+        ImmutableMultimap.Builder<String, Property> builder = ImmutableMultimap.builder();
         if (skin != null) {
-            profile.properties().put(TabList.TEXTURES_PROPERTY,
+            builder.put(TabList.TEXTURES_PROPERTY,
                     new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
         }
-        return profile;
+        return new GameProfile(id, name, new PropertyMap(builder.build()));
     }
 
     /**
