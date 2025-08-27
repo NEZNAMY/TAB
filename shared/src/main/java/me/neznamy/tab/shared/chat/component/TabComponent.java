@@ -488,7 +488,7 @@ public abstract class TabComponent {
     @NotNull
     public static ObjectComponent head(@NonNull TabList.Skin skin) {
         ObjectComponent component = new ObjectComponent(new PlayerSprite(skin, true)); // Always show hat
-        component.modifier.setShadowColor(0);
+        component.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
         return component;
     }
 }
