@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.chat.TextColor;
+import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;

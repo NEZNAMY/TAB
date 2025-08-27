@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.config.file;
 
 import lombok.NonNull;
-import me.neznamy.chat.TextColor;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.yamlassist.YamlAssist;
 import org.jetbrains.annotations.Nullable;

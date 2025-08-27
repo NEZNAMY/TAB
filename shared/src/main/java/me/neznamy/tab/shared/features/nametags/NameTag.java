@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.nametags;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;

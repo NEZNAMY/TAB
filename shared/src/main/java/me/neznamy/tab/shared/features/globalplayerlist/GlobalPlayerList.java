@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
 import lombok.Getter;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;

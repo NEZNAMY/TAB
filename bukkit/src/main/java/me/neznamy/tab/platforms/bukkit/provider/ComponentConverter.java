@@ -1,12 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.provider;
 
-import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.KeybindComponent;
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.chat.component.TextComponent;
-import me.neznamy.chat.component.TranslatableComponent;
-import me.neznamy.chat.component.object.AtlasSprite;
-import me.neznamy.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
+import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.v1_7_R3;
 
 import lombok.NonNull;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.minecraft.server.v1_7_R3.Packet;

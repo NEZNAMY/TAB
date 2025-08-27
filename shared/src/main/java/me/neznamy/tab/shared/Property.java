@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
-import me.neznamy.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;

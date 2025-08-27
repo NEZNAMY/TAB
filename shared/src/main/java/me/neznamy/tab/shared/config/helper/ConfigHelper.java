@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.config.helper;
 
 import lombok.NonNull;
-import me.neznamy.chat.TextColor;
-import me.neznamy.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.tab.shared.TAB;
 
 import java.io.File;

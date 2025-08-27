@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.platforms.fabric.hook.PermissionsAPIHook;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import net.minecraft.SharedConstants;

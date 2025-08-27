@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
 import lombok.AllArgsConstructor;
-import me.neznamy.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.platform.TabPlayer;

@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;

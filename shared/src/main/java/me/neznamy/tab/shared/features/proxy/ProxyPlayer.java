@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.proxy;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.TabConstants.Permission;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.platform.Scoreboard;

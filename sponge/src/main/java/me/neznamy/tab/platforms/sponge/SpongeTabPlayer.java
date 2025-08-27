@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.sponge;
 
 import lombok.SneakyThrows;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;

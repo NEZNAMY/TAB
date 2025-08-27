@@ -1,9 +1,12 @@
 package me.neznamy.tab.platforms.neoforge;
 
 import com.mojang.logging.LogUtils;
-import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.*;
-import me.neznamy.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;

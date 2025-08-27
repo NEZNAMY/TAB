@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.config.helper;
 
 import lombok.NonNull;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 

@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.header;
 
 import lombok.Getter;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;

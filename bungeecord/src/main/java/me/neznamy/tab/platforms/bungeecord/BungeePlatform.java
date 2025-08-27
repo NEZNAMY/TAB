@@ -1,10 +1,12 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
-import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.TextComponent;
-import me.neznamy.chat.component.*;
-import me.neznamy.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
 import me.neznamy.tab.platforms.bungeecord.features.BungeeRedisSupport;
 import me.neznamy.tab.platforms.bungeecord.hook.BungeePremiumVanishHook;
 import me.neznamy.tab.platforms.bungeecord.injection.BungeePipelineInjector;

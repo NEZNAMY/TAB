@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.hook;
 
-import me.neznamy.chat.component.TabComponent;
-import me.neznamy.chat.hook.AdventureHook;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.hook.AdventureHook;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;

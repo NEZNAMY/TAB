@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.placeholders;
 
 import lombok.Getter;
-import me.neznamy.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import org.jetbrains.annotations.NotNull;
 

@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.google.common.collect.Lists;
 import lombok.NonNull;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;

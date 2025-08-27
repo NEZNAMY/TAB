@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.paper_1_20_5;
 
-import me.neznamy.chat.ChatModifier;
-import me.neznamy.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;

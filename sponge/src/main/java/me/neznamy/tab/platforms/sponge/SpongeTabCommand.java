@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;

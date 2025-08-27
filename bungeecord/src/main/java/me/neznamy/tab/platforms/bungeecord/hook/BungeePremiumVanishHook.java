@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord.hook;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;

@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
