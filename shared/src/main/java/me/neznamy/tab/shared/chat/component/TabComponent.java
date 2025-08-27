@@ -9,9 +9,11 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
 import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
 import me.neznamy.tab.shared.chat.hook.AdventureHook;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.chat.util.TriFunction;
+import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -318,7 +320,7 @@ public abstract class TabComponent {
                     }
                     String atlas = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
                     String sprite = matcher.group(3) != null ? matcher.group(3) : matcher.group(4);
-                    components.add(objectAtlasSprite(atlas, sprite));
+                    components.add(atlasSprite(atlas, sprite));
 
                     // skip
                     i += matcher.group(0).length() - 1;
@@ -417,6 +419,7 @@ public abstract class TabComponent {
      *
      * @return  Empty legacy text component
      */
+    @NotNull
     public static TabComponent empty() {
         return EMPTY_LEGACY_TEXT;
     }
@@ -428,6 +431,7 @@ public abstract class TabComponent {
      *          Text to use in the component
      * @return  New legacy text component with given text
      */
+    @NotNull
     public static LegacyTextComponent legacyText(@NonNull String text) {
         if (text.isEmpty()) return EMPTY_LEGACY_TEXT;
         return new LegacyTextComponent(text);
@@ -440,6 +444,7 @@ public abstract class TabComponent {
      *          Translatable to use in the component
      * @return  New translatable component with given key
      */
+    @NotNull
     public static TranslatableComponent translatable(@NonNull String key) {
         return new TranslatableComponent(key);
     }
@@ -451,6 +456,7 @@ public abstract class TabComponent {
      *          Key to use in the component
      * @return  New keybind text component with given key
      */
+    @NotNull
     public static KeybindComponent keybind(@NonNull String keybind) {
         return new KeybindComponent(keybind);
     }
@@ -464,10 +470,25 @@ public abstract class TabComponent {
      *          Sprite to use in the component
      * @return  New object component with given atlas and sprite
      */
-    public static ObjectComponent objectAtlasSprite(@NonNull String atlas, @NonNull String sprite) {
+    @NotNull
+    public static ObjectComponent atlasSprite(@NonNull String atlas, @NonNull String sprite) {
         return new ObjectComponent(new AtlasSprite(
                 atlas.toLowerCase(Locale.US).replace(" ", "_"),
                 sprite.toLowerCase(Locale.US).replace(" ", "_")
         ));
+    }
+
+    /**
+     * Creates a new component of "object" type with given player skin.
+     *
+     * @param   skin
+     *          Player skin to use in the component
+     * @return  New object component with given player skin
+     */
+    @NotNull
+    public static ObjectComponent head(@NonNull TabList.Skin skin) {
+        ObjectComponent component = new ObjectComponent(new PlayerSprite(skin, true)); // Always show hat
+        component.modifier.setShadowColor(0);
+        return component;
     }
 }

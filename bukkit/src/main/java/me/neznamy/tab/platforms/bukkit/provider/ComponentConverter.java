@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.tab.shared.chat.component.TranslatableComponent;
 import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
 import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -33,8 +34,9 @@ public abstract class ComponentConverter {
             nmsComponent = newKeybindComponent(((KeybindComponent)component).getKeybind());
         } else if (component instanceof ObjectComponent) {
             if ((((ObjectComponent) component).getContents() instanceof AtlasSprite)) {
-                AtlasSprite sprite = (AtlasSprite) ((ObjectComponent) component).getContents();
-                nmsComponent = newObjectAtlasSpriteComponent(sprite.getAtlas(), sprite.getSprite());
+                nmsComponent = newObjectComponent((AtlasSprite) ((ObjectComponent) component).getContents());
+            } else if ((((ObjectComponent) component).getContents() instanceof PlayerSprite)) {
+                nmsComponent = newObjectComponent((PlayerSprite) ((ObjectComponent) component).getContents());
             } else {
                 throw new IllegalArgumentException("Unexpected object component type: " + ((ObjectComponent) component).getContents().getClass().getName());
             }
@@ -86,14 +88,21 @@ public abstract class ComponentConverter {
     /**
      * Creates a new object component with given atlas and sprite.
      *
-     * @param   atlas
-     *          Atlas to use
-     * @param   sprite
-     *          Sprite to use
-     * @return  Object component with given atlas and sprite
+     * @param sprite Sprite to use
+     * @return Object component with given atlas and sprite
      */
     @NotNull
-    public abstract Object newObjectAtlasSpriteComponent(@NotNull String atlas, @NotNull String sprite);
+    public abstract Object newObjectComponent(@NotNull AtlasSprite sprite);
+
+    /**
+     * Creates a new head component with given skin.
+     *
+     * @param   sprite
+     *          Skin to use
+     * @return  Head component with given skin
+     */
+    @NotNull
+    public abstract Object newObjectComponent(@NotNull PlayerSprite sprite);
 
     /**
      * Converts given chat modifier to minecraft style and applies it to the component.

@@ -1,8 +1,17 @@
 package me.neznamy.tab.platforms.fabric;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
+import lombok.NonNull;
+import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.component.KeybindComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
@@ -10,10 +19,7 @@ import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.tab.shared.chat.component.TranslatableComponent;
 import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
 import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
-import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -27,16 +33,17 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.*;
-import net.minecraft.network.chat.contents.ObjectContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 /**
  * Platform implementation for Fabric
@@ -44,6 +51,9 @@ import java.util.Collections;
  * @param server Minecraft server reference
  */
 public record FabricPlatform(MinecraftServer server) implements BackendPlatform {
+
+    /** Empty UUID */
+    private static final UUID NIL_UUID = new UUID(0, 0);
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -139,11 +149,17 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
             case TranslatableComponent translatable -> Component.translatable(translatable.getKey());
             case KeybindComponent keybind -> Component.keybind(keybind.getKeybind());
             case ObjectComponent object -> {
-                if (object.getContents() instanceof AtlasSprite) {
-                    yield MutableComponent.create(new ObjectContents(new net.minecraft.network.chat.contents.objects.AtlasSprite(
-                            ResourceLocation.parse(((AtlasSprite) object.getContents()).getAtlas()),
-                            ResourceLocation.parse(((AtlasSprite) object.getContents()).getSprite())
-                    )));
+                if (object.getContents() instanceof AtlasSprite sprite) {
+                    yield Component.object(new net.minecraft.network.chat.contents.objects.AtlasSprite(
+                            ResourceLocation.parse(sprite.getAtlas()),
+                            ResourceLocation.parse(sprite.getSprite())
+                    ));
+                }
+                if (object.getContents() instanceof PlayerSprite sprite) {
+                    yield Component.object(new net.minecraft.network.chat.contents.objects.PlayerSprite(
+                            ResolvableProfile.createResolved(profileFromSkin(sprite.getSkin())),
+                            sprite.isShowHat()
+                    ));
                 }
                 throw new IllegalStateException("Unexpected object component type: " + object.getContents().getClass().getName());
             }
@@ -169,6 +185,13 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
         }
 
         return nmsComponent;
+    }
+
+    @NotNull
+    private GameProfile profileFromSkin(@NonNull TabList.Skin skin) {
+        ImmutableMultimap.Builder<String, Property> builder = ImmutableMultimap.builder();
+        builder.put(TabList.TEXTURES_PROPERTY, new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
+        return new GameProfile(NIL_UUID, "", new PropertyMap(builder.build()));
     }
 
     @Override
