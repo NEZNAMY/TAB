@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
@@ -105,7 +106,9 @@ public abstract class TabComponent {
     /** Pattern for detecting fonts */
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
 
-    private static final Pattern SPRITE_PATTERN = Pattern.compile("<sprite:(?:\"([^\"]+)\"|([^:]+)):(?:\"([^\"]+)\"|([^>]+))>");;
+    private static final Pattern ATLAS_PATTERN = Pattern.compile("<sprite:(?:\"([^\"]+)\"|([^:]+)):(?:\"([^\"]+)\"|([^>]+))>");
+
+    private static final Pattern HEAD_PATTERN = Pattern.compile("<head:([^>]+)>");
 
     @Nullable
     private Object converted;
@@ -307,7 +310,7 @@ public abstract class TabComponent {
         component.modifier.setFont(font);
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '<') {
-                Matcher matcher = SPRITE_PATTERN.matcher(text.substring(i));
+                Matcher matcher = ATLAS_PATTERN.matcher(text.substring(i));
                 if (matcher.find() && matcher.start() == 0) {
                     // flush current builder
                     if (builder.length() > 0) {
@@ -330,6 +333,33 @@ public abstract class TabComponent {
                     component.setText("");
                     component.modifier.setFont(font);
                     continue;
+                }
+
+                matcher = HEAD_PATTERN.matcher(text.substring(i));
+                if (matcher.find() && matcher.start() == 0) {
+                    String skinDefinition = matcher.group(1);
+                    TabList.Skin skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin(skinDefinition);
+                    if (skin != null) {
+                        // flush current builder
+                        if (builder.length() > 0) {
+                            component.setText(builder.toString());
+                            components.add(component);
+                            component = new TextComponent(component);
+                            component.setText("");
+                            component.modifier.setFont(font);
+                            builder = new StringBuilder();
+                        }
+                        components.add(head(skin));
+
+                        // skip
+                        i += matcher.group(0).length() - 1;
+
+                        // reset formatting component safely
+                        component = new TextComponent(component);
+                        component.setText("");
+                        component.modifier.setFont(font);
+                        continue;
+                    }
                 }
             }
 
