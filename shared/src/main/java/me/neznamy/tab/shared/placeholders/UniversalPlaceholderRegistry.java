@@ -53,6 +53,7 @@ public class UniversalPlaceholderRegistry {
         // Player
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.BEDROCK, -1, p -> Boolean.toString(p.isBedrockPlayer()));
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER, -1, me.neznamy.tab.api.TabPlayer::getName);
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.UUID, -1, p -> p.getUniqueId().toString());
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).world.getName());
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer)p).server.getName());
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION, -1, p -> ((TabPlayer)p).getVersion().getFriendlyName());
