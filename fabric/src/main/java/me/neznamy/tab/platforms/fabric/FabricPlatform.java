@@ -4,10 +4,12 @@ import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -41,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -156,10 +159,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
                     ));
                 }
                 if (object.getContents() instanceof PlayerSprite sprite) {
-                    yield Component.object(new net.minecraft.network.chat.contents.objects.PlayerSprite(
-                            ResolvableProfile.createResolved(profileFromSkin(sprite.getSkin())),
-                            sprite.isShowHat()
-                    ));
+                    yield Component.object(new net.minecraft.network.chat.contents.objects.PlayerSprite(spriteToProfile(sprite), sprite.isShowHat()));
                 }
                 throw new IllegalStateException("Unexpected object component type: " + object.getContents().getClass().getName());
             }
@@ -185,6 +185,23 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
         }
 
         return nmsComponent;
+    }
+
+    @NotNull
+    @SneakyThrows
+    private ResolvableProfile spriteToProfile(@NonNull PlayerSprite sprite) {
+        if (sprite.getId() != null) {
+            return ResolvableProfile.createUnresolved(sprite.getId());
+        } else if (sprite.getName() != null) {
+            // Moyank pls
+            Constructor<ResolvableProfile.Dynamic> cons = ResolvableProfile.Dynamic.class.getDeclaredConstructor(Either.class);
+            cons.setAccessible(true);
+            return cons.newInstance(Either.left(sprite.getName()));
+        } else if (sprite.getSkin() != null) {
+            return ResolvableProfile.createResolved(profileFromSkin(sprite.getSkin()));
+        } else {
+            throw new IllegalStateException("Player head component does not have id, name or skin set");
+        }
     }
 
     @NotNull

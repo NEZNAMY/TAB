@@ -19,10 +19,7 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -338,28 +335,25 @@ public abstract class TabComponent {
                 matcher = HEAD_PATTERN.matcher(text.substring(i));
                 if (matcher.find() && matcher.start() == 0) {
                     String skinDefinition = matcher.group(1);
-                    TabList.Skin skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin(skinDefinition);
-                    if (skin != null) {
-                        // flush current builder
-                        if (builder.length() > 0) {
-                            component.setText(builder.toString());
-                            components.add(component);
-                            component = new TextComponent(component);
-                            component.setText("");
-                            component.modifier.setFont(font);
-                            builder = new StringBuilder();
-                        }
-                        components.add(head(skin));
-
-                        // skip
-                        i += matcher.group(0).length() - 1;
-
-                        // reset formatting component safely
+                    // flush current builder
+                    if (builder.length() > 0) {
+                        component.setText(builder.toString());
+                        components.add(component);
                         component = new TextComponent(component);
                         component.setText("");
                         component.modifier.setFont(font);
-                        continue;
+                        builder = new StringBuilder();
                     }
+                    components.add(head(skinDefinition));
+
+                    // skip
+                    i += matcher.group(0).length() - 1;
+
+                    // reset formatting component safely
+                    component = new TextComponent(component);
+                    component.setText("");
+                    component.modifier.setFont(font);
+                    continue;
                 }
             }
 
@@ -509,15 +503,38 @@ public abstract class TabComponent {
     }
 
     /**
-     * Creates a new component of "object" type with given player skin.
+     * Creates a new component of "object" type with given player skin definition.
+     * If the skin definition is invalid in any way, text component with the error message is returned.
      *
-     * @param   skin
-     *          Player skin to use in the component
-     * @return  New object component with given player skin
+     * @param   skinDefinition
+     *          Skin definition to use in the component
+     * @return  New object component with given player skin or text component with error message
      */
     @NotNull
-    public static ObjectComponent head(@NonNull TabList.Skin skin) {
-        ObjectComponent component = new ObjectComponent(new PlayerSprite(skin, true)); // Always show hat
+    public static TabComponent head(@NonNull String skinDefinition) {
+        PlayerSprite sprite;
+        if (skinDefinition.startsWith("id:")) {
+            String stringUUID = skinDefinition.substring(3);
+            try {
+                sprite = new PlayerSprite(UUID.fromString(stringUUID));
+            } catch (IllegalArgumentException e) {
+                return new LegacyTextComponent(String.format("<Invalid UUID: \"%s\">", stringUUID));
+            }
+        } else if (skinDefinition.startsWith("name:")) {
+            String name = skinDefinition.substring(5);
+            if (name.length() > 16) {
+                return new LegacyTextComponent(String.format("<Invalid name (too long): \"%s\">", name));
+            }
+            sprite = new PlayerSprite(name);
+        } else {
+            TabList.Skin skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin(skinDefinition);
+            if (skin == null) {
+                return new LegacyTextComponent(String.format("<Invalid skin: \"%s\">", skinDefinition));
+            }
+            sprite = new PlayerSprite(skin);
+        }
+        sprite.setShowHat(true); // Always show hat
+        ObjectComponent component = new ObjectComponent(sprite);
         component.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
         return component;
     }
