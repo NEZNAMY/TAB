@@ -142,11 +142,6 @@ public class Property {
             }
         }
 
-        // Make \n work even if used in '', which snakeyaml does not convert to newline
-        if (rawFormattedValue0.contains("\\n")) {
-            rawFormattedValue0 = rawFormattedValue0.replace("\\n", "\n");
-        }
-
         // Apply static colors to not need to do it on every refresh
         rawFormattedValue = EnumChatFormat.color(rawFormattedValue0);
 

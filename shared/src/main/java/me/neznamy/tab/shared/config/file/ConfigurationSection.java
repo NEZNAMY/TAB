@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.config.file;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,25 +64,25 @@ public class ConfigurationSection {
 
     @Nullable
     public String getString(@NonNull String path) {
-        return getNullable(path, String.class);
+        return fixString(getNullable(path, String.class));
     }
 
     @NotNull
     public String getString(@NonNull String path, @NonNull String defaultValue) {
-        return getRequired(path, defaultValue, String.class);
+        return fixString(getRequired(path, defaultValue, String.class));
     }
 
     @Nullable
     public List<String> getStringList(@NonNull String path) {
         List<Object> list = getNullable(path, List.class);
         if (list == null) return null;
-        return list.stream().map(Object::toString).collect(Collectors.toList());
+        return list.stream().map(o -> fixString(o.toString())).collect(Collectors.toList());
     }
 
     @NotNull
     public List<String> getStringList(@NonNull String path, @NonNull List<String> defaultValue) {
         List<Object> list = getRequired(path, defaultValue, List.class);
-        return list.stream().map(Object::toString).collect(Collectors.toList());
+        return list.stream().map(o -> fixString(o.toString())).collect(Collectors.toList());
     }
 
     @Nullable
@@ -157,5 +158,12 @@ public class ConfigurationSection {
         Map<Object, Object> map = getMap(path);
         if (map == null) map = Collections.emptyMap();
         return new ConfigurationSection(file, section + "." + path, map);
+    }
+
+    @Contract("null -> null; !null -> !null")
+    private String fixString(@Nullable String string) {
+        if (string == null) return null;
+        // Make \n work even if used in '', which snakeyaml does not convert to newline
+        return string.replace("\\n", "\n");
     }
 }
