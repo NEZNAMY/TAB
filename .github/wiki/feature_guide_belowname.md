@@ -81,9 +81,9 @@ This is how you can achieve it using the following popular NPC plugins:
 Sadly, this feature is suffering from bugs introduced by third party clients such as Feather and Lunar. These two completely ignore `fancy-value` as if it was never added into the game, even on 1.20.3+. This is just an example, and it's not limited to these two clients and this one issue. If you experience issues with the feature and believe you configured it correctly, use vanilla client to make sure it's not caused by a broken client.
 
 # Compatibility with other plugins
-TAB does not contain any sort of compatibility functionality for this feature. 
-It will not try to prevent other plugins from applying the feature and neither will it detect it to re-add back once the other plugin removes it. 
-Therefore, if another plugin also sends belowname objective, TAB's may not show anymore (depending on who sends it first). 
+TAB does not contain any sort of compatibility functionality for this feature.
+It will not try to prevent other plugins from applying the feature and neither will it detect it to re-add back once the other plugin removes it.
+Therefore, if another plugin also sends belowname objective, TAB's may not show anymore (depending on who sends it first).
 Make sure you do not have any other plugin sending it to ensure the feature works properly.
 
 # Limitations

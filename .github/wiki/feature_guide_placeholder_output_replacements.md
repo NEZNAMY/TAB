@@ -51,8 +51,8 @@ placeholder-output-replacements:
 > [!NOTE]
 > The text must match exactly, including color codes.
 > To check the color codes a placeholder returns use
-> [`/tab parse <player> <placeholder>`](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-parse-text)
-> and check "Without colors" part.
+> [`/tab parse <player> <placeholder>`](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-parse-player-text)
+> and check "Raw colors" part.
 
 ### Pattern 2: Number intervals
 Output will be replaced if it's numeric and belongs in a configured interval.

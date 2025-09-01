@@ -8,12 +8,14 @@
 * [Skins](#skins)
   * [Format](#format)
 * [Additional settings](#additional-settings)
+* [Compatibility](#compatibility)
+  * [Playerlist objective incompatibility](#playerlist-objective-incompatibility)
+  * [Global playerlist incompatibility](#global-playerlist-incompatibility)
+  * [Per world playerlist incompatibility](#per-world-playerlist-incompatibility)
 * [Additional info](#additional-info)
-  * [Additional note 1 - Playerlist objective incompatibility](#additional-note-1---playerlist-objective-incompatibility)
-  * [Additional note 2 - Global playerlist incompatibility](#additional-note-2---global-playerlist-incompatibility)
-  * [Additional note 3 - [1.19.3 - 1.21.1] Entries in chat complete](#additional-note-3---1193---1211-entries-in-chat-complete)
-  * [Additional note 4 - Per world playerlist incompatibility](#additional-note-4---per-world-playerlist-incompatibility)
-  * [Additional note 5 - [1.8 - 1.21.3] Second layer of skin missing](#additional-note-5---18---1213-second-layer-of-skin-missing)
+  * [Additional note 1 - [1.19.3 - 1.21.1] Entries in chat complete](#additional-note-1---1193---1211-entries-in-chat-complete)
+  * [Additional note 2 - [1.8 - 1.21.3] Second layer of skin missing](#additional-note-2---18---1213-second-layer-of-skin-missing)
+  * [Additional note 3 - Entry overlap](https://github.com/NEZNAMY/TAB/wiki/Feature-guide%3A-Layout/_edit#additional-note-3---entry-overlap)
 * [Examples](#examples)
   * [Example 1 - Per-server columns](#example-1---per-server-columns)
 
@@ -131,23 +133,18 @@ Currently, TAB supports 3 skin formats:
 ![image](https://user-images.githubusercontent.com/6338394/179363352-40f815d4-fc37-4ca1-8056-298488e84a60.png)
 ![image](https://user-images.githubusercontent.com/6338394/179355373-3e50b8c5-95d7-4470-b93f-deb162ccc145.png)
 
-# Additional info
-## Additional note 1 - Playerlist objective incompatibility
+# Compatibility
+## Playerlist objective incompatibility
 To avoid showing fake players in tab-complete, TAB uses an empty string as the fake players' names.  
 Though Minecraft's scoreboard objectives (which help achieve the Playerlist objective feature) only use players' names and not players' UUIDs to define values.  
 As a result, it is impossible for TAB to assign a different value for each fake player since they all have the same name, making the [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective) feature incompatible.
 
-## Additional note 2 - Global playerlist incompatibility
+## Global playerlist incompatibility
 The way this feature works is by pushing all real players out of the tablist and showing fake players instead.  
 As a result, enabling [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) feature won't make any difference, since real players aren't visible in the tablist.  
 Layout feature is capable of working with all online players connected to the server where TAB is installed, meaning it can show players from all servers when installed on BungeeCord. Because of this, if you use layout, you can disable global playerlist to reduce resource usage.
 
-## Additional note 3 - [1.19.3 - 1.21.1] Entries in chat complete
-From 1.19.3 until 1.21.1 (inclusive), entries will also appear in chat complete.
-The mechanic used to hide them on <1.19.3 can no longer be used since 1.19.3.
-1.21.2 has added a new way of sorting players, which is being taken advantage of to restore empty chat complete.
-
-## Additional note 4 - Per world playerlist incompatibility
+## Per world playerlist incompatibility
 Layout works by adding 80 fake players into the tablist, pushing real player entries out of view.
 Because of this,
 when using [per world playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist),
@@ -205,7 +202,13 @@ You can also replicate "ignore-effect-in-worlds" by creating a layout with condi
 ```
 </details>
 
-## Additional note 5 - [1.8 - 1.21.3] Second layer of skin missing
+# Additional info
+## Additional note 1 - [1.19.3 - 1.21.1] Entries in chat complete
+From 1.19.3 until 1.21.1 (inclusive), entries will also appear in chat complete.
+The mechanic used to hide them on <1.19.3 can no longer be used since 1.19.3.
+1.21.2 has added a new way of sorting players, which is being taken advantage of to restore empty chat complete.
+
+## Additional note 2 - [1.8 - 1.21.3] Second layer of skin missing
 Layout works by creating 80 fake entries, pushing real players out of the tablist.
 Unfortunately, players must be spawned around the player viewing the tablist to see the second layer of their skin.
 Since those fake entries you see are not the actual players and aren't spawned,
@@ -214,6 +217,25 @@ This can only be fixed by actually letting the real entries display in the tabli
 which would require a rework of the feature, which is not planned.  
 **1.21.4 has added a new tablist option called "show hats", which layout sets to true.
 They will be visible for 1.21.4+ players.**
+
+## Additional note 3 - Entry overlap
+Tablist entries automatically adapt their width based on the longest entry.
+The final width is global for all columns, not just using the longest width in each respective column.
+When the requested width is higher than the game window can handle, the text in entries will start to overlap.
+This is how it looks with 1/4 screen size, which is the default window size when launching Minecraft.  
+<img width="855" height="519" alt="image" src="https://github.com/user-attachments/assets/2a256b25-c672-49ea-8c8f-d670aa9efd43" />  
+This can be solved by increasing window size either manually, or by pressing the expand button on the top left, next to the "X".
+If it still looks the same for you even though you have the game in full screen, your GUI scale can be messed up.
+
+To fix it, go to `Esc -> Options -> Video Settings...` and set `GUI Scale: ` to a lower value.
+
+If you are looking for a more systematic solution that will automatically work for all of your players and not just you, the only way is to make the entries shorter.
+Here are a few tips how to do that:
+* Avoid using suffix altogether
+* Do not use bold (`&l`) code
+* Use a shorter alternative for your prefixes, such as `A` instead of `Admin`
+* Remove unnecessary brackets from prefix
+
 
 # Examples
 ## Example 1 - Per-server columns

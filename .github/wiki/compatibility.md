@@ -150,7 +150,6 @@ Sending scoreboard packets (scoreboard-teams, belowname-objective, playerlist-ob
   For example, here are a few bugs in LunarClient / FeatherClient that you may run into when using TAB:
   * They add their icon to players in tablist, but don't widen the entries. This results in player names overlapping with latency bar. You can avoid this by configuring some spaces in tabsuffix.
   * They don't support color field in chat components, which means they don't support RGB codes and will display bossbar without colors as well.
-  * Bossbar is not visible on 1.8.
   * Rendering belowname 3 times.
   * They don't respect nametag visibility rule, showing their own nametag using F5 even if set to invisible by the plugin.
   * When the scoreboard is set to use all 0s, lines are rendered in opposite order on 1.20.3+.

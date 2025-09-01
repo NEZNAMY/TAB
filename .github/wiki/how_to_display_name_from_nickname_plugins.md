@@ -1,6 +1,7 @@
 # Content
 * [Tablist](#tablist)
 * [Nametag](#nametag)
+* [Proper compatibility with plugins that change profile name](#proper-compatibility-with-plugins-that-change-profile-name)
 * [Tips & Tricks](#tips--tricks)
   * [Tip 1 - Nickname prefix](#tip-1---nickname-prefix)
   * [Tip 2 - Sorting nicked players with the lowest priority](#tip-2---sorting-nicked-players-with-the-lowest-priority)
