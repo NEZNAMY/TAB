@@ -226,6 +226,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     @Override
     public void setExpectedProfileName(@NonNull String profileName) {
+        if (nickname.equals(profileName)) return;
+        TAB.getInstance().debug("Changing expected profile name of player " + name + " from " + nickname + " to " + profileName + " as a result of an API call.");
         nickname = profileName;
         NickCompatibility nick = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY);
         nick.processNameChange(this);
