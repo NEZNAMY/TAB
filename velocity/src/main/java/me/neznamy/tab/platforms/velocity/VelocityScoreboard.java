@@ -115,7 +115,7 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
                     .collisionRule(collisions[team.getCollision().ordinal()])
                     .allowFriendlyFire((team.getOptions() & 0x01) > 0)
                     .canSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0)
-                    .color(colors[team.getColor().getLegacyColor().ordinal()])
+                    .color(colors[team.getColor().ordinal()])
                     .entries(team.getPlayers())
             ));
         } catch (Exception e) {
@@ -143,7 +143,7 @@ public class VelocityScoreboard extends SafeScoreboard<VelocityTabPlayer> {
                 .suffix(team.getSuffix().toTextHolder(textHolderFunction))
                 .nameVisibility(visibilities[team.getVisibility().ordinal()])
                 .collisionRule(collisions[team.getCollision().ordinal()])
-                .color(colors[team.getColor().getLegacyColor().ordinal()])
+                .color(colors[team.getColor().ordinal()])
                 .allowFriendlyFire((team.getOptions() & 0x01) > 0)
                 .canSeeFriendlyInvisibles((team.getOptions() & 0x02) > 0)
         );

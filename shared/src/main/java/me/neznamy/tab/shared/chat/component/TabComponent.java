@@ -123,12 +123,13 @@ public abstract class TabComponent {
     private Object textHolder;
 
     /**
-     * Last color of this component.
+     * Last style of this component.
      * Used to determine team color based on the last color of prefix.
-     * Saved as TextColor instead of EnumChatFormat to have things ready if Mojang adds RGB support to team color.
+     * Saved as ChatModifier instead of EnumChatFormat to have things ready if Mojang adds RGB support to team color, as well as
+     * properly handle cases when both color and magic codes are used.
      */
     @Nullable
-    private TextColor lastColor;
+    private ChatModifier lastStyle;
 
     /** Chat modifier containing color, magic codes, hover and click event */
     @NotNull
@@ -221,17 +222,14 @@ public abstract class TabComponent {
     }
 
     /**
-     * Returns last color of this component. This value is cached. If no color is used, WHITE color is returned.
+     * Returns last style of this component. This value is cached.
      *
-     * @return  Last color of this component
+     * @return  Last style of this component
      */
     @NotNull
-    public TextColor getLastColor() {
-        if (lastColor == null) {
-            lastColor = fetchLastColor();
-            if (lastColor == null) lastColor = TextColor.WHITE;
-        }
-        return lastColor;
+    public ChatModifier getLastStyle() {
+        if (lastStyle == null) lastStyle = fetchLastStyle();
+        return lastStyle;
     }
 
     /**
@@ -243,21 +241,17 @@ public abstract class TabComponent {
     public abstract String toLegacyText();
 
     /**
-     * Computes and returns the last used color code in this component.
-     * If no color is present, {@code null} is returned.
+     * Computes and returns the last used style in this component.
      *
-     * @return  Last color of this component, {@code null} if no colors are used
+     * @return  Last style of this component
      */
-    @Nullable
-    protected TextColor fetchLastColor() {
-        TextColor lastColor = modifier.getColor();
+    @NotNull
+    protected ChatModifier fetchLastStyle() {
+        ChatModifier lastStyle = modifier;
         for (TabComponent extra : getExtra()) {
-            TextColor color = extra.fetchLastColor();
-            if (color != null) {
-                lastColor = color;
-            }
+            lastStyle = extra.fetchLastStyle();
         }
-        return lastColor;
+        return lastStyle;
     }
 
     /**

@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,7 +113,7 @@ public interface Scoreboard {
      */
     void registerTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                       @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
-                      @NonNull Collection<String> players, int options, @NonNull TextColor color);
+                      @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color);
 
     /**
      * Unregisters team from the scoreboard.
@@ -145,7 +145,7 @@ public interface Scoreboard {
      */
     void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                     @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
-                    int options, @NonNull TextColor color);
+                    int options, @NonNull EnumChatFormat color);
 
     /**
      * Updates team prefix, suffix and color.
@@ -159,7 +159,7 @@ public interface Scoreboard {
      * @param   color
      *          New team color (name color and prefix/suffix color start)
      */
-    void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull TextColor color);
+    void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull EnumChatFormat color);
 
     /**
      * Updates collision rule.

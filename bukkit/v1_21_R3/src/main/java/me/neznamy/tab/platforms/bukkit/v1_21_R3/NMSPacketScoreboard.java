@@ -131,7 +131,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         t.a(collisions[team.getCollision().ordinal()]);
         t.b((IChatBaseComponent) team.getPrefix().convert());
         t.c(team.getSuffix().convert());
-        t.a(EnumChatFormat.valueOf(team.getColor().getLegacyColor().name()));
+        t.a(EnumChatFormat.valueOf(team.getColor().name()));
     }
 
     @Override

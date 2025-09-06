@@ -118,7 +118,7 @@ public class ForgeScoreboard extends SafeScoreboard<ForgeTabPlayer> {
         PlayerTeam t = (PlayerTeam) team.getPlatformTeam();
         t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
         t.setSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
-        t.setColor(formats[team.getColor().getLegacyColor().ordinal()]);
+        t.setColor(formats[team.getColor().ordinal()]);
         t.setCollisionRule(collisions[team.getCollision().ordinal()]);
         t.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
         t.setPlayerPrefix(team.getPrefix().convert());

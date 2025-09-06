@@ -94,7 +94,7 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(target.getNickname()),
                             2,
-                            target.getTagPrefix().getLastColor()
+                            target.getTagPrefix().getLastStyle().toEnumChatFormat()
                     );
                 }
             } else {
@@ -106,7 +106,7 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
                             nameVisibility,
                             Scoreboard.CollisionRule.ALWAYS,
                             2,
-                            target.getTagPrefix().getLastColor()
+                            target.getTagPrefix().getLastStyle().toEnumChatFormat()
                     );
                 }
             }

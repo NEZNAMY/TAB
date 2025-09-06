@@ -56,4 +56,21 @@ public class ChatModifier {
         if (Boolean.TRUE.equals(underlined)) builder.append("§n");
         return builder.toString();
     }
+
+    /**
+     * Converts this style to EnumChatFormat for determining team color.
+     * Magic codes are preferred, since that is how they are defined in configuration as well.
+     *
+     * @return  EnumChatFormat to show to represent this style
+     */
+    @NotNull
+    public EnumChatFormat toEnumChatFormat() {
+        if (Boolean.TRUE == bold) return EnumChatFormat.BOLD;
+        if (Boolean.TRUE == italic) return EnumChatFormat.ITALIC;
+        if (Boolean.TRUE == underlined) return EnumChatFormat.UNDERLINE;
+        if (Boolean.TRUE == strikethrough) return EnumChatFormat.STRIKETHROUGH;
+        if (Boolean.TRUE == obfuscated) return EnumChatFormat.OBFUSCATED;
+        if (color != null) return color.getLegacyColor();
+        return EnumChatFormat.RESET;
+    }
 }

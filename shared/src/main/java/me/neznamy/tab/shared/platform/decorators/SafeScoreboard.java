@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.platform.decorators;
 
 import lombok.*;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -134,7 +134,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Override
     public synchronized void registerTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                                    @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
-                                   @NonNull Collection<String> players, int options, @NonNull TextColor color) {
+                                   @NonNull Collection<String> players, int options, @NonNull EnumChatFormat color) {
         Team existing = teams.get(name);
         if (existing != null) {
             error("Tried to register duplicated team %s with entry %s, while this team already exists with entry %s to player ",
@@ -161,7 +161,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     @Override
     public synchronized void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix,
                                  @NonNull NameVisibility visibility, @NonNull CollisionRule collision,
-                                 int options, @NonNull TextColor color) {
+                                 int options, @NonNull EnumChatFormat color) {
         Team team = teams.get(name);
         if (team == null) {
             error("Tried to modify non-existing team %s for player ", name);
@@ -173,7 +173,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
     }
 
     @Override
-    public synchronized void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull TextColor color) {
+    public synchronized void updateTeam(@NonNull String name, @NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull EnumChatFormat color) {
         Team team = teams.get(name);
         if (team == null) return;
         team.update(prefix, suffix, color);
@@ -527,10 +527,10 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         @NonNull private CollisionRule collision;
         @NonNull private Collection<String> players;
         private int options;
-        @NonNull private TextColor color;
+        @NonNull private EnumChatFormat color;
 
         private void update(@NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull NameVisibility visibility,
-                            @NonNull CollisionRule collision, int options, @NonNull TextColor color) {
+                            @NonNull CollisionRule collision, int options, @NonNull EnumChatFormat color) {
             this.prefix = prefix;
             this.suffix = suffix;
             this.visibility = visibility;
@@ -539,7 +539,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
             this.color = color;
         }
 
-        private void update(@NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull TextColor color) {
+        private void update(@NonNull TabComponent prefix, @NonNull TabComponent suffix, @NonNull EnumChatFormat color) {
             this.prefix = prefix;
             this.suffix = suffix;
             this.color = color;

@@ -169,7 +169,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         CollisionRule.ALWAYS,
                         Collections.singletonList(proxied.getNickname()),
                         2,
-                        proxied.getTagPrefix().getLastColor()
+                        proxied.getTagPrefix().getLastStyle().toEnumChatFormat()
                 );
             }
             proxy.sendMessage(new NameTagUpdateProxyPlayer(
@@ -271,7 +271,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     player.teamData.teamName,
                     prefix,
                     cache.get(player.teamData.suffix.getFormat(viewer)),
-                    prefix.getLastColor()
+                    prefix.getLastStyle().toEnumChatFormat()
             );
         }
         if (proxy != null) {
@@ -376,7 +376,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 Collections.singletonList(p.getNickname()),
                 teamOptions,
-                prefix.getLastColor()
+                prefix.getLastStyle().toEnumChatFormat()
         );
     }
 
@@ -463,7 +463,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     Scoreboard.CollisionRule.ALWAYS,
                     Collections.singletonList(player.getNickname()),
                     2,
-                    player.getTagPrefix().getLastColor()
+                    player.getTagPrefix().getLastStyle().toEnumChatFormat()
             );
         }
     }

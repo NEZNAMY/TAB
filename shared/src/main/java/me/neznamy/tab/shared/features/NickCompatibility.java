@@ -79,7 +79,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                             player.teamData.getCollisionRule() ? Scoreboard.CollisionRule.ALWAYS : Scoreboard.CollisionRule.NEVER,
                             Collections.singletonList(player.getNickname()),
                             nameTags.getTeamOptions(),
-                            prefix.getLastColor()
+                            prefix.getLastStyle().toEnumChatFormat()
                     );
                 }
             if (belowname != null) belowname.processNicknameChange(player);
@@ -103,7 +103,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(player.getNickname()),
                             nameTags.getTeamOptions(),
-                            prefix.getLastColor()
+                            prefix.getLastStyle().toEnumChatFormat()
                     );
                 }
             }
