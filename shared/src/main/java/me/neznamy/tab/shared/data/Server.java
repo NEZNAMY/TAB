@@ -30,11 +30,11 @@ public class Server {
      *
      * @param   name
      *          Name of the server
-     * @return  World instance with given name
+     * @return  Server instance with given name
      */
     @Contract("!null -> !null")
     public static Server byName(@Nullable String name) {
         if (name == null) return null;
-        return servers.computeIfAbsent(name.toLowerCase(), Server::new);
+        return servers.computeIfAbsent(name, Server::new);
     }
 }
