@@ -475,7 +475,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             if (player.teamData.hideNametag(reason)) {
                 updateVisibility(player);
             }
-            if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
+            if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden());
         }, getFeatureName(), cpuReason));
     }
 
@@ -486,7 +486,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             if (player.teamData.hideNametag(viewer, reason)) {
                 updateVisibility(player, viewer);
             }
-            if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
+            if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden());
         }, getFeatureName(), cpuReason));
     }
 
@@ -497,7 +497,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             if (player.teamData.showNametag(reason)) {
                 updateVisibility(player);
             }
-            if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
+            if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown());
         }, getFeatureName(), cpuReason));
     }
 
@@ -508,7 +508,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             if (player.teamData.showNametag(viewer, reason)) {
                 updateVisibility(player, viewer);
             }
-            if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
+            if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown());
         }, getFeatureName(), cpuReason));
     }
 
@@ -518,10 +518,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             if (player.teamData.hasHiddenNametag(reason)) {
                 player.teamData.showNametag(reason);
-                if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
+                if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown());
             } else {
                 player.teamData.hideNametag(reason);
-                if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
+                if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden());
             }
             updateVisibility(player);
         }, getFeatureName(), cpuReason));
@@ -533,10 +533,10 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             if (player.teamData.hasHiddenNametag(viewer, reason)) {
                 player.teamData.showNametag(viewer, reason);
-                if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown()));
+                if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown());
             } else {
                 player.teamData.hideNametag(viewer, reason);
-                if (sendMessage) player.sendMessage(TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden()));
+                if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetHidden());
             }
             updateVisibility(player, viewer);
         }, getFeatureName(), cpuReason));
