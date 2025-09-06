@@ -291,11 +291,15 @@ public abstract class TabComponent {
                 break;
             }
         }
-        TextComponent component = new TextComponent("", components);
-        // Safe check to avoid rare mojang "bug" that display text as italic by default
-        // This doesn't affect #toLegacyText() method at all
-        component.modifier.setItalic(false);
-        return component;
+        TextComponent root = new TextComponent("", components);
+        // Avoid team color affecting prefix/suffix
+        root.modifier.setColor(TextColor.WHITE);
+        root.modifier.setBold(false);
+        root.modifier.setItalic(false);
+        root.modifier.setUnderlined(false);
+        root.modifier.setStrikethrough(false);
+        root.modifier.setObfuscated(false);
+        return root;
     }
 
     @NotNull
@@ -458,7 +462,15 @@ public abstract class TabComponent {
     @NotNull
     public static LegacyTextComponent legacyText(@NonNull String text) {
         if (text.isEmpty()) return EMPTY_LEGACY_TEXT;
-        return new LegacyTextComponent(text);
+        LegacyTextComponent component = new LegacyTextComponent(text);
+        // Avoid team color affecting prefix/suffix
+        component.modifier.setColor(TextColor.WHITE);
+        component.modifier.setBold(false);
+        component.modifier.setItalic(false);
+        component.modifier.setUnderlined(false);
+        component.modifier.setStrikethrough(false);
+        component.modifier.setObfuscated(false);
+        return component;
     }
 
     /**
