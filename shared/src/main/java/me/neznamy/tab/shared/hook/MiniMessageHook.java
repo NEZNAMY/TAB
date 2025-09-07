@@ -31,7 +31,7 @@ public class MiniMessageHook {
      * @return  {@code true} if MiniMessage is available on the server, {@code false} if not
      */
     public static boolean isAvailable() {
-        return mm != null;
+        return mm != null && TAB.getInstance().getConfiguration().getConfig().getComponents().isMinimessageSupport();
     }
 
     /**

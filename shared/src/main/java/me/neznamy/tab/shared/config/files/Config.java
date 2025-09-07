@@ -3,7 +3,9 @@ package me.neznamy.tab.shared.config.files;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.Converter;
+import me.neznamy.tab.shared.chat.ComponentConfiguration;
+import me.neznamy.tab.shared.config.converter.LegacyConverter;
+import me.neznamy.tab.shared.config.converter.ModernConverter;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.config.mysql.MySQLConfiguration;
@@ -54,6 +56,7 @@ public class Config {
     @Nullable private SortingConfiguration sorting;
     @Nullable private TablistFormattingConfiguration tablistFormatting;
     @Nullable private TeamConfiguration teams;
+    @NotNull private final ComponentConfiguration components;
 
     private final boolean preventSpectatorEffect = config.getBoolean("prevent-spectator-effect.enabled", false);
     private final boolean bukkitPermissions = TAB.getInstance().getPlatform().isProxy() && config.getBoolean("use-bukkit-permissions-manager", false);
@@ -72,7 +75,7 @@ public class Config {
     @NotNull private final List<String> primaryGroupFindingList = config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
     public Config() throws IOException {
-        Converter converter = new Converter();
+        LegacyConverter converter = new LegacyConverter();
         converter.convert292to300(config);
         converter.convert301to302(config);
         converter.convert332to400(config);
@@ -83,10 +86,15 @@ public class Config {
         converter.convert507to510(config);
         converter.convert521to522(config);
 
+        ModernConverter modernConverter = new ModernConverter();
+        modernConverter.convert(config);
+
         conditions = ConditionsSection.fromSection(config.getConfigurationSection("conditions"));
         refresh = PlaceholderRefreshConfiguration.fromSection(config.getConfigurationSection("placeholder-refresh-intervals"));
         replacements = PlaceholderReplacementsConfiguration.fromSection(config.getConfigurationSection("placeholder-output-replacements"));
         placeholders = PlaceholdersConfiguration.fromSection(config.getConfigurationSection("placeholders"));
+        components = ComponentConfiguration.fromSection(config.getConfigurationSection("components"));
+
         if (config.getBoolean("belowname-objective.enabled", false)) belowname = BelowNameConfiguration.fromSection(config.getConfigurationSection("belowname-objective"));
         if (config.getBoolean("bossbar.enabled", false)) bossbar = BossBarConfiguration.fromSection(config.getConfigurationSection("bossbar"));
         if (config.getBoolean("global-playerlist.enabled", false)) globalPlayerList = GlobalPlayerListConfiguration.fromSection(config.getConfigurationSection("global-playerlist"));

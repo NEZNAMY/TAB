@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.config.files;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.Converter;
+import me.neznamy.tab.shared.config.converter.LegacyConverter;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.placeholders.animation.AnimationConfiguration;
@@ -20,7 +20,7 @@ public class Animations {
     @NotNull private final AnimationConfiguration animations;
 
     public Animations() throws IOException {
-        new Converter().convert2810to290(animationFile);
+        new LegacyConverter().convert2810to290(animationFile);
         animations = AnimationConfiguration.fromSection(animationFile.getConfigurationSection(""));
     }
 }

@@ -262,6 +262,13 @@ proxy-support:
     exchange: 'plugin'
     url: 'amqp://guest:guest@localhost:5672/%2F'
 
+components:
+  minimessage-support: true
+  disable-shadow-for-heads: true
+
+# Internal value, do not change this
+config-version: 1
+
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #
 ########################################################################

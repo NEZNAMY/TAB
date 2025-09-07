@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.config;
+package me.neznamy.tab.shared.config.converter;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.TextColor;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Configuration converter that converts configuration files from practically
  * any previous version of TAB to the current format.
  */
-public class Converter {
+public class LegacyConverter {
 
     /**
      * Converts animations file from 2.8.10 to 2.9.0.

@@ -541,7 +541,9 @@ public abstract class TabComponent {
         }
         sprite.setShowHat(true); // Always show hat
         ObjectComponent component = new ObjectComponent(sprite);
-        component.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
+        if (TAB.getInstance().getConfiguration().getConfig().getComponents().isDisableShadowForHeads()) {
+            component.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
+        }
         return component;
     }
 }
