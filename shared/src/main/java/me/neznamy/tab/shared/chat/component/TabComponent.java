@@ -32,10 +32,6 @@ public abstract class TabComponent {
     /** Empty component to avoid recreating one over and over */
     public static final LegacyTextComponent EMPTY_LEGACY_TEXT = new LegacyTextComponent("");
 
-    /** Function for converting this class into platform's actual component */
-    @Nullable
-    public static Function<TabComponent, Object> CONVERT_FUNCTION;
-
     /** Formatter to convert gradient into TAB's #RRGGBB spam */
     private static final TriFunction<TextColor, String, TextColor, String> TABGradientFormatter = (start, text, end) -> {
         if (text.length() == 1) {
@@ -171,8 +167,7 @@ public abstract class TabComponent {
     @NotNull
     @SuppressWarnings("unchecked")
     public <T> T convert() {
-        if (CONVERT_FUNCTION == null) throw new IllegalStateException("Convert function is not initialized");
-        if (converted == null) converted = CONVERT_FUNCTION.apply(this);
+        if (converted == null) converted = TAB.getInstance().getPlatform().convertComponent(this);
         return (T) converted;
     }
 
