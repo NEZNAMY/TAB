@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
 import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
 import me.neznamy.tab.shared.chat.hook.AdventureHook;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.chat.util.TriFunction;
+import me.neznamy.tab.shared.util.function.TriFunction;
 import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;

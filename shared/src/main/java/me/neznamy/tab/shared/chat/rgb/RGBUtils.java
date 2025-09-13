@@ -9,7 +9,7 @@ import me.neznamy.tab.shared.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.shared.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.shared.chat.rgb.gradient.GradientPattern;
 import me.neznamy.tab.shared.chat.rgb.gradient.NexEngineGradient;
-import me.neznamy.tab.shared.chat.util.TriFunction;
+import me.neznamy.tab.shared.util.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;

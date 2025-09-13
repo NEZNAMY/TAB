@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.util.cache;
 import me.neznamy.tab.shared.chat.TextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.chat.util.TriFunction;
+import me.neznamy.tab.shared.util.function.TriFunction;
 import me.neznamy.tab.shared.hook.MiniMessageHook;
 import org.jetbrains.annotations.NotNull;
 

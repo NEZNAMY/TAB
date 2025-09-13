@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.chat.rgb.gradient;
 
 import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.util.TriFunction;
+import me.neznamy.tab.shared.util.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -1,19 +1,21 @@
 package me.neznamy.tab.shared.util.function;
 
 /**
- * An interface for Consumer with 3 arguments.
+ * An interface for a function with 3 input arguments.
  * @param   <A>
  *          First function argument
  * @param   <B>
  *          Second function argument
  * @param   <C>
  *          Third function argument
+ * @param   <D>
+ *          Function return type
  */
 @FunctionalInterface
-public interface TriConsumer<A, B, C> {
+public interface TriFunction<A, B, C, D> {
 
     /**
-     * Runs the function.
+     * Runs the function and returns the result
      *
      * @param   a
      *          First argument
@@ -21,6 +23,7 @@ public interface TriConsumer<A, B, C> {
      *          Second argument
      * @param   c
      *          Third argument
+     * @return  Output from function
      */
-    void accept(A a, B b, C c);
+    D apply(A a, B b, C c);
 }
