@@ -71,7 +71,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         if (value == null) return false;
         String newValue = setPlaceholders(replacements.findReplacement(value), null);
 
-        if (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValue.equals(newValue)) {
+        if (!ERROR_VALUE.equals(newValue) && !lastValue.equals(newValue)) {
             lastValue = newValue;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 updateParents(player);
