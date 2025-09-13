@@ -171,6 +171,10 @@ public class TabConstants {
             return "scoreboard-score-" + scoreboard + "-" + index;
         }
 
+        public static String design(String name) {
+            return "design-" + name;
+        }
+
         public static String layout(String name) {
             return "layout-" + name;
         }

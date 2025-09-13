@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.header;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -15,11 +16,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class HeaderFooterConfiguration {
 
-    @NotNull private final List<String> header;
-    @NotNull private final List<String> footer;
-    @NotNull private final String disableCondition;
-    @NotNull private final Map<String, HeaderFooterPair> perWorld;
-    @NotNull private final Map<String, HeaderFooterPair> perServer;
+    /** List of header/footer designs */
+    @NotNull private final LinkedHashMap<String, HeaderFooterDesignDefinition> designs;
 
     /**
      * Returns instance of this class created from given configuration section. If there are
@@ -32,50 +30,45 @@ public class HeaderFooterConfiguration {
     @NotNull
     public static HeaderFooterConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "header", "footer", "disable-condition", "per-world", "per-server"));
+        section.checkForUnknownKey(Arrays.asList("enabled", "designs"));
 
-        List<String> header = section.getStringList("header", Collections.emptyList());
-        List<String> footer = section.getStringList("footer", Collections.emptyList());
+        // Load designs
+        LinkedHashMap<String, HeaderFooterDesignDefinition> designs = new LinkedHashMap<>();
+        ConfigurationSection designsSection = section.getConfigurationSection("designs");
+        for (Object key : designsSection.getKeys()) {
+            designs.put(key.toString(), HeaderFooterDesignDefinition.fromSection(designsSection.getConfigurationSection(key.toString())));
+        }
 
-        return new HeaderFooterConfiguration(
-                header,
-                footer,
-                section.getString("disable-condition", "%world%=disabledworld"),
-                getPairs(section.getConfigurationSection("per-world"), "world", header, footer),
-                getPairs(section.getConfigurationSection("per-server"), "server", header, footer)
-        );
+        // Check design chain for hanging designs
+        checkChain(section, designs);
+
+        return new HeaderFooterConfiguration(designs);
     }
 
-    @NotNull
-    private static Map<String, HeaderFooterPair> getPairs(@NotNull ConfigurationSection section, @NotNull String type,
-                                                          @NotNull List<String> header, @NotNull List<String> footer) {
-        Map<String, HeaderFooterPair> pairs = new HashMap<>();
-        for (Object key : section.getKeys()) {
-            String asString = key.toString();
-            HeaderFooterPair pair = HeaderFooterPair.fromSection(section.getConfigurationSection(asString));
-            pairs.put(asString, pair);
-
-            if (header.equals(pair.getHeader())) {
-                section.hint("Per-" + type + " header for " + type + " \"" + key + "\" is identical to default header. " +
-                        "This is redundant and can be removed for cleaner config.");
-            }
-            if (footer.equals(pair.getFooter())) {
-                section.hint("Per-" + type + " footer for " + type + " \"" + key + "\" is identical to default footer. " +
-                        "This is redundant and can be removed for cleaner config.");
+    private static void checkChain(@NotNull ConfigurationSection section, Map<String, HeaderFooterDesignDefinition> scoreboards) {
+        String noConditionDesign = null;
+        for (Map.Entry<String, HeaderFooterDesignDefinition> entry : scoreboards.entrySet()) {
+            if (noConditionDesign != null) {
+                section.startupWarn("Header/footer design \"" + noConditionDesign + "\" has no display condition set, however, there is" +
+                        " another design in the chain (" + entry.getKey() + "). Designs are checked from top to bottom" +
+                        " until a design with meeting condition or no condition is found. Because of this, the design (" +
+                        entry.getKey() + ") after the no-condition design (" + noConditionDesign + ") will never be displayed.");
+            } else if (entry.getValue().displayCondition == null) {
+                noConditionDesign = entry.getKey();
             }
         }
-        return pairs;
     }
 
     /**
-     * Class storing a header-footer pair.
+     * Class storing a header-footer design.
      */
     @Getter
     @RequiredArgsConstructor
-    public static class HeaderFooterPair {
+    public static class HeaderFooterDesignDefinition {
 
-        @Nullable private final List<String> header;
-        @Nullable private final List<String> footer;
+        @Nullable private final String displayCondition;
+        @NonNull private final List<String> header;
+        @NonNull private final List<String> footer;
 
         /**
          * Returns instance of this class created from given configuration section. If there are
@@ -85,11 +78,15 @@ public class HeaderFooterConfiguration {
          *          Configuration section to load from
          * @return  Loaded instance from given configuration section
          */
-        public static HeaderFooterPair fromSection(@NotNull ConfigurationSection section) {
+        public static HeaderFooterDesignDefinition fromSection(@NotNull ConfigurationSection section) {
             // Check keys
-            section.checkForUnknownKey(Arrays.asList("header", "footer"));
+            section.checkForUnknownKey(Arrays.asList("header", "footer", "display-condition"));
 
-            return new HeaderFooterPair(section.getStringList("header"), section.getStringList("footer"));
+            return new HeaderFooterDesignDefinition(
+                    section.getString("display-condition"),
+                    section.getStringList("header", Collections.emptyList()),
+                    section.getStringList("footer", Collections.emptyList())
+            );
         }
     }
 }

@@ -19,7 +19,7 @@ public interface PropertyConfiguration {
 
     /** List of all valid properties for groups and users */
     @NotNull
-    List<String> VALID_PROPERTIES = Lists.newArrayList("tagprefix", "tagsuffix", "tabprefix", "customtabname", "tabsuffix", "header", "footer");
+    List<String> VALID_PROPERTIES = Lists.newArrayList("tagprefix", "tagsuffix", "tabprefix", "customtabname", "tabsuffix");
 
     /**
      * Sets property value of group or user to specified value. If {@code world} or

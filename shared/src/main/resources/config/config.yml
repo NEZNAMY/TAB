@@ -1,35 +1,28 @@
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer
 header-footer:
   enabled: true
-  header:
-    - "<#FFFFFF>&m                                                </#FFFF00>"
-    - "&3&lServer name"
-    - "&r&7&l>> %animation:Welcome%&3 &l%player%&7&l! &7&l<<"
-    - "&r&7Online players: &f%online%"
-    - "&6Online staff: &e%staffonline%"
-    - ""
-  footer:
-    - "%animation:time%"
-    - "&2Ping: %ping%"
-    - "&7&l Used memory: %memory-used% MB / %memory-max% MB"
-    - ""
-    - "&r&7Visit our webpage %animation:web%"
-    - "<#FFFFFF>&m                                                </#FFFF00>"
-  disable-condition: '%world%=disabledworld'
-  per-world:
-    world1:
+  designs:
+    world-test:
+      display-condition: "%world%=test"
       header:
-        - "an example of world with custom"
+        - "Test header in world 'test'"
       footer:
-        - "header/footer and prefix/suffix"
-    world2;world3:
+        - "Test footer in world 'test'"
+    default:
       header:
-        - "This is a shared header for"
-        - "world2 and world3"
-  per-server:
-    server1:
-      header:
-        - "an example of server with custom header"
+        - "<#FFFFFF>&m                                                </#FFFF00>"
+        - "&3&lServer name"
+        - "&r&7&l>> %animation:Welcome%&3 &l%player%&7&l! &7&l<<"
+        - "&r&7Online players: &f%online%"
+        - "&6Online staff: &e%staffonline%"
+        - ""
+      footer:
+        - "%animation:time%"
+        - "&2Ping: %ping%"
+        - "&7&l Used memory: %memory-used% MB / %memory-max% MB"
+        - ""
+        - "&r&7Visit our webpage %animation:web%"
+        - "<#FFFFFF>&m                                                </#FFFF00>"
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting
 tablist-name-formatting:
@@ -267,7 +260,7 @@ components:
   disable-shadow-for-heads: true
 
 # Internal value, do not change this
-config-version: 1
+config-version: 2
 
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #

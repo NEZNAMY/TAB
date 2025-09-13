@@ -1,51 +1,48 @@
 package me.neznamy.tab.shared.features.header;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.component.TabComponent;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.data.Server;
-import me.neznamy.tab.shared.data.World;
-import me.neznamy.tab.shared.features.header.HeaderFooterConfiguration.HeaderFooterPair;
 import me.neznamy.tab.shared.features.types.*;
-import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Feature handler for header and footer.
  */
+@RequiredArgsConstructor
 public class HeaderFooter extends RefreshableFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
-        WorldSwitchListener, ServerSwitchListener, CustomThreaded, GroupListener {
+        ServerSwitchListener, CustomThreaded {
 
     private final StringToComponentCache headerCache = new StringToComponentCache("Header", 1000);
     private final StringToComponentCache footerCache = new StringToComponentCache("Footer", 1000);
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB Header/Footer Thread");
-    private final HeaderFooterConfiguration configuration;
-    private final DisableChecker disableChecker;
+    private final Map<String, HeaderFooterDesign> registeredDesigns = new LinkedHashMap<>();
+    private HeaderFooterDesign[] definedDesigns;
 
-    /**
-     * Constructs new instance and registers disable condition checker to feature manager.
-     *
-     * @param   configuration
-     *          Feature configuration
-     */
-    public HeaderFooter(@NotNull HeaderFooterConfiguration configuration) {
-        this.configuration = configuration;
-        disableChecker = new DisableChecker(this, Condition.getCondition(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.headerFooterData.disabled);
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.HEADER_FOOTER + "-Condition", disableChecker);
-    }
+    @NonNull private final HeaderFooterConfiguration configuration;
 
     @Override
     public void load() {
+        for (Map.Entry<String, HeaderFooterConfiguration.HeaderFooterDesignDefinition> entry : configuration.getDesigns().entrySet()) {
+            String designName = entry.getKey();
+            HeaderFooterDesign design = new HeaderFooterDesign(this, designName, entry.getValue());
+            registeredDesigns.put(designName, design);
+            TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.design(designName), design);
+        }
+        definedDesigns = registeredDesigns.values().toArray(new HeaderFooterDesign[0]);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
@@ -54,118 +51,102 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (p.headerFooterData.disabled.get()) continue;
+            if (p.headerFooterData.activeDesign == null) continue;
             sendHeaderFooter(p, "","");
         }
     }
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.headerFooterData.header = new Property(this, connectedPlayer, getFromConfig(connectedPlayer, "header"));
-        connectedPlayer.headerFooterData.footer = new Property(this, connectedPlayer, getFromConfig(connectedPlayer, "footer"));
-        if (disableChecker.isDisableConditionMet(connectedPlayer)) {
-            connectedPlayer.headerFooterData.disabled.set(true);
-        } else {
-            sendHeaderFooter(connectedPlayer, connectedPlayer.headerFooterData.header.get(), connectedPlayer.headerFooterData.footer.get());
+        sendHighestDesign(connectedPlayer);
+    }
+
+    private void sendHighestDesign(@NotNull TabPlayer player) {
+        HeaderFooterDesign highest = detectHighestDesign(player);
+        HeaderFooterDesign current = player.headerFooterData.activeDesign;
+        if (highest != current) {
+            if (highest != null) {
+                highest.sendTo(player);
+            } else {
+                sendHeaderFooter(player, "", "");
+            }
         }
+    }
+
+    @Nullable
+    private HeaderFooterDesign detectHighestDesign(@NonNull TabPlayer p) {
+        for (HeaderFooterDesign design : definedDesigns) {
+            if (design.isConditionMet(p)) return design;
+        }
+        return null;
     }
 
     @Override
     public void onServerChange(@NotNull TabPlayer p, @NotNull Server from, @NotNull Server to) {
-        // Velocity clears header/footer on server switch, resend regardless of whether values changed or not
-        updateProperties(p);
-        sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
-    }
-
-    @Override
-    public void onWorldChange(@NotNull TabPlayer p, @NotNull World from, @NotNull World to) {
-        if (updateProperties(p)) {
-            sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
-        }
+        // Velocity clears header/footer on server switch
+        sendHighestDesign(p);
     }
 
     @NotNull
     @Override
     public String getRefreshDisplayName() {
-        return "Updating header/footer";
+        return "Switching designs";
     }
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        sendHeaderFooter(p, p.headerFooterData.header.updateAndGet(), p.headerFooterData.footer.updateAndGet());
-    }
-
-    @Override
-    public void onGroupChange(@NotNull TabPlayer player) {
-        if (updateProperties(player)) {
-            sendHeaderFooter(player, player.headerFooterData.header.get(), player.headerFooterData.footer.get());
-        }
+        sendHighestDesign(p);
     }
 
     /**
-     * Loads all properties from config and returns {@code true} if at least
-     * one of them either wasn't loaded or changed value, {@code false} otherwise.
+     * Sends header and footer to player.
      *
      * @param   player
-     *          Player to update properties of
-     * @return  {@code true} if at least one property changed, {@code false} if not
+     *          Player to send header and footer to
+     * @param   header
+     *          Header to send
+     * @param   footer
+     *          Footer to send
      */
-    private boolean updateProperties(@NotNull TabPlayer player) {
-        boolean changed = player.headerFooterData.header.changeRawValue(getFromConfig(player, "header"), null);
-        if (player.headerFooterData.footer.changeRawValue(getFromConfig(player, "footer"), null)) changed = true;
-        return changed;
+    public void sendHeaderFooter(@NotNull TabPlayer player, @NotNull String header, @NotNull String footer) {
+        player.getTabList().setPlayerListHeaderFooter(headerCache.get(header), footerCache.get(footer));
     }
 
     /**
-     * Processes disable condition change.
+     * Sends header and footer to player based on currently active design or forced
+     * header/footer set by the API.
      *
-     * @param   p
-     *          Player who the condition has changed for
-     * @param   disabledNow
-     *          Whether the feature is disabled now or not
+     * @param   player
+     *          Player to send header and footer to
      */
-    public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        if (disabledNow) {
-            p.getTabList().setPlayerListHeaderFooter(TabComponent.empty(), TabComponent.empty());
-        } else {
-            sendHeaderFooter(p, p.headerFooterData.header.get(), p.headerFooterData.footer.get());
-        }
-    }
-
-    private String getFromConfig(TabPlayer p, String property) {
-        String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getName(), property, p.server, p.world);
-        if (value.length > 0) {
-            return value[0];
-        }
-        value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getUniqueId().toString(), property, p.server, p.world);
-        if (value.length > 0) {
-            return value[0];
-        }
-        value = TAB.getInstance().getConfiguration().getGroups().getProperty(p.getGroup(), property, p.server, p.world);
-        if (value.length > 0) {
-            return value[0];
-        }
-        List<String> lines = null;
-        HeaderFooterPair pair = configuration.getPerWorld().get(TAB.getInstance().getConfiguration().getGroup(configuration.getPerWorld().keySet(), p.world.getName()));
-        if (pair != null) {
-            lines = property.equals("header") ? pair.getHeader() : pair.getFooter();
-        }
-        if (lines == null) {
-            pair = configuration.getPerServer().get(TAB.getInstance().getConfiguration().getGroup(configuration.getPerServer().keySet(), p.server.getName()));
-            if (pair != null) {
-                lines = property.equals("header") ? pair.getHeader() : pair.getFooter();
+    public void sendHeaderFooter(@NotNull TabPlayer player) {
+        String header;
+        String footer;
+        if (player.headerFooterData.forcedHeader != null) {
+            header = player.headerFooterData.forcedHeader.updateAndGet();
+        } else if (player.headerFooterData.activeDesign != null) {
+            Property prop = player.headerFooterData.headerProperties.get(player.headerFooterData.activeDesign);
+            if (prop == null) {
+                prop = new Property(player.headerFooterData.activeDesign, player, String.join("\n", player.headerFooterData.activeDesign.getDefinition().getHeader()));
+                player.headerFooterData.headerProperties.put(player.headerFooterData.activeDesign, prop);
             }
+            header = prop.updateAndGet();
+        } else {
+            header = "";
         }
-
-        if (lines == null) {
-            lines = property.equals("header") ? configuration.getHeader() : configuration.getFooter();
+        if (player.headerFooterData.forcedFooter != null) {
+            footer = player.headerFooterData.forcedFooter.updateAndGet();
+        } else if (player.headerFooterData.activeDesign != null) {
+            Property prop = player.headerFooterData.footerProperties.get(player.headerFooterData.activeDesign);
+            if (prop == null) {
+                prop = new Property(player.headerFooterData.activeDesign, player, String.join("\n", player.headerFooterData.activeDesign.getDefinition().getFooter()));
+                player.headerFooterData.footerProperties.put(player.headerFooterData.activeDesign, prop);
+            }
+            footer = prop.updateAndGet();
+        } else {
+            footer = "";
         }
-        return String.join("\n", lines);
-    }
-
-    private void sendHeaderFooter(TabPlayer player, String header, String footer) {
-        if (player.headerFooterData.disabled.get()) return;
-        player.getTabList().setPlayerListHeaderFooter(headerCache.get(header), footerCache.get(footer));
+        sendHeaderFooter(player, header, footer);
     }
 
     // ------------------
@@ -177,8 +158,12 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         ensureActive();
         customThread.execute(() -> {
             TabPlayer player = (TabPlayer) p;
-            player.headerFooterData.header.setTemporaryValue(header);
-            sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+            if (header != null) {
+                player.headerFooterData.forcedHeader = new Property(this, player, header);
+            } else {
+                player.headerFooterData.forcedHeader = null;
+            }
+            sendHeaderFooter(player);
         });
     }
 
@@ -187,8 +172,12 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         ensureActive();
         customThread.execute(() -> {
             TabPlayer player = (TabPlayer) p;
-            player.headerFooterData.footer.setTemporaryValue(footer);
-            sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+            if (footer != null) {
+                player.headerFooterData.forcedFooter = new Property(this, player, footer);
+            } else {
+                player.headerFooterData.forcedFooter = null;
+            }
+            sendHeaderFooter(player);
         });
     }
 
@@ -197,9 +186,17 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         ensureActive();
         customThread.execute(() -> {
             TabPlayer player = (TabPlayer) p;
-            player.headerFooterData.header.setTemporaryValue(header);
-            player.headerFooterData.footer.setTemporaryValue(footer);
-            sendHeaderFooter(player, player.headerFooterData.header.updateAndGet(), player.headerFooterData.footer.updateAndGet());
+            if (header != null) {
+                player.headerFooterData.forcedHeader = new Property(this, player, header);
+            } else {
+                player.headerFooterData.forcedHeader = null;
+            }
+            if (footer != null) {
+                player.headerFooterData.forcedFooter = new Property(this, player, footer);
+            } else {
+                player.headerFooterData.forcedFooter = null;
+            }
+            sendHeaderFooter(player);
         });
     }
 
@@ -214,13 +211,22 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
      */
     public static class PlayerData {
 
-        /** Player's header */
-        public Property header;
+        /** Forced header using the API */
+        @Nullable
+        public Property forcedHeader;
 
-        /** Player's footer */
-        public Property footer;
+        /** Forced footer using the API */
+        @Nullable
+        public Property forcedFooter;
 
-        /** Flag tracking whether this feature is disabled for the player with condition or not */
-        public final AtomicBoolean disabled = new AtomicBoolean();
+        /** Currently active design */
+        @Nullable
+        public HeaderFooterDesign activeDesign;
+
+        /** Map of header properties for each design */
+        public final Map<HeaderFooterDesign, Property> headerProperties = new IdentityHashMap<>();
+
+        /** Map of footer properties for each design */
+        public final Map<HeaderFooterDesign, Property> footerProperties = new IdentityHashMap<>();
     }
 }
