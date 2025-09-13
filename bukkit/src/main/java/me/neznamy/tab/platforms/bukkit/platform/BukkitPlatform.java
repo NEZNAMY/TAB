@@ -308,11 +308,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public Object convertComponent(@NotNull TabComponent component) {
-        if (implementationProvider.getComponentConverter() != null) {
-            return implementationProvider.getComponentConverter().convert(component);
-        } else {
-            return component;
-        }
+        return implementationProvider.getComponentConverter().convert(component);
     }
 
     @Override

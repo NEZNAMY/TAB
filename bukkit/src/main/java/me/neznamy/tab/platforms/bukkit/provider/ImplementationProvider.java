@@ -16,7 +16,7 @@ public interface ImplementationProvider {
     @NotNull
     TabList newTabList(@NotNull BukkitTabPlayer player);
 
-    @Nullable
+    @NotNull
     ComponentConverter getComponentConverter();
 
     @Nullable
