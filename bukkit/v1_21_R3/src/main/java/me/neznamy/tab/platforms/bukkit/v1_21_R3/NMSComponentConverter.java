@@ -46,16 +46,16 @@ public class NMSComponentConverter extends ComponentConverter {
 
     @Override
     public void applyStyle(@NotNull Object nmsComponent, @NotNull ChatModifier modifier) {
-        ((IChatMutableComponent)nmsComponent).c(
-                net.minecraft.network.chat.ChatModifier.a
-                        .a(modifier.getColor() == null ? null : ChatHexColor.a(modifier.getColor().getRgb()))
-                        .a(modifier.getBold())
-                        .b(modifier.getItalic())
-                        .c(modifier.getUnderlined())
-                        .d(modifier.getStrikethrough())
-                        .e(modifier.getObfuscated())
-                        .a(modifier.getFont() == null ? null : MinecraftKey.a(modifier.getFont()))
-        );
+        net.minecraft.network.chat.ChatModifier style = net.minecraft.network.chat.ChatModifier.a
+                .a(modifier.getColor() == null ? null : ChatHexColor.a(modifier.getColor().getRgb()))
+                .a(modifier.getBold())
+                .b(modifier.getItalic())
+                .c(modifier.getUnderlined())
+                .d(modifier.getStrikethrough())
+                .e(modifier.getObfuscated())
+                .a(modifier.getFont() == null ? null : MinecraftKey.a(modifier.getFont()));
+        if (modifier.getShadowColor() != null) style = style.b(modifier.getShadowColor());
+        ((IChatMutableComponent)nmsComponent).c(style);
     }
 
     @Override
