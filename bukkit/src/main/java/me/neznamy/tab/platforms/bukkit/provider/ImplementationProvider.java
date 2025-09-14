@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An interface to provide platform-specific implementations of various features in various Miniecraft versions.
+ * An interface to provide platform-specific implementations of various features in various Minecraft versions.
  */
 public interface ImplementationProvider {
 
