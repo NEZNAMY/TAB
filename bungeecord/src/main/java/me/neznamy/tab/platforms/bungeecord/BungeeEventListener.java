@@ -83,7 +83,7 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
      * @param   e
      *          Command execute event
      */
-    @EventHandler (priority = EventPriority.HIGH) // HIGH sounds about fair
+    @EventHandler(priority = EventPriority.HIGH) // HIGH sounds about fair
     public void onCommand(ChatEvent e) {
         if (e.isCancelled()) return;
         if (e.isCommand() && command(((ProxiedPlayer)e.getSender()).getUniqueId(), e.getMessage())) {
