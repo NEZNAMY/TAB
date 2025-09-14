@@ -35,6 +35,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private OnlinePlayers onlinePlayers;
     private final TeamConfiguration configuration;
     private final StringToComponentCache cache = new StringToComponentCache("NameTags", 1000);
+    private final VisibilityRefresher visibilityRefresher;
     private final CollisionManager collisionManager;
     private final int teamOptions;
     private final DisableChecker disableChecker;
@@ -50,9 +51,9 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         this.configuration = configuration;
         teamOptions = configuration.isCanSeeFriendlyInvisibles() ? 2 : 0;
         disableChecker = new DisableChecker(this, Condition.getCondition(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.teamData.disabled);
+        visibilityRefresher = new VisibilityRefresher(this);
         collisionManager = new CollisionManager(this);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         if (proxy != null) {
             proxy.registerMessage(NameTagUpdateProxyPlayer.class, in -> new NameTagUpdateProxyPlayer(in, this));
         }
@@ -61,13 +62,12 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public void load() {
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, visibilityRefresher);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
+        visibilityRefresher.load();
         collisionManager.load();
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             loadProperties(all);
-            if (configuration.isInvisibleNameTags()) {
-                all.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
-            }
             all.teamData.teamName = all.sortingData.shortTeamName; // Sorting is loaded sync before nametags
             if (disableChecker.isDisableConditionMet(all)) {
                 all.teamData.disabled.set(true);
@@ -127,9 +127,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
         loadProperties(connectedPlayer);
-        if (configuration.isInvisibleNameTags()) {
-            connectedPlayer.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
-        }
         connectedPlayer.teamData.teamName = connectedPlayer.sortingData.shortTeamName; // Sorting is loaded sync before nametags
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (all == connectedPlayer) continue; //avoiding double registration

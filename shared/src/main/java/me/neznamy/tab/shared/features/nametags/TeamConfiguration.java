@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class TeamConfiguration {
 
     @NotNull private final String enableCollision;
-    private final boolean invisibleNameTags;
+    @NotNull private final String invisibleNameTags;
     private final boolean canSeeFriendlyInvisibles;
     @NotNull private final String disableCondition;
 
@@ -35,7 +35,7 @@ public class TeamConfiguration {
 
         return new TeamConfiguration(
                 section.getObject("enable-collision", "true").toString(),
-                section.getBoolean("invisible-nametags", false),
+                section.getObject("invisible-nametags", "false").toString(),
                 section.getBoolean("can-see-friendly-invisibles", false),
                 section.getString("disable-condition", "%world%=disabledworld")
         );

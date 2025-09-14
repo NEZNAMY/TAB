@@ -4,31 +4,60 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
+import me.neznamy.tab.shared.features.types.JoinListener;
+import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Sub-feature that makes nametags invisible for players who are invisible
- * for 1.8 players to compensate for a client-sided bug.
+ * for 1.8 players to compensate for a client-sided bug,
+ * as well as offering condition for managing visibility.
  */
-public class VisibilityRefresher extends RefreshableFeature implements CustomThreaded {
+public class VisibilityRefresher extends RefreshableFeature implements JoinListener, Loadable, CustomThreaded {
 
-    @NotNull
-    private final NameTag nameTags;
+    @NotNull private final NameTag nameTags;
+    @NotNull private final Condition invisibleCondition;
 
     /**
-     * Constructs new instance and registers {@link TabConstants.Placeholder#INVISIBLE} placeholders.
+     * Constructs new instance.
      *
      * @param   nameTags
      *          Parent feature
      */
     public VisibilityRefresher(@NotNull NameTag nameTags) {
         this.nameTags = nameTags;
+        invisibleCondition = Condition.getCondition(nameTags.getConfiguration().getInvisibleNameTags());
+    }
+
+    @Override
+    public void load() {
         int refresh = TAB.getInstance().getPlatform().isProxy() ? -1 : 500;
-        TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, refresh,
-                p -> Boolean.toString(((TabPlayer)p).hasInvisibilityPotion()));
+        TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, refresh, p -> {
+            TabPlayer player = (TabPlayer) p;
+            boolean newInvisibility = player.hasInvisibilityPotion() || invisibleCondition.isMet((TabPlayer) p);
+            if (newInvisibility) {
+                player.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
+            } else {
+                player.teamData.showNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
+            }
+            return Boolean.toString(newInvisibility);
+        });
         addUsedPlaceholder(TabConstants.Placeholder.INVISIBLE);
+        for (TabPlayer all : nameTags.getOnlinePlayers().getPlayers()) {
+            onJoin(all);
+        }
+    }
+
+    @Override
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        if (invisibleCondition.isMet(connectedPlayer)) {
+            connectedPlayer.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
+        } else {
+            connectedPlayer.teamData.showNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
+        }
     }
 
     @NotNull
@@ -40,9 +69,7 @@ public class VisibilityRefresher extends RefreshableFeature implements CustomThr
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.isDisabled()) return;
-        for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
-            if (viewer.getVersion().getMinorVersion() == 8) nameTags.updateVisibility(p, viewer);
-        }
+        nameTags.updateVisibility(p);
     }
 
     @Override
