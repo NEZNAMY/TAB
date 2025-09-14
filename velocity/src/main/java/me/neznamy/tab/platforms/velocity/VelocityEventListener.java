@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * The core for Velocity forwarding events into all enabled features
  */
-@SuppressWarnings("UnstableApiUsage")
 public class VelocityEventListener implements EventListener<Player> {
 
     /** Map for tracking online players */
