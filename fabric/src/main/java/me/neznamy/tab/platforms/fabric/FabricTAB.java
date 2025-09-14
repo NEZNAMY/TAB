@@ -20,6 +20,13 @@ public class FabricTAB implements DedicatedServerModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> TAB.getInstance().unload());
     }
 
+    /**
+     * Gets level name with dimension suffix to match Bukkit's behavior.
+     *
+     * @param   level
+     *          Level to get name of
+     * @return  Level name with dimension suffix
+     */
     @NotNull
     public static String getLevelName(@NotNull Level level) {
         String path = level.dimension().location().getPath();

@@ -23,6 +23,9 @@ import java.util.List;
 @Getter
 public class FabricTabExpansion implements TabExpansion {
 
+    /**
+     * Constructs new instance and registers internal placeholders.
+     */
     public FabricTabExpansion() {
         List<String> placeholders = Arrays.asList(
                 "tabprefix",
@@ -92,6 +95,4 @@ public class FabricTabExpansion implements TabExpansion {
 
     @Override
     public void unregisterExpansion() {}
-
-
 }

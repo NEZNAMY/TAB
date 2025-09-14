@@ -18,12 +18,22 @@ import org.jetbrains.annotations.NotNull;
 @Mod("tab")
 public class ForgeTAB {
 
+	/**
+	 * Constructs new instance and registers necessary events.
+	 */
 	public ForgeTAB() {
 		RegisterCommandsEvent.BUS.addListener(event -> new ForgeTabCommand().onRegisterCommands(event.getDispatcher()));
 		ServerStartingEvent.BUS.addListener(event -> TAB.create(new ForgePlatform(event.getServer())));
 		ServerStoppingEvent.BUS.addListener(event -> TAB.getInstance().unload());
 	}
 
+	/**
+	 * Gets level name with dimension suffix to match Bukkit's behavior.
+	 *
+	 * @param   level
+	 *          Level to get name of
+	 * @return  Level name with dimension suffix
+	 */
 	@NotNull
 	public static String getLevelName(@NotNull Level level) {
 		String path = level.dimension().location().getPath();
