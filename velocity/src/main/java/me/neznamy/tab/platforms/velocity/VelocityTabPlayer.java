@@ -52,7 +52,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public void sendPluginMessage(byte[] message) {
         try {
-            getPlayer().getCurrentServer().ifPresent(server -> server.sendPluginMessage(getPlatform().getMCI(), message));
+            getPlayer().getCurrentServer().ifPresent(currentServer -> currentServer.sendPluginMessage(getPlatform().getMCI(), message));
         } catch (IllegalStateException VelocityBeingVelocityException) {
             // java.lang.IllegalStateException: Not connected to server!
         }
