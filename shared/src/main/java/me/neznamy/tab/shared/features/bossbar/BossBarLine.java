@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
-import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl.BossBarProperties;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -295,7 +294,7 @@ public class BossBarLine implements BossBar {
     public void addPlayer(@NonNull me.neznamy.tab.api.TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
         if (player.bossbarData.visibleBossBars.containsKey(this)) return;
-        BossBarProperties properties = new BossBarProperties(
+        BossBarLinePlayerProperties properties = new BossBarLinePlayerProperties(
                 new Property(textRefresher, player, title),
                 new Property(progressRefresher, player, progress),
                 new Property(colorRefresher, player, color),

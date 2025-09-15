@@ -16,7 +16,7 @@ import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.belowname.BelowNamePlayerData;
-import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.features.bossbar.BossBarPlayerData;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.header.HeaderFooterPlayerData;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
@@ -107,7 +107,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final LayoutManagerImpl.PlayerData layoutData = new LayoutManagerImpl.PlayerData();
 
     /** Data for BossBar */
-    public final BossBarManagerImpl.PlayerData bossbarData = new BossBarManagerImpl.PlayerData();
+    public final BossBarPlayerData bossbarData = new BossBarPlayerData();
 
     /** Data for Header/Footer */
     public final HeaderFooterPlayerData headerFooterData = new HeaderFooterPlayerData();
