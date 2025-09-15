@@ -83,10 +83,6 @@ public class ProxyPlayer {
     @Nullable
     private TabComponent playerlistFancy;
 
-    /** Global playerlist server group of server this player is on */
-    @Nullable
-    public Object serverGroup;
-
     /** Player's connection state */
     @NotNull
     private ConnectionState connectionState = ConnectionState.QUEUED;

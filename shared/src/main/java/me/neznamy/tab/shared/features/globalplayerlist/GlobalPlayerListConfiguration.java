@@ -3,11 +3,9 @@ package me.neznamy.tab.shared.features.globalplayerlist;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
-import me.neznamy.tab.shared.data.Server;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Class for storing global playerlist configuration.
@@ -20,8 +18,8 @@ public class GlobalPlayerListConfiguration {
     private final boolean vanishedAsSpectators;
     private final boolean isolateUnlistedServers;
     private final boolean updateLatency;
-    @NotNull private final List<Server> spyServers;
-    @NotNull private final Map<String, List<Server>> sharedServers;
+    @NotNull private final List<String> spyServers;
+    @NotNull private final Map<String, List<String>> sharedServers;
 
     /**
      * Returns instance of this class created from given configuration section. If there are
@@ -38,12 +36,12 @@ public class GlobalPlayerListConfiguration {
                 "isolate-unlisted-servers", "update-latency", "spy-servers", "server-groups"));
 
         ConfigurationSection serverGroupSection = section.getConfigurationSection("server-groups");
-        Map<String, List<Server>> sharedServers = new HashMap<>();
+        Map<String, List<String>> sharedServers = new HashMap<>();
         Map<String, String> takenServers = new HashMap<>();
         for (Object serverGroup : serverGroupSection.getKeys()) {
             String group = serverGroup.toString();
             List<String> servers = serverGroupSection.getStringList(group, Collections.emptyList());
-            sharedServers.put(group, servers.stream().map(Server::byName).collect(Collectors.toList()));
+            sharedServers.put(group, servers);
             for (String server : servers) {
                 if (takenServers.containsKey(server)) {
                     section.startupWarn(String.format("Server \"%s\" is defined in global playerlist groups \"%s\" and \"%s\", but it can only be a part of one group.",
@@ -54,20 +52,12 @@ public class GlobalPlayerListConfiguration {
             }
         }
 
-        List<String> spyServerNames = section.getStringList("spy-servers", Collections.singletonList("spyserver1"));
-        List<Server> spyServers = new ArrayList<>();
-        for (String serverName : spyServerNames) {
-            Server server = Server.byName(serverName);
-            server.markSpyServer();
-            spyServers.add(server);
-        }
-
         return new GlobalPlayerListConfiguration(
                 section.getBoolean("display-others-as-spectators", false),
                 section.getBoolean("display-vanished-players-as-spectators", true),
                 section.getBoolean("isolate-unlisted-servers", false),
                 section.getBoolean("update-latency", false),
-                spyServers,
+                section.getStringList("spy-servers", Collections.singletonList("spyserver1")),
                 sharedServers
         );
     }

@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.config;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.FeatureManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
@@ -15,7 +14,6 @@ import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.config.skin.SkinManager;
 import me.neznamy.tab.shared.data.Server;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -144,18 +142,7 @@ public class Configs {
     @Nullable
     private String tryServerGroup(@NonNull Collection<String> serverGroups, @Nullable Server server) {
         if (serverGroups.isEmpty() || server == null) return null;
-
-        // Check global-playerlist server-groups for this server
-        FeatureManager featureManager = TAB.getInstance().getFeatureManager();
-        if (!featureManager.isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST)) return null;
-
-        GlobalPlayerList t = featureManager.getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
-        if (t == null) return null;
-
-        String globalGroup = t.getServerGroupName(server);
-        for (Object serverGroup : serverGroups) {
-            if (globalGroup.equals(serverGroup.toString())) return globalGroup;
-        }
-        return null;
+        if (server.getServerGroup() == null) return null;
+        return server.getServerGroup().getName();
     }
 }

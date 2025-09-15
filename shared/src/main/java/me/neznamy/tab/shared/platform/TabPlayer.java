@@ -121,9 +121,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Data for tablist formatting */
     public final TablistFormattingPlayerData tablistData = new TablistFormattingPlayerData();
 
-    /** Data for global playerlist */
-    public final GlobalPlayerList.PlayerData globalPlayerListData = new GlobalPlayerList.PlayerData();
-
     /** Data for plugin's PlaceholderAPI expansion */
     public final Map<String, String> expansionValues = new HashMap<>();
 
