@@ -3,17 +3,19 @@ package me.neznamy.tab.platforms.bukkit.features;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * TAB's expansion for PlaceholderAPI
@@ -50,19 +52,19 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     @Override
     @NotNull
     public String getAuthor() {
-        return TabConstants.PLUGIN_AUTHOR;
+        return ProjectVariables.PLUGIN_AUTHOR;
     }
 
     @Override
     @NotNull
     public String getIdentifier() {
-        return TabConstants.PLUGIN_ID;
+        return ProjectVariables.PLUGIN_ID;
     }
 
     @Override
     @NotNull
     public String getVersion() {
-        return TabConstants.PLUGIN_VERSION;
+        return ProjectVariables.PLUGIN_VERSION;
     }
 
     @Override

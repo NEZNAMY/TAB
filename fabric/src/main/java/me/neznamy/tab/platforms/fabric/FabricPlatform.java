@@ -11,8 +11,8 @@ import eu.pb4.placeholders.api.Placeholders;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
+import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.component.KeybindComponent;
@@ -140,7 +140,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @Override
     @NotNull
     public File getDataFolder() {
-        return FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile();
+        return FabricLoader.getInstance().getConfigDir().resolve(ProjectVariables.PLUGIN_ID).toFile();
     }
 
     @Override

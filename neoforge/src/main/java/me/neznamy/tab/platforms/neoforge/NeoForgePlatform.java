@@ -1,15 +1,15 @@
 package me.neznamy.tab.platforms.neoforge;
 
 import com.mojang.logging.LogUtils;
+import me.neznamy.tab.shared.ProjectVariables;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.ChatModifier;
 import me.neznamy.tab.shared.chat.component.KeybindComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.TextComponent;
 import me.neznamy.tab.shared.chat.component.TranslatableComponent;
 import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -103,7 +103,7 @@ public record NeoForgePlatform(MinecraftServer server) implements BackendPlatfor
     @Override
     @NotNull
     public File getDataFolder() {
-        return FMLPaths.CONFIGDIR.get().resolve(TabConstants.PLUGIN_ID).toFile();
+        return FMLPaths.CONFIGDIR.get().resolve(ProjectVariables.PLUGIN_ID).toFile();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.command;
 
+import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -58,7 +59,7 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, "&3[TAB] &a&lShowing debug information");
         sendMessage(sender, separator);
         sendMessage(sender, "&6Server version: &b" + tab.getPlatform().getServerVersionInfo());
-        sendMessage(sender, "&6Plugin version: &b" + TabConstants.PLUGIN_VERSION);
+        sendMessage(sender, "&6Plugin version: &b" + ProjectVariables.PLUGIN_VERSION);
         sendMessage(sender, "&6Permission plugin: &b" + TAB.getInstance().getGroupManager().getPermissionPlugin());
         sendMessage(sender, "&6Permission group choice logic: &b" + getGroupChoiceLogic());
         sendMessage(sender, "&6Sorting system: &b" + getSortingType());

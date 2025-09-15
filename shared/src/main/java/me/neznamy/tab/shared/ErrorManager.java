@@ -115,7 +115,7 @@ public class ErrorManager {
             try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))) {
                 if (message != null) {
                     if (file.length() < TabConstants.MAX_LOG_SIZE)
-                        buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + message + System.lineSeparator());
+                        buf.write(dateFormat.format(new Date()) + "[TAB v" + ProjectVariables.PLUGIN_VERSION + "] " + message + System.lineSeparator());
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().getConfig().isDebugMode())
                         TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(message));
                 }

@@ -11,18 +11,11 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TabConstants {
 
-    public static final String PLUGIN_NAME = "{{ name }}";
-    public static final String PLUGIN_ID = "{{ id }}";
-    public static final String PLUGIN_VERSION = "{{ version }}";
-    public static final String PLUGIN_DESCRIPTION = "{{ description }}";
-    public static final String PLUGIN_WEBSITE = "{{ website }}";
-    public static final String PLUGIN_AUTHOR = "{{ author }}";
-
     public static final String NO_GROUP = "NONE";
     public static final String DEFAULT_GROUP = "_DEFAULT_";
     public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-6";
-    public static final String PROXY_CHANNEL_NAME = PLUGIN_NAME;
-    public static final String PIPELINE_HANDLER_NAME = PLUGIN_NAME;
+    public static final String PROXY_CHANNEL_NAME = ProjectVariables.PLUGIN_NAME;
+    public static final String PIPELINE_HANDLER_NAME = ProjectVariables.PLUGIN_NAME;
 
     public static final int BSTATS_PLUGIN_ID_BUKKIT = 5304;
     public static final int BSTATS_PLUGIN_ID_BUNGEE = 10535;

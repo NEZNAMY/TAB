@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.command;
 
+import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.bossbar.BossBarCommand;
@@ -64,7 +65,7 @@ public class TabCommand extends SubCommand {
      */
     private void help(@Nullable TabPlayer sender) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_ALL)) {
-            sendMessage(sender, "&3TAB v" + TabConstants.PLUGIN_VERSION);
+            sendMessage(sender, "&3TAB v" + ProjectVariables.PLUGIN_VERSION);
             for (String message : getMessages().getHelpMenu()) {
                 sendMessage(sender, message.replace("/tab", "/" + TAB.getInstance().getPlatform().getCommand()));
             }

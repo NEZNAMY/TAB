@@ -10,8 +10,8 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
+import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import org.bstats.velocity.Metrics;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -22,12 +22,12 @@ import java.nio.file.Path;
  * Main class for Velocity.
  */
 @Plugin(
-        id = TabConstants.PLUGIN_ID,
-        name = TabConstants.PLUGIN_NAME,
-        version = TabConstants.PLUGIN_VERSION,
-        description = TabConstants.PLUGIN_DESCRIPTION,
-        url = TabConstants.PLUGIN_WEBSITE,
-        authors = TabConstants.PLUGIN_AUTHOR,
+        id = ProjectVariables.PLUGIN_ID,
+        name = ProjectVariables.PLUGIN_NAME,
+        version = ProjectVariables.PLUGIN_VERSION,
+        description = ProjectVariables.PLUGIN_DESCRIPTION,
+        url = ProjectVariables.PLUGIN_WEBSITE,
+        authors = ProjectVariables.PLUGIN_AUTHOR,
         dependencies = @Dependency(id = "velocity-scoreboard-api", optional = true)
 )
 @Getter

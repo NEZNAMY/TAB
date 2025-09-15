@@ -2,9 +2,9 @@ package me.neznamy.tab.platforms.sponge;
 
 import com.google.inject.Inject;
 import lombok.Getter;
+import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import org.apache.logging.log4j.Logger;
 import org.bstats.sponge.Metrics;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ import java.nio.file.Path;
  * Main class for Sponge.
  */
 @Getter
-@Plugin(TabConstants.PLUGIN_ID)
+@Plugin(ProjectVariables.PLUGIN_ID)
 public class SpongeTAB {
 
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;

@@ -5,8 +5,8 @@ import eu.pb4.placeholders.api.PlaceholderHandler;
 import eu.pb4.placeholders.api.PlaceholderResult;
 import eu.pb4.placeholders.api.Placeholders;
 import lombok.Getter;
+import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -84,7 +84,7 @@ public class FabricTabExpansion implements TabExpansion {
     }
 
     private void registerPlaceholder(String identifier, PlaceholderHandler handler) {
-        Placeholders.register(ResourceLocation.tryParse(TabConstants.PLUGIN_ID+":"+identifier), handler);
+        Placeholders.register(ResourceLocation.tryParse(ProjectVariables.PLUGIN_ID+":"+identifier), handler);
     }
 
 
