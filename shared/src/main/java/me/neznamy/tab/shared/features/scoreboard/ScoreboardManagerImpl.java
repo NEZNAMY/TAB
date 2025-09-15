@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.scoreboard;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
@@ -11,7 +10,6 @@ import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.ToggleManager;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
-import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -385,45 +383,5 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     @NotNull
     public Map<String, me.neznamy.tab.api.scoreboard.Scoreboard> getRegisteredScoreboards() {
         return Collections.unmodifiableMap(registeredScoreboards);
-    }
-
-    /**
-     * Class storing scoreboard data of players.
-     */
-    public static class PlayerData {
-
-        /** Flag tracking whether this player is under join delay or not */
-        public boolean joinDelayed;
-
-        /** Flag tracking whether player wishes to have scoreboard visible or not */
-        public boolean visible;
-
-        /** Scoreboard currently displayed to player */
-        @Nullable
-        public ScoreboardImpl activeScoreboard;
-
-        /** Forced scoreboard using API */
-        @Nullable
-        public ScoreboardImpl forcedScoreboard;
-
-        /** Scoreboard sent by another plugin (objective name) */
-        @Nullable
-        public String otherPluginScoreboard;
-
-        /** Property of scoreboard title of scoreboard the player can currently see */
-        @Nullable
-        public Property titleProperty;
-
-        /** Map of line text properties */
-        @NotNull
-        public final Map<ScoreboardLine, Property> lineProperties = new IdentityHashMap<>();
-
-        /** Map of line player name properties (used in long lines) */
-        @NotNull
-        public final Map<ScoreboardLine, Property> lineNameProperties = new IdentityHashMap<>();
-
-        /** Map of line NumberFormat properties */
-        @NotNull
-        public final Map<ScoreboardLine, Property> numberFormatProperties = new IdentityHashMap<>();
     }
 }

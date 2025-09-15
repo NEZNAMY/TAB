@@ -23,7 +23,7 @@ import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
 import me.neznamy.tab.shared.features.playerlist.TablistFormattingPlayerData;
 import me.neznamy.tab.shared.features.playerlistobjective.PlayerListObjectivePlayerData;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardPlayerData;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.hook.FloodgateHook;
@@ -98,7 +98,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final Sorting.PlayerData sortingData = new Sorting.PlayerData();
 
     /** Data for sidebar scoreboard feature */
-    public final ScoreboardManagerImpl.PlayerData scoreboardData = new ScoreboardManagerImpl.PlayerData();
+    public final ScoreboardPlayerData scoreboardData = new ScoreboardPlayerData();
 
     /** Data for scoreboard team */
     public final NameTagPlayerData teamData = new NameTagPlayerData();
