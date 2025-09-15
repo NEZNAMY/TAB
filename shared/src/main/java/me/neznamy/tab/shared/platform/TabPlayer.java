@@ -24,7 +24,7 @@ import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
 import me.neznamy.tab.shared.features.playerlist.TablistFormattingPlayerData;
 import me.neznamy.tab.shared.features.playerlistobjective.PlayerListObjectivePlayerData;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardPlayerData;
-import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.features.sorting.SortingPlayerData;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.hook.FloodgateHook;
 import net.luckperms.api.model.user.User;
@@ -95,7 +95,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @Getter private boolean online = true;
 
     /** Data for sorting */
-    public final Sorting.PlayerData sortingData = new Sorting.PlayerData();
+    public final SortingPlayerData sortingData = new SortingPlayerData();
 
     /** Data for sidebar scoreboard feature */
     public final ScoreboardPlayerData scoreboardData = new ScoreboardPlayerData();
