@@ -1,20 +1,14 @@
 package me.neznamy.tab.shared.features.playerlistobjective;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
-import me.neznamy.tab.shared.features.proxy.QueuedData;
-import me.neznamy.tab.shared.features.proxy.message.ProxyMessage;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -26,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Feature handler for scoreboard objective with
@@ -47,7 +40,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
 
     private final PlayerListObjectiveConfiguration configuration;
 
-    private final PlayerlistObjectiveTitleRefresher titleRefresher = new PlayerlistObjectiveTitleRefresher(this);
+    private final PlayerListObjectiveTitleRefresher titleRefresher = new PlayerListObjectiveTitleRefresher(this);
     private final DisableChecker disableChecker;
 
     @Nullable
@@ -65,7 +58,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.YELLOW_NUMBER_TEXT, titleRefresher);
         if (proxy != null) {
-            proxy.registerMessage(UpdateProxyPlayer.class, UpdateProxyPlayer::new);
+            proxy.registerMessage(PlayerListObjectiveUpdateProxyPlayer.class, in -> new PlayerListObjectiveUpdateProxyPlayer(this, in));
         }
     }
 
@@ -82,7 +75,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             }
             values.put(loaded, getValueNumber(loaded));
             if (proxy != null) {
-                proxy.sendMessage(new UpdateProxyPlayer(loaded.getTablistId(), values.get(loaded), loaded.playerlistObjectiveData.valueModern.get()));
+                proxy.sendMessage(new PlayerListObjectiveUpdateProxyPlayer(this, loaded.getTablistId(), values.get(loaded), loaded.playerlistObjectiveData.valueModern.get()));
             }
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
@@ -117,7 +110,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
             }
         }
         if (proxy != null) {
-            proxy.sendMessage(new UpdateProxyPlayer(connectedPlayer.getTablistId(), getValueNumber(connectedPlayer), connectedPlayer.playerlistObjectiveData.valueModern.get()));
+            proxy.sendMessage(new PlayerListObjectiveUpdateProxyPlayer(this, connectedPlayer.getTablistId(), getValueNumber(connectedPlayer), connectedPlayer.playerlistObjectiveData.valueModern.get()));
             if (connectedPlayer.playerlistObjectiveData.disabled.get()) return;
             for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
                 if (proxied.getPlayerlistFancy() == null) continue; // This proxy player is not loaded yet
@@ -149,7 +142,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
                 setScore(p, all, getValueNumber(all), all.playerlistObjectiveData.valueModern.getFormat(p));
             }
             if (proxy != null) {
-                proxy.sendMessage(new UpdateProxyPlayer(p.getTablistId(), getValueNumber(p), p.playerlistObjectiveData.valueModern.get()));
+                proxy.sendMessage(new PlayerListObjectiveUpdateProxyPlayer(this, p.getTablistId(), getValueNumber(p), p.playerlistObjectiveData.valueModern.get()));
                 for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
                     if (proxied.getPlayerlistFancy() == null) continue; // This proxy player is not loaded yet
                     p.getScoreboard().setScore(
@@ -204,7 +197,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, refreshed, value, refreshed.playerlistObjectiveData.valueModern.getFormat(viewer));
         }
-        if (proxy != null) proxy.sendMessage(new UpdateProxyPlayer(refreshed.getTablistId(), value, refreshed.playerlistObjectiveData.valueModern.get()));
+        if (proxy != null) proxy.sendMessage(new PlayerListObjectiveUpdateProxyPlayer(this, refreshed.getTablistId(), value, refreshed.playerlistObjectiveData.valueModern.get()));
     }
 
     private void register(@NotNull TabPlayer player) {
@@ -267,7 +260,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     @Override
     public void onProxyLoadRequest() {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            proxy.sendMessage(new UpdateProxyPlayer(all.getTablistId(), getValueNumber(all), all.playerlistObjectiveData.valueModern.get()));
+            proxy.sendMessage(new PlayerListObjectiveUpdateProxyPlayer(this, all.getTablistId(), getValueNumber(all), all.playerlistObjectiveData.valueModern.get()));
         }
     }
 
@@ -294,58 +287,5 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     @Override
     public String getFeatureName() {
         return "Playerlist Objective";
-    }
-
-    /**
-     * Proxy message to update playerlist objective data of a player.
-     */
-    @AllArgsConstructor
-    @ToString
-    private class UpdateProxyPlayer extends ProxyMessage {
-
-        @NotNull private final UUID playerId;
-        private final int value;
-        @NotNull private final String fancyValue;
-
-        /**
-         * Creates new instance and reads data from byte input.
-         *
-         * @param   in
-         *          Input stream to read from
-         */
-        private UpdateProxyPlayer(@NotNull ByteArrayDataInput in) {
-            playerId = readUUID(in);
-            value = in.readInt();
-            fancyValue = in.readUTF();
-        }
-
-        @NotNull
-        public ThreadExecutor getCustomThread() {
-            return customThread;
-        }
-
-        @Override
-        public void write(@NotNull ByteArrayDataOutput out) {
-            writeUUID(out, playerId);
-            out.writeInt(value);
-            out.writeUTF(fancyValue);
-        }
-
-        @Override
-        public void process(@NotNull ProxySupport proxySupport) {
-            ProxyPlayer target = proxySupport.getProxyPlayers().get(playerId);
-            if (target == null) {
-                unknownPlayer(playerId.toString(), "playerlist objective update");
-                QueuedData data = proxySupport.getQueuedData().computeIfAbsent(playerId, k -> new QueuedData());
-                data.setPlayerlistNumber(value);
-                data.setPlayerlistFancy(cache.get(fancyValue));
-                return;
-            }
-            target.setPlayerlistNumber(value);
-            target.setPlayerlistFancy(cache.get(fancyValue));
-            if (target.getConnectionState() == ProxyPlayer.ConnectionState.CONNECTED) {
-                updatePlayer(target);
-            }
-        }
     }
 }

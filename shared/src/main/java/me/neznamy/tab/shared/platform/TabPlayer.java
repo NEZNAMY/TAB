@@ -22,7 +22,7 @@ import me.neznamy.tab.shared.features.header.HeaderFooterPlayerData;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
 import me.neznamy.tab.shared.features.playerlist.TablistFormattingPlayerData;
-import me.neznamy.tab.shared.features.playerlistobjective.PlayerlistObjectivePlayerData;
+import me.neznamy.tab.shared.features.playerlistobjective.PlayerListObjectivePlayerData;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -113,7 +113,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final HeaderFooterPlayerData headerFooterData = new HeaderFooterPlayerData();
 
     /** Data for Playerlist Objective */
-    public final PlayerlistObjectivePlayerData playerlistObjectiveData = new PlayerlistObjectivePlayerData();
+    public final PlayerListObjectivePlayerData playerlistObjectiveData = new PlayerListObjectivePlayerData();
 
     /** Data for Belowname Objective */
     public final BelowNamePlayerData belowNameData = new BelowNamePlayerData();

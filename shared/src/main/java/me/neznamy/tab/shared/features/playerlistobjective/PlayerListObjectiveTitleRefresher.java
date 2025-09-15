@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Feature for updating playerlist objective title.
  */
 @RequiredArgsConstructor
-public class PlayerlistObjectiveTitleRefresher extends RefreshableFeature implements CustomThreaded {
+public class PlayerListObjectiveTitleRefresher extends RefreshableFeature implements CustomThreaded {
 
     @NotNull
     private final YellowNumber feature;

@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Class for storing playerlist objective data of players.
  */
-public class PlayerlistObjectivePlayerData {
+public class PlayerListObjectivePlayerData {
 
     /** Player's score value (1.20.2-) */
     public Property valueLegacy;
