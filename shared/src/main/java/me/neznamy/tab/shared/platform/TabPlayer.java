@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.platform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.api.integration.VanishIntegration;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
@@ -11,6 +10,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.belowname.BelowNamePlayerData;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
-import me.neznamy.tab.shared.features.header.HeaderFooter;
+import me.neznamy.tab.shared.features.header.HeaderFooterPlayerData;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
@@ -110,7 +110,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final BossBarManagerImpl.PlayerData bossbarData = new BossBarManagerImpl.PlayerData();
 
     /** Data for Header/Footer */
-    public final HeaderFooter.PlayerData headerFooterData = new HeaderFooter.PlayerData();
+    public final HeaderFooterPlayerData headerFooterData = new HeaderFooterPlayerData();
 
     /** Data for Playerlist Objective */
     public final PlayerlistObjectivePlayerData playerlistObjectiveData = new PlayerlistObjectivePlayerData();
