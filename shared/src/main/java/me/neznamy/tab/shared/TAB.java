@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.helper.ConfigHelper;
 import me.neznamy.tab.shared.cpu.CpuManager;
+import me.neznamy.tab.shared.data.DataManager;
 import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
@@ -110,6 +111,9 @@ public class TAB extends TabAPI {
     /** Helper for detecting misconfiguration in configs and send it to user */
     private final ConfigHelper configHelper = new ConfigHelper();
 
+    /** Data manager for storing servers and worlds */
+    private DataManager dataManager;
+
     /**
      * Creates new instance using given platform and loads it
      *
@@ -182,6 +186,7 @@ public class TAB extends TabAPI {
         try {
             long time = System.currentTimeMillis();
             cpu = new CpuManager();
+            dataManager = new DataManager();
             configuration = new Configs();
             featureManager = new FeatureManager();
             placeholderManager = new PlaceholderManagerImpl(cpu, configuration.getConfig().getRefresh());

@@ -4,11 +4,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Class storing information about a world. Instances are re-used,
@@ -17,9 +15,6 @@ import java.util.Map;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class World {
-
-    /** Map of all worlds, indexed by their name */
-    private static final Map<String, World> worlds = new HashMap<>();
 
     /** Name of the world */
     @NonNull
@@ -35,6 +30,6 @@ public class World {
     @Contract("!null -> !null")
     public static World byName(@Nullable String name) {
         if (name == null) return null;
-        return worlds.computeIfAbsent(name, World::new);
+        return TAB.getInstance().getDataManager().getWorlds().computeIfAbsent(name, World::new);
     }
 }
