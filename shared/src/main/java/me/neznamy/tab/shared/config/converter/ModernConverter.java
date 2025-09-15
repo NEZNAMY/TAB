@@ -50,7 +50,15 @@ public class ModernConverter {
             for (Object world : perWorld.getKeys()) {
                 ConfigurationSection worldSection = perWorld.getConfigurationSection(world.toString());
                 Map<String, Object> design = new LinkedHashMap<>();
-                design.put("display-condition", Arrays.stream(world.toString().split(";")).map(part -> "%world%=" + part).collect(Collectors.joining("|")));
+                design.put("display-condition", Arrays.stream(world.toString().split(";")).map(part -> {
+                    if (part.endsWith("*")) {
+                        return "%world%|-" + part.substring(0, part.length() - 1);
+                    } else if (part.startsWith("*")) {
+                        return "%world%-|" + part.substring(1);
+                    } else {
+                        return "%world%=" + part;
+                    }
+                }).collect(Collectors.joining("|")));
                 design.put("header", worldSection.getStringList("header", Collections.emptyList()));
                 design.put("footer", worldSection.getStringList("footer", Collections.emptyList()));
                 designs.put("world-" + world, design);
@@ -59,7 +67,15 @@ public class ModernConverter {
             for (Object server : perServer.getKeys()) {
                 ConfigurationSection serverSection = perServer.getConfigurationSection(server.toString());
                 Map<String, Object> design = new LinkedHashMap<>();
-                design.put("display-condition", Arrays.stream(server.toString().split(";")).map(part -> "%server%=" + part).collect(Collectors.joining("|")));
+                design.put("display-condition", Arrays.stream(server.toString().split(";")).map(part -> {
+                    if (part.endsWith("*")) {
+                        return "%server%|-" + part.substring(0, part.length() - 1);
+                    } else if (part.startsWith("*")) {
+                        return "%server%-|" + part.substring(1);
+                    } else {
+                        return "%server%=" + part;
+                    }
+                }).collect(Collectors.joining("|")));
                 design.put("header", serverSection.getStringList("header", Collections.emptyList()));
                 design.put("footer", serverSection.getStringList("footer", Collections.emptyList()));
                 designs.put("server-" + server, design);
