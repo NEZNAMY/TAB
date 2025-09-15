@@ -21,7 +21,7 @@ import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.header.HeaderFooterPlayerData;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
-import me.neznamy.tab.shared.features.playerlist.PlayerList;
+import me.neznamy.tab.shared.features.playerlist.TablistFormattingPlayerData;
 import me.neznamy.tab.shared.features.playerlistobjective.PlayerlistObjectivePlayerData;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -119,7 +119,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final BelowNamePlayerData belowNameData = new BelowNamePlayerData();
 
     /** Data for tablist formatting */
-    public final PlayerList.PlayerData tablistData = new PlayerList.PlayerData();
+    public final TablistFormattingPlayerData tablistData = new TablistFormattingPlayerData();
 
     /** Data for global playerlist */
     public final GlobalPlayerList.PlayerData globalPlayerListData = new GlobalPlayerList.PlayerData();

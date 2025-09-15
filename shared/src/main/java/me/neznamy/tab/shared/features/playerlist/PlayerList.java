@@ -2,12 +2,12 @@ package me.neznamy.tab.shared.features.playerlist;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
@@ -21,8 +21,6 @@ import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature handler for TabList display names
@@ -421,23 +419,5 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     @Override
     public String getFeatureName() {
         return "Tablist name formatting";
-    }
-
-    /**
-     * Class holding tablist formatting data for players.
-     */
-    public static class PlayerData {
-
-        /** Player's tabprefix */
-        public Property prefix;
-
-        /** Player's customtabname */
-        public Property name;
-
-        /** Player's tabsuffix */
-        public Property suffix;
-
-        /** Flag tracking whether this feature is disabled for the player with condition or not */
-        public final AtomicBoolean disabled = new AtomicBoolean();
     }
 }
