@@ -65,7 +65,6 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         if (configuration.isUpdateLatency()) addUsedPlaceholder(TabConstants.Placeholder.PING);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             all.globalPlayerListData.serverGroup = getServerGroup(all.server);
-            all.globalPlayerListData.onSpyServer = configuration.getSpyServers().contains(all.server);
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (TabPlayer displayed : onlinePlayers.getPlayers()) {
@@ -89,7 +88,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
         if (displayed == viewer) return true;
         if (!viewer.canSee(displayed)) return false;
-        if (viewer.globalPlayerListData.onSpyServer) return true;
+        if (viewer.server.isSpyServer()) return true;
         return viewer.globalPlayerListData.serverGroup == displayed.globalPlayerListData.serverGroup;
     }
 
@@ -151,7 +150,6 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
         connectedPlayer.globalPlayerListData.serverGroup = getServerGroup(connectedPlayer.server);
-        connectedPlayer.globalPlayerListData.onSpyServer = configuration.getSpyServers().contains(connectedPlayer.server);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             if (connectedPlayer.server == all.server) continue;
             if (shouldSee(all, connectedPlayer)) {
@@ -181,7 +179,6 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public void onServerChange(@NotNull TabPlayer changed, @NotNull Server from, @NotNull Server to) {
         changed.globalPlayerListData.serverGroup = getServerGroup(changed.server);
-        changed.globalPlayerListData.onSpyServer = configuration.getSpyServers().contains(changed.server);
         // TODO fix players potentially not appearing on rapid server switching (if anyone reports it)
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
@@ -292,7 +289,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
         // Do not show duplicate player that will be removed in a sec
         if (TAB.getInstance().isPlayerConnected(target.getTablistId())) return false;
-        if (viewer.globalPlayerListData.onSpyServer) return true;
+        if (viewer.server.isSpyServer()) return true;
         return viewer.globalPlayerListData.serverGroup == target.serverGroup;
     }
 
@@ -364,8 +361,5 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
 
         /** Server group of server the player is connected to */
         private Object serverGroup;
-
-        /** Flag tracking whether the player is on spy server or not */
-        private boolean onSpyServer;
     }
 }

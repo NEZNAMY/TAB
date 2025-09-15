@@ -54,12 +54,20 @@ public class GlobalPlayerListConfiguration {
             }
         }
 
+        List<String> spyServerNames = section.getStringList("spy-servers", Collections.singletonList("spyserver1"));
+        List<Server> spyServers = new ArrayList<>();
+        for (String serverName : spyServerNames) {
+            Server server = Server.byName(serverName);
+            server.markSpyServer();
+            spyServers.add(server);
+        }
+
         return new GlobalPlayerListConfiguration(
                 section.getBoolean("display-others-as-spectators", false),
                 section.getBoolean("display-vanished-players-as-spectators", true),
                 section.getBoolean("isolate-unlisted-servers", false),
                 section.getBoolean("update-latency", false),
-                section.getStringList("spy-servers", Collections.singletonList("spyserver1")).stream().map(Server::byName).collect(Collectors.toList()),
+                spyServers,
                 sharedServers
         );
     }

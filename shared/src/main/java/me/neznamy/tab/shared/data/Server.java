@@ -20,6 +20,9 @@ public class Server {
     @NonNull
     private final String name;
 
+    /** Flag tracking whether this server is marked as spy-server in global playerlist configuration or not */
+    private boolean isSpyServer;
+
     /**
      * Returns server with given name, creating it if it does not exist.
      *
@@ -31,5 +34,12 @@ public class Server {
     public static Server byName(@Nullable String name) {
         if (name == null) return null;
         return TAB.getInstance().getDataManager().getServers().computeIfAbsent(name, Server::new);
+    }
+
+    /**
+     * Marks this server as spy-server defined in global playerlist configuration.
+     */
+    public void markSpyServer() {
+        isSpyServer = true;
     }
 }
