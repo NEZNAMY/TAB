@@ -100,9 +100,10 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
      * @param   format
      *          Whether player's actual format should be used or {@code null} for reset
      */
-    public void updatePlayer(@NotNull TabPlayer player, boolean format) {
+    public void formatPlayerForEveryone(@NotNull TabPlayer player, boolean format) {
+        if (player.tablistData.disabled.get()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (!viewer.canSee(player)) continue;
+            if (!viewer.server.canSee(player.server) || !viewer.canSee(player)) continue;
             // TODO This probably needs some layout check to make sure it does not use layout entry names for player names
             updateDisplayName(viewer, player, format ? getTabFormat(player, viewer) : null);
         }
@@ -136,40 +137,30 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             loadProperties(all);
             if (disableChecker.isDisableConditionMet(all)) {
                 all.tablistData.disabled.set(true);
-            } else {
-                if (proxy != null) proxy.sendMessage(new PlayerListUpdateProxyPlayer(this, all.getUniqueId(), all.getName(),
-                        all.tablistData.prefix.get() + all.tablistData.name.get() + all.tablistData.suffix.get()));
             }
         }
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (target.tablistData.disabled.get()) continue;
-                if (!viewer.canSee(target)) continue;
-                updateDisplayName(viewer, target, getTabFormat(target, viewer));
-            }
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+            formatPlayerForEveryone(target, true);
         }
     }
 
     @Override
     public void unload() {
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (target.tablistData.disabled.get()) continue;
-                if (!viewer.canSee(target)) continue;
-                updateDisplayName(viewer, target, null);
-            }
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+            formatPlayerForEveryone(target, false);
         }
     }
 
     @Override
     public void onServerChange(@NotNull TabPlayer p, @NotNull Server from, @NotNull Server to) {
-        if (updateProperties(p) && !p.tablistData.disabled.get()) updatePlayer(p, true);
+        updateProperties(p);
+        formatPlayerForEveryone(p, true); // Always update because this feature only affects the same server (group)
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
         TAB.getInstance().getCpu().getProcessingThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (!all.tablistData.disabled.get() && p.canSee(all))
+                if (!all.tablistData.disabled.get() && p.server.canSee(all.server) && p.canSee(all))
                     updateDisplayName(p, all, getTabFormat(all, p));
-                if (all != p && !p.tablistData.disabled.get() && all.canSee(p))
+                if (all != p && !p.tablistData.disabled.get() && all.server.canSee(p.server) && all.canSee(p))
                     updateDisplayName(all, p, getTabFormat(p, all));
             }
             if (proxy != null) {
@@ -182,7 +173,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onWorldChange(@NotNull TabPlayer changed, @NotNull World from, @NotNull World to) {
-        if (updateProperties(changed) && !changed.tablistData.disabled.get()) updatePlayer(changed, true);
+        if (updateProperties(changed)) formatPlayerForEveryone(changed, true);
     }
 
     /**
@@ -194,7 +185,16 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
      *          Whether the feature is disabled now or not
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        updatePlayer(p, !disabledNow);
+        if (disabledNow) {
+            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                if (!viewer.server.canSee(p.server) || !viewer.canSee(p)) continue;
+                updateDisplayName(viewer, p, null);
+            }
+            if (proxy != null) proxy.sendMessage(new PlayerListUpdateProxyPlayer(this, p.getUniqueId(), p.getName(), p.tablistData.prefix.get() +
+                    p.tablistData.name.get() + p.tablistData.suffix.get()));
+        } else {
+            formatPlayerForEveryone(p, true);
+        }
     }
 
     @NotNull
@@ -216,16 +216,15 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             boolean suffix = refreshed.tablistData.suffix.update();
             refresh = prefix || name || suffix;
         }
-        if (refreshed.tablistData.disabled.get()) return;
         if (refresh) {
-            updatePlayer(refreshed, true);
+            formatPlayerForEveryone(refreshed, true);
         }
     }
 
     @Override
     public void onGroupChange(@NotNull TabPlayer player) {
-        if (updateProperties(player) && !player.tablistData.disabled.get()) {
-            updatePlayer(player, true);
+        if (updateProperties(player)) {
+            formatPlayerForEveryone(player, true);
         }
     }
 
@@ -235,13 +234,13 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.tablistData.disabled.set(true);
         } else {
-            updatePlayer(connectedPlayer, true);
+            formatPlayerForEveryone(connectedPlayer, true);
         }
         Runnable r = () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; // Already updated above
                 if (all.tablistData.disabled.get()) continue;
-                if (!connectedPlayer.canSee(all)) continue;
+                if (!connectedPlayer.server.canSee(all.server) || !connectedPlayer.canSee(all)) continue;
                 updateDisplayName(connectedPlayer, all, getTabFormat(all, connectedPlayer));
             }
             if (proxy != null) {
@@ -261,11 +260,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
-        if (player.isVanished() || player.tablistData.disabled.get()) return;
-        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (!viewer.canSee(player)) continue;
-            viewer.getTabList().updateDisplayName(player, getTabFormat(player, viewer));
-        }
+        if (player.isVanished()) return;
+        formatPlayerForEveryone(player, true);
     }
 
     // ------------------
@@ -277,8 +273,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).tablistData.prefix.setTemporaryValue(prefix);
-        if (((TabPlayer)player).tablistData.disabled.get()) return;
-        updatePlayer(((TabPlayer)player), true);
+        formatPlayerForEveryone(((TabPlayer)player), true);
     }
 
     @Override
@@ -286,8 +281,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).tablistData.name.setTemporaryValue(customName);
-        if (((TabPlayer)player).tablistData.disabled.get()) return;
-        updatePlayer(((TabPlayer)player), true);
+        formatPlayerForEveryone(((TabPlayer)player), true);
     }
 
     @Override
@@ -295,8 +289,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         ensureActive();
         ((TabPlayer)player).ensureLoaded();
         ((TabPlayer)player).tablistData.suffix.setTemporaryValue(suffix);
-        if (((TabPlayer)player).tablistData.disabled.get()) return;
-        updatePlayer(((TabPlayer)player), true);
+        formatPlayerForEveryone(((TabPlayer)player), true);
     }
 
     @Override
@@ -399,15 +392,15 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
 
     @Override
     public void onVanishStatusChange(@NotNull ProxyPlayer player) {
-        updatePlayer(player);
+        formatPlayerForEveryone(player);
     }
 
     @Override
     public void onJoin(@NotNull ProxyPlayer player) {
-        updatePlayer(player);
+        formatPlayerForEveryone(player);
     }
 
-    public void updatePlayer(@NotNull ProxyPlayer player) {
+    public void formatPlayerForEveryone(@NotNull ProxyPlayer player) {
         if (player.isVanished()) return;
         if (player.getTabFormat() == null) return; // Player not loaded yet
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {

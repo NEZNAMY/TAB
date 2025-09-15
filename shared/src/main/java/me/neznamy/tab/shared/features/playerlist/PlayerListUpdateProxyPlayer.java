@@ -57,7 +57,7 @@ public class PlayerListUpdateProxyPlayer extends ProxyMessage {
         }
         target.setTabFormat(feature.getCache().get(format));
         if (target.getConnectionState() == ProxyPlayer.ConnectionState.CONNECTED) {
-            feature.updatePlayer(target);
+            feature.formatPlayerForEveryone(target);
         }
     }
 }
