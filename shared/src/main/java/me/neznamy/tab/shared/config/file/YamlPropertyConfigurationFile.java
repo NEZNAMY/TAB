@@ -53,7 +53,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
                 for (String server : serverGroups) {
                     for (String name : this.<String, Object>getMap(PER_SERVER + "." + server).keySet()) {
                         for (String property : this.<String, Object>getMap(PER_SERVER + "." + server + "." + name).keySet()) {
-                            checkProperty(destination.getName(), category, name, property, Server.byName(server), null, true);
+                            checkProperty(destination.getName(), category, name, property, server, null, true);
                         }
                     }
                 }
@@ -61,7 +61,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
                 for (String world : worldGroups) {
                     for (String name : this.<String, Object>getMap(PER_WORLD + "." + world).keySet()) {
                         for (String property : this.<String, Object>getMap(PER_WORLD + "." + world + "." + name).keySet()) {
-                            checkProperty(destination.getName(), category, name, property, null, World.byName(world), true);
+                            checkProperty(destination.getName(), category, name, property, null, world, true);
                         }
                     }
                 }

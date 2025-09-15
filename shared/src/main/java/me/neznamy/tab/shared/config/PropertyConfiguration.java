@@ -184,11 +184,11 @@ public interface PropertyConfiguration {
      *          Whether the message should be printed as startup warn and counted or not
      */
     default void checkProperty(@NonNull String source, @NonNull String type, @NonNull String name, @NonNull String property,
-                               @Nullable Server server, @Nullable World world, boolean startupWarn) {
+                               @Nullable String server, @Nullable String world, boolean startupWarn) {
         if (VALID_PROPERTIES.contains(property.toLowerCase(Locale.US))) return;
         StringBuilder msg = new StringBuilder(String.format("[%s] Unknown property \"%s\" defined for %s \"%s\"", source, property, type, name));
-        if (world != null) msg.append(" in world \"").append(world.getName()).append("\"");
-        if (server != null) msg.append(" in server \"").append(server.getName()).append("\"");
+        if (world != null) msg.append(" in world \"").append(world).append("\"");
+        if (server != null) msg.append(" in server \"").append(server).append("\"");
         msg.append(". Valid properties: ").append(VALID_PROPERTIES);
         if (startupWarn) {
             TAB.getInstance().getConfigHelper().startup().startupWarn(msg.toString());

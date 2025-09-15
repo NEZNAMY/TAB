@@ -39,7 +39,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
             String world = crs.getString("world");
             String server = crs.getString("server");
             setProperty0(group, property, Server.byName(server), World.byName(world), value);
-            checkProperty("MySQL", "group", group, property, Server.byName(server), World.byName(world), true);
+            checkProperty("MySQL", "group", group, property, server, world, true);
         }
     }
 
