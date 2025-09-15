@@ -86,10 +86,9 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
      * @return  {@code true} if viewer should see the target, {@code false} if not
      */
     public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
-        if (displayed == viewer) return true;
-        if (!viewer.canSee(displayed)) return false;
-        if (viewer.server.isSpyServer()) return true;
-        return viewer.globalPlayerListData.serverGroup == displayed.globalPlayerListData.serverGroup;
+        if (displayed == viewer || viewer.server.isSpyServer()) return true;
+        if (viewer.globalPlayerListData.serverGroup != displayed.globalPlayerListData.serverGroup) return false;
+        return viewer.canSee(displayed);
     }
 
     /**
@@ -286,11 +285,11 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     }
 
     private boolean shouldSee(@NotNull TabPlayer viewer, @NotNull ProxyPlayer target) {
-        if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
         // Do not show duplicate player that will be removed in a sec
         if (TAB.getInstance().isPlayerConnected(target.getTablistId())) return false;
+        if (viewer.globalPlayerListData.serverGroup != target.serverGroup) return false;
         if (viewer.server.isSpyServer()) return true;
-        return viewer.globalPlayerListData.serverGroup == target.serverGroup;
+        return !target.isVanished() || viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
     }
 
     // ------------------
