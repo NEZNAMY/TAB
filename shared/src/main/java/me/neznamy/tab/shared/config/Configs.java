@@ -142,7 +142,8 @@ public class Configs {
     @Nullable
     private String tryServerGroup(@NonNull Collection<String> serverGroups, @Nullable Server server) {
         if (serverGroups.isEmpty() || server == null) return null;
-        if (server.getServerGroup() == null) return null;
+        if (serverGroups.contains(server.getName())) return server.getName();
+        if (server.getServerGroup() == null) return server.getName();
         return server.getServerGroup().getName();
     }
 }
