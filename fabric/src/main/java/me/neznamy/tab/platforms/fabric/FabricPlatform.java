@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
@@ -43,7 +42,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -193,10 +191,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
         if (sprite.getId() != null) {
             return ResolvableProfile.createUnresolved(sprite.getId());
         } else if (sprite.getName() != null) {
-            // Moyank pls
-            Constructor<ResolvableProfile.Dynamic> cons = ResolvableProfile.Dynamic.class.getDeclaredConstructor(Either.class);
-            cons.setAccessible(true);
-            return cons.newInstance(Either.left(sprite.getName()));
+            return ResolvableProfile.createUnresolved(sprite.getName());
         } else if (sprite.getSkin() != null) {
             return ResolvableProfile.createResolved(profileFromSkin(sprite.getSkin()));
         } else {
