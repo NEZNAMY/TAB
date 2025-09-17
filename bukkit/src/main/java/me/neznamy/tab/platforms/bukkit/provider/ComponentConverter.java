@@ -12,8 +12,11 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for converting TAB components into NMS components (1.7+).
+ *
+ * @param   <T>
+ *          NMS component type
  */
-public abstract class ComponentConverter {
+public abstract class ComponentConverter<T> {
 
     /**
      * Converts TAB component to NMS component.
@@ -23,9 +26,9 @@ public abstract class ComponentConverter {
      * @return  Converted component
      */
     @NotNull
-    public Object convert(@NotNull TabComponent component) {
+    public T convert(@NotNull TabComponent component) {
         // Component type
-        Object nmsComponent;
+        T nmsComponent;
         if (component instanceof TabTextComponent) {
             nmsComponent = newTextComponent(((TabTextComponent) component).getText());
         } else if (component instanceof TabTranslatableComponent) {
@@ -63,7 +66,7 @@ public abstract class ComponentConverter {
      * @return  Text component with given text
      */
     @NotNull
-    public abstract Object newTextComponent(@NotNull String text);
+    public abstract T newTextComponent(@NotNull String text);
 
     /**
      * Creates a new translatable component with the given key.
@@ -73,7 +76,7 @@ public abstract class ComponentConverter {
      * @return  Translatable component with the given key
      */
     @NotNull
-    public abstract Object newTranslatableComponent(@NotNull String key);
+    public abstract T newTranslatableComponent(@NotNull String key);
 
     /**
      * Creates a new keybind component with given keybind.
@@ -83,7 +86,7 @@ public abstract class ComponentConverter {
      * @return  Keybind component with given keybind
      */
     @NotNull
-    public abstract Object newKeybindComponent(@NotNull String keybind);
+    public abstract T newKeybindComponent(@NotNull String keybind);
 
     /**
      * Creates a new object component with given atlas and sprite.
@@ -92,7 +95,7 @@ public abstract class ComponentConverter {
      * @return Object component with given atlas and sprite
      */
     @NotNull
-    public abstract Object newObjectComponent(@NotNull TabAtlasSprite sprite);
+    public abstract T newObjectComponent(@NotNull TabAtlasSprite sprite);
 
     /**
      * Creates a new head component with given skin.
@@ -102,7 +105,7 @@ public abstract class ComponentConverter {
      * @return  Head component with given skin
      */
     @NotNull
-    public abstract Object newObjectComponent(@NotNull TabPlayerSprite sprite);
+    public abstract T newObjectComponent(@NotNull TabPlayerSprite sprite);
 
     /**
      * Converts given chat modifier to minecraft style and applies it to the component.
@@ -112,7 +115,7 @@ public abstract class ComponentConverter {
      * @param   style
      *          Style to convert and apply
      */
-    public abstract void applyStyle(@NotNull Object nmsComponent, @NotNull TabStyle style);
+    public abstract void applyStyle(@NotNull T nmsComponent, @NotNull TabStyle style);
 
     /**
      * Appends child to the given parent component.
@@ -122,5 +125,5 @@ public abstract class ComponentConverter {
      * @param   child
      *          Child component to append
      */
-    public abstract void addSibling(@NotNull Object parent, @NotNull Object child);
+    public abstract void addSibling(@NotNull T parent, @NotNull T child);
 }

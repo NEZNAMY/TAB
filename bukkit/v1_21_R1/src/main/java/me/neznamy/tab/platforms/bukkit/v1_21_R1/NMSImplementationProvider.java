@@ -26,7 +26,7 @@ public class NMSImplementationProvider implements ImplementationProvider {
     private static final Field networkManager = ReflectionUtils.getOnlyField(ServerCommonPacketListenerImpl.class, NetworkManager.class);
 
     @NotNull
-    private final ComponentConverter componentConverter = new NMSComponentConverter();
+    private final ComponentConverter<?> componentConverter = new NMSComponentConverter();
     
     @Override
     @NotNull

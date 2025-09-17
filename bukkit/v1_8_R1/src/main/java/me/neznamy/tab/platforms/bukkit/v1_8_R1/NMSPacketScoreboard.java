@@ -89,6 +89,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void registerTeam(@NonNull Team team) {
         updateTeamProperties(team);
         ScoreboardTeam t = (ScoreboardTeam) team.getPlatformTeam();

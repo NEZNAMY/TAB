@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class NMSImplementationProvider implements ImplementationProvider {
 
     @NotNull
-    private final ComponentConverter componentConverter = new NMSComponentConverter();
+    private final ComponentConverter<?> componentConverter = new NMSComponentConverter();
     
     @Override
     @NotNull

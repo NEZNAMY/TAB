@@ -24,7 +24,7 @@ public class NMSImplementationProvider implements ImplementationProvider {
     private static final Field channel = ReflectionUtils.getOnlyField(NetworkManager.class, Channel.class);
 
     @NotNull
-    private final ComponentConverter componentConverter = new NMSComponentConverter();
+    private final ComponentConverter<?> componentConverter = new NMSComponentConverter();
     
     @Override
     @NotNull

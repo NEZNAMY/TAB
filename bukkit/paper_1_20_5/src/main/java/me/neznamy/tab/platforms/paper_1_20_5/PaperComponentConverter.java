@@ -12,40 +12,40 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Component converter using direct mojang-mapped code.
  */
-public class PaperComponentConverter extends ComponentConverter {
+public class PaperComponentConverter extends ComponentConverter<Component> {
 
     @Override
     @NotNull
-    public Object newTextComponent(@NotNull String text) {
+    public Component newTextComponent(@NotNull String text) {
         return Component.literal(text);
     }
 
     @Override
     @NotNull
-    public Object newTranslatableComponent(@NotNull String key) {
+    public Component newTranslatableComponent(@NotNull String key) {
         return Component.translatable(key);
     }
 
     @Override
     @NotNull
-    public Object newKeybindComponent(@NotNull String keybind) {
+    public Component newKeybindComponent(@NotNull String keybind) {
         return Component.keybind(keybind);
     }
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull TabAtlasSprite sprite) {
+    public Component newObjectComponent(@NotNull TabAtlasSprite sprite) {
         return Component.literal(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull TabPlayerSprite sprite) {
+    public Component newObjectComponent(@NotNull TabPlayerSprite sprite) {
         return Component.literal(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
-    public void applyStyle(@NotNull Object nmsComponent, @NotNull TabStyle modifier) {
+    public void applyStyle(@NotNull Component nmsComponent, @NotNull TabStyle modifier) {
         Style style = Style.EMPTY
                 .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
                 .withBold(modifier.getBold())
@@ -58,7 +58,7 @@ public class PaperComponentConverter extends ComponentConverter {
     }
 
     @Override
-    public void addSibling(@NotNull Object parent, @NotNull Object child) {
-        ((MutableComponent)parent).append((Component) child);
+    public void addSibling(@NotNull Component parent, @NotNull Component child) {
+        ((MutableComponent)parent).append(child);
     }
 }

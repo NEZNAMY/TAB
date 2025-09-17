@@ -39,7 +39,7 @@ public interface ImplementationProvider {
      * @return  Component converter
      */
     @NotNull
-    ComponentConverter getComponentConverter();
+    ComponentConverter<?> getComponentConverter();
 
     /**
      * Returns a function that extracts Netty channel from the given player.

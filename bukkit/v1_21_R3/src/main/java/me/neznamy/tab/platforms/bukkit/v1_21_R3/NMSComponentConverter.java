@@ -12,40 +12,40 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Component converter using direct NMS code.
  */
-public class NMSComponentConverter extends ComponentConverter {
+public class NMSComponentConverter extends ComponentConverter<IChatBaseComponent> {
 
     @Override
     @NotNull
-    public Object newTextComponent(@NotNull String text) {
+    public IChatBaseComponent newTextComponent(@NotNull String text) {
         return IChatBaseComponent.b(text);
     }
 
     @Override
     @NotNull
-    public Object newTranslatableComponent(@NotNull String key) {
+    public IChatBaseComponent newTranslatableComponent(@NotNull String key) {
         return IChatBaseComponent.c(key);
     }
 
     @Override
     @NotNull
-    public Object newKeybindComponent(@NotNull String keybind) {
+    public IChatBaseComponent newKeybindComponent(@NotNull String keybind) {
         return IChatBaseComponent.d(keybind);
     }
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull TabAtlasSprite sprite) {
+    public IChatBaseComponent newObjectComponent(@NotNull TabAtlasSprite sprite) {
         return IChatBaseComponent.b(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull TabPlayerSprite sprite) {
+    public IChatBaseComponent newObjectComponent(@NotNull TabPlayerSprite sprite) {
         return IChatBaseComponent.b(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
-    public void applyStyle(@NotNull Object nmsComponent, @NotNull TabStyle modifier) {
+    public void applyStyle(@NotNull IChatBaseComponent nmsComponent, @NotNull TabStyle modifier) {
         ChatModifier style = ChatModifier.a
                 .a(modifier.getColor() == null ? null : ChatHexColor.a(modifier.getColor().getRgb()))
                 .a(modifier.getBold())
@@ -59,7 +59,7 @@ public class NMSComponentConverter extends ComponentConverter {
     }
 
     @Override
-    public void addSibling(@NotNull Object parent, @NotNull Object child) {
-        ((IChatMutableComponent)parent).b((IChatBaseComponent) child);
+    public void addSibling(@NotNull IChatBaseComponent parent, @NotNull IChatBaseComponent child) {
+        ((IChatMutableComponent)parent).b(child);
     }
 }

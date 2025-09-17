@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class PaperImplementationProvider implements ImplementationProvider {
 
     @NotNull
-    private final ComponentConverter componentConverter = new PaperComponentConverter();
+    private final ComponentConverter<?> componentConverter = new PaperComponentConverter();
     
     @Override
     @NotNull
