@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb.gradient;
 
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.util.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,5 +19,5 @@ public interface GradientPattern {
      * @return  reformatted text
      */
     @NotNull
-    String applyPattern(@NotNull String text, @NotNull TriFunction<TextColor, String, TextColor, String> gradientFunction);
+    String applyPattern(@NotNull String text, @NotNull TriFunction<TabTextColor, String, TabTextColor, String> gradientFunction);
 }

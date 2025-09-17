@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.features.proxy;
 import com.saicone.delivery4j.AbstractMessenger;
 import com.saicone.delivery4j.Broker;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +44,7 @@ public class ProxyMessengerSupport extends ProxySupport {
             };
             messenger.subscribe(TabConstants.PROXY_CHANNEL_NAME).consume((channel, lines) -> processMessage(lines[0])).cache(true);
             messenger.start();
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Successfully connected to " + messengerName, TextColor.GREEN));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Successfully connected to " + messengerName, TabTextColor.GREEN));
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().criticalError("Failed to connect to " + messengerName + ": " + e.getClass().getName() + ": " + e.getMessage(), null);
         }

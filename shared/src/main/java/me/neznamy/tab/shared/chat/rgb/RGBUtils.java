@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.chat.rgb;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.chat.rgb.format.CommonFormatter;
 import me.neznamy.tab.shared.chat.rgb.format.RGBFormatter;
@@ -51,8 +51,8 @@ public class RGBUtils {
      * @return  text where all gradients are converted to desired format
      */
     @NotNull
-    public String applyFormats(@NotNull String text, @NotNull TriFunction<TextColor, String, TextColor, String> gradientFunction,
-                               @NotNull Function<TextColor, String> rgbFunction) {
+    public String applyFormats(@NotNull String text, @NotNull TriFunction<TabTextColor, String, TabTextColor, String> gradientFunction,
+                               @NotNull Function<TabTextColor, String> rgbFunction) {
         String replaced = text;
         for (GradientPattern pattern : gradients) {
             replaced = pattern.applyPattern(replaced, gradientFunction);

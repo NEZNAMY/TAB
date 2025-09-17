@@ -6,18 +6,18 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A component of "translate" type that contains key to translate.
+ * A component of "keybind" type that contains bound key.
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class TranslatableComponent extends TabComponent {
+public class TabKeybindComponent extends TabComponent {
 
     @NotNull
-    protected final String key;
+    protected final String keybind;
 
     @Override
     @NotNull
     public String toLegacyText() {
-        return key;
+        return keybind;
     }
 }

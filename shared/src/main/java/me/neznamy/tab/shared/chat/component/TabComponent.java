@@ -5,12 +5,12 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
-import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
+import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import me.neznamy.tab.shared.chat.hook.AdventureHook;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.function.TriFunction;
@@ -33,14 +33,14 @@ public abstract class TabComponent {
     public static final LegacyTextComponent EMPTY_LEGACY_TEXT = new LegacyTextComponent("");
 
     /** Formatter to convert gradient into TAB's #RRGGBB spam */
-    private static final TriFunction<TextColor, String, TextColor, String> TABGradientFormatter = (start, text, end) -> {
+    private static final TriFunction<TabTextColor, String, TabTextColor, String> TABGradientFormatter = (start, text, end) -> {
         if (text.length() == 1) {
             return "#" + start.getHexCode() + text;
         }
         StringBuilder sb = new StringBuilder();
         List<Character> characters = new ArrayList<>();
-        List<ChatModifier> modifiers = new ArrayList<>();
-        ChatModifier modifier = new ChatModifier();
+        List<TabStyle> modifiers = new ArrayList<>();
+        TabStyle modifier = new TabStyle();
         for (int i=0; i<text.length(); i++) {
             char c = text.charAt(i);
             if (c == '§' && i < text.length() - 1) {
@@ -66,18 +66,18 @@ public abstract class TabComponent {
                         i++;
                         break;
                     case 'r':
-                        modifier = new ChatModifier();
+                        modifier = new TabStyle();
                         i++;
                         break;
                     default:
                         // Invalid code
                         characters.add('§');
-                        modifiers.add(new ChatModifier(modifier));
+                        modifiers.add(new TabStyle(modifier));
                         break;
                 }
             } else {
                 characters.add(c);
-                modifiers.add(new ChatModifier(modifier));
+                modifiers.add(new TabStyle(modifier));
             }
         }
 
@@ -94,7 +94,7 @@ public abstract class TabComponent {
     };
 
     /** Formatter to convert RGB code to use TAB's #RRGGBB */
-    private static final Function<TextColor, String> TABRGBFormatter = color -> "#" + color.getHexCode();
+    private static final Function<TabTextColor, String> TABRGBFormatter = color -> "#" + color.getHexCode();
 
     /** Pattern for detecting fonts */
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
@@ -125,13 +125,13 @@ public abstract class TabComponent {
      * properly handle cases when both color and magic codes are used.
      */
     @Nullable
-    private ChatModifier lastStyle;
+    private TabStyle lastStyle;
 
     /** Chat modifier containing color, magic codes, hover and click event */
     @NotNull
     @Getter
     @Setter
-    protected ChatModifier modifier = new ChatModifier();
+    protected TabStyle modifier = new TabStyle();
 
     /** Extra components used in "extra" field */
     protected List<TabComponent> extra;
@@ -222,7 +222,7 @@ public abstract class TabComponent {
      * @return  Last style of this component
      */
     @NotNull
-    public ChatModifier getLastStyle() {
+    public TabStyle getLastStyle() {
         if (lastStyle == null) lastStyle = fetchLastStyle();
         return lastStyle;
     }
@@ -241,8 +241,8 @@ public abstract class TabComponent {
      * @return  Last style of this component
      */
     @NotNull
-    protected ChatModifier fetchLastStyle() {
-        ChatModifier lastStyle = modifier;
+    protected TabStyle fetchLastStyle() {
+        TabStyle lastStyle = modifier;
         for (TabComponent extra : getExtra()) {
             lastStyle = extra.fetchLastStyle();
         }
@@ -257,7 +257,7 @@ public abstract class TabComponent {
      * @return  organized component from colored text
      */
     @NotNull
-    public static TextComponent fromColoredText(@NotNull String originalText) {
+    public static TabTextComponent fromColoredText(@NotNull String originalText) {
         String remainingText = originalText;
         List<TabComponent> components = new ArrayList<>();
         while (!remainingText.isEmpty()) {
@@ -280,9 +280,9 @@ public abstract class TabComponent {
                 break;
             }
         }
-        TextComponent root = new TextComponent("", components);
+        TabTextComponent root = new TabTextComponent("", components);
         // Avoid team color affecting prefix/suffix
-        root.modifier.setColor(TextColor.WHITE);
+        root.modifier.setColor(TabTextColor.WHITE);
         root.modifier.setBold(false);
         root.modifier.setItalic(false);
         root.modifier.setUnderlined(false);
@@ -296,7 +296,7 @@ public abstract class TabComponent {
         String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText), TABGradientFormatter, TABRGBFormatter);
         List<TabComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
-        TextComponent component = new TextComponent();
+        TabTextComponent component = new TabTextComponent();
         component.modifier.setFont(font);
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '<') {
@@ -306,7 +306,7 @@ public abstract class TabComponent {
                     if (builder.length() > 0) {
                         component.setText(builder.toString());
                         components.add(component);
-                        component = new TextComponent(component);
+                        component = new TabTextComponent(component);
                         component.setText("");
                         component.modifier.setFont(font);
                         builder = new StringBuilder();
@@ -319,7 +319,7 @@ public abstract class TabComponent {
                     i += matcher.group(0).length() - 1;
 
                     // reset formatting component safely
-                    component = new TextComponent(component);
+                    component = new TabTextComponent(component);
                     component.setText("");
                     component.modifier.setFont(font);
                     continue;
@@ -332,7 +332,7 @@ public abstract class TabComponent {
                     if (builder.length() > 0) {
                         component.setText(builder.toString());
                         components.add(component);
-                        component = new TextComponent(component);
+                        component = new TabTextComponent(component);
                         component.setText("");
                         component.modifier.setFont(font);
                         builder = new StringBuilder();
@@ -343,7 +343,7 @@ public abstract class TabComponent {
                     i += matcher.group(0).length() - 1;
 
                     // reset formatting component safely
-                    component = new TextComponent(component);
+                    component = new TabTextComponent(component);
                     component.setText("");
                     component.modifier.setFont(font);
                     continue;
@@ -360,32 +360,32 @@ public abstract class TabComponent {
                 if ((c >= 'A') && (c <= 'Z')) {
                     c = (char)(c + ' ');
                 }
-                TextColor format = TextColor.getLegacyByChar(c);
+                TabTextColor format = TabTextColor.getLegacyByChar(c);
                 if (format != null) {
                     if (builder.length() > 0) {
                         component.setText(builder.toString());
                         components.add(component);
-                        component = new TextComponent(component);
+                        component = new TabTextComponent(component);
                         component.setText("");
                         component.modifier.setFont(font);
                         builder = new StringBuilder();
                     }
-                    if (format == TextColor.BOLD) {
+                    if (format == TabTextColor.BOLD) {
                         component.modifier.setBold(true);
-                    } else if (format == TextColor.ITALIC) {
+                    } else if (format == TabTextColor.ITALIC) {
                         component.modifier.setItalic(true);
-                    } else if (format == TextColor.UNDERLINE) {
+                    } else if (format == TabTextColor.UNDERLINE) {
                         component.modifier.setUnderlined(true);
-                    } else if (format == TextColor.STRIKETHROUGH) {
+                    } else if (format == TabTextColor.STRIKETHROUGH) {
                         component.modifier.setStrikethrough(true);
-                    } else if (format == TextColor.OBFUSCATED) {
+                    } else if (format == TabTextColor.OBFUSCATED) {
                         component.modifier.setObfuscated(true);
-                    } else if (format == TextColor.RESET) {
-                        component = new TextComponent();
-                        component.modifier.setColor(TextColor.WHITE);
+                    } else if (format == TabTextColor.RESET) {
+                        component = new TabTextComponent();
+                        component.modifier.setColor(TabTextColor.WHITE);
                         component.modifier.setFont(font);
                     } else {
-                        component = new TextComponent();
+                        component = new TabTextComponent();
                         component.modifier.setColor(format);
                         component.modifier.setFont(font);
                     }
@@ -393,14 +393,14 @@ public abstract class TabComponent {
             } else if (c == '#' && text.length() > i+6) {
                 String hex = text.substring(i+1, i+7);
                 if (isHexCode(hex)) {
-                    TextColor color = new TextColor(hex);
+                    TabTextColor color = new TabTextColor(hex);
                     i += 6;
                     if (builder.length() > 0) {
                         component.setText(builder.toString());
                         components.add(component);
                         builder = new StringBuilder();
                     }
-                    component = new TextComponent();
+                    component = new TabTextComponent();
                     component.modifier.setColor(color);
                     component.modifier.setFont(font);
                 } else {
@@ -453,7 +453,7 @@ public abstract class TabComponent {
         if (text.isEmpty()) return EMPTY_LEGACY_TEXT;
         LegacyTextComponent component = new LegacyTextComponent(text);
         // Avoid team color affecting prefix/suffix
-        component.modifier.setColor(TextColor.WHITE);
+        component.modifier.setColor(TabTextColor.WHITE);
         component.modifier.setBold(false);
         component.modifier.setItalic(false);
         component.modifier.setUnderlined(false);
@@ -470,8 +470,8 @@ public abstract class TabComponent {
      * @return  New translatable component with given key
      */
     @NotNull
-    public static TranslatableComponent translatable(@NonNull String key) {
-        return new TranslatableComponent(key);
+    public static TabTranslatableComponent translatable(@NonNull String key) {
+        return new TabTranslatableComponent(key);
     }
 
     /**
@@ -482,8 +482,8 @@ public abstract class TabComponent {
      * @return  New keybind text component with given key
      */
     @NotNull
-    public static KeybindComponent keybind(@NonNull String keybind) {
-        return new KeybindComponent(keybind);
+    public static TabKeybindComponent keybind(@NonNull String keybind) {
+        return new TabKeybindComponent(keybind);
     }
 
     /**
@@ -496,8 +496,8 @@ public abstract class TabComponent {
      * @return  New object component with given atlas and sprite
      */
     @NotNull
-    public static ObjectComponent atlasSprite(@NonNull String atlas, @NonNull String sprite) {
-        return new ObjectComponent(new AtlasSprite(
+    public static TabObjectComponent atlasSprite(@NonNull String atlas, @NonNull String sprite) {
+        return new TabObjectComponent(new TabAtlasSprite(
                 atlas.toLowerCase(Locale.US).replace(" ", "_"),
                 sprite.toLowerCase(Locale.US).replace(" ", "_")
         ));
@@ -513,11 +513,11 @@ public abstract class TabComponent {
      */
     @NotNull
     public static TabComponent head(@NonNull String skinDefinition) {
-        PlayerSprite sprite;
+        TabPlayerSprite sprite;
         if (skinDefinition.startsWith("id:")) {
             String stringUUID = skinDefinition.substring(3);
             try {
-                sprite = new PlayerSprite(UUID.fromString(stringUUID));
+                sprite = new TabPlayerSprite(UUID.fromString(stringUUID));
             } catch (IllegalArgumentException e) {
                 return new LegacyTextComponent(String.format("<Invalid UUID: \"%s\">", stringUUID));
             }
@@ -526,16 +526,16 @@ public abstract class TabComponent {
             if (name.length() > 16) {
                 return new LegacyTextComponent(String.format("<Invalid name (too long): \"%s\">", name));
             }
-            sprite = new PlayerSprite(name);
+            sprite = new TabPlayerSprite(name);
         } else {
             TabList.Skin skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin(skinDefinition);
             if (skin == null) {
                 return new LegacyTextComponent(String.format("<Invalid skin: \"%s\">", skinDefinition));
             }
-            sprite = new PlayerSprite(skin);
+            sprite = new TabPlayerSprite(skin);
         }
         sprite.setShowHat(true); // Always show hat
-        ObjectComponent component = new ObjectComponent(sprite);
+        TabObjectComponent component = new TabObjectComponent(sprite);
         if (TAB.getInstance().getConfiguration().getConfig().getComponents().isDisableShadowForHeads()) {
             component.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
         }

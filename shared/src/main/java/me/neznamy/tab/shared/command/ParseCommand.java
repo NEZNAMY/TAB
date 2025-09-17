@@ -4,9 +4,9 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,11 +57,11 @@ public class ParseCommand extends SubCommand {
             return;
         }
         // Do it this way to avoid sending the "§" symbol to the console to try to color the text (does not work on Velocity)
-        sendMessage(sender, new TextComponent("", Arrays.asList(
-                new TextComponent("Replacing placeholder ", TextColor.GOLD),
-                new TextComponent(textToParse, TextColor.YELLOW),
-                new TextComponent(" for player ", TextColor.GOLD),
-                new TextComponent(target.getName(), TextColor.YELLOW)
+        sendMessage(sender, new TabTextComponent("", Arrays.asList(
+                new TabTextComponent("Replacing placeholder ", TabTextColor.GOLD),
+                new TabTextComponent(textToParse, TabTextColor.YELLOW),
+                new TabTextComponent(" for player ", TabTextColor.GOLD),
+                new TabTextComponent(target.getName(), TabTextColor.YELLOW)
         )));
         try {
             String replaced = new Property(null, null, target, textToParse, null).get();
@@ -71,11 +71,11 @@ public class ParseCommand extends SubCommand {
             } else {
                 TAB.getInstance().getPlatform().logInfo(colored);
             }
-            sendMessage(sender, new TextComponent("", Arrays.asList(
-                    new TextComponent("Raw colors: ", TextColor.DARK_AQUA),
-                    new TextComponent("\"", TextColor.YELLOW),
-                    new TextComponent(replaced.replace('§', '&'), TextColor.WHITE),
-                    new TextComponent("\"", TextColor.YELLOW)
+            sendMessage(sender, new TabTextComponent("", Arrays.asList(
+                    new TabTextComponent("Raw colors: ", TabTextColor.DARK_AQUA),
+                    new TabTextComponent("\"", TabTextColor.YELLOW),
+                    new TabTextComponent(replaced.replace('§', '&'), TabTextColor.WHITE),
+                    new TabTextComponent("\"", TabTextColor.YELLOW)
             )));
             sendMessage(sender, "&3Output length: &e" + replaced.length() + " &3characters");
         } catch (Exception e) {

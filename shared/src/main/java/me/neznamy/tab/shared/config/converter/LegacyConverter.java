@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.config.converter;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
@@ -33,7 +33,7 @@ public class LegacyConverter {
      */
     public void convert2810to290(@NonNull ConfigurationFile animations) {
         if (animations.getValues().size() == 1 && animations.getValues().containsKey("animations")) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 2.8.10 to 2.9.0", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 2.8.10 to 2.9.0", TabTextColor.YELLOW));
             animations.setValues(animations.getMap("animations"));
             animations.save();
         }
@@ -50,7 +50,7 @@ public class LegacyConverter {
      */
     public void convert292to300(@NonNull ConfigurationFile currentConfig) throws IOException {
         if (!currentConfig.hasConfigOption("change-nametag-prefix-suffix")) return;
-        TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 2.9.2 to 3.0.0", TextColor.YELLOW));
+        TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 2.9.2 to 3.0.0", TabTextColor.YELLOW));
 
         File folder = TAB.getInstance().getDataFolder();
         moveOldFiles();
@@ -350,7 +350,7 @@ public class LegacyConverter {
      */
     public void convert301to302(@NonNull ConfigurationFile config) {
         if (config.removeOption("placeholders.remove-strings")) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 3.0.1 to 3.0.2", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 3.0.1 to 3.0.2", TabTextColor.YELLOW));
         }
     }
 
@@ -375,7 +375,7 @@ public class LegacyConverter {
     public void convert332to400(@NonNull ConfigurationFile config) throws IOException {
         // Removed config options
         if (config.hasConfigOption("fix-pet-names")) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 3.3.2 to 4.0.0", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 3.3.2 to 4.0.0", TabTextColor.YELLOW));
             config.set("fix-pet-names", null);
             config.set("bossbar.disable-in-worlds", null);
             config.set("bossbar.disable-in-servers", null);
@@ -450,7 +450,7 @@ public class LegacyConverter {
      */
     public void convert409to410(@NonNull ConfigurationFile config) {
         if (config.hasConfigOption("yellow-number-in-tablist")) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 4.0.9 to 4.1.0", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 4.0.9 to 4.1.0", TabTextColor.YELLOW));
             Map<Object, Object> section = config.getMap("yellow-number-in-tablist");
             section.put("fancy-value", "&7Ping: %ping%");
             config.set("yellow-number-in-tablist", null);
@@ -464,7 +464,7 @@ public class LegacyConverter {
 
     public void convert412to413(@NonNull ConfigurationFile config) {
         if (config.setIfMissing("placeholders.register-tab-expansion", false)) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 4.1.2 to 4.1.3", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 4.1.2 to 4.1.3", TabTextColor.YELLOW));
         }
     }
 
@@ -477,7 +477,7 @@ public class LegacyConverter {
      */
     public void convert419to500(@NonNull ConfigurationFile config) {
         if (config.removeOption("scoreboard-teams.unlimited-nametag-mode")) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 4.1.9 to 5.0.0", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 4.1.9 to 5.0.0", TabTextColor.YELLOW));
             config.removeOption("scoreboard.respect-other-plugins");
         }
         if (!config.hasConfigOption("global-playerlist.update-latency")) {
@@ -494,7 +494,7 @@ public class LegacyConverter {
      */
     public void convert501to502(@NonNull ConfigurationFile config) {
         if (config.rename("belowname-objective.number", "belowname-objective.value")) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 5.0.1 to 5.0.2", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 5.0.1 to 5.0.2", TabTextColor.YELLOW));
         }
         config.rename("belowname-objective.text", "belowname-objective.title");
         config.rename("belowname-objective.fancy-display-players", "belowname-objective.fancy-value");
@@ -513,7 +513,7 @@ public class LegacyConverter {
      */
     public void convert507to510(@NonNull ConfigurationFile config) {
         if (config.rename("enable-redisbungee-support", "proxy-support.enabled")) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 5.0.7 to 5.1.0", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 5.0.7 to 5.1.0", TabTextColor.YELLOW));
             config.set("proxy-support.type", "PLUGIN");
             config.set("proxy-support.plugin.name", "RedisBungee");
             config.set("proxy-support.redis.url", "redis://:password@localhost:6379/0");
@@ -535,7 +535,7 @@ public class LegacyConverter {
      */
     public void convert521to522(@NonNull ConfigurationFile config) {
         if (config.removeOption("scoreboard-teams.anti-override")) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from 5.2.1 to 5.2.2", TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 5.2.1 to 5.2.2", TabTextColor.YELLOW));
         }
         config.removeOption("tablist-name-formatting.anti-override");
     }

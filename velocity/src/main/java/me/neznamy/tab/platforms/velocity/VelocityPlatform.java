@@ -12,9 +12,9 @@ import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
@@ -85,17 +85,17 @@ public class VelocityPlatform extends ProxyPlatform {
                 // Scoreboard API failed to enable due to an error
             }
         } else {
-            logInfo(new TextComponent("==============================================================================", TextColor.RED));
-            logInfo(new TextComponent("Velocity does not have any sort of scoreboard API.", TextColor.RED));
-            logInfo(new TextComponent("As a result, many features cannot be implemented using the standard Velocity API.", TextColor.RED));
-            logInfo(new TextComponent("In order to enhance your experience, please consider installing VelocityScoreboardAPI " +
-                    "(https://github.com/NEZNAMY/VelocityScoreboardAPI/releases/) plugin.", TextColor.RED));
-            logInfo(new TextComponent("Until then, the following features will not work:", TextColor.RED));
-            logInfo(new TextComponent("- scoreboard-teams", TextColor.RED));
-            logInfo(new TextComponent("- belowname-objective", TextColor.RED));
-            logInfo(new TextComponent("- playerlist-objective", TextColor.RED));
-            logInfo(new TextComponent("- scoreboard", TextColor.RED));
-            logInfo(new TextComponent("==============================================================================", TextColor.RED));
+            logInfo(new TabTextComponent("==============================================================================", TabTextColor.RED));
+            logInfo(new TabTextComponent("Velocity does not have any sort of scoreboard API.", TabTextColor.RED));
+            logInfo(new TabTextComponent("As a result, many features cannot be implemented using the standard Velocity API.", TabTextColor.RED));
+            logInfo(new TabTextComponent("In order to enhance your experience, please consider installing VelocityScoreboardAPI " +
+                    "(https://github.com/NEZNAMY/VelocityScoreboardAPI/releases/) plugin.", TabTextColor.RED));
+            logInfo(new TabTextComponent("Until then, the following features will not work:", TabTextColor.RED));
+            logInfo(new TabTextComponent("- scoreboard-teams", TabTextColor.RED));
+            logInfo(new TabTextComponent("- belowname-objective", TabTextColor.RED));
+            logInfo(new TabTextComponent("- playerlist-objective", TabTextColor.RED));
+            logInfo(new TabTextComponent("- scoreboard", TabTextColor.RED));
+            logInfo(new TabTextComponent("==============================================================================", TabTextColor.RED));
         }
         if (plugin.getServer().getPluginManager().isLoaded("premiumvanish")) {
             new VelocityPremiumVanishHook().register();

@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.config.helper;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.TAB;
 
 import java.io.File;
@@ -46,7 +46,7 @@ public class ConfigHelper {
      *          Hint message to print
      */
     public void hint(@NonNull File file, @NonNull String message) {
-        TAB.getInstance().getPlatform().logInfo(new TextComponent("[Hint] [" + file.getName() + "] " + message, TextColor.GOLD));
+        TAB.getInstance().getPlatform().logInfo(new TabTextComponent("[Hint] [" + file.getName() + "] " + message, TabTextColor.GOLD));
     }
 
     /**
@@ -58,6 +58,6 @@ public class ConfigHelper {
      *          Hint message to print
      */
     public void hint(@NonNull String file, @NonNull String message) {
-        TAB.getInstance().getPlatform().logInfo(new TextComponent("[" + file + "] [Hint] " + message, TextColor.GOLD));
+        TAB.getInstance().getPlatform().logInfo(new TabTextComponent("[" + file + "] [Hint] " + message, TabTextColor.GOLD));
     }
 }

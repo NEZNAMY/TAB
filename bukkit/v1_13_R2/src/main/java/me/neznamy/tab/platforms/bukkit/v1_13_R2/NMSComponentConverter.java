@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.v1_13_R2;
 
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.TabStyle;
+import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
-import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
+import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import net.minecraft.server.v1_13_R2.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,26 +33,25 @@ public class NMSComponentConverter extends ComponentConverter {
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull AtlasSprite sprite) {
-        return new ChatComponentText(ObjectComponent.ERROR_MESSAGE);
+    public Object newObjectComponent(@NotNull TabAtlasSprite sprite) {
+        return new ChatComponentText(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull PlayerSprite sprite) {
-        return new ChatComponentText(ObjectComponent.ERROR_MESSAGE);
+    public Object newObjectComponent(@NotNull TabPlayerSprite sprite) {
+        return new ChatComponentText(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
-    public void applyStyle(@NotNull Object nmsComponent, @NotNull ChatModifier modifier) {
-        ((IChatBaseComponent)nmsComponent).setChatModifier(
-                new net.minecraft.server.v1_13_R2.ChatModifier()
-                        .setColor(modifier.getColor() == null ? null : EnumChatFormat.valueOf(modifier.getColor().getLegacyColor().name()))
-                        .setBold(modifier.getBold())
-                        .setItalic(modifier.getItalic())
-                        .setUnderline(modifier.getUnderlined())
-                        .setStrikethrough(modifier.getStrikethrough())
-                        .setRandom(modifier.getObfuscated())
+    public void applyStyle(@NotNull Object nmsComponent, @NotNull TabStyle modifier) {
+        ((IChatBaseComponent)nmsComponent).setChatModifier(new ChatModifier()
+                .setColor(modifier.getColor() == null ? null : EnumChatFormat.valueOf(modifier.getColor().getLegacyColor().name()))
+                .setBold(modifier.getBold())
+                .setItalic(modifier.getItalic())
+                .setUnderline(modifier.getUnderlined())
+                .setStrikethrough(modifier.getStrikethrough())
+                .setRandom(modifier.getObfuscated())
         );
     }
 

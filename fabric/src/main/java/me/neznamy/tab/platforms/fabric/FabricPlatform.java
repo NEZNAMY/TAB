@@ -8,19 +8,18 @@ import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
-import me.neznamy.tab.shared.chat.component.TranslatableComponent;
-import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
-import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
+import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
+import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
+import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -34,6 +33,8 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.contents.objects.AtlasSprite;
+import net.minecraft.network.chat.contents.objects.PlayerSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -146,26 +147,19 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     public Component convertComponent(@NotNull TabComponent component) {
         // Component type
         MutableComponent nmsComponent = switch (component) {
-            case TextComponent text -> Component.literal(text.getText());
-            case TranslatableComponent translatable -> Component.translatable(translatable.getKey());
-            case KeybindComponent keybind -> Component.keybind(keybind.getKeybind());
-            case ObjectComponent object -> {
-                if (object.getContents() instanceof AtlasSprite sprite) {
-                    yield Component.object(new net.minecraft.network.chat.contents.objects.AtlasSprite(
-                            ResourceLocation.parse(sprite.getAtlas()),
-                            ResourceLocation.parse(sprite.getSprite())
-                    ));
-                }
-                if (object.getContents() instanceof PlayerSprite sprite) {
-                    yield Component.object(new net.minecraft.network.chat.contents.objects.PlayerSprite(spriteToProfile(sprite), sprite.isShowHat()));
-                }
-                throw new IllegalStateException("Unexpected object component type: " + object.getContents().getClass().getName());
-            }
+            case TabTextComponent text -> Component.literal(text.getText());
+            case TabTranslatableComponent translatable -> Component.translatable(translatable.getKey());
+            case TabKeybindComponent keybind -> Component.keybind(keybind.getKeybind());
+            case TabObjectComponent object -> switch(object.getContents()) {
+                case TabAtlasSprite sprite -> Component.object(new AtlasSprite(ResourceLocation.parse(sprite.getAtlas()), ResourceLocation.parse(sprite.getSprite())));
+                case TabPlayerSprite sprite -> Component.object(new PlayerSprite(spriteToProfile(sprite), sprite.isShowHat()));
+                default -> throw new IllegalStateException("Unexpected object component type: " + object.getContents().getClass().getName());
+            };
             default -> throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         };
 
         // Component style
-        ChatModifier modifier = component.getModifier();
+        TabStyle modifier = component.getModifier();
         Style style = Style.EMPTY
                 .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
                 .withBold(modifier.getBold())
@@ -186,8 +180,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     }
 
     @NotNull
-    @SneakyThrows
-    private ResolvableProfile spriteToProfile(@NonNull PlayerSprite sprite) {
+    private ResolvableProfile spriteToProfile(@NonNull TabPlayerSprite sprite) {
         if (sprite.getId() != null) {
             return ResolvableProfile.createUnresolved(sprite.getId());
         } else if (sprite.getName() != null) {

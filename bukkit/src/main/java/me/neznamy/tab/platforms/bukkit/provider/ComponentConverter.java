@@ -1,13 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.provider;
 
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.TabStyle;
+import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
-import me.neznamy.tab.shared.chat.component.TranslatableComponent;
-import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
-import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
+import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
+import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,19 +26,19 @@ public abstract class ComponentConverter {
     public Object convert(@NotNull TabComponent component) {
         // Component type
         Object nmsComponent;
-        if (component instanceof TextComponent) {
-            nmsComponent = newTextComponent(((TextComponent) component).getText());
-        } else if (component instanceof TranslatableComponent) {
-            nmsComponent = newTranslatableComponent(((TranslatableComponent) component).getKey());
-        } else if (component instanceof KeybindComponent) {
-            nmsComponent = newKeybindComponent(((KeybindComponent)component).getKeybind());
-        } else if (component instanceof ObjectComponent) {
-            if ((((ObjectComponent) component).getContents() instanceof AtlasSprite)) {
-                nmsComponent = newObjectComponent((AtlasSprite) ((ObjectComponent) component).getContents());
-            } else if ((((ObjectComponent) component).getContents() instanceof PlayerSprite)) {
-                nmsComponent = newObjectComponent((PlayerSprite) ((ObjectComponent) component).getContents());
+        if (component instanceof TabTextComponent) {
+            nmsComponent = newTextComponent(((TabTextComponent) component).getText());
+        } else if (component instanceof TabTranslatableComponent) {
+            nmsComponent = newTranslatableComponent(((TabTranslatableComponent) component).getKey());
+        } else if (component instanceof TabKeybindComponent) {
+            nmsComponent = newKeybindComponent(((TabKeybindComponent)component).getKeybind());
+        } else if (component instanceof TabObjectComponent) {
+            if ((((TabObjectComponent) component).getContents() instanceof TabAtlasSprite)) {
+                nmsComponent = newObjectComponent((TabAtlasSprite) ((TabObjectComponent) component).getContents());
+            } else if ((((TabObjectComponent) component).getContents() instanceof TabPlayerSprite)) {
+                nmsComponent = newObjectComponent((TabPlayerSprite) ((TabObjectComponent) component).getContents());
             } else {
-                throw new IllegalArgumentException("Unexpected object component type: " + ((ObjectComponent) component).getContents().getClass().getName());
+                throw new IllegalArgumentException("Unexpected object component type: " + ((TabObjectComponent) component).getContents().getClass().getName());
             }
         } else {
             throw new IllegalArgumentException("Unexpected component type: " + component.getClass().getName());
@@ -92,7 +92,7 @@ public abstract class ComponentConverter {
      * @return Object component with given atlas and sprite
      */
     @NotNull
-    public abstract Object newObjectComponent(@NotNull AtlasSprite sprite);
+    public abstract Object newObjectComponent(@NotNull TabAtlasSprite sprite);
 
     /**
      * Creates a new head component with given skin.
@@ -102,7 +102,7 @@ public abstract class ComponentConverter {
      * @return  Head component with given skin
      */
     @NotNull
-    public abstract Object newObjectComponent(@NotNull PlayerSprite sprite);
+    public abstract Object newObjectComponent(@NotNull TabPlayerSprite sprite);
 
     /**
      * Converts given chat modifier to minecraft style and applies it to the component.
@@ -112,7 +112,7 @@ public abstract class ComponentConverter {
      * @param   style
      *          Style to convert and apply
      */
-    public abstract void applyStyle(@NotNull Object nmsComponent, @NotNull ChatModifier style);
+    public abstract void applyStyle(@NotNull Object nmsComponent, @NotNull TabStyle style);
 
     /**
      * Appends child to the given parent component.

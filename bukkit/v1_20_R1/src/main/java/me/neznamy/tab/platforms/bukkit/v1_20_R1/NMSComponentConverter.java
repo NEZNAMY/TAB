@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.v1_20_R1;
 
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.TabStyle;
+import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
-import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
+import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.MinecraftKey;
 import org.jetbrains.annotations.NotNull;
@@ -34,27 +34,26 @@ public class NMSComponentConverter extends ComponentConverter {
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull AtlasSprite sprite) {
-        return IChatBaseComponent.b(ObjectComponent.ERROR_MESSAGE);
+    public Object newObjectComponent(@NotNull TabAtlasSprite sprite) {
+        return IChatBaseComponent.b(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull PlayerSprite sprite) {
-        return IChatBaseComponent.b(ObjectComponent.ERROR_MESSAGE);
+    public Object newObjectComponent(@NotNull TabPlayerSprite sprite) {
+        return IChatBaseComponent.b(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
-    public void applyStyle(@NotNull Object nmsComponent, @NotNull ChatModifier modifier) {
-        ((IChatMutableComponent)nmsComponent).c(
-                net.minecraft.network.chat.ChatModifier.a
-                        .a(modifier.getColor() == null ? null : ChatHexColor.a(modifier.getColor().getRgb()))
-                        .a(modifier.getBold())
-                        .b(modifier.getItalic())
-                        .c(modifier.getUnderlined())
-                        .d(modifier.getStrikethrough())
-                        .e(modifier.getObfuscated())
-                        .a(modifier.getFont() == null ? null : MinecraftKey.a(modifier.getFont()))
+    public void applyStyle(@NotNull Object nmsComponent, @NotNull TabStyle modifier) {
+        ((IChatMutableComponent)nmsComponent).c(ChatModifier.a
+                .a(modifier.getColor() == null ? null : ChatHexColor.a(modifier.getColor().getRgb()))
+                .a(modifier.getBold())
+                .b(modifier.getItalic())
+                .c(modifier.getUnderlined())
+                .d(modifier.getStrikethrough())
+                .e(modifier.getObfuscated())
+                .a(modifier.getFont() == null ? null : MinecraftKey.a(modifier.getFont()))
         );
     }
 

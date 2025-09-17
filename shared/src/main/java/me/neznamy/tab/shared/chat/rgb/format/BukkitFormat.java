@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb.format;
 
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -16,14 +16,14 @@ public class BukkitFormat implements RGBFormatter {
     
     @Override
     @NotNull
-    public String reformat(@NotNull String text, @NotNull Function<TextColor, String> rgbFunction) {
+    public String reformat(@NotNull String text, @NotNull Function<TabTextColor, String> rgbFunction) {
         if (!text.contains("§x")) return text;
         String replaced = text;
         Matcher m = pattern.matcher(replaced);
         while (m.find()) {
             String group = m.group();
             String hexCode = new String(new char[] {group.charAt(3), group.charAt(5), group.charAt(7), group.charAt(9), group.charAt(11), group.charAt(13)});
-            replaced = replaced.replace(group, rgbFunction.apply(new TextColor(hexCode)));
+            replaced = replaced.replace(group, rgbFunction.apply(new TabTextColor(hexCode)));
         }
         return replaced;
     }

@@ -7,7 +7,7 @@ import lombok.NonNull;
  * Object type representing an atlas and sprite.
  */
 @Data
-public class AtlasSprite implements ObjectInfo {
+public class TabAtlasSprite implements ObjectInfo {
 
     @NonNull
     private final String atlas;

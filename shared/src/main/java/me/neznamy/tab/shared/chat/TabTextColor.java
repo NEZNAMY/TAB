@@ -9,35 +9,35 @@ import java.util.Map;
 /**
  * A class representing a component color, which can be either RGB or legacy code.
  */
-public class TextColor {
+public class TabTextColor {
 
     /** Map of legacy colors by their character */
-    public static final Map<Character, TextColor> LEGACY_COLORS = new LinkedHashMap<>();
+    public static final Map<Character, TabTextColor> LEGACY_COLORS = new LinkedHashMap<>();
 
-    public static final TextColor BLACK = new TextColor(EnumChatFormat.BLACK, 0x000000);
-    public static final TextColor DARK_BLUE = new TextColor(EnumChatFormat.DARK_BLUE, 0x0000AA);
-    public static final TextColor DARK_GREEN = new TextColor(EnumChatFormat.DARK_GREEN, 0x00AA00);
-    public static final TextColor DARK_AQUA = new TextColor(EnumChatFormat.DARK_AQUA, 0x00AAAA);
-    public static final TextColor DARK_RED = new TextColor(EnumChatFormat.DARK_RED, 0xAA0000);
-    public static final TextColor DARK_PURPLE = new TextColor(EnumChatFormat.DARK_PURPLE, 0xAA00AA);
-    public static final TextColor GOLD = new TextColor(EnumChatFormat.GOLD, 0xFFAA00);
-    public static final TextColor GRAY = new TextColor(EnumChatFormat.GRAY, 0xAAAAAA);
-    public static final TextColor DARK_GRAY = new TextColor(EnumChatFormat.DARK_GRAY, 0x555555);
-    public static final TextColor BLUE = new TextColor(EnumChatFormat.BLUE, 0x5555FF);
-    public static final TextColor GREEN = new TextColor(EnumChatFormat.GREEN, 0x55FF55);
-    public static final TextColor AQUA = new TextColor(EnumChatFormat.AQUA, 0x55FFFF);
-    public static final TextColor RED = new TextColor(EnumChatFormat.RED, 0xFF5555);
-    public static final TextColor LIGHT_PURPLE = new TextColor(EnumChatFormat.LIGHT_PURPLE, 0xFF55FF);
-    public static final TextColor YELLOW = new TextColor(EnumChatFormat.YELLOW, 0xFFFF55);
-    public static final TextColor WHITE = new TextColor(EnumChatFormat.WHITE, 0xFFFFFF);
-    public static final TextColor OBFUSCATED = new TextColor(EnumChatFormat.OBFUSCATED, 0);
-    public static final TextColor BOLD = new TextColor(EnumChatFormat.BOLD, 0);
-    public static final TextColor STRIKETHROUGH = new TextColor(EnumChatFormat.STRIKETHROUGH, 0);
-    public static final TextColor UNDERLINE = new TextColor(EnumChatFormat.UNDERLINE, 0);
-    public static final TextColor ITALIC = new TextColor(EnumChatFormat.ITALIC, 0);
-    public static final TextColor RESET = new TextColor(EnumChatFormat.RESET, 0);
+    public static final TabTextColor BLACK = new TabTextColor(EnumChatFormat.BLACK, 0x000000);
+    public static final TabTextColor DARK_BLUE = new TabTextColor(EnumChatFormat.DARK_BLUE, 0x0000AA);
+    public static final TabTextColor DARK_GREEN = new TabTextColor(EnumChatFormat.DARK_GREEN, 0x00AA00);
+    public static final TabTextColor DARK_AQUA = new TabTextColor(EnumChatFormat.DARK_AQUA, 0x00AAAA);
+    public static final TabTextColor DARK_RED = new TabTextColor(EnumChatFormat.DARK_RED, 0xAA0000);
+    public static final TabTextColor DARK_PURPLE = new TabTextColor(EnumChatFormat.DARK_PURPLE, 0xAA00AA);
+    public static final TabTextColor GOLD = new TabTextColor(EnumChatFormat.GOLD, 0xFFAA00);
+    public static final TabTextColor GRAY = new TabTextColor(EnumChatFormat.GRAY, 0xAAAAAA);
+    public static final TabTextColor DARK_GRAY = new TabTextColor(EnumChatFormat.DARK_GRAY, 0x555555);
+    public static final TabTextColor BLUE = new TabTextColor(EnumChatFormat.BLUE, 0x5555FF);
+    public static final TabTextColor GREEN = new TabTextColor(EnumChatFormat.GREEN, 0x55FF55);
+    public static final TabTextColor AQUA = new TabTextColor(EnumChatFormat.AQUA, 0x55FFFF);
+    public static final TabTextColor RED = new TabTextColor(EnumChatFormat.RED, 0xFF5555);
+    public static final TabTextColor LIGHT_PURPLE = new TabTextColor(EnumChatFormat.LIGHT_PURPLE, 0xFF55FF);
+    public static final TabTextColor YELLOW = new TabTextColor(EnumChatFormat.YELLOW, 0xFFFF55);
+    public static final TabTextColor WHITE = new TabTextColor(EnumChatFormat.WHITE, 0xFFFFFF);
+    public static final TabTextColor OBFUSCATED = new TabTextColor(EnumChatFormat.OBFUSCATED, 0);
+    public static final TabTextColor BOLD = new TabTextColor(EnumChatFormat.BOLD, 0);
+    public static final TabTextColor STRIKETHROUGH = new TabTextColor(EnumChatFormat.STRIKETHROUGH, 0);
+    public static final TabTextColor UNDERLINE = new TabTextColor(EnumChatFormat.UNDERLINE, 0);
+    public static final TabTextColor ITALIC = new TabTextColor(EnumChatFormat.ITALIC, 0);
+    public static final TabTextColor RESET = new TabTextColor(EnumChatFormat.RESET, 0);
 
-    private static final TextColor[] legacyColorArray = LEGACY_COLORS.values().toArray(new TextColor[0]);
+    private static final TabTextColor[] legacyColorArray = LEGACY_COLORS.values().toArray(new TabTextColor[0]);
 
     /**
      * RGB values as a single number of 3 8-bit numbers (0-255).
@@ -62,7 +62,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if hexCode is {@code null}
      */
-    public TextColor(@NotNull String hexCode) {
+    public TabTextColor(@NotNull String hexCode) {
         this.hexCode = hexCode;
     }
 
@@ -72,7 +72,7 @@ public class TextColor {
      * @param   legacyColor
      *          legacy color to construct the instance from
      */
-    private TextColor(@NotNull EnumChatFormat legacyColor, int rgb) {
+    private TabTextColor(@NotNull EnumChatFormat legacyColor, int rgb) {
         this.rgb = rgb;
         this.legacyColor = legacyColor;
         hexCode = String.format("%06X", rgb);
@@ -85,7 +85,7 @@ public class TextColor {
      * @param   rgb
      *          RGB value
      */
-    public TextColor(int rgb) {
+    public TabTextColor(int rgb) {
         this.rgb = rgb;
     }
 
@@ -99,7 +99,7 @@ public class TextColor {
      * @param   blue
      *          blue value
      */
-    public TextColor(int red, int green, int blue) {
+    public TabTextColor(int red, int green, int blue) {
         rgb = (red << 16) + (green << 8) + blue;
     }
 
@@ -110,7 +110,7 @@ public class TextColor {
         double minMaxDist = 9999;
         double maxDist;
         EnumChatFormat closestColor = EnumChatFormat.WHITE;
-        for (TextColor color : legacyColorArray) {
+        for (TabTextColor color : legacyColorArray) {
             int rDiff = Math.abs(color.getRed() - getRed());
             int gDiff = Math.abs(color.getGreen() - getGreen());
             int bDiff = Math.abs(color.getBlue() - getBlue());
@@ -194,7 +194,7 @@ public class TextColor {
      * @return  instance from the character or {@code null} if character is not valid
      */
     @Nullable
-    public static TextColor getLegacyByChar(char c) {
+    public static TabTextColor getLegacyByChar(char c) {
         return LEGACY_COLORS.get(c);
     }
 }

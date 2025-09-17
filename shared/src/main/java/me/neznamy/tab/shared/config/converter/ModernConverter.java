@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.config.converter;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TextColor;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
 
@@ -31,9 +31,9 @@ public class ModernConverter {
         });
         converters.put(1, config -> {
             // Warn users
-            TAB.getInstance().getPlatform().logWarn(new TextComponent("Please note that header/footer conversion is only " +
+            TAB.getInstance().getPlatform().logWarn(new TabTextComponent("Please note that header/footer conversion is only " +
                     "symbolic and does not fully convert old format to new one, most notably per-group and per-user settings." +
-                    " Review your config to make sure it is set up the way you want.", TextColor.RED));
+                    " Review your config to make sure it is set up the way you want.", TabTextColor.RED));
 
             // Read old data
             ConfigurationSection headerFooter = config.getConfigurationSection("header-footer");
@@ -102,7 +102,7 @@ public class ModernConverter {
     public void convert(@NonNull ConfigurationFile config) {
         int configVersion = config.getInt("config-version", 0);
         while (converters.containsKey(configVersion)) {
-            TAB.getInstance().getPlatform().logInfo(new TextComponent("Performing configuration conversion from config version " + configVersion + " to " + (configVersion + 1), TextColor.YELLOW));
+            TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from config version " + configVersion + " to " + (configVersion + 1), TabTextColor.YELLOW));
             converters.get(configVersion).accept(config);
             configVersion++;
             config.set("config-version", configVersion);

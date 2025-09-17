@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.Limitations;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -90,7 +90,7 @@ public class BungeeTabList17 extends BungeeTabList {
     public void addEntry0(@NonNull Entry entry) {
         addUuid(entry.getUniqueId());
         update(PlayerListItem.Action.ADD_PLAYER, createItem(entry.getName(),
-                entry.getDisplayName() == null ? new TextComponent(entry.getName()) : entry.getDisplayName(), entry.getLatency()));
+                entry.getDisplayName() == null ? new TabTextComponent(entry.getName()) : entry.getDisplayName(), entry.getLatency()));
 
         // Add to map
         userNames.put(entry.getUniqueId(), entry.getName());
@@ -108,7 +108,7 @@ public class BungeeTabList17 extends BungeeTabList {
         String displayNameString = component.toLegacyText();
         if (displayNameString.length() > Limitations.MAX_DISPLAY_NAME_LENGTH_1_7)
             displayNameString = displayNameString.substring(0, Limitations.MAX_DISPLAY_NAME_LENGTH_1_7);
-        return player.getPlatform().transformComponent(new TextComponent(displayNameString), player.getVersion());
+        return player.getPlatform().transformComponent(new TabTextComponent(displayNameString), player.getVersion());
     }
 
     private void update(@NonNull PlayerListItem.Action action, @NonNull PlayerListItem.Item item) {

@@ -4,12 +4,12 @@ import com.mojang.logging.LogUtils;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.TabStyle;
+import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
-import me.neznamy.tab.shared.chat.component.TranslatableComponent;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
+import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -111,15 +111,15 @@ public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
     public Component convertComponent(@NotNull TabComponent component) {
         // Component type
         MutableComponent nmsComponent = switch (component) {
-            case TextComponent text -> Component.literal(text.getText());
-            case TranslatableComponent translatable -> Component.translatable(translatable.getKey());
-            case KeybindComponent keybind -> Component.keybind(keybind.getKeybind());
-            case ObjectComponent object -> Component.literal(object.toLegacyText()); // TODO once released
+            case TabTextComponent text -> Component.literal(text.getText());
+            case TabTranslatableComponent translatable -> Component.translatable(translatable.getKey());
+            case TabKeybindComponent keybind -> Component.keybind(keybind.getKeybind());
+            case TabObjectComponent object -> Component.literal(object.toLegacyText()); // TODO once released
             default -> throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
         };
 
         // Component style
-        ChatModifier modifier = component.getModifier();
+        TabStyle modifier = component.getModifier();
         Style style = Style.EMPTY
                 .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
                 .withBold(modifier.getBold())

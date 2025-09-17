@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb.format;
 
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -20,5 +20,5 @@ public interface RGBFormatter {
      * @return  reformatted text
      */
     @NotNull
-    String reformat(@NotNull String text, @NotNull Function<TextColor, String> rgbFunction);
+    String reformat(@NotNull String text, @NotNull Function<TabTextColor, String> rgbFunction);
 }

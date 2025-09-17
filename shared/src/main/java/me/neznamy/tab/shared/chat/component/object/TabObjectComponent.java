@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @Getter
 @AllArgsConstructor
-public class ObjectComponent extends TabComponent {
+public class TabObjectComponent extends TabComponent {
 
     /** Error message to display when this component is used on a server version lower than 1.21.9. */
     public static final String ERROR_MESSAGE = "<Object components were added in 1.21.9>";

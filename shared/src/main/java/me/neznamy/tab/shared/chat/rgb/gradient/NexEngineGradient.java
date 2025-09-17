@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb.gradient;
 
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.util.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,15 +14,15 @@ public class NexEngineGradient implements GradientPattern {
 
     @Override
     @NotNull
-    public String applyPattern(@NotNull String text, @NotNull TriFunction<TextColor, String, TextColor, String> gradientFunction) {
+    public String applyPattern(@NotNull String text, @NotNull TriFunction<TabTextColor, String, TabTextColor, String> gradientFunction) {
         if (!text.contains("<grad")) return text;
         String replaced = text;
         Matcher matcher = pattern.matcher(replaced);
         while (matcher.find()) {
             String format = matcher.group();
-            TextColor start = new TextColor(matcher.group(1));
+            TabTextColor start = new TabTextColor(matcher.group(1));
             String content = matcher.group(2);
-            TextColor end = new TextColor(matcher.group(3));
+            TabTextColor end = new TabTextColor(matcher.group(3));
             replaced = replaced.replace(format, gradientFunction.apply(start, content, end));
         }
         return replaced;

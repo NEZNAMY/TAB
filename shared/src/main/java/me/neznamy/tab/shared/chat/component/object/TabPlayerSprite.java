@@ -16,7 +16,7 @@ import java.util.UUID;
  * This class will support all of them.
  */
 @Getter
-public class PlayerSprite implements ObjectInfo {
+public class TabPlayerSprite implements ObjectInfo {
 
     /** UUID of a player to show skin of */
     @Nullable
@@ -40,7 +40,7 @@ public class PlayerSprite implements ObjectInfo {
      * @param   id
      *          UUID of a player to show skin of
      */
-    public PlayerSprite(@NonNull UUID id) {
+    public TabPlayerSprite(@NonNull UUID id) {
         this.id = id;
     }
 
@@ -50,7 +50,7 @@ public class PlayerSprite implements ObjectInfo {
      * @param   name
      *          Name of a player to show skin of
      */
-    public PlayerSprite(@NonNull String name) {
+    public TabPlayerSprite(@NonNull String name) {
         this.name = name;
     }
 
@@ -60,7 +60,7 @@ public class PlayerSprite implements ObjectInfo {
      * @param   skin
      *          Skin to show
      */
-    public PlayerSprite(@NonNull TabList.Skin skin) {
+    public TabPlayerSprite(@NonNull TabList.Skin skin) {
         this.skin = skin;
     }
 }

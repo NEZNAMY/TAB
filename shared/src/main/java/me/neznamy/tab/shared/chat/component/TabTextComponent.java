@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import me.neznamy.tab.shared.chat.ChatModifier;
+import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TextComponent extends TabComponent {
+public class TabTextComponent extends TabComponent {
 
     @NotNull
     protected String text;
@@ -32,7 +32,7 @@ public class TextComponent extends TabComponent {
      * @param   extra
      *          Extra components
      */
-    public TextComponent(@NotNull String text, List<TabComponent> extra) {
+    public TabTextComponent(@NotNull String text, List<TabComponent> extra) {
         this.text = text;
         super.extra = extra;
     }
@@ -43,9 +43,9 @@ public class TextComponent extends TabComponent {
      * @param   component
      *          Component to clone
      */
-    public TextComponent(@NotNull TextComponent component) {
+    public TabTextComponent(@NotNull TabTextComponent component) {
         text = component.text;
-        modifier = new ChatModifier(component.modifier);
+        modifier = new TabStyle(component.modifier);
     }
 
     /**
@@ -56,7 +56,7 @@ public class TextComponent extends TabComponent {
      * @param   color
      *          Text color
      */
-    public TextComponent(@NotNull String text, @Nullable TextColor color) {
+    public TabTextComponent(@NotNull String text, @Nullable TabTextColor color) {
         this.text = text;
         modifier.setColor(color);
     }
@@ -87,8 +87,8 @@ public class TextComponent extends TabComponent {
         }
         builder.append(text);
         for (TabComponent component : getExtra()) {
-            if (component instanceof TextComponent) {
-                formatting = ((TextComponent) component).append(builder, formatting);
+            if (component instanceof TabTextComponent) {
+                formatting = ((TabTextComponent) component).append(builder, formatting);
             }
         }
         return formatting;

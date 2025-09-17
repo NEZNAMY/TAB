@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.TAB;
@@ -138,7 +138,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
                 Scoreboard.CollisionRule.NEVER,
                 Collections.singletonList(fakePlayer),
                 0,
-                TextColor.RESET.getLegacyColor()
+                TabTextColor.RESET.getLegacyColor()
         );
         shownPlayers.add(p);
     }
@@ -244,7 +244,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
                 teamName,
                 parent.getManager().getCache().get(prefix),
                 parent.getManager().getCache().get(suffix),
-                TextColor.RESET.getLegacyColor()
+                TabTextColor.RESET.getLegacyColor()
         );
     }
 

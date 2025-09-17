@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.chat.rgb.format;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -22,14 +22,14 @@ public class CommonFormatter implements RGBFormatter {
     
     @Override
     @NotNull
-    public String reformat(@NotNull String text, @NotNull Function<TextColor, String> rgbFunction) {
+    public String reformat(@NotNull String text, @NotNull Function<TabTextColor, String> rgbFunction) {
         if (!text.contains(stringCheck)) return text;
         String replaced = text;
         Matcher m = pattern.matcher(replaced);
         while (m.find()) {
             String group = m.group();
             String hexCode = group.substring(2, 8);
-            replaced = replaced.replace(group, rgbFunction.apply(new TextColor(hexCode)));
+            replaced = replaced.replace(group, rgbFunction.apply(new TabTextColor(hexCode)));
         }
         return replaced;
     }

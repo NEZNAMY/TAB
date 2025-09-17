@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb.gradient;
 
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.util.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +24,7 @@ public class CMIGradient extends CommonGradient {
     
     @Override
     @NotNull
-    public String applyPattern(@NotNull String text, @NotNull TriFunction<TextColor, String, TextColor, String> gradientFunction) {
+    public String applyPattern(@NotNull String text, @NotNull TriFunction<TabTextColor, String, TabTextColor, String> gradientFunction) {
         String replaced = text;
         if (replaced.contains("<>}")) {
             Matcher m = shortcutPattern.matcher(replaced);

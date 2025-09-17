@@ -1,13 +1,17 @@
 package me.neznamy.tab.shared.chat.hook;
 
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.TabStyle;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
-import me.neznamy.tab.shared.chat.component.TranslatableComponent;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
+import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.KeybindComponent;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -66,16 +70,16 @@ public class AdventureHook {
         }
         
         // Component type & return
-        if (component instanceof TextComponent) {
-            return Component.text(((TextComponent) component).getText(), style.build()).children(list);
+        if (component instanceof TabTextComponent) {
+            return Component.text(((TabTextComponent) component).getText(), style.build()).children(list);
         }
-        if (component instanceof TranslatableComponent) {
-            return Component.translatable(((TranslatableComponent) component).getKey(), style.build()).children(list);
+        if (component instanceof TabTranslatableComponent) {
+            return Component.translatable(((TabTranslatableComponent) component).getKey(), style.build()).children(list);
         }
-        if (component instanceof KeybindComponent) {
-            return Component.keybind(((KeybindComponent) component).getKeybind(), style.build()).children(list);
+        if (component instanceof TabKeybindComponent) {
+            return Component.keybind(((TabKeybindComponent) component).getKeybind(), style.build()).children(list);
         }
-        if (component instanceof ObjectComponent) {
+        if (component instanceof TabObjectComponent) {
             return Component.text(component.toLegacyText()); // TODO once added
         }
         throw new UnsupportedOperationException(component.getClass().getName() + " component type is not supported");
@@ -98,20 +102,20 @@ public class AdventureHook {
     public static TabComponent convert(@NotNull Component component) {
         // Component type
         TabComponent tabComponent;
-        if (component instanceof net.kyori.adventure.text.TextComponent) {
-            tabComponent = new TextComponent(((net.kyori.adventure.text.TextComponent) component).content());
-        } else if (component instanceof net.kyori.adventure.text.TranslatableComponent) {
-            tabComponent = TabComponent.translatable(((net.kyori.adventure.text.TranslatableComponent) component).key());
-        } else if (component instanceof net.kyori.adventure.text.KeybindComponent) {
-            tabComponent = TabComponent.keybind(((net.kyori.adventure.text.KeybindComponent) component).keybind());
+        if (component instanceof TextComponent) {
+            tabComponent = new TabTextComponent(((TextComponent) component).content());
+        } else if (component instanceof TranslatableComponent) {
+            tabComponent = TabComponent.translatable(((TranslatableComponent) component).key());
+        } else if (component instanceof KeybindComponent) {
+            tabComponent = TabComponent.keybind(((KeybindComponent) component).keybind());
         } else {
             throw new UnsupportedOperationException(component.getClass().getName() + " component type is not supported");
         }
 
         // Component style
         Map<TextDecoration, TextDecoration.State> decorations = component.style().decorations();
-        tabComponent.setModifier(new ChatModifier(
-                component.color() == null ? null : new me.neznamy.tab.shared.chat.TextColor(component.color().value()),
+        tabComponent.setModifier(new TabStyle(
+                component.color() == null ? null : new TabTextColor(component.color().value()),
                 SHADOW_COLOR_AVAILABLE ? AdventureShadowHook.getShadowColor(component) : null,
                 getDecoration(decorations.get(TextDecoration.BOLD)),
                 getDecoration(decorations.get(TextDecoration.ITALIC)),

@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.config.file;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.yamlassist.YamlAssist;
 import org.jetbrains.annotations.Nullable;
@@ -56,12 +56,12 @@ public class YamlConfigurationFile extends ConfigurationFile {
             TAB tab = TAB.getInstance();
             tab.setBrokenFile(destination.getName());
             tab.getPlatform().logWarn(TabComponent.legacyText("File " + destination + " has broken syntax."));
-            tab.getPlatform().logInfo(new TextComponent("Error message from yaml parser: " + e.getMessage(), TextColor.GOLD));
+            tab.getPlatform().logInfo(new TabTextComponent("Error message from yaml parser: " + e.getMessage(), TabTextColor.GOLD));
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
-                tab.getPlatform().logInfo(new TextComponent("Suggestions to fix yaml syntax:", TextColor.LIGHT_PURPLE));
+                tab.getPlatform().logInfo(new TabTextComponent("Suggestions to fix yaml syntax:", TabTextColor.LIGHT_PURPLE));
                 for (String suggestion : suggestions) {
-                    tab.getPlatform().logInfo(new TextComponent("- " + suggestion, TextColor.LIGHT_PURPLE));
+                    tab.getPlatform().logInfo(new TabTextComponent("- " + suggestion, TabTextColor.LIGHT_PURPLE));
                 }
             }
             throw e;

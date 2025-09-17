@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.paper_1_21_4;
 
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.component.object.AtlasSprite;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.TabStyle;
+import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
-import me.neznamy.tab.shared.chat.component.object.PlayerSprite;
+import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -34,18 +34,18 @@ public class PaperComponentConverter extends ComponentConverter {
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull AtlasSprite sprite) {
-        return Component.literal(ObjectComponent.ERROR_MESSAGE);
+    public Object newObjectComponent(@NotNull TabAtlasSprite sprite) {
+        return Component.literal(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
     @NotNull
-    public Object newObjectComponent(@NotNull PlayerSprite sprite) {
-        return Component.literal(ObjectComponent.ERROR_MESSAGE);
+    public Object newObjectComponent(@NotNull TabPlayerSprite sprite) {
+        return Component.literal(TabObjectComponent.ERROR_MESSAGE);
     }
 
     @Override
-    public void applyStyle(@NotNull Object nmsComponent, @NotNull ChatModifier modifier) {
+    public void applyStyle(@NotNull Object nmsComponent, @NotNull TabStyle modifier) {
         Style style = Style.EMPTY
                 .withColor(modifier.getColor() == null ? null : TextColor.fromRgb(modifier.getColor().getRgb()))
                 .withBold(modifier.getBold())

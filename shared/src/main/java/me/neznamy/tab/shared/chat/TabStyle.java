@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatModifier {
+public class TabStyle {
 
-    @Nullable private TextColor color;
+    @Nullable private TabTextColor color;
     @Nullable private Integer shadowColor; // ARGB
     @Nullable private Boolean bold;
     @Nullable private Boolean italic;
@@ -29,7 +29,7 @@ public class ChatModifier {
      * @param   modifier
      *          Modifier to copy
      */
-    public ChatModifier(@NotNull ChatModifier modifier) {
+    public TabStyle(@NotNull TabStyle modifier) {
         color = modifier.color;
         shadowColor = modifier.shadowColor;
         bold = modifier.bold;

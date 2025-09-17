@@ -1,14 +1,14 @@
 package me.neznamy.tab.shared.chat.component;
 
-import me.neznamy.tab.shared.chat.ChatModifier;
-import me.neznamy.tab.shared.chat.TextColor;
+import me.neznamy.tab.shared.chat.TabStyle;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * An implementation that only uses the "text" field with legacy colors in it, without using
  * any component style or extra.
  */
-public class LegacyTextComponent extends TextComponent {
+public class LegacyTextComponent extends TabTextComponent {
 
     /**
      * Constructs new instance with given text.
@@ -28,22 +28,22 @@ public class LegacyTextComponent extends TextComponent {
 
     @Override
     @NotNull
-    protected ChatModifier fetchLastStyle() {
-        ChatModifier modifier = new ChatModifier();
+    protected TabStyle fetchLastStyle() {
+        TabStyle modifier = new TabStyle();
         char[] chars = text.toCharArray();
         for (int index = chars.length - 2; index >= 0; index--) {
             if (chars[index] != '§') continue;
-            TextColor color = TextColor.getLegacyByChar(chars[index + 1]);
+            TabTextColor color = TabTextColor.getLegacyByChar(chars[index + 1]);
             if (color != null) {
-                if (color == TextColor.BOLD) {
+                if (color == TabTextColor.BOLD) {
                     modifier.setBold(true);
-                } else if (color == TextColor.ITALIC) {
+                } else if (color == TabTextColor.ITALIC) {
                     modifier.setItalic(true);
-                } else if (color == TextColor.UNDERLINE) {
+                } else if (color == TabTextColor.UNDERLINE) {
                     modifier.setUnderlined(true);
-                } else if (color == TextColor.STRIKETHROUGH) {
+                } else if (color == TabTextColor.STRIKETHROUGH) {
                     modifier.setStrikethrough(true);
-                } else if (color == TextColor.OBFUSCATED) {
+                } else if (color == TabTextColor.OBFUSCATED) {
                     modifier.setObfuscated(true);
                 } else {
                     modifier.setColor(color);

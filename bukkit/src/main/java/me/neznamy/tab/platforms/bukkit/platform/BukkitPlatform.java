@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.shared.chat.component.KeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TextComponent;
-import me.neznamy.tab.shared.chat.component.TranslatableComponent;
-import me.neznamy.tab.shared.chat.component.object.ObjectComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
+import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitEventListener;
 import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
 import me.neznamy.tab.platforms.bukkit.BukkitTabCommand;
@@ -420,13 +420,13 @@ public class BukkitPlatform implements BackendPlatform {
             }
         }
         sb.append(component.getModifier().getMagicCodes());
-        if (component instanceof TextComponent) {
-            sb.append(((TextComponent) component).getText());
-        } else if (component instanceof TranslatableComponent) {
-            sb.append(((TranslatableComponent) component).getKey());
-        } else if (component instanceof KeybindComponent) {
-            sb.append(((KeybindComponent) component).getKeybind());
-        } else if (component instanceof ObjectComponent) {
+        if (component instanceof TabTextComponent) {
+            sb.append(((TabTextComponent) component).getText());
+        } else if (component instanceof TabTranslatableComponent) {
+            sb.append(((TabTranslatableComponent) component).getKey());
+        } else if (component instanceof TabKeybindComponent) {
+            sb.append(((TabKeybindComponent) component).getKeybind());
+        } else if (component instanceof TabObjectComponent) {
             sb.append(component.toLegacyText());
         } else {
             throw new IllegalStateException("Unexpected component type: " + component.getClass().getName());
