@@ -1,0 +1,29 @@
+name: Backport
+description: Backport to an older version of MC for modded platforms
+labels: ["Type: Backport"]
+body:
+  - type: input
+    attributes:
+      label: Server software and version
+      description: Server software and version to backport to
+      placeholder: Forge 1.5.2
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Other
+      description: Anything else you may want to say
+      placeholder: Lots of servers want this and it's missing
+    validations:
+      required: false
+
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Let's make sure this request is valid
+      options:
+        - label: This is not a request to update to a new MC version that just came out
+          required: true
+        - label: This version is either not available on Modrinth, or is very outdated
+          required: false
