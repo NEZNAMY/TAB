@@ -123,7 +123,7 @@ scoreboard:
 layout:
   enabled: false
   direction: COLUMNS
-  default-skin: mineskin:383747683
+  default-skin: mineskin:37e93c8e12cd426cb28fce31969e0674
   enable-remaining-players-text: true
   remaining-players-text: '... and %s more'
   empty-slot-ping-value: 1000

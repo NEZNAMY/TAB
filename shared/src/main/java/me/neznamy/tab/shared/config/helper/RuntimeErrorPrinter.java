@@ -180,16 +180,6 @@ public class RuntimeErrorPrinter {
     }
 
     /**
-     * Logs a warning if MineSkin ID is invalid.
-     *
-     * @param   id
-     *          MineSkin ID
-     */
-    public void unknownMineSkin(@NonNull String id) {
-        error("Failed to load skin by id: No skin with the id '" + id + "' was found");
-    }
-
-    /**
      * Logs a warning if player with given name does not exist.
      *
      * @param   name
