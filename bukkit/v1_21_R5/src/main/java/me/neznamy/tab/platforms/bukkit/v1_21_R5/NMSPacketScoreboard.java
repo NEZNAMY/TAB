@@ -136,28 +136,17 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    @SuppressWarnings("unchecked")
     public void onPacketSend(@NonNull Object packet) {
-        if (packet instanceof PacketPlayOutScoreboardDisplayObjective) {
-            TAB.getInstance().getFeatureManager().onDisplayObjective(
-                    player,
-                    ((PacketPlayOutScoreboardDisplayObjective)packet).b().ordinal(),
-                    ((PacketPlayOutScoreboardDisplayObjective)packet).e()
-            );
+        if (packet instanceof PacketPlayOutScoreboardDisplayObjective display) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.b().ordinal(), display.e());
         }
-        if (packet instanceof PacketPlayOutScoreboardObjective) {
-            TAB.getInstance().getFeatureManager().onObjective(
-                    player,
-                    ((PacketPlayOutScoreboardObjective)packet).f(),
-                    ((PacketPlayOutScoreboardObjective)packet).b()
-            );
+        if (packet instanceof PacketPlayOutScoreboardObjective objective) {
+            TAB.getInstance().getFeatureManager().onObjective(player, objective.f(), objective.b());
         }
-        if (packet instanceof PacketPlayOutScoreboardTeam) {
-            int action = getMethod((PacketPlayOutScoreboardTeam) packet);
+        if (packet instanceof PacketPlayOutScoreboardTeam team) {
+            int action = getMethod(team);
             if (action == TeamAction.UPDATE) return;
-            Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
-            if (players == null) players = Collections.emptyList();
-            TeamPacket_PLAYERS.set(packet, onTeamPacket(action, ((PacketPlayOutScoreboardTeam)packet).f(), players));
+            TeamPacket_PLAYERS.set(packet, onTeamPacket(action, team.f(), team.g() == null ? Collections.emptyList() : team.g()));
         }
     }
 
