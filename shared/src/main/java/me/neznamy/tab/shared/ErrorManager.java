@@ -328,4 +328,8 @@ public class ErrorManager {
     public void redisBungeeMessageSendFail(@NotNull Exception e) {
         printError("Failed to deliver message through RedisBungee due to an error ", e, false, errorLog);
     }
+
+    public void redisBungeeRegisterFail(@NotNull Exception e) {
+        printError("Failed to register TAB channel in RedisBungee due to an error ", e, false, errorLog);
+    }
 }

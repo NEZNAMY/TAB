@@ -35,7 +35,13 @@ public class VelocityRedisSupport extends ProxySupport {
     @Override
     public void register() {
         plugin.getServer().getEventManager().register(plugin, this);
-        RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.PROXY_CHANNEL_NAME);
+        try {
+            RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.PROXY_CHANNEL_NAME);
+        } catch (NullPointerException e) {
+            // java.lang.NullPointerException: Cannot invoke "com.imaginarycode.minecraft.redisbungee.api.PubSubListener.addChannel(String[])"
+            // because the return value of "com.imaginarycode.minecraft.redisbungee.api.RedisBungeePlugin.getPubSubListener()" is null
+            TAB.getInstance().getErrorManager().redisBungeeRegisterFail(e);
+        }
     }
 
     @Override
