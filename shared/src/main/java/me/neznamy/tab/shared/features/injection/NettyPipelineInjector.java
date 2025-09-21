@@ -65,6 +65,10 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
+                if (packet == null) {
+                    return;
+                }
+                
                 if (player.getVersion().getMinorVersion() >= 8) {
                     ((TrackedTabList<?>)player.getTabList()).onPacketSend(packet);
                 }
