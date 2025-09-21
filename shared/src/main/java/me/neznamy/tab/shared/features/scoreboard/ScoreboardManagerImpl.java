@@ -114,7 +114,6 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
      *          player to send scoreboard to
      */
     public void sendHighestScoreboard(@NonNull TabPlayer p) {
-        if (p.scoreboardData.otherPluginScoreboard != null) return;
         if (!hasScoreboardVisible(p)) return;
         ScoreboardImpl scoreboard = (ScoreboardImpl) detectHighestScoreboard(p);
         ScoreboardImpl current = p.scoreboardData.activeScoreboard;
@@ -174,21 +173,19 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     @Override
     public void onDisplayObjective(@NotNull TabPlayer receiver, int slot, @NotNull String objective) {
         if (slot == Scoreboard.DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
-            TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", hiding TAB one.");
+            TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", disabling TAB's scoreboard slotting.");
             receiver.scoreboardData.otherPluginScoreboard = objective;
-            ScoreboardImpl sb = receiver.scoreboardData.activeScoreboard;
-            if (sb != null) {
-                sb.removePlayer(receiver);
-            }
         }
     }
 
     @Override
     public void onObjective(@NotNull TabPlayer receiver, int action, @NotNull String objective) {
         if (action == Scoreboard.ObjectiveAction.UNREGISTER && objective.equals(receiver.scoreboardData.otherPluginScoreboard)) {
-            TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
+            TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, slotting TAB scoreboard.");
             receiver.scoreboardData.otherPluginScoreboard = null;
-            sendHighestScoreboard(receiver);
+            if (receiver.scoreboardData.activeScoreboard != null) {
+                receiver.getScoreboard().setDisplaySlot(OBJECTIVE_NAME, Scoreboard.DisplaySlot.SIDEBAR);
+            }
         }
     }
 
@@ -295,9 +292,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         if (player.scoreboardData.visible == visible) return;
         if (visible) {
             player.scoreboardData.visible = true;
-            if (player.scoreboardData.otherPluginScoreboard == null) {
-                sendHighestScoreboard(player);
-            }
+            sendHighestScoreboard(player);
             if (sendToggleMessage) {
                 player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOn());
             }
@@ -310,9 +305,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             }
         } else {
             player.scoreboardData.visible = false;
-            if (player.scoreboardData.otherPluginScoreboard == null) {
-                unregisterScoreboard(player);
-            }
+            unregisterScoreboard(player);
             if (sendToggleMessage) {
                 player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOff());
             }
@@ -376,7 +369,9 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public void onServerChange(@NotNull TabPlayer changed, @NotNull Server from, @NotNull Server to) {
         if (changed.scoreboardData.otherPluginScoreboard != null) {
             changed.scoreboardData.otherPluginScoreboard = null;
-            sendHighestScoreboard(changed);
+            if (changed.scoreboardData.activeScoreboard != null) {
+                changed.getScoreboard().setDisplaySlot(OBJECTIVE_NAME, Scoreboard.DisplaySlot.SIDEBAR);
+            }
         }
     }
 

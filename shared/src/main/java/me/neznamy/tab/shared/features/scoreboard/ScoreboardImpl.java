@@ -155,7 +155,9 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
                 Scoreboard.HealthDisplay.INTEGER,
                 TabComponent.empty()
         );
-        p.getScoreboard().setDisplaySlot(ScoreboardManagerImpl.OBJECTIVE_NAME, Scoreboard.DisplaySlot.SIDEBAR);
+        if (p.scoreboardData.otherPluginScoreboard == null) {
+            p.getScoreboard().setDisplaySlot(ScoreboardManagerImpl.OBJECTIVE_NAME, Scoreboard.DisplaySlot.SIDEBAR);
+        }
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }
