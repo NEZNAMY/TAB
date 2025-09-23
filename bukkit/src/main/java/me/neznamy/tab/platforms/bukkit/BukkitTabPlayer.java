@@ -1,9 +1,10 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -69,6 +70,11 @@ public class BukkitTabPlayer extends BackendTabPlayer {
             if (v.asBoolean()) return true;
         }
         return false;
+    }
+
+    @Override
+    public int getDeaths() {
+        return getPlayer().getStatistic(Statistic.DEATHS);
     }
 
     @Override

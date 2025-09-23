@@ -233,10 +233,11 @@ public class TabConstants {
         public static final String COLLISION = "%collision%";
         public static final String INVISIBLE = "%invisible%";
 
-        // Bukkit only
+        // Backend only
         public static final String TPS = "%tps%";
         public static final String MSPT = "%mspt%";
         public static final String HEALTH = "%health%";
+        public static final String DEATHS = "%deaths%";
 
         public static final int MINIMUM_REFRESH_INTERVAL = 50;
         public static final int RETURN_TIME_WARN_THRESHOLD = 50;

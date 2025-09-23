@@ -72,4 +72,11 @@ public abstract class BackendTabPlayer extends TabPlayer {
      * @return  {@code true} if player is vanished, {@code false} if not
      */
     public abstract boolean isVanished0();
+
+    /**
+     * Returns number of player's deaths for placeholder.
+     *
+     * @return  number of player's deaths
+     */
+    public abstract int getDeaths();
 }

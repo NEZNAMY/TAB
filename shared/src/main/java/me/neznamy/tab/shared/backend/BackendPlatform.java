@@ -38,6 +38,8 @@ public interface BackendPlatform extends Platform {
                 () -> registry.getDecimal2().format(Math.min(20, getTPS())));
         manager.registerInternalServerPlaceholder(TabConstants.Placeholder.MSPT, 1000,
                 () -> registry.getDecimal2().format(getMSPT()));
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.DEATHS, 1000,
+                p -> PerformanceUtil.toString(((BackendTabPlayer)p).getDeaths()));
         registry.registerPlaceholders(manager);
     }
 

@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.sponge;
 
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Keys;
@@ -11,6 +11,7 @@ import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.network.ServerConnectionState;
+import org.spongepowered.api.statistic.Statistics;
 
 import java.util.Collections;
 
@@ -74,6 +75,11 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isVanished0() {
         return getPlayer().vanishState().get().invisible();
+    }
+
+    @Override
+    public int getDeaths() {
+        return getPlayer().statistics().get().get(Statistics.DEATHS.get()).intValue();
     }
 
     @Override
