@@ -32,7 +32,7 @@ public class ModernConverter {
         converters.put(1, config -> {
             // Warn users
             TAB.getInstance().getPlatform().logWarn(new TabTextComponent("Please note that header/footer conversion is only " +
-                    "symbolic and does not fully convert old format to new one, most notably per-group and per-user settings." +
+                    "symbolic and does not fully convert old format to new one. The following content is not converted: per-group settings, per-user settings and disable-condition." +
                     " Review your config to make sure it is set up the way you want.", TabTextColor.RED));
 
             // Read old data
