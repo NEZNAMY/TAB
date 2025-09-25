@@ -2,7 +2,8 @@ package me.neznamy.tab.shared.features.nametags;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
@@ -21,16 +22,19 @@ import java.util.UUID;
 /**
  * Proxy message to update team data of a player.
  */
-@AllArgsConstructor
-@ToString
-public class NameTagUpdateProxyPlayer extends ProxyMessage {
+@RequiredArgsConstructor
+@ToString(exclude = "feature")
+@Getter
+public class NameTagProxyPlayerData extends ProxyMessage {
 
     @NotNull private final NameTag feature;
+    private final long id;
     @NotNull private final UUID playerId;
     @NotNull private final String teamName;
     @NotNull private final String prefix;
     @NotNull private final String suffix;
     @NotNull private final Scoreboard.NameVisibility nameVisibility;
+    @Nullable private String resolvedTeamName;
 
     /**
      * Creates new instance and reads data from byte input.
@@ -40,8 +44,9 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
      * @param   feature
      *          Feature instance to use for processing
      */
-    public NameTagUpdateProxyPlayer(@NotNull ByteArrayDataInput in, @NotNull NameTag feature) {
+    public NameTagProxyPlayerData(@NotNull ByteArrayDataInput in, @NotNull NameTag feature) {
         this.feature = feature;
+        id = in.readLong();
         playerId = readUUID(in);
         teamName = in.readUTF();
         prefix = in.readUTF();
@@ -56,6 +61,7 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
 
     @Override
     public void write(@NotNull ByteArrayDataOutput out) {
+        out.writeLong(id);
         writeUUID(out, playerId);
         out.writeUTF(teamName);
         out.writeUTF(prefix);
@@ -69,44 +75,45 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
         if (target == null) {
             unknownPlayer(playerId.toString(), "nametag update update");
             QueuedData data = proxySupport.getQueuedData().computeIfAbsent(playerId, k -> new QueuedData());
-            data.setTeamName(checkTeamName(null, teamName.substring(0, teamName.length()-1)));
-            data.setTagPrefix(feature.getCache().get(prefix));
-            data.setTagSuffix(feature.getCache().get(suffix));
-            data.setNameVisibility(nameVisibility);
+            if (data.getNametag() == null || data.getNametag().id < id) {
+                resolvedTeamName = checkTeamName(null, teamName.substring(0, teamName.length()-1));
+                data.setNametag(this);
+            }
             return;
         }
-        String oldTeamName = target.getTeamName();
-        String newTeamName = checkTeamName(target, teamName.substring(0, teamName.length()-1));
-        target.setTeamName(newTeamName);
-        target.setTagPrefix(feature.getCache().get(prefix));
-        target.setTagSuffix(feature.getCache().get(suffix));
-        target.setNameVisibility(nameVisibility);
+        if (target.getNametag() != null && target.getNametag().id > id) {
+            TAB.getInstance().debug("Dropping nametag update action for player " + target.getName() + " due to newer action already being present");
+            return;
+        }
+        NameTagProxyPlayerData oldData = target.getNametag();
+        resolvedTeamName = checkTeamName(target, teamName.substring(0, teamName.length()-1));
+        target.setNametag(this);
 
         if (target.getConnectionState() == ProxyPlayer.ConnectionState.CONNECTED) {
-            if (!newTeamName.equals(oldTeamName)) {
-                for (TabPlayer viewer : feature.getOnlinePlayers().getPlayers()) {
-                    if (oldTeamName != null) viewer.getScoreboard().unregisterTeam(oldTeamName);
+            for (TabPlayer viewer : feature.getOnlinePlayers().getPlayers()) {
+                if (oldData != null && resolvedTeamName.equals(oldData.resolvedTeamName)) {
+                    viewer.getScoreboard().updateTeam(
+                            oldData.teamName,
+                            feature.getCache().get(prefix),
+                            feature.getCache().get(suffix),
+                            nameVisibility,
+                            Scoreboard.CollisionRule.ALWAYS,
+                            feature.getTeamOptions(),
+                            feature.getCache().get(prefix).getLastStyle().toEnumChatFormat()
+                    );
+                } else {
+                    if (oldData != null) {
+                        viewer.getScoreboard().unregisterTeam(oldData.resolvedTeamName);
+                    }
                     viewer.getScoreboard().registerTeam(
-                            newTeamName,
-                            target.getTagPrefix(),
-                            target.getTagSuffix(),
+                            resolvedTeamName,
+                            feature.getCache().get(prefix),
+                            feature.getCache().get(suffix),
                             nameVisibility,
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(target.getNickname()),
-                            2,
-                            target.getTagPrefix().getLastStyle().toEnumChatFormat()
-                    );
-                }
-            } else {
-                for (TabPlayer viewer : feature.getOnlinePlayers().getPlayers()) {
-                    viewer.getScoreboard().updateTeam(
-                            oldTeamName,
-                            target.getTagPrefix(),
-                            target.getTagSuffix(),
-                            nameVisibility,
-                            Scoreboard.CollisionRule.ALWAYS,
-                            2,
-                            target.getTagPrefix().getLastStyle().toEnumChatFormat()
+                            feature.getTeamOptions(),
+                            feature.getCache().get(prefix).getLastStyle().toEnumChatFormat()
                     );
                 }
             }
@@ -128,7 +135,7 @@ public class NameTagUpdateProxyPlayer extends ProxyMessage {
             if (!nameTaken && feature.getProxy() != null) {
                 for (ProxyPlayer all : feature.getProxy().getProxyPlayers().values()) {
                     if (all == player) continue;
-                    if (potentialTeamName.equals(all.getTeamName())) {
+                    if (all.getNametag() != null && potentialTeamName.equals(all.getNametag().teamName)) {
                         nameTaken = true;
                         break;
                     }

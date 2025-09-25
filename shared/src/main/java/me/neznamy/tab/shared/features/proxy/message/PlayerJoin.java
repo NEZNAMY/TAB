@@ -83,15 +83,10 @@ public class PlayerJoin extends ProxyMessage {
         proxySupport.getProxyPlayers().put(decodedPlayer.getUniqueId(), decodedPlayer);
         QueuedData data = proxySupport.getQueuedData().remove(decodedPlayer.getUniqueId());
         if (data != null) {
-            decodedPlayer.setBelowNameNumber(data.getBelowNameNumber());
-            decodedPlayer.setBelowNameFancy(data.getBelowNameFancy());
+            decodedPlayer.setBelowname(data.getBelowname());
             decodedPlayer.setTabFormat(data.getTabFormat());
-            decodedPlayer.setTeamName(data.getTeamName());
-            decodedPlayer.setTagPrefix(data.getTagPrefix());
-            decodedPlayer.setTagSuffix(data.getTagSuffix());
-            decodedPlayer.setNameVisibility(data.getNameVisibility());
-            decodedPlayer.setPlayerlistNumber(data.getPlayerlistNumber());
-            decodedPlayer.setPlayerlistFancy(data.getPlayerlistFancy());
+            decodedPlayer.setNametag(data.getNametag());
+            decodedPlayer.setPlayerlist(data.getPlayerlist());
             decodedPlayer.setVanished(data.isVanished());
         }
         if (TAB.getInstance().getPlayer(decodedPlayer.getUniqueId()) == null) {

@@ -69,6 +69,7 @@ public class VisibilityRefresher extends RefreshableFeature implements JoinListe
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.isDisabled()) return;
+        if (!nameTags.getOnlinePlayers().contains(p)) return; // player is not loaded by this feature yet
         nameTags.updateVisibility(p);
     }
 

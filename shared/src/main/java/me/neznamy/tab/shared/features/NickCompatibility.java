@@ -90,16 +90,16 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     private void processNameChange(ProxyPlayer player) {
         CpuManager cpu = TAB.getInstance().getCpu();
         cpu.getProcessingThread().execute(new TimedCaughtTask(cpu, () -> {
-            if (nameTags != null) {
-                String teamName = player.getTeamName();
+            if (nameTags != null && player.getNametag() != null) {
+                String teamName = player.getNametag().getResolvedTeamName();
                 for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
                     viewer.getScoreboard().unregisterTeam(teamName);
-                    TabComponent prefix = player.getTagPrefix();
+                    TabComponent prefix = player.getNametag().getFeature().getCache().get(player.getNametag().getPrefix());
                     viewer.getScoreboard().registerTeam(
                             teamName,
                             prefix,
-                            player.getTagSuffix(),
-                            player.getNameVisibility(),
+                            player.getNametag().getFeature().getCache().get(player.getNametag().getSuffix()),
+                            player.getNametag().getNameVisibility(),
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(player.getNickname()),
                             nameTags.getTeamOptions(),
@@ -107,25 +107,25 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                     );
                 }
             }
-            if (belowname != null) {
+            if (belowname != null && player.getBelowname() != null) {
                 for (TabPlayer all : belowname.getOnlinePlayers().getPlayers()) {
                     all.getScoreboard().setScore(
                             BelowName.OBJECTIVE_NAME,
                             player.getNickname(),
-                            player.getBelowNameNumber(),
+                            player.getBelowname().getValue(),
                             null, // Unused by this objective slot
-                            player.getBelowNameFancy()
+                            player.getBelowname().getFeature().getCache().get(player.getBelowname().getFancyValue())
                     );
                 }
             }
-            if (yellownumber != null) {
+            if (yellownumber != null && player.getPlayerlist() != null) {
                 for (TabPlayer all : yellownumber.getOnlinePlayers().getPlayers()) {
                     all.getScoreboard().setScore(
                             YellowNumber.OBJECTIVE_NAME,
                             player.getNickname(),
-                            player.getPlayerlistNumber(),
+                            player.getPlayerlist().getValue(),
                             null, // Unused by this objective slot
-                            player.getPlayerlistFancy()
+                            player.getPlayerlist().getFeature().getCache().get(player.getPlayerlist().getFancyValue())
                     );
                 }
             }

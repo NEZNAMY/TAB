@@ -171,7 +171,7 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
             }
             if (!nameTaken && proxy != null && nameTags != null) {
                 for (ProxyPlayer all : proxy.getProxyPlayers().values()) {
-                    if (potentialTeamName.equals(all.getTeamName())) {
+                    if (all.getNametag() != null && potentialTeamName.equals(all.getNametag().getResolvedTeamName())) {
                         nameTaken = true;
                         break;
                     }

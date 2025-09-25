@@ -2,9 +2,11 @@ package me.neznamy.tab.shared.features.proxy;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.data.Server;
-import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.features.belowname.BelowNameProxyPlayerData;
+import me.neznamy.tab.shared.features.nametags.NameTagProxyPlayerData;
+import me.neznamy.tab.shared.features.playerlist.PlayerListProxyPlayerData;
+import me.neznamy.tab.shared.features.playerlistobjective.PlayerListObjectiveProxyPlayerData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,39 +18,21 @@ import org.jetbrains.annotations.Nullable;
 @Setter
 public class QueuedData {
 
-    /** Belowname number for 1.20.2- */
-    private int belowNameNumber;
-
-    /** Belowname NumberFormat for 1.20.3+ */
+    /** Belowname data */
     @Nullable
-    private TabComponent belowNameFancy;
+    private BelowNameProxyPlayerData belowname;
+
+    /** Playerlist objective data */
+    @Nullable
+    private PlayerListObjectiveProxyPlayerData playerlist;
 
     /** Tablist display name */
     @Nullable
-    private TabComponent tabFormat;
+    private PlayerListProxyPlayerData tabFormat;
 
-    /** Scoreboard team name */
+    /** Nametag data */
     @Nullable
-    private String teamName;
-
-    /** Nametag prefix */
-    @Nullable
-    private TabComponent tagPrefix;
-
-    /** Nametag suffix */
-    @Nullable
-    private TabComponent tagSuffix;
-
-    /** Nametag visibility rule */
-    @Nullable
-    private Scoreboard.NameVisibility nameVisibility;
-
-    /** Playerlist objective number for 1.20.2- */
-    private int playerlistNumber;
-
-    /** Playerlist objective NumberFormat for 1.20.3+ */
-    @Nullable
-    private TabComponent playerlistFancy;
+    private NameTagProxyPlayerData nametag;
 
     /** Whether player is vanished or not */
     private boolean vanished;

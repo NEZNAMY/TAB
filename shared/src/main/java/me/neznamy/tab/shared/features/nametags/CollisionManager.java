@@ -59,6 +59,7 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (p.teamData.isDisabled()) return;
+        if (!nameTags.getOnlinePlayers().contains(p)) return; // player is not loaded by this feature yet
         nameTags.updateCollision(p, false);
     }
 

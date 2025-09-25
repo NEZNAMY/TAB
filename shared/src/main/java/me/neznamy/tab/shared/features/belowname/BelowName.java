@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Feature handler for BelowName feature
@@ -60,7 +61,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
         if (proxy != null) {
-            proxy.registerMessage(BelowNameUpdateProxyPlayer.class, in -> new BelowNameUpdateProxyPlayer(in, this));
+            proxy.registerMessage(BelowNameProxyPlayerData.class, in -> new BelowNameProxyPlayerData(in, this));
         }
     }
 
@@ -76,9 +77,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 register(loaded);
             }
             values.put(loaded, getValue(loaded));
-            if (proxy != null) {
-                proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, loaded.getTablistId(), values.get(loaded), loaded.belowNameData.numberFormat.get()));
-            }
+            sendProxyMessage(loaded.getUniqueId(), values.get(loaded), loaded.belowNameData.numberFormat.get());
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
@@ -115,16 +114,16 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
             }
         }
         if (proxy != null) {
-            proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, connectedPlayer.getTablistId(), getValue(connectedPlayer), connectedPlayer.belowNameData.numberFormat.get()));
+            sendProxyMessage(connectedPlayer);
             if (connectedPlayer.belowNameData.disabled.get()) return;
             for (ProxyPlayer proxyPlayer : proxy.getProxyPlayers().values()) {
-                if (proxyPlayer.getBelowNameFancy() == null) continue; // This proxy player is not loaded yet
+                if (proxyPlayer.getBelowname() == null) continue; // This proxy player is not loaded yet
                 connectedPlayer.getScoreboard().setScore(
                         OBJECTIVE_NAME,
                         proxyPlayer.getNickname(),
-                        proxyPlayer.getBelowNameNumber(),
+                        proxyPlayer.getBelowname().getValue(),
                         null, // Unused by this objective slot
-                        proxyPlayer.getBelowNameFancy()
+                        cache.get(proxyPlayer.getBelowname().getFancyValue())
                 );
             }
         }
@@ -148,15 +147,15 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 setScore(p, all, getValue(all), all.belowNameData.numberFormat.getFormat(p));
             }
             if (proxy != null) {
-                proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, p.getTablistId(), getValue(p), p.belowNameData.numberFormat.get()));
+                sendProxyMessage(p);
                 for (ProxyPlayer proxyPlayer : proxy.getProxyPlayers().values()) {
-                    if (proxyPlayer.getBelowNameFancy() == null) continue; // This proxy player is not loaded yet
+                    if (proxyPlayer.getBelowname() == null) continue; // This proxy player is not loaded yet
                     p.getScoreboard().setScore(
                             OBJECTIVE_NAME,
                             proxyPlayer.getNickname(),
-                            proxyPlayer.getBelowNameNumber(),
+                            proxyPlayer.getBelowname().getValue(),
                             null, // Unused by this objective slot
-                            proxyPlayer.getBelowNameFancy()
+                            cache.get(proxyPlayer.getBelowname().getFancyValue())
                     );
                 }
             }
@@ -205,7 +204,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
             if (!sameServerAndWorld(viewer, refreshed)) continue;
             setScore(viewer, refreshed, number, fancy.getFormat(viewer));
         }
-        if (proxy != null) proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, refreshed.getTablistId(), number, fancy.get()));
+        sendProxyMessage(refreshed.getUniqueId(), number, fancy.get());
     }
 
     private void register(@NotNull TabPlayer player) {
@@ -300,15 +299,15 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     }
 
     public void updatePlayer(@NotNull ProxyPlayer player) {
-        if (player.getBelowNameFancy() == null) return; // Player not loaded yet
+        if (player.getBelowname() == null) return; // Player not loaded yet
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             if (viewer.belowNameData.disabled.get()) continue;
             viewer.getScoreboard().setScore(
                     OBJECTIVE_NAME,
                     player.getNickname(),
-                    player.getBelowNameNumber(),
+                    player.getBelowname().getValue(),
                     null, // Unused by this objective slot
-                    player.getBelowNameFancy()
+                    cache.get(player.getBelowname().getFancyValue())
             );
         }
     }
@@ -317,10 +316,24 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     // ProxySupport
     // ------------------
 
+    private void sendProxyMessage(@NotNull TabPlayer player) {
+        if (proxy == null) return;
+        sendProxyMessage(
+                player.getUniqueId(),
+                getValue(player),
+                player.belowNameData.numberFormat.get()
+        );
+    }
+
+    private void sendProxyMessage(@NotNull UUID uniqueId, int value, @NotNull String fancyValue) {
+        if (proxy == null) return;
+        proxy.sendMessage(new BelowNameProxyPlayerData(this, proxy.getIdCounter().incrementAndGet(), uniqueId, value, fancyValue));
+    }
+
     @Override
     public void onProxyLoadRequest() {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            proxy.sendMessage(new BelowNameUpdateProxyPlayer(this, all.getTablistId(), getValue(all), all.belowNameData.numberFormat.get()));
+            sendProxyMessage(all);
         }
     }
 

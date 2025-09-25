@@ -53,4 +53,15 @@ public class OnlinePlayers {
         playerSet.remove(player);
         players = playerSet.toArray(new TabPlayer[0]);
     }
+
+    /**
+     * Checks if given player is online.
+     *
+     * @param   player
+     *          Player to check
+     * @return  {@code true} if player is online, {@code false} if not
+     */
+    public boolean contains(@NotNull TabPlayer player) {
+        return playerSet.contains(player);
+    }
 }
