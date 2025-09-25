@@ -1,9 +1,10 @@
 package me.neznamy.tab.platforms.bungeecord.hook;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -29,9 +30,9 @@ public class BungeePremiumVanishHook extends PremiumVanishHook {
             canSeeEnabled = true;
         } else {
             canSeeEnabled = false;
-            platform.logWarn(TabComponent.legacyText("Detected an outdated version of " +
+            platform.logWarn(new TabTextComponent("Detected an outdated version of " +
                     "PremiumVanish with limited API. Vanish compatibility " +
-                    "may not work as expected. Update PremiumVanish to version 2.7.11+ for optimal experience."));
+                    "may not work as expected. Update PremiumVanish to version 2.7.11+ for optimal experience.", TabTextColor.RED));
         }
     }
 

@@ -4,11 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
-import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TabTextComponent;
-import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
-import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitEventListener;
 import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
 import me.neznamy.tab.platforms.bukkit.BukkitTabCommand;
@@ -24,6 +19,12 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
+import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -286,7 +287,7 @@ public class BukkitPlatform implements BackendPlatform {
             command.setExecutor(cmd);
             command.setTabCompleter(cmd);
         } else {
-            logWarn(TabComponent.legacyText("Failed to register command, is it defined in plugin.yml?"));
+            logWarn(new TabTextComponent("Failed to register command, is it defined in plugin.yml?", TabTextColor.RED));
         }
     }
 

@@ -1,10 +1,9 @@
 package me.neznamy.tab.shared.config.file;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.TabTextColor;
-import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.yamlassist.YamlAssist;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
@@ -55,7 +54,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
             if (input != null) input.close();
             TAB tab = TAB.getInstance();
             tab.setBrokenFile(destination.getName());
-            tab.getPlatform().logWarn(TabComponent.legacyText("File " + destination + " has broken syntax."));
+            tab.getPlatform().logWarn(new TabTextComponent("File " + destination + " has broken syntax.", TabTextColor.RED));
             tab.getPlatform().logInfo(new TabTextComponent("Error message from yaml parser: " + e.getMessage(), TabTextColor.GOLD));
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
@@ -77,10 +76,10 @@ public class YamlConfigurationFile extends ConfigurationFile {
             new Yaml(options).dump(values, writer);
             writer.close();
         } catch (IOException e) {
-            TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(String.format(
+            TAB.getInstance().getPlatform().logWarn(new TabTextComponent(String.format(
                     "Failed to save yaml file %s: %s: %s",
                     file.getPath(), e.getClass().getName(), e.getMessage()
-            )));
+            ), TabTextColor.RED));
         }
     }
 }

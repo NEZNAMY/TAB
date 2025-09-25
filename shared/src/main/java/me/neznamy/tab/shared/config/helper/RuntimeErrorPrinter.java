@@ -1,9 +1,10 @@
 package me.neznamy.tab.shared.config.helper;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -196,6 +197,6 @@ public class RuntimeErrorPrinter {
      *          Message to log
      */
     public void error(@NonNull String message) {
-        TAB.getInstance().getPlatform().logWarn(TabComponent.legacyText(message.replace('§', '&')));
+        TAB.getInstance().getPlatform().logWarn(new TabTextComponent(message.replace('§', '&'), TabTextColor.RED));
     }
 }
