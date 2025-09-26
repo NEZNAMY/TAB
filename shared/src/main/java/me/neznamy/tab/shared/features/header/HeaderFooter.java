@@ -83,7 +83,9 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public void onServerChange(@NotNull TabPlayer p, @NotNull Server from, @NotNull Server to) {
         // Velocity clears header/footer on server switch
-        sendHighestDesign(p);
+        if (p.headerFooterData.activeDesign != null) {
+            p.headerFooterData.activeDesign.sendTo(p);
+        }
     }
 
     @NotNull
