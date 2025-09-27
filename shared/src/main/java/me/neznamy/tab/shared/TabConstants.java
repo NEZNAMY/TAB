@@ -14,7 +14,7 @@ public class TabConstants {
     public static final String NO_GROUP = "NONE";
     public static final String DEFAULT_GROUP = "_DEFAULT_";
     public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-6";
-    public static final String PROXY_CHANNEL_NAME = ProjectVariables.PLUGIN_NAME;
+    public static final String PROXY_CHANNEL_NAME = ProjectVariables.PLUGIN_NAME + "-2";
     public static final String PIPELINE_HANDLER_NAME = ProjectVariables.PLUGIN_NAME;
 
     public static final int BSTATS_PLUGIN_ID_BUKKIT = 5304;
