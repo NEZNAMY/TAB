@@ -26,7 +26,7 @@ public class ProxyMessengerSupport extends ProxySupport {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        if (messenger == null) return;
+        if (messenger == null || !messenger.isEnabled()) return;
         messenger.send(TabConstants.PROXY_CHANNEL_NAME, message);
     }
 
