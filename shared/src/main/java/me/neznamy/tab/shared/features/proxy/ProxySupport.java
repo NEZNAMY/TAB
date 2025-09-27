@@ -58,6 +58,7 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
         registerMessage(PlayerQuit.class, PlayerQuit::new);
         registerMessage(ServerSwitch.class, ServerSwitch::new);
         registerMessage(UpdateVanishStatus.class, UpdateVanishStatus::new);
+        TAB.getInstance().debug("[Proxy Support] Using channel name: " + TabConstants.PROXY_CHANNEL_NAME);
     }
 
     @NotNull
