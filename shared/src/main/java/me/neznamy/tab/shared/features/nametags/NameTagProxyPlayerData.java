@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
@@ -90,16 +91,18 @@ public class NameTagProxyPlayerData extends ProxyMessage {
         target.setNametag(this);
 
         if (target.getConnectionState() == ProxyPlayer.ConnectionState.CONNECTED) {
+            TabComponent prefix = feature.getPrefixCache().get(this.prefix);
+            TabComponent suffix = feature.getSuffixCache().get(this.suffix);
             for (TabPlayer viewer : feature.getOnlinePlayers().getPlayers()) {
                 if (oldData != null && resolvedTeamName.equals(oldData.resolvedTeamName)) {
                     viewer.getScoreboard().updateTeam(
                             oldData.teamName,
-                            feature.getCache().get(prefix),
-                            feature.getCache().get(suffix),
+                            prefix,
+                            suffix,
                             nameVisibility,
                             Scoreboard.CollisionRule.ALWAYS,
                             feature.getTeamOptions(),
-                            feature.getCache().get(prefix).getLastStyle().toEnumChatFormat()
+                            prefix.getLastStyle().toEnumChatFormat()
                     );
                 } else {
                     if (oldData != null) {
@@ -107,13 +110,13 @@ public class NameTagProxyPlayerData extends ProxyMessage {
                     }
                     viewer.getScoreboard().registerTeam(
                             resolvedTeamName,
-                            feature.getCache().get(prefix),
-                            feature.getCache().get(suffix),
+                            prefix,
+                            suffix,
                             nameVisibility,
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(target.getNickname()),
                             feature.getTeamOptions(),
-                            feature.getCache().get(prefix).getLastStyle().toEnumChatFormat()
+                            prefix.getLastStyle().toEnumChatFormat()
                     );
                 }
             }

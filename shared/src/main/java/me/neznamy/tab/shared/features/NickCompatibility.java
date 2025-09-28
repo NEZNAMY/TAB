@@ -69,12 +69,12 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
         cpu.getProcessingThread().execute(new TimedCaughtTask(cpu, () -> {
             if (nameTags != null && !player.teamData.isDisabled())
                 for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
-                    TabComponent prefix = nameTags.getCache().get(player.teamData.prefix.getFormat(viewer));
+                    TabComponent prefix = nameTags.getPrefixCache().get(player.teamData.prefix.getFormat(viewer));
                     viewer.getScoreboard().unregisterTeam(player.sortingData.getShortTeamName());
                     viewer.getScoreboard().registerTeam(
                             player.sortingData.getShortTeamName(),
                             prefix,
-                            nameTags.getCache().get(player.teamData.suffix.getFormat(viewer)),
+                            nameTags.getSuffixCache().get(player.teamData.suffix.getFormat(viewer)),
                             nameTags.getTeamVisibility(player, viewer) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER,
                             player.teamData.getCollisionRule() ? Scoreboard.CollisionRule.ALWAYS : Scoreboard.CollisionRule.NEVER,
                             Collections.singletonList(player.getNickname()),
@@ -94,11 +94,11 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
                 String teamName = player.getNametag().getResolvedTeamName();
                 for (TabPlayer viewer : nameTags.getOnlinePlayers().getPlayers()) {
                     viewer.getScoreboard().unregisterTeam(teamName);
-                    TabComponent prefix = player.getNametag().getFeature().getCache().get(player.getNametag().getPrefix());
+                    TabComponent prefix = player.getNametag().getFeature().getPrefixCache().get(player.getNametag().getPrefix());
                     viewer.getScoreboard().registerTeam(
                             teamName,
                             prefix,
-                            player.getNametag().getFeature().getCache().get(player.getNametag().getSuffix()),
+                            player.getNametag().getFeature().getSuffixCache().get(player.getNametag().getSuffix()),
                             player.getNametag().getNameVisibility(),
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(player.getNickname()),
