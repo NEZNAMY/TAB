@@ -34,8 +34,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private final ThreadExecutor customThread = new ThreadExecutor("TAB NameTag Thread");
     private OnlinePlayers onlinePlayers;
     private final TeamConfiguration configuration;
-    private final StringToComponentCache prefixCache = new StringToComponentCache("NameTags", 1000);
-    private final StringToComponentCache suffixCache = new StringToComponentCache("NameTags", 1000);
+    private final StringToComponentCache prefixCache = new StringToComponentCache("NameTag prefix", 1000);
+    private final StringToComponentCache suffixCache = new StringToComponentCache("NameTag suffix", 1000);
     private final VisibilityRefresher visibilityRefresher;
     private final CollisionManager collisionManager;
     private final int teamOptions;
