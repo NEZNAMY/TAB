@@ -299,7 +299,8 @@ public abstract class TabComponent {
         TabTextComponent component = new TabTextComponent();
         component.modifier.setFont(font);
         for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '<') {
+            char c = text.charAt(i);
+            if (c == '<') {
                 Matcher matcher = ATLAS_PATTERN.matcher(text.substring(i));
                 if (matcher.find() && matcher.start() == 0) {
                     // flush current builder
@@ -350,7 +351,6 @@ public abstract class TabComponent {
                 }
             }
 
-            char c = text.charAt(i);
             if (c == '§') {
                 i++;
                 if (i >= text.length()) {
