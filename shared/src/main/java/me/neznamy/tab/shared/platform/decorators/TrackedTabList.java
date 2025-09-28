@@ -32,6 +32,14 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     /** Forced game modes by spectator fix, saving to restore them on packet sends */
     private final Map<UUID, Integer> forcedGameModes = Collections.synchronizedMap(new WeakHashMap<>());
 
+    /** Header sent by the plugin */
+    @Nullable
+    private TabComponent header;
+
+    /** Footer sent by the plugin */
+    @Nullable
+    private TabComponent footer;
+
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         forcedDisplayNames.put(entry, displayName);
@@ -74,6 +82,25 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
         forcedGameModes.put(player.getTablistId(), gameMode);
         if (containsEntry(player.getTablistId()) && this.player.canSee(player)) {
             updateGameMode(player.getTablistId(), gameMode);
+        }
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@Nullable TabComponent header, @Nullable TabComponent footer) {
+        this.header = header;
+        this.footer = footer;
+        setPlayerListHeaderFooter0(
+                header == null ? TabComponent.empty() : header,
+                footer == null ? TabComponent.empty() : footer
+        );
+    }
+
+    /**
+     * Resends header and footer to the player. Called on server switch.
+     */
+    public void resendHeaderFooter() {
+        if (header != null && footer != null) {
+            setPlayerListHeaderFooter0(header, footer);
         }
     }
 
@@ -123,4 +150,14 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      *          Entry to add
      */
     public abstract void addEntry0(@NonNull Entry entry);
+
+    /**
+     * Sends header and footer to player.
+     *
+     * @param   header
+     *          Header to send
+     * @param   footer
+     *          Footer to send
+     */
+    public abstract void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer);
 }

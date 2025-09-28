@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
-import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
@@ -23,7 +22,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public class HeaderFooter extends RefreshableFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
-        ServerSwitchListener, CustomThreaded {
+        CustomThreaded {
 
     private final StringToComponentCache headerCache = new StringToComponentCache("Header", 1000);
     private final StringToComponentCache footerCache = new StringToComponentCache("Footer", 1000);
@@ -51,7 +50,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.headerFooterData.activeDesign == null) continue;
-            sendHeaderFooter(p, "","");
+            p.getTabList().setPlayerListHeaderFooter(null, null);
         }
     }
 
@@ -64,10 +63,11 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         HeaderFooterDesign highest = detectHighestDesign(player);
         HeaderFooterDesign current = player.headerFooterData.activeDesign;
         if (highest != current) {
+            player.headerFooterData.activeDesign = highest;
             if (highest != null) {
-                highest.sendTo(player);
+                sendHeaderFooter(player);
             } else {
-                sendHeaderFooter(player, "", "");
+                player.getTabList().setPlayerListHeaderFooter(null, null);
             }
         }
     }
@@ -80,14 +80,6 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         return null;
     }
 
-    @Override
-    public void onServerChange(@NotNull TabPlayer p, @NotNull Server from, @NotNull Server to) {
-        // Velocity clears header/footer on server switch
-        if (p.headerFooterData.activeDesign != null) {
-            p.headerFooterData.activeDesign.sendTo(p);
-        }
-    }
-
     @NotNull
     @Override
     public String getRefreshDisplayName() {
@@ -97,20 +89,6 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         sendHighestDesign(p);
-    }
-
-    /**
-     * Sends header and footer to player.
-     *
-     * @param   player
-     *          Player to send header and footer to
-     * @param   header
-     *          Header to send
-     * @param   footer
-     *          Footer to send
-     */
-    public void sendHeaderFooter(@NotNull TabPlayer player, @NotNull String header, @NotNull String footer) {
-        player.getTabList().setPlayerListHeaderFooter(headerCache.get(header), footerCache.get(footer));
     }
 
     /**
@@ -147,7 +125,7 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         } else {
             footer = "";
         }
-        sendHeaderFooter(player, header, footer);
+        player.getTabList().setPlayerListHeaderFooter(headerCache.get(header), footerCache.get(footer));
     }
 
     // ------------------

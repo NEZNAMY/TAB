@@ -90,7 +90,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+    public void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer) {
         sendPacket(new ClientboundTabListPacket(header.convert(), footer.convert()));
     }
 

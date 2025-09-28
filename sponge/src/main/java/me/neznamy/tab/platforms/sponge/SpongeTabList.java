@@ -87,7 +87,7 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+    public void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer) {
         player.getPlayer().tabList().setHeaderAndFooter(header.toAdventure(), footer.toAdventure());
     }
 

@@ -101,7 +101,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+    public void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer) {
         sendPacket(new PacketPlayOutPlayerListHeaderFooter(header.convert(), footer.convert()));
     }
 

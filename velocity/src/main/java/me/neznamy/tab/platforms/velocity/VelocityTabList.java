@@ -90,7 +90,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+    public void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer) {
         player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventure(), footer.toAdventure());
     }
 

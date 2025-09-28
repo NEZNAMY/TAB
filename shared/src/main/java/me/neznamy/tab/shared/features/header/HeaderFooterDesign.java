@@ -49,7 +49,9 @@ public class HeaderFooterDesign extends RefreshableFeature {
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (refreshed.headerFooterData.activeDesign == this) sendTo(refreshed);
+        if (refreshed.headerFooterData.activeDesign == this) {
+            feature.sendHeaderFooter(refreshed);
+        }
     }
 
     @Override
@@ -67,16 +69,5 @@ public class HeaderFooterDesign extends RefreshableFeature {
      */
     public boolean isConditionMet(@NonNull TabPlayer p) {
         return displayCondition == null || displayCondition.isMet(p);
-    }
-
-    /**
-     * Sends this design to the player
-     *
-     * @param   player
-     *          player to send to
-     */
-    public void sendTo(@NonNull TabPlayer player) {
-        player.headerFooterData.activeDesign = this;
-        feature.sendHeaderFooter(player);
     }
 }

@@ -255,6 +255,7 @@ public class FeatureManager {
         Server from = changed.server;
         changed.server = to;
         ((ProxyTabPlayer)changed).sendJoinPluginMessage();
+        ((TrackedTabList<?>)changed.getTabList()).resendHeaderFooter();
         for (TabFeature f : values) {
             if (!(f instanceof ServerSwitchListener)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),

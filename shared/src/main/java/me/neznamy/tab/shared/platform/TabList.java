@@ -142,7 +142,7 @@ public interface TabList {
      * @param   footer
      *          Footer to use
      */
-    void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer);
+    void setPlayerListHeaderFooter(@Nullable TabComponent header, @Nullable TabComponent footer);
 
     /**
      * Returns player's skin data

@@ -45,7 +45,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+    public void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer) {
         player.getPlayer().setTabHeader(toComponent(header), toComponent(footer));
     }
 

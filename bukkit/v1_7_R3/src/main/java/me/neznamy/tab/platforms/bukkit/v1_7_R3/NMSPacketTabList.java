@@ -67,7 +67,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull TabComponent header, @NonNull TabComponent footer) {
+    public void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer) {
         // Added in 1.8
     }
 
