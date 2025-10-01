@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.GroupPattern;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -23,7 +24,7 @@ public class ParentGroup {
 
     public ParentGroup(@NotNull LayoutView layout, @NotNull GroupPattern pattern, @NotNull TabPlayer viewer) {
         this.layout = layout;
-        condition = Condition.getCondition(pattern.getCondition());
+        condition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(pattern.getCondition());
         slots = pattern.getSlots();
         this.viewer = viewer;
         for (int slot : slots) {

@@ -1,17 +1,16 @@
-package me.neznamy.tab.shared.placeholders.conditions;
+package me.neznamy.tab.shared.placeholders.conditions.expression.numbers;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.placeholders.conditions.expression.ComparatorExpression;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.BiFunction;
 
 /**
  * A class handling numeric conditions to avoid
  * repeated number parsing for static numbers and therefore
  * reduce memory allocations and improve performance.
  */
-public class NumericCondition extends SimpleCondition {
+public abstract class NumericExpression extends ComparatorExpression {
 
     /** {@code true} if left side is a static number, {@code false} if it has placeholders */
     private boolean leftSideStatic;
@@ -25,31 +24,27 @@ public class NumericCondition extends SimpleCondition {
     /** If right side is static, value is stored here */
     private float rightSideValue;
 
-    /** Function that determines whether condition is met or not */
-    private final BiFunction<Double, Double, Boolean> function;
-
     /**
      * Constructs new instance with given parameters.
      *
-     * @param   arr
-     *          Array with first value being left side, second value being right side
-     * @param   function
-     *          Condition function
+     * @param   leftSide
+     *          left side of the expression
+     * @param   rightSide
+     *          right side of the expression
      */
-    public NumericCondition(@NotNull String[] arr, @NotNull BiFunction<Double, Double, Boolean> function) {
-        super(arr);
-        this.function = function;
+    protected NumericExpression(@NotNull String leftSide, @NotNull String rightSide) {
+        super(leftSide, rightSide);
         try {
             leftSideValue = Float.parseFloat(leftSide);
             leftSideStatic = true;
         } catch (NumberFormatException e) {
-            //not a valid number
+            // Value is not static
         }
         try {
             rightSideValue = Float.parseFloat(rightSide);
             rightSideStatic = true;
         } catch (NumberFormatException e) {
-            //not a valid number
+            // Value is not static
         }
     }
 
@@ -65,7 +60,7 @@ public class NumericCondition extends SimpleCondition {
         if (leftSideStatic) return leftSideValue;
         String value = parseLeftSide(p);
         if (value.contains(",")) value = value.replace(",", "");
-        return parseDouble(leftSide, value, 0, p);
+        return parseDouble(leftSide, value, p);
     }
 
     /**
@@ -80,7 +75,7 @@ public class NumericCondition extends SimpleCondition {
         if (rightSideStatic) return rightSideValue;
         String value = parseRightSide(p);
         if (value.contains(",")) value = value.replace(",", "");
-        return parseDouble(rightSide, value, 0, p);
+        return parseDouble(rightSide, value, p);
     }
 
     /**
@@ -91,23 +86,16 @@ public class NumericCondition extends SimpleCondition {
      *          Raw placeholder, used in error message
      * @param   output
      *          string to parse
-     * @param   defaultValue
-     *          value to return if string is not valid
      * @param   player
      *          Player name used in error message
      * @return  parsed double or {@code defaultValue} if input is invalid
      */
-    public double parseDouble(@NotNull String placeholder, @NotNull String output, double defaultValue, TabPlayer player) {
+    private double parseDouble(@NotNull String placeholder, @NotNull String output, TabPlayer player) {
         try {
             return Double.parseDouble(output);
         } catch (NumberFormatException e) {
             TAB.getInstance().getConfigHelper().runtime().invalidNumberForCondition(placeholder, output, player);
-            return defaultValue;
+            return 0;
         }
-    }
-
-    @Override
-    public boolean isMet(@NotNull TabPlayer p) {
-        return function.apply(getLeftSide(p), getRightSide(p));
     }
 }

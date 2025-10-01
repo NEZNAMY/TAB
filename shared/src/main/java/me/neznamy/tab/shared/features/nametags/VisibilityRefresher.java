@@ -29,7 +29,7 @@ public class VisibilityRefresher extends RefreshableFeature implements JoinListe
      */
     public VisibilityRefresher(@NotNull NameTag nameTags) {
         this.nameTags = nameTags;
-        invisibleCondition = Condition.getCondition(nameTags.getConfiguration().getInvisibleNameTags());
+        invisibleCondition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(nameTags.getConfiguration().getInvisibleNameTags());
     }
 
     @Override

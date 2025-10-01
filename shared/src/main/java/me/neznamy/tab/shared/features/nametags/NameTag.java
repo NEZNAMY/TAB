@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
-import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
@@ -51,7 +50,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public NameTag(@NotNull TeamConfiguration configuration) {
         this.configuration = configuration;
         teamOptions = configuration.isCanSeeFriendlyInvisibles() ? 2 : 0;
-        disableChecker = new DisableChecker(this, Condition.getCondition(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.teamData.disabled);
+        disableChecker = new DisableChecker(this, TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.teamData.disabled);
         visibilityRefresher = new VisibilityRefresher(this);
         collisionManager = new CollisionManager(this);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);

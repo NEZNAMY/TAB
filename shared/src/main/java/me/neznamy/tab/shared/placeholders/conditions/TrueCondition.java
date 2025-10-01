@@ -14,11 +14,22 @@ public class TrueCondition extends Condition {
     public static final TrueCondition INSTANCE = new TrueCondition();
 
     private TrueCondition() {
-        super(false, "TrueCondition", Collections.emptyList(), null, null);
+        super("true", Collections.emptyList(), true, "true", "false");
     }
 
     @Override
     public boolean isMet(@NotNull TabPlayer player) {
         return true;
+    }
+
+    @NotNull
+    public Condition invert() {
+        return FalseCondition.INSTANCE;
+    }
+
+    @NotNull
+    @Override
+    public String toShortFormat() {
+        return "true";
     }
 }

@@ -6,6 +6,8 @@ import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import me.neznamy.tab.shared.placeholders.conditions.ConditionsSection;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -32,7 +34,7 @@ public class ModernConverter {
         converters.put(1, config -> {
             // Warn users
             TAB.getInstance().getPlatform().logWarn(new TabTextComponent("Please note that header/footer conversion is only " +
-                    "symbolic and does not fully convert old format to new one. The following content is not converted: per-group settings, per-user settings and disable-condition." +
+                    "symbolic and does not fully convert old format to new one. The following content is not converted: per-group settings and per-user settings." +
                     " Review your config to make sure it is set up the way you want.", TabTextColor.RED));
 
             // Read old data
@@ -40,7 +42,7 @@ public class ModernConverter {
             boolean enabled = headerFooter.getBoolean("enabled", true);
             List<String> defaultHeader = headerFooter.getStringList("header", Collections.emptyList());
             List<String> defaultFooter = headerFooter.getStringList("footer", Collections.emptyList());
-            //String disableCondition = headerFooter.getString("disable-condition", "%world%=disabledworld");
+            String disableCondition = headerFooter.getString("disable-condition", "%world%=disabledworld");
             ConfigurationSection perWorld = headerFooter.getConfigurationSection("per-world");
             ConfigurationSection perServer = headerFooter.getConfigurationSection("per-server");
 
@@ -82,6 +84,17 @@ public class ModernConverter {
             }
 
             Map<String, Object> defaultDesign = new LinkedHashMap<>();
+            if (!disableCondition.isEmpty()) {
+                ConditionsSection conditions = ConditionsSection.fromSection(config.getConfigurationSection("conditions"));
+                ConditionsSection.ConditionDefinition namedCondition = conditions.getConditions().get(disableCondition);
+                if (namedCondition != null) {
+                    // Named condition
+                    defaultDesign.put("display-condition", "%condition:" + namedCondition.getName() + "%=" + namedCondition.getNo());
+                } else {
+                    // Short format
+                    defaultDesign.put("display-condition", new Condition(disableCondition).invert().toShortFormat());
+                }
+            }
             defaultDesign.put("header", defaultHeader);
             defaultDesign.put("footer", defaultFooter);
             designs.put("default", defaultDesign);

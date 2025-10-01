@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshConfiguration;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshTask;
+import me.neznamy.tab.shared.placeholders.conditions.ConditionManager;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
@@ -38,12 +39,12 @@ import java.util.regex.Pattern;
 /**
  * Messy class for placeholder management
  */
+@Getter
 public class PlaceholderManagerImpl extends RefreshableFeature implements PlaceholderManager, JoinListener, Loadable {
 
     private static final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
     @NotNull
-    @Getter
     private final PlaceholderRefreshConfiguration configuration;
 
     private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
@@ -52,15 +53,16 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     private final Map<String, Set<RefreshableFeature>> placeholderUsage = new ConcurrentHashMap<>();
     private Placeholder[] usedPlaceholders = new Placeholder[0];
 
-    @Getter private int loopTime;
+    private int loopTime;
 
-    @NotNull @Getter private final TabExpansion tabExpansion;
+    @NotNull private final TabExpansion tabExpansion;
 
     private final CpuManager cpu;
 
     /** Placeholders which are refreshed on backend server */
-    @Getter
     private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
+
+    private final ConditionManager conditionManager = new ConditionManager();
 
     /**
      * Constructs new instance.

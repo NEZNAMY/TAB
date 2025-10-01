@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.layout;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.tablist.layout.Layout;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
@@ -27,7 +28,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull LayoutDefinition def) {
         this.manager = manager;
         this.name = name;
-        condition = Condition.getCondition(def.getCondition());
+        condition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(def.getCondition());
         if (condition != null) manager.addUsedPlaceholder(TabConstants.Placeholder.condition(condition.getName()));
         for (FixedSlotDefinition fixed : def.getFixedSlots()) {
             addFixedSlot(fixed);
@@ -44,7 +45,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
 
     public void addGroup(@NotNull String name, @Nullable String condition, int[] slots) {
         groups.add(new GroupPattern(name, condition, Arrays.stream(slots).filter(slot -> !fixedSlots.containsKey(slot)).toArray()));
-        if (condition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(Condition.getCondition(condition).getName()));
+        if (condition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(condition).getName()));
     }
 
     public boolean isConditionMet(@NotNull TabPlayer p) {

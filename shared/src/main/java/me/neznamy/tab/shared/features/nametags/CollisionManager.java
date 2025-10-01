@@ -27,7 +27,7 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
      */
     public CollisionManager(@NotNull NameTag nameTags) {
         this.nameTags = nameTags;
-        enableCollision = Condition.getCondition(nameTags.getConfiguration().getEnableCollision());
+        enableCollision = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(nameTags.getConfiguration().getEnableCollision());
     }
 
     @Override

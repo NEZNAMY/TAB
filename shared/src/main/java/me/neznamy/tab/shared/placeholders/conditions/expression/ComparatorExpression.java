@@ -1,5 +1,7 @@
-package me.neznamy.tab.shared.placeholders.conditions;
+package me.neznamy.tab.shared.placeholders.conditions.expression;
 
+import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
@@ -7,26 +9,27 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An abstract class representing a simple condition
+ * An abstract class representing a condition that compares 2 values.
  */
-public abstract class SimpleCondition {
+@Getter
+public abstract class ComparatorExpression extends ConditionalExpression {
 
     /** Text on the left side of condition */
     @NotNull protected final String leftSide;
-    
-    /** Placeholders used on the left side */
-    @NotNull private final String[] leftSidePlaceholders;
 
     /** Text on the right side of condition */
     @NotNull protected final String rightSide;
 
+    /** Placeholders used on the left side */
+    @NotNull private final String[] leftSidePlaceholders;
+
     /** Placeholders used on the right side */
     @NotNull private final String[] rightSidePlaceholders;
 
-    protected SimpleCondition(@NotNull String[] arr) {
-        leftSide = arr.length < 1 ? "" : arr[0];
+    protected ComparatorExpression(@NonNull String leftSide, @NonNull String rightSide) {
+        this.leftSide = leftSide;
+        this.rightSide = rightSide;
         leftSidePlaceholders = PlaceholderManagerImpl.detectPlaceholders(leftSide).toArray(new String[0]);
-        rightSide = arr.length < 2 ? "" : arr[1];
         rightSidePlaceholders = PlaceholderManagerImpl.detectPlaceholders(rightSide).toArray(new String[0]);
     }
 
@@ -37,10 +40,11 @@ public abstract class SimpleCondition {
      *          player to replace placeholders for
      * @return  replaced left side
      */
-    public @NotNull String parseLeftSide(@NotNull TabPlayer p) {
+    @NotNull
+    public String parseLeftSide(@NotNull TabPlayer p) {
         return parseSide(p, leftSide, leftSidePlaceholders);
     }
-    
+
     /**
      * Replaces placeholders on the right side and return result
      *
@@ -48,10 +52,11 @@ public abstract class SimpleCondition {
      *           player to replace placeholders for
      * @return   replaced right side
      */
-    public @NotNull String parseRightSide(@NotNull TabPlayer p) {
+    @NotNull
+    public String parseRightSide(@NotNull TabPlayer p) {
         return parseSide(p, rightSide, rightSidePlaceholders);
     }
-    
+
     /**
      * Replaces placeholders in provided value
      *
@@ -63,6 +68,7 @@ public abstract class SimpleCondition {
      *          used placeholders
      * @return  replaced string
      */
+    @NotNull
     public String parseSide(@NotNull TabPlayer p, @NotNull String value, @NotNull String[] placeholders) {
         String result = value;
         for (String identifier : placeholders) {
@@ -70,13 +76,4 @@ public abstract class SimpleCondition {
         }
         return EnumChatFormat.color(result);
     }
-    
-    /**
-     * Returns {@code true} if condition is met for player, {@code false} if not
-     *
-     * @param   p
-     *          player to check condition for
-     * @return  {@code true} if met, {@code false} if not
-     */
-    public abstract boolean isMet(@NotNull TabPlayer p);
 }

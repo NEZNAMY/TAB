@@ -42,7 +42,7 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
      */
     public PlayerList(@NotNull TablistFormattingConfiguration configuration) {
         this.configuration = configuration;
-        disableChecker = new DisableChecker(this, Condition.getCondition(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.tablistData.disabled);
+        disableChecker = new DisableChecker(this, TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.tablistData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
         TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {

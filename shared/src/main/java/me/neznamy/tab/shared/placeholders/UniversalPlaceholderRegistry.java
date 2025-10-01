@@ -137,12 +137,11 @@ public class UniversalPlaceholderRegistry {
             Animation a = new Animation(manager, entry.getKey(), entry.getValue());
             manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.animation(a.getName()), a.getRefresh(), p -> a.getMessage());
         }
-        Condition.clearConditions();
         for (Entry<String, ConditionDefinition> condition : TAB.getInstance().getConfiguration().getConfig().getConditions().getConditions().entrySet()) {
-            ConditionDefinition def = condition.getValue();
-            Condition c = new Condition(def.isType(), condition.getKey(), def.getConditions(), def.getYes(), def.getNo());
+            Condition c = new Condition(condition.getValue());
             manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), p -> c.getText((TabPlayer)p));
+            TAB.getInstance().getPlaceholderManager().getConditionManager().registerCondition(c);
         }
-        Condition.finishSetups();
+        manager.getConditionManager().finishSetups();
     }
 }

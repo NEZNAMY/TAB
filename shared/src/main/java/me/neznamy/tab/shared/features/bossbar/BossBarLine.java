@@ -78,7 +78,7 @@ public class BossBarLine implements BossBar {
     public BossBarLine(@NonNull BossBarManagerImpl manager, @NonNull String name, @NonNull BossBarConfiguration.BossBarDefinition configuration) {
         this.manager = manager;
         this.name = name;
-        displayCondition = Condition.getCondition(configuration.getDisplayCondition());
+        displayCondition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getDisplayCondition());
         if (displayCondition != null) {
             manager.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
         }

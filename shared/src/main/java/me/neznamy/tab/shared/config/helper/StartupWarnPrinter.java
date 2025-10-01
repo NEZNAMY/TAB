@@ -43,10 +43,6 @@ public class StartupWarnPrinter {
         startupWarn("\"" + placeholder + "\" is not a valid placeholder for " + type.getClass().getSimpleName() + " sorting type");
     }
 
-    public void invalidConditionPattern(@NonNull String conditionName, @NonNull String line) {
-        startupWarn("Line \"" + line + "\" in condition " + conditionName + " is not a valid condition pattern.");
-    }
-
     public void invalidSortingLine(@NonNull String configuredLine, @NonNull String message) {
         startupWarn("Sorting line \"" + configuredLine + "\" is invalid: " + message);
     }
