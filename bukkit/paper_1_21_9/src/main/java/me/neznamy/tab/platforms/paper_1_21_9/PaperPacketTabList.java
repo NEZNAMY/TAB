@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.neoforge;
+package me.neznamy.tab.platforms.paper_1_21_9;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
@@ -7,6 +7,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
@@ -17,6 +18,7 @@ import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.world.level.GameType;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,9 +26,9 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * TabList implementation for NeoForge using packets.
+ * TabList implementation using direct mojang-mapped code.
  */
-public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
+public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateDisplayName = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);
@@ -37,14 +39,14 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateHat = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT);
 
     private static final Field entries = ReflectionUtils.getOnlyField(ClientboundPlayerInfoUpdatePacket.class, List.class);
-    
+
     /**
      * Constructs new instance.
      *
      * @param   player
      *          Player this tablist will belong to
      */
-    public NeoForgeTabList(@NotNull NeoForgeTabPlayer player) {
+    public PaperPacketTabList(@NotNull BukkitTabPlayer player) {
         super(player);
     }
 
@@ -102,7 +104,7 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
     @Override
     @Nullable
     public Skin getSkin() {
-        Collection<Property> properties = player.getPlayer().getGameProfile().properties().get(TEXTURES_PROPERTY);
+        Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().properties().get(TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
         Property property = properties.iterator().next();
         return new Skin(property.value(), property.signature());
@@ -118,8 +120,8 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
             for (ClientboundPlayerInfoUpdatePacket.Entry nmsData : info.entries()) {
                 boolean rewriteEntry = false;
                 Component displayName = nmsData.displayName();
-                int gameMode = nmsData.gameMode().getId();
                 int latency = nmsData.latency();
+                int gameMode = nmsData.gameMode().getId();
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
                     TabComponent forcedDisplayName = getForcedDisplayNames().get(nmsData.profileId());
                     if (forcedDisplayName != null && forcedDisplayName.convert() != displayName) {
@@ -152,11 +154,9 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
         }
     }
 
-    @SneakyThrows
     private void sendPacket(@NonNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,
                             boolean listed, int latency, int gameMode, @Nullable TabComponent displayName, int listOrder, boolean showHat) {
-        ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(action, Collections.emptyList());
-        entries.set(packet, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
+        ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(action, new ClientboundPlayerInfoUpdatePacket.Entry(
                 id,
                 action.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER) ? createProfile(id, name, skin) : null,
                 listed,
@@ -166,7 +166,7 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
                 showHat,
                 listOrder,
                 null
-        )));
+        ));
         sendPacket(packet);
     }
 
@@ -198,6 +198,6 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
      *          Packet to send
      */
     private void sendPacket(@NotNull Packet<?> packet) {
-        player.getPlayer().connection.send(packet);
+        ((CraftPlayer)player.getPlayer()).getHandle().connection.send(packet);
     }
 }

@@ -186,17 +186,12 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
         } else if (sprite.getName() != null) {
             return ResolvableProfile.createUnresolved(sprite.getName());
         } else if (sprite.getSkin() != null) {
-            return ResolvableProfile.createResolved(profileFromSkin(sprite.getSkin()));
+            ImmutableMultimap.Builder<String, Property> builder = ImmutableMultimap.builder();
+            builder.put(TabList.TEXTURES_PROPERTY, new Property(TabList.TEXTURES_PROPERTY, sprite.getSkin().getValue(), sprite.getSkin().getSignature()));
+            return ResolvableProfile.createResolved(new GameProfile(NIL_UUID, "", new PropertyMap(builder.build())));
         } else {
             throw new IllegalStateException("Player head component does not have id, name or skin set");
         }
-    }
-
-    @NotNull
-    private GameProfile profileFromSkin(@NonNull TabList.Skin skin) {
-        ImmutableMultimap.Builder<String, Property> builder = ImmutableMultimap.builder();
-        builder.put(TabList.TEXTURES_PROPERTY, new Property(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature()));
-        return new GameProfile(NIL_UUID, "", new PropertyMap(builder.build()));
     }
 
     @Override

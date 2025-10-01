@@ -19,13 +19,13 @@ public class BungeeTAB extends Plugin {
     }
 
     private boolean isCompatible() {
-        return ReflectionUtils.classExists("net.md_5.bungee.protocol.util.Either");
+        return ReflectionUtils.classExists("net.md_5.bungee.api.chat.ObjectComponent");
     }
 
     private void logIncompatibleVersionWarning() {
-        int buildNumber = 1990;
-        String releaseDate = "July 14th, 2025";
-        String oldTabVersion = "5.2.4";
+        int buildNumber = 2000;
+        String releaseDate = "September 30th, 2025";
+        String oldTabVersion = "5.2.5";
         getLogger().warning("§c====================================================================================================");
         getLogger().warning(String.format("§cThe plugin requires BungeeCord build #%d (released on %s) and up (or an equivalent fork) to work.", buildNumber, releaseDate));
         getLogger().warning(String.format("§cIf you are using a fork that did not update to the new BungeeCord version yet, stay on TAB v%s, which supports older builds.", oldTabVersion));

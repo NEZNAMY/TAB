@@ -10,6 +10,8 @@ import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 /**
  * Interface for converting TAB components into NMS components (1.7+).
  *
@@ -17,6 +19,9 @@ import org.jetbrains.annotations.NotNull;
  *          NMS component type
  */
 public abstract class ComponentConverter<T> {
+
+    /** Empty UUID for creating dummy profiles */
+    protected final UUID NIL_UUID = new UUID(0, 0);
 
     /**
      * Converts TAB component to NMS component.

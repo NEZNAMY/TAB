@@ -14,7 +14,7 @@
     "fabric-api-base": "*",
     "java": ">=17",
     "minecraft": [
-      "1.21.9-rc.1"
+      "1.21.9"
     ]
   },
   "recommends": {
