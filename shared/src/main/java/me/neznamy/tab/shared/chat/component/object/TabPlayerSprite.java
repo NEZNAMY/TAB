@@ -1,8 +1,7 @@
 package me.neznamy.tab.shared.chat.component.object;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
 import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,51 +15,21 @@ import java.util.UUID;
  * This class will support all of them.
  */
 @Getter
+@AllArgsConstructor
 public class TabPlayerSprite implements ObjectInfo {
 
     /** UUID of a player to show skin of */
     @Nullable
-    private UUID id;
+    private final UUID id;
 
     /** Name of a player to show skin of */
     @Nullable
-    private String name;
+    private final String name;
 
     /** Skin texture to show */
     @Nullable
-    private TabList.Skin skin;
+    private final TabList.Skin skin;
 
     /** Whether to show hat layer or not */
-    @Setter
-    private boolean showHat;
-
-    /**
-     * Constructs new instance for skin by UUID.
-     *
-     * @param   id
-     *          UUID of a player to show skin of
-     */
-    public TabPlayerSprite(@NonNull UUID id) {
-        this.id = id;
-    }
-
-    /**
-     * Constructs new instance for skin by name.
-     *
-     * @param   name
-     *          Name of a player to show skin of
-     */
-    public TabPlayerSprite(@NonNull String name) {
-        this.name = name;
-    }
-
-    /**
-     * Constructs new instance for specified skin.
-     *
-     * @param   skin
-     *          Skin to show
-     */
-    public TabPlayerSprite(@NonNull TabList.Skin skin) {
-        this.skin = skin;
-    }
+    private final boolean showHat;
 }

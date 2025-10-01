@@ -5,16 +5,16 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
 import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import me.neznamy.tab.shared.chat.hook.AdventureHook;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.util.function.TriFunction;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.util.function.TriFunction;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -513,32 +513,43 @@ public abstract class TabComponent {
      */
     @NotNull
     public static TabComponent head(@NonNull String skinDefinition) {
-        TabPlayerSprite sprite;
+        UUID id = null;
+        String name = null;
+        TabList.Skin skin = null;
         if (skinDefinition.startsWith("id:")) {
             String stringUUID = skinDefinition.substring(3);
             try {
-                sprite = new TabPlayerSprite(UUID.fromString(stringUUID));
+                id = UUID.fromString(stringUUID);
             } catch (IllegalArgumentException e) {
                 return new LegacyTextComponent(String.format("<Invalid UUID: \"%s\">", stringUUID));
             }
         } else if (skinDefinition.startsWith("name:")) {
-            String name = skinDefinition.substring(5);
+            name = skinDefinition.substring(5);
             if (name.length() > 16) {
                 return new LegacyTextComponent(String.format("<Invalid name (too long): \"%s\">", name));
             }
-            sprite = new TabPlayerSprite(name);
         } else {
-            TabList.Skin skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin(skinDefinition);
+            skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin(skinDefinition);
             if (skin == null) {
                 return new LegacyTextComponent(String.format("<Invalid skin: \"%s\">", skinDefinition));
             }
-            sprite = new TabPlayerSprite(skin);
         }
-        sprite.setShowHat(true); // Always show hat
-        TabObjectComponent component = new TabObjectComponent(sprite);
+        TabObjectComponent component = new TabObjectComponent(new TabPlayerSprite(id, name, skin, true)); // Always show hat
         if (TAB.getInstance().getConfiguration().getConfig().getComponents().isDisableShadowForHeads()) {
             component.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
         }
         return component;
+    }
+
+    /**
+     * Creates a new component of "object" type with given player sprite.
+     *
+     * @param   sprite
+     *          Player sprite to use in the component
+     * @return  New object component with given player sprite
+     */
+    @NotNull
+    public static TabComponent head(@NonNull TabPlayerSprite sprite) {
+        return new TabObjectComponent(sprite);
     }
 }
