@@ -132,26 +132,21 @@ In this example, scoreboard will only be displayed to players with `tab.admin` p
 ### Short format
 If trying to use a condition on place where it's available (bossbar display condition, scoreboard display condition) where you don't need the yes/no values, you can use a short format instead.
 
-This can be used by simply creating all subconditions and separating them with `;` for `AND` condition type. For `OR` type, use `|`.
-<details>
-  <summary>Example</summary>
-
-Single condition:
+This can be used by simply creating all subconditions and separating them with `;` for `AND` condition type. For `OR` type, use `|`.  
+**Single condition example**:
 ```
 display-condition: "%server%=lobby"
 ```
 
-Multiple conditions, all of them must be met:
+**Multiple conditions, all of them must be met**:
 ```
 display-condition: "%server%=lobby;%world%=world"
 ```
 
-Multiple conditions, at least one of them must be met:
+**Multiple conditions, at least one of them must be met**:
 ```
 display-condition: "%server%=lobby|%server%=lobby2"
 ```
-
-</details>
 
 # Refresh interval
 Conditions are just placeholders after all, and, as such, they must be refreshed periodically.

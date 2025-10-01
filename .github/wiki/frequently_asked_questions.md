@@ -115,14 +115,7 @@ You can check out [this reddit post](https://www.reddit.com/r/admincraft/comment
 When using the symbol in configuration using \u format, remember to use `""` in config instead of `''`.
 
 ## #16 - Is MiniMessage supported?
-Kind of.
-MiniMessage support **is** included; however, this doesn't mean it is guaranteed to work.
-MiniMessage library must be included in your server software.
-TAB does not include this library.
-* It **is** included in **Paper 1.18.2** and higher, **Velocity** and **Sponge**.
-* It **is not** included in **Spigot**, any server software for 1.18.1 and lower, **BungeeCord**, **Fabric**, **Forge** and **NeoForge**.
-
-If you believe MiniMessage should be supported on your server but doesn't work, open a bug report.
+Yes, however, it must be included in your server software (it is only in Paper / Velocity). Read more about MiniMessage hook [here](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components#minimessage).
 
 ## #17 - Is it possible to show the number of players in a specific group, similar to staffonline placeholder?
 The plugin's internal placeholders are limited, and this kind of functionality is not included.

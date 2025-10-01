@@ -76,6 +76,12 @@ This is how you can achieve it using the following popular NPC plugins:
   * 1 - Select the NPC (`/npc select <ID>` or `/npc select` to select the nearest NPC)
   * 2 - Hide its original nametag (which also hides belowname) using `/npc name`
   * 3 - Display your desired text using `/npc hologram add <text>` ([more info](https://wiki.citizensnpcs.co/Commands#:~:text=the%20NPC%20hitbox-,/npc%20hologram,-add%20%5Btext%5D%20%7C%20set))
+* **FancyNpcs with FancyHolograms**:
+  * 1 - Create a hologram with `/hologram create text <name>`.
+  * 2 - Link your newly created hologram with your NPC: `/hologram edit <hologram name> linkWithNpc <NPC name>`.  
+    Its original name will be hidden automatically, so you don't need to manually do it.
+  * 3 - Change the NPC's name by editing your hologram's line(s): `/hologram edit hi setline 1 <text>`.  
+    You can also add more lines if you want. See [FancyNpcs's wiki](https://docs.fancyinnovations.com/fancyholograms/commands/hologram/#text-hologram-modification) for more commands & info.
 
 # Additional note 4 - Compatibility with modified clients
 Sadly, this feature is suffering from bugs introduced by third party clients such as Feather and Lunar. These two completely ignore `fancy-value` as if it was never added into the game, even on 1.20.3+. This is just an example, and it's not limited to these two clients and this one issue. If you experience issues with the feature and believe you configured it correctly, use vanilla client to make sure it's not caused by a broken client.

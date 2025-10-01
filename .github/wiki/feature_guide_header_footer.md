@@ -5,7 +5,7 @@
   * [Per-world / per-server](#per-world--per-server)
   * [Per-group / per-player](#per-group--per-player)
 * [Additional info](#additional-info)
-  * [Additional note 1 - Not resetting on server switch](#additional-note-1---not-resetting-on-server-switch)
+  * [Additional note 1 - [1.8 - 1.20.1] Not resetting on server switch](#additional-note-1---18---1201-not-resetting-on-server-switch)
 * [Tips & Tricks](#tips--tricks)
   * [Tip 1 - Dynamic line count](#tip-1---dynamic-line-count)
 * [API](#api)
@@ -86,10 +86,12 @@ per-world:
 Same for users, which can be configured in **users.yml**.
 
 # Additional info
-## Additional note 1 - Not resetting on server switch
+## Additional note 1 - [1.8 - 1.20.1] Not resetting on server switch
 When under a BungeeCord network and having TAB installed on backend server and switching to another server, the header/footer will not reset. This is because BungeeCord makes it look like a world switch to the client. To avoid this, you have 2 options:
 * Install TAB on BungeeCord and disable header/footer on the server.
 * Install a plugin that sends some, or even empty header/footer on join.
+
+Velocity sends reset packet, so it isn't a problem there.
 
 # Tips & Tricks
 ## Tip 1 - Dynamic line count

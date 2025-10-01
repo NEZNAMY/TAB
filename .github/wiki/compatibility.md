@@ -39,7 +39,7 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>
-            <td>✔ (1.20.6 - 1.21.7)</td>
+            <td>✔ (1.20.6 - 1.21.8)</td>
         </tr>
     </tbody>
     <tbody>
@@ -70,7 +70,7 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
     </tbody>
 </table>
 
-<sup>1</sup> Modded platforms only support the latest MC version(s). For older MC versions try [modrinth](https://modrinth.com/plugin/tab-was-taken)'s version download filter. If your desired version is not available, you may request it.
+<sup>1</sup> Modded platforms only support the latest MC version(s). For older MC versions try [modrinth](https://modrinth.com/plugin/tab-was-taken)'s version download filter. If TAB is not available for your desired Minecraft version or is very outdated, you may [request a backport](https://github.com/NEZNAMY/TAB/issues/new?template=backport.yml).
 
 <sup>2</sup> Latest only doesn't mean only the latest build will work,
 it means the plugin was made to be compatible with the latest version/build.
