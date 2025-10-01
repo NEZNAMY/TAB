@@ -8,10 +8,7 @@ import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
 import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.KeybindComponent;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.*;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -108,6 +105,8 @@ public class AdventureHook {
             tabComponent = TabComponent.translatable(((TranslatableComponent) component).key());
         } else if (component instanceof KeybindComponent) {
             tabComponent = TabComponent.keybind(((KeybindComponent) component).keybind());
+        } else if (component instanceof ObjectComponent) {
+            tabComponent = TabComponent.legacyText("<Adventure -> TAB component conversion does not support ObjectComponent yet, check back later>"); // TODO
         } else {
             throw new UnsupportedOperationException(component.getClass().getName() + " component type is not supported");
         }

@@ -10,6 +10,7 @@ repositories {
     maven("https://jitpack.io") // YamlAssist
     maven("https://repo.opencollab.dev/maven-snapshots/")
     maven("https://repo.viaversion.com/")
+    maven("https://repo.papermc.io/repository/maven-public/") // Adventure
 }
 
 dependencies {

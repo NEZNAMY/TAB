@@ -10,6 +10,7 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots")
     maven("https://maven.nucleoid.xyz/")
     maven("https://maven.neoforged.net/releases")
+    maven("https://repo.papermc.io/repository/maven-public/") // Adventure
 }
 
 val minecraftVersion = "1.21.9"

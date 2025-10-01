@@ -18,8 +18,8 @@ dependencies {
     compileOnlyApi("net.luckperms:api:5.4")
     compileOnlyApi("com.google.guava:guava:31.1-jre")
     compileOnlyApi("org.geysermc.floodgate:api:2.2.0-SNAPSHOT")
-    compileOnlyApi("net.kyori:adventure-api:4.18.0")
-    compileOnlyApi("net.kyori:adventure-text-minimessage:4.18.0")
+    compileOnlyApi("net.kyori:adventure-api:4.25.0-SNAPSHOT")
+    compileOnlyApi("net.kyori:adventure-text-minimessage:4.25.0-SNAPSHOT")
     implementation("com.saicone.delivery4j:delivery4j:1.1.1")
     implementation("com.saicone.delivery4j:broker-rabbitmq:1.1.1") {
         exclude("org.slf4j", "slf4j-api")

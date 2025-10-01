@@ -6,7 +6,7 @@ dependencyResolutionManagement {
         maven("https://repo.viaversion.com/") // ViaVersion
         maven("https://repo.william278.net/releases/") // VelocityScoreboardAPI
         maven("https://repo.codemc.org/repository/nms/") // CraftBukkit + NMS
-        maven("https://repo.papermc.io/repository/maven-public/") // paperweight, Velocity
+        maven("https://repo.papermc.io/repository/maven-public/") // paperweight, Velocity, Adventure
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate, Bungeecord-proxy
         maven("https://repo.purpurmc.org/snapshots") // Purpur
