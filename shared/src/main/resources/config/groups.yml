@@ -10,6 +10,7 @@ _DEFAULT_:
   tabprefix: "%luckperms-prefix%"
   tagprefix: "%luckperms-prefix%"
   customtabname: "%player%"
+  customnametag: "%cmi_user_display_name%"
   tabsuffix: "%luckperms-suffix%"
   tagsuffix: "%luckperms-suffix%"
 

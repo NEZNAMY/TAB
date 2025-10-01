@@ -22,6 +22,9 @@ public class NameTagPlayerData {
     /** Player's tagsuffix */
     public Property suffix;
 
+    /** Player's custom nametag name */
+    public Property customName;
+
     /** Flag tracking whether this feature is disabled for the player with condition or not */
     public final AtomicBoolean disabled = new AtomicBoolean();
 

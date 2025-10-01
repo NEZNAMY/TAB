@@ -35,6 +35,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
     @NotNull private final String prefix;
     @NotNull private final String suffix;
     @NotNull private final Scoreboard.NameVisibility nameVisibility;
+    @Nullable private final String customName;
     @Nullable private String resolvedTeamName;
 
     /**
@@ -53,6 +54,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
         prefix = in.readUTF();
         suffix = in.readUTF();
         nameVisibility = Scoreboard.NameVisibility.getByName(in.readUTF());
+        customName = in.readBoolean() ? in.readUTF() : null;
     }
 
     @NotNull
@@ -68,6 +70,8 @@ public class NameTagProxyPlayerData extends ProxyMessage {
         out.writeUTF(prefix);
         out.writeUTF(suffix);
         out.writeUTF(nameVisibility.toString());
+        out.writeBoolean(customName != null);
+        if (customName != null) out.writeUTF(customName);
     }
 
     @Override
@@ -114,7 +118,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
                             suffix,
                             nameVisibility,
                             Scoreboard.CollisionRule.ALWAYS,
-                            Collections.singletonList(target.getNickname()),
+                            Collections.singletonList(customName != null ? customName : target.getNickname()),
                             feature.getTeamOptions(),
                             prefix.getLastStyle().toEnumChatFormat()
                     );

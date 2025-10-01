@@ -105,6 +105,9 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             refresh = prefix || suffix;
         }
         if (refresh) updatePrefixSuffix(refreshed);
+        if (refreshed.teamData.customName != null && refreshed.teamData.customName.update()) {
+            updatePrefixSuffix(refreshed);
+        }
     }
 
     @Override
@@ -217,6 +220,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private void loadProperties(@NotNull TabPlayer player) {
         player.teamData.prefix = player.loadPropertyFromConfig(this, "tagprefix", "");
         player.teamData.suffix = player.loadPropertyFromConfig(this, "tagsuffix", "");
+        player.teamData.customName = player.loadPropertyFromConfig(this, "customnametag", null);
     }
 
     /**
@@ -230,6 +234,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private boolean updateProperties(@NotNull TabPlayer p) {
         boolean changed = p.updatePropertyFromConfig(p.teamData.prefix, "");
         if (p.updatePropertyFromConfig(p.teamData.suffix, "")) changed = true;
+        if (p.updatePropertyFromConfig(p.teamData.customName, null)) changed = true;
         return changed;
     }
 
@@ -333,13 +338,14 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (p.teamData.isDisabled() || p.teamData.vanishedFor.contains(viewer.getUniqueId())) return;
         if (!viewer.canSee(p) && p != viewer) return;
         TabComponent prefix = prefixCache.get(p.teamData.prefix.getFormat(viewer));
+        String displayName = p.teamData.customName != null ? p.teamData.customName.getFormat(viewer) : p.getNickname();
         viewer.getScoreboard().registerTeam(
                 p.teamData.teamName,
                 prefix,
                 suffixCache.get(p.teamData.suffix.getFormat(viewer)),
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
-                Collections.singletonList(p.getNickname()),
+                Collections.singletonList(displayName),
                 teamOptions,
                 prefix.getLastStyle().toEnumChatFormat()
         );
@@ -465,7 +471,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     player.teamData.teamName,
                     player.teamData.prefix.get(),
                     player.teamData.suffix.get(),
-                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
+                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
+                    player.teamData.customName != null ? player.teamData.customName.get() : null
             ));
         }
     }
@@ -499,7 +506,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     suffixCache.get(player.getNametag().getSuffix()),
                     player.getNametag().getNameVisibility(),
                     Scoreboard.CollisionRule.ALWAYS,
-                    Collections.singletonList(player.getNickname()),
+                    Collections.singletonList(player.getNametag().getCustomName() != null ? player.getNametag().getCustomName() : player.getNickname()),
                     teamOptions,
                     prefix.getLastStyle().toEnumChatFormat()
             );
