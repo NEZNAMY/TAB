@@ -33,8 +33,8 @@ public class ModernConverter {
         });
         converters.put(1, config -> {
             // Warn users
-            TAB.getInstance().getPlatform().logWarn(new TabTextComponent("Please note that header/footer conversion is only " +
-                    "symbolic and does not fully convert old format to new one. The following content is not converted: per-group settings and per-user settings." +
+            TAB.getInstance().getPlatform().logWarn(new TabTextComponent("Please note that header/footer conversion may not be 100% accurate and will not convert" +
+                    " per-group settings and per-user settings." +
                     " Review your config to make sure it is set up the way you want.", TabTextColor.RED));
 
             // Read old data
