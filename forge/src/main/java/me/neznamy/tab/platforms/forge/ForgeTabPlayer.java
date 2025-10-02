@@ -22,7 +22,7 @@ public class ForgeTabPlayer extends BackendTabPlayer {
      *          Platform's player object
      */
     public ForgeTabPlayer(@NotNull ForgePlatform platform, @NotNull ServerPlayer player) {
-        super(platform, player, player.getUUID(), player.getGameProfile().getName(),
+        super(platform, player, player.getUUID(), player.getGameProfile().name(),
                 ForgeTAB.getLevelName(player.level()), SharedConstants.getProtocolVersion());
     }
 
@@ -85,6 +85,6 @@ public class ForgeTabPlayer extends BackendTabPlayer {
     @Override
     @NotNull
     public String getDisplayName() {
-        return getPlayer().getGameProfile().getName(); // Will make it work properly if someone asks
+        return getPlayer().getGameProfile().name(); // Will make it work properly if someone asks
     }
 }
