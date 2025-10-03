@@ -72,16 +72,7 @@ public class Condition {
         expressions = new ArrayList<>(definition.getConditions());
         yes = definition.getYes();
         no = definition.getNo();
-        for (ConditionalExpression expression : expressions) {
-            if (expression instanceof Permission || expression instanceof NotPermission) {
-                int permissionRefresh = TAB.getInstance().getConfiguration().getConfig().getPermissionRefreshInterval();
-                if (refresh > permissionRefresh || refresh == -1) refresh = permissionRefresh;
-            } else {
-                ComparatorExpression comparator = (ComparatorExpression) expression;
-                placeholdersInConditions.addAll(Arrays.asList(comparator.getLeftSidePlaceholders()));
-                placeholdersInConditions.addAll(Arrays.asList(comparator.getRightSidePlaceholders()));
-            }
-        }
+        analyzeContent();
     }
 
     /**
@@ -110,6 +101,20 @@ public class Condition {
             }
             return expression;
         }).filter(Objects::nonNull).collect(Collectors.toList());
+        analyzeContent();
+    }
+
+    private void analyzeContent() {
+        for (ConditionalExpression expression : expressions) {
+            if (expression instanceof Permission || expression instanceof NotPermission) {
+                int permissionRefresh = TAB.getInstance().getConfiguration().getConfig().getPermissionRefreshInterval();
+                if (refresh > permissionRefresh || refresh == -1) refresh = permissionRefresh;
+            } else {
+                ComparatorExpression comparator = (ComparatorExpression) expression;
+                placeholdersInConditions.addAll(Arrays.asList(comparator.getLeftSidePlaceholders()));
+                placeholdersInConditions.addAll(Arrays.asList(comparator.getRightSidePlaceholders()));
+            }
+        }
     }
 
     /**
