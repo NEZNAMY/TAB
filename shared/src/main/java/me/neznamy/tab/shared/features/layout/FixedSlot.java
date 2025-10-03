@@ -92,13 +92,21 @@ public class FixedSlot extends RefreshableFeature {
      */
     @NotNull
     public static FixedSlot fromDefinition(@NotNull FixedSlotDefinition def, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
+        String skin;
+        if (def.getSkin() != null && !def.getSkin().isEmpty()) {
+            skin = def.getSkin();
+        } else if (pattern.getDefaultSkinDefinition() != null) {
+            skin = pattern.getDefaultSkinDefinition();
+        } else {
+            skin = manager.getConfiguration().getDefaultSkin(def.getSlot());
+        }
         FixedSlot f = new FixedSlot(
                 manager,
                 def.getSlot(),
                 pattern,
                 manager.getUUID(def.getSlot()),
                 def.getText(),
-                def.getSkin() == null || def.getSkin().isEmpty() ? manager.getConfiguration().getDefaultSkin(def.getSlot()) : def.getSkin(),
+                skin,
                 def.getPing() == null ? manager.getConfiguration().getEmptySlotPing() : def.getPing()
         );
         if (!def.getText().isEmpty()) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), def.getSlot()), f);

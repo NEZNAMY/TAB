@@ -51,7 +51,7 @@ public class LayoutView {
             viewer.getTabList().addEntry(new TabList.Entry(
                     manager.getUUID(slot),
                     manager.getConfiguration().getDirection().getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
-                    manager.getSkinManager().getDefaultSkin(slot),
+                    pattern.getDefaultSkin(slot),
                     true,
                     manager.getConfiguration().getEmptySlotPing(),
                     0,

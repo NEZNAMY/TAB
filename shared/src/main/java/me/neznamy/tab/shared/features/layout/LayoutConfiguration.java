@@ -130,6 +130,7 @@ public class LayoutConfiguration {
     public static class LayoutDefinition {
 
         @Nullable private final String condition;
+        @Nullable private final String defaultSkin;
         @NotNull private final List<FixedSlotDefinition> fixedSlots;
         @NotNull private final LinkedHashMap<String, GroupPattern> groups;
 
@@ -145,7 +146,7 @@ public class LayoutConfiguration {
          */
         public static LayoutDefinition fromSection(@NotNull String name, @NotNull ConfigurationSection section) {
             // Check keys
-            section.checkForUnknownKey(Arrays.asList("condition", "fixed-slots", "groups"));
+            section.checkForUnknownKey(Arrays.asList("condition", "default-skin", "fixed-slots", "groups"));
 
             List<FixedSlotDefinition> fixedSlots = new ArrayList<>();
             for (String line : section.getStringList("fixed-slots", Collections.emptyList())) {
@@ -181,7 +182,12 @@ public class LayoutConfiguration {
 
                 groups.put(asString, pattern);
             }
-            return new LayoutDefinition(section.getString("condition"), fixedSlots, groups);
+            return new LayoutDefinition(
+                    section.getString("condition"),
+                    section.getString("default-skin"),
+                    fixedSlots,
+                    groups
+            );
         }
 
         /**

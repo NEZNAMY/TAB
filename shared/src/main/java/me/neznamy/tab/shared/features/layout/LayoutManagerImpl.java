@@ -167,7 +167,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
     @NotNull
     public Layout createNewLayout(@NonNull String name) {
         ensureActive();
-        return new LayoutPattern(this, name, new LayoutDefinition(null, Collections.emptyList(), new LinkedHashMap<>()));
+        return new LayoutPattern(this, name, new LayoutDefinition(null, null, Collections.emptyList(), new LinkedHashMap<>()));
     }
 
     @Override

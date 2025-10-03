@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features.layout;
 
-import lombok.Getter;
 import me.neznamy.tab.shared.config.skin.SkinManager;
 import me.neznamy.tab.shared.platform.TabList.Skin;
 import org.jetbrains.annotations.NotNull;
@@ -16,13 +15,13 @@ import java.util.Map.Entry;
 public class LayoutSkinManager {
 
     /** Skin manager to load skins with */
-    private final SkinManager skinManager;
+    @NotNull private final SkinManager skinManager;
 
     /** Configured default skin */
-    @Getter private final Skin defaultSkin;
+    @Nullable private final Skin defaultSkin;
 
     /** Default skins per slot */
-    private final Map<Integer, Skin> defaultSkinHashMap = new HashMap<>();
+    @NotNull private final Map<Integer, Skin> defaultSkinHashMap = new HashMap<>();
 
     /**
      * Constructs new instance with given parameters and loads cache.
@@ -50,7 +49,7 @@ public class LayoutSkinManager {
      *          Slot id
      * @return  Default skin for specified slot
      */
-    @NotNull
+    @Nullable
     public Skin getDefaultSkin(int slot) {
         return defaultSkinHashMap.getOrDefault(slot, defaultSkin);
     }

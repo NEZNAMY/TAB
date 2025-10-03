@@ -52,7 +52,7 @@ public class PlayerSlot {
             data = new TabList.Entry(
                     uniqueId,
                     layout.getManager().getConfiguration().getDirection().getEntryName(viewer, slot, LayoutManagerImpl.isTeamsEnabled()),
-                    layout.getManager().getSkinManager().getDefaultSkin(slot),
+                    layout.getPattern().getDefaultSkin(slot),
                     true,
                     layout.getManager().getConfiguration().getEmptySlotPing(),
                     0,
