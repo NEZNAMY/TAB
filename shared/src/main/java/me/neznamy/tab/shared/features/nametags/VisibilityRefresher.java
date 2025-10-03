@@ -34,8 +34,7 @@ public class VisibilityRefresher extends RefreshableFeature implements JoinListe
 
     @Override
     public void load() {
-        int refresh = TAB.getInstance().getPlatform().isProxy() ? -1 : 500;
-        TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, refresh, p -> {
+        TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, 500, p -> {
             TabPlayer player = (TabPlayer) p;
             boolean newInvisibility = player.hasInvisibilityPotion() || invisibleCondition.isMet((TabPlayer) p);
             if (newInvisibility) {
@@ -55,8 +54,7 @@ public class VisibilityRefresher extends RefreshableFeature implements JoinListe
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         if (invisibleCondition.isMet(connectedPlayer)) {
             connectedPlayer.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
-        } else {
-            connectedPlayer.teamData.showNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
+            nameTags.updateVisibility(connectedPlayer);
         }
     }
 
