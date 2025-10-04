@@ -84,10 +84,14 @@ public class BukkitPlatform implements BackendPlatform {
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
+    /** Package name of the server implementation, null on Paper 1.20.5+ */
+    @Nullable
+    private final String serverPackage;
+
     /** Implementation for creating new instances using content available on the server */
     @NotNull
     @Setter
-    private ImplementationProvider implementationProvider = findImplementationProvider();
+    private ImplementationProvider implementationProvider;
 
     private final boolean modernOnlinePlayers;
 
@@ -101,6 +105,10 @@ public class BukkitPlatform implements BackendPlatform {
     public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         modernOnlinePlayers = Bukkit.class.getMethod("getOnlinePlayers").getReturnType() == Collection.class;
+        String CRAFTBUKKIT_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
+        String[] array = CRAFTBUKKIT_PACKAGE.split("\\.");
+        serverPackage = array.length > 3 ? array[3] : null;
+        implementationProvider = findImplementationProvider();
         try {
             Object server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
             recentTps = ((double[]) server.getClass().getField("recentTps").get(server));
@@ -115,10 +123,6 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     @SneakyThrows
     private ImplementationProvider findImplementationProvider() {
-        String CRAFTBUKKIT_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
-        String[] array = CRAFTBUKKIT_PACKAGE.split("\\.");
-        String serverPackage = array.length > 3 ? array[3] : null;
-
         if (serverPackage == null) {
             // Paper 1.20.5+, check for available module
             String paperModule = getPaperModule();
@@ -131,10 +135,8 @@ public class BukkitPlatform implements BackendPlatform {
                 // Does not actually support flat 1.19, but whatever, no one is using it anyway
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
             } catch (ClassNotFoundException ignored) {
-
             }
         }
-
         throw new UnsupportedOperationException();
     }
 
@@ -273,7 +275,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @NotNull
     public String getServerVersionInfo() {
-        return "[Bukkit] " + Bukkit.getName() + " - " + Bukkit.getBukkitVersion().split("-")[0];
+        return "[Bukkit] " + Bukkit.getName() + " - " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")";
     }
 
     @Override
