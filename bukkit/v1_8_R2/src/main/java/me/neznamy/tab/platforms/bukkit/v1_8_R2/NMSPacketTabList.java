@@ -4,9 +4,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -126,7 +126,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             }
             if (action == EnumPlayerInfoAction.UPDATE_GAME_MODE || action == EnumPlayerInfoAction.ADD_PLAYER) {
                 Integer forcedGameMode = getForcedGameModes().get(id);
-                if (forcedGameMode != null) PlayerInfoData_GameMode.set(nmsData, forcedGameMode);
+                if (forcedGameMode != null) PlayerInfoData_GameMode.set(nmsData, WorldSettings.EnumGamemode.getById(forcedGameMode));
             }
             if (action == EnumPlayerInfoAction.UPDATE_LATENCY || action == EnumPlayerInfoAction.ADD_PLAYER) {
                 if (getForcedLatency() != null) {

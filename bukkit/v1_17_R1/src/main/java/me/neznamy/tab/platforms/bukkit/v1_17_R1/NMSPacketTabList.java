@@ -129,7 +129,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             }
             if (action == UPDATE_GAME_MODE || action == ADD_PLAYER) {
                 Integer forcedGameMode = getForcedGameModes().get(id);
-                if (forcedGameMode != null) PlayerInfoData_GameMode.set(nmsData, forcedGameMode);
+                if (forcedGameMode != null) PlayerInfoData_GameMode.set(nmsData, EnumGamemode.getById(forcedGameMode));
             }
             if (action == UPDATE_LATENCY || action == ADD_PLAYER) {
                 if (getForcedLatency() != null) {
