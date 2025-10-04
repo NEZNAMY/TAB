@@ -85,7 +85,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
     @Override
     public void removeScore(@NonNull Score score) {
-        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
+        if (player.getVersionId() >= ProtocolVersion.V1_20_3.getNetworkId()) {
             player.sendPacket(new ScoreboardScoreReset(score.getHolder(), score.getObjective().getName()));
         } else {
             player.sendPacket(new ScoreboardScore(score.getHolder(), (byte) ScoreAction.REMOVE, score.getObjective().getName(), 0, null, null));
@@ -130,7 +130,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
     @NotNull
     private Either<String, NameTagVisibility> convertVisibility(@NotNull NameVisibility visibility) {
-        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_5.getNetworkId()) {
+        if (player.getVersionId() >= ProtocolVersion.V1_21_5.getNetworkId()) {
             return Either.right(NameTagVisibility.valueOf(visibility.name()));
         } else {
             return Either.left(visibility.toString());
@@ -139,7 +139,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
     @NotNull
     private Either<String, net.md_5.bungee.protocol.packet.Team.CollisionRule> convertCollision(@NotNull CollisionRule collision) {
-        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_5.getNetworkId()) {
+        if (player.getVersionId() >= ProtocolVersion.V1_21_5.getNetworkId()) {
             return Either.right(net.md_5.bungee.protocol.packet.Team.CollisionRule.valueOf(collision.name()));
         } else {
             return Either.left(collision.toString());

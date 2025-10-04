@@ -165,7 +165,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         p.scoreboardData.activeScoreboard = this;
         recalculateScores(p);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, name);
-        if (containsNumberFormat && p.getVersion().getNetworkId() < ProtocolVersion.V1_20_3.getNetworkId()) {
+        if (containsNumberFormat && p.getVersionId() < ProtocolVersion.V1_20_3.getNetworkId()) {
             TAB.getInstance().getConfigHelper().runtime().error("Scoreboard \"" + name + "\" contains right-side text alignment (using ||), however, this feature " +
                     "was added in 1.20.3, but player \"" + p.getName() + "\" is using version " + p.getVersion().getFriendlyName() + ". Right-side text " +
                     "will not be visible for them.");

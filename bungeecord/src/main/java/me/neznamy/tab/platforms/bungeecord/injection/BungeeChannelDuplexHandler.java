@@ -37,7 +37,7 @@ public class BungeeChannelDuplexHandler extends TabChannelDuplexHandler {
             cpu.getProcessingThread().executeLater(new TimedCaughtTask(cpu, () -> {
                 ((SafeScoreboard<?>)player.getScoreboard()).setFrozen(false);
                 player.getScoreboard().resend();
-                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+                if (player.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     // For 1.20.2+ we need to do this, because server switch event is called before tablist is cleared
                     TAB.getInstance().getFeatureManager().onTabListClear(player);
                     ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();

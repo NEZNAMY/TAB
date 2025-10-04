@@ -49,7 +49,7 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
         // Avoid 1.20.3+ client crash on scoreboard packets, do it sync to prevent packet being sent after event, but before processing
         // Avoid 1.20.5+ client disconnect with "Network Protocol Error"
         TabPlayer p = tab.getPlayer(e.getPlayer().getUniqueId());
-        if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+        if (p != null && p.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
             ((SafeScoreboard<?>)p.getScoreboard()).setFrozen(true);
             ((SafeBossBar<?>)p.getBossBar()).freeze();
         }
@@ -61,14 +61,14 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
 
                 // Things will get cleared immediately after, so no point in sending it, also someone said it fixed some warn from Geyser
                 // Sending these packets before login packet will also crash the client on 1.20.3
-                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+                if (player.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     ((SafeScoreboard<?>)player.getScoreboard()).setFrozen(true);
                     ((SafeBossBar<?>)player.getBossBar()).freeze();
                 }
                 tab.getFeatureManager().onJoin(player);
             } else {
                 tab.getFeatureManager().onServerChange(player.getUniqueId(), Server.byName(e.getPlayer().getServer().getInfo().getName()));
-                if (player.getVersion().getNetworkId() < ProtocolVersion.V1_20_2.getNetworkId()) {
+                if (player.getVersionId() < ProtocolVersion.V1_20_2.getNetworkId()) {
                     // For versions below 1.20.2 the tablist is already clean when this event is called
                     // For 1.20.2+ this event is called before, so we listen to Login packet instead
                     tab.getFeatureManager().onTabListClear(player);

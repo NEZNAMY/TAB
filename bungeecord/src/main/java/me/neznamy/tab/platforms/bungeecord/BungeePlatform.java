@@ -286,9 +286,9 @@ public class BungeePlatform extends ProxyPlatform {
     @Override
     @NotNull
     public TabList createTabList(@NotNull TabPlayer player) {
-        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
+        if (player.getVersionId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
             return new BungeeTabList1193((BungeeTabPlayer) player);
-        } else if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_8.getNetworkId()) {
+        } else if (player.getVersionId() >= ProtocolVersion.V1_8.getNetworkId()) {
             return new BungeeTabList18((BungeeTabPlayer) player);
         } else {
             return new BungeeTabList17((BungeeTabPlayer) player);

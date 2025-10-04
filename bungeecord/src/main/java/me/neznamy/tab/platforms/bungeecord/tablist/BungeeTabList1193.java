@@ -103,7 +103,7 @@ public class BungeeTabList1193 extends BungeeTabList {
 
     @Override
     public void updateListOrder(@NonNull UUID entry, int listOrder) {
-        if (player.getVersion().getNetworkId() < ProtocolVersion.V1_21_2.getNetworkId()) return;
+        if (player.getVersionId() < ProtocolVersion.V1_21_2.getNetworkId()) return;
         Item item = item(entry);
         item.setListOrder(listOrder);
         sendPacket(updateListOrder, item);
@@ -111,7 +111,7 @@ public class BungeeTabList1193 extends BungeeTabList {
 
     @Override
     public void updateHat(@NonNull UUID entry, boolean showHat) {
-        if (player.getVersion().getNetworkId() < ProtocolVersion.V1_21_4.getNetworkId()) return;
+        if (player.getVersionId() < ProtocolVersion.V1_21_4.getNetworkId()) return;
         Item item = item(entry);
         item.setShowHat(showHat);
         sendPacket(updateHat, item);
@@ -121,9 +121,9 @@ public class BungeeTabList1193 extends BungeeTabList {
     public void addEntry0(@NonNull Entry entry) {
         addUuid(entry.getUniqueId());
         EnumSet<PlayerListItemUpdate.Action> actions;
-        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_4.getNetworkId()) {
+        if (player.getVersionId() >= ProtocolVersion.V1_21_4.getNetworkId()) {
             actions = addPlayer_1_21_4;
-        } else if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId()) {
+        } else if (player.getVersionId() >= ProtocolVersion.V1_21_2.getNetworkId()) {
             actions = addPlayer_1_21_2;
         } else {
             actions = addPlayer_legacy;

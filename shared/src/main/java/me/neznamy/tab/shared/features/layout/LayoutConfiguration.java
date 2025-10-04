@@ -108,8 +108,8 @@ public class LayoutConfiguration {
         }
 
         public String getEntryName(@NotNull TabPlayer viewer, int slot, boolean teamsEnabled) {
-            boolean legacySorting = viewer.getVersion().getNetworkId() < ProtocolVersion.V1_19_3.getNetworkId();
-            boolean modernSorting = viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId() && TAB.getInstance().getPlatform().supportsListOrder();
+            boolean legacySorting = viewer.getVersionId() < ProtocolVersion.V1_19_3.getNetworkId();
+            boolean modernSorting = viewer.getVersionId() >= ProtocolVersion.V1_21_2.getNetworkId() && TAB.getInstance().getPlatform().supportsListOrder();
             if (legacySorting || modernSorting) {
                 return "";
             } else {

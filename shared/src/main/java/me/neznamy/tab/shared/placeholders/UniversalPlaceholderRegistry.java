@@ -57,7 +57,7 @@ public class UniversalPlaceholderRegistry {
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).world.getName());
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER, -1, p -> ((TabPlayer)p).server.getName());
         manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION, -1, p -> ((TabPlayer)p).getVersion().getFriendlyName());
-        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION_ID, -1, p -> PerformanceUtil.toString(((TabPlayer)p).getVersion().getNetworkId()));
+        manager.registerInternalPlayerPlaceholder(TabConstants.Placeholder.PLAYER_VERSION_ID, -1, p -> PerformanceUtil.toString(((TabPlayer)p).getVersionId()));
 
         // Server
         manager.registerInternalServerPlaceholder("%%", -1, () -> "%");

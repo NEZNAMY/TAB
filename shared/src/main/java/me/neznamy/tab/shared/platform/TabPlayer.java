@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.belowname.BelowNamePlayerData;
 import me.neznamy.tab.shared.features.bossbar.BossBarPlayerData;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.header.HeaderFooterPlayerData;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTagPlayerData;
@@ -82,7 +81,10 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Player's game type, {@code true} for Bedrock, {@code false} for Java */
     @Getter private final boolean bedrockPlayer;
 
-    /** Player's game version */
+    /** Player's protocol version (actual retrieved value) */
+    @Getter private final int versionId;
+
+    /** Player's game version (evaluated to known versions) */
     @Getter protected final ProtocolVersion version;
 
     /**
@@ -175,6 +177,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         this.server = Server.byName(server);
         this.world = World.byName(world);
         nickname = name;
+        versionId = protocolVersion;
         version = ProtocolVersion.fromNetworkId(protocolVersion);
         bedrockPlayer = FloodgateHook.getInstance().isFloodgatePlayer(uniqueId, name);
         permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);

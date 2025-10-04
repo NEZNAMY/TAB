@@ -74,7 +74,7 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
         sendMessage(sender, "&eInternal UUID: &a" + analyzed.getUniqueId());
         sendMessage(sender, "&eTablist UUID: &a" + analyzed.getTablistId());
-        sendMessage(sender, "&ePlayer version: &a" + analyzed.getVersion().getFriendlyName() + " (" + analyzed.getVersion().getNetworkId() + ")");
+        sendMessage(sender, "&ePlayer version: &a" + analyzed.getVersion().getFriendlyName() + " (" + analyzed.getVersionId() + ")");
         if (analyzed instanceof ProxyTabPlayer) {
             char versionRequired = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.charAt(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.length()-1);
             sendMessage(sender, "&eBridge connection: " + (((ProxyTabPlayer)analyzed).isBridgeConnected() ?

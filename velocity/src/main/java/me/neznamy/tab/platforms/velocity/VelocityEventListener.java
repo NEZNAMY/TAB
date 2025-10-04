@@ -62,7 +62,7 @@ public class VelocityEventListener implements EventListener<Player> {
         if (TAB.getInstance().isPluginDisabled()) return;
         if (e.getResult().isAllowed()) {
             TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-            if (p != null && p.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+            if (p != null && p.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                 ((SafeBossBar<?>)p.getBossBar()).freeze();
             }
         }
@@ -91,7 +91,7 @@ public class VelocityEventListener implements EventListener<Player> {
                         Server.byName(e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null"))
                 );
                 tab.getFeatureManager().onTabListClear(player);
-                if (BOSSBAR_BUG_COMPENSATION && player.getVersion().getNetworkId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+                if (BOSSBAR_BUG_COMPENSATION && player.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
                 }
             }
