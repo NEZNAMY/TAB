@@ -84,10 +84,10 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
             return new String[] {toString(value), String.format("group=%s,world=%s", TabConstants.DEFAULT_GROUP, worldName)};
         }
         if ((value = perServer.getOrDefault(serverName, new HashMap<>()).getOrDefault(lowercaseGroup, new HashMap<>()).get(property)) != null) {
-            return new String[] {toString(value), String.format("group=%s,server=%s", lowercaseGroup, server)};
+            return new String[] {toString(value), String.format("group=%s,server=%s", lowercaseGroup, serverName)};
         }
         if ((value = perServer.getOrDefault(serverName, new HashMap<>()).getOrDefault(TabConstants.DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
-            return new String[] {toString(value), String.format("group=%s,server=%s", TabConstants.DEFAULT_GROUP, server)};
+            return new String[] {toString(value), String.format("group=%s,server=%s", TabConstants.DEFAULT_GROUP, serverName)};
         }
         if ((value = values.getOrDefault(lowercaseGroup, new HashMap<>()).get(property)) != null) {
             return new String[] {toString(value), String.format("group=%s", lowercaseGroup)};

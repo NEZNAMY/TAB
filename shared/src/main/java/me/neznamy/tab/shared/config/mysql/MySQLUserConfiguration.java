@@ -60,10 +60,10 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
         TabPlayer p = getPlayer(user);
         Object value;
         if ((value = perWorld.getOrDefault(world, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
-            return new String[] {toString(value), String.format("user=%s,world=%s", user, world)};
+            return new String[] {toString(value), String.format("user=%s,world=%s", user, world.getName())};
         }
         if ((value = perServer.getOrDefault(server, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
-            return new String[] {toString(value), String.format("user=%s,server=%s", user, server)};
+            return new String[] {toString(value), String.format("user=%s,server=%s", user, server.getName())};
         }
         if ((value = values.getOrDefault(p, new HashMap<>()).get(property)) != null) {
             return new String[] {toString(value), String.format("user=%s", user)};
