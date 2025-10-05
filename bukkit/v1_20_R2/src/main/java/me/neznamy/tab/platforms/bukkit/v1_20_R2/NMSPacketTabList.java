@@ -118,8 +118,9 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @SneakyThrows
     @Override
-    public void onPacketSend(@NonNull Object packet) {
-        if (!(packet instanceof ClientboundPlayerInfoUpdatePacket info)) return;
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
+        if (!(packet instanceof ClientboundPlayerInfoUpdatePacket info)) return packet;
         EnumSet<ClientboundPlayerInfoUpdatePacket.a> actions = info.a();
         List<ClientboundPlayerInfoUpdatePacket.b> updatedList = new ArrayList<>();
         boolean rewritePacket = false;
@@ -158,6 +159,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             ) : nmsData);
         }
         if (rewritePacket) entries.set(info, updatedList);
+        return packet;
     }
 
     @SneakyThrows

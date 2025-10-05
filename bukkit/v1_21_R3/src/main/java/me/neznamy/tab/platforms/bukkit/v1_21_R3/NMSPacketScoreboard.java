@@ -136,7 +136,8 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void onPacketSend(@NonNull Object packet) {
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
         if (packet instanceof PacketPlayOutScoreboardDisplayObjective display) {
             TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.b().ordinal(), display.e());
         }
@@ -145,9 +146,11 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         }
         if (packet instanceof PacketPlayOutScoreboardTeam team) {
             int action = getMethod(team);
-            if (action == TeamAction.UPDATE) return;
-            TeamPacket_PLAYERS.set(packet, onTeamPacket(action, team.f(), team.g() == null ? Collections.emptyList() : team.g()));
+            if (action != TeamAction.UPDATE) {
+                TeamPacket_PLAYERS.set(packet, onTeamPacket(action, team.f(), team.g() == null ? Collections.emptyList() : team.g()));
+            }
         }
+        return packet;
     }
 
     private int getMethod(@NonNull PacketPlayOutScoreboardTeam team) {

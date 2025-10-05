@@ -110,7 +110,8 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void onPacketSend(@NonNull Object packet) {
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
             List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
@@ -150,6 +151,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
             }
             if (rewritePacket) entries.set(info, updatedList);
         }
+        return packet;
     }
 
     @SneakyThrows

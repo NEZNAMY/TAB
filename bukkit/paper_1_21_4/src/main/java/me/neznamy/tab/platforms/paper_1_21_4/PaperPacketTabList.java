@@ -110,7 +110,8 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void onPacketSend(@NonNull Object packet) {
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
             List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
@@ -150,6 +151,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             }
             if (rewritePacket) entries.set(info, updatedList);
         }
+        return packet;
     }
 
     private void sendPacket(@NonNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> action, @NonNull UUID id, @NonNull String name, @Nullable Skin skin,

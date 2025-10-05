@@ -1,12 +1,19 @@
 package me.neznamy.tab.shared.platform.decorators;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
+import java.util.WeakHashMap;
 
 /**
  * Decorated class for TabList that tracks entries and their expected values.
@@ -127,9 +134,11 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      *
      * @param   packet
      *          Packet to process
+     * @return  Packet to forward
      */
-    public void onPacketSend(@NonNull Object packet) {
-        // Empty by default, overridden by Bukkit, BungeeCord, Fabric, Forge and NeoForge
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
+        return packet;
     }
 
     /**

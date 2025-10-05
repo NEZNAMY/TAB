@@ -127,7 +127,8 @@ public class NeoForgeScoreboard extends SafeScoreboard<NeoForgeTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void onPacketSend(@NonNull Object packet) {
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
         if (packet instanceof ClientboundSetDisplayObjectivePacket display) {
             TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getSlot().ordinal(), display.getObjectiveName());
         }
@@ -136,9 +137,11 @@ public class NeoForgeScoreboard extends SafeScoreboard<NeoForgeTabPlayer> {
         }
         if (packet instanceof ClientboundSetPlayerTeamPacket team) {
             int method = getMethod(team);
-            if (method == TeamAction.UPDATE) return;
-            players.set(team, onTeamPacket(method, team.getName(), team.getPlayers()));
+            if (method != TeamAction.UPDATE) {
+                players.set(team, onTeamPacket(method, team.getName(), team.getPlayers()));
+            }
         }
+        return packet;
     }
 
     private int getMethod(@NonNull ClientboundSetPlayerTeamPacket team) {

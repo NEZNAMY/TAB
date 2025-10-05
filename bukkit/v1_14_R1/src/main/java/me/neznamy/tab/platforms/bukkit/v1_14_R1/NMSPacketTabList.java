@@ -118,8 +118,9 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public void onPacketSend(@NonNull Object packet) {
-        if (!(packet instanceof PacketPlayOutPlayerInfo)) return;
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
+        if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
         EnumPlayerInfoAction action = (EnumPlayerInfoAction) ACTION.get(packet);
         for (Object nmsData : (List<Object>) PLAYERS.get(packet)) {
             GameProfile profile = (GameProfile) PlayerInfoData_Profile.get(nmsData);
@@ -141,6 +142,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
             }
         }
+        return packet;
     }
 
     @SneakyThrows

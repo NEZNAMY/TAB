@@ -83,8 +83,10 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    public void onPacketSend(@NonNull Object packet) {
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
         // Pipeline injection is not available (netty is relocated)
+        return packet;
     }
 
     /**

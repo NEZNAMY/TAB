@@ -117,8 +117,9 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void onPacketSend(@NonNull Object packet) {
-        if (!(packet instanceof PacketPlayOutPlayerInfo)) return;
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
+        if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
         EnumPlayerInfoAction action = ((PacketPlayOutPlayerInfo)packet).c();
         for (PlayerInfoData nmsData : ((PacketPlayOutPlayerInfo)packet).b()) {
             GameProfile profile = nmsData.a();
@@ -140,6 +141,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
             }
         }
+        return packet;
     }
 
     @SneakyThrows

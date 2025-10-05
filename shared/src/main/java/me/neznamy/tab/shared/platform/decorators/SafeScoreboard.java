@@ -284,9 +284,11 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
      *
      * @param   packet
      *          Packet sent by the server
+     * @return  Packet to forward
      */
-    public void onPacketSend(@NonNull Object packet) {
-        // Implemented by platforms with pipeline injection
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
+        return packet;
     }
 
     /**

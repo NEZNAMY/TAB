@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 import java.util.function.Function;
@@ -63,23 +64,23 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         protected final TabPlayer player;
 
         @Override
-        public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
+        public void write(@NotNull ChannelHandlerContext context, @Nullable Object packet, @NotNull ChannelPromise channelPromise) {
+            Object newPacket = packet;
             try {
-                if (packet == null) {
+                if (newPacket == null) {
                     return;
                 }
-                
                 if (player.getVersion().getMinorVersion() >= 8) {
-                    ((TrackedTabList<?>)player.getTabList()).onPacketSend(packet);
+                    newPacket = ((TrackedTabList<?>)player.getTabList()).onPacketSend(newPacket);
                 }
-                ((SafeScoreboard<?>)player.getScoreboard()).onPacketSend(packet);
+                newPacket = ((SafeScoreboard<?>)player.getScoreboard()).onPacketSend(newPacket);
             } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }
             try {
-                super.write(context, packet, channelPromise);
+                super.write(context, newPacket, channelPromise);
             } catch (Throwable e) {
-                TAB.getInstance().getErrorManager().printError(String.format("Failed to forward packet %s to %s", packet.getClass().getSimpleName(), player.getName()), e);
+                TAB.getInstance().getErrorManager().printError(String.format("Failed to forward packet %s to %s", newPacket, player.getName()), e);
             }
         }
     }

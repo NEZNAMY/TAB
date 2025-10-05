@@ -109,7 +109,8 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
     }
 
     @Override
-    public void onPacketSend(@NonNull Object packet) {
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
         if (packet instanceof PlayerListItem) {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
@@ -151,6 +152,7 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
                 }
             }
         }
+        return packet;
     }
 
     @Override

@@ -147,7 +147,8 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void onPacketSend(@NonNull Object packet) {
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
         if (packet instanceof ScoreboardDisplay) {
             ScoreboardDisplay display = (ScoreboardDisplay) packet;
             TAB.getInstance().getFeatureManager().onDisplayObjective(player, display.getPosition(), display.getName());
@@ -158,10 +159,12 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
         }
         if (packet instanceof net.md_5.bungee.protocol.packet.Team) {
             net.md_5.bungee.protocol.packet.Team team = (net.md_5.bungee.protocol.packet.Team) packet;
-            if (team.getMode() == TeamAction.UPDATE) return;
-            List<String> players = team.getPlayers() == null ? Collections.emptyList() : Lists.newArrayList(team.getPlayers());
-            team.setPlayers(onTeamPacket(team.getMode(), team.getName(), players).toArray(new String[0]));
+            if (team.getMode() != TeamAction.UPDATE) {
+                List<String> players = team.getPlayers() == null ? Collections.emptyList() : Lists.newArrayList(team.getPlayers());
+                team.setPlayers(onTeamPacket(team.getMode(), team.getName(), players).toArray(new String[0]));
+            }
         }
+        return packet;
     }
 
     @NotNull

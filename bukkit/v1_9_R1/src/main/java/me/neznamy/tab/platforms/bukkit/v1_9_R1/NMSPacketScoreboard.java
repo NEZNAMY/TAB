@@ -121,7 +121,8 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     @Override
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public void onPacketSend(@NonNull Object packet) {
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
         if (packet instanceof PacketPlayOutScoreboardDisplayObjective) {
             TAB.getInstance().getFeatureManager().onDisplayObjective(player, DisplayObjective_POSITION.getInt(packet),
                     (String) DisplayObjective_OBJECTIVE_NAME.get(packet));
@@ -132,11 +133,13 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         }
         if (packet instanceof PacketPlayOutScoreboardTeam) {
             int action = TeamPacket_ACTION.getInt(packet);
-            if (action == TeamAction.UPDATE) return;
-            Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
-            if (players == null) players = Collections.emptyList();
-            TeamPacket_PLAYERS.set(packet, onTeamPacket(action, (String) TeamPacket_NAME.get(packet), players));
+            if (action != TeamAction.UPDATE) {
+                Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
+                if (players == null) players = Collections.emptyList();
+                TeamPacket_PLAYERS.set(packet, onTeamPacket(action, (String) TeamPacket_NAME.get(packet), players));
+            }
         }
+        return packet;
     }
 
     /**
