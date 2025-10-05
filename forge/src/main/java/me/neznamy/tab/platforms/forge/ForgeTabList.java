@@ -149,7 +149,11 @@ public class ForgeTabList extends TrackedTabList<ForgeTabPlayer> {
                         nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()
                 ) : nmsData);
             }
-            if (rewritePacket) entries.set(info, updatedList);
+            if (rewritePacket) {
+                ClientboundPlayerInfoUpdatePacket newPacket = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
+                entries.set(newPacket, updatedList);
+                return newPacket;
+            }
         }
         return packet;
     }

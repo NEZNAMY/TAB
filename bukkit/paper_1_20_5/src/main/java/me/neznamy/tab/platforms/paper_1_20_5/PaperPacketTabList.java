@@ -3,13 +3,11 @@ package me.neznamy.tab.platforms.paper_1_20_5;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.NonNull;
-import lombok.SneakyThrows;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
@@ -20,7 +18,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -33,8 +30,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateLatency = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateGameMode = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateListed = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED);
-
-    private static final Field entries = ReflectionUtils.getOnlyField(ClientboundPlayerInfoUpdatePacket.class, List.class);
 
     /**
      * Constructs new instance.
@@ -107,7 +102,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     @NotNull
     public Object onPacketSend(@NonNull Object packet) {
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
@@ -147,7 +141,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                         nmsData.chatSession()
                 ) : nmsData);
             }
-            if (rewritePacket) entries.set(info, updatedList);
+            if (rewritePacket) return new ClientboundPlayerInfoUpdatePacket(actions, updatedList);
         }
         return packet;
     }

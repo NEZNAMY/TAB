@@ -149,7 +149,11 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
                         nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()
                 ) : nmsData);
             }
-            if (rewritePacket) entries.set(info, updatedList);
+            if (rewritePacket) {
+                ClientboundPlayerInfoUpdatePacket newPacket = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
+                entries.set(newPacket, updatedList);
+                return newPacket;
+            }
         }
         return packet;
     }

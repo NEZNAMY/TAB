@@ -43,8 +43,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.a> UPDATE_LATENCY_SET = EnumSet.of(UPDATE_LATENCY);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.a> UPDATE_LISTED_SET = EnumSet.of(UPDATE_LISTED);
 
-    private static final Field entries = ReflectionUtils.getOnlyField(ClientboundPlayerInfoUpdatePacket.class, List.class);
-
     /**
      * Constructs new instance.
      *
@@ -159,7 +157,11 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                     nmsData.g()
             ) : nmsData);
         }
-        if (rewritePacket) entries.set(info, updatedList);
+        if (rewritePacket) {
+            ClientboundPlayerInfoUpdatePacket newPacket = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
+            PLAYERS.set(newPacket, updatedList);
+            return newPacket;
+        }
         return packet;
     }
 
