@@ -62,12 +62,10 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * World the player is currently in, {@code "N/A"} if TAB is
      * installed on proxy and bridge is not installed
      */
-    @Getter
     @NotNull
     public World world;
 
     /** Server the player is currently in, {@code "N/A"} if TAB is installed on backend */
-    @Getter
     @NotNull
     public Server server;
 
@@ -343,6 +341,18 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
             }
         }
         return !target.isVanished() || hasPermission(TabConstants.Permission.SEE_VANISHED);
+    }
+
+    @Override
+    @NotNull
+    public String getServer() {
+        return server.getName();
+    }
+
+    @Override
+    @NotNull
+    public String getWorld() {
+        return world.getName();
     }
 
     /**
