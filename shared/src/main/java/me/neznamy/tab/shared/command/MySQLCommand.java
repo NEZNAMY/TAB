@@ -94,10 +94,12 @@ public class MySQLCommand extends SubCommand {
             try {
                 YamlPropertyConfigurationFile groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("config/groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
                 YamlPropertyConfigurationFile userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
+                mysql.execute("DELETE FROM tab_groups");
+                mysql.execute("DELETE FROM tab_users");
                 upload(groupFile, TAB.getInstance().getConfiguration().getGroups());
                 upload(userFile, TAB.getInstance().getConfiguration().getUsers());
                 sendMessage(sender, getMessages().getMySQLUploadSuccess());
-            } catch (YAMLException | IOException e) {
+            } catch (YAMLException | IOException | SQLException e) {
                 sendMessage(sender, getMessages().getMySQLFailError());
                 TAB.getInstance().getErrorManager().criticalError("MySQL upload failed", e);
             }
