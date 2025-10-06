@@ -7,3 +7,6 @@ is in quality of the report (typically providing correct steps to reproduce that
 This way you will help make the actual releases more stable / help get stable releases sooner.
 * Help improve the wiki by opening a [Wiki change issue](https://github.com/NEZNAMY/TAB/issues/new?assignees=&labels=Wiki&template=wiki_change.yml), 
 where you can improve existing descriptions, add information you found missing, fix typos / grammar mistakes or add more examples.
+* Create spark reports and then send them to me. I will analyze them and try to find optimizations to make the plugin run faster. Commands:
+  * `/spark profiler start --timeout 300 --thread * --interval 0.1`
+  * `/spark profiler start --timeout 300 --thread * --interval 0.1 --alloc`
