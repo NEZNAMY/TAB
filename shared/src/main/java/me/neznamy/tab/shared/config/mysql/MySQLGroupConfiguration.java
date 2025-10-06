@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.config.mysql;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
@@ -44,17 +45,16 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     }
 
     @Override
+    @SneakyThrows
     public void setProperty(@NonNull String group, @NonNull String property, @Nullable Server server, @Nullable World world, @Nullable String value) {
         String lowercaseGroup = group.equals(TabConstants.DEFAULT_GROUP) ? group : group.toLowerCase(Locale.US);
-        try {
-            if (getProperty(lowercaseGroup, property, server, world) != null) {
-                mysql.execute("delete from `tab_groups` where `group` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", lowercaseGroup, property, world, server);
-            }
-            setProperty0(lowercaseGroup, property, server, world, value);
-            if (value != null) mysql.execute("insert into `tab_groups` (`group`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", lowercaseGroup, property, value, world, server);
-        } catch (SQLException e) {
-            TAB.getInstance().getErrorManager().mysqlQueryFailed(e);
+        if (getProperty(lowercaseGroup, property, server, world) != null) {
+            mysql.execute("delete from `tab_groups` where `group` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?",
+                    lowercaseGroup, property, world == null ? null : world.getName(), server == null ? null : server.getName());
         }
+        setProperty0(lowercaseGroup, property, server, world, value);
+        if (value != null) mysql.execute("insert into `tab_groups` (`group`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)",
+                lowercaseGroup, property, value, world == null ? null : world.getName(), server == null ? null : server.getName());
     }
     
     private String querySymbol(boolean isNull) {

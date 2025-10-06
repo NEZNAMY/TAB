@@ -56,7 +56,7 @@ public class MessageFile extends YamlConfigurationFile {
             "/tab mysql download - downloads data from mysql to files"
     ));
     private final String mySQLFailNotEnabled = getString("mysql-fail-not-enabled", "&cCannot download/upload data from/to MySQL, because it's disabled.");
-    private final String mySQLFailError = getString("mysql-fail-error", "MySQL download failed due to an error. Check console for more info.");
+    private final String mySQLFailError = getString("mysql-fail-error", "MySQL download / upload failed due to an error. Check console for more info.");
     private final String mySQLDownloadSuccess = getString("mysql-download-success", "&aMySQL data downloaded successfully.");
     private final String mySQLUploadSuccess = getString("mysql-upload-success", "&aMySQL data uploaded successfully.");
     private final List<String> scoreboardHelpMenu = getStringList("scoreboard-help-menu", Arrays.asList(
