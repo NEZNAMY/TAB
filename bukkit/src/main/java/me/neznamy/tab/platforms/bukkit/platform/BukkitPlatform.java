@@ -39,7 +39,6 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.impl.AdventureBossBar;
 import me.neznamy.tab.shared.platform.impl.DummyBossBar;
-import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.audience.Audience;
 import net.milkbowl.vault.chat.Chat;
@@ -192,8 +191,6 @@ public class BukkitPlatform implements BackendPlatform {
                 manager.registerInternalPlayerPlaceholder("%vault-suffix%", 1000, p -> chat.getPlayerSuffix((Player) p.getPlayer()));
             }
         }
-        // Override for the PAPI placeholder to prevent console errors on unsupported server versions when ping field changes
-        manager.registerPlayerPlaceholder("%player_ping%", p -> PerformanceUtil.toString(((TabPlayer) p).getPing()));
         BackendPlatform.super.registerPlaceholders();
     }
 
