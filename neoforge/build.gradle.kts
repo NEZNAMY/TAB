@@ -13,12 +13,13 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/") // Adventure
 }
 
-val minecraftVersion = "1.21.9"
+val minecraftVersion = "1.21.10"
 
 // NeoForge API versions for each Minecraft version for easier backporting
 // Official website (for updating in the future): https://projects.neoforged.net/neoforged/neoforge
 val neoforgeApiVersions = mapOf(
-    "1.21.9" to "21.9.2-beta",
+    "1.21.10" to "21.10.0-beta",
+    "1.21.9" to "21.9.16-beta",
     "1.21.8" to "21.8.47",
     "1.21.7" to "21.7.25-beta",
     "1.21.6" to "21.6.20-beta",

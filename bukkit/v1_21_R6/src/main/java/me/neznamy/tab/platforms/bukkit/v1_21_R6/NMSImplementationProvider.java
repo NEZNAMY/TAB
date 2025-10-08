@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 
 /**
- * Implementation provider using direct NMS code for 1.21.9.
+ * Implementation provider using direct NMS code for 1.21.9 - 1.21.10.
  */
 @Getter
 public class NMSImplementationProvider implements ImplementationProvider {

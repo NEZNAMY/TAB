@@ -165,6 +165,7 @@ public class BukkitPlatform implements BackendPlatform {
             case V1_21_8:
                 return "1_21_4";
             case V1_21_9:
+            case V1_21_10:
                 return "1_21_9";
             default:
                 return null;
