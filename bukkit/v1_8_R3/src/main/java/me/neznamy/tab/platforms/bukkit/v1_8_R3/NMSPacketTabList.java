@@ -163,7 +163,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             updatedList.add(rewriteEntry ? info.new PlayerInfoData(
                     profile,
                     latency,
-                    EnumGamemode.values()[gameMode],
+                    EnumGamemode.getById(gameMode),
                     displayName
             ) : nmsData);
         }
@@ -182,7 +182,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         PLAYERS.set(packet, Collections.singletonList(packet.new PlayerInfoData(
                 createProfile(id, name, skin),
                 latency,
-                EnumGamemode.values()[gameMode],
+                EnumGamemode.getById(gameMode),
                 displayName == null ? null : displayName.convert())
         ));
         sendPacket(packet);

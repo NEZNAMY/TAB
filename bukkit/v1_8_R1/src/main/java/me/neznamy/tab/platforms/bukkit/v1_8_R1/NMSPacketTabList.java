@@ -161,7 +161,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                     info,
                     profile,
                     latency,
-                    EnumGamemode.values()[gameMode],
+                    EnumGamemode.getById(gameMode),
                     displayName
             ) : nmsData);
         }
@@ -181,7 +181,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 packet,
                 createProfile(id, name, skin),
                 latency,
-                EnumGamemode.values()[gameMode],
+                EnumGamemode.getById(gameMode),
                 displayName == null ? null : displayName.convert())
         ));
         sendPacket(packet);
