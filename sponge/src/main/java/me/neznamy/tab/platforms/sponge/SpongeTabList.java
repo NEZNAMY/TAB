@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.sponge;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
@@ -134,5 +135,16 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
         if (gameMode == GameModes.ADVENTURE.get()) return 2;
         if (gameMode == GameModes.SPECTATOR.get()) return 3;
         return 0;
+    }
+
+    @Override
+    public void checkHeaderFooter() {
+        if (header == null || footer == null) return;
+        Component actualHeader = player.getPlayer().tabList().header().orElse(Component.empty());
+        Component actualFooter = player.getPlayer().tabList().footer().orElse(Component.empty());
+        if (actualHeader != header.toAdventure() || actualFooter != footer.toAdventure()) {
+            printHeaderFooterOverrideMessage(actualHeader.toString(), actualFooter.toString());
+            player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventure(), footer.toAdventure());
+        }
     }
 }

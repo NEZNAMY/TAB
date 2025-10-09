@@ -333,4 +333,14 @@ public class ErrorManager {
     public void redisBungeeRegisterFail(@NotNull Exception e) {
         printError("Failed to register TAB channel in RedisBungee due to an error ", e, false, errorLog);
     }
+
+    /**
+     * Prints anti-override message into anti-override.log file
+     *
+     * @param   message
+     *          message to print
+     */
+    public void logAntiOverride(@NotNull String message) {
+        printError(message, Collections.emptyList(), false, antiOverrideLog);
+    }
 }

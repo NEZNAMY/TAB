@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -41,11 +42,11 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     /** Header sent by the plugin */
     @Nullable
-    private TabComponent header;
+    protected TabComponent header;
 
     /** Footer sent by the plugin */
     @Nullable
-    private TabComponent footer;
+    protected TabComponent footer;
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
@@ -130,6 +131,15 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     }
 
     /**
+     * Checks if header and footer are as set by the plugin and if not,
+     * they are forced. Only works on platforms with a full TabList API.
+     * Not needed for platforms which support pipeline injection.
+     */
+    public void checkHeaderFooter() {
+        // Empty by default, overridden by Sponge and Velocity
+    }
+
+    /**
      * Processes packet for anti-override, ping spoof and nick compatibility.
      *
      * @param   packet
@@ -139,6 +149,19 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     @NotNull
     public Object onPacketSend(@NonNull Object packet) {
         return packet;
+    }
+
+    /**
+     * Logs a message about a blocked attempt to override header/footer.
+     *
+     * @param   header
+     *          Header attempted to be set
+     * @param   footer
+     *          Footer attempted to be set
+     */
+    protected void printHeaderFooterOverrideMessage(@NotNull String header, @NotNull String footer) {
+        TAB.getInstance().getErrorManager().logAntiOverride("Blocked attempt to set tablist header for player " + player.getName() +
+                " to \"" + header + "\" and footer to \"" + footer + "\". To fix this, find the plugin setting the header/footer and disable the function.");
     }
 
     /**

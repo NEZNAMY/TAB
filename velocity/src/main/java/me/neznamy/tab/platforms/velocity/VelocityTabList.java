@@ -5,6 +5,8 @@ import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -130,5 +132,28 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
                 entry.setGameMode(forcedGameMode);
             }
         }
+    }
+
+    @Override
+    public void checkHeaderFooter() {
+        if (header == null || footer == null) return;
+        Component actualHeader = player.getPlayer().getPlayerListHeader();
+        Component actualFooter = player.getPlayer().getPlayerListFooter();
+        if (actualHeader != header.toAdventure() || actualFooter != footer.toAdventure()) {
+            printHeaderFooterOverrideMessage(toString(actualHeader), toString(actualFooter));
+            player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventure(), footer.toAdventure());
+        }
+    }
+
+    @NotNull
+    private String toString(@NotNull Component component) {
+        StringBuilder sb = new StringBuilder();
+        if (component instanceof TextComponent) {
+            sb.append(((TextComponent) component).content());
+        }
+        for (Component child : component.children()) {
+            sb.append(toString(child));
+        }
+        return sb.toString();
     }
 }

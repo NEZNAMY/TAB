@@ -118,6 +118,14 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     @Override
     @NotNull
     public Object onPacketSend(@NonNull Object packet) {
+        if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
+            PacketPlayOutPlayerListHeaderFooter tablist = (PacketPlayOutPlayerListHeaderFooter) packet;
+            if (header == null || footer == null) return packet;
+            if (tablist.a != header.convert() || tablist.b != footer.convert()) {
+                printHeaderFooterOverrideMessage(tablist.a.getString(), tablist.b.getString());
+                return new PacketPlayOutPlayerListHeaderFooter(header.convert(), footer.convert());
+            }
+        }
         if (!(packet instanceof ClientboundPlayerInfoUpdatePacket)) return packet;
         ClientboundPlayerInfoUpdatePacket info = (ClientboundPlayerInfoUpdatePacket) packet;
         EnumSet<ClientboundPlayerInfoUpdatePacket.a> actions = info.a();

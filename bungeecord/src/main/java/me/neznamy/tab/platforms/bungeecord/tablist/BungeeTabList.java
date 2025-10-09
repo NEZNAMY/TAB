@@ -12,6 +12,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.data.Property;
+import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
@@ -111,6 +112,17 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
     @Override
     @NotNull
     public Object onPacketSend(@NonNull Object packet) {
+        if (packet instanceof PlayerListHeaderFooter) {
+            PlayerListHeaderFooter tablist = (PlayerListHeaderFooter) packet;
+            if (header == null || footer == null) return packet;
+            BaseComponent headerComponent = player.getPlatform().transformComponent(header, player.getVersion());
+            BaseComponent footerComponent = player.getPlatform().transformComponent(footer, player.getVersion());
+            if (tablist.getHeader() != headerComponent || tablist.getFooter() != footerComponent) {
+                printHeaderFooterOverrideMessage(tablist.getHeader().toPlainText(), tablist.getHeader().toPlainText());
+                tablist.setHeader(headerComponent);
+                tablist.setFooter(footerComponent);
+            }
+        }
         if (packet instanceof PlayerListItem) {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {

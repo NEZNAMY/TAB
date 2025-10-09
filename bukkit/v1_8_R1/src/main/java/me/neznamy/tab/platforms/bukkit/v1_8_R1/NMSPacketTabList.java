@@ -25,6 +25,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     private static final Field ACTION = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, EnumPlayerInfoAction.class);
     private static final Field PLAYERS = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, List.class);
+    private static final Field HEADER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(0);
     private static final Field FOOTER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooter.class, IChatBaseComponent.class).get(1);
 
     /**
@@ -80,11 +81,8 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     public void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(header.convert());
-        FOOTER.set(packet, footer.convert());
-        sendPacket(packet);
+        sendPacket(newHeaderFooter(header, footer));
     }
 
     @Override
@@ -101,11 +99,29 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         return new Skin(property.getValue(), property.getSignature());
     }
 
+    @NonNull
+    @SneakyThrows
+    private PacketPlayOutPlayerListHeaderFooter newHeaderFooter(@NotNull TabComponent header, @NonNull TabComponent footer) {
+        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(header.convert());
+        FOOTER.set(packet, footer.convert());
+        return packet;
+    }
+
     @Override
     @SneakyThrows
     @NotNull
     @SuppressWarnings("unchecked")
     public Object onPacketSend(@NonNull Object packet) {
+        if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
+            PacketPlayOutPlayerListHeaderFooter tablist = (PacketPlayOutPlayerListHeaderFooter) packet;
+            if (header == null || footer == null) return packet;
+            IChatBaseComponent header = (IChatBaseComponent) HEADER.get(tablist);
+            IChatBaseComponent footer = (IChatBaseComponent) FOOTER.get(tablist);
+            if (header != this.header.convert() || footer != this.footer.convert()) {
+                printHeaderFooterOverrideMessage(header.c(), footer.c());
+                return newHeaderFooter(this.header, this.footer);
+            }
+        }
         if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
         PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
         EnumPlayerInfoAction action = (EnumPlayerInfoAction) ACTION.get(info);

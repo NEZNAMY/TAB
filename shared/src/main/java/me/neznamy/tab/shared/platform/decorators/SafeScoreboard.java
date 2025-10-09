@@ -387,7 +387,7 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         //not logging the same message for every online player who received the packet
         if (!message.equals(lastTeamOverrideMessage)) {
             lastTeamOverrideMessage = message;
-            TAB.getInstance().getErrorManager().printError(message, Collections.emptyList(), false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
+            TAB.getInstance().getErrorManager().logAntiOverride(message);
         }
     }
 

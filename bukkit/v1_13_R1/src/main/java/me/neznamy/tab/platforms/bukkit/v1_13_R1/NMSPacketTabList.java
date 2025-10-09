@@ -90,12 +90,8 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    @SneakyThrows
     public void setPlayerListHeaderFooter0(@NonNull TabComponent header, @NonNull TabComponent footer) {
-        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
-        packet.a = header.convert();
-        packet.b = footer.convert();
-        sendPacket(packet);
+        sendPacket(newHeaderFooter(header, footer));
     }
 
     @Override
@@ -112,11 +108,27 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         return new Skin(property.getValue(), property.getSignature());
     }
 
+    @NonNull
+    private PacketPlayOutPlayerListHeaderFooter newHeaderFooter(@NotNull TabComponent header, @NonNull TabComponent footer) {
+        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
+        packet.a = header.convert();
+        packet.b = footer.convert();
+        return packet;
+    }
+
     @Override
     @SneakyThrows
     @NotNull
     @SuppressWarnings("unchecked")
     public Object onPacketSend(@NonNull Object packet) {
+        if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
+            PacketPlayOutPlayerListHeaderFooter tablist = (PacketPlayOutPlayerListHeaderFooter) packet;
+            if (header == null || footer == null) return packet;
+            if (tablist.a != header.convert() || tablist.b != footer.convert()) {
+                printHeaderFooterOverrideMessage(tablist.a.getString(), tablist.b.getString());
+                return newHeaderFooter(header, footer);
+            }
+        }
         if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
         PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
         EnumPlayerInfoAction action = (EnumPlayerInfoAction) ACTION.get(info);

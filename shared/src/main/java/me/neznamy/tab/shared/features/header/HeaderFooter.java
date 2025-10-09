@@ -8,8 +8,10 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +46,11 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
+        TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                ((TrackedTabList<?>)p.getTabList()).checkHeaderFooter();
+            }
+        }, getFeatureName(), TabConstants.CpuUsageCategory.PERIODIC_TASK), 500);
     }
 
     @Override
