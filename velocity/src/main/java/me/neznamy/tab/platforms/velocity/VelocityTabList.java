@@ -136,6 +136,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
 
     @Override
     public void checkHeaderFooter() {
+        if (true) return; // Disable this for now. Velocity "translates" the component, breaking identity reference
         if (header == null || footer == null) return;
         Component actualHeader = player.getPlayer().getPlayerListHeader();
         Component actualFooter = player.getPlayer().getPlayerListFooter();
