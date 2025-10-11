@@ -121,7 +121,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             IChatBaseComponent header = (IChatBaseComponent) HEADER.get(tablist);
             IChatBaseComponent footer = (IChatBaseComponent) FOOTER.get(tablist);
             if (header != this.header.convert() || footer != this.footer.convert()) {
-                printHeaderFooterOverrideMessage(header.toPlainText(), footer.toPlainText());
                 return newHeaderFooter(this.header, this.footer);
             }
         }

@@ -116,7 +116,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             PacketPlayOutPlayerListHeaderFooter tablist = (PacketPlayOutPlayerListHeaderFooter) packet;
             if (header == null || footer == null) return packet;
             if (tablist.a != header.convert() || tablist.b != footer.convert()) {
-                printHeaderFooterOverrideMessage(tablist.a.getString(), tablist.b.getString());
                 return new PacketPlayOutPlayerListHeaderFooter(header.convert(), footer.convert());
             }
         }

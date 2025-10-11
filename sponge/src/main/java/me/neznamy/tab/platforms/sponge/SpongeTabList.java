@@ -143,7 +143,6 @@ public class SpongeTabList extends TrackedTabList<SpongeTabPlayer> {
         Component actualHeader = player.getPlayer().tabList().header().orElse(Component.empty());
         Component actualFooter = player.getPlayer().tabList().footer().orElse(Component.empty());
         if (actualHeader != header.toAdventure() || actualFooter != footer.toAdventure()) {
-            printHeaderFooterOverrideMessage(actualHeader.toString(), actualFooter.toString());
             player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventure(), footer.toAdventure());
         }
     }

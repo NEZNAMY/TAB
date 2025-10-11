@@ -108,7 +108,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         if (packet instanceof ClientboundTabListPacket tablist) {
             if (header == null || footer == null) return packet;
             if (tablist.header() != header.convert() || tablist.footer() != footer.convert()) {
-                printHeaderFooterOverrideMessage(tablist.header().getString(), tablist.footer().getString());
                 return new ClientboundTabListPacket(header.convert(), footer.convert());
             }
         }

@@ -118,7 +118,6 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
             BaseComponent headerComponent = player.getPlatform().transformComponent(header, player.getVersion());
             BaseComponent footerComponent = player.getPlatform().transformComponent(footer, player.getVersion());
             if (tablist.getHeader() != headerComponent || tablist.getFooter() != footerComponent) {
-                printHeaderFooterOverrideMessage(tablist.getHeader().toPlainText(), tablist.getHeader().toPlainText());
                 tablist.setHeader(headerComponent);
                 tablist.setFooter(footerComponent);
             }
