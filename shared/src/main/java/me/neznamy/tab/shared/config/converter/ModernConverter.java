@@ -40,8 +40,8 @@ public class ModernConverter {
             // Read old data
             ConfigurationSection headerFooter = config.getConfigurationSection("header-footer");
             boolean enabled = headerFooter.getBoolean("enabled", true);
-            List<String> defaultHeader = headerFooter.getStringList("header", Collections.emptyList());
-            List<String> defaultFooter = headerFooter.getStringList("footer", Collections.emptyList());
+            List<String> defaultHeader = headerFooter.getStringList("header", new ArrayList<>());
+            List<String> defaultFooter = headerFooter.getStringList("footer", new ArrayList<>());
             String disableCondition = headerFooter.getString("disable-condition", "%world%=disabledworld");
             ConfigurationSection perWorld = headerFooter.getConfigurationSection("per-world");
             ConfigurationSection perServer = headerFooter.getConfigurationSection("per-server");
@@ -61,8 +61,12 @@ public class ModernConverter {
                         return "%world%=" + part;
                     }
                 }).collect(Collectors.joining("|")));
-                design.put("header", worldSection.getStringList("header", Collections.emptyList()));
-                design.put("footer", worldSection.getStringList("footer", Collections.emptyList()));
+                List<String> header = worldSection.getStringList("header");
+                if (header == null) header = new ArrayList<>();
+                List<String> footer = worldSection.getStringList("footer");
+                if (footer == null) footer = new ArrayList<>();
+                design.put("header", header);
+                design.put("footer", footer);
                 designs.put("world-" + world, design);
             }
 
@@ -78,8 +82,12 @@ public class ModernConverter {
                         return "%server%=" + part;
                     }
                 }).collect(Collectors.joining("|")));
-                design.put("header", serverSection.getStringList("header", Collections.emptyList()));
-                design.put("footer", serverSection.getStringList("footer", Collections.emptyList()));
+                List<String> header = serverSection.getStringList("header");
+                if (header == null) header = new ArrayList<>();
+                List<String> footer = serverSection.getStringList("footer");
+                if (footer == null) footer = new ArrayList<>();
+                design.put("header", header);
+                design.put("footer", footer);
                 designs.put("server-" + server, design);
             }
 
