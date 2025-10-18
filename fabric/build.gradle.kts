@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("dev.architectury.loom")
 }
@@ -75,5 +77,8 @@ tasks {
     }
     validateAccessWidener {
         enabled = true
+    }
+    withType<ShadowJar>().configureEach {
+        enabled = false
     }
 }
