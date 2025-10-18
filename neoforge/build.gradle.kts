@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("dev.architectury.loom")
 }
@@ -49,5 +51,8 @@ loom.neoForge.accessTransformer(file("src/main/resources/META-INF/accesstransfor
 tasks {
     compileJava {
         options.release.set(21)
+    }
+    withType<ShadowJar>().configureEach {
+        enabled = false
     }
 }

@@ -13,64 +13,64 @@ allprojects {
     ext.set("credits", "Joseph T. McQuigg (JT122406)")
 }
 
-val platforms = setOf(
-    projects.bukkit,
-    projects.bukkit.paper1205,
-    projects.bukkit.paper1212,
-    projects.bukkit.paper1214,
-    projects.bukkit.paper1219,
-    projects.bukkit.v17R1,
-    projects.bukkit.v17R2,
-    projects.bukkit.v17R3,
-    projects.bukkit.v17R4,
-    projects.bukkit.v18R1,
-    projects.bukkit.v18R2,
-    projects.bukkit.v18R3,
-    projects.bukkit.v19R1,
-    projects.bukkit.v19R2,
-    projects.bukkit.v110R1,
-    projects.bukkit.v111R1,
-    projects.bukkit.v112R1,
-    projects.bukkit.v113R1,
-    projects.bukkit.v113R2,
-    projects.bukkit.v114R1,
-    projects.bukkit.v115R1,
-    projects.bukkit.v116R1,
-    projects.bukkit.v116R2,
-    projects.bukkit.v116R3,
-    projects.bukkit.v117R1,
-    projects.bukkit.v118R1,
-    projects.bukkit.v118R2,
-    projects.bukkit.v119R1,
-    projects.bukkit.v119R2,
-    projects.bukkit.v119R3,
-    projects.bukkit.v120R1,
-    projects.bukkit.v120R2,
-    projects.bukkit.v120R3,
-    projects.bukkit.v120R4,
-    projects.bukkit.v121R1,
-    projects.bukkit.v121R2,
-    projects.bukkit.v121R3,
-    projects.bukkit.v121R4,
-    projects.bukkit.v121R5,
-    projects.bukkit.v121R6,
-    projects.bungeecord,
-    projects.velocity,
-    projects.sponge,
-    projects.fabric,
-    projects.neoforge,
-    projects.forge
-).map { it.dependencyProject }
+val platformPaths = setOf(
+    ":bukkit",
+    ":bukkit:paper_1_20_5",
+    ":bukkit:paper_1_21_2",
+    ":bukkit:paper_1_21_4",
+    ":bukkit:paper_1_21_9",
+    ":bukkit:v1_7_R1",
+    ":bukkit:v1_7_R2",
+    ":bukkit:v1_7_R3",
+    ":bukkit:v1_7_R4",
+    ":bukkit:v1_8_R1",
+    ":bukkit:v1_8_R2",
+    ":bukkit:v1_8_R3",
+    ":bukkit:v1_9_R1",
+    ":bukkit:v1_9_R2",
+    ":bukkit:v1_10_R1",
+    ":bukkit:v1_11_R1",
+    ":bukkit:v1_12_R1",
+    ":bukkit:v1_13_R1",
+    ":bukkit:v1_13_R2",
+    ":bukkit:v1_14_R1",
+    ":bukkit:v1_15_R1",
+    ":bukkit:v1_16_R1",
+    ":bukkit:v1_16_R2",
+    ":bukkit:v1_16_R3",
+    ":bukkit:v1_17_R1",
+    ":bukkit:v1_18_R1",
+    ":bukkit:v1_18_R2",
+    ":bukkit:v1_19_R1",
+    ":bukkit:v1_19_R2",
+    ":bukkit:v1_19_R3",
+    ":bukkit:v1_20_R1",
+    ":bukkit:v1_20_R2",
+    ":bukkit:v1_20_R3",
+    ":bukkit:v1_20_R4",
+    ":bukkit:v1_21_R1",
+    ":bukkit:v1_21_R2",
+    ":bukkit:v1_21_R3",
+    ":bukkit:v1_21_R4",
+    ":bukkit:v1_21_R5",
+    ":bukkit:v1_21_R6",
+    ":bungeecord",
+    ":velocity",
+    ":sponge",
+    ":fabric",
+    ":neoforge",
+    ":forge"
+)
 
-val special = setOf(
-    projects.api,
-    projects.shared
-).map { it.dependencyProject }
+val specialPaths = setOf(
+    ":api",
+    ":shared"
+)
 
 subprojects {
-    when (this) {
-        in platforms -> plugins.apply("tab.platform-conventions")
-        in special -> plugins.apply("tab.standard-conventions")
+    when (path) {
+        in platformPaths -> plugins.apply("tab.platform-conventions")
+        in specialPaths -> plugins.apply("tab.standard-conventions")
         else -> plugins.apply("tab.base-conventions")
     }
 }
