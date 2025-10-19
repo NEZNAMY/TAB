@@ -1,5 +1,5 @@
 dependencies {
-    compileOnlyApi("org.jetbrains:annotations:24.1.0")
+    compileOnlyApi("org.jetbrains:annotations:26.0.2")
 }
 
 tasks.javadoc {

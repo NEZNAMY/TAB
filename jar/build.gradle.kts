@@ -1,78 +1,87 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.Project
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.jvm.tasks.Jar
 
 plugins {
     id("com.gradleup.shadow")
 }
 
-val platforms = setOf(
-    rootProject.projects.bukkit,
-    rootProject.projects.bukkit.paper1205,
-    rootProject.projects.bukkit.paper1212,
-    rootProject.projects.bukkit.paper1214,
-    rootProject.projects.bukkit.paper1219,
-    rootProject.projects.bukkit.v17R1,
-    rootProject.projects.bukkit.v17R2,
-    rootProject.projects.bukkit.v17R3,
-    rootProject.projects.bukkit.v17R4,
-    rootProject.projects.bukkit.v18R1,
-    rootProject.projects.bukkit.v18R2,
-    rootProject.projects.bukkit.v18R3,
-    rootProject.projects.bukkit.v19R1,
-    rootProject.projects.bukkit.v19R2,
-    rootProject.projects.bukkit.v110R1,
-    rootProject.projects.bukkit.v111R1,
-    rootProject.projects.bukkit.v112R1,
-    rootProject.projects.bukkit.v113R1,
-    rootProject.projects.bukkit.v113R2,
-    rootProject.projects.bukkit.v114R1,
-    rootProject.projects.bukkit.v115R1,
-    rootProject.projects.bukkit.v116R1,
-    rootProject.projects.bukkit.v116R2,
-    rootProject.projects.bukkit.v116R3,
-    rootProject.projects.bukkit.v117R1,
-    rootProject.projects.bukkit.v118R1,
-    rootProject.projects.bukkit.v118R2,
-    rootProject.projects.bukkit.v119R1,
-    rootProject.projects.bukkit.v119R2,
-    rootProject.projects.bukkit.v119R3,
-    rootProject.projects.bukkit.v120R1,
-    rootProject.projects.bukkit.v120R2,
-    rootProject.projects.bukkit.v120R3,
-    rootProject.projects.bukkit.v120R4,
-    rootProject.projects.bukkit.v121R1,
-    rootProject.projects.bukkit.v121R2,
-    rootProject.projects.bukkit.v121R3,
-    rootProject.projects.bukkit.v121R4,
-    rootProject.projects.bukkit.v121R5,
-    rootProject.projects.bukkit.v121R6,
-    rootProject.projects.bungeecord,
-    rootProject.projects.velocity,
-    rootProject.projects.sponge
-).map { it.dependencyProject }
+val platformPaths = setOf(
+    ":bukkit",
+    ":bukkit:paper_1_20_5",
+    ":bukkit:paper_1_21_2",
+    ":bukkit:paper_1_21_4",
+    ":bukkit:paper_1_21_9",
+    ":bukkit:v1_7_R1",
+    ":bukkit:v1_7_R2",
+    ":bukkit:v1_7_R3",
+    ":bukkit:v1_7_R4",
+    ":bukkit:v1_8_R1",
+    ":bukkit:v1_8_R2",
+    ":bukkit:v1_8_R3",
+    ":bukkit:v1_9_R1",
+    ":bukkit:v1_9_R2",
+    ":bukkit:v1_10_R1",
+    ":bukkit:v1_11_R1",
+    ":bukkit:v1_12_R1",
+    ":bukkit:v1_13_R1",
+    ":bukkit:v1_13_R2",
+    ":bukkit:v1_14_R1",
+    ":bukkit:v1_15_R1",
+    ":bukkit:v1_16_R1",
+    ":bukkit:v1_16_R2",
+    ":bukkit:v1_16_R3",
+    ":bukkit:v1_17_R1",
+    ":bukkit:v1_18_R1",
+    ":bukkit:v1_18_R2",
+    ":bukkit:v1_19_R1",
+    ":bukkit:v1_19_R2",
+    ":bukkit:v1_10_R1",
+    ":bukkit:v1_19_R3",
+    ":bukkit:v1_20_R1",
+    ":bukkit:v1_20_R2",
+    ":bukkit:v1_20_R3",
+    ":bukkit:v1_20_R4",
+    ":bukkit:v1_21_R1",
+    ":bukkit:v1_21_R2",
+    ":bukkit:v1_21_R3",
+    ":bukkit:v1_21_R4",
+    ":bukkit:v1_21_R5",
+    ":bukkit:v1_21_R6",
+    ":bungeecord",
+    ":velocity",
+    ":sponge"
+)
 
-val moddedPlatforms = setOf(
-    rootProject.projects.fabric,
-    rootProject.projects.neoforge,
-    rootProject.projects.forge
-).map { it.dependencyProject }
+val moddedPaths = setOf(
+    ":fabric",
+    ":neoforge",
+    ":forge"
+)
+
+val platforms: List<Project> = platformPaths.map { rootProject.project(it) }
+val moddedPlatforms: List<Project> = moddedPaths.map { rootProject.project(it) }
 
 tasks {
     shadowJar {
         archiveFileName.set("TAB-${project.version}.jar")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-        fun registerPlatform(project: Project, shadeTask: org.gradle.jvm.tasks.Jar) {
-            dependsOn(shadeTask)
+        fun registerPlatform(project: Project, jarTask: AbstractArchiveTask) {
+            dependsOn(jarTask)
             dependsOn(project.tasks.withType<Jar>())
-            from(zipTree(shadeTask.archiveFile))
+            from(zipTree(jarTask.archiveFile))
         }
 
-        platforms.forEach {
-            registerPlatform(it, it.tasks.named<ShadowJar>("shadowJar").get())
+        platforms.forEach { p ->
+            val task = p.tasks.named<ShadowJar>("shadowJar").get()
+            registerPlatform(p, task)
         }
 
-        moddedPlatforms.forEach {
-            registerPlatform(it, it.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").get())
+        moddedPlatforms.forEach { p ->
+            val task = p.tasks.named<Jar>("remapJar").get()
+            registerPlatform(p, task)
         }
     }
     build.get().dependsOn(shadowJar)
