@@ -4,17 +4,14 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
-import me.neznamy.tab.api.event.EventHandler;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
-import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.features.proxy.message.*;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Base64;
@@ -44,7 +41,6 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
     /** UUID of this proxy to ignore messages coming from the same proxy */
     @NotNull private final UUID proxy = UUID.randomUUID();
 
-    private EventHandler<TabPlaceholderRegisterEvent> eventHandler;
     @NotNull private final Map<String, Function<ByteArrayDataInput, ProxyMessage>> stringToClass = new HashMap<>();
     @NotNull private final Map<Class<? extends ProxyMessage>, String> classToString = new HashMap<>();
 
@@ -123,66 +119,13 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
     @Override
     public void load() {
         register();
-        overridePlaceholders();
-        TAB.getInstance().getEventBus().register(TabPlaceholderRegisterEvent.class, eventHandler);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
         sendMessage(new LoadRequest());
-    }
-
-    private void overridePlaceholders() {
-        eventHandler = event -> {
-            String identifier = event.getIdentifier();
-            if (identifier.startsWith("%online_")) {
-                String serverName = identifier.substring(8, identifier.length()-1);
-                Server server = Server.byName(serverName);
-                event.setServerPlaceholder(() -> {
-                    int count = 0;
-                    for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                        if (player.server == server && !player.isVanished()) count++;
-                    }
-                    for (ProxyPlayer player : proxyPlayers.values()) {
-                        if (player.server == server && !player.isVanished()) count++;
-                    }
-                    return PerformanceUtil.toString(count);
-                });
-            }
-        };
-        TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> {
-            int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (!player.isVanished()) count++;
-            }
-            for (ProxyPlayer player : proxyPlayers.values()) {
-                if (!player.isVanished()) count++;
-            }
-            return PerformanceUtil.toString(count);
-        });
-        TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () -> {
-            int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (!player.isVanished() && player.hasPermission(TabConstants.Permission.STAFF)) count++;
-            }
-            for (ProxyPlayer player : proxyPlayers.values()) {
-                if (!player.isVanished() && player.isStaff()) count++;
-            }
-            return PerformanceUtil.toString(count);
-        });
-        TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.SERVER_ONLINE, 1000, p -> {
-            int count = 0;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (((TabPlayer)p).server == player.server && !player.isVanished()) count++;
-            }
-            for (ProxyPlayer player : proxyPlayers.values()) {
-                if (((TabPlayer)p).server == player.server && !player.isVanished()) count++;
-            }
-            return PerformanceUtil.toString(count);
-        });
     }
 
     @Override
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onQuit(p);
-        TAB.getInstance().getEventBus().unregister(eventHandler);
         unregister();
     }
 

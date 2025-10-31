@@ -4,6 +4,8 @@ import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.animation.Animation;
 import me.neznamy.tab.shared.placeholders.animation.AnimationConfiguration.AnimationDefinition;
@@ -83,12 +85,24 @@ public class UniversalPlaceholderRegistry {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (!player.isVanished()) count++;
             }
+            ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
+            if (proxy != null) {
+                for (ProxyPlayer player : proxy.getProxyPlayers().values()) {
+                    if (!player.isVanished()) count++;
+                }
+            }
             return PerformanceUtil.toString(count);
         });
         manager.registerInternalServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 2000, () -> {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                if (player.hasPermission(TabConstants.Permission.STAFF) && !player.isVanished()) count++;
+                if (!player.isVanished() && player.hasPermission(TabConstants.Permission.STAFF)) count++;
+            }
+            ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
+            if (proxy != null) {
+                for (ProxyPlayer player : proxy.getProxyPlayers().values()) {
+                    if (!player.isVanished() && player.isStaff()) count++;
+                }
             }
             return PerformanceUtil.toString(count);
         });
@@ -117,6 +131,12 @@ public class UniversalPlaceholderRegistry {
             int count = 0;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 if (((TabPlayer)p).server == player.server && !player.isVanished()) count++;
+            }
+            ProxySupport proxySupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
+            if (proxySupport != null) {
+                for (ProxyPlayer player : proxySupport.getProxyPlayers().values()) {
+                    if (((TabPlayer)p).server == player.server && !player.isVanished()) count++;
+                }
             }
             return PerformanceUtil.toString(count);
         });

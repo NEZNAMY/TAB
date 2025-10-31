@@ -21,6 +21,7 @@ import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -84,6 +85,12 @@ public class BungeePlatform extends ProxyPlatform {
                 int count = 0;
                 for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                     if (player.server == server && !player.isVanished()) count++;
+                }
+                ProxySupport proxySupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
+                if (proxySupport != null) {
+                    for (ProxyPlayer player : proxySupport.getProxyPlayers().values()) {
+                        if (player.server == server && !player.isVanished()) count++;
+                    }
                 }
                 return PerformanceUtil.toString(count);
             });
