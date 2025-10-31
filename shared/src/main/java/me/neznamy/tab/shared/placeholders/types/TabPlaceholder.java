@@ -25,7 +25,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * Internal constant used to detect if placeholder threw an error.
      * If so, placeholder's last known value is displayed.
      */
-    protected final String ERROR_VALUE = "ERROR";
+    protected final String ERROR_VALUE = "<ERROR>";
 
     /** Refresh interval of the placeholder */
     private final int refresh;
