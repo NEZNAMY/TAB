@@ -5,7 +5,7 @@
 
 # Detection
 For TAB to properly detect player as a bedrock player, floodgate and TAB must be installed on the same server instance.
-If TAB is installed on bukkit and floodgate is on both bungeecord and bukkit,
+If TAB is installed on backend and floodgate is on both proxy and backend,
 make sure [they are connected](https://geysermc.org/wiki/floodgate/setup/?platform=proxy-servers).
 
 To make sure floodgate is configured correctly, you have two options:

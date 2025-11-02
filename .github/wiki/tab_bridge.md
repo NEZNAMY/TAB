@@ -1,7 +1,7 @@
 # About
-When TAB is installed on BungeeCord / Velocity, the plugin has very limited access to information. It is unable to retrieve internal server data, as well as hook into backend plugins, because it's a different server.  
+When TAB is installed on a proxy, the plugin has very limited access to information. It is unable to retrieve internal server data, as well as hook into backend plugins, because it's a different server.  
 Bridge is a backend plugin that sends this data to the proxy, allowing TAB to work better when installed on a proxy.  
-You can download it from [GitHub](https://github.com/NEZNAMY/TAB-Bridge/releases) or [Spigot](https://www.spigotmc.org/resources/83966).
+You can download it from [GitHub](https://github.com/NEZNAMY/TAB-Bridge/releases), [Spigot](https://www.spigotmc.org/resources/83966) or [Modrinth](https://modrinth.com/plugin/tab-bridge).
 
 # Installation
 Installation is as simple as it can be.
@@ -13,10 +13,10 @@ Bridge itself has no config file, as everything is configured in the main plugin
 * Forwarding PlaceholderAPI support to the proxy
 * Allow detection if player is invisible to make their nametag invisible (compensation for 1.8.x client sided bug)
 * Allow detection if a player is disguised to disable collision to prevent endless push
-* Forwarding permission groups of players if no permission plugin is installed on BungeeCord
+* Forwarding permission groups of players if no permission plugin is installed on the proxy
 * Forwarding vanish status for compatibility with global playerlist / layout features
 * Forward player's world for %world% and per-world settings
-* Allow TAB's PlaceholderAPI expansion with TAB on BungeeCord
+* Allow TAB's PlaceholderAPI expansion with TAB on proxy
 * Forward player's gamemode for spectator fix feature to work
 
 # Compatibility

@@ -2,10 +2,10 @@
 This page lists all the commands and permissions that are available with TAB.
 Commands have required permissions associated with them.
 
-**BungeeCord / Velocity users who installed TAB on the proxy:**
+**Users who installed TAB on a proxy server:**
 * Use **/btab** instead of /tab. Permissions are the same.
-* Permission nodes are checked on the server where the plugin is installed (by default). This means that with TAB on BungeeCord, permission nodes are checked on BungeeCord, and therefore you'll need a permission plugin there as well. If you wish to take permission groups and checks from backend servers instead, set `use-bukkit-permissions-manager: true` in config.
-* Giving yourself OP on the backend server does not give you permissions on the proxy. It's a completely different server. You'll need to give yourself permissions using a permission plugin installed on the proxy.
+* Permission nodes are checked on the server where the plugin is installed (by default). This means that with TAB on proxy, permission nodes are checked on the proxy, and therefore you'll need a permission plugin there as well. If you wish to take permission groups and checks from backend servers instead, set `use-bukkit-permissions-manager: true` in config.
+* Giving yourself OP on the backend server does not give you permissions on the proxy. It's a completely different server. You'll need to give yourself permissions using a permission plugin installed on the proxy (unless you enabled the option above).
 * You are not able to execute proxy commands using a backend plugin (for example some menu plugin). If you want to achieve this, you'll need to find an updated plugin that allows you to send commands to the proxy.
 
 # Content
@@ -68,7 +68,7 @@ Commands have required permissions associated with them.
 ## /tab debug [player]
 * **Permission:** `tab.debug`
 * **Description:** Shows the server version, plugin version, permission group choice logic, and sorting type. If player argument is filled, shows info about that player:
-  * On BungeeCord, shows whether player is connected to the backend server with [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) plugin or not.
+  * On proxy, shows whether player is connected to the backend server with [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) plugin or not.
   * Sorting value & explanation, useful to see what went wrong if players are not sorted correctly.
   * Primary group set using [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups)
   * List of all configured properties, their values and source.

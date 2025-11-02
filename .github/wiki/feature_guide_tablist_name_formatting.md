@@ -73,7 +73,7 @@ _DEFAULT_:
 ```
 
 ## Per-world / per-server
-Values can also be applied per-world (and per-server on bungeecord), where they can be defined per group/user. These values take priority over global settings. Example:  
+Values can also be applied per-world (and per-server on a proxy), where they can be defined per group/user. These values take priority over global settings. Example:  
 **groups.yml**
 ```
 per-world:

@@ -130,8 +130,8 @@ Then, you need to force your players to get the resource pack.
 ## Additional note 2 - Not hiding on server switch
 When under a proxy network and having TAB installed on backend server and switching to another server,
 the bossbar will not hide.
-This is because BungeeCord makes it look like a world switch to the client.
-To avoid this, the only way is to install TAB on BungeeCord and disable bossbar on that server.
+This is because proxies makes it look like a world switch to the client.
+To avoid this, the only way is to install TAB on the proxy and disable bossbar on that server.
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*

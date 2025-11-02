@@ -37,7 +37,7 @@ _DEFAULT_:
 ```
 This requires Vault and a permission plugin to work.  
 If you have luckperms installed on the same server instance, you can use TAB's internal `%luckperms-prefix%` (and suffix) placeholders instead.  
-**Note:** If TAB is on bungeecord, and you want prefixes to be taken from backend servers, use `%vault_prefix%` (or `%luckperms_prefix%`) with [PlaceholderAPI support on bungeecord](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge).
+**Note:** If TAB is on a proxy, and you want prefixes to be taken from backend servers, use `%vault_prefix%` (or `%luckperms_prefix%`) with [PlaceholderAPI support on proxy](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge).
 
 # Showing player's version in tablist
 Run `/tab group _DEFAULT_ tabsuffix " &8[&3%player-version%&8]"` or any other color combination you want. You can also include other placeholders with it. You can also modify it directly in **groups.yml** file instead. With the provided example command, you'll get the following result:  

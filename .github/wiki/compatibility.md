@@ -35,26 +35,26 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
         <tr>
             <td rowspan=2>Vanilla</td>
             <td rowspan=1><a href="https://getbukkit.org/">Bukkit</a> (+forge hybrids)</td>
-            <td>✔ (1.5 - 1.21.8)</td>
+            <td>✔ (1.7.x - 1.21.10)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>
-            <td>✔ (1.20.6 - 1.21.8)</td>
+            <td>✔ (1.20.6 - 1.21.10)</td>
         </tr>
     </tbody>
     <tbody>
         <tr>
             <td rowspan=3>Modded</td>
             <td rowspan=1><a href="https://fabricmc.net">Fabric</a></td>
-            <td>✔ (1.21.6 - 1.21.8)<sup>1</sup></td>
+            <td>✔ (1.21.9 - 1.21.10)<sup>1</sup></td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://minecraftforge.net">Forge</a></td>
-            <td>✔ (1.21.6 - 1.21.8)<sup>1</sup></td>
+            <td>✔ (1.21.9 - 1.21.10)<sup>1</sup></td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://neoforged.net/">NeoForge</a></td>
-            <td>✔ (1.21.6 - 1.21.8)<sup>1</sup></td>
+            <td>✔ (1.21.9 - 1.21.10)<sup>1</sup></td>
         </tr>
     </tbody>
     <tbody>

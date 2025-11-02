@@ -12,6 +12,7 @@
 * [Object components (1.21.9+)](#object-components-1219)
   * [Atlas sprite](#atlas-sprite)
   * [Player sprite](#player-sprite)
+  * [Compatibility with < 1.21.9](#compatibility-with--1219)
 * [MiniMessage](#minimessage)
 * [Config options](#config-options)
 * [Tips & Tricks](#tips--tricks)
@@ -92,22 +93,7 @@ When trying to use both font and RGB or gradients, font must be outside and RGB/
 TAB (currently?) does not have any built-in way to convert text input into shadow color field. However, you can use [MiniMessage](#minimessage) for that. TAB will properly read this value from adventure components and convert it further into Minecraft components.
 
 # Object components (1.21.9+)
-> [!NOTE]
-> This is a draft for future versions - MC 1.21.9+ and TAB 5.3.0+.
-
 A new component of "object" type was added into the game in 1.21.9. It currently has 2 implementations described below.
-
-> [!WARNING]
-> In order to use these, you will need to disable MiniMessage support, because object components were not added to MiniMessage yet. Even when they are added, TAB will require and update to read them from adventure. To disable MiniMessage support, set:
-> ```
-> components:
->   minimessage-support: false
-> ```
-> in **config.yml**.
-
-> [!WARNING]
-> The syntax for object components is just temporary and will change in the future to match MiniMessage (once they add it) to avoid confusing users / adding conversion from TAB syntax to MiniMessage syntax even for these.
-> Expect the syntax to break in a future TAB update. For now, use the existing syntax for prototyping and testing.
 
 ## Atlas sprite
 This type allows you to display any item or block. The syntax is
@@ -118,7 +104,7 @@ where `ATLAS` is the atlas and `SPRITE` is the sprite. Note that atlas can conta
 Example:
 ```
   header:
-    - 'Diamond helmet: <sprite:"minecraft:blocks":"minecraft:item/diamond_helmet">'
+    - '&bDiamond helmet: <sprite:"minecraft:blocks":"minecraft:item/diamond_helmet">'
     - 'Diamond chestplate: <sprite:"minecraft:blocks":"minecraft:item/diamond_chestplate">'
     - 'Diamond leggings: <sprite:"minecraft:blocks":"minecraft:item/diamond_leggings">'
     - 'Diamond boots: <sprite:"minecraft:blocks":"minecraft:item/diamond_boots">'
@@ -127,28 +113,54 @@ Example:
 
 
 ## Player sprite
-This type allows you to display minecraft heads. There are 3 ways to define a head along with their TAB syntaxes:
-* `name`: `<head:name:NAME>` where `NAME` is player name
-* `uuid`: `<head:id:UUID>` where `UUID` is UUID of a player
-* `skin`: `<head:signed_texture:VALUE;SIGNATURE>` where `VALUE` and `SIGNATURE` are value and signature of that skin
+> [!WARNING]
+> In order to use these, you will need to disable MiniMessage support, because head components were not added to MiniMessage yet. Even when they are added, they will have a different syntax, so TAB will be updated to match the format to avoid complications. For now, use the existing syntax for prototyping and testing. To disable MiniMessage support, set:
+> ```
+> components:
+>   minimessage-support: false
+> ```
+> in **config.yml**.
 
-Here is an example configuration
+This type allows you to display minecraft heads. There are 3 ways to define a head:
+| Type                     | Functionality                                                             |
+|--------------------------|---------------------------------------------------------------------------|
+| Player name              | The client checks recently received profiles (players on current server) and shows skin of player with that name. If no such player was found, connects to Mojang and gets skin of player with specified name. <br />**Note**: This means using a plugin for changing skins will result in the skin being changed here too (the client has a cache, so it won't be visible immediately (restarting the client resets the cache)). If using offline mode and no skin plugin, head won't display correct skin even if such player is registered at Mojang. |
+| Player UUID              | The client checks recently received profiles (players on current server) and shows skin of player with that UUID. If no such player was found, connects to Mojang and gets skin of player with specified UUID. <br />**Note**: This means using a plugin for changing skins will result in the skin being changed here too (the client has a cache, so it won't be visible immediately (restarting the client resets the cache)). |
+| Skin value and signature | The client displays skin from given value and signature |
+
+Here are all the ways you can display player skins using TAB and their implementation (using `ALL CAPS` for "placeholder" text instead of `<>` to avoid confusion as `<>` is actual part of the syntax):
+| Syntax | Explanation | Implementation |
+|-----|-------------|------------|
+| `<head:name:NAME>` | Shows head defined by player name | name |
+| `<head:id:UUID>` | Shows head defined by player UUID | uuid |
+| `<head:signed_texture:VALUE;SIGNATURE>` | Shows head defined by value and signature | value and signature |
+| `<head:player:NAME` | Connects to Mojang and retrieves value and signature of defined player | value and signature |
+| `<head:mineskin:ID>` | Connects to Mineskin and retrieves value and signature of specified upload ID | value and signature |
+| `<head:texture:VALUE>` | Connects to Mojang and retrieves skin value and signature from "texture" | value and signature |
+
+Here is an example for all types:
 ```
-  footer:
-    - "Head by your UUID: <head:id:%uuid%>"
-    - "Head by your name: <head:name:%player%>"
-    - "Head by raw texture: <head:signed_texture:ewogICJ0aW1lc3RhbXAiIDogMTc1NjMxNjc0OTk4MywKICAicHJvZmlsZUlkIiA6ICIyMzdkOGI1NTNmOTc0NzQ5YWE2MGU5ZmU5N2I0NTA2MiIsCiAgInByb2ZpbGVOYW1lIiA6ICJfTkVaTkFNWV8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY1ZTNhNWRmODkxYzEzMTdhZjUzMmMzNmY4NDgxNDBhNDBmMGZhMGNlZGRmZmEwNWU5NGU1NzU1OGQxY2Q4YyIKICAgIH0KICB9Cn0=;YFVoqA0CqWgnZhme5s/M7xtadURyLkyLWVsh0vN8BqdfwzN32nqlBJb2pRjkxIs0V21EOeKbGFjgdKQKzPRQdf6sTFQ/x0KOjUg8A/neAiwCvDSDrsTQ2Yf7yoVP6M2PpuB7te19N+I139mGY5psxU100x6GiV/uFfpUfG3XBJog43JtXzRJ9fRtoSeIEzqLrkpCmt6o5Mzo6GZFZc4CtI76OU90Mg9ZvTZTYelvtjFtllxTtkNZCcglzvh5R19+qtzLOzEr+N8m4Ed+5yZyezEb3LeeSgmbSLIjuOKuUupE+2F6yVYP3eKhgGLZ2G+cg9TZZjTCsNMzHqewM/1+qStzTQCdNmggXCGcIfC8HcYsBfdv4SicxBq8ff+BDyveFZMFyREpQNqX/fLmlz16cmxHvBQ9qqA+IzIsBJ7i/mrG78jBhkJsvtcHMHvTviXascCSQP1TCn58D6HJ/Agww6HFTJe/B6sX0Utzm0URE4jZK7wnhrx0q2H8OkCXc5ZwuXALqtvk0uWmZo2RMnIGQNi4nb5AUsGV8pNirhS16MfqZeJ4q0HGaIVscRp4jazab6kMVKusbuqQB1cZNbaao7mP1HAUVCd5geWQL4CQQIc6gv0q3KT2E45d0YeYqpy/RppKMWmg1+aQ5wVGQW4/p2mqXos71FKy6vP0ur6txd8=>"
-
+      footer:
+      - 'Head by id: <head:id:%uuid%>'  # This will obviously not work in offline mode
+      - 'Head by name: <head:name:%player%>'  # May or may not work in offline mode (see above for full explanation)
+      - 'Head by raw texture: <head:signed_texture:ewogICJ0aW1lc3RhbXAiIDogMTc1NjMxNjc0OTk4MywKICAicHJvZmlsZUlkIiA6ICIyMzdkOGI1NTNmOTc0NzQ5YWE2MGU5ZmU5N2I0NTA2MiIsCiAgInByb2ZpbGVOYW1lIiA6ICJfTkVaTkFNWV8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY1ZTNhNWRmODkxYzEzMTdhZjUzMmMzNmY4NDgxNDBhNDBmMGZhMGNlZGRmZmEwNWU5NGU1NzU1OGQxY2Q4YyIKICAgIH0KICB9Cn0=;YFVoqA0CqWgnZhme5s/M7xtadURyLkyLWVsh0vN8BqdfwzN32nqlBJb2pRjkxIs0V21EOeKbGFjgdKQKzPRQdf6sTFQ/x0KOjUg8A/neAiwCvDSDrsTQ2Yf7yoVP6M2PpuB7te19N+I139mGY5psxU100x6GiV/uFfpUfG3XBJog43JtXzRJ9fRtoSeIEzqLrkpCmt6o5Mzo6GZFZc4CtI76OU90Mg9ZvTZTYelvtjFtllxTtkNZCcglzvh5R19+qtzLOzEr+N8m4Ed+5yZyezEb3LeeSgmbSLIjuOKuUupE+2F6yVYP3eKhgGLZ2G+cg9TZZjTCsNMzHqewM/1+qStzTQCdNmggXCGcIfC8HcYsBfdv4SicxBq8ff+BDyveFZMFyREpQNqX/fLmlz16cmxHvBQ9qqA+IzIsBJ7i/mrG78jBhkJsvtcHMHvTviXascCSQP1TCn58D6HJ/Agww6HFTJe/B6sX0Utzm0URE4jZK7wnhrx0q2H8OkCXc5ZwuXALqtvk0uWmZo2RMnIGQNi4nb5AUsGV8pNirhS16MfqZeJ4q0HGaIVscRp4jazab6kMVKusbuqQB1cZNbaao7mP1HAUVCd5geWQL4CQQIc6gv0q3KT2E45d0YeYqpy/RppKMWmg1+aQ5wVGQW4/p2mqXos71FKy6vP0ur6txd8=>'
+      - 'Head by player: <head:player:%player%>'
+      - 'Head by mineskin: <head:mineskin:37e93c8e12cd426cb28fce31969e0674>'
+      - 'Head by texture: <head:texture:ff9bb9e56125c8227b94bbda9f6e0f862931c229255ba8f1205d13c44c1bb561>'
 ```
-With dynamic UUID and name, but hardcoded texture.  
-<img width="261" height="61" alt="image" src="https://github.com/user-attachments/assets/88e61963-9408-42fe-8075-95479c7fadda" />
 
+<img width="331" height="111" alt="image" src="https://github.com/user-attachments/assets/5912975a-a892-42c3-b9ab-7eab33ee42b6" />
 
-Additionally, you can use
-* `<head:mineskin:ID>` to display skin from mineskin
-* `<head:texture:VALUE>` to display skin from defined texture
+## Compatibility with < 1.21.9
+You may be wondering what happens when you try to use these and the client is below 1.21.9.  
+See table below for behavior based on your setup.
 
-TAB will retrieve skin value + signature and use those values.
+| Setup           | Legacy text decider | Displayed text for <1.21.9 players                                                                                                                                  |
+|-----------------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Backend <1.21.9 | TAB                 | `<Object components were added in 1.21.9>` (even for 1.21.9+ players)                                                                                               |
+| Backend 1.21.9+ | ViaVersion          | ViaBackwards 5.5.0 - [Client disconnects with a packet decoding error](https://github.com/ViaVersion/ViaBackwards/issues/1107) <br /> ViaBackwards 5.5.1+ - (empty) |
+| BungeeCord      | TAB                 | `<Object components were added in 1.21.9>`                                                                                                                          |
+| Velocity        | Velocity            | Client disconnects with a packet decoding error                                                                                                                     |
 
 # MiniMessage
 TAB has [MiniMessage](https://docs.advntr.dev/minimessage/format.html) hook, however, it does not include this library on its own. Including it would cause conflicts, so it has to be included in the server software.
@@ -158,9 +170,6 @@ TAB has [MiniMessage](https://docs.advntr.dev/minimessage/format.html) hook, how
 When MiniMessage is detected on your server, it is automatically used. All codes are translated to MiniMessage syntax and then parsed by MiniMessage.
 
 # Config options
-> [!NOTE]
-> This is a draft for future versions - TAB 5.3.0+.
-
 | Option name              | Default value | Description                                                                                                                                |
 |--------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | minimessage-support      | true          | Enables / Disables MiniMessage support (if it's available).                                                                                |

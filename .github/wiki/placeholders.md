@@ -3,7 +3,7 @@
 * [Internal placeholders](#internal-placeholders)
   * [Universal](#universal)
   * [Backend only](#backend-only)
-  * [BungeeCord only](#bungeecord-only)
+  * [Proxy only](#proxy-only)
 * [PlaceholderAPI](#placeholderapi)
 * [Relational placeholders](#relational-placeholders)
   * [About](#about-1)
@@ -44,6 +44,7 @@ These placeholders are available on all platforms.
 | %worldonline%                             | 1000             | Amount of players in the same world (excluding [vanished players](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection)) as the player                                                                                                                                                                                        |
 | %ping%                                    | 500              | Player's ping to the server where TAB is installed. <br />**Note**: This value is measured by the server and TAB is only retrieving that value. If it's wrong, it's not a TAB issue.                                                                                                                                                                 |
 | %player%                                  | -1               | Player's name                                                                                                                                                                                                                                                                                                                                        |
+| %uuid%                                    | -1               | Player's UUID                                                                                                                                                                                                                                                                                                                                        |
 | %time%                                    | 500              | Current real time, output is configurable in **config.yml** in `time-format` option                                                                                                                                                                                                                                                                  |
 | %date%                                    | 60000            | Current date, output is configurable in **config.yml** in `date-format` option                                                                                                                                                                                                                                                                       |
 | %staffonline%                             | 2000             | Amount of online players with `tab.staff` permission                                                                                                                                                                                                                                                                                                 |
@@ -67,15 +68,16 @@ These placeholders are available on all platforms.
 | %%                                        | -1               | Returns the `%` symbol. Useful to display `%` symbol without breaking all placeholders after it                                                                                                                                                                                                                                                      |
 
 ## Backend only
-These placeholders only work when TAB is installed on a backend server (Bukkit / Sponge / Fabric), they don't work when TAB is on BungeeCord. If you have TAB installed on BungeeCord and wish to use these, use their [PlaceholderAPI](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide) alternative with [Bridge plugin](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) installed for PlaceholderAPI support on BungeeCord.
+These placeholders only work when TAB is installed on a backend server, they don't work when TAB is on a proxy. If you have TAB installed on proxy and wish to use these, use their [PlaceholderAPI](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide) alternative with [Bridge plugin](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) installed for PlaceholderAPI support on proxy.
 | Identifier | Refresh interval | Description | PlaceholderAPI alternative |
 | ------------- | ------------- | ------------- | ------------- |
 | %health% | 100 | Player's health, rounded up to match Minecraft's heart display. | %player_health_rounded% |
 | %displayname% | 500 | Player's display name value set by permission plugin. | %player_displayname% |
 | %tps%               | 1000 | TPS of server from the last minute. Measured by the server. Not directly available on Fabric, Forge and Neoforge. Primitive approximation using MSPT (TPS = 1000/MSPT, max 20) is used there. | %server_tps_1% |
 | %mspt%              | 1000 | Server's current milliseconds per tick (not available on Spigot) | - |
+| %deaths%            | 1000 | Player's death count | %statistic_deaths% |
 
-## BungeeCord only
+## Proxy only
 | Identifier                   | Refresh interval | Description                                                                                                                                                                   |
 |------------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | %server%                     | -1               | Name of server where player is, defined in proxy's config.                                                                                                                    |
@@ -166,17 +168,17 @@ When using a placeholder, you should know if it's a [TAB's internal placeholder]
 
 ## Internal placeholder is not working
 All TAB's internal placeholders are listed above.
-Some of them are bukkit only (meaning they won't work on bungeecord) and some are bungee only.
+Some of them are backend only (meaning they won't work on proxy) and some are proxy only.
 > [!IMPORTANT]
-> Trying to use a bukkit-only placeholder on bungeecord will not work.
+> Trying to use a backend-only placeholder on proxy will not work.
 > If you want to use those,
-> [set up PlaceholderAPI support on bungeecord](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)
+> [set up PlaceholderAPI support on proxy](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)
 > and find their PlaceholderAPI equivalent.
 > For example, you can use %vault_prefix% instead of %vault-prefix%,
 > %player_health_rounded% instead of %health% and so on.
 
 ## PlaceholderAPI placeholder is not working
-If you have TAB installed on bungeecord, make sure you [set up PlaceholderAPI support on bungeecord](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) as there is no other way to retrieve data from technically a different server.
+If you have TAB installed on a proxy, make sure you [set up PlaceholderAPI support on proxy](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) as there is no other way to retrieve data from technically a different server.
 
 > [!TIP]
 > Use `/papi parse me <placeholder>` to check if the placeholder is working.

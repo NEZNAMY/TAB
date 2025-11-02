@@ -210,7 +210,7 @@ If your file is empty / does not exist, it means you have no conflicting plugins
 If the file exists, most of the time you can guess where the teams come from by their name.  
 Here are a few common teams and their sources (`xxxx` means any, usually random character sequence):
 * `collideRule_xxxx` - this comes from Paper. Not going to explain why as that would be quite long, but the way you can avoid is by setting `enable-player-collisions: true` in paper config and `enable-collision: false` in TAB config (yes, collisions will be disabled).
-* `CMINPxx` - CMI, set `DisableTeamManagement: true` in `plugins/CMI/config.yml`.
+* `CMINPxx` - CMI, set `DisableTeamManagement: true` in `plugins/CMI/config.yml` (though CMI won't allow you to change glow color if you do, so keep that in mind).
 * `CIT-xxxxxxxxxxxx` - Citizens NPC with the same name as some online player. Make NPC names not match real players and use holograms to display your desired text (/npc name or something).
 * `PVP-xxxxxxxxxxxx` - Team coming from [PvPManager](https://www.spigotmc.org/resources/pvpmanager-lite.845/) plugin.
 
@@ -229,12 +229,13 @@ The most common mistakes include:
 * Mistaking `primary-group-finding-list` for the sorting list, despite that list having nothing to do with sorting and by default even having a comment above it saying it has nothing to do with sorting.
 * Not configuring primary groups correctly. This can have multiple reasons, such as
   * Not configuring group weights in LuckPerms.
-  * Accidentally enabling `use-bukkit-permission-manager` option when on BungeeCord without knowing what it does.
-  * Installing TAB on BungeeCord without having any permission plugin on BungeeCord.
+  * Accidentally enabling `use-bukkit-permission-manager` option when on a proxy without knowing what it does.
+  * Installing TAB on a proxy without having any permission plugin on the proxy.
   * Enabling `assign-groups-by-permissions` without giving those permissions (or the opposite - giving away OP to users, resulting in the highest group being taken).
 
   [Debug command](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-debug-player) will help you identify if this is your case.
-* Using a plugin that causes TAB to fail to apply teams (such as Tablisknu). This includes installing TAB plugin on both bukkit and bungeecord, causing the installations to conflict.
+* Using a plugin that causes TAB to fail to apply teams (such as Tablisknu). This includes installing TAB plugin on both backend and proxy, causing the installations to conflict.
+* Using TAB on Velocity without installing [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*

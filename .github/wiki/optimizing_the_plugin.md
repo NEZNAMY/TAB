@@ -8,8 +8,8 @@ The usage can be checked at any time using [**/tab cpu**](https://github.com/NEZ
 * [#4 - [All platforms] Don't use animations](#4---all-platforms-dont-use-animations)
 * [#5 - [All platforms] Disable tablist name formatting](#5---all-platforms-disable-tablist-name-formatting)
 * [#6 - [All platforms] Increase permission refresh interval](#6---all-platforms-increase-permission-refresh-interval)
-* [#7 - [BungeeCord / Velocity] Disable TAB expansion](#7---bungeecord--velocity-disable-tab-expansion)
-* [#8 - [BungeeCord / Velocity] Disable update-latency option in global playerlist](#8---bungeecord--velocity-disable-update-latency-option-in-global-playerlist)
+* [#7 - [Proxies] Disable TAB expansion](#7---proxies-disable-tab-expansion)
+* [#8 - [Proxies] Disable update-latency option in global playerlist](#8---proxies-disable-update-latency-option-in-global-playerlist)
 
 # #1 - [All platforms] Static text instead of placeholders
 Static text doesn't need to be refreshed periodically, resulting in better performance.
@@ -79,7 +79,7 @@ Refreshes them every second.
 If you don't need any permission/group changes to take effect within a second,
 you can increase this value for better performance.
 
-# #7 - [BungeeCord / Velocity] Disable TAB expansion
+# #7 - [Proxies] Disable TAB expansion
 To maximize the performance of TAB's response to PlaceholderAPI request,
 values are tracked in advance and then quickly returned.
 This process takes resources and is especially heavy on proxy installation,
@@ -90,5 +90,5 @@ Disabling TAB's PlaceholderAPI expansion if you don't use it improves performanc
 placeholders:
   register-tab-expansion: false
 ```
-# #8 - [BungeeCord / Velocity] Disable update-latency option in global playerlist
+# #8 - [Proxies] Disable update-latency option in global playerlist
 When [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) is enabled, you can enable / disable [update-latency](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist#:~:text=other%20unlisted%20servers.-,update%2Dlatency,-false) option (open the link for detailed description of the option). Disabling this option massively improves performance.  

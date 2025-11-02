@@ -23,7 +23,7 @@ Pick your desired way and configure it. I don't know anything about redis or rab
 > ```
 > server-name: "server"
 > ```
-> Ideally, name it the same as servers in your BungeeCord / Velocity config. This value will be used for getting player's server name. Aside from %server% placeholder, it will be used for internal logic when checking for player's server. One of them is global playerlist not adding/removing players who are on the same server in the tablist, as backend servers already do this (and duplicating actions would cause problems).  
+> Ideally, name it the same as servers in your proxy config. This value will be used for getting player's server name. Aside from %server% placeholder, it will be used for internal logic when checking for player's server. One of them is global playerlist not adding/removing players who are on the same server in the tablist, as backend servers already do this (and duplicating actions would cause problems).  
 > **As a result, not configuring this value will result in everyone's server being "N/A", therefore global playerlist will think everyone is on the same server and not add anyone into the tablist, effectively making the feature not work.**
 
 Supported plugins:

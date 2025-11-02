@@ -1,14 +1,15 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-  * [Global settings](#global-settings)
-  * [Per-world / per-server](#per-world--per-server)
-  * [Per-group / per-player](#per-group--per-player)
+  * [Designs](#designs)
+  * [Chaining designs](#chaining-designs)
 * [Additional info](#additional-info)
   * [Additional note 1 - [1.8 - 1.20.1] Not resetting on server switch](#additional-note-1---18---1201-not-resetting-on-server-switch)
 * [Tips & Tricks](#tips--tricks)
   * [Tip 1 - Dynamic line count](#tip-1---dynamic-line-count)
 * [API](#api)
+* [Examples](#examples)
+  * [Example 1 - Per-version header/footer](#example-1---per-version-headerfooter)
 
 # About
 Minecraft feature **introduced in 1.8** showing text above and below playerlist. It cannot be displayed on 1.7 clients in any way.
@@ -16,74 +17,55 @@ Minecraft feature **introduced in 1.8** showing text above and below playerlist.
 ![](https://images-ext-2.discordapp.net/external/Jm9G7_fX8Rq4KU-Syj57W2a_leel380bZ4lmd6c0vBs/https/image.prntscr.com/image/qvuAdtgZTDeZ4IeABi8I3g.png)
 
 # Configuration
-| Option name       | Default value         | Description                                                                                                                                                                                         |
-|-------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| enabled           | true                  | Enables / Disables the feature                                                                                                                                                                      |
-| disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. |
+| Option name       | Default value         | Description                                                       |
+|-------------------|-----------------------|-------------------------------------------------------------------|
+| enabled           | true                  | Enables / Disables the feature                                    |
+| designs           | *Map*                 | Designs to display based on conditions (see below for more info). |
 
-## Global settings
-The example above is using this configuration:
+# Designs
+A header/footer design has 3 options:
+* `display-condition` (optional) - [Condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for the design to be displayed. If not defined, design will be displayed without any required condition. If player does not meet condition, another design may be displayed based on chaining (see below for more info).
+* `header` - List of lines to display in the header.
+* `footer` - List of lines to display in the footer.
+
+**Example**:
 ```
 header-footer:
-  header:
-  - "This is the first line of header"
-  - "2nd line of header"
-  footer:
-  - "This is the first line of footer"
-  - "2nd line of footer"
-```
-It is the default header/footer for everyone, unless overridden in some way.
-
-## Per-world / per-server
-```
-header-footer:
-  per-world:
-    <your world>:
+  enabled: true
+  designs:
+    MyDesign:  # Design name
+      display-condition: "%world%=world"  # Delete the line for no condition requirement
       header:
-        - "Header in specified world"
+        - "Header for world %world%"
       footer:
-        - "Footer in specified world"
-  per-server:
-    <your server>:
-      header:
-        - "Header in specified server"
-      footer:
-        - "Footer in specified server"
+        - "Footer for world %world%"
 ```
 
-For multiple worlds/servers to share the same settings, separate them with `;`.  
-For worlds/servers starting with a specified text, use `*` after the shared part. For ending with a shared part, use `*` at the beginning.  
+# Chaining designs
+When defining more than 1 design in config, the plugin will display the correct design based on conditions.
+The plugin goes through all defined designs, starting with the design on top.
+If the design's condition is met or not set, it is displayed.
+If not, the next defined design is checked and so on.
+If no suitable design is found (the last one has a condition requirement which wasn't met), none is displayed.
 Example:
 ```
 header-footer:
-  per-world:
-    world1;world2:
+  enabled: true
+  designs:
+    per-world:
+      display-condition: "%world%=world"
       header:
-        - "Shared header in worlds world1 and world2"
-    lobby-*:
+        - "Header for world %world%"
+      footer:
+        - "Footer for world %world%"
+    default:  # No display condition
       header:
-        - "Header in all worlds starting with lobby-"
+        - "Header for every world except %world%"
+      footer:
+        - "Footer for every world except %world%"
 ```
-
-> [!NOTE]
-> To make per-world work on proxy installation,
-> install the [TAB-Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) plugin on your backend servers.
-
-## Per-group / per-player
-**groups.yml**
-```
-MyGroup:
-  header:
-    - "This is a header for MyGroup group"
-  footer:
-    - "This is a footer for MyGroup group"
-per-world:
-  MyWorld:
-    TestGroup:
-      header:
-        - "Header for group TestGroup in world MyWorld"
-```
-Same for users, which can be configured in **users.yml**.
+Design `per-world` is checked first. If condition is not met, `default` is displayed.  
+If a chaining 3 or more and player meets 2 or more conditions for 2 (or more) different designs, the first one defined in the config will be displayed.  You can swap order of designs based on your priority needs.
 
 # Additional info
 ## Additional note 1 - [1.8 - 1.20.1] Not resetting on server switch
@@ -111,8 +93,10 @@ MyAnimation:
 **config.yml**
 ```
 header-footer:
-  header:
-    - "%animation:MyAnimation%"
+  designs:
+    DesignName:
+      header:
+        - "%animation:MyAnimation%"
 ```
 </details>
 
@@ -126,4 +110,24 @@ To set the header and/or footer for a player, use the following:
 * `HeaderFooterManager#setFooter(TabPlayer, String)`
 * `HeaderFooterManager#setHeaderAndFooter(TabPlayer, String, String)`
 
-To reset the header and/or footer for a player back to their original values, use `null` as argument.  
+To reset the header and/or footer for a player back to their original values, use `null` as argument.
+
+# Examples
+## Example 1 - Per-version header/footer
+Minecraft 1.21.9 has introduced [object components](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components#object-components-1219), but these are not available for older versions. Let's make 2 designs, one for 1.21.9+ and second one for <1.21.9.
+```
+header-footer:
+  enabled: true
+  designs:
+    newer-client:
+      display-condition: "%player-version-id%>=773" # 1.21.9 uses 773
+      header:
+        - "Look, it's your head! <head:name:%player%>"
+      footer:
+        - "Cool, isn't it?"
+    older-client:
+      header:
+        - "Regular header for old clients"
+      footer:
+        - "Consider updating your game"
+```

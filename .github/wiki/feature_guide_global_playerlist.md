@@ -37,7 +37,7 @@ global-playerlist:
 ```
 Contains 2 groups, each of them consisting of 2 servers.
 Server group name can be anything (in our case, they're called "lobbies" and "group2").
-Under group name, list the actual server names defined in config.yml of bungeecord.
+Under group name, list the actual server names defined in config.yml of the proxy server.
 
 With this setup, "lobby1" and "lobby2" will share playerlist, as well as "server1" with "server2". All unlisted servers are automatically put into a hidden default group and share playerlist. This means that all other servers except these 4 will share playerlist.
 

@@ -1,18 +1,16 @@
 # Content
 * [Backend](#backend)
-* [BungeeCord / Velocity](#bungeecord--velocity)
+* [Proxy](#proxy)
   * [Proxy installation](#proxy-installation)
   * [Backend installation](#backend-installation)
   * [Mixed installation](#mixed-installation)
 * [Updating the plugin](#updating-the-plugin)
 
 # Backend
-Installation on Bukkit / Fabric / Sponge is as simple as it can be.
-Put the plugin into the plugins folder and restart the server.  
-Dynamic (re)loads at runtime such as `/plugman load tab` to load the plugin are fully supported.
-However, plugins hooking into TAB may break when you use such ways to (re)load it.
+Installation on backend servers is as simple as it can be.
+Put the plugin into the plugins folder and restart the server.
 
-# BungeeCord / Velocity
+# Proxy
 When running a network, you have 3 options:
 * Installing TAB only on the proxy (recommended)
 * Installing TAB on all backend servers instead

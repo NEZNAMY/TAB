@@ -2,6 +2,7 @@
 * [About](#about)
 * [Creating a layout](#creating-a-layout)
   * [Display condition](#display-condition)
+  * [default-skin](#default-skin)
   * [Fixed slots](#fixed-slots)
   * [Player groups](#player-groups)
 * [Managing multiple layouts with conditions](#managing-multiple-layouts-with-conditions)
@@ -25,7 +26,11 @@ This feature allows you to customize all 80 tablist slots. Displaying less than 
 This feature is only available for versions **1.8** and up due to massive tablist changes, which would make 1.7- compatibility require a complete rewrite of the functionality and could still cause all kinds of visual issues, including, but not limited to compatibility with other plugins adding/removing players from the tablist.
 
 # Creating a layout
-Layouts can be creating in config under `layout.layouts` section. Each layout contains 3 settings: Fixed slots, player groups and display condition (optional).
+Layouts can be creating in config under `layout.layouts` section. A layout has 4 settings:
+* [Display condition](#display-condition) (optional)
+* [default-skin](#default-skin) (optional)
+* [Fixed slots](#fixed-slots)
+* [Player groups](#player-groups)
 
 ## Display condition
 Condition that must be met for player to see the layout.
@@ -40,6 +45,27 @@ layouts:
     condition: "permission:tab.staff"
 ```
 This layout will only be visible to players with `tab.staff` permission.
+
+## default-skin
+When configured, layout will override `default-skin` value and use that one for empty slots and fixed slots without skin definition. When not set, global `default-skin` will be displayed.  
+**Example**:
+```
+layout:
+  enabled: true
+  direction: COLUMNS
+  default-skin: mineskin:37e93c8e12cd426cb28fce31969e0674  # Global default skin for all layouts
+  enable-remaining-players-text: true
+  remaining-players-text: '... and %s more'
+  empty-slot-ping-value: 1000
+  layouts:
+    test:
+      default-skin: player:Notch  # All empty slots will use skin of player "Notch" in this layout
+      fixed-slots: []
+      groups:
+        players:
+          slots:
+          - 1-80
+```
 
 ## Fixed slots
 These are slots with fixed position that contain configurable text and skin.  
@@ -57,6 +83,13 @@ layouts:
       - '3|&8&m                       '
       - '4|&3TPS&f:'
       - '5|&b%tps%'
+```
+If you do not wish to use any fixed slots, make it an empty list (`[]`).  
+Example:
+```
+layouts:
+  staff:
+    fixed-slots: []
 ```
 
 ## Player groups
@@ -142,7 +175,7 @@ As a result, it is impossible for TAB to assign a different value for each fake 
 ## Global playerlist incompatibility
 The way this feature works is by pushing all real players out of the tablist and showing fake players instead.  
 As a result, enabling [Global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) feature won't make any difference, since real players aren't visible in the tablist.  
-Layout feature is capable of working with all online players connected to the server where TAB is installed, meaning it can show players from all servers when installed on BungeeCord. Because of this, if you use layout, you can disable global playerlist to reduce resource usage.
+Layout feature is capable of working with all online players connected to the server where TAB is installed, meaning it can show players from all servers when installed on a proxy. Because of this, if you use layout, you can disable global playerlist to reduce resource usage.
 
 ## Per world playerlist incompatibility
 Layout works by adding 80 fake players into the tablist, pushing real player entries out of view.

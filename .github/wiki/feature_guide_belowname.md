@@ -138,7 +138,7 @@ create two condition chains, one for each value and use them.
 
 > [!NOTE]
 > This is just an example, the plugin is not limited to displaying different values only per world.
-> If you want per server values on BungeeCord, use %server% with server names.
+> If you want per server values on proxy, use %server% with server names.
 > If you want WorldGuard regions, use %worldguard_region_name% with region names.
 > This works for any placeholder offered by the plugin or by PlaceholderAPI.
 

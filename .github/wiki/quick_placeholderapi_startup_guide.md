@@ -3,8 +3,8 @@ This is a quick guide for [PlaceholderAPI](https://www.spigotmc.org/resources/pl
 
 # Installation
 PlaceholderAPI is a standalone bukkit plugin that can be installed just like any other plugin.
-It does not support BungeeCord.
-If you have TAB on BungeeCord and wish to use PlaceholderAPI placeholders,
+It does not support proxies.
+If you have TAB on a proxy server and wish to use PlaceholderAPI placeholders,
 you'll need to install [Bridge](https://www.spigotmc.org/resources/83966) plugin on backend servers.
 Alongside other features, it forwards PlaceholderAPI support to the proxy.
 

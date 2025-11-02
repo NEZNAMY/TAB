@@ -44,12 +44,35 @@ Up to 15 lines of text. You can define more, but the client won't display them.
 Since 1.20.3, you can also configure the value on the right side, which no longer has to be a red number. To set it, use `||` sequence and put right-side text after it. Example:
 ```
       lines:
-      - "Left side text 1||Right side text 1"
-      - "Left side text 2....||Right side text 2...."
-      - "Left side text 3.......||Right side text 3......."
+      - "Left 1---"
+      - "||---Right 1"
+      - "Left 2------"
+      - "||------Right 2"
+      - "Left 3---------"
+      - "||---------Right 3"
+      - "Left 4------------"
+      - "||------------Right 4"
+      - "Left 5---------------"
+      - "||---------------Right 5"
+      - "Left 6------------------"
+      - "||------------------Right 6"
 ```
 Will give you the following:  
-![image](https://github.com/NEZNAMY/TAB/assets/6338394/785e4e66-935c-4233-8a16-f3e34386cfd0)
+<img width="305" height="239" alt="image" src="https://github.com/user-attachments/assets/a712b5fb-21ea-4ee4-83ec-d962bd431a07" />
+
+Additionally, the following configuration:
+```
+      lines:
+      - "Left 1---||---Right 1"
+      - "Left 2------||------Right 2"
+      - "Left 3---------||---------Right 3"
+      - "Left 4------------||------------Right 4"
+      - "Left 5---------------||---------------Right 5"
+      - "Left 6------------------||------------------Right 6"
+```
+Will give you  
+<img width="583" height="131" alt="image" src="https://github.com/user-attachments/assets/15e809c6-4ecd-4234-a30e-744c2d413335" />
+
 
 The right side text will not be visible at 1.20.2 and lower, and numbers will be displayed instead.
 
