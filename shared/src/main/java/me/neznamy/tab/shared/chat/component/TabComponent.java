@@ -242,9 +242,17 @@ public abstract class TabComponent {
      */
     @NotNull
     protected TabStyle fetchLastStyle() {
-        TabStyle lastStyle = modifier;
+        TabStyle lastStyle = new TabStyle(modifier);
         for (TabComponent extra : getExtra()) {
-            lastStyle = extra.fetchLastStyle();
+            TabStyle extraStyle = extra.fetchLastStyle();
+            if (extraStyle.getColor() != null) lastStyle.setColor(extraStyle.getColor());
+            if (extraStyle.getShadowColor() != null) lastStyle.setShadowColor(extraStyle.getShadowColor());
+            if (extraStyle.getBold() != null) lastStyle.setBold(extraStyle.getBold());
+            if (extraStyle.getItalic() != null) lastStyle.setItalic(extraStyle.getItalic());
+            if (extraStyle.getUnderlined() != null) lastStyle.setUnderlined(extraStyle.getUnderlined());
+            if (extraStyle.getStrikethrough() != null) lastStyle.setStrikethrough(extraStyle.getStrikethrough());
+            if (extraStyle.getObfuscated() != null) lastStyle.setObfuscated(extraStyle.getObfuscated());
+            if (extraStyle.getFont() != null) lastStyle.setFont(extraStyle.getFont());
         }
         return lastStyle;
     }
