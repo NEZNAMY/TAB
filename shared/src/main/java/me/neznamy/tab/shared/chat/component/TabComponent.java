@@ -243,16 +243,16 @@ public abstract class TabComponent {
     @NotNull
     protected TabStyle fetchLastStyle() {
         TabStyle lastStyle = new TabStyle(modifier);
-        for (TabComponent extra : getExtra()) {
-            TabStyle extraStyle = extra.fetchLastStyle();
-            if (extraStyle.getColor() != null) lastStyle.setColor(extraStyle.getColor());
-            if (extraStyle.getShadowColor() != null) lastStyle.setShadowColor(extraStyle.getShadowColor());
-            if (extraStyle.getBold() != null) lastStyle.setBold(extraStyle.getBold());
-            if (extraStyle.getItalic() != null) lastStyle.setItalic(extraStyle.getItalic());
-            if (extraStyle.getUnderlined() != null) lastStyle.setUnderlined(extraStyle.getUnderlined());
-            if (extraStyle.getStrikethrough() != null) lastStyle.setStrikethrough(extraStyle.getStrikethrough());
-            if (extraStyle.getObfuscated() != null) lastStyle.setObfuscated(extraStyle.getObfuscated());
-            if (extraStyle.getFont() != null) lastStyle.setFont(extraStyle.getFont());
+        if (extra != null && !extra.isEmpty()) {
+            TabStyle childStyle = extra.get(extra.size() - 1).fetchLastStyle();
+            if (childStyle.getColor() != null) lastStyle.setColor(childStyle.getColor());
+            if (childStyle.getShadowColor() != null) lastStyle.setShadowColor(childStyle.getShadowColor());
+            if (childStyle.getBold() != null) lastStyle.setBold(childStyle.getBold());
+            if (childStyle.getItalic() != null) lastStyle.setItalic(childStyle.getItalic());
+            if (childStyle.getUnderlined() != null) lastStyle.setUnderlined(childStyle.getUnderlined());
+            if (childStyle.getStrikethrough() != null) lastStyle.setStrikethrough(childStyle.getStrikethrough());
+            if (childStyle.getObfuscated() != null) lastStyle.setObfuscated(childStyle.getObfuscated());
+            if (childStyle.getFont() != null) lastStyle.setFont(childStyle.getFont());
         }
         return lastStyle;
     }
