@@ -53,7 +53,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     private final Map<String, Set<RefreshableFeature>> placeholderUsage = new ConcurrentHashMap<>();
     private Placeholder[] usedPlaceholders = new Placeholder[0];
 
-    private int loopTime;
+    private long loopTime;
 
     @NotNull private final TabExpansion tabExpansion;
 

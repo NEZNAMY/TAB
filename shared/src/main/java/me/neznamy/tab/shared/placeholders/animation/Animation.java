@@ -80,6 +80,6 @@ public class Animation {
      * @return  current message
      */
     public @NotNull String getMessage() {
-        return messages[(((placeholderManager.getLoopTime())%(messages.length*interval))/interval)];
+        return messages[(int) (((placeholderManager.getLoopTime())%(messages.length*interval))/interval)];
     }
 }
