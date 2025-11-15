@@ -64,8 +64,6 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, visibilityRefresher);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
-        visibilityRefresher.load();
-        collisionManager.load();
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             loadProperties(all);
             all.teamData.teamName = all.sortingData.shortTeamName; // Sorting is loaded sync before nametags
@@ -84,6 +82,8 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 if (!target.teamData.isDisabled()) registerTeam(target, viewer);
             }
         }
+        visibilityRefresher.load();
+        collisionManager.load();
     }
 
     @NotNull
