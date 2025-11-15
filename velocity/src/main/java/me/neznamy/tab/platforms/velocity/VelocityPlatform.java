@@ -2,7 +2,10 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.command.CommandMeta;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.scoreboard.ObjectiveEvent;
+import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -35,6 +38,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Velocity implementation of Platform
@@ -52,7 +58,10 @@ public class VelocityPlatform extends ProxyPlatform {
     private final MinecraftChannelIdentifier MCI = MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
 
     /** Logger for components */
-    private static final ComponentLogger logger = ComponentLogger.logger("TAB");
+    private final ComponentLogger logger = ComponentLogger.logger("TAB");
+
+    /** List of custom commands registered to be able to unregister them on reload */
+    private final List<String> customCommands = new ArrayList<>();
 
     /**
      * Constructs new instance with given plugin reference.
@@ -231,5 +240,29 @@ public class VelocityPlatform extends ProxyPlatform {
     @NotNull
     public String getCommand() {
         return "btab"; // Maybe change it to vtab one day?
+    }
+
+    @Override
+    public void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function) {
+        CommandManager cmd = plugin.getServer().getCommandManager();
+        CommandMeta meta = cmd.metaBuilder(commandName).build();
+        customCommands.add(commandName);
+        cmd.register(meta, (SimpleCommand) invocation -> {
+            if (invocation.source() instanceof ConsoleCommandSource) {
+                invocation.source().sendMessage(TabComponent.fromColoredText(
+                        TAB.getInstance().getConfiguration().getMessages().getCommandOnlyFromGame()).toAdventure());
+                return;
+            }
+            TabPlayer p = TAB.getInstance().getPlayer(((Player) invocation.source()).getUniqueId());
+            if (p == null) return; //player not loaded correctly
+            function.accept(p);
+        });
+    }
+
+    @Override
+    public void unregisterAllCustomCommands() {
+        for (String cmd : customCommands) {
+            plugin.getServer().getCommandManager().unregister(cmd);
+        }
     }
 }

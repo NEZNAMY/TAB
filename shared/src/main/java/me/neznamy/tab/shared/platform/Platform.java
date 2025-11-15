@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.platform;
 
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 /**
  * An interface with methods that are called in universal code,
@@ -206,4 +207,20 @@ public interface Platform {
      */
     @NotNull
     String getCommand();
+
+    /**
+     * Registers a custom command that executes the given function
+     * when a player uses it.
+     *
+     * @param   commandName
+     *          Name of the command without "/" prefix
+     * @param   function
+     *          Function to execute when a player uses the command
+     */
+    void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function);
+
+    /**
+     * Unregisters all custom commands registered by features.
+     */
+    void unregisterAllCustomCommands();
 }

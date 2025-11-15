@@ -57,6 +57,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -355,6 +356,16 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     public boolean isSafeFromPacketEventsBug() {
         return serverVersion.getMinorVersion() >= 13;
+    }
+
+    @Override
+    public void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function) {
+        // TODO
+    }
+
+    @Override
+    public void unregisterAllCustomCommands() {
+        // TODO
     }
 
     @Override

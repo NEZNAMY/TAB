@@ -1,6 +1,8 @@
 package me.neznamy.tab.platforms.forge;
 
+import com.mojang.brigadier.CommandDispatcher;
 import me.neznamy.tab.shared.TAB;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraftforge.api.distmarker.Dist;
@@ -18,11 +20,14 @@ import org.jetbrains.annotations.NotNull;
 @Mod("tab")
 public class ForgeTAB {
 
+	/** Command dispatcher instance for later command registration. */
+	public static CommandDispatcher<CommandSourceStack> COMMAND_DISPATCHER;
+
 	/**
 	 * Constructs new instance and registers necessary events.
 	 */
 	public ForgeTAB() {
-		RegisterCommandsEvent.BUS.addListener(event -> new ForgeTabCommand().onRegisterCommands(event.getDispatcher()));
+		RegisterCommandsEvent.BUS.addListener(event -> COMMAND_DISPATCHER = event.getDispatcher());
 		ServerStartingEvent.BUS.addListener(event -> TAB.create(new ForgePlatform(event.getServer())));
 		ServerStoppingEvent.BUS.addListener(event -> TAB.getInstance().unload());
 	}

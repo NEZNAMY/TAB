@@ -1,9 +1,11 @@
 package me.neznamy.tab.platforms.fabric;
 
+import com.mojang.brigadier.CommandDispatcher;
 import me.neznamy.tab.shared.TAB;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ServerLevelData;
 import org.jetbrains.annotations.NotNull;
@@ -13,9 +15,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FabricTAB implements DedicatedServerModInitializer {
 
+    /** Command dispatcher instance for later command registration. */
+    public static CommandDispatcher<CommandSourceStack> COMMAND_DISPATCHER;
+
     @Override
     public void onInitializeServer() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, commandBuildContext, commandSelection) -> new FabricTabCommand().onRegisterCommands(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, commandBuildContext, commandSelection) -> COMMAND_DISPATCHER = dispatcher);
         ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> TAB.getInstance().unload());
     }

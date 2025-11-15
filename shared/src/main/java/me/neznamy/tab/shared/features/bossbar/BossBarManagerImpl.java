@@ -2,13 +2,12 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.ToggleManager;
@@ -64,6 +63,14 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
 
     @Override
     public void load() {
+        TAB.getInstance().getPlatform().registerCustomCommand(configuration.getToggleCommand().replaceFirst("/", ""), p -> {
+            if (!isActive()) return;
+            if (p.hasPermission(TabConstants.Permission.COMMAND_BOSSBAR_TOGGLE)) {
+                toggleBossBar(p, true);
+            } else {
+                p.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNoPermission());
+            }
+        });
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }

@@ -24,6 +24,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 /**
  * Platform implementation for Sponge.
@@ -134,6 +135,16 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public boolean supportsListOrder() {
         return false; // Maybe add it in the future when LTS bumps
+    }
+
+    @Override
+    public void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function) {
+        // Not supported by this platform
+    }
+
+    @Override
+    public void unregisterAllCustomCommands() {
+        // Not supported by this platform
     }
 
     @Override

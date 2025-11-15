@@ -1,10 +1,12 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Abstract class representing a core feature of the plugin.
  */
+@Getter
 public abstract class TabFeature {
 
     /** Flag tracking whether this instance is active or not */

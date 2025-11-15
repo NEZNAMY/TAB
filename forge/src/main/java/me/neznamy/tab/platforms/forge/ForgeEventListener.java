@@ -20,8 +20,8 @@ public class ForgeEventListener implements EventListener<ServerPlayer> {
         PlayerEvent.PlayerLoggedOutEvent.BUS.addListener(event -> quit(event.getEntity().getUUID()));
         PlayerEvent.PlayerRespawnEvent.BUS.addListener(event -> {
             ServerPlayer player = (ServerPlayer) event.getEntity();
-          replacePlayer(player.getUUID(), player);
-          worldChange(player.getUUID(), ForgeTAB.getLevelName(player.level()));
+            replacePlayer(player.getUUID(), player);
+            worldChange(player.getUUID(), ForgeTAB.getLevelName(player.level()));
         });
         PlayerEvent.PlayerChangedDimensionEvent.BUS.addListener(event -> worldChange(event.getEntity().getUUID(), ForgeTAB.getLevelName(event.getEntity().level())));
     }

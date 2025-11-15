@@ -25,6 +25,7 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.SharedConstants;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.network.chat.contents.objects.PlayerSprite;
@@ -40,6 +41,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Platform implementation for NeoForge
@@ -103,7 +105,7 @@ public record NeoForgePlatform(MinecraftServer server) implements BackendPlatfor
 
     @Override
     public void registerCommand() {
-        // Event listener must be registered in main class
+        NeoForgeTAB.COMMAND_DISPATCHER.getRoot().addChild(new NeoForgeTabCommand(getCommand()).getCommand());
     }
 
     @Override
@@ -190,6 +192,31 @@ public record NeoForgePlatform(MinecraftServer server) implements BackendPlatfor
     @Override
     public boolean supportsScoreboards() {
         return true;
+    }
+
+    @Override
+    public void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function) {
+        NeoForgeCommand command = new NeoForgeCommand(commandName) {
+
+            @Override
+            public int execute(@NotNull CommandSourceStack source, @NotNull String[] args) {
+                if (source.getEntity() != null) {
+                    TabPlayer p = TAB.getInstance().getPlayer(source.getEntity().getUUID());
+                    if (p == null) return 0; //player not loaded correctly
+                    function.accept(p);
+                    return 0;
+                }
+                source.sendSystemMessage(TabComponent.fromColoredText(
+                        TAB.getInstance().getConfiguration().getMessages().getCommandOnlyFromGame()).convert());
+                return 0;
+            }
+        };
+        NeoForgeTAB.COMMAND_DISPATCHER.getRoot().addChild(command.getCommand());
+    }
+
+    @Override
+    public void unregisterAllCustomCommands() {
+        // Not supported?
     }
 
     @Override

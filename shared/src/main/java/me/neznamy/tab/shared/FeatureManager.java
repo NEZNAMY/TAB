@@ -100,6 +100,7 @@ public class FeatureManager {
                 ((ProxyTabPlayer)player).sendPluginMessage(new Unload());
             }
         }
+        TAB.getInstance().getPlatform().unregisterAllCustomCommands();
     }
 
     /**

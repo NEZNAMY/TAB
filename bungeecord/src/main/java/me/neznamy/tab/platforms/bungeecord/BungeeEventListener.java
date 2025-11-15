@@ -9,13 +9,11 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -75,20 +73,6 @@ public class BungeeEventListener implements EventListener<ProxiedPlayer>, Listen
                 }
             }
         });
-    }
-
-    /**
-     * Listens to command execute event to potentially cancel it.
-     *
-     * @param   e
-     *          Command execute event
-     */
-    @EventHandler(priority = EventPriority.HIGH) // HIGH sounds about fair
-    public void onCommand(ChatEvent e) {
-        if (e.isCancelled()) return;
-        if (e.isCommand() && command(((ProxiedPlayer)e.getSender()).getUniqueId(), e.getMessage())) {
-            e.setCancelled(true);
-        }
     }
 
     /**
