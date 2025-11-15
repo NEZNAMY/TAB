@@ -77,7 +77,7 @@ public interface TabPlayer {
      * Changes expected profile name of the player. This adapts all name-bound features
      * to use this new profile name if another plugin changed profile name of the player. <p>
      * Automatic profile name change detection is available on Bukkit, BungeeCord and Fabric,
-     * therefore using this is redundant there. This function is only needed on Sponge and Velocity,
+     * therefore using this is redundant there. This function is only needed on Velocity,
      * where the detection is not available. <p>
      * Warning: This function does NOT change player's profile name, it only updates the tracked
      * name inside the plugin.

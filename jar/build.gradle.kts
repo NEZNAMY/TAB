@@ -50,8 +50,7 @@ val platformPaths = setOf(
     ":bukkit:v1_21_R5",
     ":bukkit:v1_21_R6",
     ":bungeecord",
-    ":velocity",
-    ":sponge"
+    ":velocity"
 )
 
 val moddedPaths = setOf(

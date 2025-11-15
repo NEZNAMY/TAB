@@ -117,7 +117,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      * Not needed for platforms which support pipeline injection.
      */
     public void checkDisplayNames() {
-        // Empty by default, overridden by Sponge and Velocity
+        // Empty by default, overridden by Velocity
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      * Not needed for platforms which support pipeline injection.
      */
     public void checkGameModes() {
-        // Empty by default, overridden by Sponge and Velocity
+        // Empty by default, overridden by Velocity
     }
 
     /**
@@ -135,7 +135,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      * Not needed for platforms which support pipeline injection.
      */
     public void checkHeaderFooter() {
-        // Empty by default, overridden by Sponge and Velocity
+        // Empty by default, overridden by Velocity
     }
 
     /**

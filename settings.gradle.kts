@@ -10,7 +10,6 @@ dependencyResolutionManagement {
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate, Bungeecord-proxy
         maven("https://repo.purpurmc.org/snapshots") // Purpur
-        maven("https://repo.spongepowered.org/repository/maven-public/") // Sponge
         maven("https://jitpack.io") // PremiumVanish, Vault, YamlAssist, RedisBungee
         maven("https://repo.md-5.net/content/groups/public/") // LibsDisguises
     }
@@ -72,7 +71,6 @@ include(":bukkit:v1_21_R4")
 include(":bukkit:v1_21_R5")
 include(":bukkit:v1_21_R6")
 include(":bungeecord")
-include(":sponge")
 include(":fabric")
 include(":neoforge")
 include(":forge")
