@@ -25,7 +25,7 @@ import java.util.Map.Entry;
  */
 @Getter
 public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
-        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable,
+        DisplayObjectiveListener, ObjectiveListener, Loadable,
         QuitListener, CustomThreaded, ServerSwitchListener {
 
     /** Objective name used by this feature */
@@ -161,21 +161,6 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             if (sb.isConditionMet(p)) return sb;
         }
         return null;
-    }
-
-    @Override
-    public boolean onCommand(@NotNull TabPlayer sender, @NotNull String message) {
-        if (message.equals(configuration.getToggleCommand())) {
-            TAB.getInstance().getCommand().execute(sender, new String[] {"scoreboard"});
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    @NotNull
-    public String getCommand() {
-        return configuration.getToggleCommand();
     }
 
     @Override
@@ -338,7 +323,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public void announceScoreboard(@NonNull String scoreboard, int duration) {
         ensureActive();
         if (duration < 0) throw new IllegalArgumentException("Duration cannot be negative");
-        ScoreboardImpl sb = (ScoreboardImpl) registeredScoreboards.get(scoreboard);
+        ScoreboardImpl sb = registeredScoreboards.get(scoreboard);
         if (sb == null) throw new IllegalArgumentException("No registered scoreboard found with name " + scoreboard);
         Map<TabPlayer, ScoreboardImpl> previous = new HashMap<>();
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {

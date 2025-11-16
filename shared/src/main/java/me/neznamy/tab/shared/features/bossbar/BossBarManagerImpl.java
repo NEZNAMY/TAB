@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * Class for handling BossBar feature
  */
-public class BossBarManagerImpl extends RefreshableFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
+public class BossBarManagerImpl extends RefreshableFeature implements BossBarManager, JoinListener, Loadable,
         QuitListener, CustomThreaded {
 
     @Getter private final StringToComponentCache cache = new StringToComponentCache("BossBar", 1000);
@@ -103,21 +103,6 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setBossBarVisible(connectedPlayer, false);
         if (toggleManager != null) toggleManager.convert(connectedPlayer);
         setBossBarVisible(connectedPlayer, configuration.isHiddenByDefault() == (toggleManager != null && toggleManager.contains(connectedPlayer)), false);
-    }
-
-    @Override
-    public boolean onCommand(@NotNull TabPlayer sender, @NotNull String message) {
-        if (message.equals(configuration.getToggleCommand())) {
-            TAB.getInstance().getCommand().execute(sender, new String[] {"bossbar"});
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    @NotNull
-    public String getCommand() {
-        return configuration.getToggleCommand();
     }
 
     /**

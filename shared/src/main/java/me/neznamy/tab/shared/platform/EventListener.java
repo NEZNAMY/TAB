@@ -86,21 +86,6 @@ public interface EventListener<T> {
     }
 
     /**
-     * Forwards command preprocess to all features. Returns {@code true}
-     * if the event should be cancelled, {@code false} if not.
-     *
-     * @param   player
-     *          Player who ran the command
-     * @param   command
-     *          Executed command including /
-     * @return  {@code true} if event should be cancelled, {@code false} if not.
-     */
-    default boolean command(@NotNull UUID player, @NotNull String command) {
-        if (TAB.getInstance().isPluginDisabled()) return false;
-        return TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(player), command);
-    }
-
-    /**
      * Creates new TabPlayer instance from given player object.
      *
      * @param   player
