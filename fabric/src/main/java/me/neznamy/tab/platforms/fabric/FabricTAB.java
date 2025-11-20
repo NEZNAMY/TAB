@@ -34,7 +34,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
      */
     @NotNull
     public static String getLevelName(@NotNull Level level) {
-        String path = level.dimension().location().getPath();
+        String path = level.dimension().identifier().getPath();
         return ((ServerLevelData)level.getLevelData()).getLevelName() + switch (path) {
             case "overworld" -> ""; // No suffix for overworld
             case "the_nether" -> "_nether";

@@ -11,7 +11,7 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public class FabricTabExpansion implements TabExpansion {
     }
 
     private void registerPlaceholder(String identifier, PlaceholderHandler handler) {
-        Placeholders.register(ResourceLocation.tryParse(ProjectVariables.PLUGIN_ID+":"+identifier), handler);
+        Placeholders.register(Identifier.tryParse(ProjectVariables.PLUGIN_ID+":"+identifier), handler);
     }
 
 

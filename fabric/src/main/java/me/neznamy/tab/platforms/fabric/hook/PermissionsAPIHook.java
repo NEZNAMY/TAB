@@ -3,6 +3,8 @@ package me.neznamy.tab.platforms.fabric.hook;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,7 +26,7 @@ public class PermissionsAPIHook {
      * @return  {@code true} if has permission, {@code false} if not
      */
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {
-        if (source.hasPermission(4)) return true;
+        if (source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS))) return true;
         return fabricPermissionsApi && Permissions.check(source, permission);
     }
 }
