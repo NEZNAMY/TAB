@@ -12,9 +12,9 @@
   },
   "depends": {
     "fabric-api-base": "*",
-    "java": ">=17",
+    "java": ">=21",
     "minecraft": [
-      "1.21.11-beta.1"
+      "1.21.11-beta.2"
     ]
   },
   "recommends": {
