@@ -196,8 +196,8 @@ conditions:
   nick: # use it with %condition:nick%
     conditions:
       - "%player%=%essentials_nickname%"
-    yes: "%player%"
-    no: "~%essentials_nickname%"
+    true: "%player%"
+    false: "~%essentials_nickname%"
 
 placeholder-refresh-intervals:
   default-refresh-interval: 500
