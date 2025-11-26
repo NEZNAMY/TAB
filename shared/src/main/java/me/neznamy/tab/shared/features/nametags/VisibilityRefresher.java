@@ -36,11 +36,14 @@ public class VisibilityRefresher extends RefreshableFeature implements JoinListe
     public void load() {
         TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, 500, p -> {
             TabPlayer player = (TabPlayer) p;
-            boolean newInvisibility = player.hasInvisibilityPotion() || invisibleCondition.isMet((TabPlayer) p);
+            boolean newInvisibility = invisibleCondition.isMet((TabPlayer) p);
             if (newInvisibility) {
                 player.teamData.hideNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
             } else {
                 player.teamData.showNametag(NameTagInvisibilityReason.MEETING_CONFIGURED_CONDITION);
+            }
+            if (player.hasInvisibilityPotion()) {
+                newInvisibility = true;
             }
             return Boolean.toString(newInvisibility);
         });
