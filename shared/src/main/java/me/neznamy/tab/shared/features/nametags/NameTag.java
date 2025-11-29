@@ -5,7 +5,6 @@ import lombok.NonNull;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.config.MessageFile;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
@@ -20,6 +19,7 @@ import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import me.neznamy.tab.shared.util.OnlinePlayers;
+import me.neznamy.tab.shared.util.cache.LastColorCache;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +34,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private OnlinePlayers onlinePlayers;
     private final TeamConfiguration configuration;
     private final StringToComponentCache prefixCache = new StringToComponentCache("NameTag prefix", 1000);
+    private final StringToComponentCache lastColorCache = new LastColorCache("NameTag last prefix color", 1000);
     private final StringToComponentCache suffixCache = new StringToComponentCache("NameTag suffix", 1000);
     private final VisibilityRefresher visibilityRefresher;
     private final CollisionManager collisionManager;
@@ -149,17 +150,15 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (proxy != null) {
             for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
                 if (proxied.getNametag() == null) continue; // This proxy player is not loaded yet
-                TabComponent prefix = prefixCache.get(proxied.getNametag().getPrefix());
-                TabComponent suffix = suffixCache.get(proxied.getNametag().getSuffix());
                 connectedPlayer.getScoreboard().registerTeam(
                         proxied.getNametag().getResolvedTeamName(),
-                        prefix,
-                        suffix,
+                        prefixCache.get(proxied.getNametag().getPrefix()),
+                        suffixCache.get(proxied.getNametag().getSuffix()),
                         proxied.getNametag().getNameVisibility(),
                         CollisionRule.ALWAYS,
                         Collections.singletonList(proxied.getNickname()),
                         teamOptions,
-                        prefix.getLastStyle().toEnumChatFormat()
+                        lastColorCache.get(proxied.getNametag().getPrefix()).getLastStyle().toEnumChatFormat()
                 );
             }
             sendProxyMessage(connectedPlayer);
@@ -249,12 +248,11 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
      */
     private void updatePrefixSuffix(@NonNull TabPlayer player) {
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            TabComponent prefix = prefixCache.get(player.teamData.prefix.getFormat(viewer));
             viewer.getScoreboard().updateTeam(
                     player.teamData.teamName,
-                    prefix,
+                    prefixCache.get(player.teamData.prefix.getFormat(viewer)),
                     suffixCache.get(player.teamData.suffix.getFormat(viewer)),
-                    prefix.getLastStyle().toEnumChatFormat()
+                    lastColorCache.get(player.teamData.prefix.getFormat(viewer)).getLastStyle().toEnumChatFormat()
             );
         }
         sendProxyMessage(player);
@@ -332,16 +330,15 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (p.teamData.isDisabled() || p.teamData.vanishedFor.contains(viewer.getUniqueId())) return;
         if (!viewer.canSee(p) && p != viewer) return;
-        TabComponent prefix = prefixCache.get(p.teamData.prefix.getFormat(viewer));
         viewer.getScoreboard().registerTeam(
                 p.teamData.teamName,
-                prefix,
+                prefixCache.get(p.teamData.prefix.getFormat(viewer)),
                 suffixCache.get(p.teamData.suffix.getFormat(viewer)),
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 p.teamData.getCollisionRule() ? CollisionRule.ALWAYS : CollisionRule.NEVER,
                 Collections.singletonList(p.getNickname()),
                 teamOptions,
-                prefix.getLastStyle().toEnumChatFormat()
+                lastColorCache.get(p.teamData.prefix.getFormat(viewer)).getLastStyle().toEnumChatFormat()
         );
     }
 
@@ -492,16 +489,15 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public void onJoin(@NotNull ProxyPlayer player) {
         if (player.getNametag() == null) return; // Player not loaded yet
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            TabComponent prefix = prefixCache.get(player.getNametag().getPrefix());
             viewer.getScoreboard().registerTeam(
                     player.getNametag().getResolvedTeamName(),
-                    prefix,
+                    prefixCache.get(player.getNametag().getPrefix()),
                     suffixCache.get(player.getNametag().getSuffix()),
                     player.getNametag().getNameVisibility(),
                     Scoreboard.CollisionRule.ALWAYS,
                     Collections.singletonList(player.getNickname()),
                     teamOptions,
-                    prefix.getLastStyle().toEnumChatFormat()
+                    lastColorCache.get(player.getNametag().getPrefix()).getLastStyle().toEnumChatFormat()
             );
         }
     }

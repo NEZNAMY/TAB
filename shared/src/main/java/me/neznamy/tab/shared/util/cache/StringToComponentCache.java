@@ -35,41 +35,45 @@ public class StringToComponentCache extends Cache<String, TabComponent> {
      *          Size limit of the cache
      */
     public StringToComponentCache(String name, int cacheSize) {
-        super(name, cacheSize, text -> {
-            if (MiniMessageHook.isAvailable() && text.indexOf('<') != -1) { // User may have wanted to use MiniMessage
+        super(name, cacheSize);
+    }
 
-                // Reformat gradients and RGB to kyori format
-                String mmFormatted = RGBUtils.getInstance().applyFormats(text, kyoriGradientFormatter, kyoriRGBFormatter);
+    @NotNull
+    @Override
+    public TabComponent convert(@NotNull String text) {
+        if (MiniMessageHook.isAvailable() && text.indexOf('<') != -1) { // User may have wanted to use MiniMessage
 
-                // Convert legacy codes into kyori format
-                for (TabTextColor format : TabTextColor.LEGACY_COLORS.values()) {
-                    char legacyChar = format.getLegacyColor().getCharacter();
-                    String colorName = format == TabTextColor.UNDERLINE
-                            ? "underlined"
-                            : format.getLegacyColor().name().toLowerCase(Locale.US);
+            // Reformat gradients and RGB to kyori format
+            String mmFormatted = RGBUtils.getInstance().applyFormats(text, kyoriGradientFormatter, kyoriRGBFormatter);
 
-                    for (char c : new char[]{legacyChar, Character.toUpperCase(legacyChar)}) {
-                        String sequence = "§" + c;
-                        if (mmFormatted.contains(sequence)) {
-                            if (format.getLegacyColor().isColor()) {
-                                mmFormatted = mmFormatted.replace(sequence, "<bold:false><italic:false><underlined:false><strikethrough:false><obfuscated:false><" + colorName + ">");
-                            } else {
-                                mmFormatted = mmFormatted.replace(sequence, "<" + colorName + ">");
-                            }
+            // Convert legacy codes into kyori format
+            for (TabTextColor format : TabTextColor.LEGACY_COLORS.values()) {
+                char legacyChar = format.getLegacyColor().getCharacter();
+                String colorName = format == TabTextColor.UNDERLINE
+                        ? "underlined"
+                        : format.getLegacyColor().name().toLowerCase(Locale.US);
+
+                for (char c : new char[]{legacyChar, Character.toUpperCase(legacyChar)}) {
+                    String sequence = "§" + c;
+                    if (mmFormatted.contains(sequence)) {
+                        if (format.getLegacyColor().isColor()) {
+                            mmFormatted = mmFormatted.replace(sequence, "<bold:false><italic:false><underlined:false><strikethrough:false><obfuscated:false><" + colorName + ">");
+                        } else {
+                            mmFormatted = mmFormatted.replace(sequence, "<" + colorName + ">");
                         }
                     }
                 }
-
-                // Convert TAB's #RRGGBB to Kyori <color:#RRGGBB>
-                mmFormatted = tabToKyori(mmFormatted);
-
-                TabComponent component = MiniMessageHook.parseText(mmFormatted);
-                if (component != null) return component;
             }
-            return text.contains("#") || text.contains("§x") || text.contains("<") ?
-                    TabComponent.fromColoredText(text) : //contains RGB colors or font
-                    TabComponent.legacyText(text); //no RGB
-        });
+
+            // Convert TAB's #RRGGBB to Kyori <color:#RRGGBB>
+            mmFormatted = tabToKyori(mmFormatted);
+
+            TabComponent component = MiniMessageHook.parseText(mmFormatted);
+            if (component != null) return component;
+        }
+        return text.contains("#") || text.contains("§x") || text.contains("<") ?
+                TabComponent.fromColoredText(text) : //contains RGB colors or font
+                TabComponent.legacyText(text); //no RGB
     }
 
     @NotNull

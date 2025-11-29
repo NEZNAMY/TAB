@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Cache to save resources when converting the same values over and over.
@@ -17,12 +16,11 @@ import java.util.function.Function;
  *          Target to convert to
  */
 @RequiredArgsConstructor
-public class Cache<K, V> {
+public abstract class Cache<K, V> {
 
     private int accessCount;
     private final String name;
     private final int cacheSize;
-    private final Function<K, V> function;
     private final Map<K, V> cache = new HashMap<>();
 
     /**
@@ -42,6 +40,16 @@ public class Cache<K, V> {
             accessCount = 0;
             cache.clear();
         }
-        return cache.computeIfAbsent(key, function);
+        return cache.computeIfAbsent(key, this::convert);
     }
+
+    /**
+     * Converts source to target type.
+     *
+     * @param   key
+     *          Source to convert
+     * @return  Converted value
+     */
+    @NotNull
+    public abstract V convert(@NotNull K key);
 }

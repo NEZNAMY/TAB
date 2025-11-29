@@ -19,7 +19,7 @@ public class MiniMessageHook {
     @Nullable
     private static MiniMessage createMiniMessage() {
         try {
-            return MiniMessage.builder().postProcessor(c -> c).build();
+            return MiniMessage.miniMessage();
         } catch (Throwable ignored) {
             return null;
         }

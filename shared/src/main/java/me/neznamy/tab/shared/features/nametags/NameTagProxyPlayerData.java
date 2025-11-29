@@ -92,6 +92,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
 
         if (target.getConnectionState() == ProxyPlayer.ConnectionState.CONNECTED) {
             TabComponent prefix = feature.getPrefixCache().get(this.prefix);
+            TabComponent lastColor = feature.getLastColorCache().get(this.prefix);
             TabComponent suffix = feature.getSuffixCache().get(this.suffix);
             for (TabPlayer viewer : feature.getOnlinePlayers().getPlayers()) {
                 if (oldData != null && resolvedTeamName.equals(oldData.resolvedTeamName)) {
@@ -102,7 +103,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
                             nameVisibility,
                             Scoreboard.CollisionRule.ALWAYS,
                             feature.getTeamOptions(),
-                            prefix.getLastStyle().toEnumChatFormat()
+                            lastColor.getLastStyle().toEnumChatFormat()
                     );
                 } else {
                     if (oldData != null) {
@@ -116,7 +117,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
                             Scoreboard.CollisionRule.ALWAYS,
                             Collections.singletonList(target.getNickname()),
                             feature.getTeamOptions(),
-                            prefix.getLastStyle().toEnumChatFormat()
+                            lastColor.getLastStyle().toEnumChatFormat()
                     );
                 }
             }
