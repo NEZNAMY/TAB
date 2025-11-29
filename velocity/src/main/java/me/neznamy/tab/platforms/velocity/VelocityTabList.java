@@ -126,9 +126,8 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
     @Override
     public void checkGameModes() {
         for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            Integer forcedGameMode = getForcedGameModes().get(entry.getProfile().getId());
-            if (forcedGameMode != null && entry.getGameMode() != forcedGameMode) {
-                entry.setGameMode(forcedGameMode);
+            if (getBlockedSpectators().contains(entry.getProfile().getId()) && entry.getGameMode() == 3) {
+                entry.setGameMode(0);
             }
         }
     }

@@ -130,8 +130,9 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
                     if (forcedDisplayName != null) item.setDisplayName(toComponent(forcedDisplayName));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_GAMEMODE || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    Integer forcedGameMode = getForcedGameModes().get(item.getUuid());
-                    if (forcedGameMode != null) item.setGamemode(forcedGameMode);
+                    if (getBlockedSpectators().contains(item.getUuid()) && item.getGamemode() == 3) {
+                        item.setGamemode(0);
+                    }
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     if (getForcedLatency() != null) {
@@ -150,8 +151,9 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
                     if (forcedDisplayName != null) item.setDisplayName(toComponent(forcedDisplayName));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_GAMEMODE)) {
-                    Integer forcedGameMode = getForcedGameModes().get(item.getUuid());
-                    if (forcedGameMode != null) item.setGamemode(forcedGameMode);
+                    if (getBlockedSpectators().contains(item.getUuid()) && item.getGamemode() == 3) {
+                        item.setGamemode(0);
+                    }
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
                     if (getForcedLatency() != null) {

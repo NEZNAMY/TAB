@@ -180,7 +180,7 @@ public class FeatureManager {
         // Player is actually not online anymore, remove to avoid memory leak
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             ((TrackedTabList<?>)all.getTabList()).getForcedDisplayNames().remove(id);
-            ((TrackedTabList<?>)all.getTabList()).getForcedGameModes().remove(id);
+            ((TrackedTabList<?>)all.getTabList()).getBlockedSpectators().remove(id);
         }
     }
 
