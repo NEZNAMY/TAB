@@ -3,7 +3,7 @@
 * [Configuration](#configuration)
 * [Limitations](#limitations)
 * [Additional info](#additional-info)
-  * [Additional note 1 - Spectator gamemode](#additional-note-1---spectator-gamemode)
+    * [Additional note 1 - Spectator gamemode](#additional-note-1---spectator-gamemode)
 
 # About
 The scoreboard objective with PLAYER_LIST display slot. On 1.20.2- it supports 2 display types:

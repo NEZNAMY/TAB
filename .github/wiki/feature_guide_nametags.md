@@ -1,26 +1,26 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-  * [Groups and users](#groups-and-users)
-  * [Per-world / per-server](#per-world--per-server)
-  * [Priority system](#priority-system)
-  * [Name color](#name-color)
-  * [Placeholder support](#placeholder-support)
-  * [Additional settings](#additional-settings)
+    * [Groups and users](#groups-and-users)
+    * [Per-world / per-server](#per-world--per-server)
+    * [Priority system](#priority-system)
+    * [Name color](#name-color)
+    * [Placeholder support](#placeholder-support)
+    * [Additional settings](#additional-settings)
 * [Tips & Tricks](#tips--tricks)
 * [Limitations](#limitations)
 * [Additional info](#additional-info)
-  * [Additional note 1 - NPC (in)compatibility](#additional-note-1---npc-incompatibility)
-  * [Additional note 2 - Prefix/suffix on pets](#additional-note-2---prefixsuffix-on-pets)
-  * [Additional note 3 - Changing name itself](#additional-note-3---changing-name-itself)
-  * [Additional note 4 - F1 view](#additional-note-4---f1-view)
-  * [Additional note 5 - Transparent players](#additional-note-5---transparent-players)
-  * [Additional note 6 - Vanish hook](#additional-note-6---vanish-hook)
+    * [Additional note 1 - NPC (in)compatibility](#additional-note-1---npc-incompatibility)
+    * [Additional note 2 - Prefix/suffix on pets](#additional-note-2---prefixsuffix-on-pets)
+    * [Additional note 3 - Changing name itself](#additional-note-3---changing-name-itself)
+    * [Additional note 4 - F1 view](#additional-note-4---f1-view)
+    * [Additional note 5 - Transparent players](#additional-note-5---transparent-players)
+    * [Additional note 6 - Vanish hook](#additional-note-6---vanish-hook)
 * [API](#api)
-  * [Changing prefix and suffix](#changing-prefix-and-suffix)
-  * [Collision](#collision)
-  * [Manipulating visibility](#manipulating-visibility)
-  * [Disabling team handling](#disabling-team-handling)
+    * [Changing prefix and suffix](#changing-prefix-and-suffix)
+    * [Collision](#collision)
+    * [Manipulating visibility](#manipulating-visibility)
+    * [Disabling team handling](#disabling-team-handling)
 
 # About
 Nametags are controlled by a feature called scoreboard teams. They offer 6 properties:
@@ -148,8 +148,8 @@ _DEFAULT_:
 # Limitations
 * [1.5 - 1.12.2] Prefix/suffix length is limited to 16 characters (including color codes). Any characters beyond that will be cut to prevent players getting disconnected.
 * [1.13+] Name color is controlled by a chat format enum constant. This means:
-  * Name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
-  * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
+    * Name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
+    * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
 * The same value manages name color and glow color, which means they cannot be different.
 * The name cannot be effectively changed and the plugin doesn't offer it.
 

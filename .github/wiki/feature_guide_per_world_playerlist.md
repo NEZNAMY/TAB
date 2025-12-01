@@ -1,7 +1,7 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-  * [Grouping playerlist from multiple worlds](#grouping-playerlist-from-multiple-worlds)
+    * [Grouping playerlist from multiple worlds](#grouping-playerlist-from-multiple-worlds)
 
 # About
 This feature allows you to limit players you see in tablist to only players in your world, or in a group of worlds.  

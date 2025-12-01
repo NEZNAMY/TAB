@@ -1,16 +1,16 @@
 # Content
 * [Requirements](#requirements)
-  * [Java](#java)
+    * [Java](#java)
 * [Supported server software and versions](#supported-server-software-and-versions)
 * [Supported features per platform](#supported-features-per-platform)
 * [Plugin hooks](#plugin-hooks)
-  * [All platforms](#all-platforms)
-  * [Bukkit](#bukkit)
-  * [BungeeCord](#bungeecord)
-  * [Fabric](#fabric)
-  * [Forge / NeoForge](#forge--neoforge)
-  * [Sponge](#sponge)
-  * [Velocity](#velocity)
+    * [All platforms](#all-platforms)
+    * [Bukkit](#bukkit)
+    * [BungeeCord](#bungeecord)
+    * [Fabric](#fabric)
+    * [Forge / NeoForge](#forge--neoforge)
+    * [Sponge](#sponge)
+    * [Velocity](#velocity)
 * [Compatibility issues](#compatibility-issues)
 
 # Requirements
@@ -140,18 +140,17 @@ Sending scoreboard packets (scoreboard-teams, belowname-objective, playerlist-ob
 
 # Compatibility issues
 * **Glow plugins** will fail to apply glow color correctly. Check [How to make the plugin compatible with glow plugins](https://github.com/NEZNAMY/TAB/wiki/How-to-make-TAB-compatible-with-glow-plugins) for more information.
-* **[Tablisknu](https://forums.skunity.com/resources/tablisknu.727/)** (skript addon) prevents TAB from assigning teams (sorting & nametags).
-* **SkBee** (skript addon) sends empty scoreboard, causing TAB's to not show sometimes.
+* Some Skript addons may cause features to not work properly, such as sorting and scoreboard.
 * **Waterfall**'s `disable_tab_list_rewrite: true` **may** cause tablist to use offline UUIDs while TAB expects online uuids, causing various problems (most notably tablist formatting not working). Checking for this option is not an option either, because tablist rewrite might still be enabled despite being disabled (don't ask how, I have no idea). Set the option to `false` if you are experiencing issues.
 * **ViaVersion on proxy and TAB on backend** acts like a client-sided protocol hack, making it impossible for TAB to know player's real version and causing issues related to it, see [Per-version experience](https://github.com/NEZNAMY/TAB/wiki/Additional-information#per-version-experience) for more info. Avoid this combination. Either install ViaVersion on all backend servers instead or install TAB on the proxy as well.
-* **Nexo**'s `hide_scoreboard_numbers` config option (may apply to ItemsAdder and Oraxen as well) makes [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)'s `value` and [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)'s `value` not visible. When using these features, you'll need to keep the option disabled.
+* **Nexo**'s `hide_scoreboard_numbers` config option (may apply to ItemsAdder and Oraxen as well) makes [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)'s and [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)'s `value` and `fancy-value` not visible. When using these features, you'll need to keep the option disabled.
 * **LimboAuth** may prevent TAB from applying tablist formatting in a way that is not detectable using Velocity API, resulting in the feature not working properly on join.
 * **Custom clients / resource packs** - Unofficially modified minecraft clients often tend to break things. Just Lunar client has tons of bugs that can be reproduced with TAB. Resource packs may also contain modifications you are not aware of, making things not look the way you want them to. If you are experiencing any visual issue and are using a custom client or resource pack, try it with a clean vanilla client. If it works there, it's an issue with the client / resource pack and TAB cannot do anything about it.  
   For example, here are a few bugs in LunarClient / FeatherClient that you may run into when using TAB:
-  * They add their icon to players in tablist, but don't widen the entries. This results in player names overlapping with latency bar. You can avoid this by configuring some spaces in tabsuffix.
-  * They don't support color field in chat components, which means they don't support RGB codes and will display bossbar without colors as well.
-  * Rendering belowname 3 times.
-  * They don't respect nametag visibility rule, showing their own nametag using F5 even if set to invisible by the plugin.
-  * When the scoreboard is set to use all 0s, lines are rendered in opposite order on 1.20.3+.
-  * They don't display 1.20.3+ NumberFormat feature in scoreboard objectives.
+    * They add their icon to players in tablist, but don't widen the entries. This results in player names overlapping with latency bar. You can avoid this by configuring some spaces in tabsuffix.
+    * They don't support color field in chat components, which means they don't support RGB codes and will display bossbar without colors as well.
+    * Rendering belowname 3 times.
+    * They don't respect nametag visibility rule, showing their own nametag using F5 even if set to invisible by the plugin.
+    * When the scoreboard is set to use all 0s, lines are rendered in opposite order on 1.20.3+.
+    * They don't display 1.20.3+ NumberFormat feature in scoreboard objectives.
 * **Random Spigot/BungeeCord forks** - All safe patches for improving security & performance are present in well-known public opensource projects, such as Paper, Purpur or Waterfall. Using a random overpriced closed-source (and probably obfuscated) fork from BuiltByBit may not be safe, since they likely include unsafe patches that may break compatibility with plugins in an attempt to fix things that are not broken. Before spending your entire budget on such a fork, reconsider it first. Paper (and its forks) is a performance-oriented fork used by 2/3 of all MC servers worldwide, while the rest is still stuck on Spigot. It is highly unlikely your needs are so specific you need every single "improvement" anyone can come up with. If you need a feature, Purpur is a feature-oriented fork. Together with plugins you should achieve what you are looking for.

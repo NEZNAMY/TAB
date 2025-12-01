@@ -17,6 +17,7 @@
 * [#16 - Is MiniMessage supported?](#16---is-minimessage-supported)
 * [#17 - Is it possible to show the number of players in a specific group, similar to staffonline placeholder?](#17---is-it-possible-to-show-the-number-of-players-in-a-specific-group-similar-to-staffonline-placeholder)
 * [#18 - Why is the plugin flagged as a virus by Windows defender?](#18---why-is-the-plugin-flagged-as-a-virus-by-windows-defender)
+* [#19 - How can I show amount of online players on the entire network?](#19---how-can-i-show-amount-of-online-players-on-the-entire-network)
 
 ## #1 - Why are NPCs showing up in the tablist?
 See [Citizens FAQ](https://wiki.citizensnpcs.co/Frequently_Asked_Questions#Why_are_NPCs_showing_up_in_the_tablist.3F).
@@ -25,8 +26,8 @@ See [Citizens FAQ](https://wiki.citizensnpcs.co/Frequently_Asked_Questions#Why_a
 * If you want to take prefixes/suffixes, check [this guide](https://github.com/NEZNAMY/TAB/wiki/Mini-guides-collection#taking-prefixessuffixes-from-permission-plugin) and use `%luckperms-prefix%` & `%luckperms-suffix%`.
 * Sorting:
   First, configure weights correctly in LuckPerms. Then, you have 2 options:
-  * Configure [sorting by groups](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#groups) (recommended).
-  * Sorting by weights directly: `PLACEHOLDER_HIGH_TO_LOW:%luckperms_highest_group_weight%`.
+    * Configure [sorting by groups](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#groups) (recommended).
+    * Sorting by weights directly: `PLACEHOLDER_HIGH_TO_LOW:%luckperms_highest_group_weight%`.
 
 ## #3 - I enabled MySQL, and my prefix is now gone!
 When enabling [MySQL](https://github.com/NEZNAMY/TAB/wiki/MySQL), it will be used as a data storage and groups.yml / users.yml files will no longer be used.  
@@ -137,3 +138,7 @@ It also checks for CPU and OS types, which could be the reason for the false pos
 [Here](https://bstats.org/plugin/bukkit/TAB%20Reborn/5304) is one of TAB's pages as an example.
 
 Windows defender could be flagging it for the same reason.
+
+## #19 - How can I show amount of online players on the entire network?
+If you have TAB installed on the proxy, use `%online%` placeholder.  
+If you have TAB installed on the backend servers, use `%bungee_total%` from [PlaceholderAPI](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide). This placeholder has an internal cooldown, which can be configured in `plugins/PlaceholderAPI/config.yml` under `expansions` -> `bungee` -> `check_interval`, default value is 30 (seconds).

@@ -2,19 +2,19 @@
 * [About](#about)
 * [Configuration](#configuration)
 * [Additional info](#additional-info)
-  * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
-  * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
-  * [Additional note 3 - Visible on NPCs](#additional-note-3---visible-on-npcs)
-  * [Additional note 4 - Compatibility with modified clients](#additional-note-4---compatibility-with-modified-clients)
+    * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
+    * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
+    * [Additional note 3 - Visible on NPCs](#additional-note-3---visible-on-npcs)
+    * [Additional note 4 - Compatibility with modified clients](#additional-note-4---compatibility-with-modified-clients)
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Limitations](#limitations)
 * [Examples](#examples)
-  * [Example 1 - Per-world values](#example-1---per-world-values)
-  * [Example 2 - Hiding `title` for 1.20.3+ players](#example-2---hiding-title-for-1203-players)
-  * [Example 3 - Displaying health as 0-10 or in %](#example-3---displaying-health-as-0-10-or-in-)
-  * [Example 4 - Health bar using hearts](#example-4---health-bar-using-hearts)
+    * [Example 1 - Per-world values](#example-1---per-world-values)
+    * [Example 2 - Hiding `title` for 1.20.3+ players](#example-2---hiding-title-for-1203-players)
+    * [Example 3 - Displaying health as 0-10 or in %](#example-3---displaying-health-as-0-10-or-in-)
+    * [Example 4 - Health bar using hearts](#example-4---health-bar-using-hearts)
 * [Tips & Tricks](#tips--tricks)
-  * [Tip 1 - Heart symbol](#tip-1---heart-symbol)
+    * [Tip 1 - Heart symbol](#tip-1---heart-symbol)
 
 # About
 This features gives you control over Minecraft's scoreboard objective feature with BELOW_NAME slot.
@@ -73,15 +73,15 @@ NPC plugin can take advantage of this by using teams to hide the original name a
 
 This is how you can achieve it using the following popular NPC plugins:
 * **Citizens**:
-  * 1 - Select the NPC (`/npc select <ID>` or `/npc select` to select the nearest NPC)
-  * 2 - Hide its original nametag (which also hides belowname) using `/npc name`
-  * 3 - Display your desired text using `/npc hologram add <text>` ([more info](https://wiki.citizensnpcs.co/Commands#:~:text=the%20NPC%20hitbox-,/npc%20hologram,-add%20%5Btext%5D%20%7C%20set))
+    * 1 - Select the NPC (`/npc select <ID>` or `/npc select` to select the nearest NPC)
+    * 2 - Hide its original nametag (which also hides belowname) using `/npc name`
+    * 3 - Display your desired text using `/npc hologram add <text>` ([more info](https://wiki.citizensnpcs.co/Commands#:~:text=the%20NPC%20hitbox-,/npc%20hologram,-add%20%5Btext%5D%20%7C%20set))
 * **FancyNpcs with FancyHolograms**:
-  * 1 - Create a hologram with `/hologram create text <name>`.
-  * 2 - Link your newly created hologram with your NPC: `/hologram edit <hologram name> linkWithNpc <NPC name>`.  
-    Its original name will be hidden automatically, so you don't need to manually do it.
-  * 3 - Change the NPC's name by editing your hologram's line(s): `/hologram edit hi setline 1 <text>`.  
-    You can also add more lines if you want. See [FancyNpcs's wiki](https://docs.fancyinnovations.com/fancyholograms/commands/hologram/#text-hologram-modification) for more commands & info.
+    * 1 - Create a hologram with `/hologram create text <name>`.
+    * 2 - Link your newly created hologram with your NPC: `/hologram edit <hologram name> linkWithNpc <NPC name>`.  
+      Its original name will be hidden automatically, so you don't need to manually do it.
+    * 3 - Change the NPC's name by editing your hologram's line(s): `/hologram edit hi setline 1 <text>`.  
+      You can also add more lines if you want. See [FancyNpcs's wiki](https://docs.fancyinnovations.com/fancyholograms/commands/hologram/#text-hologram-modification) for more commands & info.
 
 # Additional note 4 - Compatibility with modified clients
 Sadly, this feature is suffering from bugs introduced by third party clients such as Feather and Lunar. These two completely ignore `fancy-value` as if it was never added into the game, even on 1.20.3+. This is just an example, and it's not limited to these two clients and this one issue. If you experience issues with the feature and believe you configured it correctly, use vanilla client to make sure it's not caused by a broken client.

@@ -1,15 +1,15 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-  * [Designs](#designs)
-  * [Chaining designs](#chaining-designs)
+    * [Designs](#designs)
+    * [Chaining designs](#chaining-designs)
 * [Additional info](#additional-info)
-  * [Additional note 1 - [1.8 - 1.20.1] Not resetting on server switch](#additional-note-1---18---1201-not-resetting-on-server-switch)
+    * [Additional note 1 - [1.8 - 1.20.1] Not resetting on server switch](#additional-note-1---18---1201-not-resetting-on-server-switch)
 * [Tips & Tricks](#tips--tricks)
-  * [Tip 1 - Dynamic line count](#tip-1---dynamic-line-count)
+    * [Tip 1 - Dynamic line count](#tip-1---dynamic-line-count)
 * [API](#api)
 * [Examples](#examples)
-  * [Example 1 - Per-version header/footer](#example-1---per-version-headerfooter)
+    * [Example 1 - Per-version header/footer](#example-1---per-version-headerfooter)
 
 # About
 Minecraft feature **introduced in 1.8** showing text above and below playerlist. It cannot be displayed on 1.7 clients in any way.

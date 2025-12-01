@@ -1,9 +1,9 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-  * [Grouping players only from certain servers](#grouping-players-only-from-certain-servers)
-  * [Configuring isolated servers](#configuring-isolated-servers)
-  * [Seeing all players on the network from some server](#seeing-all-players-on-the-network-from-some-server)
+    * [Grouping players only from certain servers](#grouping-players-only-from-certain-servers)
+    * [Configuring isolated servers](#configuring-isolated-servers)
+    * [Seeing all players on the network from some server](#seeing-all-players-on-the-network-from-some-server)
 * [Compatibility with vanish plugins](#compatibility-with-vanish-plugins)
 
 # About

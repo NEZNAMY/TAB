@@ -7,8 +7,8 @@ Combine the knowledge gathered by reading the wiki to get interesting results, m
 * [BedWars1058 compatibility](#bedwars1058-compatibility)
 * [Displaying AFK status in tablist](#displaying-afk-status-in-tablist)
 * [Showing combined online player count from multiple servers](#showing-combined-online-player-count-from-multiple-servers)
-  * [Option 1 - Using global playerlist](#option-1---using-global-playerlist)
-  * [Option 2 - Using PlaceholderAPI](#option-2---using-placeholderapi)
+    * [Option 1 - Using global playerlist](#option-1---using-global-playerlist)
+    * [Option 2 - Using PlaceholderAPI](#option-2---using-placeholderapi)
 
 # Displaying kill / death counter in tablist
 This example uses PlaceholderAPI placeholders.  
@@ -63,13 +63,13 @@ conditions:
   tps:
     conditions:
       - "%tps%>=19"
-    yes: "<#55FF55>%tps%</#00AA00>"
-    no: "%condition:tps2%"
+    true: "<#55FF55>%tps%</#00AA00>"
+    false: "%condition:tps2%"
   tps2:
     conditions:
       - "%tps%>=15"
-    yes: "<#FFFF55>%tps%</#FFAA00>"
-    no: "<#FF5555>%tps%</#AA0000>"
+    true: "<#FFFF55>%tps%</#FFAA00>"
+    false: "<#FF5555>%tps%</#AA0000>"
 ```
 To use this, we will use `%condition:tps%`.  
 Now, repeat for mspt and ping. For mspt, purpur's intervals are <40, <50, 50+. For ping, it's <100, <200, 200+.
@@ -80,23 +80,23 @@ conditions:
   mspt:
     conditions:
       - "%mspt%<40"
-    yes: "<#55FF55>%mspt%</#00AA00>"
-    no: "%condition:mspt2%"
+    true: "<#55FF55>%mspt%</#00AA00>"
+    false: "%condition:mspt2%"
   mspt2:
     conditions:
       - "%mspt%<50"
-    yes: "<#FFFF55>%mspt%</#FFAA00>"
-    no: "<#FF5555>%mspt%</#AA0000>"
+    true: "<#FFFF55>%mspt%</#FFAA00>"
+    false: "<#FF5555>%mspt%</#AA0000>"
   ping:
     conditions:
       - "%ping%<100"
-    yes: "<#55FF55>%ping%</#00AA00>"
-    no: "%condition:ping2%"
+    true: "<#55FF55>%ping%</#00AA00>"
+    false: "%condition:ping2%"
   ping2:
     conditions:
       - "%ping%<200"
-    yes: "<#FFFF55>%ping%</#FFAA00>"
-    no: "<#FF5555>%ping%</#AA0000>"
+    true: "<#FFFF55>%ping%</#FFAA00>"
+    false: "<#FF5555>%ping%</#AA0000>"
 ```
 To use them, we will use `%condition:mspt%` and `%condition:ping%`. Purpur's TPSBar is using mspt as bossbar progress with range from 0 to 50. This can be achieved with PlaceholderAPI's math expansion: `%math_0_{tab_placeholder_mspt}*2%`. It always uses `GREEN` color and `NOTCHED_20` style. Let's put all of this together:
 ```
@@ -137,8 +137,8 @@ conditions:
   rankOrTeam:
     conditions:
       - "%bw1058_player_team%="
-    yes: "%luckperms-prefix%"
-    no: "%bw1058_player_team%"
+    true: "%luckperms-prefix%"
+    false: "%bw1058_player_team%"
 ```
 And then do `/tab group _DEFAULT_ tabprefix %condition:rankOrTeam%` and `/tab group _DEFAULT_ tagprefix %condition:rankOrTeam%` so it shows in your nametag and in your tablist name.
 

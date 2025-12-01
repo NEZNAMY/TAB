@@ -3,8 +3,8 @@
 * [Nametag](#nametag)
 * [Proper compatibility with plugins that change profile name](#proper-compatibility-with-plugins-that-change-profile-name)
 * [Tips & Tricks](#tips--tricks)
-  * [Tip 1 - Nickname prefix](#tip-1---nickname-prefix)
-  * [Tip 2 - Sorting nicked players with the lowest priority](#tip-2---sorting-nicked-players-with-the-lowest-priority)
+    * [Tip 1 - Nickname prefix](#tip-1---nickname-prefix)
+    * [Tip 2 - Sorting nicked players with the lowest priority](#tip-2---sorting-nicked-players-with-the-lowest-priority)
 
 # Tablist
 This one is straightforward.
@@ -69,8 +69,8 @@ conditions:
   nick:
     conditions:
     - '%essentials_nickname%=%player%'
-    yes: "%player%"              # If nickname = player name -> player is not nicked
-    no: "~%essentials_nickname%" # If nickname != player name -> player is nicked
+    true: "%player%"              # If nickname = player name -> player is not nicked
+    false: "~%essentials_nickname%" # If nickname != player name -> player is nicked
 ```
 Then, use `%condition:nick%` in your `customtabname` instead of the placeholder directly.
 
@@ -87,8 +87,8 @@ conditions:
   group:
     conditions:
     - '%haonick_isNicked%=true'
-    yes: "default"
-    no: "%group%"
+    true: "default"
+    false: "%group%"
 ```
 When the condition is met, meaning player is nicked, it will return the group we want nicked players to be sorted as, in this case `default`. Otherwise, return player's actual group.  
 The condition check may differ with different nickname plugins. You will need to check documentation of your nickname plugin to see what kind of placeholders it offers and what they return (you can also use `/tab parse` to see what exactly did a placeholder return).  

@@ -1,22 +1,22 @@
 # Content
 * [About](#about)
 * [RGB Colors (1.16+)](#rgb-colors-116)
-  * [Usage](#usage)
-  * [Magic codes](#magic-codes)
-  * [Invalid code handling](#invalid-code-handling)
-  * [Compatibility with <1.16](#compatibility-with-116)
+    * [Usage](#usage)
+    * [Magic codes](#magic-codes)
+    * [Invalid code handling](#invalid-code-handling)
+    * [Compatibility with <1.16](#compatibility-with-116)
 * [Fonts (1.16+)](#fonts-116)
-  * [Usage](#usage-1)
-  * [Compatibility with RGB and gradients](#compatibility-with-rgb-and-gradients)
+    * [Usage](#usage-1)
+    * [Compatibility with RGB and gradients](#compatibility-with-rgb-and-gradients)
 * [Shadow color (1.21.4+)](#shadow-color-1214)
 * [Object components (1.21.9+)](#object-components-1219)
-  * [Atlas sprite](#atlas-sprite)
-  * [Player sprite](#player-sprite)
-  * [Compatibility with < 1.21.9](#compatibility-with--1219)
+    * [Atlas sprite](#atlas-sprite)
+    * [Player sprite](#player-sprite)
+    * [Compatibility with < 1.21.9](#compatibility-with--1219)
 * [MiniMessage](#minimessage)
 * [Config options](#config-options)
 * [Tips & Tricks](#tips--tricks)
-  * [Tip 1 - Manually defining legacy color](#tip-1---manually-defining-legacy-color)
+    * [Tip 1 - Manually defining legacy color](#tip-1---manually-defining-legacy-color)
 
 # About
 In Minecraft 1.7, new feature called components was introduced. This is an upgrade from using legacy colors (using § symbol) into creating a json object where text, color, and magic codes (boolean values) are separated.  
@@ -186,8 +186,8 @@ conditions:
   rgb:
     conditions:
     - '%player-version-id%>=735'
-    yes: "#00FF00 RGB text"
-    no: "&a Legacy text"
+    true: "#00FF00 RGB text"
+    false: "&a Legacy text"
 ```
 Then, use this condition with `%condition:rgb%`.
 

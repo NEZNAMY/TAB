@@ -15,7 +15,8 @@ On order to not have to explain something every time it is mentioned, it will be
 | Name           | Description           |
 |----------------|-----------------------|
 | proxy server   | Server running BungeeCord or Velocity software, which are used to connect multiple servers, allowing easy transfer between them |
-| backend server | Minecraft server that is actually being played on, not a proxy. This includes Bukkit (and its forks), Sponge and modded servers (Fabric, Forge and NeoForge) |
+| modded server  | Fabric, Forge and NeoForge |
+| backend server | Minecraft server that is actually being played on, not a proxy. This includes Bukkit (and its forks), Sponge and modded servers |
 
 # Limitations of plugins
 TAB is a plugin (even on modded platforms, it is only a server-sided mod).

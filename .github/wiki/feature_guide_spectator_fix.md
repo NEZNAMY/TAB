@@ -3,7 +3,7 @@
 * [Enabling](#enabling)
 * [Permissions](#permissions)
 * [Additional info](#additional-info)
-  * [Additional note 1 - Seeing yourself still as spectator](#additional-note-1---seeing-yourself-still-as-spectator)
+    * [Additional note 1 - Seeing yourself still as spectator](#additional-note-1---seeing-yourself-still-as-spectator)
 
 # About
 With the introduction of spectator gamemode in 1.8,
