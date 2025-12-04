@@ -23,6 +23,8 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final ScoreboardTeamBase.EnumNameTagVisibility[] visibilities = ScoreboardTeamBase.EnumNameTagVisibility.values();
     private static final ScoreboardTeamBase.EnumTeamPush[] collisions = ScoreboardTeamBase.EnumTeamPush.values();
     private static final Scoreboard dummyScoreboard = new Scoreboard();
+    private static final IScoreboardCriteria INTEGER = new ScoreboardBaseCriteria("dummy");
+    private static final IScoreboardCriteria HEARTS = new ScoreboardHealthCriteria("health");
 
     private static final Field TeamPacket_NAME = ReflectionUtils.getFields(PacketPlayOutScoreboardTeam.class, String.class).get(0);
     private static final Field TeamPacket_ACTION = ReflectionUtils.getInstanceFields(PacketPlayOutScoreboardTeam.class, int.class).get(1);
@@ -46,9 +48,9 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerObjective(@NonNull Objective objective) {
-        ScoreboardObjective obj = new ScoreboardObjective(dummyScoreboard, objective.getName(), IScoreboardCriteria.b);
+        IScoreboardCriteria healthDisplay = objective.getHealthDisplay() == HealthDisplay.INTEGER ? INTEGER : HEARTS;
+        ScoreboardObjective obj = new ScoreboardObjective(dummyScoreboard, objective.getName(), healthDisplay);
         obj.setDisplayName(maybeCut(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
-        obj.a(IScoreboardCriteria.EnumScoreboardHealthDisplay.valueOf(objective.getHealthDisplay().name()));
         objective.setPlatformObjective(obj);
         sendPacket(new PacketPlayOutScoreboardObjective(obj, ObjectiveAction.REGISTER));
     }
@@ -65,9 +67,9 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
-        ScoreboardObjective obj = (ScoreboardObjective) objective.getPlatformObjective();
+        IScoreboardCriteria healthDisplay = objective.getHealthDisplay() == HealthDisplay.INTEGER ? INTEGER : HEARTS;
+        ScoreboardObjective obj = new ScoreboardObjective(dummyScoreboard, objective.getName(), healthDisplay);
         obj.setDisplayName(maybeCut(objective.getTitle().toLegacyText(), Limitations.SCOREBOARD_TITLE_PRE_1_13));
-        obj.a(IScoreboardCriteria.EnumScoreboardHealthDisplay.valueOf(objective.getHealthDisplay().name()));
         sendPacket(new PacketPlayOutScoreboardObjective(obj, ObjectiveAction.UPDATE));
     }
 
