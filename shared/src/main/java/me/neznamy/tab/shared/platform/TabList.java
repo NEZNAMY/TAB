@@ -126,15 +126,6 @@ public interface TabList {
     void addEntry(@NonNull Entry entry);
 
     /**
-     * Returns {@code true} if tablist contains specified entry, {@code false} if not.
-     *
-     * @param   entry
-     *          UUID of entry to check
-     * @return  {@code true} if tablist contains specified entry, {@code false} if not
-     */
-    boolean containsEntry(@NonNull UUID entry);
-
-    /**
      * Sets header and footer to specified values.
      *
      * @param   header

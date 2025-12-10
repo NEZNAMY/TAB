@@ -169,7 +169,8 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
     }
 
     @Override
-    public boolean containsEntry(@NonNull UUID entry) {
+    @NotNull
+    public Boolean containsEntry(@NonNull UUID entry) {
         return uuids.contains(entry);
     }
 

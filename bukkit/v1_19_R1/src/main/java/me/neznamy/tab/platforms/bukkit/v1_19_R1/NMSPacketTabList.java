@@ -36,6 +36,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     private static final EnumPlayerInfoAction UPDATE_GAME_MODE = EnumPlayerInfoAction.b;
     private static final EnumPlayerInfoAction UPDATE_LATENCY = EnumPlayerInfoAction.c;
     private static final EnumPlayerInfoAction UPDATE_DISPLAY_NAME = EnumPlayerInfoAction.d;
+    private static final EnumPlayerInfoAction REMOVE_PLAYER = EnumPlayerInfoAction.e;
 
     /**
      * Constructs new instance.
@@ -96,11 +97,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    public boolean containsEntry(@NonNull UUID entry) {
-        return true; // TODO?
-    }
-
-    @Override
     @Nullable
     public Skin getSkin() {
         Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
@@ -153,7 +149,11 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 }
             }
             if (action == ADD_PLAYER) {
+                onEntryAdd(id);
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
+            }
+            if (action == REMOVE_PLAYER) {
+                onEntryRemove(id);
             }
             updatedList.add(rewriteEntry ? new PlayerInfoData(
                     profile,

@@ -89,11 +89,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    public boolean containsEntry(@NonNull UUID entry) {
-        return true; // TODO?
-    }
-
-    @Override
     @Nullable
     public Skin getSkin() {
         Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
@@ -156,7 +151,11 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 }
             }
             if (action == EnumPlayerInfoAction.ADD_PLAYER) {
+                onEntryAdd(id);
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
+            }
+            if (action == EnumPlayerInfoAction.REMOVE_PLAYER) {
+                onEntryRemove(id);
             }
             updatedList.add(rewriteEntry ? info.new PlayerInfoData(
                     profile,

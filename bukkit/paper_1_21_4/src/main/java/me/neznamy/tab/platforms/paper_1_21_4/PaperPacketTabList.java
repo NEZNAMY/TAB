@@ -90,11 +90,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    public boolean containsEntry(@NonNull UUID entry) {
-        return true; // TODO?
-    }
-
-    @Override
     @Nullable
     public Skin getSkin() {
         Collection<Property> properties = ((CraftPlayer)player.getPlayer()).getProfile().getProperties().get(TEXTURES_PROPERTY);
@@ -110,6 +105,11 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
             if (header == null || footer == null) return packet;
             if (tablist.header() != header.convert() || tablist.footer() != footer.convert()) {
                 return new ClientboundTabListPacket(header.convert(), footer.convert());
+            }
+        }
+        if (packet instanceof ClientboundPlayerInfoRemovePacket remove) {
+            for (UUID id : remove.profileIds()) {
+                onEntryRemove(id);
             }
         }
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
@@ -141,6 +141,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                     }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
+                    onEntryAdd(nmsData.profileId());
                     TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(

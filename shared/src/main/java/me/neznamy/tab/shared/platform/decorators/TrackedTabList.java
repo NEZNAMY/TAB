@@ -34,7 +34,13 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     private final Map<UUID, TabComponent> forcedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
 
     /** Players to change to survival gamemode instead of spectator */
-    private final Set<UUID> blockedSpectators = Collections.synchronizedSet(new java.util.HashSet<>());
+    private final Set<UUID> blockedSpectators = Collections.synchronizedSet(new HashSet<>());
+
+    /** Players added into tablist (detected in pipeline) */
+    private final Set<UUID> addedEntries = Collections.synchronizedSet(new HashSet<>());
+
+    /** Players removed from tablist (detected in pipeline) */
+    private final Set<UUID> removedEntries = Collections.synchronizedSet(new HashSet<>());
 
     /** Header sent by the plugin */
     @Nullable
@@ -64,28 +70,58 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull TabPlayer player, @Nullable TabComponent displayName) {
-        forcedDisplayNames.put(player.getTablistId(), displayName);
-        if (player.getVersion().getMinorVersion() < 8) {
+    public void updateDisplayName(@NonNull TabPlayer target, @Nullable TabComponent displayName) {
+        forcedDisplayNames.put(target.getTablistId(), displayName);
+        if (target.getVersion().getMinorVersion() < 8) {
             return; // Display names are not supported on 1.7 and below
         }
-        if (containsEntry(player.getTablistId()) && this.player.canSee(player)) {
-            updateDisplayName0(player.getTablistId(), displayName);
+        Boolean contains = containsEntry(target.getTablistId());
+        if (contains == Boolean.FALSE) return; // Player is definitely not in tablist, drop packet
+        if (contains == Boolean.TRUE) {
+            // Player is definitely in tablist, update directly
+            updateDisplayName0(target.getTablistId(), displayName);
+            return;
         }
+        // Unknown result, try other means
+        if (!player.canSee(target)) {
+            // Target is vanished and this player should not see them. Drop packet.
+            return;
+        }
+        updateDisplayName0(target.getTablistId(), displayName);
     }
 
     @Override
-    public void updateLatency(@NonNull TabPlayer player, int latency) {
-        if (containsEntry(player.getTablistId()) && this.player.canSee(player)) {
-            updateLatency(player.getTablistId(), latency);
+    public void updateLatency(@NonNull TabPlayer target, int latency) {
+        Boolean contains = containsEntry(target.getTablistId());
+        if (contains == Boolean.FALSE) return; // Player is definitely not in tablist, drop packet
+        if (contains == Boolean.TRUE) {
+            // Player is definitely in tablist, update directly
+            updateLatency(target.getTablistId(), latency);
+            return;
         }
+        // Unknown result, try other means
+        if (!player.canSee(target)) {
+            // Target is vanished and this player should not see them. Drop packet.
+            return;
+        }
+        updateLatency(target.getTablistId(), latency);
     }
 
     @Override
-    public void updateGameMode(@NonNull TabPlayer player, int gameMode) {
-        if (containsEntry(player.getTablistId()) && this.player.canSee(player)) {
-            updateGameMode(player.getTablistId(), gameMode);
+    public void updateGameMode(@NonNull TabPlayer target, int gameMode) {
+        Boolean contains = containsEntry(target.getTablistId());
+        if (contains == Boolean.FALSE) return; // Player is definitely not in tablist, drop packet
+        if (contains == Boolean.TRUE) {
+            // Player is definitely in tablist, update directly
+            updateGameMode(target.getTablistId(), gameMode);
+            return;
         }
+        // Unknown result, try other means
+        if (!player.canSee(target)) {
+            // Target is vanished and this player should not see them. Drop packet.
+            return;
+        }
+        updateGameMode(target.getTablistId(), gameMode);
     }
 
     @Override
@@ -156,6 +192,48 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     public void unblockSpectator(@NonNull TabPlayer player) {
         blockedSpectators.remove(player.getTablistId());
         updateGameMode(player, player.getGamemode());
+    }
+
+    /**
+     * Returns {@code Boolean.TRUE} if tablist definitely contains specified entry, {@code Boolean.FALSE} if
+     * definitely not. If not sure due to lack of API and tracked data, returns {@code null}.
+     *
+     * @param   entry
+     *          UUID of entry to check
+     * @return  {@code Boolean.TRUE} if tablist contains specified entry, {@code Boolean.FALSE} if not and {@code null} if unknown
+     */
+    @Nullable
+    public Boolean containsEntry(@NonNull UUID entry) {
+        // This is the default implementation.
+        // Platforms with tablist entry tracker (proxies) will override it for non-null results.
+
+        if (addedEntries.contains(entry)) return Boolean.TRUE;
+        if (removedEntries.contains(entry)) return Boolean.FALSE;
+        return null; // No packets received for this entry yet, not sure
+    }
+
+    /**
+     * Processes entry addition on platforms without full TabList API, called when packet is
+     * received in the pipeline.
+     *
+     * @param   entry
+     *          Added entry
+     */
+    protected void onEntryAdd(@NotNull UUID entry) {
+        addedEntries.add(entry);
+        removedEntries.remove(entry);
+    }
+
+    /**
+     * Processes entry removal on platforms without full TabList API, called when packet is
+     * received in the pipeline.
+     *
+     * @param   entry
+     *          Removed entry
+     */
+    protected void onEntryRemove(@NotNull UUID entry) {
+        removedEntries.add(entry);
+        addedEntries.remove(entry);
     }
 
     /**

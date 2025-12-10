@@ -89,11 +89,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
     }
 
     @Override
-    public boolean containsEntry(@NonNull UUID entry) {
-        return true; // TODO?
-    }
-
-    @Override
     @NotNull
     public Object onPacketSend(@NonNull Object packet) {
         // Pipeline injection is not available (netty is relocated)

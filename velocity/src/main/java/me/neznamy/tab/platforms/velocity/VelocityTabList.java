@@ -96,7 +96,8 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
     }
 
     @Override
-    public boolean containsEntry(@NonNull UUID entry) {
+    @NotNull
+    public Boolean containsEntry(@NonNull UUID entry) {
         return player.getPlayer().getTabList().containsEntry(entry);
     }
 
