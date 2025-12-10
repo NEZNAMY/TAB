@@ -10,8 +10,8 @@ import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.TabStyle;
-import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
 import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.chat.component.TabTranslatableComponent;
 import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
@@ -29,7 +29,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.network.chat.contents.objects.PlayerSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -128,7 +128,7 @@ public record NeoForgePlatform(MinecraftServer server) implements BackendPlatfor
             case TabTranslatableComponent translatable -> Component.translatable(translatable.getKey());
             case TabKeybindComponent keybind -> Component.keybind(keybind.getKeybind());
             case TabObjectComponent object -> switch(object.getContents()) {
-                case TabAtlasSprite sprite -> Component.object(new AtlasSprite(ResourceLocation.parse(sprite.getAtlas()), ResourceLocation.parse(sprite.getSprite())));
+                case TabAtlasSprite sprite -> Component.object(new AtlasSprite(Identifier.parse(sprite.getAtlas()), Identifier.parse(sprite.getSprite())));
                 case TabPlayerSprite sprite -> Component.object(new PlayerSprite(spriteToProfile(sprite), sprite.isShowHat()));
                 default -> throw new IllegalStateException("Unexpected object component type: " + object.getContents().getClass().getName());
             };
@@ -144,7 +144,7 @@ public record NeoForgePlatform(MinecraftServer server) implements BackendPlatfor
                 .withUnderlined(modifier.getUnderlined())
                 .withStrikethrough(modifier.getStrikethrough())
                 .withObfuscated(modifier.getObfuscated())
-                .withFont(modifier.getFont() == null ? null : new FontDescription.Resource(ResourceLocation.parse(modifier.getFont())));
+                .withFont(modifier.getFont() == null ? null : new FontDescription.Resource(Identifier.parse(modifier.getFont())));
         if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor());
         nmsComponent.setStyle(style);
 

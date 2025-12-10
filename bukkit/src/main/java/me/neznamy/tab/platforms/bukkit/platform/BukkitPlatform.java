@@ -138,6 +138,8 @@ public class BukkitPlatform implements BackendPlatform {
             String paperModule = getPaperModule();
             if (paperModule != null) {
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
+            } else {
+                throw new UnsupportedOperationException();
             }
         } else {
             // Paper <1.20.5 or Spigot
@@ -145,9 +147,9 @@ public class BukkitPlatform implements BackendPlatform {
                 // Does not actually support flat 1.19, but whatever, no one is using it anyway
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
             } catch (ClassNotFoundException ignored) {
+                throw new UnsupportedOperationException();
             }
         }
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -178,6 +180,8 @@ public class BukkitPlatform implements BackendPlatform {
             case V1_21_9:
             case V1_21_10:
                 return "1_21_9";
+            case V1_21_11:
+                return "1_21_11";
             default:
                 return null;
         }

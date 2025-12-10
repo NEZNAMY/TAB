@@ -20,7 +20,7 @@ public class BukkitTAB extends JavaPlugin {
         } catch (UnsupportedOperationException e) {
             Bukkit.getConsoleSender().sendMessage("§c[TAB] ================================================================================");
             Bukkit.getConsoleSender().sendMessage("§c[TAB] Your server version (" + Bukkit.getBukkitVersion().split("-")[0] + ") is not supported. " +
-                    "This jar only supports 1.7 - 1.21.10. If you just updated to a new Minecraft version, check for TAB updates.");
+                    "This jar only supports 1.7 - 1.21.11. If you just updated to a new Minecraft version, check for TAB updates.");
             Bukkit.getConsoleSender().sendMessage("§c[TAB] ================================================================================");
         }
     }
