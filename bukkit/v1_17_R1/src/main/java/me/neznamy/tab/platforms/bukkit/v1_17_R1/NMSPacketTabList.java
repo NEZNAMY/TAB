@@ -147,11 +147,7 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 }
             }
             if (action == ADD_PLAYER) {
-                onEntryAdd(id);
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, id, profile.getName());
-            }
-            if (action == REMOVE_PLAYER) {
-                onEntryRemove(id);
             }
             updatedList.add(rewriteEntry ? new PlayerInfoData(
                     profile,

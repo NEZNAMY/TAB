@@ -122,11 +122,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 return new PacketPlayOutPlayerListHeaderFooter(header.convert(), footer.convert());
             }
         }
-        if (packet instanceof ClientboundPlayerInfoRemovePacket remove) {
-            for (UUID id : remove.b()) {
-                onEntryRemove(id);
-            }
-        }
         if (!(packet instanceof ClientboundPlayerInfoUpdatePacket info)) return packet;
         EnumSet<ClientboundPlayerInfoUpdatePacket.a> actions = info.b();
         List<ClientboundPlayerInfoUpdatePacket.b> updatedList = new ArrayList<>();
@@ -157,7 +152,6 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 }
             }
             if (actions.contains(ADD_PLAYER)) {
-                onEntryAdd(profileId);
                 TAB.getInstance().getFeatureManager().onEntryAdd(player, profileId, nmsData.b().getName());
             }
             updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.b(

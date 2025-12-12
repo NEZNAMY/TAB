@@ -7,9 +7,11 @@ import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.util.function.FunctionWithException;
+import me.neznamy.tab.shared.platform.TabListEntryTracker;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation provider using direct Mojang-mapped NMS code for versions 1.20.5 - 1.21.1.
@@ -34,8 +36,14 @@ public class PaperImplementationProvider implements ImplementationProvider {
 
     @Override
     @NotNull
-    public FunctionWithException<BukkitTabPlayer, Channel> getChannelFunction() {
-        return player -> ((CraftPlayer)player.getPlayer()).getHandle().connection.connection.channel;
+    public Channel getChannel(@NotNull Player player) {
+        return ((CraftPlayer)player).getHandle().connection.connection.channel;
+    }
+
+    @Override
+    @NotNull
+    public TabListEntryTracker newTabListEntryTracker() {
+        return new PaperTabListEntryTracker();
     }
 
     @Override

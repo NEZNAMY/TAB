@@ -113,11 +113,6 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
                 return new ClientboundTabListPacket(header.convert(), footer.convert());
             }
         }
-        if (packet instanceof ClientboundPlayerInfoRemovePacket remove) {
-            for (UUID id : remove.profileIds()) {
-                onEntryRemove(id);
-            }
-        }
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
             List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
@@ -147,7 +142,6 @@ public class NeoForgeTabList extends TrackedTabList<NeoForgeTabPlayer> {
                     }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
-                    onEntryAdd(nmsData.profileId());
                     TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().name());
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(

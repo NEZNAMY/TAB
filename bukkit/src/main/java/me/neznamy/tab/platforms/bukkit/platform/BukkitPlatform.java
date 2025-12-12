@@ -213,7 +213,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
-        return implementationProvider.getChannelFunction() != null ? new BukkitPipelineInjector() : null;
+        return serverVersion.getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
     }
 
     @Override
@@ -293,7 +293,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void registerListener() {
-        Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), plugin);
+        Bukkit.getPluginManager().registerEvents(new BukkitEventListener(this), plugin);
     }
 
     @Override

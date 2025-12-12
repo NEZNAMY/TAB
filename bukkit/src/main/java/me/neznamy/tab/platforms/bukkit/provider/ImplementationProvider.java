@@ -4,7 +4,8 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.util.function.FunctionWithException;
+import me.neznamy.tab.shared.platform.TabListEntryTracker;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,13 +43,22 @@ public interface ImplementationProvider {
     ComponentConverter<?> getComponentConverter();
 
     /**
-     * Returns a function that extracts Netty channel from the given player.
-     * If not supported in the version, returns {@code null}.
+     * Gets player's channel. If not available, returns {@code null}.
      *
-     * @return  Channel extractor function or {@code null} if not supported
+     * @param   player
+     *          Player to get channel of
+     * @return  Player's channel or {@code null} if not supported
      */
     @Nullable
-    FunctionWithException<BukkitTabPlayer, Channel> getChannelFunction();
+    Channel getChannel(@NotNull Player player);
+
+    /**
+     * Creates a new instance of tab list entry tracker.
+     *
+     * @return  Newly created tab list entry tracker
+     */
+    @NotNull
+    TabListEntryTracker newTabListEntryTracker();
 
     /**
      * Returns ping of the given player.

@@ -148,6 +148,10 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @NotNull
     private final TabList tabList;
 
+    @Getter
+    @Nullable
+    private final TabListEntryTracker tabListEntryTracker;
+
     /**
      * Constructs new instance with given parameters
      *
@@ -183,6 +187,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         scoreboard = platform.createScoreboard(this);
         bossBar = platform.createBossBar(this);
         tabList = platform.createTabList(this);
+        tabListEntryTracker = TAB.getInstance().getTablistTrackers().get(uniqueId);
     }
 
     /**

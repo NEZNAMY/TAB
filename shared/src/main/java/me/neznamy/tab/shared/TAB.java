@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.api.TabAPI;
@@ -22,6 +23,7 @@ import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.Platform;
+import me.neznamy.tab.shared.platform.TabListEntryTracker;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +32,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,6 +48,9 @@ public class TAB extends TabAPI {
 
     /** Player data storage */
     private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
+
+    /** TabList entry trackers for each player, to preserve on reload */
+    private final Map<UUID, TabListEntryTracker> tablistTrackers = new ConcurrentHashMap<>();
 
     /** Players by their exact username */
     private final Map<String, TabPlayer> playersByName = new ConcurrentHashMap<>();
@@ -246,6 +252,28 @@ public class TAB extends TabAPI {
     }
 
     /**
+     * Adds TabList entry tracker for specified player to preserve
+     * it on plugin reload.
+     *
+     * @param   player
+     *          Player UUID
+     * @param   channel
+     *          Channel to inject the tracker to
+     * @param   tracker
+     *          TabList entry tracker
+     */
+    public void addTablistTracker(@NotNull UUID player, @Nullable Channel channel, @NotNull TabListEntryTracker tracker) {
+        if (channel != null) {
+            if (!channel.pipeline().names().contains("packet_handler")) return; // Player got disconnected instantly or fake player
+            try {
+                channel.pipeline().addBefore("packet_handler", "TAB-TablistEntryTracker", tracker);
+            } catch (NoSuchElementException | IllegalArgumentException ignored) {
+            }
+        }
+        tablistTrackers.put(player, tracker);
+    }
+
+    /**
      * Adds specified player to online players
      *
      * @param   player
@@ -269,6 +297,7 @@ public class TAB extends TabAPI {
         playersByName.remove(player.getName());
         playersByTabListId.remove(player.getTablistId());
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
+        tablistTrackers.remove(player.getUniqueId()); // Player left, it is safe to remove their tracker
     }
 
     /**

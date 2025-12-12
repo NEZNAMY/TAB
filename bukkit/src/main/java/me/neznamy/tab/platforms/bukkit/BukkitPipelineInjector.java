@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import io.netty.channel.Channel;
-import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -21,8 +20,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     @Override
     @NotNull
-    @SneakyThrows
     protected Channel getChannel(@NotNull TabPlayer player) {
-        return ((BukkitPlatform)player.getPlatform()).getImplementationProvider().getChannelFunction().apply((BukkitTabPlayer) player);
+        return ((BukkitPlatform)player.getPlatform()).getImplementationProvider().getChannel(((BukkitTabPlayer) player).getPlayer());
     }
 }

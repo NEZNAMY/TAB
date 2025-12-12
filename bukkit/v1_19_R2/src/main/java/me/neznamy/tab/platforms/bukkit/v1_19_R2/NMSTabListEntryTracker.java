@@ -1,0 +1,35 @@
+package me.neznamy.tab.platforms.bukkit.v1_19_R2;
+
+import me.neznamy.tab.shared.platform.TabListEntryTracker;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.a;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+
+/**
+ * Implementation of TabListEntryTracker.
+ */
+public class NMSTabListEntryTracker extends TabListEntryTracker {
+
+    private static final a ADD_PLAYER = a.valueOf("ADD_PLAYER");
+
+    @Override
+    public void onPacketSend(@NotNull Object packet) {
+        if (packet instanceof ClientboundPlayerInfoRemovePacket) {
+            ClientboundPlayerInfoRemovePacket remove = (ClientboundPlayerInfoRemovePacket) packet;
+            for (UUID id : remove.b()) {
+                tablistEntries.remove(id);
+            }
+        }
+        if (packet instanceof ClientboundPlayerInfoUpdatePacket) {
+            ClientboundPlayerInfoUpdatePacket update = (ClientboundPlayerInfoUpdatePacket) packet;
+            if (update.b().contains(ADD_PLAYER)) {
+                for (ClientboundPlayerInfoUpdatePacket.b nmsData : update.c()) {
+                    tablistEntries.add(nmsData.a());
+                }
+            }
+        }
+    }
+}

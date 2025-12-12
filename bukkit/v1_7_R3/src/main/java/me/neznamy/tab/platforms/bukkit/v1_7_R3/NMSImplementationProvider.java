@@ -7,8 +7,9 @@ import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.util.function.FunctionWithException;
+import me.neznamy.tab.shared.platform.TabListEntryTracker;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,8 +36,18 @@ public class NMSImplementationProvider implements ImplementationProvider {
 
     @Override
     @Nullable
-    public FunctionWithException<BukkitTabPlayer, Channel> getChannelFunction() {
+    public Channel getChannel(@NotNull Player player) {
         return null;
+    }
+
+    @Override
+    @NotNull
+    public TabListEntryTracker newTabListEntryTracker() {
+        return new TabListEntryTracker() {
+            @Override
+            public void onPacketSend(@NotNull Object packet) {
+            }
+        };
     }
 
     @Override

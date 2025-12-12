@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -35,12 +38,6 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     /** Players to change to survival gamemode instead of spectator */
     private final Set<UUID> blockedSpectators = Collections.synchronizedSet(new HashSet<>());
-
-    /** Players added into tablist (detected in pipeline) */
-    private final Set<UUID> addedEntries = Collections.synchronizedSet(new HashSet<>());
-
-    /** Players removed from tablist (detected in pipeline) */
-    private final Set<UUID> removedEntries = Collections.synchronizedSet(new HashSet<>());
 
     /** Header sent by the plugin */
     @Nullable
@@ -75,53 +72,47 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
         if (target.getVersion().getMinorVersion() < 8) {
             return; // Display names are not supported on 1.7 and below
         }
-        Boolean contains = containsEntry(target.getTablistId());
-        if (contains == Boolean.FALSE) return; // Player is definitely not in tablist, drop packet
-        if (contains == Boolean.TRUE) {
-            // Player is definitely in tablist, update directly
+        if (containsEntry(target.getTablistId())) {
             updateDisplayName0(target.getTablistId(), displayName);
-            return;
+        } else {
+            // Entry is not in tablist. This could be on join. Delay and try again.
+            TAB.getInstance().getCpu().getTablistEntryCheckThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                // If entry was added in the meantime and display name did not
+                if (containsEntry(target.getTablistId()) && Objects.equals(forcedDisplayNames.get(target.getTablistId()), displayName)) {
+                    updateDisplayName0(target.getTablistId(), displayName);
+                }
+            }, TabConstants.Feature.PLAYER_LIST, "Delayed format update"), 500);
         }
-        // Unknown result, try other means
-        if (!player.canSee(target)) {
-            // Target is vanished and this player should not see them. Drop packet.
-            return;
-        }
-        updateDisplayName0(target.getTablistId(), displayName);
     }
 
     @Override
     public void updateLatency(@NonNull TabPlayer target, int latency) {
-        Boolean contains = containsEntry(target.getTablistId());
-        if (contains == Boolean.FALSE) return; // Player is definitely not in tablist, drop packet
-        if (contains == Boolean.TRUE) {
-            // Player is definitely in tablist, update directly
+        if (containsEntry(target.getTablistId())) {
             updateLatency(target.getTablistId(), latency);
-            return;
+        } else {
+            // Entry is not in tablist. This could be on join. Delay and try again.
+            TAB.getInstance().getCpu().getTablistEntryCheckThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                // If entry was added in the meantime
+                if (containsEntry(target.getTablistId())) {
+                    updateLatency(target.getTablistId(), latency);
+                }
+            }, TabConstants.Feature.PING_SPOOF, "Delayed ping update"), 500);
         }
-        // Unknown result, try other means
-        if (!player.canSee(target)) {
-            // Target is vanished and this player should not see them. Drop packet.
-            return;
-        }
-        updateLatency(target.getTablistId(), latency);
     }
 
     @Override
     public void updateGameMode(@NonNull TabPlayer target, int gameMode) {
-        Boolean contains = containsEntry(target.getTablistId());
-        if (contains == Boolean.FALSE) return; // Player is definitely not in tablist, drop packet
-        if (contains == Boolean.TRUE) {
-            // Player is definitely in tablist, update directly
+        if (containsEntry(target.getTablistId())) {
             updateGameMode(target.getTablistId(), gameMode);
-            return;
+        } else {
+            // Entry is not in tablist. This could be on join. Delay and try again.
+            TAB.getInstance().getCpu().getTablistEntryCheckThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                // If entry was added in the meantime
+                if (containsEntry(target.getTablistId())) {
+                    updateGameMode(target.getTablistId(), gameMode);
+                }
+            }, TabConstants.Feature.SPECTATOR_FIX, "Delayed gamemode update"), 500);
         }
-        // Unknown result, try other means
-        if (!player.canSee(target)) {
-            // Target is vanished and this player should not see them. Drop packet.
-            return;
-        }
-        updateGameMode(target.getTablistId(), gameMode);
     }
 
     @Override
@@ -195,45 +186,14 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     }
 
     /**
-     * Returns {@code Boolean.TRUE} if tablist definitely contains specified entry, {@code Boolean.FALSE} if
-     * definitely not. If not sure due to lack of API and tracked data, returns {@code null}.
+     * Returns {@code true} if tablist contains specified entry, {@code false} if not.
      *
      * @param   entry
      *          UUID of entry to check
-     * @return  {@code Boolean.TRUE} if tablist contains specified entry, {@code Boolean.FALSE} if not and {@code null} if unknown
+     * @return  {@code true} if tablist contains specified entry, {@code false} if not
      */
-    @Nullable
-    public Boolean containsEntry(@NonNull UUID entry) {
-        // This is the default implementation.
-        // Platforms with tablist entry tracker (proxies) will override it for non-null results.
-
-        if (addedEntries.contains(entry)) return Boolean.TRUE;
-        if (removedEntries.contains(entry)) return Boolean.FALSE;
-        return null; // No packets received for this entry yet, not sure
-    }
-
-    /**
-     * Processes entry addition on platforms without full TabList API, called when packet is
-     * received in the pipeline.
-     *
-     * @param   entry
-     *          Added entry
-     */
-    protected void onEntryAdd(@NotNull UUID entry) {
-        addedEntries.add(entry);
-        removedEntries.remove(entry);
-    }
-
-    /**
-     * Processes entry removal on platforms without full TabList API, called when packet is
-     * received in the pipeline.
-     *
-     * @param   entry
-     *          Removed entry
-     */
-    protected void onEntryRemove(@NotNull UUID entry) {
-        removedEntries.add(entry);
-        addedEntries.remove(entry);
+    public boolean containsEntry(@NonNull UUID entry) {
+        return player.getTabListEntryTracker() == null || player.getTabListEntryTracker().containsEntry(entry);
     }
 
     /**

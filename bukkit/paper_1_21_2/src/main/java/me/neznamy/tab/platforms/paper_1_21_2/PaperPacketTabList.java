@@ -106,11 +106,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 return new ClientboundTabListPacket(header.convert(), footer.convert());
             }
         }
-        if (packet instanceof ClientboundPlayerInfoRemovePacket remove) {
-            for (UUID id : remove.profileIds()) {
-                onEntryRemove(id);
-            }
-        }
         if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = info.actions();
             List<ClientboundPlayerInfoUpdatePacket.Entry> updatedList = new ArrayList<>();
@@ -140,7 +135,6 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                     }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
-                    onEntryAdd(nmsData.profileId());
                     TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
