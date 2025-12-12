@@ -2,6 +2,8 @@ package me.neznamy.tab.platforms.forge.hook;
 
 import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +26,7 @@ public class LuckPermsAPIHook {
      * @return  {@code true} if has permission, {@code false} if not
      */
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {
-        if (source.hasPermission(4)) return true;
+        if (source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS))) return true;
         return luckPerms && LuckPermsProvider.get().getUserManager().getUser(source.getPlayer().getUUID()).getCachedData().getPermissionData().checkPermission(permission).asBoolean();
     }
 }
