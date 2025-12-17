@@ -38,7 +38,7 @@ public class ParentGroup {
 
         // High-performance way to filter players
         remainingPlayers.removeIf(p -> {
-            boolean met = (condition == null || condition.isMet(p));
+            boolean met = (condition == null || condition.isMet(viewer, p));
             if (met) meetingCondition.add(p);
             return met;
         });

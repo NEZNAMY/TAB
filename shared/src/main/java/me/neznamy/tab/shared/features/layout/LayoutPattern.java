@@ -49,7 +49,11 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
 
     public void addGroup(@NotNull String name, @Nullable String condition, int[] slots) {
         groups.add(new GroupPattern(name, condition, Arrays.stream(slots).filter(slot -> !fixedSlots.containsKey(slot)).toArray()));
-        if (condition != null) addUsedPlaceholder(TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(condition).getPlaceholderIdentifier());
+        if (condition != null) {
+            Condition compiled = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(condition);
+            addUsedPlaceholder(compiled.getPlaceholderIdentifier());
+            addUsedPlaceholder(compiled.getRelationalPlaceholderIdentifier());
+        }
     }
 
     public boolean isConditionMet(@NotNull TabPlayer p) {
