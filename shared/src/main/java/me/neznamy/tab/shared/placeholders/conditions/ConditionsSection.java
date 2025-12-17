@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
-import me.neznamy.tab.shared.placeholders.conditions.expression.ConditionalExpression;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

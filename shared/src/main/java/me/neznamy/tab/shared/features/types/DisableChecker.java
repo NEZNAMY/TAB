@@ -47,7 +47,7 @@ public class DisableChecker extends RefreshableFeature {
         this.disableCondition = disableCondition;
         this.action = action;
         this.field = field;
-        if (disableCondition != null) addUsedPlaceholder(TabConstants.Placeholder.condition(disableCondition.getName()));
+        if (disableCondition != null) addUsedPlaceholder(disableCondition.getPlaceholderIdentifier());
     }
 
     @NotNull

@@ -240,10 +240,6 @@ public class TabConstants {
         public static final int MINIMUM_REFRESH_INTERVAL = 50;
         public static final int RETURN_TIME_WARN_THRESHOLD = 50;
 
-        public static String condition(String name) {
-            return "%condition:" + name + "%";
-        }
-
         public static String animation(String name) {
             return "%animation:" + name + "%";
         }

@@ -4,11 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.placeholders.conditions.expression.ComparatorExpression;
-import me.neznamy.tab.shared.placeholders.conditions.expression.ConditionalExpression;
-import me.neznamy.tab.shared.placeholders.conditions.expression.NotPermission;
-import me.neznamy.tab.shared.placeholders.conditions.expression.Permission;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -111,8 +106,8 @@ public class Condition {
                 if (refresh > permissionRefresh || refresh == -1) refresh = permissionRefresh;
             } else {
                 ComparatorExpression comparator = (ComparatorExpression) expression;
-                placeholdersInConditions.addAll(Arrays.asList(comparator.getLeftSidePlaceholders()));
-                placeholdersInConditions.addAll(Arrays.asList(comparator.getRightSidePlaceholders()));
+                placeholdersInConditions.addAll(Arrays.stream(comparator.getLeftSide().getPlaceholders()).map(ConditionPlaceholder::getRealPlaceholder).collect(Collectors.toList()));
+                placeholdersInConditions.addAll(Arrays.stream(comparator.getRightSide().getPlaceholders()).map(ConditionPlaceholder::getRealPlaceholder).collect(Collectors.toList()));
             }
         }
     }
@@ -152,7 +147,8 @@ public class Condition {
      */
     public void finishSetup() {
         for (String placeholder : placeholdersInConditions) {
-            TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(TabConstants.Placeholder.condition(name));
+            TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(getPlaceholderIdentifier());
+            TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(getRelationalPlaceholderIdentifier());
             Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
             if (pl.getRefresh() < refresh && pl.getRefresh() != -1) {
                 refresh = pl.getRefresh();
@@ -164,30 +160,46 @@ public class Condition {
     /**
      * Returns text for player based on if condition is met or not
      *
-     * @param   p
-     *          player to check condition for
+     * @param   viewer
+     *          Viewer (relational conditions only)
+     * @param   target
+     *          Target player to check condition for
      * @return  yes or no value depending on if condition passed or not
      */
-    public String getText(TabPlayer p) {
-        return isMet(p) ? yes : no;
+    @NotNull
+    public String getText(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        return isMet(viewer, target) ? yes : no;
     }
 
     /**
      * Returns {@code true} if condition is met for player, {@code false} if not
      *
-     * @param   p
-     *          player to check conditions for
+     * @param   player
+     *          Player to check condition for
      * @return  {@code true} if met, {@code false} if not
      */
-    public boolean isMet(TabPlayer p) {
+    public boolean isMet(@NotNull TabPlayer player) {
+        return isMet(player, player);
+    }
+
+    /**
+     * Returns {@code true} if condition is met for player, {@code false} if not
+     *
+     * @param   viewer
+     *          Viewer (relational conditions only)
+     * @param   target
+     *          Target player to check condition for
+     * @return  {@code true} if met, {@code false} if not
+     */
+    public boolean isMet(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         if (type) {
             for (ConditionalExpression condition : expressions) {
-                if (!condition.isMet(p)) return false;
+                if (!condition.isMet(viewer, target)) return false;
             }
             return true;
         } else {
             for (ConditionalExpression condition : expressions) {
-                if (condition.isMet(p)) return true;
+                if (condition.isMet(viewer, target)) return true;
             }
             return false;
         }
@@ -220,5 +232,25 @@ public class Condition {
     @NotNull
     public String toShortFormat() {
         return expressions.stream().map(ConditionalExpression::toShortFormat).collect(Collectors.joining(type ? ";" : "|"));
+    }
+
+    /**
+     * Returns the placeholder identifier for this condition.
+     *
+     * @return The placeholder identifier in the format "%condition:name%"
+     */
+    @NotNull
+    public String getPlaceholderIdentifier() {
+        return "%condition:" + name + "%";
+    }
+
+    /**
+     * Returns the relational placeholder identifier for this condition.
+     *
+     * @return The relational placeholder identifier in the format "%rel_condition:name%"
+     */
+    @NotNull
+    public String getRelationalPlaceholderIdentifier() {
+        return "%rel_condition:" + name + "%";
     }
 }

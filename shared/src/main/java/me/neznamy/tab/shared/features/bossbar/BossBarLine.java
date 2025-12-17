@@ -80,7 +80,7 @@ public class BossBarLine implements BossBar {
         this.name = name;
         displayCondition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getDisplayCondition());
         if (displayCondition != null) {
-            manager.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
+            manager.addUsedPlaceholder(displayCondition.getPlaceholderIdentifier());
         }
         color = configuration.getColor();
         style = configuration.getStyle();

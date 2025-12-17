@@ -1,13 +1,8 @@
-package me.neznamy.tab.shared.placeholders.conditions.expression;
+package me.neznamy.tab.shared.placeholders.conditions;
 
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.placeholders.conditions.expression.numbers.GreaterThan;
-import me.neznamy.tab.shared.placeholders.conditions.expression.numbers.GreaterThanOrEqual;
-import me.neznamy.tab.shared.placeholders.conditions.expression.numbers.LessThan;
-import me.neznamy.tab.shared.placeholders.conditions.expression.numbers.LessThanOrEqual;
-import me.neznamy.tab.shared.placeholders.conditions.expression.string.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,18 +24,18 @@ public abstract class ConditionalExpression {
     private static final Map<String, Function<String, ConditionalExpression>> conditionTypes = new LinkedHashMap<>();
 
     static {
-        conditionTypes.put(">=", line -> new GreaterThanOrEqual(splitAndTrim(line, ">=")));
-        conditionTypes.put(">", line -> new GreaterThan(splitAndTrim(line, ">")));
-        conditionTypes.put("<=", line -> new LessThanOrEqual(splitAndTrim(line, "<=")));
-        conditionTypes.put("!<-", line -> new NotContains(splitAndTrim(line, "!<-")));
-        conditionTypes.put("!|-", line -> new NotStartsWith(splitAndTrim(line, "!|-")));
-        conditionTypes.put("!-|", line -> new NotEndsWith(splitAndTrim(line, "!-|")));
-        conditionTypes.put("<-", line -> new Contains(splitAndTrim(line, "<-")));
-        conditionTypes.put("<", line -> new LessThan(splitAndTrim(line, "<")));
-        conditionTypes.put("|-", line -> new StartsWith(splitAndTrim(line, "|-")));
-        conditionTypes.put("-|", line -> new EndsWith(splitAndTrim(line, "-|")));
-        conditionTypes.put("!=", line -> new NotEquals(splitAndTrim(line, "!=")));
-        conditionTypes.put("=", line -> new Equals(splitAndTrim(line, "=")));
+        registerConditionType(">=", Operator.GREATER_THAN_OR_EQUAL);
+        registerConditionType(">", Operator.GREATER_THAN);
+        registerConditionType("<=", Operator.LESS_THAN_OR_EQUAL);
+        registerConditionType("!<-", Operator.NOT_CONTAINS);
+        registerConditionType("!|-", Operator.NOT_STARTS_WITH);
+        registerConditionType("!-|", Operator.NOT_ENDS_WITH);
+        registerConditionType("<-", Operator.CONTAINS);
+        registerConditionType("<", Operator.LESS_THAN);
+        registerConditionType("-|", Operator.ENDS_WITH);
+        registerConditionType("|-", Operator.STARTS_WITH);
+        registerConditionType("!=", Operator.NOT_EQUALS);
+        registerConditionType("=", Operator.EQUALS);
         conditionTypes.put("!permission:", line -> {
             String node = splitAndTrim(line, ":")[1];
             return new NotPermission(node);
@@ -48,6 +43,13 @@ public abstract class ConditionalExpression {
         conditionTypes.put("permission:", line -> {
             String node = splitAndTrim(line, ":")[1];
             return new Permission(node);
+        });
+    }
+
+    private static void registerConditionType(@NotNull String key, @NotNull Operator operator) {
+        conditionTypes.put(key, line -> {
+            String[] args = splitAndTrim(line, key);
+            return new ComparatorExpression(args[0], args[1], operator);
         });
     }
 
@@ -115,11 +117,13 @@ public abstract class ConditionalExpression {
     /**
      * Checks if the condition is met for the given player.
      *
-     * @param   p
-     *          The player to check the condition for
+     * @param   viewer
+     *          Viewer player, for relational placeholders and if configured to parse for viewer instead of target
+     * @param   target
+     *          The player to check the condition for by default
      * @return  {@code true} if the condition is met, {@code false} otherwise
      */
-    public abstract boolean isMet(@NonNull TabPlayer p);
+    public abstract boolean isMet(@NonNull TabPlayer viewer, @NonNull TabPlayer target);
 
     /**
      * Inverts the conditional expression.

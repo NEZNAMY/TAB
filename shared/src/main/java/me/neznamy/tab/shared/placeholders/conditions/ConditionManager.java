@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.placeholders.conditions;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -59,9 +58,14 @@ public class ConditionManager {
             Condition c = new Condition(string);
             c.finishSetup();
             TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(
-                    TabConstants.Placeholder.condition(c.getName()),
+                    c.getPlaceholderIdentifier(),
                     c.getRefresh(),
-                    p -> c.getText((TabPlayer) p)
+                    p -> c.getText((TabPlayer) p, (TabPlayer) p)
+            );
+            TAB.getInstance().getPlaceholderManager().registerInternalRelationalPlaceholder(
+                    c.getRelationalPlaceholderIdentifier(),
+                    c.getRefresh(),
+                    (viewer, target) -> c.getText((TabPlayer) viewer, (TabPlayer) target)
             );
             registerCondition(c);
             return c;

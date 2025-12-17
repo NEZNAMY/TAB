@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.placeholders.conditions.expression;
+package me.neznamy.tab.shared.placeholders.conditions;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,8 @@ public class Permission extends ConditionalExpression {
     private final String permission;
 
     @Override
-    public boolean isMet(@NonNull TabPlayer p) {
-        return p.hasPermission(permission);
+    public boolean isMet(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
+        return target.hasPermission(permission);
     }
 
     @Override

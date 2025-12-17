@@ -18,7 +18,7 @@ public class FalseCondition extends Condition {
     }
 
     @Override
-    public boolean isMet(@NotNull TabPlayer player) {
+    public boolean isMet(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         return false;
     }
 

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -38,7 +37,7 @@ public class HeaderFooterDesign extends RefreshableFeature {
         this.definition = definition;
         displayCondition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(definition.getDisplayCondition());
         if (displayCondition != null) {
-            feature.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
+            feature.addUsedPlaceholder(displayCondition.getPlaceholderIdentifier());
         }
     }
 

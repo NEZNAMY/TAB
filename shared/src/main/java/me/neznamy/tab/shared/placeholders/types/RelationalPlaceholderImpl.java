@@ -1,22 +1,22 @@
 package me.neznamy.tab.shared.placeholders.types;
 
+import lombok.NonNull;
+import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.features.types.CustomThreaded;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
-
-import lombok.NonNull;
-import me.neznamy.tab.shared.cpu.TimedCaughtTask;
-import me.neznamy.tab.shared.features.types.CustomThreaded;
-import me.neznamy.tab.shared.features.types.RefreshableFeature;
-import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation of RelationalPlaceholder interface
@@ -40,7 +40,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     public RelationalPlaceholderImpl(@NonNull String identifier, int refresh,
                                      @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
         super(identifier, refresh);
-        if (!identifier.startsWith("%rel_")) throw new IllegalArgumentException("Relational placeholder identifiers must start with \"rel_\"");
+        if (!identifier.startsWith("%rel_")) throw new IllegalArgumentException(
+                "Relational placeholder identifiers must start with \"rel_\" (attempted to use \"" + identifier + "\")");
         this.function = function;
     }
 

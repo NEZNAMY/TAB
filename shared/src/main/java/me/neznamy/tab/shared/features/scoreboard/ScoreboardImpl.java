@@ -70,7 +70,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         this(manager, name, definition, false, false);
         displayCondition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(definition.getDisplayCondition());
         if (displayCondition != null) {
-            manager.addUsedPlaceholder(TabConstants.Placeholder.condition(displayCondition.getName()));
+            manager.addUsedPlaceholder(displayCondition.getPlaceholderIdentifier());
         }
     }
 
