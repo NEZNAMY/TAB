@@ -98,6 +98,17 @@ public interface TabList {
     void updateListed(@NonNull UUID entry, boolean listed);
 
     /**
+     * Updates listed flag of specified player (1.19.3+). If the viewer cannot see the player,
+     * the action will not be sent to the client.
+     *
+     * @param   player
+     *          Player to safely update listed flag of
+     * @param   listed
+     *          New listed flag
+     */
+    void updateListed(@NonNull TabPlayer player, boolean listed);
+
+    /**
      * Updates list order of specified entry (1.21.2+).
      *
      * @param   entry
@@ -162,6 +173,17 @@ public interface TabList {
      *          Player to allow being shown as spectator
      */
     void unblockSpectator(@NonNull TabPlayer player);
+
+    /**
+     * Hides all real players from the tablist and makes sure newly joined players
+     * are hidden as well.
+     */
+    void hideAllPlayers();
+
+    /**
+     * Shows all real players in the tablist again.
+     */
+    void showAllPlayers();
 
     /**
      * A subclass representing player list entry

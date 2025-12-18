@@ -2,9 +2,9 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
@@ -158,6 +158,11 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
                     if (getForcedLatency() != null) {
                         item.setPing(getForcedLatency());
+                    }
+                }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LISTED)) {
+                    if (allPlayersHidden && item.getUuid().getMostSignificantBits() != 0) { // Filter out layout entries
+                        item.setListed(false);
                     }
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {

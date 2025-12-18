@@ -11,7 +11,7 @@ import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
-import me.neznamy.tab.shared.features.layout.PlayerSlot;
+import me.neznamy.tab.shared.features.layout.impl.common.PlayerSlot;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;

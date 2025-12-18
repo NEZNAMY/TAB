@@ -363,6 +363,11 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
+    public boolean supportsListed() {
+        return serverVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId();
+    }
+
+    @Override
     public boolean supportsListOrder() {
         return serverVersion.getNetworkId() >= ProtocolVersion.V1_21_2.getNetworkId();
     }

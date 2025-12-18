@@ -1,8 +1,10 @@
-package me.neznamy.tab.shared.features.layout;
+package me.neznamy.tab.shared.features.layout.impl.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
+import me.neznamy.tab.shared.features.layout.impl.LayoutBase;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -18,7 +20,7 @@ public class PlayerSlot {
     private static final StringToComponentCache cache = new StringToComponentCache("LayoutPlayerSlot", 100);
 
     private final int slot;
-    private final LayoutView layout;
+    private final LayoutBase layout;
     @Getter private final UUID uniqueId;
     @Getter private TabPlayer player;
     private String text = "";
@@ -27,7 +29,6 @@ public class PlayerSlot {
         if (player == newPlayer) return;
         player = newPlayer;
         if (player != null) text = "";
-        if (layout.getViewer().getVersion().getMinorVersion() < 8 || layout.getViewer().isBedrockPlayer()) return;
         layout.getViewer().getTabList().removeEntry(uniqueId);
         layout.getViewer().getTabList().addEntry(getSlot(layout.getViewer()));
     }
@@ -70,7 +71,6 @@ public class PlayerSlot {
         if (player != null) {
             setPlayer(null);
         } else {
-            if (layout.getViewer().isBedrockPlayer()) return;
             layout.getViewer().getTabList().updateDisplayName(uniqueId, cache.get(text));
         }
     }

@@ -1,8 +1,9 @@
-package me.neznamy.tab.shared.features.layout;
+package me.neznamy.tab.shared.features.layout.impl.common;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.GroupPattern;
+import me.neznamy.tab.shared.features.layout.impl.LayoutBase;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -13,32 +14,48 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ParentGroup {
+/**
+ * A group of players in a layout, defined by a condition and slots.
+ */
+@Getter
+public class PlayerGroup {
 
-    @NotNull private final LayoutView layout;
+    @NotNull private final LayoutBase layout;
     @Nullable private final Condition condition;
-    @Getter private final int[] slots;
-    private final TabPlayer viewer;
-    @Getter private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
-    @Getter private final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
+    private final int[] slots;
+    private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
+    private final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
-    public ParentGroup(@NotNull LayoutView layout, @NotNull GroupPattern pattern, @NotNull TabPlayer viewer) {
+    /**
+     * Constructs a new PlayerGroup with the specified layout and group pattern.
+     *
+     * @param   layout
+     *          The layout this group belongs to
+     * @param   pattern
+     *          The group pattern defining the condition and slots
+     */
+    public PlayerGroup(@NotNull LayoutBase layout, @NotNull GroupPattern pattern) {
         this.layout = layout;
         condition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(pattern.getCondition());
         slots = pattern.getSlots();
-        this.viewer = viewer;
         for (int slot : slots) {
             playerSlots.put(slot, new PlayerSlot(slot, layout, layout.getManager().getUUID(slot)));
         }
     }
 
+    /**
+     * Updates the player slots in this group based on the remaining players.
+     *
+     * @param   remainingPlayers
+     *          The list of players remaining to be assigned to slots
+     */
     public void tick(@NotNull List<TabPlayer> remainingPlayers) {
         players.clear();
         List<TabPlayer> meetingCondition = new ArrayList<>();
 
         // High-performance way to filter players
         remainingPlayers.removeIf(p -> {
-            boolean met = (condition == null || condition.isMet(viewer, p));
+            boolean met = (condition == null || condition.isMet(layout.getViewer(), p));
             if (met) meetingCondition.add(p);
             return met;
         });
@@ -58,10 +75,13 @@ public class ParentGroup {
             }
         }
     }
-    
-    public void sendSlots() {
+
+    /**
+     * Sends all player slots in this group to the viewer's tab list.
+     */
+    public void sendAll() {
         for (PlayerSlot s : playerSlots.values()) {
-            viewer.getTabList().addEntry(s.getSlot(viewer));
+            layout.getViewer().getTabList().addEntry(s.getSlot(layout.getViewer()));
         }
     }
 }

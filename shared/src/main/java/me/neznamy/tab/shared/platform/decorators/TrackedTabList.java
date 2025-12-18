@@ -47,6 +47,9 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     @Nullable
     protected TabComponent footer;
 
+    /** Flag tracking whether all real players should be hidden or not */
+    protected boolean allPlayersHidden;
+
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         forcedDisplayNames.put(entry, displayName);
@@ -112,6 +115,21 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
                     updateGameMode(target.getTablistId(), gameMode);
                 }
             }, TabConstants.Feature.SPECTATOR_FIX, "Delayed gamemode update"), 500);
+        }
+    }
+
+    @Override
+    public void updateListed(@NonNull TabPlayer target, boolean listed) {
+        if (containsEntry(target.getTablistId())) {
+            updateListed(target.getTablistId(), listed);
+        } else {
+            // Entry is not in tablist. This could be on join. Delay and try again.
+            TAB.getInstance().getCpu().getTablistEntryCheckThread().executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                // If entry was added in the meantime
+                if (containsEntry(target.getTablistId())) {
+                    updateListed(target.getTablistId(), listed);
+                }
+            }, TabConstants.Feature.LAYOUT, "Delayed listed update"), 500);
         }
     }
 
@@ -194,6 +212,22 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
      */
     public boolean containsEntry(@NonNull UUID entry) {
         return player.getTabListEntryTracker() == null || player.getTabListEntryTracker().containsEntry(entry);
+    }
+
+    @Override
+    public void hideAllPlayers() {
+        allPlayersHidden = true;
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            updateListed(all, false);
+        }
+    }
+
+    @Override
+    public void showAllPlayers() {
+        allPlayersHidden = false;
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            updateListed(all, true);
+        }
     }
 
     /**

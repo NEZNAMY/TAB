@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features.layout;
+package me.neznamy.tab.shared.features.layout.impl.common;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.GroupPattern;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabList;
@@ -22,17 +23,19 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     @NotNull private final LayoutManagerImpl manager;
     @NotNull private final String name;
     @Nullable private final Condition condition;
-    @Nullable private final String defaultSkinDefinition;
+    private final int slotCount;
+    @Nullable private final String defaultSkinOverride;
     @Nullable private final TabList.Skin defaultSkin;
     private final Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
     private final List<GroupPattern> groups = new ArrayList<>();
 
-    public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull LayoutDefinition def) {
+    public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull LayoutDefinition def) {
         this.manager = manager;
-        this.name = name;
+        name = def.getName();
         condition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(def.getCondition());
         if (condition != null) manager.addUsedPlaceholder(condition.getPlaceholderIdentifier());
-        defaultSkinDefinition = def.getDefaultSkin();
+        slotCount = def.getSlotCount();
+        defaultSkinOverride = def.getDefaultSkin();
         defaultSkin = def.getDefaultSkin() == null ? null : manager.getSkinManager().getSkin(def.getDefaultSkin());
         for (FixedSlotDefinition fixed : def.getFixedSlots()) {
             addFixedSlot(fixed);
@@ -42,12 +45,12 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
         }
     }
 
-    public void addFixedSlot(@NotNull FixedSlotDefinition def) {
+    private void addFixedSlot(@NotNull FixedSlotDefinition def) {
         FixedSlot slot = FixedSlot.fromDefinition(def, this, manager);
         fixedSlots.put(slot.getSlot(), slot);
     }
 
-    public void addGroup(@NotNull String name, @Nullable String condition, int[] slots) {
+    private void addGroup(@NotNull String name, @Nullable String condition, int[] slots) {
         groups.add(new GroupPattern(name, condition, Arrays.stream(slots).filter(slot -> !fixedSlots.containsKey(slot)).toArray()));
         if (condition != null) {
             Condition compiled = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(condition);
@@ -56,6 +59,13 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
         }
     }
 
+    /**
+     * Checks if condition for this layout pattern is met for given player.
+     *
+     * @param   p
+     *          player to check for
+     * @return  {@code true} if condition is met or not defined, {@code false} if not met
+     */
     public boolean isConditionMet(@NotNull TabPlayer p) {
         return condition == null || condition.isMet(p);
     }
@@ -96,7 +106,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
         addFixedSlot(
                 slot,
                 text,
-                defaultSkinDefinition != null ? defaultSkinDefinition : manager.getConfiguration().getDefaultSkin(slot),
+                defaultSkinOverride != null ? defaultSkinOverride : manager.getConfiguration().getDefaultSkin(slot),
                 manager.getConfiguration().getEmptySlotPing()
         );
     }
@@ -113,7 +123,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
         addFixedSlot(
                 slot,
                 text,
-                defaultSkinDefinition != null ? defaultSkinDefinition : manager.getConfiguration().getDefaultSkin(slot),
+                defaultSkinOverride != null ? defaultSkinOverride : manager.getConfiguration().getDefaultSkin(slot),
                 ping
         );
     }
@@ -121,7 +131,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     @Override
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping) {
         ensureActive();
-        if (slot < 1 || slot > 80) throw new IllegalArgumentException("Slot must be between 1 - 80 (was " + slot + ")");
+        if (slot < 1 || slot > slotCount) throw new IllegalArgumentException("Slot must be between 1 - " + slotCount + " (was " + slot + ")");
         fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text, skin, ping));
     }
 

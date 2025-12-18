@@ -116,6 +116,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                 Component displayName = nmsData.displayName();
                 int latency = nmsData.latency();
                 int gameMode = nmsData.gameMode().getId();
+                boolean listed = nmsData.listed();
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME)) {
                     TabComponent forcedDisplayName = getForcedDisplayNames().get(nmsData.profileId());
                     if (forcedDisplayName != null && forcedDisplayName.convert() != displayName) {
@@ -135,11 +136,17 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
                         rewriteEntry = rewritePacket = true;
                     }
                 }
+                if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED)) {
+                    if (allPlayersHidden && nmsData.profileId().getMostSignificantBits() != 0) { // Filter out layout entries
+                        listed = false;
+                        rewriteEntry = rewritePacket = true;
+                    }
+                }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER)) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(player, nmsData.profileId(), nmsData.profile().getName());
                 }
                 updatedList.add(rewriteEntry ? new ClientboundPlayerInfoUpdatePacket.Entry(
-                        nmsData.profileId(), nmsData.profile(), nmsData.listed(), latency, GameType.byId(gameMode), displayName,
+                        nmsData.profileId(), nmsData.profile(), listed, latency, GameType.byId(gameMode), displayName,
                         nmsData.showHat(), nmsData.listOrder(), nmsData.chatSession()
                 ) : nmsData);
             }

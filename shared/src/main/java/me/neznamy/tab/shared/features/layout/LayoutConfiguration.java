@@ -129,8 +129,10 @@ public class LayoutConfiguration {
     @RequiredArgsConstructor
     public static class LayoutDefinition {
 
+        @NotNull private final String name;
         @Nullable private final String condition;
         @Nullable private final String defaultSkin;
+        private final int slotCount;
         @NotNull private final List<FixedSlotDefinition> fixedSlots;
         @NotNull private final LinkedHashMap<String, GroupPattern> groups;
 
@@ -146,21 +148,31 @@ public class LayoutConfiguration {
          */
         public static LayoutDefinition fromSection(@NotNull String name, @NotNull ConfigurationSection section) {
             // Check keys
-            section.checkForUnknownKey(Arrays.asList("condition", "default-skin", "fixed-slots", "groups"));
+            section.checkForUnknownKey(Arrays.asList("condition", "default-skin", "slot-count", "fixed-slots", "groups"));
 
+            // Slot count
+            Integer slotCount = section.getInt("slot-count");
+            if (slotCount == null) slotCount = 80;
+            if (slotCount < 0 || slotCount > 80) {
+                section.startupWarn("Layout \"" + name + "\" has invalid slot-count value \"" + slotCount + "\" defined. Slot count must range between 0 - 80. Using 80.");
+                slotCount = 80;
+            }
+
+            // Fixed slots
             List<FixedSlotDefinition> fixedSlots = new ArrayList<>();
             for (String line : section.getStringList("fixed-slots", Collections.emptyList())) {
-                FixedSlotDefinition def = FixedSlotDefinition.fromLine(line, name, section);
+                FixedSlotDefinition def = FixedSlotDefinition.fromLine(line, name, section, slotCount);
                 if (def != null) fixedSlots.add(def);
             }
 
+            // Player groups
             ConfigurationSection groupsSection = section.getConfigurationSection("groups");
             LinkedHashMap<String, GroupPattern> groups = new LinkedHashMap<>();
             String noConditionGroup = null;
             Map<Integer, String> takenSlots = new HashMap<>();
             for (Object groupName : groupsSection.getKeys()) {
                 String asString = groupName.toString();
-                GroupPattern pattern = GroupPattern.fromSection(groupsSection.getConfigurationSection(asString), name, asString);
+                GroupPattern pattern = GroupPattern.fromSection(groupsSection.getConfigurationSection(asString), name, asString, slotCount);
 
                 // Checking for unreachable layout
                 if (noConditionGroup != null) {
@@ -182,9 +194,12 @@ public class LayoutConfiguration {
 
                 groups.put(asString, pattern);
             }
+
             return new LayoutDefinition(
+                    name,
                     section.getString("condition"),
                     section.getString("default-skin"),
+                    slotCount,
                     fixedSlots,
                     groups
             );
@@ -203,25 +218,26 @@ public class LayoutConfiguration {
             @Nullable private final Integer ping;
 
             @Nullable
-            private static FixedSlotDefinition fromLine(@NotNull String line, @NotNull String layoutName, @NotNull ConfigurationSection section) {
+            private static FixedSlotDefinition fromLine(@NotNull String line, @NotNull String layoutName,
+                                                        @NotNull ConfigurationSection section, int slotCount) {
                 String[] array = line.split("\\|");
 
                 if (array.length < 2) {
                     section.startupWarn("Layout " + layoutName + " has invalid fixed slot defined as \"" + line + "\". " +
-                            "Supported values are \"SLOT|TEXT\" and \"SLOT|TEXT|SKIN\", where SLOT is a number from 1 to 80, " +
+                            "Supported values are \"SLOT|TEXT\" and \"SLOT|TEXT|SKIN\", where SLOT is a number from 1 to " + slotCount + ", " +
                             "TEXT is displayed text and SKIN is skin used for the slot");
                     return null;
                 }
                 int slot;
                 try {
                     slot = Integer.parseInt(array[0]);
-                    if (slot < 1 || slot > 80) {
-                        section.startupWarn("Layout " + layoutName + " has invalid fixed slot value \"" + slot + "\" defined. Slots must range between 1 - 80.");
+                    if (slot < 1 || slot > slotCount) {
+                        section.startupWarn("Layout " + layoutName + " has invalid fixed slot value \"" + slot + "\" defined. Slots must range between 1 - " + slotCount + ".");
                         return null;
                     }
                 } catch (NumberFormatException e) {
                     section.startupWarn("Layout " + layoutName + " has invalid fixed slot defined as \"" + line + "\". " +
-                            "Supported values are \"SLOT|TEXT\" and \"SLOT|TEXT|SKIN\", where SLOT is a number from 1 to 80, " +
+                            "Supported values are \"SLOT|TEXT\" and \"SLOT|TEXT|SKIN\", where SLOT is a number from 1 to " + slotCount + ", " +
                             "TEXT is displayed text and SKIN is skin used for the slot");
                     return null;
                 }
@@ -256,7 +272,8 @@ public class LayoutConfiguration {
             private final int[] slots;
 
             @NotNull
-            private static GroupPattern fromSection(@NotNull ConfigurationSection section, @NotNull String layout, @NotNull String groupName) {
+            private static GroupPattern fromSection(@NotNull ConfigurationSection section, @NotNull String layout,
+                                                    @NotNull String groupName, int slotCount) {
                 // Check keys
                 section.checkForUnknownKey(Arrays.asList("condition", "slots"));
 
@@ -266,8 +283,8 @@ public class LayoutConfiguration {
                     int from = Integer.parseInt(arr[0]);
                     int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
                     for (int i = from; i<= to; i++) {
-                        if (i < 1 || i > 80) {
-                            section.startupWarn("Layout " + layout + "'s player group \"" + groupName + "\" has invalid slot value \"" + i + "\" defined. Slots must range between 1 - 80.");
+                        if (i < 1 || i > slotCount) {
+                            section.startupWarn("Layout " + layout + "'s player group \"" + groupName + "\" has invalid slot value \"" + i + "\" defined. Slots must range between 1 - " + slotCount + ".");
                             continue;
                         }
                         if (positions.contains(i)) {

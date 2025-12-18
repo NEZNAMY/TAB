@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features.layout;
+package me.neznamy.tab.shared.features.layout.impl.common;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -45,8 +46,7 @@ public class FixedSlot extends RefreshableFeature {
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        if (p.layoutData.currentLayout == null || p.layoutData.currentLayout.view.getPattern() != pattern ||
-                p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return; // TODO check if / make view null for <1.8 and bedrock to skip all these checks everywhere
+        if (p.layoutData.currentLayout == null || p.layoutData.currentLayout.view.getPattern() != pattern) return;
         if (p.layoutData.currentLayout.fixedSlotSkins.get(this).update()) {
             p.getTabList().removeEntry(id);
             p.getTabList().addEntry(createEntry(p));
@@ -95,8 +95,8 @@ public class FixedSlot extends RefreshableFeature {
         String skin;
         if (def.getSkin() != null && !def.getSkin().isEmpty()) {
             skin = def.getSkin();
-        } else if (pattern.getDefaultSkinDefinition() != null) {
-            skin = pattern.getDefaultSkinDefinition();
+        } else if (pattern.getDefaultSkinOverride() != null) {
+            skin = pattern.getDefaultSkinOverride();
         } else {
             skin = manager.getConfiguration().getDefaultSkin(def.getSlot());
         }
