@@ -129,6 +129,7 @@ layout:
   empty-slot-ping-value: 1000
   layouts:
     default:
+      slot-count: 80
       fixed-slots:
         - '1|&3Website&f:'
         - '2|&bmyserver.net'
