@@ -228,7 +228,7 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
-        return null;
+        return new VelocityPipelineInjector();
     }
 
     @Override

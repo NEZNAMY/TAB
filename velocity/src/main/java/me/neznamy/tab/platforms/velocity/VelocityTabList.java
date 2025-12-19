@@ -1,11 +1,16 @@
 package me.neznamy.tab.platforms.velocity;
 
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
+import com.velocitypowered.proxy.protocol.packet.HeaderAndFooterPacket;
+import com.velocitypowered.proxy.protocol.packet.LegacyPlayerListItemPacket;
+import com.velocitypowered.proxy.protocol.packet.UpsertPlayerInfoPacket;
+import com.velocitypowered.proxy.protocol.packet.chat.ComponentHolder;
 import lombok.NonNull;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,10 +20,16 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * TabList implementation for Velocity using its API.
+ * TabList implementation for Velocity using its API where possible + packet interception.
  */
 public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
 
+    private static final int ADD_PLAYER = 0;
+    private static final int UPDATE_GAMEMODE = 1;
+    private static final int UPDATE_LATENCY = 2;
+    private static final int UPDATE_DISPLAY_NAME = 3;
+    private static final int REMOVE_PLAYER = 4;
+    
     /**
      * Constructs new instance.
      *
@@ -114,32 +125,60 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
     }
 
     @Override
-    public void checkDisplayNames() {
-        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            TabComponent expectedComponent = getForcedDisplayNames().get(entry.getProfile().getId());
-            if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent.toAdventure()) {
-                entry.setDisplayName(expectedComponent.toAdventure());
+    @NotNull
+    public Object onPacketSend(@NonNull Object packet) {
+        if (packet instanceof HeaderAndFooterPacket) {
+            if (header == null || footer == null) return packet;
+            return HeaderAndFooterPacket.create(header.toAdventure(), footer.toAdventure(), ProtocolVersion.getProtocolVersion(player.getVersionId()));
+        }
+        if (packet instanceof LegacyPlayerListItemPacket listItem) {
+            for (LegacyPlayerListItemPacket.Item item : listItem.getItems()) {
+                if (listItem.getAction() == UPDATE_DISPLAY_NAME || listItem.getAction() == ADD_PLAYER) {
+                    TabComponent forcedDisplayName = getForcedDisplayNames().get(item.getUuid());
+                    if (forcedDisplayName != null) item.setDisplayName(forcedDisplayName.toAdventure());
+                }
+                if (listItem.getAction() == UPDATE_GAMEMODE || listItem.getAction() == ADD_PLAYER) {
+                    if (getBlockedSpectators().contains(item.getUuid()) && item.getGameMode() == 3) {
+                        item.setGameMode(0);
+                    }
+                }
+                if (listItem.getAction() == UPDATE_LATENCY || listItem.getAction() == ADD_PLAYER) {
+                    if (getForcedLatency() != null) {
+                        item.setLatency(getForcedLatency());
+                    }
+                }
+                if (listItem.getAction() == ADD_PLAYER) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(player, item.getUuid(), item.getName());
+                }
+            }
+        } else if (packet instanceof UpsertPlayerInfoPacket update) {
+            for (UpsertPlayerInfoPacket.Entry item : update.getEntries()) {
+                if (update.getActions().contains(UpsertPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME)) {
+                    TabComponent forcedDisplayName = getForcedDisplayNames().get(item.getProfileId());
+                    if (forcedDisplayName != null) {
+                        item.setDisplayName(new ComponentHolder(ProtocolVersion.getProtocolVersion(player.getVersionId()), forcedDisplayName.toAdventure()));
+                    }
+                }
+                if (update.getActions().contains(UpsertPlayerInfoPacket.Action.UPDATE_GAME_MODE)) {
+                    if (getBlockedSpectators().contains(item.getProfileId()) && item.getGameMode() == 3) {
+                        item.setGameMode(0);
+                    }
+                }
+                if (update.getActions().contains(UpsertPlayerInfoPacket.Action.UPDATE_LATENCY)) {
+                    if (getForcedLatency() != null) {
+                        item.setLatency(getForcedLatency());
+                    }
+                }
+                if (update.getActions().contains(UpsertPlayerInfoPacket.Action.UPDATE_LISTED)) {
+                    if (allPlayersHidden && item.getProfileId().getMostSignificantBits() != 0) { // Filter out layout entries
+                        item.setListed(false);
+                    }
+                }
+                if (update.getActions().contains(UpsertPlayerInfoPacket.Action.ADD_PLAYER)) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(player, item.getProfileId(), item.getProfile().getName());
+                }
             }
         }
-    }
-
-    @Override
-    public void checkGameModes() {
-        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            if (getBlockedSpectators().contains(entry.getProfile().getId()) && entry.getGameMode() == 3) {
-                entry.setGameMode(0);
-            }
-        }
-    }
-
-    @Override
-    public void checkHeaderFooter() {
-        if (true) return; // Disable this for now. Velocity "translates" the component, breaking identity reference.
-        if (header == null || footer == null) return;
-        Component actualHeader = player.getPlayer().getPlayerListHeader();
-        Component actualFooter = player.getPlayer().getPlayerListFooter();
-        if (actualHeader != header.toAdventure() || actualFooter != footer.toAdventure()) {
-            player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventure(), footer.toAdventure());
-        }
+        return packet;
     }
 }

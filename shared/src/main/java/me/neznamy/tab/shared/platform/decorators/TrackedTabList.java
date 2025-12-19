@@ -152,45 +152,6 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
         }
     }
 
-    /**
-     * Checks if all entries have display names as configured and if not,
-     * they are forced. Only works on platforms with a full TabList API.
-     * Not needed for platforms which support pipeline injection.
-     */
-    public void checkDisplayNames() {
-        // Empty by default, overridden by Velocity
-    }
-
-    /**
-     * Checks if all entries have game modes as configured and if not,
-     * they are forced. Only works on platforms with a full TabList API.
-     * Not needed for platforms which support pipeline injection.
-     */
-    public void checkGameModes() {
-        // Empty by default, overridden by Velocity
-    }
-
-    /**
-     * Checks if header and footer are as set by the plugin and if not,
-     * they are forced. Only works on platforms with a full TabList API.
-     * Not needed for platforms which support pipeline injection.
-     */
-    public void checkHeaderFooter() {
-        // Empty by default, overridden by Velocity
-    }
-
-    /**
-     * Processes packet for anti-override, ping spoof and nick compatibility.
-     *
-     * @param   packet
-     *          Packet to process
-     * @return  Packet to forward
-     */
-    @NotNull
-    public Object onPacketSend(@NonNull Object packet) {
-        return packet;
-    }
-
     @Override
     public void blockSpectator(@NonNull TabPlayer player) {
         blockedSpectators.add(player.getTablistId());
@@ -229,6 +190,16 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
             updateListed(all, true);
         }
     }
+
+    /**
+     * Processes packet for anti-override, ping spoof and nick compatibility.
+     *
+     * @param   packet
+     *          Packet to process
+     * @return  Packet to forward
+     */
+    @NotNull
+    public abstract Object onPacketSend(@NonNull Object packet);
 
     /**
      * Updates display name of an entry. Using {@code null} makes it undefined and

@@ -16,7 +16,6 @@ import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,11 +42,6 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         this.configuration = configuration;
         disableChecker = new DisableChecker(this, TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.tablistData.disabled);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
-        TAB.getInstance().getCpu().getTablistEntryCheckThread().repeatTask(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                ((TrackedTabList<?>)p.getTabList()).checkDisplayNames();
-            }
-        }, getFeatureName(), CpuUsageCategory.ANTI_OVERRIDE_TABLIST_PERIODIC), 500);
         if (proxy != null) {
             proxy.registerMessage(PlayerListProxyPlayerData.class, in -> new PlayerListProxyPlayerData(in, this));
         }
