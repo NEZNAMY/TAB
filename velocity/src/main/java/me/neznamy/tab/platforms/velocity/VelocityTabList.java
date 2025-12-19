@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
-import com.velocitypowered.proxy.protocol.packet.HeaderAndFooterPacket;
 import com.velocitypowered.proxy.protocol.packet.LegacyPlayerListItemPacket;
 import com.velocitypowered.proxy.protocol.packet.UpsertPlayerInfoPacket;
 import com.velocitypowered.proxy.protocol.packet.chat.ComponentHolder;
@@ -127,10 +126,6 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
     @Override
     @NotNull
     public Object onPacketSend(@NonNull Object packet) {
-        if (packet instanceof HeaderAndFooterPacket) {
-            if (header == null || footer == null) return packet;
-            return HeaderAndFooterPacket.create(header.toAdventure(), footer.toAdventure(), ProtocolVersion.getProtocolVersion(player.getVersionId()));
-        }
         if (packet instanceof LegacyPlayerListItemPacket listItem) {
             for (LegacyPlayerListItemPacket.Item item : listItem.getItems()) {
                 if (listItem.getAction() == UPDATE_DISPLAY_NAME || listItem.getAction() == ADD_PLAYER) {
