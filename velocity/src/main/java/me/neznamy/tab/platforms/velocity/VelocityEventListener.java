@@ -30,6 +30,7 @@ public class VelocityEventListener implements EventListener<Player> {
      * Compensating on builds #546+ will duplicate bossbars on server switch.
      * Not compensating on builds #545- will cause player disconnects on 1.20.5+ clients on server switch.
      * Not going to bump minimum required version just for this, we will wait for another opportunity to bump minimum build and then remove this.
+     * EDIT: Apparently there is one more bug, so this option does not control as much, because code is executed regardless.
      */
     private static final boolean BOSSBAR_BUG_COMPENSATION = !ReflectionUtils.classExists("com.velocitypowered.proxy.connection.player.bossbar.BossBarManager");
 
@@ -60,7 +61,6 @@ public class VelocityEventListener implements EventListener<Player> {
      */
     @Subscribe
     public void preConnect(@NotNull ServerPreConnectEvent e) {
-        if (!BOSSBAR_BUG_COMPENSATION) return;
         if (TAB.getInstance().isPluginDisabled()) return;
         if (e.getResult().isAllowed()) {
             TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
@@ -93,8 +93,8 @@ public class VelocityEventListener implements EventListener<Player> {
                         Server.byName(e.getPlayer().getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null"))
                 );
                 tab.getFeatureManager().onTabListClear(player);
-                if (BOSSBAR_BUG_COMPENSATION && player.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
+                if (player.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
+                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend(!BOSSBAR_BUG_COMPENSATION);
                 }
             }
         });

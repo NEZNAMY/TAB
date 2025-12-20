@@ -97,11 +97,14 @@ public abstract class SafeBossBar<T> implements BossBar {
 
     /**
      * Unfreezes the class back, enabling it back and resending all BossBars to the player.
+     *
+     * @param   destroyFirst
+     *          If true, first removes existing BossBars before resending them
      */
-    public synchronized void unfreezeAndResend() {
+    public synchronized void unfreezeAndResend(boolean destroyFirst) {
         frozen = false;
         for (BossBarInfo bar : bossBars.values()) {
-            // Destroy previous reference due to Adventure bug
+            if (destroyFirst) remove(bar);
             bar.setBossBar(constructBossBar(bar.getTitle(), bar.getProgress(), bar.getColor(), bar.getStyle()));
             create(bar);
         }

@@ -40,7 +40,7 @@ public class BungeeChannelDuplexHandler extends TabChannelDuplexHandler {
                 if (player.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     // For 1.20.2+ we need to do this, because server switch event is called before tablist is cleared
                     TAB.getInstance().getFeatureManager().onTabListClear(player);
-                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
+                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend(false);
                 }
             }, "Pipeline injection", TabConstants.CpuUsageCategory.PACKET_LOGIN), 200);
         }
