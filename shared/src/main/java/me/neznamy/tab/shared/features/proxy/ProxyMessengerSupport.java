@@ -2,17 +2,14 @@ package me.neznamy.tab.shared.features.proxy;
 
 import com.saicone.delivery4j.AbstractMessenger;
 import com.saicone.delivery4j.Broker;
-import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabTextComponent;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-@RequiredArgsConstructor
 public class ProxyMessengerSupport extends ProxySupport {
 
     @NotNull
@@ -24,10 +21,26 @@ public class ProxyMessengerSupport extends ProxySupport {
     @Nullable
     private AbstractMessenger messenger;
 
+    /**
+     * Creates new instance with given parameters.
+     *
+     * @param   messengerName
+     *          Messenger name
+     * @param   channelName
+     *          Name of the messaging channel
+     * @param   brokerSupplier
+     *          Supplier returning broker instance
+     */
+    public ProxyMessengerSupport(@NotNull String messengerName, @NotNull String channelName, @NotNull Supplier<Broker> brokerSupplier) {
+        super(channelName);
+        this.messengerName = messengerName;
+        this.brokerSupplier = brokerSupplier;
+    }
+
     @Override
     public void sendMessage(@NotNull String message) {
         if (messenger == null || !messenger.isEnabled()) return;
-        messenger.send(TabConstants.PROXY_CHANNEL_NAME, message);
+        messenger.send(getChannelName(), message);
     }
 
     @Override
@@ -42,7 +55,7 @@ public class ProxyMessengerSupport extends ProxySupport {
                     return broker;
                 }
             };
-            messenger.subscribe(TabConstants.PROXY_CHANNEL_NAME).consume((channel, lines) -> processMessage(lines[0])).cache(true);
+            messenger.subscribe(getChannelName()).consume((channel, lines) -> processMessage(lines[0])).cache(true);
             messenger.start();
             TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Successfully connected to " + messengerName, TabTextColor.GREEN));
         } catch (Exception e) {

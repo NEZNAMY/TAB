@@ -116,6 +116,7 @@ public class ModernConverter {
             config.removeOption("scoreboard.use-numbers");
             config.removeOption("scoreboard.static-number");
         });
+        converters.put(3, config -> config.set("proxy-support.channel-name-suffix", "TAB"));
     }
 
     /**

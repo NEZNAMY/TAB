@@ -24,7 +24,8 @@ public interface BackendPlatform extends Platform {
         return new GroupManager("None", p -> TabConstants.NO_GROUP);
     }
 
-    default ProxySupport getProxySupport(@NotNull String plugin) { return null; }
+    @Override
+    default ProxySupport getProxySupport(@NotNull String plugin, @NotNull String channelName) { return null; }
 
     @Override
     default void registerPlaceholders() {

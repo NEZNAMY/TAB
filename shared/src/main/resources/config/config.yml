@@ -242,6 +242,7 @@ mysql:
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Multi-server-support
 proxy-support:
   enabled: true
+  channel-name-suffix: "TAB"
   # Supported types: PLUGIN, REDIS, RABBITMQ
   type: PLUGIN
   plugin:

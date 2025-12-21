@@ -67,9 +67,12 @@ public interface Platform {
      *
      * @param   plugin
      *          Proxy plugin to use
+     * @param   channelName
+     *          Channel name to use
      * @return  Created instance
      */
-    @Nullable ProxySupport getProxySupport(@NotNull String plugin);
+    @Nullable
+    ProxySupport getProxySupport(@NotNull String plugin, @NotNull String channelName);
 
     /**
      * Returns per world player list feature handler.

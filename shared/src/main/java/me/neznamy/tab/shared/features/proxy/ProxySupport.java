@@ -5,7 +5,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
@@ -32,6 +31,10 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
         Loadable, UnLoadable, ServerSwitchListener,
         VanishListener {
 
+    /** Name of the messaging channel */
+    @NotNull
+    private final String channelName;
+
     /** Proxy players on other proxies by their UUID */
     @NotNull protected final Map<UUID, ProxyPlayer> proxyPlayers = new ConcurrentHashMap<>();
 
@@ -47,14 +50,15 @@ public abstract class ProxySupport extends TabFeature implements JoinListener, Q
     /** ID generator for messages requiring an ID */
     private final AtomicLong idCounter = new AtomicLong(0);
 
-    protected ProxySupport() {
+    protected ProxySupport(@NotNull String channelName) {
+        this.channelName = channelName;
         registerMessage(Load.class, Load::new);
         registerMessage(LoadRequest.class, in -> new LoadRequest());
         registerMessage(PlayerJoin.class, PlayerJoin::new);
         registerMessage(PlayerQuit.class, PlayerQuit::new);
         registerMessage(ServerSwitch.class, ServerSwitch::new);
         registerMessage(UpdateVanishStatus.class, UpdateVanishStatus::new);
-        TAB.getInstance().debug("[Proxy Support] Using channel name: " + TabConstants.PROXY_CHANNEL_NAME);
+        TAB.getInstance().debug("[Proxy Support] Using channel name: " + channelName);
     }
 
     @NotNull

@@ -24,6 +24,7 @@ import me.neznamy.tab.shared.features.playerlistobjective.YellowNumber;
 import me.neznamy.tab.shared.features.proxy.ProxyMessengerSupport;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.proxy.ProxySupportConfiguration;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
@@ -533,19 +534,16 @@ public class FeatureManager {
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
 
         // Load the feature first, because it will be processed in main thread (to make it run before feature threads)
-        if (config.isEnableProxySupport()) {
-            String type = config.getConfig().getString("proxy-support.type", "PLUGIN");
+        if (config.getProxySupport() != null) {
+            ProxySupportConfiguration configuration = config.getProxySupport();
             ProxySupport proxy = null;
-            if (type.equalsIgnoreCase("PLUGIN")) {
-                String plugin = config.getConfig().getString("proxy-support.plugin.name", "RedisBungee");
-                proxy = TAB.getInstance().getPlatform().getProxySupport(plugin);
-            } else if (type.equalsIgnoreCase("REDIS")) {
-                String url = config.getConfig().getString("proxy-support.redis.url", "redis://:password@localhost:6379/0");
-                proxy = new ProxyMessengerSupport("Redis", () -> RedisBroker.of(url));
-            } else if (type.equalsIgnoreCase("RABBITMQ")) {
-                String exchange = config.getConfig().getString("proxy-support.rabbitmq.exchange", "plugin");
-                String url = config.getConfig().getString("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
-                proxy = new ProxyMessengerSupport("RabbitMQ", () -> RabbitMQBroker.of(url, exchange));
+            if (configuration.getType().equalsIgnoreCase("PLUGIN")) {
+                proxy = TAB.getInstance().getPlatform().getProxySupport(configuration.getPluginName(), configuration.getChannelName());
+            } else if (configuration.getType().equalsIgnoreCase("REDIS")) {
+                proxy = new ProxyMessengerSupport("Redis", configuration.getChannelName(), () -> RedisBroker.of(configuration.getRedisUrl()));
+            } else if (configuration.getType().equalsIgnoreCase("RABBITMQ")) {
+                proxy = new ProxyMessengerSupport("RabbitMQ", configuration.getChannelName(),
+                        () -> RabbitMQBroker.of(configuration.getRabbitmqUrl(), configuration.getRabbitmqExchange()));
             }
             if (proxy != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PROXY_SUPPORT, proxy);
         }

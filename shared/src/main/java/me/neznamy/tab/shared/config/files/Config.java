@@ -19,6 +19,7 @@ import me.neznamy.tab.shared.features.nametags.TeamConfiguration;
 import me.neznamy.tab.shared.features.pingspoof.PingSpoofConfiguration;
 import me.neznamy.tab.shared.features.playerlist.TablistFormattingConfiguration;
 import me.neznamy.tab.shared.features.playerlistobjective.PlayerListObjectiveConfiguration;
+import me.neznamy.tab.shared.features.proxy.ProxySupportConfiguration;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration;
 import me.neznamy.tab.shared.features.sorting.SortingConfiguration;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshConfiguration;
@@ -56,6 +57,7 @@ public class Config {
     @Nullable private SortingConfiguration sorting;
     @Nullable private TablistFormattingConfiguration tablistFormatting;
     @Nullable private TeamConfiguration teams;
+    @Nullable private ProxySupportConfiguration proxySupport;
     @NotNull private final ComponentConfiguration components;
 
     private final boolean preventSpectatorEffect = config.getBoolean("prevent-spectator-effect.enabled", false);
@@ -65,7 +67,6 @@ public class Config {
     private final boolean pipelineInjection = getSecretOption("pipeline-injection", true);
     @NotNull private final String serverName = getSecretOption("server-name", "N/A");
     private final int permissionRefreshInterval = config.getInt("permission-refresh-interval", 1000);
-    private final boolean enableProxySupport = config.getBoolean("proxy-support.enabled", true);
     private final boolean packetEventsCompensation = config.getBoolean("compensate-for-packetevents-bug", false) && !TAB.getInstance().getPlatform().isSafeFromPacketEventsBug();
 
     /** If enabled, groups are assigned via permissions instead of permission plugin */
@@ -108,6 +109,7 @@ public class Config {
         if (config.getBoolean("scoreboard-teams.enabled", true) || config.getBoolean("layout.enabled", false)) sorting = SortingConfiguration.fromSection(config.getConfigurationSection("scoreboard-teams"));
         if (config.getBoolean("tablist-name-formatting.enabled", false)) tablistFormatting = TablistFormattingConfiguration.fromSection(config.getConfigurationSection("tablist-name-formatting"));
         if (config.getBoolean("scoreboard-teams.enabled", false)) teams = TeamConfiguration.fromSection(config.getConfigurationSection("scoreboard-teams"));
+        if (config.getBoolean("proxy-support.enabled", true)) proxySupport = ProxySupportConfiguration.fromSection(config.getConfigurationSection("proxy-support"));
 
         if (layout != null) {
             if (perWorldPlayerList != null) {
