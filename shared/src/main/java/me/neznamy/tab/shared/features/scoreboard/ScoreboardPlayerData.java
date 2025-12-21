@@ -43,6 +43,10 @@ public class ScoreboardPlayerData {
     @NotNull
     public final Map<ScoreboardLine, Property> lineNameProperties = new IdentityHashMap<>();
 
+    /** Map of line score properties */
+    @NotNull
+    public final Map<ScoreboardLine, Property> scoreProperties = new IdentityHashMap<>();
+
     /** Map of line NumberFormat properties */
     @NotNull
     public final Map<ScoreboardLine, Property> numberFormatProperties = new IdentityHashMap<>();

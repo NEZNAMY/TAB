@@ -22,8 +22,6 @@ public class ScoreboardConfiguration {
     @NotNull private final String toggleCommand;
     private final boolean rememberToggleChoice;
     private final boolean hiddenByDefault;
-    private final boolean useNumbers;
-    private final int staticNumber;
     private final int joinDelay;
     @NotNull private final Map<String, ScoreboardDefinition> scoreboards;
 
@@ -55,8 +53,6 @@ public class ScoreboardConfiguration {
                 section.getString("toggle-command", "/sb"),
                 section.getBoolean("remember-toggle-choice", false),
                 section.getBoolean("hidden-by-default", false),
-                section.getBoolean("use-numbers", true),
-                section.getInt("static-number", 0),
                 section.getInt("delay-on-join-milliseconds", 0),
                 scoreboards
         );

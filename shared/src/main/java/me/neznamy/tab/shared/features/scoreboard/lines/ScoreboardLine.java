@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,11 +28,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public abstract class ScoreboardLine extends RefreshableFeature implements Line, CustomThreaded {
 
-    //ID of this line
-    protected final int lineNumber;
-
-    //text to display
+    /** Text to display in this line */
+    @NotNull
     protected String text;
+
+    /** Score to use instead of line number (can be null if not configured) */
+    @Nullable
+    protected String score;
+
+    /** Number format to use (can be null if not configured) */
+    @Nullable
     protected String numberFormat;
     
     //scoreboard this line belongs to
@@ -55,17 +61,16 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
      * @param   lineNumber
      *          ID of this line
      */
-    protected ScoreboardLine(@NonNull ScoreboardImpl parent, int lineNumber, String text) {
+    protected ScoreboardLine(@NonNull ScoreboardImpl parent, int lineNumber, @NotNull String text) {
         initializeText(text);
         this.parent = parent;
-        this.lineNumber = lineNumber;
         teamName = "TAB-Sidebar-" + lineNumber;
         if (lineNumber > 99) throw new IllegalStateException("Internal code does not support more than 99 lines per scoreboard.");
         forcedPlayerNameStart = String.format("§%d§%d§r", (lineNumber / 10) % 10, lineNumber % 10);
-        scoreRefresher = new ScoreRefresher(this, numberFormat);
+        scoreRefresher = new ScoreRefresher(this, lineNumber, score, numberFormat);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardScore(parent.getName(), lineNumber), scoreRefresher);
     }
-    
+
     /**
      * Registers this line to the player
      *
@@ -126,7 +131,7 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
         p.getScoreboard().setScore(
                 ScoreboardManagerImpl.OBJECTIVE_NAME,
                 fakePlayer,
-                getNumber(p),
+                scoreRefresher.getScore(p),
                 null, // Makes no sense for TAB
                 scoreRefresher.getNumberFormat(p)
         );
@@ -155,21 +160,6 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
         p.getScoreboard().removeScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer);
         p.getScoreboard().unregisterTeam(teamName);
         shownPlayers.remove(p);
-    }
-
-    /**
-     * Returns number that should be displayed as score for specified player
-     *
-     * @param   p
-     *          player to get number for
-     * @return  number displayed
-     */
-    public int getNumber(@NonNull TabPlayer p) {
-        if (parent.getManager().getConfiguration().isUseNumbers() || p.getVersion().getMinorVersion() < 8) {
-            return parent.getLines().size() + 1 - lineNumber;
-        } else {
-            return parent.getManager().getConfiguration().getStaticNumber();
-        }
     }
 
     /**
@@ -217,16 +207,24 @@ public abstract class ScoreboardLine extends RefreshableFeature implements Line,
     }
 
     /**
-     * Splits text using {@code "||"} string, where first part is text to display and
-     * second part is number format (optional)
+     * Splits text using {@code "||"} string, where first part is text to display,
+     * second part is number format (optional) and third part is score (optional).
      *
      * @param   text
      *          Inputted text to categorize
      */
     protected void initializeText(@NotNull String text) {
-        String[] split = text.split("\\|\\|");
-        this.text = split[0];
-        numberFormat = split.length >= 2 ? split[1] : "";
+        numberFormat = null;
+        score = null;
+
+        if (text.contains("||")) {
+            String[] split = text.split("\\|\\|", -1);
+            this.text = split.length > 0 ? split[0] : "";
+            if (split.length > 1) numberFormat = split[1];
+            if (split.length > 2) score = split[2];
+        } else {
+            this.text = text;
+        }
     }
 
     /**

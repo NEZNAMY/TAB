@@ -2,12 +2,11 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
 import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
@@ -50,8 +49,6 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
 
     //lines of scoreboard
     private final List<Line> lines = new ArrayList<>();
-
-    private boolean containsNumberFormat;
 
     //players currently seeing this scoreboard
     private final Set<TabPlayer> players = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -96,7 +93,6 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         for (int i = 0; i< definition.getLines().size(); i++) {
             String line = definition.getLines().get(i);
             if (line == null) line = "";
-            if (line.contains("||")) containsNumberFormat = true;
             ScoreboardLine score;
             if (dynamicLinesOnly) {
                 score = new StableDynamicLine(this, i+1, line);
@@ -165,11 +161,6 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         p.scoreboardData.activeScoreboard = this;
         recalculateScores(p);
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, name);
-        if (containsNumberFormat && p.getVersionId() < ProtocolVersion.V1_20_3.getNetworkId()) {
-            TAB.getInstance().getConfigHelper().runtime().error("Scoreboard \"" + name + "\" contains right-side text alignment (using ||), however, this feature " +
-                    "was added in 1.20.3, but player \"" + p.getName() + "\" is using version " + p.getVersion().getFriendlyName() + ". Right-side text " +
-                    "will not be visible for them.");
-        }
     }
 
     /**
@@ -222,17 +213,16 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Player to recalculate scores for
      */
     public void recalculateScores(@NonNull TabPlayer p) {
-        if (!manager.getConfiguration().isUseNumbers()) return;
         List<Line> linesReversed = new ArrayList<>(lines);
         Collections.reverse(linesReversed);
-        int score = manager.getConfiguration().getStaticNumber();
+        int score = 0;
         for (Line line : linesReversed) {
             Property pr = p.scoreboardData.lineProperties.get((ScoreboardLine) line);
             if (pr.getCurrentRawValue().isEmpty() || (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {
                 p.getScoreboard().setScore(
                         ScoreboardManagerImpl.OBJECTIVE_NAME,
                         ((ScoreboardLine)line).getPlayerName(p),
-                        score++,
+                        ((ScoreboardLine)line).getScoreRefresher().getScore(p, score++),
                         null, // Makes no sense for TAB
                         ((ScoreboardLine) line).getScoreRefresher().getNumberFormat(p)
                 );

@@ -112,6 +112,10 @@ public class ModernConverter {
             newHeaderFooter.put("designs", designs);
             config.set("header-footer", newHeaderFooter);
         });
+        converters.put(2, config -> {
+            config.removeOption("scoreboard.use-numbers");
+            config.removeOption("scoreboard.static-number");
+        });
     }
 
     /**
