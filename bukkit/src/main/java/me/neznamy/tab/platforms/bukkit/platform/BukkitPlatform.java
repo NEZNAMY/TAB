@@ -383,15 +383,15 @@ public class BukkitPlatform implements BackendPlatform {
 
             @Override
             public boolean execute(@NotNull CommandSender commandSender, @NotNull String alias, @NotNull String[] args) {
-                if (commandSender instanceof ConsoleCommandSender) {
+                if (commandSender instanceof Player) {
+                    TabPlayer p = TAB.getInstance().getPlayer(((Player) commandSender).getUniqueId());
+                    if (p == null) return false; //player not loaded correctly
+                    function.accept(p);
+                } else {
                     commandSender.sendMessage(toBukkitFormat(
                             TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getCommandOnlyFromGame())
                     ));
-                    return false;
                 }
-                TabPlayer p = TAB.getInstance().getPlayer(((Player) commandSender).getUniqueId());
-                if (p == null) return false; //player not loaded correctly
-                function.accept(p);
                 return false;
             }
         };

@@ -42,7 +42,6 @@ import net.md_5.bungee.api.chat.player.Profile;
 import net.md_5.bungee.api.chat.player.Property;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.command.ConsoleCommandSender;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
@@ -328,16 +327,16 @@ public class BungeePlatform extends ProxyPlatform {
 
             @Override
             public void execute(CommandSender commandSender, String[] strings) {
-                if (commandSender instanceof ConsoleCommandSender) {
+                if (commandSender instanceof ProxiedPlayer) {
+                    TabPlayer p = TAB.getInstance().getPlayer(((ProxiedPlayer) commandSender).getUniqueId());
+                    if (p == null) return; //player not loaded correctly
+                    function.accept(p);
+                } else {
                     commandSender.sendMessage(createComponent(
                             TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getCommandOnlyFromGame()),
                             ProtocolVersion.values()[1]
                     ));
-                    return;
                 }
-                TabPlayer p = TAB.getInstance().getPlayer(((ProxiedPlayer) commandSender).getUniqueId());
-                if (p == null) return; //player not loaded correctly
-                function.accept(p);
             }
         };
         customCommands.add(cmd);

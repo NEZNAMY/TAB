@@ -5,7 +5,6 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.scoreboard.ObjectiveEvent;
-import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -248,14 +247,14 @@ public class VelocityPlatform extends ProxyPlatform {
         CommandMeta meta = cmd.metaBuilder(commandName).build();
         customCommands.add(commandName);
         cmd.register(meta, (SimpleCommand) invocation -> {
-            if (invocation.source() instanceof ConsoleCommandSource) {
+            if (invocation.source() instanceof Player) {
+                TabPlayer p = TAB.getInstance().getPlayer(((Player) invocation.source()).getUniqueId());
+                if (p == null) return; //player not loaded correctly
+                function.accept(p);
+            } else {
                 invocation.source().sendMessage(TabComponent.fromColoredText(
                         TAB.getInstance().getConfiguration().getMessages().getCommandOnlyFromGame()).toAdventure());
-                return;
             }
-            TabPlayer p = TAB.getInstance().getPlayer(((Player) invocation.source()).getUniqueId());
-            if (p == null) return; //player not loaded correctly
-            function.accept(p);
         });
     }
 
