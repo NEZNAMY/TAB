@@ -260,7 +260,7 @@ components:
   disable-shadow-for-heads: true
 
 # Internal value, do not change this
-config-version: 2
+config-version: 4
 
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #
