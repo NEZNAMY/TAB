@@ -57,7 +57,12 @@ public class ConditionSide {
     public String parse(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         String result = value;
         for (ConditionPlaceholder placeholder : placeholders) {
-            result = result.replace(placeholder.getPlaceholderDefinition(), placeholder.parse(viewer, target));
+            String parsed = placeholder.parse(viewer, target);
+            if (result.equals(placeholder.getPlaceholderDefinition())) {
+                result = parsed;
+            } else {
+                result = result.replace(placeholder.getPlaceholderDefinition(), parsed);
+            }
         }
         return EnumChatFormat.color(result);
     }
