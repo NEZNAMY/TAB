@@ -88,4 +88,17 @@ public class ConditionSide {
             return 0;
         }
     }
+
+    /**
+     * Returns {@code true} if this side contains relational placeholders,
+     * {@code false} if it only contains regular placeholders or constants.
+     *
+     * @return  {@code true} if relational content is present, {@code false} if not
+     */
+    public boolean hasRelationalContent() {
+        for (ConditionPlaceholder placeholder : placeholders) {
+            if (placeholder.isRelational()) return true;
+        }
+        return false;
+    }
 }

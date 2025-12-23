@@ -55,4 +55,9 @@ public class ComparatorExpression extends ConditionalExpression {
     public String toShortFormat() {
         return leftSide.getValue() + operator.getSymbol() + rightSide.getValue();
     }
+
+    @Override
+    public boolean hasRelationalContent() {
+        return leftSide.hasRelationalContent() || rightSide.hasRelationalContent();
+    }
 }

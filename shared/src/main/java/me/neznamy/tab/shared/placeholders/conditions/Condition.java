@@ -148,7 +148,9 @@ public class Condition {
     public void finishSetup() {
         for (String placeholder : placeholdersInConditions) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(getPlaceholderIdentifier());
-            TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(getRelationalPlaceholderIdentifier());
+            if (hasRelationalContent()) {
+                TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(getRelationalPlaceholderIdentifier());
+            }
             Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
             if (pl.getRefresh() < refresh && pl.getRefresh() != -1) {
                 refresh = pl.getRefresh();
@@ -252,5 +254,17 @@ public class Condition {
     @NotNull
     public String getRelationalPlaceholderIdentifier() {
         return "%rel_condition:" + name + "%";
+    }
+
+    /**
+     * Checks if this condition contains any relational content.
+     *
+     * @return {@code true} if the condition has relational content, {@code false} otherwise
+     */
+    public boolean hasRelationalContent() {
+        for (ConditionalExpression expression : expressions) {
+            if (expression.hasRelationalContent()) return true;
+        }
+        return false;
     }
 }

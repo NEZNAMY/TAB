@@ -37,6 +37,10 @@ public class ConditionPlaceholder {
     /** Flag tracking whether the placeholder should be parsed as viewer or not */
     private final boolean parseAsViewer;
 
+    /** Flag tracking whether the placeholder is relational */
+    @Getter
+    private final boolean isRelational;
+
     /**
      * Constructs new instance with given parameters.
      *
@@ -50,6 +54,7 @@ public class ConditionPlaceholder {
         if (m.find()) {
             realPlaceholder = "%" + m.group(1) + "%";
             parseAsViewer = true;
+            isRelational = true;
             return;
         }
         // Parse for target
@@ -57,11 +62,13 @@ public class ConditionPlaceholder {
         if (m.find()) {
             realPlaceholder = "%" + m.group(1) + "%";
             parseAsViewer = false;
+            isRelational = false;
             return;
         }
-        // No viewer/target specified, parse as target
+        // No viewer/target specified, parse as target (or a relational placeholder)
         realPlaceholder = placeholderDefinition;
         parseAsViewer = false;
+        isRelational = placeholderDefinition.startsWith("%rel_");
     }
 
     /**

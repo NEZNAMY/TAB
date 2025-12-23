@@ -140,4 +140,12 @@ public abstract class ConditionalExpression {
      */
     @NotNull
     public abstract String toShortFormat();
+
+    /**
+     * Returns {@code true} if this expression involves relational content,
+     * meaning it depends on both viewer and target players.
+     *
+     * @return  {@code true} if relational content is involved, {@code false} otherwise
+     */
+    public abstract boolean hasRelationalContent();
 }

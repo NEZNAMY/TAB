@@ -30,4 +30,9 @@ public class Permission extends ConditionalExpression {
     public String toShortFormat() {
         return "permission:" + permission;
     }
+
+    @Override
+    public boolean hasRelationalContent() {
+        return false;
+    }
 }
