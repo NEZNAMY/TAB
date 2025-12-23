@@ -6,7 +6,6 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
@@ -32,14 +31,15 @@ public class BungeeTabCommand extends Command implements TabExecutor {
     @Override
     public void execute(@NotNull CommandSender sender, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
-            for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
+            for (TabComponent message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
                 if (sender instanceof ProxiedPlayer) {
                     sender.sendMessage(((BungeePlatform)TAB.getInstance().getPlatform()).transformComponent(
-                            TabComponent.fromColoredText(message),
+                            message,
                             ProtocolVersion.fromNetworkId(((ProxiedPlayer)sender).getPendingConnection().getVersion())
                     ));
                 } else {
-                    sender.sendMessage((BaseComponent) TabComponent.fromColoredText(message).convert());
+                    // Bungee console does not actually support components, internal toLegacyText is called when using component
+                    sender.sendMessage(message.toLegacyText());
                 }
             }
         } else {

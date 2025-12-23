@@ -21,8 +21,8 @@ public class VelocityTabCommand implements SimpleCommand {
     public void execute(@NotNull Invocation invocation) {
         CommandSource sender = invocation.source();
         if (TAB.getInstance().isPluginDisabled()) {
-            for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
-                sender.sendMessage(TabComponent.fromColoredText(message).toAdventure());
+            for (TabComponent message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
+                sender.sendMessage(message.toAdventure());
             }
         } else {
             TabPlayer p = null;

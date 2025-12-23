@@ -31,8 +31,8 @@ public class FabricTabCommand extends FabricCommand {
         if (TAB.getInstance().isPluginDisabled()) {
             boolean hasReloadPermission = PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
             boolean hasAdminPermission = PermissionsAPIHook.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
-            for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
-                source.sendSystemMessage(TabComponent.fromColoredText(message).convert());
+            for (TabComponent message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
+                source.sendSystemMessage(message.convert());
             }
         } else {
             if (source.getEntity() == null) {
