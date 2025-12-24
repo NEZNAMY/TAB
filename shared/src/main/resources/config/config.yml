@@ -55,9 +55,9 @@ playerlist-objective:
 belowname-objective:
   enabled: false
   value: "%health%"
-  title: "&cHealth"
   fancy-value: "&c%health%"
   fancy-value-default: "NPC"
+  title: "&cHealth"
   disable-condition: '%world%=disabledworld'
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix
