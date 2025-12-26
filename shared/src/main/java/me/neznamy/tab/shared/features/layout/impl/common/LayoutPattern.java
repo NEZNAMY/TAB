@@ -55,7 +55,9 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
         if (condition != null) {
             Condition compiled = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(condition);
             addUsedPlaceholder(compiled.getPlaceholderIdentifier());
-            addUsedPlaceholder(compiled.getRelationalPlaceholderIdentifier());
+            if (compiled.hasRelationalContent()) {
+                addUsedPlaceholder(compiled.getRelationalPlaceholderIdentifier());
+            }
         }
     }
 
