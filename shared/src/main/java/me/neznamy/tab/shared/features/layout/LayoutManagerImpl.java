@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinitio
 import me.neznamy.tab.shared.features.layout.impl.LayoutBase;
 import me.neznamy.tab.shared.features.layout.impl.FakeEntryLayout;
 import me.neznamy.tab.shared.features.layout.impl.common.FixedSlot;
-import me.neznamy.tab.shared.features.layout.impl.common.LayoutPattern;
+import me.neznamy.tab.shared.features.layout.pattern.LayoutPattern;
 import me.neznamy.tab.shared.features.pingspoof.PingSpoof;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.types.*;

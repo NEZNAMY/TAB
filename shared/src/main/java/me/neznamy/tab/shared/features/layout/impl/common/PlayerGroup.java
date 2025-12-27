@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.features.layout.impl.common;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.GroupPattern;
 import me.neznamy.tab.shared.features.layout.impl.LayoutBase;
+import me.neznamy.tab.shared.features.layout.pattern.GroupPattern;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;

@@ -33,11 +33,12 @@ public class LayoutLatencyRefresher extends RefreshableFeature {
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
+        int ping = p.getPing();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.layoutData.currentLayout == null) continue;
             PlayerSlot slot = all.layoutData.currentLayout.view.getSlot(p);
             if (slot == null) continue;
-            all.getTabList().updateLatency(slot.getUniqueId(), p.getPing());
+            all.getTabList().updateLatency(slot.getUniqueId(), ping);
         }
     }
 }

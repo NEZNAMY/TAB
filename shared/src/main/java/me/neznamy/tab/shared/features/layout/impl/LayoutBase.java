@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.layout.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
-import me.neznamy.tab.shared.features.layout.impl.common.LayoutPattern;
+import me.neznamy.tab.shared.features.layout.pattern.LayoutPattern;
 import me.neznamy.tab.shared.features.layout.impl.common.PlayerSlot;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;

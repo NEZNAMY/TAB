@@ -4,12 +4,12 @@ import lombok.Getter;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.component.TabComponent;
-import me.neznamy.tab.shared.features.layout.LayoutConfiguration;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.layout.impl.common.FixedSlot;
-import me.neznamy.tab.shared.features.layout.impl.common.LayoutPattern;
 import me.neznamy.tab.shared.features.layout.impl.common.PlayerGroup;
 import me.neznamy.tab.shared.features.layout.impl.common.PlayerSlot;
+import me.neznamy.tab.shared.features.layout.pattern.GroupPattern;
+import me.neznamy.tab.shared.features.layout.pattern.LayoutPattern;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,8 @@ import java.util.stream.IntStream;
 
 /**
  * Layout implementation using fake entries used to fill the tablist.
- * On 1.19.3+ it hides real players using listed option, which also allows less than 80 slots.
+ * On <1.19.3, it sends all 80 slots, pushing real players out of the tablist.
+ * On 1.19.3+, it hides real players using listed option, which means less than 80 slots are supported.
  */
 @Getter
 public class FakeEntryLayout extends LayoutBase {
@@ -62,7 +63,7 @@ public class FakeEntryLayout extends LayoutBase {
         for (FixedSlot slot : fixedSlots) {
             emptySlots.remove((Integer) slot.getSlot());
         }
-        for (LayoutConfiguration.LayoutDefinition.GroupPattern group : pattern.getGroups()) {
+        for (GroupPattern group : pattern.getGroups()) {
             emptySlots.removeAll(Arrays.stream(group.getSlots()).boxed().collect(Collectors.toList()));
             groups.add(new PlayerGroup(this, group));
         }

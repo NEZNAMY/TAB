@@ -6,8 +6,9 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition.FixedSlotDefinition;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
+import me.neznamy.tab.shared.features.layout.pattern.FixedSlotPattern;
+import me.neznamy.tab.shared.features.layout.pattern.LayoutPattern;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -91,7 +92,7 @@ public class FixedSlot extends RefreshableFeature {
      * @return  New slot using given line or {@code null} if invalid
      */
     @NotNull
-    public static FixedSlot fromDefinition(@NotNull FixedSlotDefinition def, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
+    public static FixedSlot fromDefinition(@NotNull FixedSlotPattern def, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
         String skin;
         if (def.getSkin() != null && !def.getSkin().isEmpty()) {
             skin = def.getSkin();
