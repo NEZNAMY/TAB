@@ -150,7 +150,7 @@ public class LayoutConfiguration {
          */
         public static LayoutDefinition fromSection(@NotNull String name, @NotNull ConfigurationSection section) {
             // Check keys
-            section.checkForUnknownKey(Arrays.asList("condition", "default-skin", "slot-count", "fixed-slots", "groups"));
+            section.checkForUnknownKey(Arrays.asList("display-condition", "default-skin", "slot-count", "fixed-slots", "groups"));
 
             // Slot count
             Integer slotCount = section.getInt("slot-count");
@@ -199,7 +199,7 @@ public class LayoutConfiguration {
 
             return new LayoutDefinition(
                     name,
-                    section.getString("condition"),
+                    section.getString("display-condition"),
                     section.getString("default-skin"),
                     slotCount,
                     fixedSlots,
@@ -211,7 +211,7 @@ public class LayoutConfiguration {
         private static GroupPattern groupFromSection(@NotNull ConfigurationSection section, @NotNull String layout,
                                                 @NotNull String groupName, int slotCount) {
             // Check keys
-            section.checkForUnknownKey(Arrays.asList("condition", "slots"));
+            section.checkForUnknownKey(Arrays.asList("display-condition", "slots"));
 
             List<Integer> positions = new ArrayList<>();
             for (String line : section.getStringList("slots", Collections.emptyList())) {
@@ -230,8 +230,10 @@ public class LayoutConfiguration {
                     positions.add(i);
                 }
             }
-            String condition = section.getString("condition");
-            return new GroupPattern(condition, positions.stream().mapToInt(i->i).toArray());
+            return new GroupPattern(
+                    section.getString("display-condition"),
+                    positions.stream().mapToInt(i->i).toArray()
+            );
         }
 
         @Nullable

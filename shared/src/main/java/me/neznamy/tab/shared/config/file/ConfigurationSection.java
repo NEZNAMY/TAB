@@ -166,4 +166,38 @@ public class ConfigurationSection {
         // Make \n work even if used in '', which snakeyaml does not convert to newline
         return string.replace("\\n", "\n");
     }
+
+    /**
+     * Puts value into the map, replacing any existing key with different casing.
+     *
+     * @param   key
+     *          Key to put
+     * @param   value
+     *          Value to put
+     */
+    public void put(@NonNull String key, @Nullable Object value) {
+        remove(key);
+        if (value != null) {
+            map.put(key, value);
+        }
+    }
+
+    /**
+     * Removes value from the map, ignoring casing.
+     *
+     * @param   key
+     *          Key to remove
+     */
+    public void remove(@NonNull String key) {
+        Object existingKey = null;
+        for (Map.Entry<Object, Object> entry : map.entrySet()) {
+            if (key.equalsIgnoreCase(entry.getKey().toString())) {
+                existingKey = entry.getKey();
+                break;
+            }
+        }
+        if (existingKey != null) {
+            map.remove(existingKey);
+        }
+    }
 }

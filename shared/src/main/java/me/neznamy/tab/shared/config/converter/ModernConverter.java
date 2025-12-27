@@ -117,6 +117,21 @@ public class ModernConverter {
             config.removeOption("scoreboard.static-number");
         });
         converters.put(3, config -> config.set("proxy-support.channel-name-suffix", "TAB"));
+        converters.put(4, config -> {
+            ConfigurationSection layout = config.getConfigurationSection("layout");
+            ConfigurationSection layouts = layout.getConfigurationSection("layouts");
+            for (Object layoutName : layouts.getKeys()) {
+                ConfigurationSection singleLayout = layouts.getConfigurationSection(layoutName.toString());
+                singleLayout.put("display-condition", singleLayout.getString("condition"));
+                singleLayout.remove("condition");
+                ConfigurationSection groups = singleLayout.getConfigurationSection("groups");
+                for (Object groupName : groups.getKeys()) {
+                    ConfigurationSection singleGroup = groups.getConfigurationSection(groupName.toString());
+                    singleGroup.put("display-condition", singleGroup.getString("condition"));
+                    singleGroup.remove("condition");
+                }
+            }
+        });
     }
 
     /**

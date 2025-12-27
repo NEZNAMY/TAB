@@ -148,7 +148,7 @@ layout:
         - '43|&8&m                       '
       groups:
         staff:
-          condition: permission:tab.staff
+          display-condition: permission:tab.staff
           slots:
             - 24-40
         players:
@@ -260,7 +260,7 @@ components:
   disable-shadow-for-heads: true
 
 # Internal value, do not change this
-config-version: 4
+config-version: 5
 
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #
