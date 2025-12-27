@@ -6,13 +6,11 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.tablist.layout.Layout;
 import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition;
-import me.neznamy.tab.shared.features.layout.impl.FakeEntryDynamicLayout;
-import me.neznamy.tab.shared.features.layout.impl.FakeEntryFull80SlotLayout;
 import me.neznamy.tab.shared.features.layout.impl.LayoutBase;
+import me.neznamy.tab.shared.features.layout.impl.FakeEntryLayout;
 import me.neznamy.tab.shared.features.layout.impl.common.FixedSlot;
 import me.neznamy.tab.shared.features.layout.impl.common.LayoutPattern;
 import me.neznamy.tab.shared.features.pingspoof.PingSpoof;
@@ -116,14 +114,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
     }
 
     private void sendLayout(@NotNull TabPlayer player, @NotNull LayoutPattern pattern) {
-        boolean canUse1193Layout = player.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() &&
-                TAB.getInstance().getPlatform().supportsListed();
-        LayoutBase view;
-        if (pattern.getSlotCount() == 80 || !canUse1193Layout) {
-            view = new FakeEntryFull80SlotLayout(this, pattern, player);
-        } else {
-            view = new FakeEntryDynamicLayout(this, pattern, player);
-        }
+        LayoutBase view = new FakeEntryLayout(this, pattern, player);
         player.layoutData.currentLayout = new LayoutData(view);
         view.send();
     }
