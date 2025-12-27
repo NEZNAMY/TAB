@@ -20,6 +20,7 @@ import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
 import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
 import me.neznamy.tab.shared.data.Server;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
@@ -102,6 +103,22 @@ public class BungeePlatform extends ProxyPlatform {
                 }
                 return PerformanceUtil.toString(count);
             });
+        }
+
+        // Register RedisBungee placeholders if RedisBungee is available
+        if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
+                RedisBungeeAPI.getRedisBungeeApi() != null) {
+            PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
+            int refreshInterval = pm.getConfiguration().getRefreshInterval("%redisbungee_total%");
+            pm.registerInternalServerPlaceholder("%redisbungee_total%", refreshInterval, () -> {
+                try {
+                    return String.valueOf(RedisBungeeAPI.getRedisBungeeApi().getPlayerCount());
+                } catch (Exception e) {
+                    TAB.getInstance().getErrorManager().printError("Failed to get RedisBungee player count", e);
+                    return "0";
+                }
+            });
+            TAB.getInstance().debug("[TAB] Registered RedisBungee placeholder %redisbungee_total% with " + refreshInterval + "ms refresh interval");
         }
     }
 

@@ -15,6 +15,7 @@ import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.data.Server;
@@ -136,6 +137,22 @@ public class VelocityPlatform extends ProxyPlatform {
                 }
                 return PerformanceUtil.toString(count);
             });
+        }
+
+        // Register RedisBungee placeholders if RedisBungee is available
+        if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
+                RedisBungeeAPI.getRedisBungeeApi() != null) {
+            PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
+            int refreshInterval = pm.getConfiguration().getRefreshInterval("%redisbungee_total%");
+            pm.registerInternalServerPlaceholder("%redisbungee_total%", refreshInterval, () -> {
+                try {
+                    return String.valueOf(RedisBungeeAPI.getRedisBungeeApi().getPlayerCount());
+                } catch (Exception e) {
+                    TAB.getInstance().getErrorManager().printError("Failed to get RedisBungee player count", e);
+                    return "0";
+                }
+            });
+            TAB.getInstance().debug("[TAB] Registered RedisBungee placeholder %redisbungee_total% with " + refreshInterval + "ms refresh interval");
         }
     }
 
