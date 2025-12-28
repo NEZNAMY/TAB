@@ -63,7 +63,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
 
     @Override
     public void load() {
-        TAB.getInstance().getPlatform().registerCustomCommand(configuration.getToggleCommand().replaceFirst("/", ""), p -> {
+        TAB.getInstance().getPlatform().registerCustomCommand(configuration.getToggleCommand().replaceFirst("/", ""), (p, args) -> {
             if (!isActive()) return;
             if (p.hasPermission(TabConstants.Permission.COMMAND_BOSSBAR_TOGGLE)) {
                 toggleBossBar(p, true);

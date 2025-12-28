@@ -46,7 +46,10 @@ import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -57,7 +60,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -378,7 +381,7 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
-    public void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function) {
+    public void registerCustomCommand(@NotNull String commandName, @NotNull BiConsumer<TabPlayer, String[]> function) {
         Command cmd = new BukkitCommand(commandName) {
 
             @Override
@@ -386,7 +389,7 @@ public class BukkitPlatform implements BackendPlatform {
                 if (commandSender instanceof Player) {
                     TabPlayer p = TAB.getInstance().getPlayer(((Player) commandSender).getUniqueId());
                     if (p == null) return false; //player not loaded correctly
-                    function.accept(p);
+                    function.accept(p, args);
                 } else {
                     commandSender.sendMessage(toBukkitFormat(
                             TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getCommandOnlyFromGame())

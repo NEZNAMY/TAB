@@ -51,7 +51,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * BungeeCord implementation of Platform
@@ -322,15 +322,15 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
-    public void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function) {
+    public void registerCustomCommand(@NotNull String commandName, @NotNull BiConsumer<TabPlayer, String[]> function) {
         Command cmd = new Command(commandName) {
 
             @Override
-            public void execute(CommandSender commandSender, String[] strings) {
+            public void execute(CommandSender commandSender, String[] args) {
                 if (commandSender instanceof ProxiedPlayer) {
                     TabPlayer p = TAB.getInstance().getPlayer(((ProxiedPlayer) commandSender).getUniqueId());
                     if (p == null) return; //player not loaded correctly
-                    function.accept(p);
+                    function.accept(p, args);
                 } else {
                     commandSender.sendMessage(createComponent(
                             TabComponent.fromColoredText(TAB.getInstance().getConfiguration().getMessages().getCommandOnlyFromGame()),

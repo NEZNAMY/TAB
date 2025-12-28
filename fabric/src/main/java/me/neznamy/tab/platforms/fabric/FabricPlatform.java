@@ -47,7 +47,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * Platform implementation for Fabric
@@ -220,7 +220,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     }
 
     @Override
-    public void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function) {
+    public void registerCustomCommand(@NotNull String commandName, @NotNull BiConsumer<TabPlayer, String[]> function) {
         FabricCommand command = new FabricCommand(commandName) {
 
             @Override
@@ -228,7 +228,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
                 if (source.getEntity() != null) {
                     TabPlayer p = TAB.getInstance().getPlayer(source.getEntity().getUUID());
                     if (p == null) return 0; //player not loaded correctly
-                    function.accept(p);
+                    function.accept(p, args);
                     return 0;
                 }
                 source.sendSystemMessage(TabComponent.fromColoredText(

@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * Velocity implementation of Platform
@@ -242,7 +242,7 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
-    public void registerCustomCommand(@NotNull String commandName, @NotNull Consumer<TabPlayer> function) {
+    public void registerCustomCommand(@NotNull String commandName, @NotNull BiConsumer<TabPlayer, String[]> function) {
         CommandManager cmd = plugin.getServer().getCommandManager();
         CommandMeta meta = cmd.metaBuilder(commandName).build();
         customCommands.add(commandName);
@@ -250,7 +250,7 @@ public class VelocityPlatform extends ProxyPlatform {
             if (invocation.source() instanceof Player) {
                 TabPlayer p = TAB.getInstance().getPlayer(((Player) invocation.source()).getUniqueId());
                 if (p == null) return; //player not loaded correctly
-                function.accept(p);
+                function.accept(p, invocation.arguments());
             } else {
                 invocation.source().sendMessage(TabComponent.fromColoredText(
                         TAB.getInstance().getConfiguration().getMessages().getCommandOnlyFromGame()).toAdventure());

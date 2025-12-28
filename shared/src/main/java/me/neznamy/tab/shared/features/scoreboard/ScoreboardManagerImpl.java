@@ -66,7 +66,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
 
     @Override
     public void load() {
-        TAB.getInstance().getPlatform().registerCustomCommand(configuration.getToggleCommand().replaceFirst("/", ""), p -> {
+        TAB.getInstance().getPlatform().registerCustomCommand(configuration.getToggleCommand().replaceFirst("/", ""), (p, args) -> {
             if (!isActive()) return;
             if (p.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE)) {
                 toggleScoreboard(p, true);
