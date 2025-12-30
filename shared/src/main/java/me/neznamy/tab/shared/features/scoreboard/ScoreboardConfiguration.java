@@ -36,7 +36,7 @@ public class ScoreboardConfiguration {
     public static ScoreboardConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
         section.checkForUnknownKey(Arrays.asList("enabled", "toggle-command", "remember-toggle-choice", "hidden-by-default",
-                "use-numbers", "static-number", "delay-on-join-milliseconds", "scoreboards"));
+                "delay-on-join-milliseconds", "scoreboards"));
 
         // Load scoreboards
         ConfigurationSection scoreboardsSection = section.getConfigurationSection("scoreboards");
