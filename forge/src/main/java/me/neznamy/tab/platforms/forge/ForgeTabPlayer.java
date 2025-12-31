@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.forge;
 
 import me.neznamy.tab.platforms.forge.hook.LuckPermsAPIHook;
+import me.neznamy.tab.platforms.forge.hook.VanishHook;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import net.minecraft.SharedConstants;
@@ -64,6 +65,9 @@ public class ForgeTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean isVanished0() {
+        if (VanishHook.isInstalled()) {
+            return VanishHook.isVanished(getPlayer());
+        }
         return false;
     }
 
