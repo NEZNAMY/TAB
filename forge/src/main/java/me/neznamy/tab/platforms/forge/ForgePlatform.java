@@ -6,6 +6,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.logging.LogUtils;
 import lombok.NonNull;
+import me.neznamy.tab.platforms.forge.hook.PlaceholderAPIHook;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -55,7 +56,15 @@ public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
-        registerDummyPlaceholder(identifier);
+        if (!PlaceholderAPIHook.isInstalled()) {
+            registerDummyPlaceholder(identifier);
+            return;
+        }
+
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(
+                identifier,
+                p -> PlaceholderAPIHook.setPlaceholders(((ForgeTabPlayer)p).getPlayer(), identifier)
+        );
     }
 
     @Override
