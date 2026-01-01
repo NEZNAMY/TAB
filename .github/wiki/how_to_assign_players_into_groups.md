@@ -46,7 +46,7 @@ Instead of taking whole groups, TAB will check for permission nodes and assign g
 By default, TAB takes groups from the permission plugin installed on the same server instance.
 In the case of proxy installation, groups are by default taken from the proxy.
 To see how is your proxy permission plugin configured, use its respective command
-(for LuckPerms it's `/lpb user <player> info` instead of `/lp`).
+(for LuckPerms it's `/lpb user <player> info` on BungeeCord and `/lpv user <player> info` on Velocity).
 
 If you don't have your permission plugin synced using MySQL for sharing groups and don't wish to, and want groups to be taken from backend servers instead, enable the config option:
 ```

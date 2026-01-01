@@ -59,7 +59,7 @@ TAB's objective and team naming:
 # Per-version experience
 Minecraft has changed over the years.
 It had some limits removed, some added, some bugs fixed, but also some bugs added.
-TAB adapts code based on player's version for the best possible experience on each minecraft version.
+TAB adapts code based on player's version for the best possible experience on each Minecraft version.
 
 ## Detection
 When TAB is installed on a proxy, the proxy's API is used to get player's version.  

@@ -1,18 +1,18 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-    * [Introduction](#introduction)
-    * [Groups and users](#groups-and-users)
-    * [Per-world / per-server](#per-world--per-server)
-    * [Priority system](#priority-system)
-    * [Placeholder support](#placeholder-support)
-    * [Additional settings](#additional-settings)
+  * [Introduction](#introduction)
+  * [Groups and users](#groups-and-users)
+  * [Per-world / per-server](#per-world--per-server)
+  * [Priority system](#priority-system)
+  * [Placeholder support](#placeholder-support)
+  * [Additional settings](#additional-settings)
 * [Tips & Tricks](#tips--tricks)
 * [API](#api)
 
 # About
 This feature allows you to configure player name formats in the tablist.
-It was added to minecraft in version 1.8.
+It was added to Minecraft in version 1.8.
 Versions 1.7 and lower only allow up to 16 characters including name,
 which is too limiting and not supported by this plugin.
 If you wish to have prefix/suffix for 1.7 and lower,

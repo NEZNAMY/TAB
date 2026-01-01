@@ -7,8 +7,8 @@ Combine the knowledge gathered by reading the wiki to get interesting results, m
 * [BedWars1058 compatibility](#bedwars1058-compatibility)
 * [Displaying AFK status in tablist](#displaying-afk-status-in-tablist)
 * [Showing combined online player count from multiple servers](#showing-combined-online-player-count-from-multiple-servers)
-    * [Option 1 - Using global playerlist](#option-1---using-global-playerlist)
-    * [Option 2 - Using PlaceholderAPI](#option-2---using-placeholderapi)
+  * [Option 1 - Using global playerlist](#option-1---using-global-playerlist)
+  * [Option 2 - Using PlaceholderAPI](#option-2---using-placeholderapi)
 
 # Displaying kill / death counter in tablist
 This example uses PlaceholderAPI placeholders.  

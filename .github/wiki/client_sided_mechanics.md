@@ -5,7 +5,7 @@
 * [Tablist entry widths](#tablist-entry-widths)
 
 # About
-This is a collection of mechanics related to the plugin explaining how does the minecraft client process information from the server and what you can and what you cannot impact.
+This is a collection of mechanics related to the plugin explaining how does the Minecraft client process information from the server and what you can and what you cannot impact.
 
 # Nametag format in tablist
 Tablist names can be formatted in 2 ways. The main one, designed explicitly for tablist names was added into Minecraft in version 1.8 and can be controlled by TAB's [Tablist name formatting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting) feature.  

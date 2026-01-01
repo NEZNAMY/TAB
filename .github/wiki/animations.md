@@ -56,5 +56,5 @@ If you want an animation too complicated to be done manually, you can check out 
 All animations start at the same time, which is time of plugin being (re)loaded.
 Thanks to this, all animations with the same number of frames and the same change interval will be synchronized.  
 If you want to synchronize multiple animations with a different change interval and different number of frames,
-you need to make sure `(frame count)*(change interval)` is same for both animations,
-for example one animation with 10 frames and 1000ms and second animation with 2 frames and 5000ms.
+you need to make sure `(frame count)*(change interval)` is same for both animations.
+For example, one animation with 10 frames and 1000ms and second animation with 2 frames and 5000ms.

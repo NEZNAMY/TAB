@@ -1,5 +1,5 @@
 # About the wiki
-The wiki explains the functionality of the plugin as of version **5.3.2**.
+The wiki explains the functionality of the plugin as of version **5.4.0**.
 If your config looks different or is missing some features, you are using an old version of the plugin.
 To get the latest version, check [releases](https://github.com/NEZNAMY/TAB/releases/).  
 Wiki for older plugin versions is not available.
@@ -14,9 +14,9 @@ A lot of examples on the wiki use PlaceholderAPI placeholders without explaining
 On order to not have to explain something every time it is mentioned, it will be explained here once.
 | Name           | Description           |
 |----------------|-----------------------|
-| proxy server   | Server running BungeeCord or Velocity software, which are used to connect multiple servers, allowing easy transfer between them |
-| modded server  | Fabric, Forge and NeoForge |
-| backend server | Minecraft server that is actually being played on, not a proxy. This includes Bukkit (and its forks), Sponge and modded servers |
+| proxy server   | Server running BungeeCord or Velocity software, which are used to connect multiple servers, allowing easy transfer between them. |
+| modded server  | Fabric, Forge and NeoForge. |
+| backend server | Minecraft server that is actually being played on, not a proxy. This includes Bukkit (and its forks) and modded servers |
 
 # Limitations of plugins
 TAB is a plugin (even on modded platforms, it is only a server-sided mod).

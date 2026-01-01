@@ -3,8 +3,8 @@
 * [Nametag](#nametag)
 * [Proper compatibility with plugins that change profile name](#proper-compatibility-with-plugins-that-change-profile-name)
 * [Tips & Tricks](#tips--tricks)
-    * [Tip 1 - Nickname prefix](#tip-1---nickname-prefix)
-    * [Tip 2 - Sorting nicked players with the lowest priority](#tip-2---sorting-nicked-players-with-the-lowest-priority)
+  * [Tip 1 - Nickname prefix](#tip-1---nickname-prefix)
+  * [Tip 2 - Sorting nicked players with the lowest priority](#tip-2---sorting-nicked-players-with-the-lowest-priority)
 
 # Tablist
 This one is straightforward.
@@ -29,12 +29,22 @@ This example uses `%essentials_nickname%` placeholder from Essentials. Giving it
 > Put the nickname placeholder into customtabname instead.
 
 # Nametag
-Nametags are more complicated because they consist of player's username, team prefix and team suffix.
-There is no intended way to do this.
-The only way is changing it using a nickname plugin.
-Some nickname plugins actually change name in game profile, which also changes it in nametag.
-You will need to find one that offers this and then use it.
-This is a complicated process with lots of side effects, so TAB does not offer it.
+**TLDR: TAB does not offer this functionality**.
+
+With that out of the way, let's learn more about this issue.  
+Unlike with tablist name formatting, which is a single component containing everything (and therefore fully customizable), nametags are different.
+They consist of prefix and suffix components (coming from scoreboard teams) and name itself.
+This name is contained in player info packet (coincidentally the same one that controls tablist format), along with player's skin and other things.
+This name is limited to 16 characters (since Minecraft doesn't allow longer names) and since it's not a component, naturally it does not support RGB colors.
+Strangely enough, legacy codes using `§` work, but they further limit the length of the rest of the name.
+
+There are really only 2 ways to achieve this solution:
+* **Change the profile name** - This requires sending player info packet that removes the old player and adds a new one with the same name. Then respawn the player. Additionally, it requires a lot of packets to be sent to the affected player, since you cannot just remove & add self, as well as a lot of other packets to restore previously sent data. These packets have been changing a lot with various MC versions. A lot of them cannot even be sent from a proxy server. As such, TAB does not offer this functionality, since it would be very limited anyway (see above) and require a lot of adapting for proper functionality.  
+  If you decide to use a plugin with this functionality, keep in mind it breaks all name-bound features, such as scoreboard teams, belowname or playerlist objective. See below for compatibility information.  
+  Example third party plugins that offer this: None?
+* **Use an armor stand / text display to show any text** - TAB no longer offers this functionality ([here's why](https://gist.github.com/NEZNAMY/f4cabf2fd9251a836b5eb877720dee5c)), so you will need to look into other plugins.  
+  If you decide to use a plugin with this functionality, just remember to make the vanilla nametag invisible, so you don't see both vanilla nametag and the entity (`invisible-nametags: true`).  
+  Example third party plugins that offer this: [UnlimitedNameTags](https://www.spigotmc.org/resources/unlimitednametags.117526/), [DisplayNameTags](https://github.com/Matt-MX/DisplayNameTags), [NotJustNamePlates](https://github.com/YouHaveTrouble/NotJustNameplates), [CustomNameplates](https://polymart.org/product/2543/customnameplates)
 
 # Proper compatibility with plugins that change profile name
 If using a nickname plugin that changes player's profile name to change it in the name tag,
@@ -43,13 +53,13 @@ Most notably, it breaks all name-bound features,
 especially [nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) and [sorting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist).
 For that reason, TAB must detect name change.
 This is done automatically on Bukkit, BungeeCord and modded platforms.
-**This detection is not available on Sponge and Velocity**.
+**This detection is not available on Velocity**.
 
 > [!WARNING]
 > If you have TAB installed on backend server and a proxy plugin changes nickname, TAB is not able to detect this change, since the modified packets never actually go through the backend server where TAB is installed.
 
 > [!TIP]
-> If automatic detection is not working for you (either you use TAB on Sponge / Velocity, or use proxy plugin for changing names while TAB is on backend), you can use [this API method](https://github.com/NEZNAMY/TAB/blob/master/api/src/main/java/me/neznamy/tab/api/TabPlayer.java#L88) to let TAB know player's name changed.
+> If automatic detection is not working for you (either you use TAB on Velocity, or use proxy plugin for changing names while TAB is on backend), you can use [this API method](https://github.com/NEZNAMY/TAB/blob/master/api/src/main/java/me/neznamy/tab/api/TabPlayer.java#L88) to let TAB know player's name changed.
 
 In order for TAB to properly detect name change, player UUID must remain the same,
 otherwise it's a random entry with a random uuid and random name, which TAB isn't able to match with actual players.

@@ -1,23 +1,23 @@
 # Content
 * [About](#about)
 * [Internal placeholders](#internal-placeholders)
-    * [Universal](#universal)
-    * [Backend only](#backend-only)
-    * [Proxy only](#proxy-only)
+  * [Universal](#universal)
+  * [Backend only](#backend-only)
+  * [Proxy only](#proxy-only)
 * [PlaceholderAPI](#placeholderapi)
 * [Relational placeholders](#relational-placeholders)
-    * [About](#about-1)
-    * [Usage](#usage)
+  * [About](#about-1)
+  * [Usage](#usage)
 * [Refreshing](#refreshing)
-    * [Refresh intervals](#refresh-intervals)
-    * [Sync refreshing](#sync-refreshing)
+  * [Refresh intervals](#refresh-intervals)
+  * [Sync refreshing](#sync-refreshing)
 * [Placeholder is not working](#placeholder-is-not-working)
-    * [Internal placeholder is not working](#internal-placeholder-is-not-working)
-    * [PlaceholderAPI placeholder is not working](#placeholderapi-placeholder-is-not-working)
+  * [Internal placeholder is not working](#internal-placeholder-is-not-working)
+  * [PlaceholderAPI placeholder is not working](#placeholderapi-placeholder-is-not-working)
 * [API](#api)
-    * [Server placeholders](#server-placeholders)
-    * [Player placeholders](#player-placeholders)
-    * [Relational placeholders](#relational-placeholders-1)
+  * [Server placeholders](#server-placeholders)
+  * [Player placeholders](#player-placeholders)
+  * [Relational placeholders](#relational-placeholders-1)
 
 # About
 TAB offers various placeholders to display the most common information. It also supports [PlaceholderAPI placeholders](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders).
@@ -37,35 +37,35 @@ Refresh interval for conditions is set to be equal to the fastest refreshing pla
 ## Universal
 These placeholders are available on all platforms.
 
-| Identifier                                | Refresh interval | Description                                                                                                                                                                                                                                                                                                                                          |
-|-------------------------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| %online%                                  | 1000             | Total online player count on server where plugin is installed (excluding [vanished players](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection)). If the plugin is installed on a proxy, it will show total player count on the whole network.                                                                              |
-| %world%                                   | -1               | Name of world where player is                                                                                                                                                                                                                                                                                                                        |
-| %worldonline%                             | 1000             | Amount of players in the same world (excluding [vanished players](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection)) as the player                                                                                                                                                                                        |
-| %ping%                                    | 500              | Player's ping to the server where TAB is installed. <br />**Note**: This value is measured by the server and TAB is only retrieving that value. If it's wrong, it's not a TAB issue.                                                                                                                                                                 |
-| %player%                                  | -1               | Player's name                                                                                                                                                                                                                                                                                                                                        |
-| %uuid%                                    | -1               | Player's UUID                                                                                                                                                                                                                                                                                                                                        |
-| %time%                                    | 500              | Current real time, output is configurable in **config.yml** in `time-format` option                                                                                                                                                                                                                                                                  |
-| %date%                                    | 60000            | Current date, output is configurable in **config.yml** in `date-format` option                                                                                                                                                                                                                                                                       |
-| %staffonline%                             | 2000             | Amount of online players with `tab.staff` permission                                                                                                                                                                                                                                                                                                 |
-| %nonstaffonline%                          | 2000             | Amount of online players without `tab.staff` permission                                                                                                                                                                                                                                                                                              |
-| %memory-used%                             | 200              | Used RAM of server in MB                                                                                                                                                                                                                                                                                                                             |
-| %memory-max%                              | -1               | Total RAM of server in MB                                                                                                                                                                                                                                                                                                                            |
-| %memory-used-gb%                          | 200              | Used RAM of server in GB                                                                                                                                                                                                                                                                                                                             |
-| %memory-max-gb%                           | -1               | Total RAM of server in GB                                                                                                                                                                                                                                                                                                                            |
-| %player-version%                          | -1               | User-friendly version of player, such as `1.14.4`. For versions that share the same protocol version number, the higher one is returned (for example 1.20 & 1.20.1 -> 1.20.1 is returned)                                                                                                                                                            |
-| %player-version-id%                       | -1               | Network ID of player's version. You can see the full version map on [fan wiki](https://wiki.vg/Protocol_version_numbers) for all versions or [TAB's source code](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/ProtocolVersion.java) for releases only. Useful for conditions to create per-version results. |
-| %luckperms-prefix%                        | 1000             | Prefix from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                                         |
-| %luckperms-suffix%                        | 1000             | Suffix from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                                         |
-| %luckperms-prefixes%                      | 1000             | All prefixes combined from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                          |
-| %luckperms-suffixes%                      | 1000             | All suffixes combined from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                          |
-| %displayname%                             | 500              | Display name variable set by permission plugin, typically prefix + name + suffix                                                                                                                                                                                                                                                                     |
-| %group%                                   | 1000             | Returns player's primary group name. Created for internal functionality, but can be used as a display placeholder as well.                                                                                                                                                                                                                           |
-| %vanished%                                | 1000             | Returns `true`/`false` based on player's vanish status. Created for internal functionality, but can be used as a display placeholder as well.                                                                                                                                                                                                        |
-| %bedrock%                                 | -1               | Returns `true`/`false` based on whether player is using Bedrock edition or not (Java)                                                                                                                                                                                                                                                                |
-| %bossbar_announce_time_total_\<bossbar\>% | -1               | Total time (inputted value) of an announced bossbar.                                                                                                                                                                                                                                                                                                 |
-| %bossbar_announce_time_left_\<bossbar\>%  | 100              | Remaining time of an announced bossbar.                                                                                                                                                                                                                                                                                                              |
-| %%                                        | -1               | Returns the `%` symbol. Useful to display `%` symbol without breaking all placeholders after it                                                                                                                                                                                                                                                      |
+| Identifier                                | Refresh interval | Description                                                                                                                                                                                                                                                                                                                            |
+|-------------------------------------------|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| %online%                                  | 1000             | Total online player count on server where plugin is installed (excluding [vanished players](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection)). If the plugin is installed on a proxy, it will show total player count on the whole network.                                                                |
+| %world%                                   | -1               | Name of world where player is                                                                                                                                                                                                                                                                                                          |
+| %worldonline%                             | 1000             | Amount of players in the same world (excluding [vanished players](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection)) as the player                                                                                                                                                                          |
+| %ping%                                    | 500              | Player's ping to the server where TAB is installed. <br />**Note**: This value is measured by the server and TAB is only retrieving that value. If it's wrong, it's not a TAB issue.                                                                                                                                                   |
+| %player%                                  | -1               | Player's name                                                                                                                                                                                                                                                                                                                          |
+| %uuid%                                    | -1               | Player's UUID                                                                                                                                                                                                                                                                                                                          |
+| %time%                                    | 500              | Current real time, output is configurable in **config.yml** in `time-format` option                                                                                                                                                                                                                                                    |
+| %date%                                    | 60000            | Current date, output is configurable in **config.yml** in `date-format` option                                                                                                                                                                                                                                                         |
+| %staffonline%                             | 2000             | Amount of online players with `tab.staff` permission                                                                                                                                                                                                                                                                                   |
+| %nonstaffonline%                          | 2000             | Amount of online players without `tab.staff` permission                                                                                                                                                                                                                                                                                |
+| %memory-used%                             | 200              | Used RAM of server in MB                                                                                                                                                                                                                                                                                                               |
+| %memory-max%                              | -1               | Total RAM of server in MB                                                                                                                                                                                                                                                                                                              |
+| %memory-used-gb%                          | 200              | Used RAM of server in GB                                                                                                                                                                                                                                                                                                               |
+| %memory-max-gb%                           | -1               | Total RAM of server in GB                                                                                                                                                                                                                                                                                                              |
+| %player-version%                          | -1               | User-friendly version of player, such as `1.14.4`. For versions that share the same protocol version number, the higher one is returned (for example 1.20 & 1.20.1 -> 1.20.1 is returned)                                                                                                                                              |
+| %player-version-id%                       | -1               | Network ID of player's version. You can see the full version list in [TAB's source code](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/ProtocolVersion.java). Useful for conditions to create per-version results using numeric operations since version names cannot be effectively compared. |
+| %luckperms-prefix%                        | 1000             | Prefix from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                           |
+| %luckperms-suffix%                        | 1000             | Suffix from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                                           |
+| %luckperms-prefixes%                      | 1000             | All prefixes combined from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                            |
+| %luckperms-suffixes%                      | 1000             | All suffixes combined from LuckPerms from the server where TAB is installed                                                                                                                                                                                                                                                            |
+| %displayname%                             | 500              | Display name variable set by permission plugin, typically prefix + name + suffix                                                                                                                                                                                                                                                       |
+| %group%                                   | 1000             | Returns player's primary group name. Created for internal functionality, but can be used as a display placeholder as well.                                                                                                                                                                                                             |
+| %vanished%                                | 1000             | Returns `true`/`false` based on player's vanish status. Created for internal functionality, but can be used as a display placeholder as well.                                                                                                                                                                                          |
+| %bedrock%                                 | -1               | Returns `true`/`false` based on whether player is using Bedrock edition or not (Java)                                                                                                                                                                                                                                                  |
+| %bossbar_announce_time_total_\<bossbar\>% | -1               | Total time (inputted value) of an announced bossbar.                                                                                                                                                                                                                                                                                   |
+| %bossbar_announce_time_left_\<bossbar\>%  | 100              | Remaining time of an announced bossbar.                                                                                                                                                                                                                                                                                                |
+| %%                                        | -1               | Returns the `%` symbol. Useful to display `%` symbol without breaking all placeholders after it                                                                                                                                                                                                                                        |
 
 ## Backend only
 These placeholders only work when TAB is installed on a backend server, they don't work when TAB is on a proxy. If you have TAB installed on proxy and wish to use these, use their [PlaceholderAPI](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide) alternative with [Bridge plugin](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) installed for PlaceholderAPI support on proxy.
@@ -73,7 +73,7 @@ These placeholders only work when TAB is installed on a backend server, they don
 | ------------- | ------------- | ------------- | ------------- |
 | %health% | 100 | Player's health, rounded up to match Minecraft's heart display. | %player_health_rounded% |
 | %displayname% | 500 | Player's display name value set by permission plugin. | %player_displayname% |
-| %tps%               | 1000 | TPS of server from the last minute. Measured by the server. Not directly available on Fabric, Forge and Neoforge. Primitive approximation using MSPT (TPS = 1000/MSPT, max 20) is used there. | %server_tps_1% |
+| %tps%               | 1000 | TPS of server from the last minute. Measured by the server. Not directly available on modded platforms - primitive approximation using MSPT (TPS = 1000/MSPT, max 20) is used there. | %server_tps_1% |
 | %mspt%              | 1000 | Server's current milliseconds per tick (not available on Spigot) | - |
 | %deaths%            | 1000 | Player's death count | %statistic_deaths% |
 
@@ -100,25 +100,43 @@ placeholders:
   register-tab-expansion: true
 ```
 in **config.yml**.  
-Full list of placeholders:  
+Full list of placeholders (general + feature specific):
+
+**General**:
 | Identifier  | Description |
 | ------------- | ------------- |
-| %tab_tabprefix% | Current tabprefix with replaced placeholders |
-| %tab_tabsuffix% | Current tabsuffix with replaced placeholders |
-| %tab_tagprefix% | Current tagprefix with replaced placeholders |
-| %tab_tagsuffix% | Current tagsuffix with replaced placeholders |
-| %tab_customtabname% | Current customtabname with replaced placeholders |
-| %tab_tabprefix_raw% | Raw tabprefix containing raw placeholders |
-| %tab_tabsuffix_raw% | Raw tabsuffix containing raw placeholders |
-| %tab_tagprefix_raw% | Raw tagprefix containing raw placeholders |
-| %tab_tagsuffix_raw% | Raw tagsuffix containing raw placeholders |
-| %tab_customtabname_raw% | Raw customtabname containing raw placeholders |
-| %tab_scoreboard_name% | Returns name of player's currently displayed scoreboard or empty string if none is displayed due to no display condition being met |
-| %tab_scoreboard_visible% | "Enabled" if visible, "Disabled" if not |
-| %tab_bossbar_visible% | "Enabled" if visible, "Disabled" if not |
-| %tab_nametag_visibility% | "Enabled" if player can see nametags, "Disabled" if disabled using `/tab nametag toggleview` |
-| %tab_replace_\<placeholder\>% | Applies [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) to a PlaceholderAPI placeholder (for example %tab_replace_essentials_vanished%) |
-| %tab_placeholder_\<placeholder\>% | returns value of tab's internal placeholder (such as %tab_placeholder_animation:name% for %animation:name%) |
+| `%tab_replace_<placeholder>%` | Applies [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) to a PlaceholderAPI placeholder (for example `%tab_replace_essentials_vanished%`) |
+| `%tab_placeholder_<placeholder>%` | returns value of tab's internal placeholder (such as `%tab_placeholder_animation:name%` for `%animation:name%`) |
+
+**BossBar**:
+| Identifier  | Description |
+| ------------- | ------------- |
+| `%tab_bossbar_visible%` | "Enabled" if visible, "Disabled" if not |
+
+**NameTags**:
+| Identifier  | Description |
+| ------------- | ------------- |
+| `%tab_tagprefix%` | Player's current tagprefix with placeholders parsed. |
+| `%tab_tagsuffix%` | Player's current tagprefix with placeholders parsed. |
+| `%tab_tagprefix_raw%` | Player's current raw tagprefix with placeholder identifiers. |
+| `%tab_tagsuffix_raw%` | Player's current raw tagsuffix with placeholder identifiers. |
+| `%tab_nametag_visibility%` | "Enabled" if player can see nametags, "Disabled" if disabled using `/tab nametag toggleview` |
+
+**Scoreboard**:  
+| Identifier  | Description |
+| ------------- | ------------- |
+| `%tab_scoreboard_name%` | Returns name of player's currently displayed scoreboard or empty string if none is displayed due to no display condition being met. |
+| `%tab_scoreboard_visible%` | "Enabled" if visible, "Disabled" if not (toggled with a command) |
+
+**Tablist name formatting**:
+| Identifier  | Description |
+| ------------- | ------------- |
+| `%tab_tabprefix%` | Player's current tabprefix with placeholders parsed. |
+| `%tab_customtabname%` | Player's current customtabname with placeholders parsed. |
+| `%tab_tabsuffix%` | Player's current tabprefix with placeholders parsed. |
+| `%tab_tabprefix_raw%` | Player's current raw tabprefix with placeholder identifiers. |
+| `%tab_customtabname_raw%` | Player's current raw customtabname with placeholder identifiers. |
+| `%tab_tabsuffix_raw%` | Player's current raw tabsuffix with placeholder identifiers. |
 
 # Relational placeholders
 ## About
@@ -167,22 +185,15 @@ When using a placeholder, you should know if it's a [TAB's internal placeholder]
 > **Example:** `Sale 100% OFF! %some_placeholder%` -> `Sale 100%% OFF! %some_placeholder%`.
 
 ## Internal placeholder is not working
-All TAB's internal placeholders are listed above.
-Some of them are backend only (meaning they won't work on proxy) and some are proxy only.
-> [!IMPORTANT]
-> Trying to use a backend-only placeholder on proxy will not work.
-> If you want to use those,
-> [set up PlaceholderAPI support on proxy](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge)
-> and find their PlaceholderAPI equivalent.
-> For example, you can use %vault_prefix% instead of %vault-prefix%,
-> %player_health_rounded% instead of %health% and so on.
+Here are few possible reasons:
+* You attempted to use a proxy-only placeholder on backend, or backend-only placeholder on proxy
+* You used the `%` symbol before the placeholder, breaking placeholder starts and ends (see above).
 
 ## PlaceholderAPI placeholder is not working
-If you have TAB installed on a proxy, make sure you [set up PlaceholderAPI support on proxy](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) as there is no other way to retrieve data from technically a different server.
-
-> [!TIP]
-> Use `/papi parse me <placeholder>` to check if the placeholder is working.
-> If it does not work, the issue is not on TAB's end.
+Here are few possible reasons:
+* The placeholder is not working in PlaceholderAPI. You can check this using `/papi parse me <placeholder>`. If it isn't working there, it's not a TAB issue. If the placeholder you used is advertised somewhere, make sure you have the adequate expansion downloaded.
+* If you have TAB installed on a proxy, make sure [TAB-Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) is installed on backend servers to forward support to the proxy.
+* You used the `%` symbol before the placeholder, breaking placeholder starts and ends (see above).
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*

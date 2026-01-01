@@ -10,30 +10,30 @@ Commands have required permissions associated with them.
 
 # Content
 * [Configuration](#configuration-commands)
-    * [/tab \<player/group/playeruuid\> \<name\> \<property\> \[value\] \[options\]](#tab-playergroupplayeruuid-name-property-value-options)
-    * [/tab \<player/group/playeruuid\> \<name\> remove](#tab-playergroupplayeruuid-name-remove)
-    * [/tab reload](#tab-reload)
-    * [/tab debug \[player\]](#tab-debug-player)
-    * [/tab group \<group\>](#tab-group-group)
-    * [/tab groups](#tab-groups)
+  * [/tab \<player/group/playeruuid\> \<name\> \<property\> \[value\] \[options\]](#tab-playergroupplayeruuid-name-property-value-options)
+  * [/tab \<player/group/playeruuid\> \<name\> remove](#tab-playergroupplayeruuid-name-remove)
+  * [/tab reload](#tab-reload)
+  * [/tab debug \[player\]](#tab-debug-player)
+  * [/tab group \<group\>](#tab-group-group)
+  * [/tab groups](#tab-groups)
 * [Bossbar](#bossbar)
-    * [/tab bossbar send \<name\> \[player\]](#tab-bossbar-show-name-player)
-    * [/tab bossbar \[on/off/toggle\] \[player\] \[options\]](#tab-bossbar-onofftoggle-player-options)
-    * [/tab bossbar announce \<name\> \<length\>](#tab-bossbar-announce-name-duration)
+  * [/tab bossbar send \<name\> \[player\]](#tab-bossbar-show-name-player)
+  * [/tab bossbar \[on/off/toggle\] \[player\] \[options\]](#tab-bossbar-onofftoggle-player-options)
+  * [/tab bossbar announce \<name\> \<length\>](#tab-bossbar-announce-name-duration)
 * [Scoreboard](#scoreboard)
-    * [/tab scoreboard show \<name\> \[player\]](#tab-scoreboard-show-name-player)
-    * [/tab scoreboard \[on/off/toggle\] \[player\] \[options\]](#tab-scoreboard-onofftoggle-player-options)
-    * [/tab scoreboard announce \<name\> \<length\>](#tab-scoreboard-announce-name-duration)
+  * [/tab scoreboard show \<name\> \[player\]](#tab-scoreboard-show-name-player)
+  * [/tab scoreboard \[on/off/toggle\] \[player\] \[options\]](#tab-scoreboard-onofftoggle-player-options)
+  * [/tab scoreboard announce \<name\> \<length\>](#tab-scoreboard-announce-name-duration)
 * [Nametags / Teams](#nametags--teams)
-    * [/tab nametag <show/hide/toggle> \[player\] \[viewer\] \[options\]](#tab-nametag-showhidetoggle-player-viewer-options)
-    * [/tab nametag <showview/hideview/toggleview> \[viewer\] \[options\]](#tab-nametag-showviewhideviewtoggleview-viewer-options)
-    * [/tab setcollision <player> <true/false>](#tab-setcollision-player-truefalse)
+  * [/tab nametag <show/hide/toggle> \[player\] \[viewer\] \[options\]](#tab-nametag-showhidetoggle-player-viewer-options)
+  * [/tab nametag <showview/hideview/toggleview> \[viewer\] \[options\]](#tab-nametag-showviewhideviewtoggleview-viewer-options)
+  * [/tab setcollision <player> <true/false>](#tab-setcollision-player-truefalse)
 * [MySQL](#mysql)
-    * [/tab mysql upload](#tab-mysql-upload)
-    * [/tab mysql download](#tab-mysql-download)
+  * [/tab mysql upload](#tab-mysql-upload)
+  * [/tab mysql download](#tab-mysql-download)
 * [Other](#other)
-    * [/tab cpu](#tab-cpu)
-    * [/tab parse \<player\> \<placeholder\>](#tab-parse-player-text)
+  * [/tab cpu](#tab-cpu)
+  * [/tab parse \<player\> \<placeholder\>](#tab-parse-player-text)
 * [Additional permissions](#additional-permissions)
 
 # Configuration commands
@@ -68,10 +68,10 @@ Commands have required permissions associated with them.
 ## /tab debug [player]
 * **Permission:** `tab.debug`
 * **Description:** Shows the server version, plugin version, permission group choice logic, and sorting type. If player argument is filled, shows info about that player:
-    * On proxy, shows whether player is connected to the backend server with [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) plugin or not.
-    * Sorting value & explanation, useful to see what went wrong if players are not sorted correctly.
-    * Primary group set using [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups)
-    * List of all configured properties, their values and source.
+  * On proxy, shows whether player is connected to the backend server with [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) plugin or not.
+  * Sorting value & explanation, useful to see what went wrong if players are not sorted correctly.
+  * Primary group set using [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups)
+  * List of all configured properties, their values and source.
 
 ## /tab group \<group\>
 * **Permission:** `tab.groupinfo`
@@ -90,7 +90,7 @@ Commands have required permissions associated with them.
 * **Permission:** `tab.scoreboard.toggle` for toggling for yourself, `tab.scoreboard.toggle.other` for toggling for others.
 * **Description:** Shows / hides / toggles scoreboard of specified player. If no player was given, command affects the sender.
 * **Options:**
-    * `-s` for silent toggling (no chat message for affected player)
+  * `-s` for silent toggling (no chat message for affected player)
 
 ## /tab scoreboard announce \<name\> \<duration\>
 * **Permission:** `tab.announce.scoreboard`
@@ -105,7 +105,7 @@ Commands have required permissions associated with them.
 * **Permission:** `tab.bossbar.toggle` for toggling for yourself, `tab.bossbar.toggle.other` for toggling for others.
 * **Description:** Shows / hides / toggles bossbar of specified player. If no player was given, command affects the sender.
 * **Options:**
-    * `-s` for silent toggling (no chat message for affected player)
+  * `-s` for silent toggling (no chat message for affected player)
 
 ## /tab bossbar announce \<name\> \<duration\>
 * **Permission:** `tab.announce.bar`
@@ -116,13 +116,13 @@ Commands have required permissions associated with them.
 * **Permission:** `tab.nametag.visibility` (`tab.nametag.visibility.other` for toggling for other players)
 * **Description:** Shows / hides / toggles nametag of a specified player. If viewer is specified, view is only affected for the viewer.
 * **Options:**
-    * `-s` for silent toggling (no chat message for affected player)
+  * `-s` for silent toggling (no chat message for affected player)
 
 ## /tab nametag <showview/hideview/toggleview> \[viewer\] \[options\]
 * **Permission:** `tab.nametag.view` (`tab.nametag.view.other` for toggling for other players)
 * **Description:** Shows / hides / toggles nametag VIEW a specified player.
 * **Options:**
-    * `-s` for silent toggling (no chat message for affected player)
+  * `-s` for silent toggling (no chat message for affected player)
 
 ## /tab setcollision \<player\> \<true|false\>
 * **Permission:** `tab.setcollision`

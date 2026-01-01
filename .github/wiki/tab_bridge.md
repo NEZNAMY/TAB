@@ -20,7 +20,7 @@ Bridge itself has no config file, as everything is configured in the main plugin
 * Forward player's gamemode for spectator fix feature to work
 
 # Compatibility
-Just like with Minecraft, when there is a change in the communication protocol between TAB <-> TAB-Bridge,
+Just like with Minecraft, when there is a change in the communication protocol between TAB ↔ TAB-Bridge,
 older software will not be compatible with the new one.
 You should always be running the latest versions of both TAB and Bridge.
 

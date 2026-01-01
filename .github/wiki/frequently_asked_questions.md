@@ -10,7 +10,7 @@
 * [#9 - How to use space in prefix/suffix command?](#9---how-to-use-spaces-in-prefixsuffix-command)
 * [#10 - Can I change/remove the green connection bar in tablist?](#10---can-i-changeremove-the-green-connection-bar-in-tablist)
 * [#11 - Placeholder is not working](#11---placeholder-is-not-working)
-* [#12 - How can I display ItemsAdder images?](#12---how-can-i-display-itemsadder-images)
+* [#12 - How can I display images from resource pack plugin?](#12---how-can-i-display-images-from-resource-pack-plugin)
 * [#13 - How can I use UTF characters in configuration?](#13---how-can-i-use-utf-characters-in-configuration)
 * [#14 - Is there a way to remove all players from tablist?](#14---is-there-a-way-to-remove-all-players-from-tablist)
 * [#15 - How to add images to tablist?](#15---how-to-add-images-to-tablist)
@@ -18,6 +18,7 @@
 * [#17 - Is it possible to show the number of players in a specific group, similar to staffonline placeholder?](#17---is-it-possible-to-show-the-number-of-players-in-a-specific-group-similar-to-staffonline-placeholder)
 * [#18 - Why is the plugin flagged as a virus by Windows defender?](#18---why-is-the-plugin-flagged-as-a-virus-by-windows-defender)
 * [#19 - How can I show amount of online players on the entire network?](#19---how-can-i-show-amount-of-online-players-on-the-entire-network)
+* [#20 - Why is LuckPerms prefix/suffix not updating on a network?](#20---why-is-luckperms-prefixsuffix-not-updating-on-a-network)
 
 ## #1 - Why are NPCs showing up in the tablist?
 See [Citizens FAQ](https://wiki.citizensnpcs.co/Frequently_Asked_Questions#Why_are_NPCs_showing_up_in_the_tablist.3F).
@@ -26,8 +27,8 @@ See [Citizens FAQ](https://wiki.citizensnpcs.co/Frequently_Asked_Questions#Why_a
 * If you want to take prefixes/suffixes, check [this guide](https://github.com/NEZNAMY/TAB/wiki/Mini-guides-collection#taking-prefixessuffixes-from-permission-plugin) and use `%luckperms-prefix%` & `%luckperms-suffix%`.
 * Sorting:
   First, configure weights correctly in LuckPerms. Then, you have 2 options:
-    * Configure [sorting by groups](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#groups) (recommended).
-    * Sorting by weights directly: `PLACEHOLDER_HIGH_TO_LOW:%luckperms_highest_group_weight%`.
+  * Configure [sorting by groups](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist#groups) (recommended).
+  * Sorting by weights directly: `PLACEHOLDER_HIGH_TO_LOW:%luckperms_highest_group_weight%`.
 
 ## #3 - I enabled MySQL, and my prefix is now gone!
 When enabling [MySQL](https://github.com/NEZNAMY/TAB/wiki/MySQL), it will be used as a data storage and groups.yml / users.yml files will no longer be used.  
@@ -71,7 +72,7 @@ Use "", for example `/tab group owner tabprefix "&2&lOwner&r "`
 
 ## #10 - Can I change/remove the green connection bar in tablist?
 The connection bar is client sided and cannot be re-textured or removed by TAB.
-You will need a custom minecraft client or a resource pack.
+You will need a custom Minecraft client or a resource pack.
 
 ## #11 - Placeholder is not working
 Most common reasons for a placeholder to not work include:
@@ -82,14 +83,29 @@ Most common reasons for a placeholder to not work include:
 
 The full list of reasons can be found on the [Placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#placeholder-is-not-working) page.
 
-## #12 - How can I display ItemsAdder images?
-ItemsAdder offers placeholders, which return the respective symbol to which your desired image is bound to. You can get them using ItemsAdder's PlaceholderAPI expansion using their `%img_<name>%` placeholder. ItemsAdder's internal placeholders (`:something:`) will not work in TAB.
+## #12 - How can I display images from resource pack plugin?
+Images work by mapping a chosen character to an image in a resource pack.
+When the game receives this character, it displays the image instead of the character.
+What you need to do is send this character to the client.  
+Although resource pack plugins are not all the same, they all have things in common.
+The first main functionality is offering placeholders.
+You can use their PlaceholderAPI placeholders in TAB, and they will return the symbol, which then the client displays as an image.
+The second main functionality is creating internal placeholders, which are different per plugin.
+The plugin then listens to outgoing packets and replaces the internal placeholder with the symbol.
+This can, however, fail.
+Here are possible reasons why:
+* You have TAB on proxy, so backend plugin cannot modify packets sent by the proxy
+* TAB also listens to packets and modifies them to make sure no other plugin is overriding it. This mostly applies to [Tablist name formatting](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting). TAB then ends up having the last shot, overriding the resource pack plugin.
 
-If you are unable to change the references
-(for example, because they are defined in permission plugin and used elsewhere as well),
-you can use [PlaceholderAPI](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide)'s `imgfix` expansion
-that replaces format of given placeholders into the correct format.  
-Example: `%luckperms_prefix%` -> `%imgfix_{luckperms_prefix}%`
+In order to make sure images display properly, use PlaceholderAPI placeholders instead of internal placeholders of your resource pack plugins.
+Here is some extra information for each resource pack plugin you might find useful:
+* ItemsAdder:
+  * The PlaceholderAPI placeholders are formatted as `%img_<name>%`, internal placeholders (`:something:`) may not always work (see above).
+  * If you are unable to change the placeholder references from internal placeholders to PlaceholderAPI placeholders (for example, because they are defined in permission plugin and used elsewhere as well, where PlaceholderAPI isn't supported), you can use [PlaceholderAPI](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide)'s `imgfix` expansion that replaces format of given placeholders into the correct format.  
+    Example: `%luckperms_prefix%` -> `%imgfix_{luckperms_prefix}%`
+* Nexo:
+  * Here is a collection of tips from Nexo discord: <br /><img width="476" height="238" alt="image" src="https://github.com/user-attachments/assets/0eca8e9b-a73f-4e66-9c76-11a230e823b4" />
+
 
 ## #13 - How can I use UTF characters in configuration?
 **Option 1**: [Save the file in UTF-8 encoding](https://github.com/NEZNAMY/TAB/wiki/How-to-save-the-config-in-UTF8-encoding) and use your desired symbol directly.
@@ -114,7 +130,7 @@ An alternative solution using TAB is putting a lot of empty lines into header,
 which will push all players out of the screen.
 
 ## #15 - How to add images to tablist?
-You can check out [this reddit post](https://www.reddit.com/r/admincraft/comments/llrgty/comment/gnswdcz/?utm_source=share&utm_medium=web2x&context=3).
+You can check out [this Reddit post](https://www.reddit.com/r/admincraft/comments/llrgty/comment/gnswdcz/?utm_source=share&utm_medium=web2x&context=3).
 When using the symbol in configuration using \u format, remember to use `""` in config instead of `''`.
 
 ## #16 - Is MiniMessage supported?
@@ -142,3 +158,10 @@ Windows defender could be flagging it for the same reason.
 ## #19 - How can I show amount of online players on the entire network?
 If you have TAB installed on the proxy, use `%online%` placeholder.  
 If you have TAB installed on the backend servers, use `%bungee_total%` from [PlaceholderAPI](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide). This placeholder has an internal cooldown, which can be configured in `plugins/PlaceholderAPI/config.yml` under `expansions` -> `bungee` -> `check_interval`, default value is 30 (seconds).
+
+## #20 - Why is LuckPerms prefix/suffix not updating on a network?
+In order for LuckPerms instances to pick up the changes to player data in real time, it needs to communicate the changes between proxy ↔ backend.  
+If you notice changes not taking effect in TAB, try running `/lpb user <player> info` (or `/lpv` on velocity). If running the command updates it in TAB, that's the problem - LuckPerms instances not communicating in real time.
+
+This is controlled by a LuckPerms setting called [messaging-service](https://luckperms.net/wiki/Syncing-data-between-servers#messaging-services). Set it to `pluginmsg` to make changes update immediately.  
+Additionally, make sure `auto-push-updates` is still `true` (it is by default already).

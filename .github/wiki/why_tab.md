@@ -1,6 +1,6 @@
 ## Easy to install
 Support for all possible Minecraft versions containing features the plugin is able to take advantage of.
-Support for multiple platforms (Bukkit, BungeeCord, Fabric, Forge, NeoForge, Sponge, Velocity),
+Support for multiple platforms (Bukkit, BungeeCord, Fabric, Forge, NeoForge, Velocity),
 with everything contained in a single jar which you can download directly.
 No need to browse version history, ask what plugin version you need for your server version,
 visit random websites looking for the download button, or anything similar.

@@ -1,20 +1,20 @@
 # Content
 * [Enabling](#enabling)
 * [Methods of sorting](#methods-of-sorting)
-    * [GROUPS](#groups)
-    * [PERMISSIONS](#permissions)
-    * [PLACEHOLDER](#placeholder)
-    * [PLACEHOLDER_A_TO_Z](#placeholder_a_to_z)
-    * [PLACEHOLDER_Z_TO_A](#placeholder_z_to_a)
-    * [PLACEHOLDER_LOW_TO_HIGH](#placeholder_low_to_high)
-    * [PLACEHOLDER_HIGH_TO_LOW](#placeholder_high_to_low)
+  * [GROUPS](#groups)
+  * [PERMISSIONS](#permissions)
+  * [PLACEHOLDER](#placeholder)
+  * [PLACEHOLDER_A_TO_Z](#placeholder_a_to_z)
+  * [PLACEHOLDER_Z_TO_A](#placeholder_z_to_a)
+  * [PLACEHOLDER_LOW_TO_HIGH](#placeholder_low_to_high)
+  * [PLACEHOLDER_HIGH_TO_LOW](#placeholder_high_to_low)
 * [Multiple elements with the same priority](#multiple-elements-with-the-same-priority)
 * [Combining multiple sorting types](#combining-multiple-sorting-types)
 * [Additional settings](#additional-settings)
 * [Additional info](#additional-info)
-    * [Additional note 1 - Limitations](#additional-note-1---limitations)
-    * [Additional note 2 - per-world sorting](#additional-note-2---per-world-sorting)
-    * [Additional note 3 - Compatibility issues with other plugins](#additional-note-3---compatibility-issues-with-other-plugins)
+  * [Additional note 1 - Limitations](#additional-note-1---limitations)
+  * [Additional note 2 - per-world sorting](#additional-note-2---per-world-sorting)
+  * [Additional note 3 - Compatibility issues with other plugins](#additional-note-3---compatibility-issues-with-other-plugins)
 * [Common mistakes](#common-mistakes)
 * [API](#api)
 
@@ -228,10 +228,10 @@ The most common mistakes include:
 * Disabling both teams and layout, not realizing it disables sorting as well.
 * Mistaking `primary-group-finding-list` for the sorting list, despite that list having nothing to do with sorting and by default even having a comment above it saying it has nothing to do with sorting.
 * Not configuring primary groups correctly. This can have multiple reasons, such as
-    * Not configuring group weights in LuckPerms.
-    * Accidentally enabling `use-bukkit-permission-manager` option when on a proxy without knowing what it does.
-    * Installing TAB on a proxy without having any permission plugin on the proxy.
-    * Enabling `assign-groups-by-permissions` without giving those permissions (or the opposite - giving away OP to users, resulting in the highest group being taken).
+  * Not configuring group weights in LuckPerms.
+  * Accidentally enabling `use-bukkit-permission-manager` option when on a proxy without knowing what it does.
+  * Installing TAB on a proxy without having any permission plugin on the proxy.
+  * Enabling `assign-groups-by-permissions` without giving those permissions (or the opposite - giving away OP to users, resulting in the highest group being taken).
 
   [Debug command](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-debug-player) will help you identify if this is your case.
 * Using a plugin that causes TAB to fail to apply teams (such as Tablisknu). This includes installing TAB plugin on both backend and proxy, causing the installations to conflict.

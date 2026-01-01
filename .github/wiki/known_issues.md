@@ -1,5 +1,5 @@
 # About
-This is collection if minecraft issues/bugs you may experience when using TAB, which are not TAB bugs and cannot be fixed with a plugin.
+This is collection if Minecraft issues/bugs you may experience when using TAB, which are not TAB bugs and cannot be fixed with a plugin.
 
 # 1.5.x - 1.12.x - Unwanted space
 You may see unwanted space at the end of a line of text even if you didn't configure any.

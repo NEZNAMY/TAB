@@ -1,82 +1,99 @@
 # Content
 * [About](#about)
-* [Creating a layout](#creating-a-layout)
-    * [Display condition](#display-condition)
-    * [default-skin](#default-skin)
+* [Configuration](#configuration)
+  * [Layout](#layout)
     * [Fixed slots](#fixed-slots)
     * [Player groups](#player-groups)
-* [Managing multiple layouts with conditions](#managing-multiple-layouts-with-conditions)
-* [Skins](#skins)
-    * [Format](#format)
-* [Additional settings](#additional-settings)
-* [Compatibility](#compatibility)
-    * [Playerlist objective incompatibility](#playerlist-objective-incompatibility)
-    * [Global playerlist incompatibility](#global-playerlist-incompatibility)
-    * [Per world playerlist incompatibility](#per-world-playerlist-incompatibility)
+  * [Chaining layouts](#chaining-layouts)
+  * [Skins](#skins)
+* [Compatibility with other plugins](#compatibility-with-other-plugins)
+* [Compatibility with other features](#compatibility-with-other-features)
+  * [Playerlist objective incompatibility](#playerlist-objective-incompatibility)
+  * [Global playerlist incompatibility](#global-playerlist-incompatibility)
+  * [Per world playerlist incompatibility](#per-world-playerlist-incompatibility)
 * [Additional info](#additional-info)
-    * [Additional note 1 - [1.19.3 - 1.21.1] Entries in chat complete](#additional-note-1---1193---1211-entries-in-chat-complete)
-    * [Additional note 2 - [1.8 - 1.21.3] Second layer of skin missing](#additional-note-2---18---1213-second-layer-of-skin-missing)
-    * [Additional note 3 - Entry overlap](https://github.com/NEZNAMY/TAB/wiki/Feature-guide%3A-Layout/_edit#additional-note-3---entry-overlap)
+  * [Additional note 1 - [1.19.3 - 1.21.1] Entries in chat complete](#additional-note-1---1193---1211-entries-in-chat-complete)
+  * [Additional note 2 - [1.8 - 1.21.3] Second layer of skin missing](#additional-note-2---18---1213-second-layer-of-skin-missing)
+  * [Additional note 3 - Entry overlap](#additional-note-3---entry-overlap)
 * [Examples](#examples)
-    * [Example 1 - Per-server columns](#example-1---per-server-columns)
+  * [Example 1 - Per-server columns](#example-1---per-server-columns)
 
 # About
 This feature allows you to customize all 80 tablist slots. Displaying less than 4 columns is currently not supported ([here's why](https://gist.github.com/NEZNAMY/3dfcbf7d44283735d3c18266a2851651)). This feature can be enabled and configured in **config.yml** file under **layout** section.
 
 This feature is only available for versions **1.8** and up due to massive tablist changes, which would make 1.7- compatibility require a complete rewrite of the functionality and could still cause all kinds of visual issues, including, but not limited to compatibility with other plugins adding/removing players from the tablist.
 
-# Creating a layout
-Layouts can be creating in config under `layout.layouts` section. A layout has 4 settings:
-* [Display condition](#display-condition) (optional)
-* [default-skin](#default-skin) (optional)
-* [Fixed slots](#fixed-slots)
-* [Player groups](#player-groups)
-
-## Display condition
-Condition that must be met for player to see the layout.
-If player does not meet the condition, the next defined layout's condition is checked.
-If a player does not meet any defined display condition, they will see the default tablist.
-Display condition is optional and doesn't need to be set.  
-For list of possible condition types see [Conditions page](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders).  
-Example:
-```
-layouts:
-  staff:
-    condition: "permission:tab.staff"
-```
-This layout will only be visible to players with `tab.staff` permission.
-
-## default-skin
-When configured, layout will override `default-skin` value and use that one for empty slots and fixed slots without skin definition. When not set, global `default-skin` will be displayed.  
-**Example**:
+# Configuration
+The feature can be configured in **config.yml** under **layout** section.  
+This is how the default configuration looks:
 ```
 layout:
-  enabled: true
+  enabled: false
   direction: COLUMNS
-  default-skin: mineskin:37e93c8e12cd426cb28fce31969e0674  # Global default skin for all layouts
+  default-skin: mineskin:37e93c8e12cd426cb28fce31969e0674
   enable-remaining-players-text: true
   remaining-players-text: '... and %s more'
   empty-slot-ping-value: 1000
   layouts:
-    test:
-      default-skin: player:Notch  # All empty slots will use skin of player "Notch" in this layout
-      fixed-slots: []
+    default:
+      slot-count: 80
+      fixed-slots:
+        - '1|&3Website&f:'
+        - '2|&bmyserver.net'
+        - '3|&8&m                       '
+        - '4|&3Name&f:'
+        - '5|&b%player%'
+        - '7|&3Rank&f:'
+        - '8|Rank: %group%'
+        - '10|&3World&f:'
+        - '11|&b%world%'
+        - '13|&3Time&f:'
+        - '14|&b%time%'
+        - '21|&3Teamspeak&f:'
+        - '22|&bts.myserver.net'
+        - '23|&8&m                       '
+        - '41|&3Store&f:'
+        - '42|&bshop.myserver.net'
+        - '43|&8&m                       '
       groups:
+        staff:
+          condition: permission:tab.staff
+          slots:
+            - 24-40
         players:
           slots:
-          - 1-80
+            - 44-80
 ```
+All the options are explained in the following table.
 
-## Fixed slots
+| Option name                   | Default value        | Description                                                                                                                                                                                                                                                                |
+|-------------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| enabled                       | true                 | Enables / Disables the feature                                                                                                                                                                                                                                             |
+| direction                     | COLUMNS              | Defines direction of slots. Options are COLUMNS (top to bottom, left to right) and ROWS (left to right, top to bottom). This does not only change the slot numbers in configuration, but will also affect the way players are being filled into player groups.             |
+| default-skin                  | "mineskin:383747683" | Default skin to display for fixed slots that do not define a skin, empty slots and fixed slots with invalid skin.                                                                                                                                                          |
+| enable-remaining-players-text | true                 | When enabled and there are more players in a player group than available slots, the last slot of player group will show how many more players there are, instead of using the last slot for one more player.                                                               |
+| remaining-players-text        | "... and %s more"    | Text to show if option above is enabled. Use `%s` variable for defining how many more players there are.                                                                                                                                                                   |
+| empty-slot-ping-value         | 1000                 | Ping value to use for fixed slots and empty slots. The ping intervals for bars are client sided and are as following: <br />- Negative value: ✖ <br />- 0 - 149: 5 bars <br />- 150 - 299: 4 bars <br />- 300 - 599: 3 bars <br />- 600 - 999: 2 bars <br />- 1000+: 1 bar |
+| layouts                       | *Map*                | Layouts to display based on conditions (see below for more info).                                                                                                                                                                                                          | 
+
+## Layout
+A layout consists of the following options:
+| Option name | Description      |
+|-------------|------------------|
+| `condition` (optional) | [Condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) (either condition name or a conditional expression) that must be met for the layout to be displayed. If not defined, layout will be displayed without any required condition. If player does not meet condition, another layout may be displayed based on chaining (see below for more info). |
+| `default-skin` (optional)      | Overrides global `default-skin` setting for this layout. |
+| `slot-count` (optional)        | Amount of slots to show in this layout. If not specified, defaults to `80`. **This option is coming in TAB v5.5.0**. |
+| `fixed-slots`                  | List of fixed slots, see below for more info. |
+| `player-groups`                | Map of player groups, see below for more info. |
+
+### Fixed slots
 These are slots with fixed position that contain configurable text and skin.  
-They can be configured under `fixed-slots` option of each layout. The definition syntax is `SLOT|TEXT|SKIN`. If you don't want to define custom skin for that slot, use `SLOT|TEXT`.  
+They can be configured under `fixed-slots` option of each layout. The definition syntax is `SLOT|TEXT[|SKIN]` (skin is optional). If you don't want to define custom skin for that slot, use `SLOT|TEXT`.  
 `SLOT` - The position of the fixed slot. It can be from 1 to 80. By default, the direction is set to columns, so the first column is 1-20.  
 `TEXT` - the text. It supports placeholders.  
 `SKIN` - layout's skin, see below for configuration.  
 Example:
 ```
-layouts:
-  staff:
     fixed-slots:
       - '1|&3RAM&f:'
       - '2|&b%memory-used%MB / %memory-max%MB'
@@ -87,12 +104,12 @@ layouts:
 If you do not wish to use any fixed slots, make it an empty list (`[]`).  
 Example:
 ```
-layouts:
-  staff:
-    fixed-slots: []
+  layouts:
+    staff:
+      fixed-slots: []
 ```
 
-## Player groups
+### Player groups
 These are groups of players that meet the specified condition. They consist of 2 parts - condition and slots.
 
 **1. Condition**  
@@ -106,25 +123,25 @@ Display condition is not required (can be used to make a "default" group with th
 Slot intervals dedicated to the group. Interval `1-5` would mean all slots from 1 to 5. In case you want to define multiple intervals to exclude some slots, define another interval below the first one.  
 Example:
 ```
-layouts:
-  myLayout:
-    groups:
-      staff:
-        condition: permission:tab.staff
-        slots:
-          - '24-40'
-      players:
-        slots:
-          - '44-80'
+  layouts:
+    myLayout:
+      groups:
+        staff:
+          condition: permission:tab.staff
+          slots:
+            - '24-40'
+        players:
+          slots:
+            - '44-80'
 ```
 In this example, slots `24-40` will be reserved for players with `tab.staff` permission. Players without that permission will be in slots `44-80`.
 
-# Managing multiple layouts with conditions
-You can define multiple layouts and display them based on a condition.
-To do so, define `condition` for layouts.
-Conditions are checked in the order layouts are defined in config.
-If layout doesn't specify condition, it is displayed with no requirement.
-If a player does not meet display condition for any layout, they will see the classic tablist.  
+## Chaining layouts
+When defining more than 1 layout in config, the plugin will display the correct design based on conditions.
+The plugin goes through all defined layouts, starting with the design on top.
+If the layout's condition is met or not set, it is displayed.
+If not, the next defined layout is checked and so on.
+If no suitable layout is found (the last one has a condition requirement which wasn't met), no layout is displayed (player will see the normal tablist).
 Example:
 ```
 layouts:
@@ -142,31 +159,22 @@ layouts:
 ```
 In this example, players with `tab.staff` permission will see `staff` layout, others will see `default` layout.
 
-# Skins
-*If you're wondering how to enable / disable heads in the tablist, see [FAQ](https://github.com/NEZNAMY/TAB/wiki/Frequently-Asked-Questions#6---how-to-make-player-heads-visible-in-tablist).*  
-In slots which display a connected player, their skin is displayed.  
-For fixed slots, if their skin is defined, it is used, otherwise `default-skin` is used. It is also used if invalid skin is specified.
+## Skins
+*If you're wondering how to enable / disable heads in the tablist, see [FAQ](https://github.com/NEZNAMY/TAB/wiki/Frequently-Asked-Questions#6---how-to-make-player-heads-visible-in-tablist).*
 
-## Format
-Currently, TAB supports 3 skin formats:
-* `mineskin:<UUID>` - takes UUID from [MineSkin](https://mineskin.org). You can find some pre-uploaded skins at the bottom of this page.
-* `player:<name>` - displays skin of player with the `name`
-* `texture:<texture>` - uses literal skin texture. This lets you use heads from [Minecraft-Heads](https://minecraft-heads.com/custom-heads) by taking the texture in the `Minecraft-URL` field.    
-  ![](https://cdn.discordapp.com/attachments/817789229479624728/916373892237512715/unknown.png)
+For players, their skin is displayed. For fixed slots and empty slots, you can specify which skin to show using the same skin syntax.  
+Currently, TAB supports these skin formats:
+| Format | Example | Description |
+|--------|---------|-------------|
+| `mineskin:<UUID>` | `mineskin:37e93c8e12cd426cb28fce31969e0674` | Takes UUID from [MineSkin](https://mineskin.org). |
+| `player:<name>` | `player:Notch` | Displays skin of specified player. |
+| `texture:<texture>` | `texture:469b3bac406b51ba0e76c2c218aa4d45fde9ea7c101c85fbd8106c92c4aa36dd` | Uses skin texture from `textures.minecraft.net`. Skin browsing websites show this value. |
 
-# Additional settings
-| Option name                   | Default value        | Description                                                                                                                                                                                                                                                                |
-|-------------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| direction                     | COLUMNS              | Defines direction of slots. Options are COLUMNS (top to bottom, left to right) and ROWS (left to right, top to bottom). This does not only change the slot numbers in configuration, but will also affect the way players are being filled into player groups.             |
-| enable-remaining-players-text | true                 | When enabled, the last slot of player group will show how many more players there are, instead of using the last slot for one more player.                                                                                                                                 |
-| remaining-players-text        | "... and %s more"    | Text to show if option above is enabled.                                                                                                                                                                                                                                   |
-| default-skin                  | "mineskin:383747683" | Default skin to display for fixed slots that do not define a skin, empty slots and fixed slots with invalid skin.                                                                                                                                                          |
-| empty-slot-ping-value         | 1000                 | Ping value to use for fixed slots and empty slots. The ping intervals for bars are client sided and are as following: <br />- Negative value: ✖ <br />- 0 - 149: 5 bars <br />- 150 - 299: 4 bars <br />- 300 - 599: 3 bars <br />- 600 - 999: 2 bars <br />- 1000+: 1 bar |
+# Compatibility with other plugins
+This feature does not have any compatibility issues with other plugins.  
+When it comes to compatibility with vanish plugins, see [Additional information - Vanish detection](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection).
 
-![image](https://user-images.githubusercontent.com/6338394/179363352-40f815d4-fc37-4ca1-8056-298488e84a60.png)
-![image](https://user-images.githubusercontent.com/6338394/179355373-3e50b8c5-95d7-4470-b93f-deb162ccc145.png)
-
-# Compatibility
+# Compatibility with other features
 ## Playerlist objective incompatibility
 To avoid showing fake players in tab-complete, TAB uses an empty string as the fake players' names.  
 Though Minecraft's scoreboard objectives (which help achieve the Playerlist objective feature) only use players' names and not players' UUIDs to define values.  

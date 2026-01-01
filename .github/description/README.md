@@ -1,6 +1,6 @@
 # About
 This folder contains the plugin's description as advertised on various marketplaces where each one uses a different syntax.
-(bbcode, markdown).  
+(BBCode, Markdown).  
   
 While this is not an accurate folder to have this stored in (`.github`),
 it is the closest if we don't want to create a folder for this in the root.  

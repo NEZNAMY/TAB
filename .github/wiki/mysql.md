@@ -3,8 +3,8 @@
 * [Enabling](#enabling)
 * [Configuration changes](#configuration-changes)
 * [Data conversion](#data-conversion)
-    * [Downloading from MySQL to files](#downloading-from-mysql-to-files)
-    * [Uploading from files to MySQL](#uploading-from-files-to-mysql)
+  * [Downloading from MySQL to files](#downloading-from-mysql-to-files)
+  * [Uploading from files to MySQL](#uploading-from-files-to-mysql)
 * [Synchronization frequency](#synchronization-frequency)
 
 # About
@@ -26,8 +26,7 @@ See the compatibility table below for current information about compatibility:
 |------------|-----------|
 | Bukkit     | ✔         |
 | BungeeCord | ✔         |
-| Fabric     | ❌         |
-| Sponge     | ❌         |
+| Modded     | ❌         |
 | Velocity   | ❌         |
 
 # Enabling

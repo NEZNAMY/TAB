@@ -1,28 +1,27 @@
 # Content
 * [About](#about)
 * [Condition types](#condition-types)
-    * [Number comparisons](#number-comparisons)
-    * [Text operations](#text-operations)
-    * [Permission](#permission)
+  * [Number comparisons](#number-comparisons)
+  * [Text operations](#text-operations)
+  * [Permission](#permission)
 * [Multiple condition requirements](#multiple-condition-requirements)
 * [Condition output](#condition-output)
 * [Configuration](#configuration)
 * [Usage](#usage)
-    * [Displaying text](#displaying-text)
-    * [Display condition of a feature](#display-condition-of-a-feature)
-        * [Short format](#short-format)
+  * [Displaying text](#displaying-text)
+  * [Display condition of a feature](#display-condition-of-a-feature)
+    * [Short format](#short-format)
 * [Refresh interval](#refresh-interval)
 * [Examples](#examples)
-    * [Example 1 - Chaining conditional placeholders](#example-1---chaining-conditional-placeholders)
-    * [Example 2 - Combining AND and OR](#example-2---combining-and-and-or)
-    * [Example 3 - Negating expressions](#example-3---negating-expressions)
+  * [Example 1 - Chaining conditional placeholders](#example-1---chaining-conditional-placeholders)
+  * [Example 2 - Combining AND and OR](#example-2---combining-and-and-or)
 
 # About
 Conditions / conditional placeholders allow you
 to create output which depends on the output of other placeholders or permission requirement.  
 They have 2 main uses in the plugin:
-* Display condition which must be met to be able to see something (bossbar, scoreboard, layout)
-* Conditional placeholders which return defined outputs in both cases if the condition passes or fails
+* `display-condition` which must be met to be able to see something (bossbar, scoreboard, layout) or `disable-condition` for disabling a feature (scoreboard-teams, tablist-name-formatting, ...)
+* Conditional placeholders which return defined outputs based on if the condition passes or fails
 
 # Condition types
 ## Number comparisons
@@ -205,32 +204,3 @@ conditions:
     type: AND
 ```
 Then, use condition `main` as the display condition (or as a placeholder - `%condition:main%`). Note that `true`/`false` values were not defined, as such, they default to `true` and `false`, respectively. Therefore, we use the placeholder from the condition and check if the result is `true`. Then, check if player is also in the specified server.
-
-## Example 3 - Negating expressions
-Most condition types contain their opposites, such as:
-* `=` -> `!=`
-* `permission:` -> `!permission:`
-* `>=` -> `<`
-* `>` -> `<=`
-* `|-` -> `!|-`
-* `-|` -> `!-|`
-* `<-` -> `!<-`
-
-You can achieve this by creating a full condition and check if it returned false.  
-**Example:**  
-Original:
-```
-display-condition: "%server%|-lobby"
-```
-Negated:
-```
-conditions:
-  lobby:
-    conditions:
-      - "%server%|-lobby"
-```
-...
-```
-display-condition: "%condition:lobby%=false"
-```
-This way, the display condition will pass if the nested condition returned `false` (player is not in any lobby).

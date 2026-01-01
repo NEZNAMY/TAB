@@ -2,7 +2,7 @@
 This is a quick guide for [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) plugin, which is often referred to on the wiki, and we also get many assistance requests with TAB which turn out to be asking for help with PlaceholderAPI. Whether its documentation is not clear enough, missing information or users just don't read it isn't the topic here to judge, instead, a quick guide with everything needed is provided.
 
 # Installation
-PlaceholderAPI is a standalone bukkit plugin that can be installed just like any other plugin.
+PlaceholderAPI is a standalone Bukkit plugin that can be installed just like any other plugin.
 It does not support proxies.
 If you have TAB on a proxy server and wish to use PlaceholderAPI placeholders,
 you'll need to install [Bridge](https://www.spigotmc.org/resources/83966) plugin on backend servers.

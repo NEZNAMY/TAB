@@ -1,12 +1,12 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-    * [Grouping playerlist from multiple worlds](#grouping-playerlist-from-multiple-worlds)
+  * [Grouping playerlist from multiple worlds](#grouping-playerlist-from-multiple-worlds)
 
 # About
 This feature allows you to limit players you see in tablist to only players in your world, or in a group of worlds.  
 This feature can be configured in **config.yml** under **per-world-playerlist** section.  
-To use it, you need TAB installed on bukkit server. This feature is not available on BungeeCord.
+To use it, you need TAB installed on Bukkit server. This feature is not available on any other platform.
 
 # Configuration
 | Option name                    | Default value | Description                                                                                                 |

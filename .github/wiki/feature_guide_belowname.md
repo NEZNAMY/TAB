@@ -1,29 +1,37 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-* [Additional info](#additional-info)
-    * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
-    * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
-    * [Additional note 3 - Visible on NPCs](#additional-note-3---visible-on-npcs)
-    * [Additional note 4 - Compatibility with modified clients](#additional-note-4---compatibility-with-modified-clients)
-* [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Limitations](#limitations)
+* [Compatibility with other plugins](#compatibility-with-other-plugins)
+* [Additional info](#additional-info)
+  * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
+  * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
+  * [Additional note 3 - Visible on NPCs](#additional-note-3---visible-on-npcs)
+  * [Additional note 4 - Compatibility with modified clients](#additional-note-4---compatibility-with-modified-clients)
 * [Examples](#examples)
-    * [Example 1 - Per-world values](#example-1---per-world-values)
-    * [Example 2 - Hiding `title` for 1.20.3+ players](#example-2---hiding-title-for-1203-players)
-    * [Example 3 - Displaying health as 0-10 or in %](#example-3---displaying-health-as-0-10-or-in-)
-    * [Example 4 - Health bar using hearts](#example-4---health-bar-using-hearts)
+  * [Example 1 - Per-world values](#example-1---per-world-values)
+  * [Example 2 - Hiding `title` for 1.20.3+ players](#example-2---hiding-title-for-1203-players)
+  * [Example 3 - Displaying health as 0-10 or in %](#example-3---displaying-health-as-0-10-or-in-)
+  * [Example 4 - Health bar using hearts](#example-4---health-bar-using-hearts)
 * [Tips & Tricks](#tips--tricks)
-    * [Tip 1 - Heart symbol](#tip-1---heart-symbol)
+  * [Tip 1 - Heart symbol](#tip-1---heart-symbol)
 
 # About
 This features gives you control over Minecraft's scoreboard objective feature with BELOW_NAME slot.
-This line is displayed below the nametags of all player entities in game. It is not possible to explicitly disable this feature for NPCs, however, this goal can be achieved (see below for more info).
+This line is displayed below the nametags of all player entities in game. It is not possible to explicitly disable this feature for NPCs; however, this goal can be achieved (see below for more info).
 It is only visible when within an 8-block range of the player (the range is hardcoded in the client and cannot be changed with a plugin).
 
 Example visual effect:  
 ![](https://images-ext-1.discordapp.net/external/YlGPCRDJVeZZI0TPWmVBKyHszxSkjatmclyqUThvTz8/https/image.prntscr.com/image/jcETUzVQQYqectQ2aI4iqQ.png)
 
+The displayed line is not one continuous configurable text. It consists of 2 parts (score and title) joined with a space.  
+The exact format is `[score]` + space + `title` (no, the space cannot be removed), where `[score]` is:
+* `value` for 1.20.2- (will show `0` on NPCs), which only supports numbers (integers)
+* `fancy-value` for 1.20.3+ (will show `fancy-value-default` on NPCs), which supports any text
+
+As you can see, the feature still has limits, even on 1.20.3+. If you are below this version or still don't like the forced space before title, you are out of luck and cannot use this feature the way you would like to. If you have seen this feature seemingly limitless, it could be a feature that was a part of TAB, but removed later. This feature hid the original nametag and placed invisible armor stands instead. If you are interested in this kind of solution, you'll need to look into other plugins.
+
+# Configuration
 The feature can be configured in **config.yml** under **belowname-objective** section.  
 This is how the default configuration looks:
 ```
@@ -35,27 +43,38 @@ belowname-objective:
   fancy-value-default: "NPC"
   disable-condition: '%world%=disabledworld'
 ```
+All the options are explained in the following table.
 
-The displayed line is not one continuous configurable text. It consists of 2 parts (score and title) joined with a space.  
-The exact format is `[score]` + space + `title` (no, the space cannot be removed), where `[score]` is:
-* `value` for 1.20.2- (will show `0` on NPCs), which only supports numbers
-* `fancy-value` for 1.20.3+ (will show `fancy-value-default` on NPCs), which supports any text
+| Option name         | Default value         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+|---------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| enabled             | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| value               | %health%              | [1.20.2-] An integer from -2147483648 to 2147483647, doesn't support decimal values. The number is always white. Supports placeholders with player-specific output, such as player health. Only visible on 1.20.2 and lower. <br/> **Note**: Even if you only support 1.20.3+, you still need to configure this value to properly evaluate to a number, because the value is still sent to the client (just not displayed). You can set it to `0` for simplicity.                                                                              |
+| fancy-value         | &c%health%            | [1.20.3+] Any text, supports placeholders with per-player output. Only visible on 1.20.3+, where it completely replaces `value`.                                                                                                                                                                                                                                                                                                                                                                                                               |
+| fancy-value-default | NPC                   | [1.20.3+] Default display for all player entities. Plugin uses the value above for every real player, therefore this default value will only appear on player entities which are not actual players, a.k.a. NPCs. Only visible on 1.20.3+.                                                                                                                                                                                                                                                                                                     |
+| title               | Health                | Shared label shown after the score for every player entity. Player sees the same text on everyone (= placeholders are parsed for the viewer). Use the `value`/`fancy-value` fields for per‑player data; use `title` only for static labels like `Health` or placeholders which are supposed to be parsed for the viewing player.                                                                                                                                                                                                               |
+| disable-condition   | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) (either name of a condition or a conditional expression) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. <br/> **Note**: Disabling the feature for a player means sending objective unregister packet to them, which results in player not seeing belowname on anyone anymore. It doesn't work the other way around - you cannot disable this feature on target players, only for viewers. |
 
-As you can see, the feature still has limits, even on 1.20.3+. If you are below this version or still don't like the forced space, you are out of luck and cannot use this feature the way you would like to. If you have seen this feature seemingly limitless, it could be a feature that was a part of TAB, but removed later. This feature hid the original nametag and placed invisible armor stands instead. If you are interested in this kind of solution, you'll need to look into other plugins.
+# Limitations
+* [1.12.2-] Title length is limited to 32 characters (including color codes).
+* [1.20.2-] `value` is limited to a white number.
+* [Bedrock] Doesn't support 1.20.3+ features (`fancy-value`), `value` will be displayed instead, just like on <1.20.3.
+* The format is a **[score] + space + shared title**. No, the space cannot be removed.
+* The title is the same on all players, therefore, it cannot be personalized (such as player's faction). Only [score] can be per-player.
+* It appears on all entities of player type. **This includes player NPCs.**
 
-# Configuration
-| Option name         | Default value         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-|---------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| enabled             | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| value               | %health%              | [1.20.2-] An integer from -2147483648 to 2147483647, doesn't support decimal values. The number is always white. Supports placeholders with player-specific output, such as player health. Only visible on 1.20.2 and lower. <br/> **Note**: Even if you only support 1.20.3+, you still need to configure this value to properly evaluate to a number, because the value is still sent to the client (just not displayed). You can set it to `0` for simplicity. |
-| fancy-value         | &c%health%            | [1.20.3+] Any text, supports placeholders with per-player output. Only visible on 1.20.3+, where it completely replaces `value`.                                                                                                                                                                                                                                                                                                                                  |
-| fancy-value-default | NPC                   | [1.20.3+] Default display for all player entities. Plugin uses the value above for every real player, therefore this default value will only appear on player entities which are not actual players, a.k.a. NPCs. Only visible on 1.20.3+.                                                                                                                                                                                                                        |
-| title               | Health                | Shared label shown after the score for every player entity. Everyone sees the same text (placeholders are parsed for the viewer). Use the `value`/`fancy-value` fields for per‑player data; use `title` only for static labels like `Health` or placeholders which are supposed to be parsed for the viewing player.                                                                                                                                              |
-| disable-condition   | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever.                                                                                                                                                                                                                                                               |
+# Compatibility with other plugins
+TAB does not contain any sort of compatibility functionality for this feature.
+It will not try to prevent other plugins from applying the feature and neither will it detect it to re-add back once the other plugin removes it.
+Therefore, if another plugin also sends belowname objective, TAB's may not show anymore (depending on who sends it first).
+Make sure you do not have any other plugin sending it to ensure the feature works properly.
+
+You can check the list of objectives registered by either commands or plugins using Bukkit API using `/scoreboard objectives list`.  
+If it contains one that could be the cause, you can unregister it by running `/scoreboard objectives remove <name>`. After doing so, reload TAB, so it resends its objectives again.  
+Note that if this was automatically generated by a plugin, it will probably be added back again.
 
 # Additional Info
 ## Additional note 1 - Copying nametag visibility rule
-The minecraft feature is programmed to be affected by nametag visibility rule.
+The Minecraft feature is programmed to be affected by nametag visibility rule.
 This means that when the nametag is set to invisible, belowname will be invisible as well.
 
 ## Additional note 2 - Hidden on sneak on 1.8
@@ -73,32 +92,18 @@ NPC plugin can take advantage of this by using teams to hide the original name a
 
 This is how you can achieve it using the following popular NPC plugins:
 * **Citizens**:
-    * 1 - Select the NPC (`/npc select <ID>` or `/npc select` to select the nearest NPC)
-    * 2 - Hide its original nametag (which also hides belowname) using `/npc name`
-    * 3 - Display your desired text using `/npc hologram add <text>` ([more info](https://wiki.citizensnpcs.co/Commands#:~:text=the%20NPC%20hitbox-,/npc%20hologram,-add%20%5Btext%5D%20%7C%20set))
+  * 1 - Select the NPC (`/npc select <ID>` or `/npc select` to select the nearest NPC)
+  * 2 - Hide its original nametag (which also hides belowname) using `/npc name`
+  * 3 - Display your desired text using `/npc hologram add <text>` ([more info](https://wiki.citizensnpcs.co/Commands#:~:text=the%20NPC%20hitbox-,/npc%20hologram,-add%20%5Btext%5D%20%7C%20set))
 * **FancyNpcs with FancyHolograms**:
-    * 1 - Create a hologram with `/hologram create text <name>`.
-    * 2 - Link your newly created hologram with your NPC: `/hologram edit <hologram name> linkWithNpc <NPC name>`.  
-      Its original name will be hidden automatically, so you don't need to manually do it.
-    * 3 - Change the NPC's name by editing your hologram's line(s): `/hologram edit hi setline 1 <text>`.  
-      You can also add more lines if you want. See [FancyNpcs's wiki](https://docs.fancyinnovations.com/fancyholograms/commands/hologram/#text-hologram-modification) for more commands & info.
+  * 1 - Create a hologram with `/hologram create text <name>`.
+  * 2 - Link your newly created hologram with your NPC: `/hologram edit <hologram name> linkWithNpc <NPC name>`.  
+    Its original name will be hidden automatically, so you don't need to manually do it.
+  * 3 - Change the NPC's name by editing your hologram's line(s): `/hologram edit hi setline 1 <text>`.  
+    You can also add more lines if you want. See [FancyNpcs's wiki](https://docs.fancyinnovations.com/fancyholograms/commands/hologram/#text-hologram-modification) for more commands & info.
 
 # Additional note 4 - Compatibility with modified clients
 Sadly, this feature is suffering from bugs introduced by third party clients such as Feather and Lunar. These two completely ignore `fancy-value` as if it was never added into the game, even on 1.20.3+. This is just an example, and it's not limited to these two clients and this one issue. If you experience issues with the feature and believe you configured it correctly, use vanilla client to make sure it's not caused by a broken client.
-
-# Compatibility with other plugins
-TAB does not contain any sort of compatibility functionality for this feature.
-It will not try to prevent other plugins from applying the feature and neither will it detect it to re-add back once the other plugin removes it.
-Therefore, if another plugin also sends belowname objective, TAB's may not show anymore (depending on who sends it first).
-Make sure you do not have any other plugin sending it to ensure the feature works properly.
-
-# Limitations
-* [1.5 - 1.12.2] Title length is limited to 32 characters (including color codes).
-* [1.5 - 1.20.2] `value` is limited to a white number.
-* [Bedrock] Doesn't support 1.20.3+ features (`fancy-value`), `value` will be displayed instead, just like on <1.20.3
-* The format is a **[score] + space + shared title**. No, the space cannot be removed.
-* The title is the same on all players, therefore, it cannot be personalized (such as player's faction). Only [score] can be per-player.
-* It appears on all entities of player type. **This includes player NPCs.**
 
 # Examples
 ## Example 1 - Per-world values
@@ -139,8 +144,7 @@ create two condition chains, one for each value and use them.
 > [!NOTE]
 > This is just an example, the plugin is not limited to displaying different values only per world.
 > If you want per server values on proxy, use %server% with server names.
-> If you want WorldGuard regions, use %worldguard_region_name% with region names.
-> This works for any placeholder offered by the plugin or by PlaceholderAPI.
+> This works for any placeholder offered by TAB or by PlaceholderAPI.
 
 ## Example 2 - Hiding `title` for 1.20.3+ players
 1.20.3 has replaced `value` field,
@@ -181,7 +185,16 @@ You'll either need to live with it, or put some shared text there to avoid havin
 If you want health to display health as 0-10 instead of 0-20, you can achieve it with PlaceholderAPI:
 * `%math_0_{player_health}/2%` for 0-10
 * `%math_0_{player_health}*5%` for 0-100
-  In order to use these placeholders, make sure PlaceholderAPI is installed and its `math` and `player` expansions are downloaded.
+
+## Example 4 - Health bar using hearts
+You can achieve this on `1.20.3+` using `healthbar` expansion from PlaceholderAPI:
+```
+belowname-objective:
+  fancy-value: "%healthbar_healthbar%"
+```
+<img width="130" height="159" alt="image" src="https://github.com/user-attachments/assets/cef217ec-0a39-41ad-8457-f8f67a1e4b02" />  
+
+Sadly, there is no way to remove the forced space between `fancy-value` and `title`. You can only try to play around it by adding some static text after it, to make it look like the space is intended. Or you can just ignore the space and live with it.
 
 # Tips & Tricks
 ## Tip 1 - Heart symbol
@@ -192,13 +205,3 @@ belowname-objective:
 ```
 > [!IMPORTANT]
 > Make sure your config is [saved in UTF-8 encoding](https://github.com/NEZNAMY/TAB/wiki/How-to-save-the-config-in-UTF8-encoding) to properly read the heart symbol.
-
-# Example 4 - Health bar using hearts
-You can achieve this on `1.20.3+` using `healthbar` expansion from PlaceholderAPI:
-```
-belowname-objective:
-  fancy-value: "%healthbar_healthbar%"
-```
-<img width="130" height="159" alt="image" src="https://github.com/user-attachments/assets/cef217ec-0a39-41ad-8457-f8f67a1e4b02" />  
-
-Sadly, there is no way to remove the forced space between `fancy-value` and `title`. You can only try to play around it by adding some static text after it, to make it look like the space is intended. Or you can just ignore the space and live with it.

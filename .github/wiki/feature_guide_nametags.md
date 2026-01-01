@@ -1,26 +1,29 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
-    * [Groups and users](#groups-and-users)
-    * [Per-world / per-server](#per-world--per-server)
-    * [Priority system](#priority-system)
-    * [Name color](#name-color)
-    * [Placeholder support](#placeholder-support)
-    * [Additional settings](#additional-settings)
-* [Tips & Tricks](#tips--tricks)
+  * [config.yml](#configyml)
+  * [groups.yml and users.yml](#groupsyml-and-usersyml)
+  * [Name color](#name-color)
+* [Commands](#commands)
+* [Placeholders](#placeholders)
+  * [PlaceholderAPI placeholders](#placeholderapi-placeholders)
 * [Limitations](#limitations)
+* [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Additional info](#additional-info)
-    * [Additional note 1 - NPC (in)compatibility](#additional-note-1---npc-incompatibility)
-    * [Additional note 2 - Prefix/suffix on pets](#additional-note-2---prefixsuffix-on-pets)
-    * [Additional note 3 - Changing name itself](#additional-note-3---changing-name-itself)
-    * [Additional note 4 - F1 view](#additional-note-4---f1-view)
-    * [Additional note 5 - Transparent players](#additional-note-5---transparent-players)
-    * [Additional note 6 - Vanish hook](#additional-note-6---vanish-hook)
+  * [Additional note 1 - NPC (in)compatibility](#additional-note-1---npc-incompatibility)
+  * [Additional note 2 - Prefix/suffix on pets](#additional-note-2---prefixsuffix-on-pets)
+  * [Additional note 3 - Changing name itself](#additional-note-3---changing-name-itself)
+  * [Additional note 4 - F1 view](#additional-note-4---f1-view)
+  * [Additional note 5 - Transparent players](#additional-note-5---transparent-players)
+  * [Additional note 6 - Vanish hook](#additional-note-6---vanish-hook)
 * [API](#api)
-    * [Changing prefix and suffix](#changing-prefix-and-suffix)
-    * [Collision](#collision)
-    * [Manipulating visibility](#manipulating-visibility)
-    * [Disabling team handling](#disabling-team-handling)
+  * [Changing prefix and suffix](#changing-prefix-and-suffix)
+  * [Collision](#collision)
+  * [Manipulating visibility](#manipulating-visibility)
+  * [Disabling team handling](#disabling-team-handling)
+* [Examples](#examples)
+  * [Example 1 - Taking prefix/suffix from permission plugin](#example-1---taking-prefixsuffix-from-permission-plugin)
+  * [Example 2 - Making nametags invisible on a subserver](#example-2---making-nametags-invisible-on-a-subserver)
 
 # About
 Nametags are controlled by a feature called scoreboard teams. They offer 6 properties:
@@ -30,13 +33,36 @@ Nametags are controlled by a feature called scoreboard teams. They offer 6 prope
 * Nametag visibility rule
 * Collision rule
 * Team color (1.13+) - used to set name and glow color (check out [How to make TAB compatible with glow plugins](https://github.com/NEZNAMY/TAB/wiki/How-to-make-TAB-compatible-with-glow-plugins)) (on 1.12- it uses last color of prefix).
+* Options - AllowFriendlyFire and CanSeeFriendlyInvisibles
 
 When enabling this feature, TAB will control all of these. It is not possible to take values from 2 different teams (plugins). Most of the compatibility problems with other plugins can be solved with placeholders. If you want sorting but not nametags, just don't configure any prefix/suffix. If you want another plugin to handle teams, configure sorting in that plugin.
 
-This feature can be configured in **config.yml** under **scoreboard-teams** section.
-
 # Configuration
-## Groups and users
+This feature is configured in 2 parts based on what you are configuring. Most settings are in the **config.yml**, but prefix/suffix is configured in **groups.yml** and **users.yml**.
+## config.yml
+The first part can be configured in **config.yml** under **scoreboard-teams** section. It controls everything except prefix and suffix.
+
+This is how the default configuration looks (excluding sorting options):
+```
+scoreboard-teams:
+  enabled: true
+  enable-collision: true
+  invisible-nametags: false
+  can-see-friendly-invisibles: false
+  disable-condition: '%world%=disabledworld'
+```
+All of the options are explained in the following table.  
+| Option name                 | Default value         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|-----------------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| enabled                     | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| enable-collision            | true                  | Controls collision rule. Available values are: <br />- `true` - Collision will be enabled permanently. <br />- `false` - Collision will be disabled permanently. <br /> - *Conditional expression* - Collision will be enabled if player meets the [short format](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders#short-format) conditional expression (for example `%world%=world` will result in collision only being enabled for players in world `world`). <br /> - *Condition name* - Uses name of a [defined condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for a player to have collision enabled.                                                                                        |
+| invisible-nametags          | false                 | Controls nametags visibility rule. Available values are: <br />- `true` - Nametags will be invisible. <br />- `false` - Nametags will be visible. <br /> - *Conditional expression* - Nametags will be invisible if player meets the [short format](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders#short-format) conditional expression. <br /> - *Condition name* - Uses name of a [defined condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders). <br /> Option to hide nametags was added in Minecraft **1.8**, therefore it will not work on 1.7. |
+| can-see-friendly-invisibles | false                 | Controls value of the team flag. It allows you to see invisible players in the same team as transparent instead of completely invisible. Since TAB places each player into an individual team, this option will only take effect in combination with plugins that spawn a dummy clone of the player (sit or disguise plugins).                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| disable-condition           | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+
+## groups.yml and users.yml
+This part allows you to configure prefix and suffix. They are called `tagprefix` and `tagsuffix`, where "tag" refers to name tag, to allow separation from tablist settings.
+
 Properties can be applied in 2 ways: groups and users. Users can be defined by both username and their UUID. Values applied to users take priority over groups.
 
 **groups.yml**
@@ -44,8 +70,7 @@ Properties can be applied in 2 ways: groups and users. Users can be defined by b
 admin:
   tagprefix: "&4&lAdmin &r"
 ```
-
-This can also be achieved with commands, in this case `/tab group admin tagprefix "&4&lAdmin &r"`.
+Or with an in-game command `/tab group admin tagprefix "&4&lAdmin &r"`.
 
 **users.yml**
 ```
@@ -56,7 +81,7 @@ _NEZNAMY_:
 237d8b55-3f97-4749-aa60-e9fe97b45062:
   tagprefix: "&6&lTAB &r"
 ```
-This can also be achieved with commands, in this case `/tab player _NEZNAMY_ tagprefix "&4&lAdmin &r"` or `/tab playeruuid _NEZNAMY_ tagprefix "&4&lAdmin &r"`.
+Or with in-game commands `/tab player _NEZNAMY_ tagprefix "&6&lTAB &r"` and `/tab playeruuid _NEZNAMY_ tagprefix "&6&lTAB &r"` (the player must be online for uuid option to work).
 
 Properties can also be set as "default" for everyone who does not have them defined.
 For that purpose, a group keyword `_DEFAULT_` was made.  
@@ -69,7 +94,6 @@ _DEFAULT_:
   tagprefix: "&7" # This will be displayed on everyone except admin
 ```
 
-## Per-world / per-server
 Values can also be applied per-world (and per-server on a proxy), where they can be defined per group/user. These values take priority over global settings. Example:  
 **groups.yml**
 ```
@@ -96,8 +120,7 @@ per-world:
       tagsuffix: "Suffix in all worlds starting with lobby-"
 ```
 
-## Priority system
-The full list of priorities looks like this:
+The full list of priorities to choose correct prefix/suffix for a player looks like this:
 1. value set using the [API](#api)
 2. per-world / per-server applied to username
 3. value applied to username
@@ -119,37 +142,36 @@ part of the value you are looking for.
 ## Name color
 On versions 1.12.2 and below, name color follows the last color of prefix. This also includes magic codes. On 1.13+, this is no longer the case. Instead, a new field called "team color" was created. This is an enum constant, where we need to pick from 22 options - 16 colors, 5 magic codes and reset. **As you can see, it doesn't allow for RGB colors**. This also means name can no longer have color and magic codes simultaneously.
 
-TAB does not have an option for configuring team color to avoid complexity, such as per-version configuration, or having to configure an additional field, while people are used to putting some color code at the end of prefix and expect the name to take it. For that reason, TAB detects the last used color code and uses that for team color.
+TAB does not have an option for configuring team color to avoid complexity, such as per-version configuration, or having to configure an additional field. 
+For that reason, TAB detects the last used color code and uses that for team color.
 > [!CAUTION]
-> An exception is when using MiniMessage syntax / using RGB codes on server which has MiniMessage library. In this scenario, it is not possible to detect reset (`&r`) as last used "color", because in minecraft components it is not a color, rather, it resets formatting by setting all magic codes to false / color to null. If you use `&r` (`<reset>`) and notice it not working, replace it with `&f` (`<white>`) (or add it after the reset to be safe). There seems to be no difference between setting color to `WHITE` versus `RESET`.
+> An exception is when using MiniMessage syntax / using RGB codes on server which has MiniMessage library. In this scenario, it is not possible to detect reset (`&r`) as last used "color", because in Minecraft components it is not a color, rather, it resets formatting by setting all magic codes to false / color to null. If you use `&r` (`<reset>`) and notice it not working, replace it with `&f` (`<white>`) (or add it after the reset to be safe). There seems to be no difference between setting color to `WHITE` versus `RESET`.
 
-## Placeholder support
-All values fully support [TAB's internal placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#internal-placeholders) and [PlaceholderAPI placeholders](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders) including relational placeholders.
-The number of placeholders is not limited, and they can be used in combination with static text as well.
+# Commands
+| Command                                                            | Permission                                                                                 | Description                                                                                                                                                                                                |
+|--------------------------------------------------------------------|--------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| /tab nametag <show/hide/toggle> \[player\] \[viewer\] \[options\]  | `tab.nametag.visibility` (for yourself) <br /> `tab.nametag.visibility.other` (for others) | Shows / hides / toggles nametag of a specified player. If viewer is specified, view is only affected for the viewer. You can use `-s` as option for silent toggling (no chat message for affected player). |
+| /tab nametag <showview/hideview/toggleview> \[viewer\] \[options\] | `tab.nametag.view` (for yourself) <br /> `tab.nametag.view.other` (for others)             | Shows / hides / toggles nametag VIEW a specified player. You can use `-s` as option for silent toggling (no chat message for affected player)                                                              |
+| /tab setcollision \<player\> \<true\|false\>                       | `tab.setcollision`                                                                         | Forces collision rule for specified player, overriding configuration.                                                                                                                                      |
 
-## Additional settings
-| Option name                 | Default value         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-|-----------------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| enabled                     | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| enable-collision            | true                  | Controls collision rule. Available values are: <br />- `true` - Collision will be enabled permanently. <br />- `false` - Collision will be disabled permanently. <br /> - *Conditional expression* - Collision will be enabled if player meets the [short format](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders#short-format) conditional expression (for example `%world%=world` will result in collision only being enabled for players in world `world`). <br /> - *Condition name* - Uses name of a [defined condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for a player to have collision enabled.                                                                                        |
-| invisible-nametags          | false                 | When evaluates to `true`, makes player's nametag invisible. Available values are: <br />- `true` - Collision will be enabled permanently. <br />- `false` - Collision will be disabled permanently. <br /> - *Conditional expression* - Collision will be enabled if player meets the [short format](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders#short-format) conditional expression (for example `%world%=world` will result in collision only being enabled for players in world `world`). <br /> - *Condition name* - Uses name of a [defined condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders). <br /> Option to hide nametags was added in minecraft **1.8**, therefore it will not work on 1.7 and lower. |
-| can-see-friendly-invisibles | false                 | Controlling value of the team flag. It allows you to see invisible players in the same team as transparent instead of completely invisible. Since TAB places each player into an individual team, this option will only take effect in combination with plugins that spawn a dummy clone of the player (sit or disguise plugins).                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| disable-condition           | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+# Placeholders
+This feature does not offer any internal placeholders, only PlaceholderAPI placeholders.
 
-# Tips & Tricks
-If you want TAB to only take prefixes/suffixes from the permission plugin,
-delete all groups from **groups.yml** and only keep this:
-```
-_DEFAULT_:
-  tagprefix: "%luckperms-prefix%"
-  tagsuffix: "%luckperms-suffix%"
-```
+## PlaceholderAPI placeholders
+Here are TAB's PlaceholderAPI placeholders you can use when this feature is enabled:
+| Placeholder | Description |
+|-------------|-------------|
+| `%tab_tagprefix%` | Player's current tagprefix with placeholders parsed. |
+| `%tab_tagsuffix%` | Player's current tagprefix with placeholders parsed. |
+| `%tab_tagprefix_raw%` | Player's current raw tagprefix with placeholder identifiers. |
+| `%tab_tagsuffix_raw%` | Player's current raw tagsuffix with placeholder identifiers. |
+| `%tab_nametag_visibility%` | "Enabled" if player can see nametags, "Disabled" if disabled using `/tab nametag toggleview` |
 
 # Limitations
-* [1.5 - 1.12.2] Prefix/suffix length is limited to 16 characters (including color codes). Any characters beyond that will be cut to prevent players getting disconnected.
+* [<1.12.2] Prefix/suffix length is limited to 16 characters (including color codes). Any characters beyond that will be cut to prevent players getting disconnected.
 * [1.13+] Name color is controlled by a chat format enum constant. This means:
-    * Name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
-    * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
+  * Name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
+  * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
 * The same value manages name color and glow color, which means they cannot be different.
 * The name cannot be effectively changed and the plugin doesn't offer it.
 
@@ -159,9 +181,13 @@ If you want to avoid these at all costs, the only way is to create entities (arm
 * [NotJustNamePlates](https://github.com/YouHaveTrouble/NotJustNameplates)
 * [CustomNameplates](https://polymart.org/product/2543/customnameplates)
 
+# Compatibility with other plugins
+Scoreboard teams is a feature that cannot be handled by multiple plugins at once. 
+To make sure no other plugin sends their own teams when not disabled in the plugin's config properly, TAB will block players being added into teams coming from all other plugins (if this feature is enabled and not disabled for a player with a condition).
+
 # Additional info
 ## Additional note 1 - NPC (in)compatibility
-Teams are bound to player names, not uuids or entity ids.
+Teams are bound to player names, not UUIDs or entity ids.
 Because of that, they will affect all player entities with that name.
 This includes NPCs with the same names as online players, and prefixes/suffixes will be displayed on those as well.
 To avoid it, make their names not match any online player and use holograms to display them instead
@@ -171,9 +197,7 @@ To avoid it, make their names not match any online player and use holograms to d
 Since Minecraft 1.9, teams affect tamed animals as well, displaying prefix/suffix on them as well and if nametags are set to be invisible, they will be completely invisible as well. If you want to avoid it, install [this plugin](https://www.spigotmc.org/resources/109466/).
 
 ## Additional note 3 - Changing name itself
-Teams do not allow to change the nametag name itself. The only way to achieve this goal is to send & modify packets to replace the player's actual profile name with a fake one. This is very complicated and can have a lot of side effects. This is out of scope of TAB and is in fact something nick plugins are trying to achieve. As such, **TAB does not offer this**.
-
-Once you find a nick plugin that supports this, you will need to [make sure TAB properly detects this](https://github.com/NEZNAMY/TAB/wiki/How-to-display-name-from-nickname-plugins#proper-compatibility-with-plugins-that-change-profile-name) to make name-bound features (such as nametags) work properly for nicked players.
+Teams do not allow to change the nametag name itself and TAB does not offer this functionality in any (other) way. For more information, see [How to display name from nickname plugins - Nametag](https://github.com/NEZNAMY/TAB/wiki/How-to-display-name-from-nickname-plugins#nametag).
 
 ## Additional note 4 - F1 view
 Using teams causes player nametags to remain visible when using F1 view.
@@ -198,7 +222,8 @@ In config.yml. Keep in mind, you'll not be able to use any team features if you 
 ## Additional note 6 - Vanish hook
 When a player is [vanished](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection), their team is unregistered for all other players who do **not** have `tab.seevanished` permission.
 
-The purpose of this is to avoid players figuring out a staff member is still online but just vanished by "checking" registered teams and their members. The easiest way of "exploiting" this is to have a 3rd party client spawn a player entity with name of a chosen player (staff member) and seeing if their name is formatted (= team is registered = player is online) or not (offline).
+The purpose of this is to avoid players figuring out a staff member is still online but just vanished by "checking" registered teams and their members. 
+An example of "exploiting" this is to have a 3rd party client spawn a player entity with name of a chosen player (staff member) and seeing if their name is formatted (= team is registered = player is online) or not (offline).
 
 For this reason, make sure you give all of your staff members who can see vanished players the `tab.seevanished` permission, otherwise the vanished player will appear on top of the tablist (players without team are above players with team) and their nametag will not be formatted.
 
@@ -246,3 +271,33 @@ To get the original value set by the plugin based on configuration:
 * `NameTagManager#pauseTeamHandling(TabPlayer)` - Pauses team handling for a specific player. This will unregister the player's team and disable anti-override for teams.
 * `NameTagManager#resumeTeamHandling(TabPlayer)` - Resumes team handling for a specific player. This will register the player's team and enable anti-override for teams.
 * `NameTagManager#hasTeamHandlingPaused(TabPlayer)` - Returns `true` if handling is disabled using methods above, `false` if not.
+
+# Examples
+## Example 1 - Taking prefix/suffix from permission plugin
+If you want TAB to only take prefixes/suffixes from the permission plugin,
+delete all groups from **groups.yml** and only keep this:
+```
+_DEFAULT_:
+  tagprefix: "%luckperms-prefix%"
+  tagsuffix: "%luckperms-suffix%"
+```
+Or a PlaceholderAPI placeholder from your permission plugin if you use a different one.
+
+> [!NOTE]
+> When doing this, make sure you don't delete something you didn't mean to delete, for example ta**b**prefix and ta**b**suffix from tablist name formatting feature.
+
+## Example 2 - Making nametags invisible on a subserver
+The config option `invisible-nametags` takes either a [condition or a conditional expression](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders).  
+We can use short format `%server%=<server name>`. If the server name is `server1`, it will look like this:
+```
+  invisible-nametags: "%server%=server1"
+```
+If we want to disable it in 2 servers, we separate them with `|` (OR). Result:
+```
+  invisible-nametags: "%server%=server1|%server%=server2"
+```
+
+> [!NOTE]
+> This is just an example, the plugin is not limited to making nametags invisible only based on server.
+> If you want to disable them in a world, use %world% with world name(s).
+> This works for any placeholder offered by TAB or by PlaceholderAPI.
