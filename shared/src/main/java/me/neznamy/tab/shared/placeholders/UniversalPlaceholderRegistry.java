@@ -159,16 +159,31 @@ public class UniversalPlaceholderRegistry {
         }
         for (Entry<String, ConditionDefinition> condition : TAB.getInstance().getConfiguration().getConfig().getConditions().getConditions().entrySet()) {
             Condition c = new Condition(condition.getValue());
-            manager.registerInternalPlayerPlaceholder(
-                    c.getPlaceholderIdentifier(),
-                    c.getRefresh(),
-                    p -> c.getText((TabPlayer) p, (TabPlayer) p)
-            );
-            manager.registerInternalRelationalPlaceholder(
-                    c.getRelationalPlaceholderIdentifier(),
-                    c.getRefresh(),
-                    (viewer, target) -> c.getText((TabPlayer) viewer, (TabPlayer) target)
-            );
+            String identifier = c.getPlaceholderIdentifier();
+            String relIdentifier = c.getRelationalPlaceholderIdentifier();
+            if (c.hasRelationalContent()) {
+                manager.registerInternalRelationalPlaceholder(
+                        relIdentifier,
+                        c.getRefresh(),
+                        (viewer, target) -> c.getText((TabPlayer) viewer, (TabPlayer) target)
+                );
+                manager.registerInternalPlayerPlaceholder(
+                        identifier,
+                        -1,
+                        p -> "<This is a relational condition, use " + relIdentifier.substring(1, relIdentifier.length()-1) + ">"
+                );
+            } else {
+                manager.registerInternalRelationalPlaceholder(
+                        relIdentifier,
+                        -1,
+                        (viewer, target) -> "<This is not a relational condition, use " + identifier.substring(1, identifier.length()-1) + ">"
+                );
+                manager.registerInternalPlayerPlaceholder(
+                        identifier,
+                        c.getRefresh(),
+                        p -> c.getText((TabPlayer) p, (TabPlayer) p)
+                );
+            }
             TAB.getInstance().getPlaceholderManager().getConditionManager().registerCondition(c);
         }
         manager.getConditionManager().finishSetups();
