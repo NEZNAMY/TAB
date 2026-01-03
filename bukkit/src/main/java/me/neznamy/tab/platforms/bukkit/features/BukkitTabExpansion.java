@@ -3,10 +3,13 @@ package me.neznamy.tab.platforms.bukkit.features;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.clip.placeholderapi.expansion.Relational;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.Player;
@@ -21,7 +24,7 @@ import java.util.List;
  * TAB's expansion for PlaceholderAPI
  */
 @Getter
-public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion {
+public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion, Relational {
 
     /** List of all placeholders offered by the plugin for command suggestions */
     @NotNull
@@ -95,9 +98,41 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             String requestedPlaceholder = "%" + identifier.substring("placeholder_".length()) + "%";
             PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
             pm.addUsedPlaceholder(requestedPlaceholder, pm);
-            return pm.getPlaceholder(requestedPlaceholder).getLastValue(p);
+            return pm.getPlaceholder(requestedPlaceholder).set(requestedPlaceholder, p);
         }
         return p.expansionValues.get(identifier);
+    }
+
+    @Override
+    public String onPlaceholderRequest(@NotNull Player viewer, @NotNull Player target, @NotNull String identifier) {
+        if (identifier.startsWith("replace_")) {
+            String text = "%" + identifier.substring(8) + "%";
+            String textBefore;
+            do {
+                textBefore = text;
+                for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(text)) {
+                    text = text.replace(placeholder, TAB.getInstance().getPlaceholderManager().findReplacement(placeholder,
+                            PlaceholderAPI.setRelationalPlaceholders(viewer, target, placeholder)));
+                }
+            } while (!textBefore.equals(text));
+            return text;
+        }
+        if (identifier.startsWith("placeholder_")) {
+            String requestedPlaceholder = "%" + identifier.substring("placeholder_".length()) + "%";
+            PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
+            pm.addUsedPlaceholder(requestedPlaceholder, pm);
+            Placeholder placeholder = pm.getPlaceholder(requestedPlaceholder);
+            if (placeholder instanceof RelationalPlaceholderImpl) {
+                RelationalPlaceholderImpl rel = (RelationalPlaceholderImpl) placeholder;
+                TabPlayer v = TAB.getInstance().getPlayer(viewer.getUniqueId());
+                TabPlayer t = TAB.getInstance().getPlayer(target.getUniqueId());
+                if (v == null || t == null) return "<Player is not loaded>";
+                return rel.getLastValue(v, t);
+            } else {
+                return "<Not a relational placeholder: " + requestedPlaceholder + ">";
+            }
+        }
+        return "<Unknown identifier: " + identifier + ">";
     }
 
     @Override
