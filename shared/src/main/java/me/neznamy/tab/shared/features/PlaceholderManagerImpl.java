@@ -9,7 +9,10 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
+import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
+import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
@@ -24,6 +27,7 @@ import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -471,7 +475,25 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             } else if (event.getRelationalPlaceholder() != null) {
                 registerRelationalPlaceholder(identifier, event.getRelationalPlaceholder());
             } else {
-                TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+                if (identifier.startsWith("%online_")) {
+                    // Temporary solution before dynamic placeholders are added
+                    Server server = Server.byName(identifier.substring(8, identifier.length() - 1));
+                    registerInternalServerPlaceholder(identifier, 1000, () -> {
+                        int count = 0;
+                        for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                            if (player.server == server && !player.isVanished()) count++;
+                        }
+                        ProxySupport proxySupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
+                        if (proxySupport != null) {
+                            for (ProxyPlayer player : proxySupport.getProxyPlayers().values()) {
+                                if (player.server == server && !player.isVanished()) count++;
+                            }
+                        }
+                        return PerformanceUtil.toString(count);
+                    });
+                } else {
+                    TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+                }
             }
             addUsedPlaceholder(identifier, this); //likely used via tab expansion
             return getPlaceholder(identifier);

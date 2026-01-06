@@ -19,9 +19,7 @@ import me.neznamy.tab.shared.chat.component.object.ObjectInfo;
 import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
 import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
-import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -29,7 +27,6 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.impl.DummyBossBar;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
-import me.neznamy.tab.shared.util.PerformanceUtil;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -81,27 +78,6 @@ public class BungeePlatform extends ProxyPlatform {
     public void loadPlayers() {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             TAB.getInstance().addPlayer(new BungeeTabPlayer(this, p));
-        }
-    }
-
-    @Override
-    public void registerPlaceholders() {
-        super.registerPlaceholders();
-        for (String serverName : ProxyServer.getInstance().getConfig().getServers().keySet()) {
-            Server server = Server.byName(serverName);
-            TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder("%online_" + serverName + "%", 1000, () -> {
-                int count = 0;
-                for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                    if (player.server == server && !player.isVanished()) count++;
-                }
-                ProxySupport proxySupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
-                if (proxySupport != null) {
-                    for (ProxyPlayer player : proxySupport.getProxyPlayers().values()) {
-                        if (player.server == server && !player.isVanished()) count++;
-                    }
-                }
-                return PerformanceUtil.toString(count);
-            });
         }
     }
 
