@@ -58,7 +58,9 @@ public class FeatureManager {
     public void load() {
         for (TabFeature f : values) {
             if (!(f instanceof Loadable)) continue;
+            long time = System.currentTimeMillis();
             ((Loadable) f).load();
+            TAB.getInstance().debug("Loaded feature " + f.getClass().getSimpleName() + " in " + (System.currentTimeMillis()-time) + "ms");
         }
         if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
             MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
@@ -74,10 +76,14 @@ public class FeatureManager {
         // Shut down and then unload sync to prevent load running before old unload ends on reloads
         for (TabFeature f : values) {
             if (f instanceof CustomThreaded) {
+                long time = System.currentTimeMillis();
                 ((CustomThreaded) f).getCustomThread().shutdown();
+                TAB.getInstance().debug("Shut down custom thread of " + f.getClass().getSimpleName() + " in " + (System.currentTimeMillis()-time) + "ms");
             }
             if (f instanceof UnLoadable) {
+                long time = System.currentTimeMillis();
                 ((UnLoadable) f).unload();
+                TAB.getInstance().debug("Unloaded feature " + f.getClass().getSimpleName() + " in " + (System.currentTimeMillis()-time) + "ms");
             }
         }
         for (TabFeature f : values) {
