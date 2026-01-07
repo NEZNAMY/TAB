@@ -124,7 +124,7 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping) {
         ensureActive();
         if (slot < 1 || slot > slotCount) throw new IllegalArgumentException("Slot must be between 1 - " + slotCount + " (was " + slot + ")");
-        fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text, skin, ping));
+        fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text, skin, null, ping));
     }
 
     @Override
