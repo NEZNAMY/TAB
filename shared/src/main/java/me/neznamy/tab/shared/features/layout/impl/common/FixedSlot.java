@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.features.layout.pattern.LayoutPattern;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +61,7 @@ public class FixedSlot extends RefreshableFeature {
         }
         Property pingProperty = p.layoutData.currentLayout.fixedSlotPings.get(this);
         if (pingProperty != null && pingProperty.update()) {
-            p.getTabList().updateLatency(id, parsePing(pingProperty.get()));
+            p.getTabList().updateLatency(id, parsePing(pingProperty.get(), p));
         }
     }
 
@@ -79,7 +80,7 @@ public class FixedSlot extends RefreshableFeature {
         if (pingText != null) {
             Property pingProperty = new Property(this, viewer, pingText);
             viewer.layoutData.currentLayout.fixedSlotPings.put(this, pingProperty);
-            ping = parsePing(pingProperty.updateAndGet());
+            ping = parsePing(pingProperty.updateAndGet(), viewer);
         }
         return new TabList.Entry(
                 id,
@@ -129,12 +130,24 @@ public class FixedSlot extends RefreshableFeature {
         return f;
     }
 
-    private int parsePing(@NotNull String value) {
+    private int parsePing(@NotNull String value, @NotNull TabPlayer viewer) {
         String trimmed = value.trim();
         if (trimmed.isEmpty()) return defaultPing;
         try {
             return (int) Math.round(Double.parseDouble(trimmed));
         } catch (NumberFormatException ignored) {
+            if (viewer instanceof ProxyTabPlayer && !((ProxyTabPlayer)viewer).isBridgeConnected()) return defaultPing;
+            if (pingText != null && pingText.contains("%")) {
+                TAB.getInstance().getConfigHelper().runtime().error(String.format(
+                        "Placeholder \"%s\" used as fixed slot ping in layout \"%s\" (slot %d) returned \"%s\" for player %s, which is not a valid number.",
+                        pingText, pattern.getName(), slot, trimmed, viewer.getName()
+                ));
+            } else {
+                TAB.getInstance().getConfigHelper().runtime().error(String.format(
+                        "Fixed slot ping \"%s\" in layout \"%s\" (slot %d) is not a valid number. Using default ping value.",
+                        pingText == null ? value : pingText, pattern.getName(), slot
+                ));
+            }
             return defaultPing;
         }
     }

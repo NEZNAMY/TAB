@@ -271,6 +271,7 @@ public class LayoutConfiguration {
                         Double.parseDouble(ping);
                     } catch (NumberFormatException ignored) {
                         section.startupWarn("Layout " + layoutName + " has fixed slot with defined ping \"" + array[3] + "\", which is not a valid number");
+                        ping = null;
                     }
                 }
             }
