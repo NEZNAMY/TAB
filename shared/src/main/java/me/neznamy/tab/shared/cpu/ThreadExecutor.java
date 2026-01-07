@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,14 +36,21 @@ public class ThreadExecutor {
      * Shuts down the executor.
      */
     public void shutdown() {
+        long time = System.currentTimeMillis();
         executor.shutdown();
         try {
             if (!executor.awaitTermination(SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                TAB.getInstance().getErrorManager().printError("Soft shutdown of thread " + threadName + " exceeded time limit of " + SHUTDOWN_TIMEOUT + "ms, forcing shutdown. This may cause issues.", null);
-                executor.shutdownNow();
+                List<Runnable> cancelledTasks = executor.shutdownNow();
+                TAB.getInstance().getErrorManager().printError("Soft shutdown of thread " + threadName + " exceeded time limit of " + SHUTDOWN_TIMEOUT +
+                        "ms, forcing shutdown. This may cause issues. Cancelling " + cancelledTasks.size() + " tasks.", null);
+            }
+            if (!executor.awaitTermination(SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                TAB.getInstance().getErrorManager().printError("Hard shutdown of thread " + threadName + " exceeded time limit of " + SHUTDOWN_TIMEOUT +
+                        "ms. This may cause issues.", null);
             }
         } catch (InterruptedException ignored) {
-            // Shutdown successful (?)
+            // Shutdown successful
+            TAB.getInstance().debug("Thread " + threadName + " shutdown in " + (System.currentTimeMillis() - time) + "ms");
         }
     }
 
