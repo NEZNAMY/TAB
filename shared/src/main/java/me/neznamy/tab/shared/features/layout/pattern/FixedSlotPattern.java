@@ -27,7 +27,7 @@ public class FixedSlotPattern {
     @Nullable
     private final String skin;
 
-    /** Ping to display, {@code null} means using global empty slot ping value */
+    /** Ping to display in raw format, {@code null} means using global empty slot ping value */
     @Nullable
-    private final Integer ping;
+    private final String ping;
 }

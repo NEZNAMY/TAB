@@ -244,5 +244,9 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         /** Player's properties for fixed slot skins */
         @NotNull
         public final Map<FixedSlot, Property> fixedSlotSkins = new IdentityHashMap<>();
+
+        /** Player's properties for fixed slot ping values */
+        @NotNull
+        public final Map<FixedSlot, Property> fixedSlotPings = new IdentityHashMap<>();
     }
 }

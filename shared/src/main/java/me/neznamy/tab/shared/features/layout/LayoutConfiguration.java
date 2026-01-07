@@ -243,8 +243,8 @@ public class LayoutConfiguration {
 
             if (array.length < 2) {
                 section.startupWarn("Layout " + layoutName + " has invalid fixed slot defined as \"" + line + "\". " +
-                        "Supported values are \"SLOT|TEXT\" and \"SLOT|TEXT|SKIN\", where SLOT is a number from 1 to " + slotCount + ", " +
-                        "TEXT is displayed text and SKIN is skin used for the slot");
+                        "Supported values are \"SLOT|TEXT\", \"SLOT|TEXT|SKIN\" and \"SLOT|TEXT|SKIN|PING\", where SLOT is a number from 1 to " + slotCount + ", " +
+                        "TEXT is displayed text, SKIN is skin used for the slot and PING is the latency value (number or placeholder)");
                 return null;
             }
             int slot;
@@ -256,17 +256,22 @@ public class LayoutConfiguration {
                 }
             } catch (NumberFormatException e) {
                 section.startupWarn("Layout " + layoutName + " has invalid fixed slot defined as \"" + line + "\". " +
-                        "Supported values are \"SLOT|TEXT\" and \"SLOT|TEXT|SKIN\", where SLOT is a number from 1 to " + slotCount + ", " +
-                        "TEXT is displayed text and SKIN is skin used for the slot");
+                        "Supported values are \"SLOT|TEXT\", \"SLOT|TEXT|SKIN\" and \"SLOT|TEXT|SKIN|PING\", where SLOT is a number from 1 to " + slotCount + ", " +
+                        "TEXT is displayed text, SKIN is skin used for the slot and PING is the latency value (number or placeholder)");
                 return null;
             }
             String skin = array.length > 2 ? array[2] : null;
-            Integer ping = null;
+            String ping = null;
             if (array.length > 3) {
-                try {
-                    ping = (int) Math.round(Double.parseDouble(array[3]));
-                } catch (NumberFormatException ignored) {
-                    section.startupWarn("Layout " + layoutName + " has fixed slot with defined ping \"" + array[3] + "\", which is not a valid number");
+                ping = array[3].trim();
+                if (ping.isEmpty()) {
+                    ping = null;
+                } else if (!ping.contains("%")) {
+                    try {
+                        Double.parseDouble(ping);
+                    } catch (NumberFormatException ignored) {
+                        section.startupWarn("Layout " + layoutName + " has fixed slot with defined ping \"" + array[3] + "\", which is not a valid number");
+                    }
                 }
             }
             return new FixedSlotPattern(slot, array[1], skin, ping);
