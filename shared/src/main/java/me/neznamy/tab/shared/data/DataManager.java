@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Class for storing servers and worlds, as well as other data related to them.
@@ -55,15 +57,8 @@ public class DataManager {
         if (globalPlayerListConfiguration == null) return null;
         for (ServerGroup group : serverGroups.values()) {
             for (String serverDefinition : group.getPatterns()) {
-                if (serverDefinition.endsWith("*")) {
-                    if (server.getName().startsWith(serverDefinition.substring(0, serverDefinition.length()-1).toLowerCase()))
-                        return group;
-                } else if (serverDefinition.startsWith("*")) {
-                    if (server.getName().endsWith(serverDefinition.substring(1).toLowerCase()))
-                        return group;
-                }  else {
-                    if (server.getName().equals(serverDefinition))
-                        return group;
+                if (matchesServerPattern(server.getName(), serverDefinition)) {
+                    return group;
                 }
             }
         }
@@ -71,6 +66,36 @@ public class DataManager {
             return new ServerGroup("", Collections.emptyList()); // Values are not used, just identity is compared
         } else {
             return defaultServerGroup;
+        }
+    }
+
+    /**
+     * Checks if a server name matches the given pattern. Supports:
+     * - Exact match: "lobby"
+     * - Prefix wildcard: "lobby*"
+     * - Suffix wildcard: "*lobby"
+     * - Regex pattern: "regex:lobby-[0-9]+"
+     *
+     * @param   serverName
+     *          Server name to check
+     * @param   pattern
+     *          Pattern to match against
+     * @return  {@code true} if server name matches the pattern, {@code false} otherwise
+     */
+    public boolean matchesServerPattern(@NotNull String serverName, @NotNull String pattern) {
+        if (pattern.startsWith("regex:")) {
+            try {
+                return Pattern.compile(pattern.substring(6)).matcher(serverName).matches();
+            } catch (PatternSyntaxException e) {
+                // Invalid regex pattern, treat as literal match
+                return serverName.equals(pattern);
+            }
+        } else if (pattern.endsWith("*")) {
+            return serverName.startsWith(pattern.substring(0, pattern.length()-1));
+        } else if (pattern.startsWith("*")) {
+            return serverName.endsWith(pattern.substring(1));
+        } else {
+            return serverName.equals(pattern);
         }
     }
 }
