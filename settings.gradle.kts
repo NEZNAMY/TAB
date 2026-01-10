@@ -11,7 +11,7 @@ dependencyResolutionManagement {
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate, Bungeecord-proxy
         maven("https://repo.purpurmc.org/snapshots") // Purpur
         maven("https://jitpack.io") // PremiumVanish, Vault, YamlAssist, RedisBungee
-        maven("https://repo.md-5.net/content/groups/public/") // LibsDisguises
+        maven("https://mvn.lib.co.nz/public") // LibsDisguises
         maven("https://repo.william278.net/velocity/") // Velocity-proxy
     }
 }

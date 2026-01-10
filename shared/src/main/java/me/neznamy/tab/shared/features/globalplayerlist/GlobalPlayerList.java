@@ -46,11 +46,11 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 if (onlinePlayers == null) return "0"; // Not loaded yet
                 int count = 0;
                 for (TabPlayer player : onlinePlayers.getPlayers()) {
-                    if (entry.getValue().contains(player.server.getName()) && !player.isVanished()) count++;
+                    if (matchesAnyPattern(player.server.getName(), entry.getValue()) && !player.isVanished()) count++;
                 }
                 if (proxy != null) {
                     for (ProxyPlayer player : proxy.getProxyPlayers().values()) {
-                        if (entry.getValue().contains(player.server.getName()) && !player.isVanished()) count++;
+                        if (matchesAnyPattern(player.server.getName(), entry.getValue()) && !player.isVanished()) count++;
                     }
                 }
                 return PerformanceUtil.toString(count);
@@ -294,5 +294,27 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     @Override
     public String getFeatureName() {
         return "Global PlayerList";
+    }
+
+    /**
+     * Checks if a server name matches any of the given patterns. Supports:
+     * - Exact match: "lobby"
+     * - Prefix wildcard: "lobby*"
+     * - Suffix wildcard: "*lobby"
+     * - Regex pattern: "regex:lobby-[0-9]+"
+     *
+     * @param   serverName
+     *          Server name to check
+     * @param   patterns
+     *          List of patterns to match against
+     * @return  {@code true} if server name matches any pattern, {@code false} otherwise
+     */
+    private boolean matchesAnyPattern(@NotNull String serverName, @NotNull List<String> patterns) {
+        for (String pattern : patterns) {
+            if (TAB.getInstance().getDataManager().matchesServerPattern(serverName, pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

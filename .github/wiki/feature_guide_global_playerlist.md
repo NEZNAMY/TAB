@@ -67,6 +67,36 @@ To make all servers share the playerlist, simply clear server groups and set
   server-groups: {}
 ```
 
+### Pattern Matching
+Server names in groups support multiple pattern types for flexible configuration:
+
+**Exact Match** - Matches server name exactly:
+```yaml
+server-groups:
+  lobbies:
+    - lobby1
+    - lobby2
+```
+
+**Wildcard Patterns** - Use `*` for prefix or suffix matching:
+```yaml
+server-groups:
+  lobbies:
+    - Lobby-*      # Matches: Lobby-1, Lobby-2, Lobby-Hub, etc.
+    - *-lobby      # Matches: eu-lobby, us-lobby, etc.
+```
+
+**Regex Patterns** - Use `regex:` prefix for advanced pattern matching:
+```yaml
+server-groups:
+  lobbies:
+    - regex:Lobby-[0-9]+        # Matches: Lobby-1, Lobby-23, but not Lobby-Hub
+  smp:
+    - regex:SMP-(EU|US)-[0-9]+  # Matches: SMP-EU-1, SMP-US-2, etc.
+```
+
+Note: Wildcard patterns are case-insensitive, while regex patterns are case-sensitive by default (use `(?i)` flag for case-insensitive regex).
+
 ## Configuring isolated servers
 If you want servers which are isolated (no one will see these players, and they will not see anyone on other servers),
 create a new group and only put that 1 server there.
