@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -19,9 +20,6 @@ import java.util.List;
  * will receive refresh call letting it know and allowing to get new value.
  */
 public class Property {
-
-    /** Thread-local StringBuilder pool for efficient string building without allocations */
-    private static final ThreadLocal<StringBuilder> STRING_BUILDER_POOL = ThreadLocal.withInitial(() -> new StringBuilder(256));
 
     /** Internal identifier for this text for PlaceholderAPI expansion, null if it should not be exposed */
     @Getter
@@ -58,56 +56,12 @@ public class Property {
     /** Source defining value of the text, displayed in debug command */
     @Nullable private String source;
 
-    /**
-     * All placeholders used in the text in the same order they are used,
-     * it may contain duplicates if placeholder is used more than once.
-     * Contains relational placeholders as well, which will get formatted
-     * to their identifier.
-     */
-    private String[] placeholders;
-
     /** Relational placeholders in the text in the same order they are used */
     private String[] relPlaceholders;
 
-    /**
-     * Represents either a literal string or a placeholder in the text.
-     */
-    private static abstract class Element {
-        abstract void appendTo(StringBuilder sb, TabPlayer owner);
-    }
-
-    /**
-     * A literal string element that gets appended as-is.
-     */
-    private static class LiteralElement extends Element {
-        private final String text;
-
-        LiteralElement(String text) {
-            this.text = text;
-        }
-
-        @Override
-        void appendTo(StringBuilder sb, TabPlayer owner) {
-            sb.append(text);
-        }
-    }
-
-    /**
-     * A placeholder element that gets resolved at runtime.
-     */
-    private static class PlaceholderElement extends Element {
-        private final String identifier;
-
-        PlaceholderElement(String identifier) {
-            this.identifier = identifier;
-        }
-
-        @Override
-        void appendTo(StringBuilder sb, TabPlayer owner) {
-            String value = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(identifier, owner);
-            sb.append(value);
-        }
-    }
+    /** String builder to avoid reallocation on every update call */
+    @NotNull
+    private final StringBuilder stringBuilder = new StringBuilder();
 
     /**
      * Constructs new instance with given parameters and prepares
@@ -159,10 +113,10 @@ public class Property {
      */
     private void analyze(@NotNull String value) {
         // Identify placeholders used directly
-        List<String> placeholders0 = new ArrayList<>();
+        List<String> placeholders = new ArrayList<>();
         List<String> relPlaceholders0 = new ArrayList<>();
         for (String identifier : PlaceholderManagerImpl.detectPlaceholders(value)) {
-            placeholders0.add(identifier);
+            placeholders.add(identifier);
             if (identifier.startsWith("%rel_")) {
                 relPlaceholders0.add(identifier);
             }
@@ -170,12 +124,12 @@ public class Property {
 
         // Parse text into elements (literal strings and placeholders)
         List<Element> elementList = new ArrayList<>();
-        if (placeholders0.isEmpty()) {
+        if (placeholders.isEmpty()) {
             // No placeholders - entire text is one literal
             elementList.add(new LiteralElement(EnumChatFormat.color(value)));
         } else {
             String remaining = value;
-            for (String placeholder : placeholders0) {
+            for (String placeholder : placeholders) {
                 int index = remaining.indexOf(placeholder);
                 if (index != -1) {
                     // Add literal text before placeholder if not empty
@@ -196,11 +150,10 @@ public class Property {
 
         // Update and save values
         elements = elementList.toArray(new Element[0]);
-        placeholders = placeholders0.toArray(new String[0]);
         relPlaceholders = relPlaceholders0.toArray(new String[0]);
 
         if (listener != null) {
-            listener.addUsedPlaceholders(placeholders0);
+            listener.addUsedPlaceholders(placeholders);
         }
         lastReplacedValue = "";
         update();
@@ -294,40 +247,17 @@ public class Property {
      * @return  if updating changed value or not
      */
     public boolean update() {
-        if (elements.length == 0) return false;
-
-        // Single literal element - fast path
-        if (elements.length == 1 && elements[0] instanceof LiteralElement) {
-            String string = ((LiteralElement) elements[0]).text;
-            if (!lastReplacedValue.equals(string)) {
-                lastReplacedValue = string;
-                mayContainRelPlaceholders = lastReplacedValue.indexOf('%') != -1;
-                if (name != null) {
-                    TAB.getInstance().getPlaceholderManager().getTabExpansion().setPropertyValue(owner, name, lastReplacedValue);
-                }
-                return true;
+        String string;
+        if (elements.length == 1) {
+            // Single element - fast path
+            string = elements[0].get(owner);
+        } else {
+            stringBuilder.setLength(0);
+            for (Element element : elements) {
+                stringBuilder.append(element.get(owner));
             }
-            return false;
+            string = stringBuilder.toString();
         }
-
-        // Get thread-local StringBuilder and prepare it
-        StringBuilder sb = STRING_BUILDER_POOL.get();
-
-        // Limit maximum capacity to prevent memory bloat
-        if (sb.capacity() > 2048) {
-            sb = new StringBuilder(256);
-            STRING_BUILDER_POOL.set(sb);
-        }
-
-        sb.setLength(0);
-
-        // Build string by processing each element
-        for (Element element : elements) {
-            element.appendTo(sb, owner);
-        }
-
-        // Colorize once at the end
-        String string = EnumChatFormat.color(sb.toString());
 
         if (!lastReplacedValue.equals(string)) {
             lastReplacedValue = string;
@@ -387,5 +317,46 @@ public class Property {
             value = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(identifier, owner);
         }
         return EnumChatFormat.color(value);
+    }
+
+    /**
+     * Represents either a literal string or a placeholder in the text.
+     */
+    private abstract static class Element {
+
+        @NotNull
+        abstract String get(@NotNull TabPlayer owner);
+    }
+
+    /**
+     * A literal string element that gets appended as-is.
+     */
+    @RequiredArgsConstructor
+    private static class LiteralElement extends Element {
+
+        @NotNull
+        private final String text;
+
+        @Override
+        @NotNull
+        String get(@NotNull TabPlayer owner) {
+            return text;
+        }
+    }
+
+    /**
+     * A placeholder element that gets resolved at runtime.
+     */
+    @RequiredArgsConstructor
+    private static class PlaceholderElement extends Element {
+
+        @NotNull
+        private final String identifier;
+
+        @Override
+        @NotNull
+        String get(@NotNull TabPlayer owner) {
+            return EnumChatFormat.color(TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(identifier, owner));
+        }
     }
 }
