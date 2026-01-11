@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class ThreadExecutor {
 
     /** Timeout for finishing tasks when shutting down thread executor */
-    private static final int SHUTDOWN_TIMEOUT = 2000;
+    private static final int SHUTDOWN_TIMEOUT = 5000;
 
     private final String threadName;
     private final ScheduledExecutorService executor;
