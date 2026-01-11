@@ -140,7 +140,7 @@ public class BukkitPlatform implements BackendPlatform {
             // Paper 1.20.5+, check for available module
             String paperModule = getPaperModule();
             if (paperModule != null) {
-                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
+                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
             } else {
                 throw new UnsupportedOperationException();
             }
