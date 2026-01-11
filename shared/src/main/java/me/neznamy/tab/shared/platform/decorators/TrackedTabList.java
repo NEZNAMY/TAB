@@ -164,13 +164,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
         updateGameMode(player, player.getGamemode());
     }
 
-    /**
-     * Returns {@code true} if tablist contains specified entry, {@code false} if not.
-     *
-     * @param   entry
-     *          UUID of entry to check
-     * @return  {@code true} if tablist contains specified entry, {@code false} if not
-     */
+    @Override
     public boolean containsEntry(@NonNull UUID entry) {
         return player.getTabListEntryTracker() == null || player.getTabListEntryTracker().containsEntry(entry);
     }

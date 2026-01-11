@@ -186,6 +186,15 @@ public interface TabList {
     void showAllPlayers();
 
     /**
+     * Returns {@code true} if tablist contains specified entry, {@code false} if not.
+     *
+     * @param   entry
+     *          UUID of entry to check
+     * @return  {@code true} if tablist contains specified entry, {@code false} if not
+     */
+    boolean containsEntry(@NonNull UUID entry);
+
+    /**
      * A subclass representing player list entry
      */
     @Getter
