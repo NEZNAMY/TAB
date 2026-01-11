@@ -257,11 +257,25 @@ public class Property {
         if ("%s".equals(rawFormattedValue)) {
             string = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[0]).set(placeholders[0], owner);
         } else {
-            Object[] values = new String[placeholders.length];
-            for (int i=0; i<placeholders.length; i++) {
-                values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
+            StringBuilder sb = new StringBuilder(rawFormattedValue.length() + placeholders.length * 16);
+            int currentPos = 0;
+            int placeholderIndex = 0;
+            int searchPos = 0;
+
+            while (placeholderIndex < placeholders.length) {
+                int pos = rawFormattedValue.indexOf("%s", searchPos);
+                if (pos == -1) break;
+
+                sb.append(rawFormattedValue, currentPos, pos);
+                String value = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[placeholderIndex]).set(placeholders[placeholderIndex], owner);
+                sb.append(value);
+
+                currentPos = pos + 2;
+                searchPos = currentPos;
+                placeholderIndex++;
             }
-            string = String.format(rawFormattedValue, values);
+            sb.append(rawFormattedValue, currentPos, rawFormattedValue.length());
+            string = sb.toString();
         }
         string = EnumChatFormat.color(string);
         if (!lastReplacedValue.equals(string)) {
