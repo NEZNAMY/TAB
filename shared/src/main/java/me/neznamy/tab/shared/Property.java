@@ -20,6 +20,9 @@ import java.util.List;
  */
 public class Property {
 
+    /** Thread-local StringBuilder pool for efficient string building without allocations */
+    private static final ThreadLocal<StringBuilder> STRING_BUILDER_POOL = ThreadLocal.withInitial(() -> new StringBuilder(256));
+
     /** Internal identifier for this text for PlaceholderAPI expansion, null if it should not be exposed */
     @Getter
     @Nullable
@@ -30,10 +33,10 @@ public class Property {
      * if any of placeholders used in it change value.
      */
     @Nullable private final RefreshableFeature listener;
-    
+
     /** Player this text belongs to */
     @NotNull private final TabPlayer owner;
-    
+
     /** Raw value as defined in configuration */
     @NotNull @Getter private String originalRawValue;
 
@@ -41,18 +44,17 @@ public class Property {
     @Nullable @Getter private String temporaryValue;
 
     /**
-     * Raw value using %s for each placeholder ready to be inserted
-     * into String formatter, which results in about 5x lower
-     * memory allocations as well as better performance.
+     * Parsed elements representing either literal text or placeholders.
+     * This array contains the text broken down into processable chunks.
      */
-    private String rawFormattedValue;
+    private Element[] elements;
 
     /** Last known value after parsing non-relational placeholders */
     private String lastReplacedValue;
 
     /** Flag tracking whether last replaced value may contain relational placeholders or not */
     private boolean mayContainRelPlaceholders;
-    
+
     /** Source defining value of the text, displayed in debug command */
     @Nullable private String source;
 
@@ -63,9 +65,49 @@ public class Property {
      * to their identifier.
      */
     private String[] placeholders;
-    
+
     /** Relational placeholders in the text in the same order they are used */
     private String[] relPlaceholders;
+
+    /**
+     * Represents either a literal string or a placeholder in the text.
+     */
+    private static abstract class Element {
+        abstract void appendTo(StringBuilder sb, TabPlayer owner);
+    }
+
+    /**
+     * A literal string element that gets appended as-is.
+     */
+    private static class LiteralElement extends Element {
+        private final String text;
+
+        LiteralElement(String text) {
+            this.text = text;
+        }
+
+        @Override
+        void appendTo(StringBuilder sb, TabPlayer owner) {
+            sb.append(text);
+        }
+    }
+
+    /**
+     * A placeholder element that gets resolved at runtime.
+     */
+    private static class PlaceholderElement extends Element {
+        private final String identifier;
+
+        PlaceholderElement(String identifier) {
+            this.identifier = identifier;
+        }
+
+        @Override
+        void appendTo(StringBuilder sb, TabPlayer owner) {
+            String value = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(identifier, owner);
+            sb.append(value);
+        }
+    }
 
     /**
      * Constructs new instance with given parameters and prepares
@@ -109,8 +151,8 @@ public class Property {
     }
 
     /**
-     * Finds all placeholders used in the value and prepares it for
-     * String formatter using %s for each placeholder.
+     * Finds all placeholders used in the value and splits text into
+     * elements (literals and placeholders) for fast replacement.
      *
      * @param   value
      *          raw value to analyze
@@ -126,46 +168,46 @@ public class Property {
             }
         }
 
-        // Convert all placeholders to %s for String formatter
-        String rawFormattedValue0 = value;
-        for (String placeholder : placeholders0) {
-            rawFormattedValue0 = replaceFirst(rawFormattedValue0, placeholder);
-        }
-
-        // Make % symbol not break String formatter by adding another one to display it
-        if (!placeholders0.isEmpty() && rawFormattedValue0.contains("%")) {
-            int index = rawFormattedValue0.lastIndexOf('%');
-            if (rawFormattedValue0.length() == index+1 || rawFormattedValue0.charAt(index+1) != 's') {
-                StringBuilder sb = new StringBuilder(rawFormattedValue0);
-                sb.insert(index+1, "%");
-                rawFormattedValue0 = sb.toString();
+        // Parse text into elements (literal strings and placeholders)
+        List<Element> elementList = new ArrayList<>();
+        if (placeholders0.isEmpty()) {
+            // No placeholders - entire text is one literal
+            elementList.add(new LiteralElement(EnumChatFormat.color(value)));
+        } else {
+            String remaining = value;
+            for (String placeholder : placeholders0) {
+                int index = remaining.indexOf(placeholder);
+                if (index != -1) {
+                    // Add literal text before placeholder if not empty
+                    if (index > 0) {
+                        elementList.add(new LiteralElement(EnumChatFormat.color(remaining.substring(0, index))));
+                    }
+                    // Add placeholder element
+                    elementList.add(new PlaceholderElement(placeholder));
+                    // Move past the placeholder
+                    remaining = remaining.substring(index + placeholder.length());
+                }
+            }
+            // Add remaining literal text if any
+            if (!remaining.isEmpty()) {
+                elementList.add(new LiteralElement(EnumChatFormat.color(remaining)));
             }
         }
 
-        // Apply static colors to not need to do it on every refresh
-        rawFormattedValue = EnumChatFormat.color(rawFormattedValue0);
-
         // Update and save values
+        elements = elementList.toArray(new Element[0]);
         placeholders = placeholders0.toArray(new String[0]);
         relPlaceholders = relPlaceholders0.toArray(new String[0]);
+
         if (listener != null) {
             listener.addUsedPlaceholders(placeholders0);
         }
-        lastReplacedValue = rawFormattedValue;
+        lastReplacedValue = "";
         update();
         if (name != null) {
             TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
             expansion.setPropertyValue(owner, name, lastReplacedValue);
             expansion.setRawPropertyValue(owner, name, getCurrentRawValue());
-        }
-    }
-
-    private String replaceFirst(String original, String searchString) {
-        int index = original.indexOf(searchString);
-        if (index != -1) {
-            return original.substring(0, index) + "%s" + original.substring(index + searchString.length());
-        } else {
-            return original;
         }
     }
 
@@ -252,18 +294,41 @@ public class Property {
      * @return  if updating changed value or not
      */
     public boolean update() {
-        if (placeholders.length == 0) return false;
-        String string;
-        if ("%s".equals(rawFormattedValue)) {
-            string = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[0]).set(placeholders[0], owner);
-        } else {
-            Object[] values = new String[placeholders.length];
-            for (int i=0; i<placeholders.length; i++) {
-                values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
+        if (elements.length == 0) return false;
+
+        // Single literal element - fast path
+        if (elements.length == 1 && elements[0] instanceof LiteralElement) {
+            String string = ((LiteralElement) elements[0]).text;
+            if (!lastReplacedValue.equals(string)) {
+                lastReplacedValue = string;
+                mayContainRelPlaceholders = lastReplacedValue.indexOf('%') != -1;
+                if (name != null) {
+                    TAB.getInstance().getPlaceholderManager().getTabExpansion().setPropertyValue(owner, name, lastReplacedValue);
+                }
+                return true;
             }
-            string = String.format(rawFormattedValue, values);
+            return false;
         }
-        string = EnumChatFormat.color(string);
+
+        // Get thread-local StringBuilder and prepare it
+        StringBuilder sb = STRING_BUILDER_POOL.get();
+
+        // Limit maximum capacity to prevent memory bloat
+        if (sb.capacity() > 2048) {
+            sb = new StringBuilder(256);
+            STRING_BUILDER_POOL.set(sb);
+        }
+
+        sb.setLength(0);
+
+        // Build string by processing each element
+        for (Element element : elements) {
+            element.appendTo(sb, owner);
+        }
+
+        // Colorize once at the end
+        String string = EnumChatFormat.color(sb.toString());
+
         if (!lastReplacedValue.equals(string)) {
             lastReplacedValue = string;
             mayContainRelPlaceholders = lastReplacedValue.indexOf('%') != -1;
