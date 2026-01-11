@@ -257,25 +257,27 @@ public class Property {
         if ("%s".equals(rawFormattedValue)) {
             string = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[0]).set(placeholders[0], owner);
         } else {
-            StringBuilder sb = new StringBuilder(rawFormattedValue.length() + placeholders.length * 16);
-            int currentPos = 0;
-            int placeholderIndex = 0;
-            int searchPos = 0;
+            int firstPos = rawFormattedValue.indexOf("%s");
+            if (firstPos == -1) {
+                string = rawFormattedValue;
+            } else {
+                StringBuilder sb = new StringBuilder(rawFormattedValue.length() + placeholders.length * 16);
+                int currentPos = 0;
+                int placeholderIndex = 0;
+                int searchPos = firstPos;
 
-            while (placeholderIndex < placeholders.length) {
-                int pos = rawFormattedValue.indexOf("%s", searchPos);
-                if (pos == -1) break;
+                while (placeholderIndex < placeholders.length && searchPos != -1) {
+                    sb.append(rawFormattedValue, currentPos, searchPos);
+                    String value = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[placeholderIndex]).set(placeholders[placeholderIndex], owner);
+                    sb.append(value);
 
-                sb.append(rawFormattedValue, currentPos, pos);
-                String value = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[placeholderIndex]).set(placeholders[placeholderIndex], owner);
-                sb.append(value);
-
-                currentPos = pos + 2;
-                searchPos = currentPos;
-                placeholderIndex++;
+                    currentPos = searchPos + 2;
+                    placeholderIndex++;
+                    searchPos = rawFormattedValue.indexOf("%s", currentPos);
+                }
+                sb.append(rawFormattedValue, currentPos, rawFormattedValue.length());
+                string = sb.toString();
             }
-            sb.append(rawFormattedValue, currentPos, rawFormattedValue.length());
-            string = sb.toString();
         }
         string = EnumChatFormat.color(string);
         if (!lastReplacedValue.equals(string)) {
