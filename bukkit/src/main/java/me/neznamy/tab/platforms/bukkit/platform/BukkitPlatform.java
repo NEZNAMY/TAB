@@ -318,6 +318,7 @@ public class BukkitPlatform implements BackendPlatform {
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
         String version = serverVersion == ProtocolVersion.UNKNOWN ? "Unknown" : "1." + serverVersion.getMinorVersion() + ".x";
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> version));
+        metrics.addCustomChart(new SimplePie("tab_5_5_0_servers", serverVersion::getFriendlyName));
     }
 
     @Override
