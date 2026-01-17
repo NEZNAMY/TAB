@@ -236,19 +236,20 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public void showScoreboard(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.scoreboard.Scoreboard scoreboard) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
 
-        if (p.scoreboardData.forcedScoreboard != null) {
-            p.scoreboardData.forcedScoreboard.removePlayer(p);
-        }
-        p.scoreboardData.forcedScoreboard = (ScoreboardImpl) scoreboard;
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (p.scoreboardData.forcedScoreboard != null) {
+                p.scoreboardData.forcedScoreboard.removePlayer(p);
+            }
+            p.scoreboardData.forcedScoreboard = (ScoreboardImpl) scoreboard;
 
-        if (p.scoreboardData.activeScoreboard != null) {
-            p.scoreboardData.activeScoreboard.removePlayer(p);
-            p.scoreboardData.activeScoreboard = null;
-        }
+            if (p.scoreboardData.activeScoreboard != null) {
+                p.scoreboardData.activeScoreboard.removePlayer(p);
+                p.scoreboardData.activeScoreboard = null;
+            }
 
-        if (hasScoreboardVisible(player)) ((ScoreboardImpl) scoreboard).addPlayer(p);
+            if (hasScoreboardVisible(player)) ((ScoreboardImpl) scoreboard).addPlayer(p);
+        }, getFeatureName(), "Showing custom Scoreboard"));
     }
 
     @Override
@@ -261,15 +262,16 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public void resetScoreboard(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
 
-        if (p.scoreboardData.forcedScoreboard != null) {
-            p.scoreboardData.forcedScoreboard.removePlayer(p);
-            p.scoreboardData.forcedScoreboard = null;
-            me.neznamy.tab.api.scoreboard.Scoreboard sb = detectHighestScoreboard(p);
-            if (sb == null) return; //no scoreboard available
-            ((ScoreboardImpl) sb).addPlayer(p);
-        }
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (p.scoreboardData.forcedScoreboard != null) {
+                p.scoreboardData.forcedScoreboard.removePlayer(p);
+                p.scoreboardData.forcedScoreboard = null;
+                me.neznamy.tab.api.scoreboard.Scoreboard sb = detectHighestScoreboard(p);
+                if (sb == null) return; //no scoreboard available
+                ((ScoreboardImpl) sb).addPlayer(p);
+            }
+        }, getFeatureName(), "Resetting custom Scoreboard"));
     }
 
     @Override
