@@ -87,7 +87,7 @@ public class ConditionPlaceholder {
         if (realPlaceholder instanceof RelationalPlaceholderImpl) {
             return ((RelationalPlaceholderImpl) realPlaceholder).getLastValue(viewer, target);
         } else {
-            return realPlaceholder.set(realPlaceholder.getIdentifier(), parseAsViewer ? viewer : target);
+            return realPlaceholder.parse(parseAsViewer ? viewer : target);
         }
     }
 }

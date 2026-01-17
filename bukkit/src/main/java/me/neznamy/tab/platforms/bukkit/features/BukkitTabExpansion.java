@@ -98,7 +98,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             String requestedPlaceholder = "%" + identifier.substring("placeholder_".length()) + "%";
             PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
             pm.addUsedPlaceholder(requestedPlaceholder, pm);
-            return pm.getPlaceholder(requestedPlaceholder).set(requestedPlaceholder, p);
+            return pm.getPlaceholder(requestedPlaceholder).parse(p);
         }
         return p.expansionValues.get(identifier);
     }

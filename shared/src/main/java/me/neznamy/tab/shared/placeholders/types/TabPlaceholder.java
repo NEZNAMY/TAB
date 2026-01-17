@@ -71,61 +71,51 @@ public abstract class TabPlaceholder implements Placeholder {
     }
 
     /**
-     * Replaces this placeholder in given string and returns output. If the entered string
-     * is equal to the placeholder identifier or does not contain the identifier at all,
-     * value is returned directly without calling {@code String#replace} for better performance.
+     * Parses the placeholder for defined player, applying all nested placeholders
+     * found in output.
      *
-     * @param   string
-     *          string to replace this placeholder in
      * @param   player
-     *          player to set placeholder for
-     * @return  string with this placeholder replaced
+     *          player to parse placeholder for
+     * @return  parsed placeholder with all nested placeholders applied
      */
     @NotNull
-    public String set(@NonNull String string, @Nullable TabPlayer player) {
-        return replace(string, identifier, setPlaceholders(getLastValue(player), player));
+    public String parse(@Nullable TabPlayer player) {
+        String value = getLastValue(player);
+        if (!value.contains("%")) return value; // No nested placeholders, return immediately
+        return setPlaceholders(value, player);
     }
 
     /**
-     * An alternative for {@code String#replace} function with better performance.
-     * If the input string does not contain string to replace, it is returned immediately.
-     * If the input string is equal to text to replace, output is returned directly.
+     * Internal method to set placeholders in a given value for a player
      *
-     * @param   string
-     *          String to replace text in
-     * @param   original
-     *          Text to replace
-     * @param   replacement
-     *          Replacement text
-     * @return  Replaced text
+     * @param   value
+     *          value to set placeholders in
+     * @param   player
+     *          player to parse placeholders for
+     * @return  value with placeholders set
      */
     @NotNull
-    private String replace(@NonNull String string, @NonNull String original, @NonNull String replacement) {
-        if (!string.contains(original)) return string;
-        if (string.equals(original)) return replacement;
-        return string.replace(original, replacement);
-    }
+    protected String setPlaceholders(@NonNull String value, @Nullable TabPlayer player) {
+        String string = value;
+        if (identifier.equals(string)) return string; // Placeholder returned itself (probably invalid)
 
-    /**
-     * Applies all nested placeholders in output
-     *
-     * @param   text
-     *          replaced placeholder
-     * @param   p
-     *          player to replace for
-     * @return  text with replaced placeholders in output
-     */
-    protected @NotNull String setPlaceholders(@NonNull String text, @Nullable TabPlayer p) {
-        if (identifier.equals(text)) return text;
-        String replaced = text;
-        for (String s : PlaceholderManagerImpl.detectPlaceholders(text)) {
-            if (s.equals(identifier) || (identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s)) || s.startsWith("%rel_")) continue;
+        // Known children first for better performance thanks to skipped checks
+        for (TabPlaceholder child : children) {
+            if (string.contains(child.identifier)) {
+                string = string.replace(child.identifier, child.parse(player));
+            }
+        }
+
+        for (String s : PlaceholderManagerImpl.detectPlaceholders(string)) {
+            if (s.equals(identifier)) continue; // Prevent infinite loop when placeholder returns itself
+            if (s.startsWith("%rel_")) continue; // Relational placeholders are handled separately
+            if ((identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s))) continue; // Self, but as sync variant
             TabPlaceholder nested = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
             nested.addParent(this);
             addChild(nested);
-            replaced = nested.set(replaced, p);
+            string = string.replace(s, nested.parse(player));
         }
-        return replaced;
+        return string;
     }
 
     /**

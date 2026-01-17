@@ -315,7 +315,7 @@ public class Property {
     public String getOriginalReplacedValue() {
         String value = originalRawValue;
         for (String identifier : PlaceholderManagerImpl.detectPlaceholders(value)) {
-            value = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(identifier, owner);
+            value = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).parse(owner);
         }
         return EnumChatFormat.color(value);
     }
@@ -357,7 +357,7 @@ public class Property {
         @Override
         @NotNull
         String get(@NotNull TabPlayer owner) {
-            return EnumChatFormat.color(placeholder.set(placeholder.getIdentifier(), owner));
+            return EnumChatFormat.color(placeholder.parse(owner));
         }
     }
 }

@@ -63,7 +63,7 @@ public abstract class SortingType {
      */
     protected String setPlaceholders(TabPlayer player) {
         if (sortingPlaceholder == null) return "";
-        return sortingPlaceholder.set(sortingPlaceholder.getIdentifier(), player);
+        return sortingPlaceholder.parse(player);
     }
 
     /**
