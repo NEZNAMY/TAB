@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
@@ -19,6 +20,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 /**
  * An implementation of PlaceholderRegistry for universal placeholders
@@ -113,6 +115,24 @@ public class UniversalPlaceholderRegistry {
             }
             return PerformanceUtil.toString(count);
         });
+        manager.registerInternalServerPlaceholder(Pattern.compile("%online_(.+?)%"), 1000, matcher -> {
+            Server server = Server.byName(matcher.group(1));
+            return () -> {
+                int count = 0;
+                for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                    if (player.server == server && !player.isVanished()) {
+                        count++;
+                    }
+                }
+                ProxySupport proxySupport = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
+                if (proxySupport != null) {
+                    for (ProxyPlayer player : proxySupport.getProxyPlayers().values()) {
+                        if (player.server == server && !player.isVanished()) count++;
+                    }
+                }
+                return PerformanceUtil.toString(count);
+            };
+        });
     }
 
     private void registerPlayerPlaceholders(@NotNull PlaceholderManagerImpl manager) {
@@ -159,31 +179,6 @@ public class UniversalPlaceholderRegistry {
         }
         for (Entry<String, ConditionDefinition> condition : TAB.getInstance().getConfiguration().getConfig().getConditions().getConditions().entrySet()) {
             Condition c = new Condition(condition.getValue());
-            String identifier = c.getPlaceholderIdentifier();
-            String relIdentifier = c.getRelationalPlaceholderIdentifier();
-            if (c.hasRelationalContent()) {
-                manager.registerInternalRelationalPlaceholder(
-                        relIdentifier,
-                        c.getRefresh(),
-                        (viewer, target) -> c.getText((TabPlayer) viewer, (TabPlayer) target)
-                );
-                manager.registerInternalPlayerPlaceholder(
-                        identifier,
-                        -1,
-                        p -> "<This is a relational condition, use " + relIdentifier.substring(1, relIdentifier.length()-1) + ">"
-                );
-            } else {
-                manager.registerInternalRelationalPlaceholder(
-                        relIdentifier,
-                        -1,
-                        (viewer, target) -> "<This is not a relational condition, use " + identifier.substring(1, identifier.length()-1) + ">"
-                );
-                manager.registerInternalPlayerPlaceholder(
-                        identifier,
-                        c.getRefresh(),
-                        p -> c.getText((TabPlayer) p, (TabPlayer) p)
-                );
-            }
             TAB.getInstance().getPlaceholderManager().getConditionManager().registerCondition(c);
         }
         manager.getConditionManager().finishSetups();

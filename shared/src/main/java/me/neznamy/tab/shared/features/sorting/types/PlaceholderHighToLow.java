@@ -25,7 +25,7 @@ public class PlaceholderHighToLow extends SortingType {
     public String getChars(@NotNull TabPlayer p) {
         if (!valid) return "";
         String output = setPlaceholders(p);
-        p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\". &r";
-        return compressNumber(DEFAULT_NUMBER - parseDouble(sortingPlaceholder, output, 0, p));
+        p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder.getIdentifier() + " returned \"&e" + output + "&r\". &r";
+        return compressNumber(DEFAULT_NUMBER - parseDouble(output, 0, p));
     }
 }

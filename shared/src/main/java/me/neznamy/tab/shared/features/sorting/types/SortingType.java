@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 
@@ -28,7 +29,8 @@ public abstract class SortingType {
     protected final int DEFAULT_NUMBER = Integer.MAX_VALUE / 2;
     
     /** Placeholder to sort by, if sorting type uses it */
-    protected String sortingPlaceholder;
+    @Nullable
+    protected TabPlaceholder sortingPlaceholder;
 
     /** Flag tracking if this sorting type is valid or not. If not, it is disabled. */
     protected final boolean valid;
@@ -39,7 +41,7 @@ public abstract class SortingType {
      * @param   sortingPlaceholder
      *          placeholder to sort by
      */
-    protected SortingType(Sorting sorting, String displayName, String sortingPlaceholder) {
+    protected SortingType(@NotNull Sorting sorting, @NotNull String displayName, @NotNull String sortingPlaceholder) {
         this.sorting = sorting;
         this.displayName = displayName;
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
@@ -47,7 +49,7 @@ public abstract class SortingType {
             valid = false;
         } else {
             sorting.addUsedPlaceholder(sortingPlaceholder);
-            this.sortingPlaceholder = sortingPlaceholder;
+            this.sortingPlaceholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(sortingPlaceholder);
             valid = true;
         }
     }
@@ -61,8 +63,7 @@ public abstract class SortingType {
      */
     protected String setPlaceholders(TabPlayer player) {
         if (sortingPlaceholder == null) return "";
-        TabPlaceholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(sortingPlaceholder);
-        return placeholder.set(placeholder.getIdentifier(), player);
+        return sortingPlaceholder.set(sortingPlaceholder.getIdentifier(), player);
     }
 
     /**
@@ -117,8 +118,6 @@ public abstract class SortingType {
      * Parses double in given string and returns it.
      * Returns second argument if string is not valid and prints a console warn.
      *
-     * @param   placeholder
-     *          Raw placeholder, used in error message
      * @param   output
      *          string to parse
      * @param   defaultValue
@@ -127,11 +126,11 @@ public abstract class SortingType {
      *          Player name used in error message
      * @return  parsed double or {@code defaultValue} if input is invalid
      */
-    public double parseDouble(@NotNull String placeholder, @NotNull String output, double defaultValue, TabPlayer player) {
+    public double parseDouble(@NotNull String output, double defaultValue, TabPlayer player) {
         try {
             return Double.parseDouble(output.replace(",", "."));
         } catch (NumberFormatException e) {
-            TAB.getInstance().getConfigHelper().runtime().invalidInputForNumericSorting(this, placeholder, output, player);
+            TAB.getInstance().getConfigHelper().runtime().invalidInputForNumericSorting(this, sortingPlaceholder.getIdentifier(), output, player);
             return defaultValue;
         }
     }

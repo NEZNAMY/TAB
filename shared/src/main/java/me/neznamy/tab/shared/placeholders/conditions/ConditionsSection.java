@@ -2,12 +2,10 @@ package me.neznamy.tab.shared.placeholders.conditions;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Class storing configured conditions.
@@ -43,7 +41,7 @@ public class ConditionsSection {
     public static class ConditionDefinition {
 
         @NotNull private final String name;
-        @NotNull private final List<ConditionalExpression> conditions;
+        @NotNull private final List<String> conditions;
         private final boolean type;
         @NotNull private final String yes;
         @NotNull private final String no;
@@ -76,14 +74,7 @@ public class ConditionsSection {
             if (list.size() >= 2 && type == null) {
                 section.startupWarn(String.format("Condition \"%s\" has multiple conditions defined, but is missing \"type\" attribute. Using AND.", name));
             }
-            List<ConditionalExpression> expressions = list.stream().map(expressionString -> {
-                ConditionalExpression expression = ConditionalExpression.compile(expressionString.trim());
-                if (expression == null) {
-                    TAB.getInstance().getConfigHelper().startup().startupWarn("Line \"" + expressionString + "\" is not a valid conditional expression.");
-                }
-                return expression;
-            }).filter(Objects::nonNull).collect(Collectors.toList());
-            return new ConditionDefinition(name, expressions, !"OR".equals(type), yes.toString(), no.toString());
+            return new ConditionDefinition(name, list, !"OR".equals(type), yes.toString(), no.toString());
         }
     }
 }

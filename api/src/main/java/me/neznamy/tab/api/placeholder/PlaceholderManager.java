@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * An interface allowing placeholder registration. Instance can be
@@ -64,6 +66,14 @@ public interface PlaceholderManager {
      *          {@code refresh} is not divisible by 50
      */
     @NotNull RelationalPlaceholder registerRelationalPlaceholder(@NonNull String identifier, int refresh, @NonNull BiFunction<TabPlayer, TabPlayer, String> function);
+
+    void registerServerPlaceholder(@NonNull Pattern identifier, int refresh, @NonNull Function<Matcher, Supplier<String>> function);
+
+    void registerPlayerPlaceholder(@NonNull Pattern identifier, int refresh,
+                                   @NonNull Function<Matcher, Function<me.neznamy.tab.api.TabPlayer, String>> function);
+
+    void registerRelationalPlaceholder(@NonNull Pattern identifier, int refresh,
+                                       @NonNull Function<Matcher, BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String>> function);
 
     /**
      * Returns placeholder from specified identifier. If it does not exist, it is registered

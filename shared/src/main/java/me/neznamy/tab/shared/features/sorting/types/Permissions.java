@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,13 +30,12 @@ public class Permissions extends SortingType {
     public Permissions(Sorting sorting, String options) {
         super(sorting, "PERMISSIONS", true);
         sortedGroups = convertSortingElements(options.split(","));
-        List<String> placeholders = new ArrayList<>();
+        List<TabPlaceholder> placeholders = new ArrayList<>();
         for (String permission : sortedGroups.keySet()) {
             String placeholder = "%permission:" + permission + "%";
-            placeholders.add(placeholder);
-            TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(placeholder,
+            placeholders.add(TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(placeholder,
                     TAB.getInstance().getConfiguration().getConfig().getPermissionRefreshInterval(),
-                    p -> Boolean.toString(((TabPlayer)p).hasPermission(permission)));
+                    p -> Boolean.toString(((TabPlayer)p).hasPermission(permission))));
         }
         sorting.addUsedPlaceholders(placeholders);
     }
