@@ -72,7 +72,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 all.teamData.disabled.set(true);
                 continue;
             }
-            TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
+            all.expansionData.setNameTagVisibility(true);
             sendProxyMessage(all);
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
@@ -132,7 +132,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 registerTeam(all, connectedPlayer);
             }
         }
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(connectedPlayer, true);
+        connectedPlayer.expansionData.setNameTagVisibility(true);
         if (proxy != null) {
             ProxyPlayer proxyPlayer = proxy.getProxyPlayers().get(connectedPlayer.getUniqueId());
             if (proxyPlayer != null && proxyPlayer.getNametag() != null) {
@@ -696,7 +696,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             MessageFile messageFile = TAB.getInstance().getConfiguration().getMessages();
             player.sendMessage(visible ? messageFile.getNameTagViewShown() :messageFile.getNameTagViewHidden());
         }
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(player, visible);
+        player.expansionData.setNameTagVisibility(visible);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             updateVisibility(all, player);
         }

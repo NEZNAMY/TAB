@@ -109,7 +109,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         String lastValue = p.lastPlaceholderValues.put(this, newValue);
         if (!newValue.equals(lastValue)) {
             if (updateParents) updateParents(p);
-            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
+            p.expansionData.setPlaceholderValue(identifier, newValue);
             return true;
         }
         return false;

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
-import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -160,9 +159,8 @@ public class Property {
         lastReplacedValue = "";
         update();
         if (name != null) {
-            TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-            expansion.setPropertyValue(owner, name, lastReplacedValue);
-            expansion.setRawPropertyValue(owner, name, getCurrentRawValue());
+            owner.expansionData.setPropertyValue(name, lastReplacedValue);
+            owner.expansionData.setRawPropertyValue(name, getCurrentRawValue());
         }
     }
 
@@ -265,7 +263,7 @@ public class Property {
             lastReplacedValue = string;
             mayContainRelPlaceholders = lastReplacedValue.indexOf('%') != -1;
             if (name != null) {
-                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPropertyValue(owner, name, lastReplacedValue);
+                owner.expansionData.setPropertyValue(name, lastReplacedValue);
             }
             return true;
         }

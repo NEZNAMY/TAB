@@ -160,7 +160,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         players.add(p);
         p.scoreboardData.activeScoreboard = this;
         recalculateScores(p);
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, name);
+        p.expansionData.setScoreboardName(name);
     }
 
     /**
@@ -185,7 +185,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         p.scoreboardData.lineProperties.clear();
         p.scoreboardData.lineNameProperties.clear();
         p.scoreboardData.numberFormatProperties.clear();
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, "");
+        p.expansionData.setScoreboardName("");
     }
 
     @NotNull

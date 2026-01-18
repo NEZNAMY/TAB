@@ -75,7 +75,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
             lastValue = newValue;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 updateParents(player);
-                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
+                player.expansionData.setPlaceholderValue(identifier, newValue);
             }
             return true;
         }

@@ -101,8 +101,8 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(connectedPlayer, "");
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(connectedPlayer, false);
+        connectedPlayer.expansionData.setScoreboardName("");
+        connectedPlayer.expansionData.setScoreboardVisible(false);
         if (toggleManager != null) toggleManager.convert(connectedPlayer);
         if (configuration.getJoinDelay() > 0) {
             connectedPlayer.scoreboardData.joinDelayed = true;
@@ -312,7 +312,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
                 }
             }
         }
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(player, visible);
+        player.expansionData.setScoreboardVisible(visible);
     }
 
     @Override

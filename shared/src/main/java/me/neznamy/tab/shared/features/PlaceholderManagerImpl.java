@@ -294,7 +294,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             recalculateUsedPlaceholders();
             TabPlaceholder p = getPlaceholder(identifier);
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValueSafe(all));
+                all.expansionData.setPlaceholderValue(p.getIdentifier(), p.getLastValueSafe(all));
             }
         }
     }
@@ -311,7 +311,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         if (placeholder.addUsedFeature(feature)) {
             recalculateUsedPlaceholders();
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                tabExpansion.setPlaceholderValue(all, placeholder.getIdentifier(), placeholder.getLastValueSafe(all));
+                all.expansionData.setPlaceholderValue(placeholder.getIdentifier(), placeholder.getLastValueSafe(all));
             }
         }
     }
@@ -342,7 +342,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         for (Placeholder p : usedPlaceholders) {
             if (p instanceof ServerPlaceholderImpl) { // server placeholders don't update on join
-                tabExpansion.setPlaceholderValue(connectedPlayer, p.getIdentifier(), ((ServerPlaceholderImpl) p).getLastValue());
+                connectedPlayer.expansionData.setPlaceholderValue(p.getIdentifier(), ((ServerPlaceholderImpl) p).getLastValue());
             }
         }
         // Initialize to avoid onVanishStatusChange being called in the loop after joining because previous value was null
