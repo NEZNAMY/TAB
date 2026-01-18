@@ -185,6 +185,49 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
         }
     }
 
+    @Override
+    @NotNull
+    public Collection<UUID> getEntries() {
+        if (player.getTabListEntryTracker() == null) return Collections.emptyList(); // This method is overridden in these cases anyway
+        return player.getTabListEntryTracker().getEntries();
+    }
+
+    @Override
+    @NotNull
+    public Object dump() {
+        Map<String, Object> data = new LinkedHashMap<>();
+
+        // Expected display names
+        Map<String, Object> forcedDisplayNames = new LinkedHashMap<>();
+        for (Map.Entry<UUID, TabComponent> entry : this.forcedDisplayNames.entrySet()) {
+            forcedDisplayNames.put(entry.getKey().toString(), entry.getValue() == null ? null : entry.getValue().toLegacyText());
+        }
+        data.put("expected display names (using legacy text)", forcedDisplayNames);
+
+        // All entries
+        List<String> entries = new ArrayList<>();
+        for (UUID entry : getEntries()) {
+            StringBuilder string = new StringBuilder(entry.toString());
+            TabPlayer byInternalId = TAB.getInstance().getPlayer(entry);
+            List<String> matches = new ArrayList<>();
+            if (byInternalId != null) {
+                matches.add("internal UUID of " + byInternalId.getName());
+            }
+            TabPlayer byTablistId = TAB.getInstance().getPlayerByTabListUUID(entry);
+            if (byTablistId != null) {
+                matches.add("tablist UUID of " + byTablistId.getName());
+            }
+            if (!matches.isEmpty()) {
+                string.append(" (").append(String.join(", ", matches)).append(")");
+            }
+
+            entries.add(string.toString());
+        }
+        data.put("entries", entries);
+
+        return data;
+    }
+
     /**
      * Processes packet for anti-override, ping spoof and nick compatibility.
      *

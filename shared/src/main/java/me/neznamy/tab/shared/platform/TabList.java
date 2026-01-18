@@ -2,8 +2,10 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.*;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -193,6 +195,22 @@ public interface TabList {
      * @return  {@code true} if tablist contains specified entry, {@code false} if not
      */
     boolean containsEntry(@NonNull UUID entry);
+
+    /**
+     * Returns collection of all entry UUIDs in this TabList.
+     *
+     * @return  collection of all entry UUIDs in this TabList
+     */
+    @NotNull
+    Collection<UUID> getEntries();
+
+    /**
+     * Dumps tablist information into an object suitable for JSON serialization.
+     *
+     * @return  dumped tablist information
+     */
+    @NotNull
+    Object dump();
 
     /**
      * A subclass representing player list entry

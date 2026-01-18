@@ -71,6 +71,7 @@ public class TabConstants {
         public static final String COMMAND_RELOAD                   = "tab.reload";
         public static final String COMMAND_CPU                      = "tab.cpu";
         public static final String COMMAND_DEBUG                    = "tab.debug";
+        public static final String COMMAND_DUMP                     = "tab.dump";
         public static final String COMMAND_GROUP_INFO               = "tab.groupinfo";
         public static final String COMMAND_GROUP_LIST               = "tab.grouplist";
         public static final String COMMAND_PARSE                    = "tab.parse";
