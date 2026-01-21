@@ -46,8 +46,8 @@ public class DumpCommand extends SubCommand {
 
     private void dump(@Nullable TabPlayer sender, @NotNull TabPlayer analyzed) {
         Map<String, Object> data = new LinkedHashMap<>();
-
         data.put("platform", TAB.getInstance().getPlatform().dump());
+        data.put("player", analyzed.dump());
         data.put("features", dumpFeatures(analyzed));
         data.put("placeholders", TAB.getInstance().getPlaceholderManager().dump(analyzed));
         data.put("tablist", analyzed.getTabList().dump());
@@ -58,6 +58,7 @@ public class DumpCommand extends SubCommand {
         Yaml yaml = new Yaml(options);
         String output = yaml.dump(data);
         try {
+            sendMessage(sender, "&eUploading dump...");
             String url = upload(output);
             sendMessage(sender, "&aDump uploaded: &e" + url);
         } catch (Exception e) {

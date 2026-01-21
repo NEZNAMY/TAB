@@ -13,11 +13,9 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Handler for "/tab debug" subcommand
@@ -75,7 +73,7 @@ public class DebugCommand extends SubCommand {
         }
         sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
         sendMessage(sender, "&eInternal UUID: &a" + analyzed.getUniqueId());
-        sendMessage(sender, "&eOffline UUID: &a" + UUID.nameUUIDFromBytes(("OfflinePlayer:" + analyzed.getName()).getBytes(StandardCharsets.UTF_8)));
+        sendMessage(sender, "&eOffline UUID: &a" + analyzed.getOfflineId());
         sendMessage(sender, "&eTablist UUID: &a" + analyzed.getTablistId());
         sendMessage(sender, "&ePlayer version: &a" + analyzed.getVersion().getFriendlyName() + " (" + analyzed.getVersionId() + ")");
         if (analyzed instanceof ProxyTabPlayer) {
