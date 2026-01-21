@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.nametags;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.nametag.NameTagManager;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.MessageFile;
@@ -28,7 +29,7 @@ import java.util.*;
 
 @Getter
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
-        Loadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, ProxyFeature, GroupListener {
+        Loadable, WorldSwitchListener, ServerSwitchListener, VanishListener, CustomThreaded, ProxyFeature, GroupListener, Dumpable {
 
     private final ThreadExecutor customThread = new ThreadExecutor("TAB NameTag Thread");
     private OnlinePlayers onlinePlayers;
@@ -712,5 +713,27 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     @Override
     public String getFeatureName() {
         return "NameTags";
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("disabled with condition", player.teamData.disabled.get());
+        map.put("team name", player.teamData.teamName.replaceAll("\\p{C}", ""));
+        map.put("team handling paused with API", player.teamData.teamHandlingPaused);
+        map.put("invisible nametag view", player.teamData.invisibleNameTagView);
+        map.put("collision", player.teamData.getCollisionRule());
+        map.put("invisible nametag", visibilityRefresher.getInvisibleCondition().isMet(player));
+        for (Property property : Arrays.asList(player.teamData.prefix, player.teamData.suffix)) {
+            Map<String, Object> propertyMap = new LinkedHashMap<>();
+            propertyMap.put("configured-raw-value", property.getOriginalRawValue());
+            propertyMap.put("api-forced-raw-value", property.getTemporaryValue());
+            propertyMap.put("current-source", property.getSource());
+            propertyMap.put("replaced-value", property.get());
+            map.put(property.getName(), propertyMap);
+        }
+        return map;
     }
 }

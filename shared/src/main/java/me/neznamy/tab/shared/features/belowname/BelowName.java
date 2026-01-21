@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ import java.util.UUID;
  * Feature handler for BelowName feature
  */
 public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        WorldSwitchListener, ServerSwitchListener, CustomThreaded, ProxyFeature, VanishListener {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded, ProxyFeature, VanishListener, Dumpable {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -330,5 +331,20 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, player, getValue(player), player.belowNameData.numberFormat.getFormat(viewer));
         }
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer analyzed) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("current values", new LinkedHashMap<String, Object>() {{
+            put("title", analyzed.belowNameData.text.get());
+            put("value", analyzed.belowNameData.score.get());
+            put("fancy-value", analyzed.belowNameData.numberFormat.get());
+            put("fancy-value-default", analyzed.belowNameData.defaultNumberFormat.get());
+            put("disabled with condition", analyzed.belowNameData.disabled.get());
+        }});
+        return map;
     }
 }

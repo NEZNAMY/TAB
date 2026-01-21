@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -10,6 +11,7 @@ import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.ToggleManager;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
+import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -26,7 +28,7 @@ import java.util.Map.Entry;
 @Getter
 public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
         DisplayObjectiveListener, ObjectiveListener, Loadable,
-        QuitListener, CustomThreaded, ServerSwitchListener {
+        QuitListener, CustomThreaded, ServerSwitchListener, Dumpable {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
@@ -188,6 +190,45 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         if (sb != null) {
             sb.removePlayerFromSet(disconnectedPlayer);
         }
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("chain", new LinkedHashMap<String, Object>() {{
+            for (ScoreboardImpl scoreboard : definedScoreboards) {
+                Map<String, Object> innerMap = new LinkedHashMap<>();
+                innerMap.put("display-condition", scoreboard.getDisplayCondition() == null ? null : scoreboard.getDisplayCondition().toShortFormat());
+                innerMap.put("display-condition with placeholders parsed", scoreboard.getDisplayCondition() == null ? null :
+                        TAB.getInstance().getPlaceholderManager().parsePlaceholders(scoreboard.getDisplayCondition().toShortFormat(), player));
+                innerMap.put("display-condition is null or met", scoreboard.isConditionMet(player));
+                innerMap.put("scoreboard is displayed", player.scoreboardData.activeScoreboard == scoreboard);
+                put(scoreboard.getName(), innerMap);
+            }
+        }});
+        if (player.scoreboardData.otherPluginScoreboard != null) {
+            map.put("scoreboard feature occupied by another plugin", "Yes (\"" + player.scoreboardData.otherPluginScoreboard + "\")");
+        } else {
+            map.put("scoreboard feature occupied by another plugin", "No");
+        }
+        map.put("scoreboard visible (= not toggled by user)", player.scoreboardData.visible);
+        if (player.scoreboardData.activeScoreboard != null) {
+            map.put("currently displayed scoreboard", new LinkedHashMap<String, Object>() {{
+                put("name", player.scoreboardData.activeScoreboard.getName());
+                put("title", player.scoreboardData.titleProperty.get());
+                List<String> lines = new ArrayList<>();
+                for (Line line : player.scoreboardData.activeScoreboard.getLines()) {
+                    lines.add(player.scoreboardData.lineProperties.get((ScoreboardLine) line).get() + " || " +
+                            player.scoreboardData.numberFormatProperties.get((ScoreboardLine) line).get());
+                }
+                put("lines", lines);
+            }});
+        } else {
+            map.put("currently displayed scoreboard", null);
+        }
+        return map;
     }
 
     // ------------------

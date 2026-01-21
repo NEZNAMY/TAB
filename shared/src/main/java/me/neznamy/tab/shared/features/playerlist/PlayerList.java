@@ -20,12 +20,16 @@ import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Feature handler for TabList display names
  */
 @Getter
 public class PlayerList extends RefreshableFeature implements TabListFormatManager, JoinListener, Loadable,
-        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, ProxyFeature, GroupListener {
+        UnLoadable, WorldSwitchListener, ServerSwitchListener, VanishListener, ProxyFeature, GroupListener, Dumpable {
 
     @NotNull private final StringToComponentCache cache = new StringToComponentCache("Tablist name formatting", 1000);
     @NotNull private final TablistFormattingConfiguration configuration;
@@ -255,6 +259,23 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         if (player.isVanished()) return;
         formatPlayerForEveryone(player, true);
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("disabled with condition", player.tablistData.disabled.get());
+        for (Property property : Arrays.asList(player.tablistData.prefix, player.tablistData.name, player.tablistData.suffix)) {
+            Map<String, Object> propertyMap = new LinkedHashMap<>();
+            propertyMap.put("configured-raw-value", property.getOriginalRawValue());
+            propertyMap.put("api-forced-raw-value", property.getTemporaryValue());
+            propertyMap.put("current-source", property.getSource());
+            propertyMap.put("replaced-value", property.get());
+            map.put(property.getName(), propertyMap);
+        }
+        return map;
     }
 
     // ------------------

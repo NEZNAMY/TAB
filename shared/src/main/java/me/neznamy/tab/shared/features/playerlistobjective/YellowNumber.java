@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ import java.util.UUID;
  */
 @Getter
 public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        CustomThreaded, ProxyFeature {
+        CustomThreaded, ProxyFeature, Dumpable {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
@@ -305,5 +306,19 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     @Override
     public String getFeatureName() {
         return "Playerlist Objective";
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer analyzed) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("current values", new LinkedHashMap<String, Object>() {{
+            put("title", analyzed.playerlistObjectiveData.title.get());
+            put("value", analyzed.playerlistObjectiveData.valueLegacy.get());
+            put("fancy-value", analyzed.playerlistObjectiveData.valueModern.get());
+            put("disabled with condition", analyzed.playerlistObjectiveData.disabled.get());
+        }});
+        return map;
     }
 }

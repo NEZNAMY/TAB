@@ -19,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ScoreboardConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final String toggleCommand;
     private final boolean rememberToggleChoice;
     private final boolean hiddenByDefault;
@@ -50,6 +51,7 @@ public class ScoreboardConfiguration {
         checkChain(section,scoreboards);
 
         return new ScoreboardConfiguration(
+                section,
                 section.getString("toggle-command", "/sb"),
                 section.getBoolean("remember-toggle-choice", false),
                 section.getBoolean("hidden-by-default", false),

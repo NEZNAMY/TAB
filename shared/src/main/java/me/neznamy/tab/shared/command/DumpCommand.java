@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.types.Dumpable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,10 +16,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Handler for "/tab dump" subcommand
@@ -39,7 +38,7 @@ public class DumpCommand extends SubCommand {
                 sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
                 return;
             }
-            dump(sender, analyzed);
+            new Thread(() -> dump(sender, analyzed)).start();
         } else {
             sendMessage(sender, "&cUsage: /tab dump <player>");
         }
@@ -47,6 +46,10 @@ public class DumpCommand extends SubCommand {
 
     private void dump(@Nullable TabPlayer sender, @NotNull TabPlayer analyzed) {
         Map<String, Object> data = new LinkedHashMap<>();
+
+        data.put("platform", TAB.getInstance().getPlatform().dump());
+        data.put("features", dumpFeatures(analyzed));
+        data.put("placeholders", TAB.getInstance().getPlaceholderManager().dump(analyzed));
         data.put("tablist", analyzed.getTabList().dump());
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -61,6 +64,31 @@ public class DumpCommand extends SubCommand {
             sendMessage(sender, "&cAn error occurred while uploading the dump, check console for more info.");
             e.printStackTrace();
         }
+    }
+
+    @NotNull
+    private Object dumpFeatures(@NotNull TabPlayer player) {
+        Map<String, Object> features = new LinkedHashMap<>();
+        List<String> featureList = Arrays.asList(
+                TabConstants.Feature.BELOW_NAME,
+                TabConstants.Feature.BOSS_BAR,
+                TabConstants.Feature.HEADER_FOOTER,
+                TabConstants.Feature.LAYOUT,
+                TabConstants.Feature.NAME_TAGS,
+                TabConstants.Feature.PLAYER_LIST,
+                TabConstants.Feature.YELLOW_NUMBER,
+                TabConstants.Feature.SCOREBOARD,
+                TabConstants.Feature.SORTING
+        );
+        for (String featureName : featureList) {
+            TabFeature feature = TAB.getInstance().getFeatureManager().getFeature(featureName);
+            if (feature instanceof Dumpable) {
+                features.put(featureName, ((Dumpable) feature).dump(player));
+            } else if (feature == null) {
+                features.put(featureName, "Feature is disabled");
+            }
+        }
+        return features;
     }
 
     @NotNull

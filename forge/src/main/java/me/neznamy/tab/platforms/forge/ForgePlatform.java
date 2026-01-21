@@ -34,14 +34,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.forgespi.language.IModInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -238,5 +238,21 @@ public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
     @Override
     public double getMSPT() {
         return (float) server.getAverageTickTimeNanos() / 1000000;
+    }
+
+    @Override
+    @NotNull
+    public Object dump() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("server-type", "Forge");
+        map.put("server-name", "Forge");
+        map.put("server-version", SharedConstants.getCurrentVersion().name());
+        map.put("tab-version", ProjectVariables.PLUGIN_VERSION);
+        Map<String, Object> mods = new LinkedHashMap<>();
+        for (IModInfo mod : ModList.get().getMods()) {
+            mods.put(mod.getModId(), mod.getVersion().toString());
+        }
+        map.put("mods", mods);
+        return map;
     }
 }

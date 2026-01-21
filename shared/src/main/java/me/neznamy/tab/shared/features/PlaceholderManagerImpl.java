@@ -9,10 +9,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
-import me.neznamy.tab.shared.features.types.CustomThreaded;
-import me.neznamy.tab.shared.features.types.JoinListener;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshConfiguration;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshTask;
 import me.neznamy.tab.shared.placeholders.conditions.ConditionManager;
@@ -39,7 +36,7 @@ import java.util.regex.Pattern;
  * Messy class for placeholder management
  */
 @Getter
-public class PlaceholderManagerImpl extends RefreshableFeature implements PlaceholderManager, JoinListener, Loadable {
+public class PlaceholderManagerImpl extends RefreshableFeature implements PlaceholderManager, JoinListener, Loadable, Dumpable {
 
     private static final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
@@ -421,6 +418,26 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         registerRelationalPlaceholder(identifier, configuration.getRefreshInterval(identifier.pattern(), defaultRefresh), function);
     }
 
+    /**
+     * Parses all placeholders in the given text for the given player.
+     *
+     * @param   text
+     *          Text to parse
+     * @param   player
+     *          Player to parse for
+     * @return  Text with all placeholders replaced
+     */
+    @NotNull
+    public String parsePlaceholders(@NotNull String text, @NotNull TabPlayer player) {
+        String output = text;
+        for (String placeholder : detectPlaceholders(text)) {
+            TabPlaceholder p = getPlaceholder(placeholder);
+            String value = p.getLastValueSafe(player);
+            output = output.replace(placeholder, value);
+        }
+        return output;
+    }
+
     // ------------------
     // API Implementation
     // ------------------
@@ -524,5 +541,30 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     @Override
     public String getFeatureName() {
         return "Refreshing placeholders";
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, String> serverPlaceholders = new HashMap<>();
+        Map<String, String> playerPlaceholders = new HashMap<>();
+        Map<String, Map<String, String>> relationalPlaceholders = new HashMap<>();
+        for (Placeholder p : usedPlaceholders) {
+            if (p instanceof ServerPlaceholderImpl) {
+                serverPlaceholders.put(p.getIdentifier(), ((ServerPlaceholderImpl) p).getLastValue());
+            } else if (p instanceof PlayerPlaceholderImpl) {
+                playerPlaceholders.put(p.getIdentifier(), ((PlayerPlaceholderImpl) p).getLastValueSafe(player));
+            } else if (p instanceof RelationalPlaceholderImpl) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                    relationalPlaceholders.computeIfAbsent(p.getIdentifier(), k -> new HashMap<>())
+                            .put("for viewer " + viewer.getName(), ((RelationalPlaceholderImpl) p).getLastValue(viewer, player));
+                }
+            }
+        }
+        Map<String, Object> placeholderValues = new LinkedHashMap<>();
+        placeholderValues.put("server", serverPlaceholders);
+        placeholderValues.put("player", playerPlaceholders);
+        placeholderValues.put("relational", relationalPlaceholders);
+        return placeholderValues;
     }
 }

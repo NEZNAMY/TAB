@@ -31,6 +31,7 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
@@ -44,9 +45,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -254,5 +253,21 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @Override
     public double getMSPT() {
         return (float) server.getAverageTickTimeNanos() / 1000000;
+    }
+
+    @Override
+    @NotNull
+    public Object dump() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("server-type", "Fabric");
+        map.put("server-name", "Fabric");
+        map.put("server-version", SharedConstants.getCurrentVersion().name());
+        map.put("tab-version", ProjectVariables.PLUGIN_VERSION);
+        Map<String, Object> mods = new LinkedHashMap<>();
+        for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
+            mods.put(mod.getMetadata().getId(), mod.getMetadata().getVersion().getFriendlyString());
+        }
+        map.put("mods", mods);
+        return map;
     }
 }

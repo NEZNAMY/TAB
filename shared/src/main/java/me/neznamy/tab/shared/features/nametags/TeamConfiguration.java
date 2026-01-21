@@ -14,6 +14,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class TeamConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final String enableCollision;
     @NotNull private final String invisibleNameTags;
     private final boolean canSeeFriendlyInvisibles;
@@ -34,6 +35,7 @@ public class TeamConfiguration {
                 "case-sensitive-sorting", "can-see-friendly-invisibles", "disable-condition"));
 
         return new TeamConfiguration(
+                section,
                 section.getObject("enable-collision", "true").toString(),
                 section.getObject("invisible-nametags", "false").toString(),
                 section.getBoolean("can-see-friendly-invisibles", false),

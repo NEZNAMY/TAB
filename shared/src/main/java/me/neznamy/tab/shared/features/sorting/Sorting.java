@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.sorting.types.*;
+import me.neznamy.tab.shared.features.types.Dumpable;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * Class for handling player sorting rules
  */
-public class Sorting extends RefreshableFeature implements SortingManager, JoinListener, Loadable {
+public class Sorting extends RefreshableFeature implements SortingManager, JoinListener, Loadable, Dumpable {
 
     private NameTag nameTags;
     private LayoutManagerImpl layout;
@@ -198,6 +199,18 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
     @Override
     public String getFeatureName() {
         return "Sorting";
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("short-team-name", player.sortingData.shortTeamName.replaceAll("\\p{C}", ""));
+        map.put("full-team-name", player.sortingData.fullTeamName.replaceAll("\\p{C}", ""));
+        map.put("forced-team-name", player.sortingData.forcedTeamName);
+        map.put("team-name-note", player.sortingData.teamNameNote.split("\n"));
+        return map;
     }
 
     // ------------------
