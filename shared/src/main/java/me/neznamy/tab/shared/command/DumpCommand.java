@@ -63,7 +63,7 @@ public class DumpCommand extends SubCommand {
             sendMessage(sender, "&aDump uploaded: &e" + url);
         } catch (Exception e) {
             sendMessage(sender, "&cAn error occurred while uploading the dump, check console for more info.");
-            e.printStackTrace();
+            TAB.getInstance().getErrorManager().criticalError("Failed to upload dump", e);
         }
     }
 
