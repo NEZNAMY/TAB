@@ -192,15 +192,18 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
         map.put("configuration", configuration.getSection().getMap());
         map.put("chain", new LinkedHashMap<String, Object>() {{
             for (HeaderFooterDesign design : definedDesigns) {
-                Map<String, Object> designMap = new LinkedHashMap<>();
-                designMap.put("display-condition", design.getDisplayCondition() == null ? null : design.getDisplayCondition().toShortFormat());
-                designMap.put("display-condition with placeholders parsed", design.getDisplayCondition() == null ? null :
-                        TAB.getInstance().getPlaceholderManager().parsePlaceholders(design.getDisplayCondition().toShortFormat(), player));
-                designMap.put("display-condition is null or met", design.isConditionMet(player));
-                designMap.put("design is displayed", player.headerFooterData.activeDesign == design);
-                put(design.getName(), designMap);
+                 put(design.getName(), design.dump(player, player.headerFooterData.activeDesign));
             }
         }});
+        if (player.headerFooterData.activeDesign != null) {
+            map.put("currently displayed design", new LinkedHashMap<String, Object>() {{
+                put("name", player.headerFooterData.activeDesign.getName());
+                put("header", player.headerFooterData.headerProperties.get(player.headerFooterData.activeDesign).get().split("\n"));
+                put("footer", player.headerFooterData.footerProperties.get(player.headerFooterData.activeDesign).get().split("\n"));
+            }});
+        } else {
+            map.put("currently displayed design", null);
+        }
         return map;
     }
 }

@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.Scorebo
 import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.StableDynamicLine;
+import me.neznamy.tab.shared.features.types.Conditional;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -30,7 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * A class representing a scoreboard configured in config
  */
 @Getter
-public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab.api.scoreboard.Scoreboard, CustomThreaded {
+public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab.api.scoreboard.Scoreboard,
+        CustomThreaded, Conditional {
 
     //scoreboard manager
     private final ScoreboardManagerImpl manager;
@@ -122,17 +124,6 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
             return new StableDynamicLine(this, lineNumber, text);
         }
         return new LongLine(this, lineNumber, text);
-    }
-
-    /**
-     * Returns true if condition is null or is met, false otherwise
-     *
-     * @param   p
-     *          player to check
-     * @return  true if condition is null or is met, false otherwise
-     */
-    public boolean isConditionMet(@NonNull TabPlayer p) {
-        return displayCondition == null || displayCondition.isMet(p);
     }
 
     /**

@@ -199,13 +199,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         map.put("configuration", configuration.getSection().getMap());
         map.put("chain", new LinkedHashMap<String, Object>() {{
             for (ScoreboardImpl scoreboard : definedScoreboards) {
-                Map<String, Object> innerMap = new LinkedHashMap<>();
-                innerMap.put("display-condition", scoreboard.getDisplayCondition() == null ? null : scoreboard.getDisplayCondition().toShortFormat());
-                innerMap.put("display-condition with placeholders parsed", scoreboard.getDisplayCondition() == null ? null :
-                        TAB.getInstance().getPlaceholderManager().parsePlaceholders(scoreboard.getDisplayCondition().toShortFormat(), player));
-                innerMap.put("display-condition is null or met", scoreboard.isConditionMet(player));
-                innerMap.put("scoreboard is displayed", player.scoreboardData.activeScoreboard == scoreboard);
-                put(scoreboard.getName(), innerMap);
+                put(scoreboard.getName(), scoreboard.dump(player, player.scoreboardData.activeScoreboard));
             }
         }});
         if (player.scoreboardData.otherPluginScoreboard != null) {

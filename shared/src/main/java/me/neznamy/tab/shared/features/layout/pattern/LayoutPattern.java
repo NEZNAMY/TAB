@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.layout.impl.common.FixedSlot;
+import me.neznamy.tab.shared.features.types.Conditional;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabList;
@@ -17,11 +18,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 @Getter
-public class LayoutPattern extends RefreshableFeature implements Layout {
+public class LayoutPattern extends RefreshableFeature implements Layout, Conditional {
 
     @NotNull private final LayoutManagerImpl manager;
     @NotNull private final String name;
-    @Nullable private final Condition condition;
+    @Nullable private final Condition displayCondition;
     private final int slotCount;
     @Nullable private final String defaultSkinOverride;
     @Nullable private final TabList.Skin defaultSkin;
@@ -31,8 +32,8 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
     public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull LayoutDefinition def) {
         this.manager = manager;
         name = def.getName();
-        condition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(def.getCondition());
-        if (condition != null) manager.addUsedPlaceholder(condition.getPlaceholderIdentifier());
+        displayCondition = TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(def.getCondition());
+        if (displayCondition != null) manager.addUsedPlaceholder(displayCondition.getPlaceholderIdentifier());
         slotCount = def.getSlotCount();
         defaultSkinOverride = def.getDefaultSkin();
         defaultSkin = def.getDefaultSkin() == null ? null : manager.getSkinManager().getSkin(def.getDefaultSkin());
@@ -43,17 +44,6 @@ public class LayoutPattern extends RefreshableFeature implements Layout {
         for (Map.Entry<String, GroupPattern> entry : def.getGroups().entrySet()) {
             addGroup(entry.getValue().getCondition(), entry.getValue().getSlots());
         }
-    }
-
-    /**
-     * Checks if condition for this layout pattern is met for given player.
-     *
-     * @param   p
-     *          player to check for
-     * @return  {@code true} if condition is met or not defined, {@code false} if not met
-     */
-    public boolean isConditionMet(@NotNull TabPlayer p) {
-        return condition == null || condition.isMet(p);
     }
 
     /**

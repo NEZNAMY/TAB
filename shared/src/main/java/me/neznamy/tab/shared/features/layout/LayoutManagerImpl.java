@@ -217,15 +217,16 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         map.put("configuration", configuration.getSection().getMap());
         map.put("chain", new LinkedHashMap<String, Object>() {{
             for (LayoutPattern pattern : layouts.values()) {
-                Map<String, Object> patternMap = new LinkedHashMap<>();
-                patternMap.put("display-condition", pattern.getCondition() == null ? "null" : pattern.getCondition().toShortFormat());
-                patternMap.put("display-condition with placeholders parsed", pattern.getCondition() == null ? null :
-                        TAB.getInstance().getPlaceholderManager().parsePlaceholders(pattern.getCondition().toShortFormat(), player));
-                patternMap.put("display-condition is null or met", pattern.isConditionMet(player));
-                patternMap.put("layout is displayed", player.layoutData.currentLayout != null && player.layoutData.currentLayout.view.getPattern() == pattern);
-                put(pattern.getName(), patternMap);
+               put(pattern.getName(), pattern.dump(player, player.layoutData.currentLayout == null ? null : player.layoutData.currentLayout.view.getPattern()));
             }
         }});
+        if (player.layoutData.currentLayout != null) {
+            map.put("currently displayed layout", new LinkedHashMap<String, Object>() {{
+                put("name", player.layoutData.currentLayout.view.getPattern().getName());
+            }});
+        } else {
+            map.put("currently displayed layout", null);
+        }
         return map;
     }
 
