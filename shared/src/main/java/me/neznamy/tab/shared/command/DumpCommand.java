@@ -76,10 +76,12 @@ public class DumpCommand extends SubCommand {
                 TabConstants.Feature.HEADER_FOOTER,
                 TabConstants.Feature.LAYOUT,
                 TabConstants.Feature.NAME_TAGS,
+                TabConstants.Feature.PING_SPOOF,
                 TabConstants.Feature.PLAYER_LIST,
                 TabConstants.Feature.YELLOW_NUMBER,
                 TabConstants.Feature.SCOREBOARD,
-                TabConstants.Feature.SORTING
+                TabConstants.Feature.SORTING,
+                TabConstants.Feature.SPECTATOR_FIX
         );
         for (String featureName : featureList) {
             TabFeature feature = TAB.getInstance().getFeatureManager().getFeature(featureName);
@@ -87,6 +89,8 @@ public class DumpCommand extends SubCommand {
                 features.put(featureName, ((Dumpable) feature).dump(player));
             } else if (feature == null) {
                 features.put(featureName, "Feature is disabled");
+            } else {
+                features.put(featureName, "Feature is not dumpable"); // Should never happen
             }
         }
         return features;

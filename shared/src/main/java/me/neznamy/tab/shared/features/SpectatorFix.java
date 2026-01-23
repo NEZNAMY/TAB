@@ -8,13 +8,16 @@ import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Cancelling GameMode change packet to spectator GameMode to avoid players being moved on
  * the bottom of TabList with transparent name. Does not work on self as that would result
  * in players not being able to clip through walls.
  */
 @Getter
-public class SpectatorFix extends TabFeature implements JoinListener, Loadable, UnLoadable, CustomThreaded {
+public class SpectatorFix extends TabFeature implements JoinListener, Loadable, UnLoadable, CustomThreaded, Dumpable {
 
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Spectator Fix Thread");
 
@@ -72,5 +75,13 @@ public class SpectatorFix extends TabFeature implements JoinListener, Loadable, 
     @Override
     public String getFeatureName() {
         return "Spectator fix";
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("player has bypass permission", player.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS));
+        return map;
     }
 }
