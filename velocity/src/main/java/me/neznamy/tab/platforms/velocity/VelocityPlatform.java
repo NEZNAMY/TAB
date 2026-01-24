@@ -5,12 +5,14 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.scoreboard.ObjectiveEvent;
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scoreboard.ScoreboardManager;
 import lombok.Getter;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
+import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.TabTextColor;
@@ -33,8 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -238,5 +239,31 @@ public class VelocityPlatform extends ProxyPlatform {
         for (String cmd : customCommands) {
             plugin.getServer().getCommandManager().unregister(cmd);
         }
+    }
+
+    @Override
+    @NotNull
+    public Object dump() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("server-type", "Velocity");
+        map.put("server-name", plugin.getServer().getVersion().getName());
+        map.put("server-version", plugin.getServer().getVersion().getVersion());
+        map.put("tab-version", ProjectVariables.PLUGIN_VERSION);
+        Optional<PluginContainer> vsapi = plugin.getServer().getPluginManager().getPlugin("velocity-scoreboard-api");
+        String vsapiString;
+        if (vsapi.isEmpty()) {
+            vsapiString = "Not installed";
+        } else if (!scoreboardAPI) {
+            vsapiString = "Installed but failed to enable (version " + vsapi.get().getDescription().getVersion().orElse("null") + ")";
+        } else {
+            vsapiString = "Installed (version " + vsapi.get().getDescription().getVersion().orElse("null") + ")";
+        }
+        map.put("VelocityScoreboardAPI", vsapiString);
+        Map<String, Object> plugins = new LinkedHashMap<>();
+        for (PluginContainer p : plugin.getServer().getPluginManager().getPlugins()) {
+            plugins.put(p.getDescription().getId(), p.getDescription().getVersion().orElse("null"));
+        }
+        map.put("plugins", plugins);
+        return map;
     }
 }

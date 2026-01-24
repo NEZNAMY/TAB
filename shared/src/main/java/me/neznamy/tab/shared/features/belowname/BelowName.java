@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ import java.util.UUID;
  * Feature handler for BelowName feature
  */
 public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        WorldSwitchListener, ServerSwitchListener, CustomThreaded, ProxyFeature, VanishListener {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded, ProxyFeature, VanishListener, Dumpable {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -81,7 +82,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
                 TabPlayer target = entry.getKey();
-                if (!sameServerAndWorld(viewer, target)) continue;
                 setScore(viewer, target, entry.getValue(), target.belowNameData.numberFormat.getFormat(viewer));
             }
         }
@@ -106,7 +106,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         int number = getValue(connectedPlayer);
         Property fancy = connectedPlayer.belowNameData.numberFormat;
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            if (!sameServerAndWorld(connectedPlayer, all)) continue;
             setScore(all, connectedPlayer, number, fancy.getFormat(all));
             if (all != connectedPlayer) {
                 setScore(connectedPlayer, all, getValue(all), all.belowNameData.numberFormat.getFormat(connectedPlayer));
@@ -142,7 +141,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         } else {
             register(p);
             for (TabPlayer all : onlinePlayers.getPlayers()) {
-                if (!sameServerAndWorld(p, all)) continue;
                 setScore(p, all, getValue(all), all.belowNameData.numberFormat.getFormat(p));
             }
             if (proxy != null) {
@@ -200,7 +198,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         Property fancy = refreshed.belowNameData.numberFormat;
         fancy.update();
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (!sameServerAndWorld(viewer, refreshed)) continue;
             setScore(viewer, refreshed, number, fancy.getFormat(viewer));
         }
         sendProxyMessage(refreshed.getUniqueId(), number, fancy.get());
@@ -230,7 +227,8 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyDisplay) {
         if (viewer.belowNameData.disabled.get()) return;
-        if (!viewer.canSee(scoreHolder)) return; // Prevent hack clients from knowing vanished players are connected
+        if (!viewer.getTabList().containsEntry(scoreHolder.getTablistId())) return; // Prevent hack clients from knowing vanished players are connected
+        if (viewer.server != scoreHolder.server || viewer.world != scoreHolder.world) return; // Viewer definitely cannot see this player in game
         viewer.getScoreboard().setScore(
                 OBJECTIVE_NAME,
                 scoreHolder.getNickname(),
@@ -238,20 +236,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 null, // Unused by this objective slot
                 cache.get(fancyDisplay)
         );
-    }
-
-    /**
-     * Returns {@code true} if the two players are in the same server and world,
-     * {@code false} if not.
-     *
-     * @param   player1
-     *          First player
-     * @param   player2
-     *          Second player
-     * @return  {@code true} if players are in the same server and world, {@code false} otherwise
-     */
-    private boolean sameServerAndWorld(@NotNull TabPlayer player1, @NotNull TabPlayer player2) {
-        return player1.server == player2.server && player1.world == player2.world;
     }
 
     @Override
@@ -266,7 +250,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
 
     private void updatePlayer(@NotNull TabPlayer player) {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
-            if (!sameServerAndWorld(all, player)) continue;
             setScore(player, all, getValue(all), all.belowNameData.numberFormat.getFormat(player));
             if (all != player) setScore(all, player, getValue(player), player.belowNameData.numberFormat.getFormat(all));
         }
@@ -292,6 +275,10 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
+    // ------------------
+    // ProxySupport
+    // ------------------
+
     @Override
     public void onJoin(@NotNull ProxyPlayer player) {
         updatePlayer(player);
@@ -310,10 +297,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
             );
         }
     }
-
-    // ------------------
-    // ProxySupport
-    // ------------------
 
     private void sendProxyMessage(@NotNull TabPlayer player) {
         if (proxy == null) return;
@@ -348,5 +331,20 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, player, getValue(player), player.belowNameData.numberFormat.getFormat(viewer));
         }
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer analyzed) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("current values", new LinkedHashMap<String, Object>() {{
+            put("title", analyzed.belowNameData.text.get());
+            put("value", analyzed.belowNameData.score.get());
+            put("fancy-value", analyzed.belowNameData.numberFormat.get());
+            put("fancy-value-default", analyzed.belowNameData.defaultNumberFormat.get());
+            put("disabled with condition", analyzed.belowNameData.disabled.get());
+        }});
+        return map;
     }
 }

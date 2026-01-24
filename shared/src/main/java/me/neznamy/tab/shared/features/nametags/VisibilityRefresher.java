@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.nametags;
 
+import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
@@ -19,7 +20,10 @@ import org.jetbrains.annotations.NotNull;
 public class VisibilityRefresher extends RefreshableFeature implements JoinListener, Loadable, CustomThreaded {
 
     @NotNull private final NameTag nameTags;
-    @NotNull private final Condition invisibleCondition;
+
+    @Getter
+    @NotNull
+    private final Condition invisibleCondition;
 
     /**
      * Constructs new instance.

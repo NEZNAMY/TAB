@@ -98,9 +98,9 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             String requestedPlaceholder = "%" + identifier.substring("placeholder_".length()) + "%";
             PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
             pm.addUsedPlaceholder(requestedPlaceholder, pm);
-            return pm.getPlaceholder(requestedPlaceholder).set(requestedPlaceholder, p);
+            return pm.getPlaceholder(requestedPlaceholder).parse(p);
         }
-        return p.expansionValues.get(identifier);
+        return p.expansionData.getValue(identifier);
     }
 
     @Override
@@ -132,17 +132,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
                 return "<Not a relational placeholder: " + requestedPlaceholder + ">";
             }
         }
-        return "<Unknown identifier: " + identifier + ">";
-    }
-
-    @Override
-    public void setPlaceholderValue(@NotNull TabPlayer player, @NotNull String placeholder, @NotNull String value) {
-        // Do not unnecessarily do all placeholders, just retrieve them on request to save resources by not using string builder all the time
-    }
-
-    @Override
-    public void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value) {
-        player.expansionValues.put(key, value);
+        return "<Unknown identifier: \"" + identifier + "\">";
     }
 
     @Override

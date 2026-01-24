@@ -26,6 +26,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardPlayerData;
 import me.neznamy.tab.shared.features.sorting.SortingPlayerData;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.hook.FloodgateHook;
+import me.neznamy.tab.shared.placeholders.expansion.ExpansionData;
 import net.luckperms.api.model.user.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,6 +55,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Player's unique ID */
     @Getter private final UUID uniqueId;
+
+    /** Player's offline UUID based on their name */
+    @Getter private final UUID offlineId;
 
     /** Player's tablist UUID */
     @Getter private final UUID tablistId;
@@ -122,7 +126,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public final TablistFormattingPlayerData tablistData = new TablistFormattingPlayerData();
 
     /** Data for plugin's PlaceholderAPI expansion */
-    public final Map<String, String> expansionValues = new HashMap<>();
+    @NotNull
+    public final ExpansionData expansionData = new ExpansionData(this);
 
     /** LuckPerms user for fast access */
     @Nullable public User luckPermsUser;
@@ -183,7 +188,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         version = ProtocolVersion.fromNetworkId(protocolVersion);
         bedrockPlayer = FloodgateHook.getInstance().isFloodgatePlayer(uniqueId, name);
         permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
-        tablistId = useRealId ? uniqueId : UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        tablistId = useRealId ? uniqueId : offlineId;
         scoreboard = platform.createScoreboard(this);
         bossBar = platform.createBossBar(this);
         tabList = platform.createTabList(this);
@@ -358,6 +364,31 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     @NotNull
     public String getWorld() {
         return world.getName();
+    }
+
+    /**
+     * Dumps player data.
+     *
+     * @return  Map of player data
+     */
+    @NotNull
+    public Object dump() {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("name", name);
+        data.put("nickname", nickname);
+        data.put("uniqueId", uniqueId.toString());
+        data.put("offlineId", offlineId.toString());
+        data.put("tablistId", tablistId.toString());
+        data.put("server", server.getName());
+        data.put("world", world.getName());
+        data.put("permissionGroup", permissionGroup);
+        data.put("temporaryGroup", temporaryGroup);
+        data.put("bedrockPlayer", bedrockPlayer);
+        data.put("protocolVersion", versionId);
+        data.put("gameVersion", version.getFriendlyName());
+        data.put("loaded", loaded);
+        data.put("online", online);
+        return data;
     }
 
     /**

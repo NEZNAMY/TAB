@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
-import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.RegisterPlaceholder;
@@ -58,10 +57,6 @@ public abstract class ProxyPlatform implements Platform {
 
     @Override
     public @Nullable TabFeature getPerWorldPlayerList(@NotNull PerWorldPlayerListConfiguration configuration) { return null; }
-
-    public @NotNull TabExpansion createTabExpansion() {
-        return new ProxyTabExpansion();
-    }
 
     @Override
     public boolean isProxy() {

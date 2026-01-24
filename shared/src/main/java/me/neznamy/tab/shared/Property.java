@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
-import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
+import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,7 +57,7 @@ public class Property {
     @Nullable private String source;
 
     /** Relational placeholders in the text in the same order they are used */
-    private String[] relPlaceholders;
+    private RelationalPlaceholderImpl[] relPlaceholders;
 
     /** String builder to avoid reallocation on every update call */
     @NotNull
@@ -113,12 +113,13 @@ public class Property {
      */
     private void analyze(@NotNull String value) {
         // Identify placeholders used directly
-        List<String> placeholders = new ArrayList<>();
-        List<String> relPlaceholders0 = new ArrayList<>();
+        List<TabPlaceholder> placeholders = new ArrayList<>();
+        List<RelationalPlaceholderImpl> relPlaceholders0 = new ArrayList<>();
         for (String identifier : PlaceholderManagerImpl.detectPlaceholders(value)) {
-            placeholders.add(identifier);
-            if (identifier.startsWith("%rel_")) {
-                relPlaceholders0.add(identifier);
+            TabPlaceholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
+            placeholders.add(placeholder);
+            if (placeholder instanceof RelationalPlaceholderImpl) {
+                relPlaceholders0.add((RelationalPlaceholderImpl) placeholder);
             }
         }
 
@@ -129,8 +130,8 @@ public class Property {
             elementList.add(new LiteralElement(EnumChatFormat.color(value)));
         } else {
             String remaining = value;
-            for (String placeholder : placeholders) {
-                int index = remaining.indexOf(placeholder);
+            for (TabPlaceholder placeholder : placeholders) {
+                int index = remaining.indexOf(placeholder.getIdentifier());
                 if (index != -1) {
                     // Add literal text before placeholder if not empty
                     if (index > 0) {
@@ -139,7 +140,7 @@ public class Property {
                     // Add placeholder element
                     elementList.add(new PlaceholderElement(placeholder));
                     // Move past the placeholder
-                    remaining = remaining.substring(index + placeholder.length());
+                    remaining = remaining.substring(index + placeholder.getIdentifier().length());
                 }
             }
             // Add remaining literal text if any
@@ -150,7 +151,7 @@ public class Property {
 
         // Update and save values
         elements = elementList.toArray(new Element[0]);
-        relPlaceholders = relPlaceholders0.toArray(new String[0]);
+        relPlaceholders = relPlaceholders0.toArray(new RelationalPlaceholderImpl[0]);
 
         if (listener != null) {
             listener.addUsedPlaceholders(placeholders);
@@ -158,9 +159,8 @@ public class Property {
         lastReplacedValue = "";
         update();
         if (name != null) {
-            TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-            expansion.setPropertyValue(owner, name, lastReplacedValue);
-            expansion.setRawPropertyValue(owner, name, getCurrentRawValue());
+            owner.expansionData.setPropertyValue(name, lastReplacedValue);
+            owner.expansionData.setRawPropertyValue(name, getCurrentRawValue());
         }
     }
 
@@ -263,7 +263,7 @@ public class Property {
             lastReplacedValue = string;
             mayContainRelPlaceholders = lastReplacedValue.indexOf('%') != -1;
             if (name != null) {
-                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPropertyValue(owner, name, lastReplacedValue);
+                owner.expansionData.setPropertyValue(name, lastReplacedValue);
             }
             return true;
         }
@@ -290,8 +290,7 @@ public class Property {
         if (!mayContainRelPlaceholders) return lastReplacedValue;
         String format = lastReplacedValue;
         // Direct placeholders
-        for (String identifier : relPlaceholders) {
-            RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
+        for (RelationalPlaceholderImpl pl : relPlaceholders) {
             format = format.replace(pl.getIdentifier(), EnumChatFormat.color(pl.getLastValue(viewer, owner)));
         }
 
@@ -314,7 +313,7 @@ public class Property {
     public String getOriginalReplacedValue() {
         String value = originalRawValue;
         for (String identifier : PlaceholderManagerImpl.detectPlaceholders(value)) {
-            value = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(identifier, owner);
+            value = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).parse(owner);
         }
         return EnumChatFormat.color(value);
     }
@@ -351,12 +350,12 @@ public class Property {
     private static class PlaceholderElement extends Element {
 
         @NotNull
-        private final String identifier;
+        private final TabPlaceholder placeholder;
 
         @Override
         @NotNull
         String get(@NotNull TabPlayer owner) {
-            return EnumChatFormat.color(TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(identifier, owner));
+            return EnumChatFormat.color(placeholder.parse(owner));
         }
     }
 }

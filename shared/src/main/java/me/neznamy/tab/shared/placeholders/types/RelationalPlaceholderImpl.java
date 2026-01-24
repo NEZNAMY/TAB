@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
@@ -53,7 +52,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     @Override
     public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target, @Nullable String value) {
         if (hasValueChanged((TabPlayer) viewer, (TabPlayer) target, value)) {
-            for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
+            for (RefreshableFeature r : getUsedByFeatures()) {
                 TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh((TabPlayer) target, true),
                         r.getFeatureName(), r.getRefreshDisplayName());
                 if (r instanceof CustomThreaded) {
@@ -91,13 +90,12 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 
     @Override
     public void updateFromNested(@NonNull TabPlayer viewer) {
-        Set<RefreshableFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier);
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             String value = request(viewer, target);
             String s = replacements.findReplacement(String.valueOf(value));
             viewer.lastRelationalValues.computeIfAbsent(this, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
             if (!target.isLoaded()) return; // Updated on join
-            for (RefreshableFeature f : usage) {
+            for (RefreshableFeature f : getUsedByFeatures()) {
                 TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(target, true),
                         f.getFeatureName(), f.getRefreshDisplayName());
                 if (f instanceof CustomThreaded) {
@@ -109,7 +107,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
             updateParents(target);
         }
         if (!viewer.isLoaded()) return; // Updated on join
-        for (RefreshableFeature f : usage) {
+        for (RefreshableFeature f : getUsedByFeatures()) {
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(viewer, true),
                     f.getFeatureName(), f.getRefreshDisplayName());
             if (f instanceof CustomThreaded) {

@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Netty injector for tablist entry tracking.
@@ -37,6 +34,16 @@ public abstract class TabListEntryTracker extends ChannelDuplexHandler {
      */
     public boolean containsEntry(@NotNull UUID uuid) {
         return tablistEntries.contains(uuid);
+    }
+
+    /**
+     * Returns collection of all tablist entries.
+     *
+     * @return  Collection of all tablist entries
+     */
+    @NotNull
+    public Collection<UUID> getEntries() {
+        return Collections.unmodifiableSet(tablistEntries);
     }
 
     /**

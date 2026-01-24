@@ -71,6 +71,7 @@ public class TabConstants {
         public static final String COMMAND_RELOAD                   = "tab.reload";
         public static final String COMMAND_CPU                      = "tab.cpu";
         public static final String COMMAND_DEBUG                    = "tab.debug";
+        public static final String COMMAND_DUMP                     = "tab.dump";
         public static final String COMMAND_GROUP_INFO               = "tab.groupinfo";
         public static final String COMMAND_GROUP_LIST               = "tab.grouplist";
         public static final String COMMAND_PARSE                    = "tab.parse";
@@ -114,30 +115,28 @@ public class TabConstants {
 
         //universal features
         public static final String HEADER_FOOTER = "HeaderFooter";
-        public static final String PLAYER_LIST = "PlayerList";
+        public static final String PLAYER_LIST = "TablistFormatting";
         public static final String SPECTATOR_FIX = "SpectatorFix";
-        public static final String YELLOW_NUMBER = "YellowNumber";
+        public static final String YELLOW_NUMBER = "PlayerlistObjective";
         public static final String YELLOW_NUMBER_TEXT = "YellowNumberText";
         public static final String BELOW_NAME = "BelowName";
         public static final String BELOW_NAME_TEXT = "BelowNameText";
-        public static final String SCOREBOARD = "ScoreBoard";
-        public static final String SORTING = "sorting";
-        public static final String LAYOUT = "layout";
+        public static final String SCOREBOARD = "Scoreboard";
+        public static final String SORTING = "Sorting";
+        public static final String LAYOUT = "Layout";
         public static final String LAYOUT_LATENCY = "layout-latency";
         public static final String PIPELINE_INJECTION = "injection";
         public static final String BOSS_BAR = "BossBar";
-        public static final String NAME_TAGS = "NameTag16";
+        public static final String NAME_TAGS = "NameTags";
         public static final String NAME_TAGS_COLLISION = "NameTagCollision";
         public static final String NAME_TAGS_VISIBILITY = "NameTagVisibility";
         public static final String PLACEHOLDER_MANAGER = "PlaceholderManager";
         public static final String PING_SPOOF = "PingSpoof";
         public static final String PROXY_SUPPORT = "ProxySupport";
+        public static final String GLOBAL_PLAYER_LIST = "GlobalPlayerList";
 
         //Bukkit only
         public static final String PER_WORLD_PLAYER_LIST = "PerWorldPlayerList";
-
-        //BungeeCord only
-        public static final String GLOBAL_PLAYER_LIST = "GlobalPlayerList";
 
         //additional info displayed in cpu command
         public static final String PACKET_DESERIALIZING = "Packet deserializing";

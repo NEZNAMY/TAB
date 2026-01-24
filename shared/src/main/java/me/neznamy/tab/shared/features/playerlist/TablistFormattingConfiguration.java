@@ -14,6 +14,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class TablistFormattingConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final String disableCondition;
 
     /**
@@ -29,6 +30,6 @@ public class TablistFormattingConfiguration {
         // Check keys
         section.checkForUnknownKey(Arrays.asList("enabled", "disable-condition"));
 
-        return new TablistFormattingConfiguration(section.getString("disable-condition", "%world%=disabledworld"));
+        return new TablistFormattingConfiguration(section, section.getString("disable-condition", "%world%=disabledworld"));
     }
 }

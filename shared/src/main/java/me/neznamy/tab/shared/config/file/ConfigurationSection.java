@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.config.file;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
@@ -16,7 +17,10 @@ public class ConfigurationSection {
     
     @NotNull private final String file;
     @NotNull private final String section;
-    @NotNull private final Map<Object, Object> map;
+
+    @Getter
+    @NotNull
+    private final Map<Object, Object> map;
 
     public void checkForUnknownKey(@NonNull List<String> validProperties) {
         for (Object mapKey : map.keySet()) {

@@ -4,11 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.api.integration.VanishIntegration;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.CpuManager;
-import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.message.outgoing.OutgoingMessage;
 import me.neznamy.tab.shared.proxy.message.outgoing.PermissionRequest;
 import me.neznamy.tab.shared.proxy.message.outgoing.PlayerJoin;
@@ -82,10 +81,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
                 TAB.getInstance().getPlaceholderManager().getBridgePlaceholders(),
                 TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues()
         ));
-        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-        if (expansion instanceof ProxyTabExpansion) {
-            ((ProxyTabExpansion) expansion).resendAllValues(this);
-        }
+        expansionData.resendAllValues();
         bridgeRequestTime = System.currentTimeMillis();
     }
 

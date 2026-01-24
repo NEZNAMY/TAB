@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * Class for handling BossBar feature
  */
 public class BossBarManagerImpl extends RefreshableFeature implements BossBarManager, JoinListener, Loadable,
-        QuitListener, CustomThreaded {
+        QuitListener, CustomThreaded, Dumpable {
 
     @Getter private final StringToComponentCache cache = new StringToComponentCache("BossBar", 1000);
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB BossBar Thread");
@@ -100,7 +100,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setBossBarVisible(connectedPlayer, false);
+        connectedPlayer.expansionData.setBossBarVisible(false);
         if (toggleManager != null) toggleManager.convert(connectedPlayer);
         setBossBarVisible(connectedPlayer, configuration.isHiddenByDefault() == (toggleManager != null && toggleManager.contains(connectedPlayer)), false);
     }
@@ -247,7 +247,7 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
                 }
             }
         }
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setBossBarVisible(player, visible);
+        player.expansionData.setBossBarVisible(visible);
     }
 
     @Override
@@ -278,5 +278,22 @@ public class BossBarManagerImpl extends RefreshableFeature implements BossBarMan
         return registeredBossBars.values().stream().filter(BossBarLine::isBeingAnnounced).collect(Collectors.toList());
     }
 
-
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("bossbar conditions", new LinkedHashMap<String, Object>() {{
+            for (BossBarLine bar : lineValues) {
+                Map<String, Object> barMap = new LinkedHashMap<>();
+                barMap.put("display-condition", bar.getDisplayCondition() == null ? null : bar.getDisplayCondition().toShortFormat());
+                barMap.put("display-condition with placeholders parsed", bar.getDisplayCondition() == null ? null :
+                        TAB.getInstance().getPlaceholderManager().parsePlaceholders(bar.getDisplayCondition().toShortFormat(), player));
+                barMap.put("display-condition is null or met", bar.isConditionMet(player));
+                barMap.put("bossbar is displayed", bar.containsPlayer(player));
+                put(bar.getName(), barMap);
+            }
+        }});
+        return map;
+    }
 }

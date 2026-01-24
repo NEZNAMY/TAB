@@ -235,4 +235,12 @@ public interface Platform {
      * Unregisters all custom commands registered by features.
      */
     void unregisterAllCustomCommands();
+
+    /**
+     * Dumps data of the platform.
+     *
+     * @return  Dumped data
+     */
+    @NotNull
+    Object dump();
 }

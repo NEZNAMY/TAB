@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -10,6 +11,7 @@ import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.ToggleManager;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
+import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -26,7 +28,7 @@ import java.util.Map.Entry;
 @Getter
 public class ScoreboardManagerImpl extends RefreshableFeature implements ScoreboardManager, JoinListener,
         DisplayObjectiveListener, ObjectiveListener, Loadable,
-        QuitListener, CustomThreaded, ServerSwitchListener {
+        QuitListener, CustomThreaded, ServerSwitchListener, Dumpable {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
@@ -101,8 +103,8 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(connectedPlayer, "");
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(connectedPlayer, false);
+        connectedPlayer.expansionData.setScoreboardName("");
+        connectedPlayer.expansionData.setScoreboardVisible(false);
         if (toggleManager != null) toggleManager.convert(connectedPlayer);
         if (configuration.getJoinDelay() > 0) {
             connectedPlayer.scoreboardData.joinDelayed = true;
@@ -190,6 +192,39 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         }
     }
 
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("chain", new LinkedHashMap<String, Object>() {{
+            for (ScoreboardImpl scoreboard : definedScoreboards) {
+                put(scoreboard.getName(), scoreboard.dump(player, player.scoreboardData.activeScoreboard));
+            }
+        }});
+        if (player.scoreboardData.otherPluginScoreboard != null) {
+            map.put("scoreboard feature occupied by another plugin", "Yes (\"" + player.scoreboardData.otherPluginScoreboard + "\")");
+        } else {
+            map.put("scoreboard feature occupied by another plugin", "No");
+        }
+        map.put("scoreboard visible (= not toggled by user)", player.scoreboardData.visible);
+        if (player.scoreboardData.activeScoreboard != null) {
+            map.put("currently displayed scoreboard", new LinkedHashMap<String, Object>() {{
+                put("name", player.scoreboardData.activeScoreboard.getName());
+                put("title", player.scoreboardData.titleProperty.get());
+                List<String> lines = new ArrayList<>();
+                for (Line line : player.scoreboardData.activeScoreboard.getLines()) {
+                    lines.add(player.scoreboardData.lineProperties.get((ScoreboardLine) line).get() + " || " +
+                            player.scoreboardData.numberFormatProperties.get((ScoreboardLine) line).get());
+                }
+                put("lines", lines);
+            }});
+        } else {
+            map.put("currently displayed scoreboard", null);
+        }
+        return map;
+    }
+
     // ------------------
     // API Implementation
     // ------------------
@@ -236,19 +271,20 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public void showScoreboard(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.scoreboard.Scoreboard scoreboard) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
 
-        if (p.scoreboardData.forcedScoreboard != null) {
-            p.scoreboardData.forcedScoreboard.removePlayer(p);
-        }
-        p.scoreboardData.forcedScoreboard = (ScoreboardImpl) scoreboard;
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (p.scoreboardData.forcedScoreboard != null) {
+                p.scoreboardData.forcedScoreboard.removePlayer(p);
+            }
+            p.scoreboardData.forcedScoreboard = (ScoreboardImpl) scoreboard;
 
-        if (p.scoreboardData.activeScoreboard != null) {
-            p.scoreboardData.activeScoreboard.removePlayer(p);
-            p.scoreboardData.activeScoreboard = null;
-        }
+            if (p.scoreboardData.activeScoreboard != null) {
+                p.scoreboardData.activeScoreboard.removePlayer(p);
+                p.scoreboardData.activeScoreboard = null;
+            }
 
-        if (hasScoreboardVisible(player)) ((ScoreboardImpl) scoreboard).addPlayer(p);
+            if (hasScoreboardVisible(player)) ((ScoreboardImpl) scoreboard).addPlayer(p);
+        }, getFeatureName(), "Showing custom Scoreboard"));
     }
 
     @Override
@@ -261,15 +297,16 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public void resetScoreboard(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
 
-        if (p.scoreboardData.forcedScoreboard != null) {
-            p.scoreboardData.forcedScoreboard.removePlayer(p);
-            p.scoreboardData.forcedScoreboard = null;
-            me.neznamy.tab.api.scoreboard.Scoreboard sb = detectHighestScoreboard(p);
-            if (sb == null) return; //no scoreboard available
-            ((ScoreboardImpl) sb).addPlayer(p);
-        }
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            if (p.scoreboardData.forcedScoreboard != null) {
+                p.scoreboardData.forcedScoreboard.removePlayer(p);
+                p.scoreboardData.forcedScoreboard = null;
+                me.neznamy.tab.api.scoreboard.Scoreboard sb = detectHighestScoreboard(p);
+                if (sb == null) return; //no scoreboard available
+                ((ScoreboardImpl) sb).addPlayer(p);
+            }
+        }, getFeatureName(), "Resetting custom Scoreboard"));
     }
 
     @Override
@@ -310,7 +347,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
                 }
             }
         }
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(player, visible);
+        player.expansionData.setScoreboardVisible(visible);
     }
 
     @Override

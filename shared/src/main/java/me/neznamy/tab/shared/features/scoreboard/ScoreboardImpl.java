@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.Scorebo
 import me.neznamy.tab.shared.features.scoreboard.lines.LongLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.StableDynamicLine;
+import me.neznamy.tab.shared.features.types.Conditional;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -30,7 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * A class representing a scoreboard configured in config
  */
 @Getter
-public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab.api.scoreboard.Scoreboard, CustomThreaded {
+public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab.api.scoreboard.Scoreboard,
+        CustomThreaded, Conditional {
 
     //scoreboard manager
     private final ScoreboardManagerImpl manager;
@@ -125,17 +127,6 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
     }
 
     /**
-     * Returns true if condition is null or is met, false otherwise
-     *
-     * @param   p
-     *          player to check
-     * @return  true if condition is null or is met, false otherwise
-     */
-    public boolean isConditionMet(@NonNull TabPlayer p) {
-        return displayCondition == null || displayCondition.isMet(p);
-    }
-
-    /**
      * Adds the player into scoreboard. This includes registering properties,
      * as well as scoreboard and all lines.
      *
@@ -160,7 +151,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         players.add(p);
         p.scoreboardData.activeScoreboard = this;
         recalculateScores(p);
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, name);
+        p.expansionData.setScoreboardName(name);
     }
 
     /**
@@ -185,7 +176,7 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         p.scoreboardData.lineProperties.clear();
         p.scoreboardData.lineNameProperties.clear();
         p.scoreboardData.numberFormatProperties.clear();
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardName(p, "");
+        p.expansionData.setScoreboardName("");
     }
 
     @NotNull

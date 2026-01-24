@@ -1,18 +1,18 @@
 package me.neznamy.tab.shared.placeholders.types;
 
-import java.util.function.Supplier;
-
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.api.placeholder.ServerPlaceholder;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 /**
  * Implementation of ServerPlaceholder interface
@@ -53,7 +53,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     @Override
     public void updateValue(@Nullable String value) {
         if (hasValueChanged(value)) {
-            for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
+            for (RefreshableFeature r : getUsedByFeatures()) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     if (!all.isLoaded()) return; // Updated on join
                     TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh(all, false), r.getFeatureName(), r.getRefreshDisplayName());
@@ -75,7 +75,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
             lastValue = newValue;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 updateParents(player);
-                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
+                player.expansionData.setPlaceholderValue(identifier, newValue);
             }
             return true;
         }

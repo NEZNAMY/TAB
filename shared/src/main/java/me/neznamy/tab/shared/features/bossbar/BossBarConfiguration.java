@@ -17,6 +17,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BossBarConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final String toggleCommand;
     private final boolean rememberToggleChoice;
     private final boolean hiddenByDefault;
@@ -42,6 +43,7 @@ public class BossBarConfiguration {
             bars.put(asString, BossBarDefinition.fromSection(asString, barsSection.getConfigurationSection(asString)));
         }
         return new BossBarConfiguration(
+                section,
                 section.getString("toggle-command", "/bossbar"),
                 section.getBoolean("remember-toggle-choice", false),
                 section.getBoolean("hidden-by-default", false),

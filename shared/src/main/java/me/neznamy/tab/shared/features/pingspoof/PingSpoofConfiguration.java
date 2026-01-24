@@ -14,6 +14,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class PingSpoofConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     private final int value;
 
     /**
@@ -29,6 +30,6 @@ public class PingSpoofConfiguration {
         // Check keys
         section.checkForUnknownKey(Arrays.asList("enabled", "value"));
 
-        return new PingSpoofConfiguration(section.getInt("value", 0));
+        return new PingSpoofConfiguration(section, section.getInt("value", 0));
     }
 }

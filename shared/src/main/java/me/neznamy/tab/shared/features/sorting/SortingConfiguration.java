@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SortingConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     private final boolean caseSensitiveSorting;
     private final List<String> sortingTypes;
 
@@ -29,6 +30,7 @@ public class SortingConfiguration {
     @NotNull
     public static SortingConfiguration fromSection(@NotNull ConfigurationSection section) {
         return new SortingConfiguration(
+                section,
                 section.getBoolean("case-sensitive-sorting", true),
                 section.getStringList("sorting-types", Collections.emptyList())
         );

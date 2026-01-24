@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.PerformanceUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,8 @@ public class BossBarLine implements BossBar {
     @Getter private final String name;
 
     //display condition
+    @Getter
+    @Nullable
     private final Condition displayCondition;
 
     //uuid

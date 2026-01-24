@@ -22,6 +22,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class LayoutConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final Direction direction;
     @NotNull private final String defaultSkin;
     private final boolean remainingPlayersTextEnabled;
@@ -82,6 +83,7 @@ public class LayoutConfiguration {
         }
 
         return new LayoutConfiguration(
+                section,
                 direction,
                 section.getString("default-skin", "mineskin:1753261242"),
                 section.getBoolean("enable-remaining-players-text", true),

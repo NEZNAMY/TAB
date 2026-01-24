@@ -14,10 +14,7 @@ import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.hook.BukkitPremiumVanishHook;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
-import me.neznamy.tab.shared.GroupManager;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
@@ -53,6 +50,7 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -140,7 +138,7 @@ public class BukkitPlatform implements BackendPlatform {
             // Paper 1.20.5+, check for available module
             String paperModule = getPaperModule();
             if (paperModule != null) {
-                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
+                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -509,5 +507,22 @@ public class BukkitPlatform implements BackendPlatform {
             return Bukkit.getOnlinePlayers();
         }
         return Arrays.asList((Player[]) Bukkit.class.getMethod("getOnlinePlayers").invoke(null));
+    }
+
+    @Override
+    @NotNull
+    public Object dump() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("server-type", "Bukkit");
+        map.put("server-name", Bukkit.getName());
+        map.put("server-version", Bukkit.getBukkitVersion().split("-")[0]);
+        map.put("craftbukkit-package", serverPackage);
+        map.put("tab-version", ProjectVariables.PLUGIN_VERSION);
+        Map<String, Object> plugins = new LinkedHashMap<>();
+        for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
+            plugins.put(p.getDescription().getName(), p.getDescription().getVersion());
+        }
+        map.put("plugins", plugins);
+        return map;
     }
 }

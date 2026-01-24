@@ -17,6 +17,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class PlayerListObjectiveConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final String value;
     @NotNull private final String fancyValue;
     @NotNull private final String title;
@@ -69,6 +70,7 @@ public class PlayerListObjectiveConfiguration {
         }
 
         return new PlayerListObjectiveConfiguration(
+                section,
                 value,
                 section.getString("fancy-value", "&7Ping: " + Placeholder.PING),
                 section.getString("title", "TAB"),

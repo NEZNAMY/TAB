@@ -16,6 +16,7 @@ import java.util.Arrays;
 @AllArgsConstructor
 public class BelowNameConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final String value;
     @NotNull private final String title;
     @NotNull private final String fancyValue;
@@ -66,6 +67,7 @@ public class BelowNameConfiguration {
         }
 
         return new BelowNameConfiguration(
+                section,
                 value,
                 title,
                 section.getString("fancy-value", "&c" + TabConstants.Placeholder.HEALTH),

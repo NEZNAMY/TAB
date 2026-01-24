@@ -9,13 +9,16 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * This feature hides real ping of players in connection bar and
  * replaces it with a custom fake value.
  */
 @Getter
 @RequiredArgsConstructor
-public class PingSpoof extends TabFeature implements JoinListener, Loadable, UnLoadable, CustomThreaded {
+public class PingSpoof extends TabFeature implements JoinListener, Loadable, UnLoadable, CustomThreaded, Dumpable {
 
     @Getter
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Ping Spoof Thread");
@@ -55,5 +58,13 @@ public class PingSpoof extends TabFeature implements JoinListener, Loadable, UnL
     @Override
     public String getFeatureName() {
         return "Ping spoof";
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        return map;
     }
 }

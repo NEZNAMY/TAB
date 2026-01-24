@@ -5,22 +5,31 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
+import me.neznamy.tab.shared.features.types.Conditional;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A sub-feature for each individual design.
  */
 @RequiredArgsConstructor
 @Getter
-public class HeaderFooterDesign extends RefreshableFeature implements CustomThreaded {
+public class HeaderFooterDesign extends RefreshableFeature implements CustomThreaded, Conditional {
 
+    @NotNull
     private final HeaderFooter feature;
+
+    @NotNull
     private final String name;
+
+    @NotNull
     private final HeaderFooterConfiguration.HeaderFooterDesignDefinition definition;
+
+    @Nullable
     private final Condition displayCondition;
 
     /**
@@ -60,17 +69,6 @@ public class HeaderFooterDesign extends RefreshableFeature implements CustomThre
     @NotNull
     public String getFeatureName() {
         return feature.getFeatureName();
-    }
-
-    /**
-     * Returns true if condition is null or is met, false otherwise
-     *
-     * @param   p
-     *          player to check
-     * @return  true if condition is null or is met, false otherwise
-     */
-    public boolean isConditionMet(@NonNull TabPlayer p) {
-        return displayCondition == null || displayCondition.isMet(p);
     }
 
     @Override

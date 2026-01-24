@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -191,6 +192,12 @@ public abstract class BungeeTabList extends TrackedTabList<BungeeTabPlayer> {
             }
         }
         return null;
+    }
+
+    @Override
+    @NotNull
+    public Collection<UUID> getEntries() {
+        return Collections.unmodifiableCollection(uuids);
     }
 
     @NotNull

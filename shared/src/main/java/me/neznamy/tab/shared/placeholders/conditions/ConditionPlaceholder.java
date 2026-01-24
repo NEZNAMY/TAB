@@ -32,7 +32,7 @@ public class ConditionPlaceholder {
     /** The actual placeholder that is being parsed */
     @NotNull
     @Getter
-    private final String realPlaceholder;
+    private final TabPlaceholder realPlaceholder;
 
     /** Flag tracking whether the placeholder should be parsed as viewer or not */
     private final boolean parseAsViewer;
@@ -49,26 +49,28 @@ public class ConditionPlaceholder {
      */
     public ConditionPlaceholder(@NotNull String placeholderDefinition) {
         this.placeholderDefinition = placeholderDefinition;
+        String realPlaceholder;
         // Parse for viewer
         Matcher m = VIEWER_PATTERN.matcher(placeholderDefinition);
         if (m.find()) {
             realPlaceholder = "%" + m.group(1) + "%";
             parseAsViewer = true;
             isRelational = true;
-            return;
+        } else {
+            // Parse for target
+            m = TARGET_PATTERN.matcher(placeholderDefinition);
+            if (m.find()) {
+                realPlaceholder = "%" + m.group(1) + "%";
+                parseAsViewer = false;
+                isRelational = false;
+            } else {
+                // No viewer/target specified, parse as target (or a relational placeholder)
+                realPlaceholder = placeholderDefinition;
+                parseAsViewer = false;
+                isRelational = placeholderDefinition.startsWith("%rel_");
+            }
         }
-        // Parse for target
-        m = TARGET_PATTERN.matcher(placeholderDefinition);
-        if (m.find()) {
-            realPlaceholder = "%" + m.group(1) + "%";
-            parseAsViewer = false;
-            isRelational = false;
-            return;
-        }
-        // No viewer/target specified, parse as target (or a relational placeholder)
-        realPlaceholder = placeholderDefinition;
-        parseAsViewer = false;
-        isRelational = placeholderDefinition.startsWith("%rel_");
+        this.realPlaceholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(realPlaceholder);
     }
 
     /**
@@ -82,11 +84,10 @@ public class ConditionPlaceholder {
      */
     @NotNull
     public String parse(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        TabPlaceholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(realPlaceholder);
-        if (placeholder instanceof RelationalPlaceholderImpl) {
-            return ((RelationalPlaceholderImpl) placeholder).getLastValue(viewer, target);
+        if (realPlaceholder instanceof RelationalPlaceholderImpl) {
+            return ((RelationalPlaceholderImpl) realPlaceholder).getLastValue(viewer, target);
         } else {
-            return placeholder.set(realPlaceholder, parseAsViewer ? viewer : target);
+            return realPlaceholder.parse(parseAsViewer ? viewer : target);
         }
     }
 }

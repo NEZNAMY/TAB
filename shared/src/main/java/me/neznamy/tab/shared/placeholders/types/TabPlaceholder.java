@@ -6,14 +6,13 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.placeholders.PlaceholderReplacementPattern;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * General collection of variables and functions shared between all placeholder types
@@ -41,7 +40,12 @@ public abstract class TabPlaceholder implements Placeholder {
      * mutual tracking allows faster parent placeholder changes when a nested
      * placeholder changed value.
      */
-    protected final List<String> parents = new ArrayList<>();
+    protected final List<TabPlaceholder> parents = new ArrayList<>();
+
+    private final List<TabPlaceholder> children = new ArrayList<>();
+
+    /** Set of features using this placeholder, used to call refresh on them */
+    private final Set<RefreshableFeature> usedByFeatures = Collections.synchronizedSet(new HashSet<>());
 
     /**
      * Constructs new instance with given parameters and loads placeholder output replacements
@@ -62,65 +66,56 @@ public abstract class TabPlaceholder implements Placeholder {
         Map<Object, Object> map = TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues().get(identifier);
         replacements = map == null ? PlaceholderReplacementPattern.EMPTY : PlaceholderReplacementPattern.create(identifier, map);
         for (String nested : replacements.getNestedPlaceholders()) {
-            TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
+            TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(this);
         }
     }
 
     /**
-     * Replaces this placeholder in given string and returns output. If the entered string
-     * is equal to the placeholder identifier or does not contain the identifier at all,
-     * value is returned directly without calling {@code String#replace} for better performance.
+     * Parses the placeholder for defined player, applying all nested placeholders
+     * found in output.
      *
-     * @param   string
-     *          string to replace this placeholder in
      * @param   player
-     *          player to set placeholder for
-     * @return  string with this placeholder replaced
+     *          player to parse placeholder for
+     * @return  parsed placeholder with all nested placeholders applied
      */
     @NotNull
-    public String set(@NonNull String string, @Nullable TabPlayer player) {
-        return replace(string, identifier, setPlaceholders(getLastValue(player), player));
+    public String parse(@Nullable TabPlayer player) {
+        String value = getLastValue(player);
+        if (!value.contains("%")) return value; // No nested placeholders, return immediately
+        return setPlaceholders(value, player);
     }
 
     /**
-     * An alternative for {@code String#replace} function with better performance.
-     * If the input string does not contain string to replace, it is returned immediately.
-     * If the input string is equal to text to replace, output is returned directly.
+     * Internal method to set placeholders in a given value for a player
      *
-     * @param   string
-     *          String to replace text in
-     * @param   original
-     *          Text to replace
-     * @param   replacement
-     *          Replacement text
-     * @return  Replaced text
+     * @param   value
+     *          value to set placeholders in
+     * @param   player
+     *          player to parse placeholders for
+     * @return  value with placeholders set
      */
     @NotNull
-    private String replace(@NonNull String string, @NonNull String original, @NonNull String replacement) {
-        if (!string.contains(original)) return string;
-        if (string.equals(original)) return replacement;
-        return string.replace(original, replacement);
-    }
+    protected String setPlaceholders(@NonNull String value, @Nullable TabPlayer player) {
+        String string = value;
+        if (identifier.equals(string)) return string; // Placeholder returned itself (probably invalid)
 
-    /**
-     * Applies all nested placeholders in output
-     *
-     * @param   text
-     *          replaced placeholder
-     * @param   p
-     *          player to replace for
-     * @return  text with replaced placeholders in output
-     */
-    protected @NotNull String setPlaceholders(@NonNull String text, @Nullable TabPlayer p) {
-        if (identifier.equals(text)) return text;
-        String replaced = text;
-        for (String s : PlaceholderManagerImpl.detectPlaceholders(text)) {
-            if (s.equals(identifier) || (identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s)) || s.startsWith("%rel_")) continue;
-            TabPlaceholder nested = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
-            nested.addParent(identifier);
-            replaced = nested.set(replaced, p);
+        // Known children first for better performance thanks to skipped checks
+        for (TabPlaceholder child : children) {
+            if (string.contains(child.identifier)) {
+                string = string.replace(child.identifier, child.parse(player));
+            }
         }
-        return replaced;
+
+        for (String s : PlaceholderManagerImpl.detectPlaceholders(string)) {
+            if (s.equals(identifier)) continue; // Prevent infinite loop when placeholder returns itself
+            if (s.startsWith("%rel_")) continue; // Relational placeholders are handled separately
+            if ((identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s))) continue; // Self, but as sync variant
+            TabPlaceholder nested = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
+            nested.addParent(this);
+            addChild(nested);
+            string = string.replace(s, nested.parse(player));
+        }
+        return string;
     }
 
     /**
@@ -130,8 +125,12 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   parent
      *          parent placeholder using this placeholder in output
      */
-    public void addParent(@NonNull String parent) {
-        if (!parents.contains(parent)) parents.add(parent);
+    public void addParent(@NonNull TabPlaceholder parent) {
+        if (parent == this) return; // ???
+        if (!parents.contains(parent)) {
+            usedByFeatures.addAll(parent.usedByFeatures);
+            parents.add(parent);
+        }
     }
 
     /**
@@ -143,10 +142,36 @@ public abstract class TabPlaceholder implements Placeholder {
      */
     public void updateParents(@NonNull TabPlayer player) {
         if (parents.isEmpty()) return;
-        for (String id : new ArrayList<>(parents)) {
-            TabPlaceholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(id);
+        for (TabPlaceholder pl : new ArrayList<>(parents)) {
             pl.updateFromNested(player);
             pl.updateParents(player);
+        }
+    }
+
+    /**
+     * Registers a feature that is using this placeholder, to allow
+     * refreshing it when this placeholder changes.
+     *
+     * @param   feature
+     *          Feature using this placeholder
+     * @return  true if feature was not already registered
+     */
+    public boolean addUsedFeature(@NonNull RefreshableFeature feature) {
+        boolean added = usedByFeatures.add(feature);
+        if (added) {
+            for (TabPlaceholder child : children) {
+                child.addUsedFeature(feature);
+            }
+        }
+        return added;
+    }
+
+    private void addChild(@NonNull TabPlaceholder child) {
+        if (!children.contains(child)) {
+            children.add(child);
+            for (RefreshableFeature feature : usedByFeatures) {
+                child.addUsedFeature(feature);
+            }
         }
     }
 

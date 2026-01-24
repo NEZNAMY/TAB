@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public class HeaderFooter extends RefreshableFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
-        CustomThreaded {
+        CustomThreaded, Dumpable {
 
     private final StringToComponentCache headerCache = new StringToComponentCache("Header", 1000);
     private final StringToComponentCache footerCache = new StringToComponentCache("Footer", 1000);
@@ -183,5 +183,27 @@ public class HeaderFooter extends RefreshableFeature implements HeaderFooterMana
     @Override
     public String getFeatureName() {
         return "Header/Footer";
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("chain", new LinkedHashMap<String, Object>() {{
+            for (HeaderFooterDesign design : definedDesigns) {
+                 put(design.getName(), design.dump(player, player.headerFooterData.activeDesign));
+            }
+        }});
+        if (player.headerFooterData.activeDesign != null) {
+            map.put("currently displayed design", new LinkedHashMap<String, Object>() {{
+                put("name", player.headerFooterData.activeDesign.getName());
+                put("header", player.headerFooterData.headerProperties.get(player.headerFooterData.activeDesign).get().split("\n"));
+                put("footer", player.headerFooterData.footerProperties.get(player.headerFooterData.activeDesign).get().split("\n"));
+            }});
+        } else {
+            map.put("currently displayed design", null);
+        }
+        return map;
     }
 }

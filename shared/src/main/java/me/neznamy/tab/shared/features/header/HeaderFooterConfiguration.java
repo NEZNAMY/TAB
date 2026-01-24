@@ -16,7 +16,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class HeaderFooterConfiguration {
 
-    /** List of header/footer designs */
+    @NotNull private final ConfigurationSection section;
+
+    /** Map of header/footer designs */
     @NotNull private final LinkedHashMap<String, HeaderFooterDesignDefinition> designs;
 
     /**
@@ -42,7 +44,7 @@ public class HeaderFooterConfiguration {
         // Check design chain for hanging designs
         checkChain(section, designs);
 
-        return new HeaderFooterConfiguration(designs);
+        return new HeaderFooterConfiguration(section, designs);
     }
 
     private static void checkChain(@NotNull ConfigurationSection section, Map<String, HeaderFooterDesignDefinition> scoreboards) {

@@ -50,7 +50,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String value) {
         if (hasValueChanged((TabPlayer) player, value, true)) {
             if (!player.isLoaded()) return; // Updated on join
-            for (RefreshableFeature r : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(identifier)) {
+            for (RefreshableFeature r : getUsedByFeatures()) {
                 TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh((TabPlayer) player, false),
                         r.getFeatureName(), r.getRefreshDisplayName());
                 if (r instanceof CustomThreaded) {
@@ -76,7 +76,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         Set<RefreshableFeature> features = new HashSet<>();
         for (Map.Entry<PlayerPlaceholderImpl, String> entry : values.entrySet()) {
             if (entry.getKey().hasValueChanged(player, entry.getValue(), true)) {
-                features.addAll(TAB.getInstance().getPlaceholderManager().getPlaceholderUsage(entry.getKey().identifier));
+                features.addAll(entry.getKey().getUsedByFeatures());
             }
         }
         if (!player.isLoaded()) return;
@@ -109,7 +109,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         String lastValue = p.lastPlaceholderValues.put(this, newValue);
         if (!newValue.equals(lastValue)) {
             if (updateParents) updateParents(p);
-            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
+            p.expansionData.setPlaceholderValue(identifier, newValue);
             return true;
         }
         return false;

@@ -2,10 +2,13 @@ package me.neznamy.tab.shared.placeholders.conditions;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
+import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,10 +24,10 @@ import java.util.stream.Collectors;
  * text or make a condition requirement for a visual to be displayed.
  */
 @RequiredArgsConstructor
+@Getter
 public class Condition {
 
     /** Name of this condition defined in configuration */
-    @Getter
     @NotNull
     private final String name;
 
@@ -47,12 +50,17 @@ public class Condition {
      * Refresh interval of placeholder created from this condition.
      * It is calculated based on nested placeholders used in sub-conditions.
      */
-    @Getter
     private int refresh = -1;
 
     /** List of all placeholders used inside this condition */
     @NotNull
-    private final List<String> placeholdersInConditions = new ArrayList<>();
+    private final List<TabPlaceholder> placeholdersInConditions = new ArrayList<>();
+
+    @Nullable
+    private TabPlaceholder placeholder;
+
+    @Nullable
+    private RelationalPlaceholderImpl relationalPlaceholder;
 
     /**
      * Constructs new instance with given definition and registers
@@ -64,7 +72,13 @@ public class Condition {
     public Condition(@NotNull ConditionsSection.ConditionDefinition definition) {
         type = definition.isType();
         name = definition.getName();
-        expressions = new ArrayList<>(definition.getConditions());
+        expressions = definition.getConditions().stream().map(expressionString -> {
+            ConditionalExpression expression = ConditionalExpression.compile(expressionString.trim());
+            if (expression == null) {
+                TAB.getInstance().getConfigHelper().startup().startupWarn("Line \"" + expressionString + "\" is not a valid conditional expression.");
+            }
+            return expression;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
         yes = definition.getYes();
         no = definition.getNo();
         analyzeContent();
@@ -146,14 +160,39 @@ public class Condition {
      * Configures refresh interval and registers nested placeholders
      */
     public void finishSetup() {
-        for (String placeholder : placeholdersInConditions) {
-            TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(getPlaceholderIdentifier());
+        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        String identifier = getPlaceholderIdentifier();
+        String relIdentifier = getRelationalPlaceholderIdentifier();
+        if (hasRelationalContent()) {
+            relationalPlaceholder = manager.registerInternalRelationalPlaceholder(
+                    relIdentifier,
+                    refresh,
+                    (viewer, target) -> getText((TabPlayer) viewer, (TabPlayer) target)
+            );
+            placeholder = manager.registerInternalPlayerPlaceholder(
+                    identifier,
+                    -1,
+                    p -> "<This is a relational condition, use " + relIdentifier.substring(1, relIdentifier.length()-1) + ">"
+            );
+        } else {
+            relationalPlaceholder = manager.registerInternalRelationalPlaceholder(
+                    relIdentifier,
+                    -1,
+                    (viewer, target) -> "<This is not a relational condition, use " + identifier.substring(1, identifier.length()-1) + ">"
+            );
+            placeholder = manager.registerInternalPlayerPlaceholder(
+                    identifier,
+                    refresh,
+                    p -> getText((TabPlayer) p, (TabPlayer) p)
+            );
+        }
+        for (TabPlaceholder placeholder : placeholdersInConditions) {
+            placeholder.addParent(this.placeholder);
             if (hasRelationalContent()) {
-                TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(getRelationalPlaceholderIdentifier());
+                placeholder.addParent(relationalPlaceholder);
             }
-            Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
-            if (pl.getRefresh() < refresh && pl.getRefresh() != -1) {
-                refresh = pl.getRefresh();
+            if (placeholder.getRefresh() < refresh && placeholder.getRefresh() != -1) {
+                refresh = placeholder.getRefresh();
             }
         }
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(placeholdersInConditions);
@@ -217,7 +256,7 @@ public class Condition {
     public Condition invert() {
         return new Condition(new ConditionsSection.ConditionDefinition(
                 "inverted:" + name,
-                expressions.stream().map(ConditionalExpression::invert).collect(Collectors.toList()),
+                expressions.stream().map(expr -> expr.invert().toShortFormat()).collect(Collectors.toList()),
                 !type,
                 yes,
                 no
