@@ -372,7 +372,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  Map of player data
      */
     @NotNull
-    public Object dump() {
+    public Map<String, Object> dump() {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("name", name);
         data.put("nickname", nickname);

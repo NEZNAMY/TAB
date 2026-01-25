@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.task.PluginMessageEncodeTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -172,5 +173,24 @@ public abstract class ProxyTabPlayer extends TabPlayer {
             return false;
         }
         return vanished;
+    }
+
+    @NotNull
+    public Map<String, Object> dump() {
+        Map<String, Object> map = super.dump();
+        map.put("bridge data", new LinkedHashMap<String, Object>() {{
+            put("Vanished", vanished);
+            put("Disguised", disguised);
+            put("Has invisibility potion", invisibilityPotion);
+            put("Gamemode", gamemode);
+            put("Permissions", permissions);
+            if (bridgeConnected) {
+                put("Bridge connection", "Connected");
+            } else {
+                char versionRequired = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.charAt(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.length()-1);
+                put("Bridge connection", "Not connected (requires Bridge version " + versionRequired + ".x.x installed)");
+            }
+        }});
+        return map;
     }
 }
