@@ -53,7 +53,7 @@ public class Property {
     /** Flag tracking whether last replaced value may contain relational placeholders or not */
     private boolean mayContainRelPlaceholders;
 
-    /** Source defining value of the text, displayed in debug command */
+    /** Source defining value of the text, displayed in dump command */
     @Nullable private String source;
 
     /** Relational placeholders in the text in the same order they are used */
@@ -92,7 +92,7 @@ public class Property {
      * @param   rawValue
      *          Raw value using raw placeholder identifiers
      * @param   source
-     *          Source of the text used in debug command
+     *          Source of the text used in dump command
      */
     public Property(@Nullable String name, @Nullable RefreshableFeature listener, @NotNull TabPlayer owner,
                     @NotNull String rawValue, @Nullable String source) {

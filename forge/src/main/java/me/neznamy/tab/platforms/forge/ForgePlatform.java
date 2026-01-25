@@ -102,12 +102,6 @@ public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
     }
 
     @Override
-    @NotNull
-    public String getServerVersionInfo() {
-        return "[Forge] " + SharedConstants.getCurrentVersion().name();
-    }
-
-    @Override
     public void registerListener() {
         new ForgeEventListener().register();
     }

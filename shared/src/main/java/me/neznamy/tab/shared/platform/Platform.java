@@ -102,13 +102,6 @@ public interface Platform {
     void logWarn(@NotNull TabComponent message);
 
     /**
-     * Returns information about server version, which is displayed in debug command
-     *
-     * @return  Server version information
-     */
-    String getServerVersionInfo();
-
-    /**
      * Registers event listener for platform's events
      */
     void registerListener();

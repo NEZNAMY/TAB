@@ -25,8 +25,8 @@ permissions:
   tab.cpu:
     description: Allows player to run /tab cpu
     default: op
-  tab.debug:
-    description: Allows player to run /tab debug [player]
+  tab.dump:
+    description: Allows player to run /tab dump <player>
     default: op
   tab.groupinfo:
     description: Allows player to run /tab group <group>

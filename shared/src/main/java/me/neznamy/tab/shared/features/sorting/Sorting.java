@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 /**
  * Class for handling player sorting rules
@@ -184,16 +183,6 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
             }
             id++;
         }
-    }
-    
-    /**
-     * Converts sorting types into user-friendly sorting types into /tab debug
-     *
-     * @return  user-friendly representation of sorting types
-     */
-    @NotNull
-    public String typesToString() {
-        return Arrays.stream(usedSortingTypes).map(SortingType::getDisplayName).collect(Collectors.joining(" -> "));
     }
 
     @NotNull

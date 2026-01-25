@@ -93,12 +93,6 @@ public record NeoForgePlatform(MinecraftServer server) implements BackendPlatfor
     }
 
     @Override
-    @NotNull
-    public String getServerVersionInfo() {
-        return "[NeoForge] " + SharedConstants.getCurrentVersion().name();
-    }
-
-    @Override
     public void registerListener() {
         new NeoForgeEventListener().register();
     }

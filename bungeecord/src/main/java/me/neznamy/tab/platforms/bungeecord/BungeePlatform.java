@@ -106,12 +106,6 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
-    @NotNull
-    public String getServerVersionInfo() {
-        return "[BungeeCord] " + plugin.getProxy().getName() + " - " + plugin.getProxy().getVersion();
-    }
-
-    @Override
     public void registerListener() {
         ProxyServer.getInstance().getPluginManager().registerListener(plugin, new BungeeEventListener());
     }

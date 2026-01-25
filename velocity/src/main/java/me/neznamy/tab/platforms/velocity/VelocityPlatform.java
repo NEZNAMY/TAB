@@ -138,12 +138,6 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
-    @NotNull
-    public String getServerVersionInfo() {
-        return "[Velocity] " + plugin.getServer().getVersion().getName() + " - " + plugin.getServer().getVersion().getVersion();
-    }
-
-    @Override
     public void registerListener() {
         plugin.getServer().getEventManager().register(plugin, new VelocityEventListener());
     }
