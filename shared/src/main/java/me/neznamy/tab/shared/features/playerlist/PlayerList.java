@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.DumpUtils;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Feature handler for TabList display names
@@ -275,6 +277,16 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             propertyMap.put("replaced-value", property.get());
             map.put(property.getName(), propertyMap);
         }
+        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(
+                Arrays.asList("Player", "tabprefix", "(custom)tabname", "tabsuffix", "Disabled with condition"),
+                Arrays.stream(TAB.getInstance().getOnlinePlayers()).map(p -> Arrays.asList(
+                        p.getName(),
+                        "\"" + p.tablistData.prefix.get() + "\"",
+                        "\"" + p.tablistData.name.get() + "\"",
+                        "\"" + p.tablistData.suffix.get() + "\"",
+                        String.valueOf(p.tablistData.disabled.get())
+                )).collect(Collectors.toList())
+        ));
         return map;
     }
 
