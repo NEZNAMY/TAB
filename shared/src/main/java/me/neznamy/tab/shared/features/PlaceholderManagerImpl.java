@@ -20,6 +20,7 @@ import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.DumpUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -546,25 +547,30 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     @Override
     @NotNull
     public Object dump(@NotNull TabPlayer player) {
-        Map<String, String> serverPlaceholders = new HashMap<>();
-        Map<String, String> playerPlaceholders = new HashMap<>();
-        Map<String, Map<String, String>> relationalPlaceholders = new HashMap<>();
+        List<List<String>> serverPlaceholders = new ArrayList<>();
+        List<List<String>> playerPlaceholders = new ArrayList<>();
+        Map<TabPlayer, List<List<String>>> relationalPlaceholders = new HashMap<>();
         for (Placeholder p : usedPlaceholders) {
             if (p instanceof ServerPlaceholderImpl) {
-                serverPlaceholders.put(p.getIdentifier(), ((ServerPlaceholderImpl) p).getLastValue());
+                serverPlaceholders.add(Arrays.asList(p.getIdentifier(), String.valueOf(p.getRefresh()), ((ServerPlaceholderImpl) p).getLastValue()));
             } else if (p instanceof PlayerPlaceholderImpl) {
-                playerPlaceholders.put(p.getIdentifier(), ((PlayerPlaceholderImpl) p).getLastValueSafe(player));
+                playerPlaceholders.add(Arrays.asList(p.getIdentifier(), String.valueOf(p.getRefresh()), ((PlayerPlaceholderImpl) p).getLastValueSafe(player)));
             } else if (p instanceof RelationalPlaceholderImpl) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    relationalPlaceholders.computeIfAbsent(p.getIdentifier(), k -> new HashMap<>())
-                            .put("for viewer " + viewer.getName(), ((RelationalPlaceholderImpl) p).getLastValue(viewer, player));
+                    relationalPlaceholders.computeIfAbsent(viewer, k -> new ArrayList<>())
+                            .add(Arrays.asList(p.getIdentifier(), String.valueOf(p.getRefresh()), ((RelationalPlaceholderImpl) p).getLastValue(viewer, player)));
                 }
             }
         }
         Map<String, Object> placeholderValues = new LinkedHashMap<>();
-        placeholderValues.put("server", serverPlaceholders);
-        placeholderValues.put("player", playerPlaceholders);
-        placeholderValues.put("relational", relationalPlaceholders);
+        placeholderValues.put("server", DumpUtils.tableToLines(Arrays.asList("Identifier", "Refresh", "Current value"), serverPlaceholders));
+        placeholderValues.put("player", DumpUtils.tableToLines(Arrays.asList("Identifier", "Refresh", "Current value"), playerPlaceholders));
+        Map<String, List<String>> relationalFormatted = new LinkedHashMap<>();
+        for (Entry<TabPlayer, List<List<String>>> entry : relationalPlaceholders.entrySet()) {
+            relationalFormatted.put("for viewer " + entry.getKey().getName(),
+                    DumpUtils.tableToLines(Arrays.asList("Identifier", "Refresh", "Current value"), entry.getValue()));
+        }
+        placeholderValues.put("relational", relationalFormatted);
         return placeholderValues;
     }
 }

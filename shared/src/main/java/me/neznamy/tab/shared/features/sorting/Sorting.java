@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.DumpUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -231,67 +232,10 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
             sortedPlayersTable.add(row);
         }
 
-        map.put("players in the order they appear in tablist along with returned values of sorting types", tableToLines(header, sortedPlayersTable));
+        map.put("players in the order they appear in tablist along with returned values of sorting types", DumpUtils.tableToLines(header, sortedPlayersTable));
 
         return map;
     }
-
-    private List<String> tableToLines(List<String> header, List<List<String>> rows) {
-        int cols = header.size();
-        int[] widths = new int[cols];
-
-        // 1. Compute column widths
-        for (int i = 0; i < cols; i++) {
-            widths[i] = header.get(i).length();
-            for (List<String> row : rows) {
-                widths[i] = Math.max(widths[i], row.get(i).length());
-            }
-        }
-
-        List<String> result = new ArrayList<>();
-
-        // 2. Header
-        result.add(buildRow(header, widths));
-
-        // 3. Separator
-        result.add(buildSeparator(widths));
-
-        // 4. Rows
-        for (List<String> row : rows) {
-            result.add(buildRow(row, widths));
-        }
-
-        return result;
-    }
-
-    private String buildRow(List<String> row, int[] widths) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("|");
-        for (int i = 0; i < row.size(); i++) {
-            sb.append(" ");
-            sb.append(row.get(i));
-            sb.append(repeat(' ', widths[i] - row.get(i).length()));
-            sb.append(" |");
-        }
-        return sb.toString();
-    }
-
-    private String buildSeparator(int[] widths) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("|");
-        for (int w : widths) {
-            sb.append(repeat('-', w + 2));
-            sb.append("|");
-        }
-        return sb.toString();
-    }
-
-    private String repeat(char c, int count) {
-        char[] arr = new char[count];
-        Arrays.fill(arr, c);
-        return new String(arr);
-    }
-
 
     // ------------------
     // API Implementation
