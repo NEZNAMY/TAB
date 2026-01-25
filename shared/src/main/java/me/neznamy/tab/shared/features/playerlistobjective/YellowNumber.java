@@ -12,15 +12,14 @@ import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.DumpUtils;
 import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Feature handler for scoreboard objective with
@@ -252,6 +251,24 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer analyzed) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(
+                Arrays.asList("Player", "value", "fancy-value", "title", "Disabled with condition"),
+                Arrays.stream(onlinePlayers.getPlayers()).map(p -> Arrays.asList(
+                        p.getName(),
+                        p.playerlistObjectiveData.valueLegacy.get(),
+                        p.playerlistObjectiveData.valueModern.get(),
+                        p.playerlistObjectiveData.title.get(),
+                        String.valueOf(p.playerlistObjectiveData.disabled.get())
+                )).collect(Collectors.toList())
+        ));
+        return map;
+    }
+
     // ------------------
     // ProxySupport
     // ------------------
@@ -306,19 +323,5 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     @Override
     public String getFeatureName() {
         return "Playerlist Objective";
-    }
-
-    @Override
-    @NotNull
-    public Object dump(@NotNull TabPlayer analyzed) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("configuration", configuration.getSection().getMap());
-        map.put("current values", new LinkedHashMap<String, Object>() {{
-            put("title", analyzed.playerlistObjectiveData.title.get());
-            put("value", analyzed.playerlistObjectiveData.valueLegacy.get());
-            put("fancy-value", analyzed.playerlistObjectiveData.valueModern.get());
-            put("disabled with condition", analyzed.playerlistObjectiveData.disabled.get());
-        }});
-        return map;
     }
 }

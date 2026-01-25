@@ -13,15 +13,14 @@ import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.DumpUtils;
 import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Feature handler for BelowName feature
@@ -275,6 +274,24 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer analyzed) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(
+                Arrays.asList("Player", "value", "fancy-value", "title", "Disabled with condition"),
+                Arrays.stream(onlinePlayers.getPlayers()).map(p -> Arrays.asList(
+                        p.getName(),
+                        p.belowNameData.score.get(),
+                        p.belowNameData.numberFormat.get(),
+                        p.belowNameData.text.get(),
+                        String.valueOf(p.belowNameData.disabled.get())
+                )).collect(Collectors.toList())
+        ));
+        return map;
+    }
+
     // ------------------
     // ProxySupport
     // ------------------
@@ -331,20 +348,5 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, player, getValue(player), player.belowNameData.numberFormat.getFormat(viewer));
         }
-    }
-
-    @Override
-    @NotNull
-    public Object dump(@NotNull TabPlayer analyzed) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("configuration", configuration.getSection().getMap());
-        map.put("current values", new LinkedHashMap<String, Object>() {{
-            put("title", analyzed.belowNameData.text.get());
-            put("value", analyzed.belowNameData.score.get());
-            put("fancy-value", analyzed.belowNameData.numberFormat.get());
-            put("fancy-value-default", analyzed.belowNameData.defaultNumberFormat.get());
-            put("disabled with condition", analyzed.belowNameData.disabled.get());
-        }});
-        return map;
     }
 }
