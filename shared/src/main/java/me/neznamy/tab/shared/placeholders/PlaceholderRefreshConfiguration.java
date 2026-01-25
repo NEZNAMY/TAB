@@ -16,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PlaceholderRefreshConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     private final int defaultInterval;
     @NotNull private final Map<String, Integer> refreshIntervals;
 
@@ -68,7 +69,7 @@ public class PlaceholderRefreshConfiguration {
             refreshIntervals.put(identifier, fixInterval(section, identifier, defaultInterval));
         }
         
-        return new PlaceholderRefreshConfiguration(defaultInterval, refreshIntervals);
+        return new PlaceholderRefreshConfiguration(section, defaultInterval, refreshIntervals);
     }
     
     private static int fixInterval(@NotNull ConfigurationSection section, @NotNull String identifier, int defaultInterval) {

@@ -16,6 +16,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AnimationConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final Map<String, AnimationDefinition> animations;
 
     /**
@@ -35,7 +36,7 @@ public class AnimationConfiguration {
                     animationName.toString()
             ));
         }
-        return new AnimationConfiguration(animations);
+        return new AnimationConfiguration(section, animations);
     }
 
     /**

@@ -14,6 +14,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ConditionsSection {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final Map<String, ConditionDefinition> conditions;
 
     /**
@@ -30,7 +31,7 @@ public class ConditionsSection {
         for (Object condition : section.getKeys()) {
             conditions.put(condition.toString(), ConditionDefinition.fromSection(section.getConfigurationSection(condition.toString()), condition.toString()));
         }
-        return new ConditionsSection(conditions);
+        return new ConditionsSection(section, conditions);
     }
 
     /**

@@ -16,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PlaceholderReplacementsConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final Map<String, Map<Object, Object>> values;
 
     /**
@@ -46,6 +47,6 @@ public class PlaceholderReplacementsConfiguration {
             values.put(identifier, map);
         }
 
-        return new PlaceholderReplacementsConfiguration(values);
+        return new PlaceholderReplacementsConfiguration(section, values);
     }
 }

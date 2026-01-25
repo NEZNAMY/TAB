@@ -547,6 +547,19 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     @Override
     @NotNull
     public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        // Placeholder-related config sections
+        map.put("configuration", new LinkedHashMap<String, Object>() {{
+            put("placeholders", TAB.getInstance().getConfiguration().getConfig().getPlaceholders().getSection().getMap());
+            put("placeholder-output-replacements", TAB.getInstance().getConfiguration().getConfig().getReplacements().getSection().getMap());
+            put("placeholder-refresh-intervals", TAB.getInstance().getConfiguration().getConfig().getRefresh().getSection().getMap());
+            put("conditions", TAB.getInstance().getConfiguration().getConfig().getConditions().getSection().getMap());
+            put("animations", TAB.getInstance().getConfiguration().getAnimations().getAnimations().getSection().getMap());
+        }});
+
+
+        // Placeholder values
         List<List<String>> serverPlaceholders = new ArrayList<>();
         List<List<String>> playerPlaceholders = new ArrayList<>();
         Map<TabPlayer, List<List<String>>> relationalPlaceholders = new HashMap<>();
@@ -571,6 +584,9 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
                     DumpUtils.tableToLines(Arrays.asList("Identifier", "Refresh", "Current value"), entry.getValue()));
         }
         placeholderValues.put("relational", relationalFormatted);
-        return placeholderValues;
+        map.put("current-placeholder-values", placeholderValues);
+
+        // Return
+        return map;
     }
 }

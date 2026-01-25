@@ -18,6 +18,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class PlaceholdersConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     @NotNull private final SimpleDateFormat dateFormat;
     @NotNull private final SimpleDateFormat timeFormat;
     private final double timeOffset;
@@ -37,6 +38,7 @@ public class PlaceholdersConfiguration {
         section.checkForUnknownKey(Arrays.asList("date-format", "time-format", "time-offset", "register-tab-expansion"));
 
         return new PlaceholdersConfiguration(
+                section,
                 parseDateFormat(section.getString("date-format", "dd.MM.yyyy"), "dd.MM.yyyy"),
                 parseDateFormat(section.getString("time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]"),
                 section.getNumber("time-offset", 0).doubleValue(),
