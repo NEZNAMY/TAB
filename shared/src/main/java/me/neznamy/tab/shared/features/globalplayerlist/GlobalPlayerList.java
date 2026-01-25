@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -181,7 +182,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
                 true,
                 configuration.isUpdateLatency() ? p.getPing() : 0,
                 configuration.isOthersAsSpectators() || (configuration.isVanishedAsSpectators() && p.isVanished()) ? 3 : p.getGamemode(),
-                viewer.getVersion().getMinorVersion() >= 8 ? format : null,
+                viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_8.getNetworkId() ? format : null,
                 0,
                 true
         );

@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -70,7 +71,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                 if (newPacket == null) {
                     return;
                 }
-                if (player.getVersion().getMinorVersion() >= 8) {
+                if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_8.getNetworkId()) {
                     newPacket = ((TrackedTabList<?>)player.getTabList()).onPacketSend(newPacket);
                 }
                 newPacket = ((SafeScoreboard<?>)player.getScoreboard()).onPacketSend(newPacket);

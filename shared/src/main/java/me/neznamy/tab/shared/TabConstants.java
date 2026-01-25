@@ -257,7 +257,6 @@ public class TabConstants {
 
         public static final String PERMISSION_SYSTEM = "permission_system";
         public static final String GLOBAL_PLAYER_LIST_ENABLED = "global_playerlist_enabled";
-        public static final String SERVER_VERSION = "server_version";
 
     }
 }

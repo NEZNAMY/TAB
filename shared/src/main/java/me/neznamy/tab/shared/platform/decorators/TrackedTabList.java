@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.component.TabComponent;
@@ -53,7 +54,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
         forcedDisplayNames.put(entry, displayName);
-        if (player.getVersion().getMinorVersion() < 8) {
+        if (player.getVersion().getNetworkId() < ProtocolVersion.V1_8.getNetworkId()) {
             return; // Display names are not supported on 1.7 and below
         }
         updateDisplayName0(entry, displayName);
@@ -63,7 +64,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     public void addEntry(@NonNull Entry entry) {
         forcedDisplayNames.put(entry.getUniqueId(), entry.getDisplayName());
         addEntry0(entry);
-        if (player.getVersion().getMinorVersion() == 8) {
+        if (player.getVersion() == ProtocolVersion.V1_8) {
             // Compensation for 1.8.0 client sided bug
             updateDisplayName0(entry.getUniqueId(), entry.getDisplayName());
         }
@@ -72,7 +73,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     @Override
     public void updateDisplayName(@NonNull TabPlayer target, @Nullable TabComponent displayName) {
         forcedDisplayNames.put(target.getTablistId(), displayName);
-        if (target.getVersion().getMinorVersion() < 8) {
+        if (target.getVersion().getNetworkId() < ProtocolVersion.V1_8.getNetworkId()) {
             return; // Display names are not supported on 1.7 and below
         }
         if (containsEntry(target.getTablistId())) {

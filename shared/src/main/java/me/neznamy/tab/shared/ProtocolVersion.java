@@ -123,16 +123,6 @@ public enum ProtocolVersion {
     }
 
     /**
-     * Returns {@code true} if this version supports RGB codes,
-     * {@code false} if not.
-     *
-     * @return {@code true} if supports, {@code false} if not
-     */
-    public boolean supportsRGB() {
-        return minorVersion >= 16;
-    }
-
-    /**
      * Returns enum constant of entered version or UNKNOWN_SERVER_VERSION if unknown version
      *
      * @param   friendlyName

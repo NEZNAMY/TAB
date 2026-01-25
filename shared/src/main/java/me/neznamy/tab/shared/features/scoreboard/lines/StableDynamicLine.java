@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -74,7 +75,7 @@ public class StableDynamicLine extends ScoreboardLine {
         boolean emptyBefore = scoreProperty.get().isEmpty();
         if (!scoreProperty.update() && !force) return EMPTY_ARRAY;
         String replaced = scoreProperty.get();
-        if (!p.getVersion().supportsRGB()) {
+        if (p.getVersion().getNetworkId() < ProtocolVersion.V1_16.getNetworkId()) {
             replaced = parent.getManager().getCache().get(replaced).toLegacyText(); //converting RGB to legacy here to avoid splitting in the middle of RGB code
         }
         String[] split = split(p, replaced);

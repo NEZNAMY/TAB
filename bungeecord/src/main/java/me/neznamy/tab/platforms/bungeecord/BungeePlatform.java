@@ -233,7 +233,7 @@ public class BungeePlatform extends ProxyPlatform {
         // Component style
         TabStyle modifier = component.getModifier();
         if (modifier.getColor() != null) {
-            if (version.getMinorVersion() >= 16) {
+            if (version.getNetworkId() >= ProtocolVersion.V1_16.getNetworkId()) {
                 bComponent.setColor(ChatColor.of("#" + modifier.getColor().getHexCode()));
             } else {
                 bComponent.setColor(ChatColor.of(modifier.getColor().getLegacyColor().name()));
@@ -269,7 +269,7 @@ public class BungeePlatform extends ProxyPlatform {
     @Override
     @NotNull
     public BossBar createBossBar(@NotNull TabPlayer player) {
-        if (player.getVersion().getMinorVersion() >= 9) {
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_9.getNetworkId()) {
             return new BungeeBossBar((BungeeTabPlayer) player);
         } else {
             return new DummyBossBar();

@@ -28,9 +28,6 @@ import java.util.List;
  */
 public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
-    /** Version with a minor team recode */
-    private final int TEAM_REWORK_VERSION = 13;
-
     /**
      * Constructs new instance with given parameter
      *
@@ -122,7 +119,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
                 either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 convertVisibility(team.getVisibility()),
                 convertCollision(team.getCollision()),
-                player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION ? team.getColor().ordinal() : 0,
+                player.getVersion().getNetworkId() >= ProtocolVersion.V1_13.getNetworkId() ? team.getColor().ordinal() : 0,
                 (byte) team.getOptions(),
                 team.getPlayers().toArray(new String[0])
         ));
@@ -169,7 +166,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
     @NotNull
     private Either<String, BaseComponent> either(@NonNull TabComponent text, int legacyLimit) {
-        if (player.getVersion().getMinorVersion() >= TEAM_REWORK_VERSION) {
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_13.getNetworkId()) {
             return Either.right(player.getPlatform().transformComponent(text, player.getVersion()));
         } else {
             return Either.left(cutTo(text.toLegacyText(), legacyLimit));

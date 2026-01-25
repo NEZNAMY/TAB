@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.MessageFile;
@@ -347,7 +348,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         if (p.teamData.hasHiddenNametag()) return false; // At least 1 reason for invisible nametag exists
         if (p.teamData.hasHiddenNametag(viewer)) return false; // At least 1 reason for invisible nametag for this viewer exists
         if (viewer.teamData.invisibleNameTagView) return false; // Viewer does not want to see nametags
-        if (viewer.getVersion().getMinorVersion() == 8 && p.hasInvisibilityPotion()) return false;
+        if (viewer.getVersion() == ProtocolVersion.V1_8 && p.hasInvisibilityPotion()) return false;
         return true;
     }
 

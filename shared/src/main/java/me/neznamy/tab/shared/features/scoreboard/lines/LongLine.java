@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
@@ -43,7 +44,7 @@ public class LongLine extends ScoreboardLine {
                 String[] values = splitText(
                         forcedPlayerNameStart,
                         parent.getManager().getCache().get(lineProperty.get()).toLegacyText(),
-                        refreshed.getVersion().getMinorVersion() >= 8 ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
+                        refreshed.getVersion().getNetworkId() >= ProtocolVersion.V1_8.getNetworkId() ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
                 );
                 addLine(refreshed, values[1], values[0], values[2]);
                 refreshed.scoreboardData.lineNameProperties.get(this).changeRawValue(values[1]);
@@ -63,7 +64,7 @@ public class LongLine extends ScoreboardLine {
             String[] values = splitText(
                     forcedPlayerNameStart,
                     parent.getManager().getCache().get(value).toLegacyText(),
-                    p.getVersion().getMinorVersion() >= 8 ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
+                    p.getVersion().getNetworkId() >= ProtocolVersion.V1_8.getNetworkId() ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
             );
             addLine(p, values[1], values[0], values[2]);
             p.scoreboardData.lineNameProperties.put(this, new Property(this, p, values[1]));

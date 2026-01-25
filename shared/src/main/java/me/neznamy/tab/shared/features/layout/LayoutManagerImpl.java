@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.tablist.layout.Layout;
 import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutConfiguration.LayoutDefinition;
@@ -135,7 +136,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
 
     @Nullable
     private LayoutPattern getHighestLayout(@NotNull TabPlayer p) {
-        if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return null; // Ignore these players entirely
+        if (p.getVersion().getNetworkId() < ProtocolVersion.V1_8.getNetworkId() || p.isBedrockPlayer()) return null; // Ignore these players entirely
         if (p.layoutData.forcedLayout != null) return p.layoutData.forcedLayout;
         for (LayoutPattern pattern : layouts.values()) {
             if (pattern.isConditionMet(p)) return pattern;

@@ -216,7 +216,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
-        return serverVersion.getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
+        return ReflectionUtils.classExists("io.netty.channel.Channel") ? new BukkitPipelineInjector() : null;
     }
 
     @Override
@@ -316,8 +316,6 @@ public class BukkitPlatform implements BackendPlatform {
         Metrics metrics = new Metrics(plugin, TabConstants.BSTATS_PLUGIN_ID_BUKKIT);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM,
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
-        String version = serverVersion == ProtocolVersion.UNKNOWN ? "Unknown" : "1." + serverVersion.getMinorVersion() + ".x";
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> version));
         metrics.addCustomChart(new SimplePie("tab_5_5_0_servers", serverVersion::getFriendlyName));
     }
 
@@ -349,7 +347,7 @@ public class BukkitPlatform implements BackendPlatform {
         if (BukkitBossBar.isAvailable()) return new BukkitBossBar((BukkitTabPlayer) player);
 
         // 1.9+ player on 1.8 server, handle using ViaVersion API
-        if (player.getVersion().getMinorVersion() >= 9) return new ViaBossBar((BukkitTabPlayer) player);
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_9.getNetworkId()) return new ViaBossBar((BukkitTabPlayer) player);
 
         // 1.8- server and player, no implementation
         return new DummyBossBar();
@@ -468,7 +466,7 @@ public class BukkitPlatform implements BackendPlatform {
     public String toBukkitFormat(@NotNull TabComponent component) {
         StringBuilder sb = new StringBuilder();
         if (component.getModifier().getColor() != null) {
-            if (serverVersion.supportsRGB()) {
+            if (serverVersion.getNetworkId() >= ProtocolVersion.V1_16.getNetworkId()) {
                 String hexCode = component.getModifier().getColor().getHexCode();
                 sb.append('§').append("x").append('§').append(hexCode.charAt(0)).append('§').append(hexCode.charAt(1))
                         .append('§').append(hexCode.charAt(2)).append('§').append(hexCode.charAt(3))
