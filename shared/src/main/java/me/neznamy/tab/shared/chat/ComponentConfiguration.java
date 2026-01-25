@@ -14,6 +14,10 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class ComponentConfiguration {
 
+    /** Original section used for extracting data */
+    @NotNull
+    private final ConfigurationSection section;
+
     /** Whether MiniMessage should be used if available or not */
     private final boolean minimessageSupport;
 
@@ -34,6 +38,7 @@ public class ComponentConfiguration {
         section.checkForUnknownKey(Arrays.asList("minimessage-support", "disable-shadow-for-heads"));
 
         return new ComponentConfiguration(
+                section,
                 section.getBoolean("minimessage-support", true),
                 section.getBoolean("disable-shadow-for-heads", true)
         );

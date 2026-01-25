@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.files.Config;
 import me.neznamy.tab.shared.features.types.Dumpable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -48,6 +49,7 @@ public class DumpCommand extends SubCommand {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("platform", TAB.getInstance().getPlatform().dump());
         data.put("player", analyzed.dump());
+        data.put("general-settings", dumpGeneralSettings());
         data.put("features", dumpFeatures(analyzed));
         data.put("placeholders", TAB.getInstance().getPlaceholderManager().dump(analyzed));
         data.put("tablist", analyzed.getTabList().dump());
@@ -65,6 +67,30 @@ public class DumpCommand extends SubCommand {
             sendMessage(sender, "&cAn error occurred while uploading the dump, check console for more info.");
             TAB.getInstance().getErrorManager().criticalError("Failed to upload dump", e);
         }
+    }
+
+    @NotNull
+    private Object dumpGeneralSettings() {
+        Map<String, Object> settings = new LinkedHashMap<>();
+        Config config = TAB.getInstance().getConfiguration().getConfig();
+        settings.put("assign-groups-by-permissions", config.isGroupsByPermissions());
+        settings.put("primary-group-finding-list", config.getPrimaryGroupFindingList());
+        settings.put("permission-refresh-interval", config.getPermissionRefreshInterval());
+        settings.put("debug", config.isDebugMode());
+        settings.put("mysql.enabled", config.getMysql() != null);
+        if (config.getProxySupport() != null) {
+            settings.put("proxy-support", "type: " + config.getProxySupport().getType());
+        } else {
+            settings.put("proxy-support", "Disabled");
+        }
+
+        settings.put("components", config.getComponents().getSection().getMap());
+        settings.put("config-version", config.getConfig().getInt("config-version", 0));
+        settings.put("compensate-for-packetevents-bug", config.isPacketEventsCompensation());
+        settings.put("use-bukkit-permissions-manager", config.isBukkitPermissions());
+        settings.put("use-online-uuid-in-tablist", config.isOnlineUuidInTabList());
+        settings.put("server-name", config.getServerName());
+        return settings;
     }
 
     @NotNull
