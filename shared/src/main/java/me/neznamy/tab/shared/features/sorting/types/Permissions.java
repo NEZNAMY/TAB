@@ -60,4 +60,15 @@ public class Permissions extends SortingType {
         }
         return String.valueOf((char) (position + 47));
     }
+
+    @Override
+    @NotNull
+    public String getReturnedValue(@NotNull TabPlayer p) {
+        for (String permission : sortedGroups.keySet()) {
+            if (p.hasPermission(permission)) {
+                return permission + " (#" + sortedGroups.get(permission.toLowerCase()) + " in list)";
+            }
+        }
+        return "NO PERMISSION";
+    }
 }

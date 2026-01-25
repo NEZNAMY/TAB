@@ -209,9 +209,89 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         map.put("short-team-name", player.sortingData.shortTeamName.replaceAll("\\p{C}", ""));
         map.put("full-team-name", player.sortingData.fullTeamName.replaceAll("\\p{C}", ""));
         map.put("forced-team-name", player.sortingData.forcedTeamName);
-        map.put("team-name-note", player.sortingData.teamNameNote.split("\n"));
+
+        List<List<String>> sortedPlayersTable = new ArrayList<>();
+        List<String> header = new ArrayList<>();
+        header.add("Player");
+        for (SortingType type : usedSortingTypes) {
+            header.add(type.getDisplayName());
+        }
+        Map<String, TabPlayer> players = new HashMap<>();
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            players.put(p.sortingData.shortTeamName, p);
+        }
+
+        Map<String, TabPlayer> sorted = new TreeMap<>(players);
+        for (TabPlayer p : sorted.values()) {
+            List<String> row = new ArrayList<>();
+            row.add(p.getName());
+            for (SortingType type : usedSortingTypes) {
+                row.add(type.getReturnedValue(p));
+            }
+            sortedPlayersTable.add(row);
+        }
+
+        map.put("players in the order they appear in tablist along with returned values of sorting types", tableToLines(header, sortedPlayersTable));
+
         return map;
     }
+
+    private List<String> tableToLines(List<String> header, List<List<String>> rows) {
+        int cols = header.size();
+        int[] widths = new int[cols];
+
+        // 1. Compute column widths
+        for (int i = 0; i < cols; i++) {
+            widths[i] = header.get(i).length();
+            for (List<String> row : rows) {
+                widths[i] = Math.max(widths[i], row.get(i).length());
+            }
+        }
+
+        List<String> result = new ArrayList<>();
+
+        // 2. Header
+        result.add(buildRow(header, widths));
+
+        // 3. Separator
+        result.add(buildSeparator(widths));
+
+        // 4. Rows
+        for (List<String> row : rows) {
+            result.add(buildRow(row, widths));
+        }
+
+        return result;
+    }
+
+    private String buildRow(List<String> row, int[] widths) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("|");
+        for (int i = 0; i < row.size(); i++) {
+            sb.append(" ");
+            sb.append(row.get(i));
+            sb.append(repeat(' ', widths[i] - row.get(i).length()));
+            sb.append(" |");
+        }
+        return sb.toString();
+    }
+
+    private String buildSeparator(int[] widths) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("|");
+        for (int w : widths) {
+            sb.append(repeat('-', w + 2));
+            sb.append("|");
+        }
+        return sb.toString();
+    }
+
+    private String repeat(char c, int count) {
+        char[] arr = new char[count];
+        Arrays.fill(arr, c);
+        return new String(arr);
+    }
+
 
     // ------------------
     // API Implementation

@@ -143,4 +143,14 @@ public abstract class SortingType {
      * @return  an as-short-as-possible character sequence for unique sorting
      */
     public abstract String getChars(@NotNull TabPlayer p);
+
+    /**
+     * Returns user-friendly output of the sorting type with a note for dumping.
+     *
+     * @param   p
+     *          player to get value for
+     * @return  value used for sorting
+     */
+    @NotNull
+    public abstract String getReturnedValue(@NotNull TabPlayer p);
 }

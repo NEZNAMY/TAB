@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import java.util.LinkedHashMap;
-
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.LinkedHashMap;
 
 /**
  * Sorting by primary permission groups.
@@ -42,5 +42,16 @@ public class Groups extends SortingType {
             p.sortingData.teamNameNote += "\n-> Primary group (&e" + p.getGroup() + "&r) is &a#" + position + "&r in sorting list.";
         }
         return String.valueOf((char) (position + 47));
+    }
+
+    @Override
+    @NotNull
+    public String getReturnedValue(@NotNull TabPlayer p) {
+        String group = p.getGroup().toLowerCase();
+        if (!sortedGroups.containsKey(group)) {
+            return p.getGroup() + " (not in list)";
+        } else {
+            return p.getGroup() + " (#" +  sortedGroups.get(group) + " in list)";
+        }
     }
 }

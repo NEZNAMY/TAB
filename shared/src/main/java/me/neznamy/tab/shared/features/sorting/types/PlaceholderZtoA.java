@@ -18,7 +18,7 @@ public class PlaceholderZtoA extends SortingType {
      *          Placeholder to sort by
      */
     public PlaceholderZtoA(Sorting sorting, String sortingPlaceholder) {
-        super(sorting, "PLACEHOLDER_Z_TO_A", sortingPlaceholder);
+        super(sorting, "PLACEHOLDER_Z_TO_A:" + sortingPlaceholder, sortingPlaceholder);
     }
 
     @Override
@@ -36,5 +36,11 @@ public class PlaceholderZtoA extends SortingType {
         }
         String s = new String(chars);
         return sorting.getConfiguration().isCaseSensitiveSorting() ? s : s.toLowerCase();
+    }
+
+    @Override
+    @NotNull
+    public String getReturnedValue(@NotNull TabPlayer p) {
+        return setPlaceholders(p);
     }
 }

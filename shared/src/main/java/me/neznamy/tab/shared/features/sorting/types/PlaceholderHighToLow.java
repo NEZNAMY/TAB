@@ -18,7 +18,7 @@ public class PlaceholderHighToLow extends SortingType {
      *          Placeholder to sort by
      */
     public PlaceholderHighToLow(Sorting sorting, String sortingPlaceholder) {
-        super(sorting, "PLACEHOLDER_HIGH_TO_LOW", sortingPlaceholder);
+        super(sorting, "PLACEHOLDER_HIGH_TO_LOW:" + sortingPlaceholder, sortingPlaceholder);
     }
 
     @Override
@@ -27,5 +27,11 @@ public class PlaceholderHighToLow extends SortingType {
         String output = setPlaceholders(p);
         p.sortingData.teamNameNote += "\n-> " + sortingPlaceholder.getIdentifier() + " returned \"&e" + output + "&r\". &r";
         return compressNumber(DEFAULT_NUMBER - parseDouble(output, 0, p));
+    }
+
+    @Override
+    @NotNull
+    public String getReturnedValue(@NotNull TabPlayer p) {
+        return setPlaceholders(p);
     }
 }

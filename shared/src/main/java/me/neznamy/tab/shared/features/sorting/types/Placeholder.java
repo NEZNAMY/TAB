@@ -30,7 +30,7 @@ public class Placeholder extends SortingType {
      *          Result of splitting the options string containing the placeholder and its values
      */
     public Placeholder(Sorting sorting, PlaceholderSplitResult result) {
-        super(sorting, "PLACEHOLDER", result.placeholder);
+        super(sorting, "PLACEHOLDER:" + result.placeholder, result.placeholder);
         sortingMap = convertSortingElements(result.values);
     }
 
@@ -72,6 +72,19 @@ public class Placeholder extends SortingType {
             p.sortingData.teamNameNote += "&r &a(#" + position + " in list). &r";
         }
         return String.valueOf((char) (position + 47));
+    }
+
+    @Override
+    @NotNull
+    public String getReturnedValue(@NotNull TabPlayer p) {
+        if (!valid) return "<INVALID>";
+        String output = EnumChatFormat.color(setPlaceholders(p));
+        String cleanOutput = output.trim().toLowerCase(Locale.US);
+        if (!sortingMap.containsKey(cleanOutput)) {
+            return output + " (not in list)";
+        } else {
+            return output + " (#" + sortingMap.get(cleanOutput) + " in list)";
+        }
     }
 
     @AllArgsConstructor
