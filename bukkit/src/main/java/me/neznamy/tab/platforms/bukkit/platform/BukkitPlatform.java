@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.platforms.bukkit.BukkitEventListener;
 import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
 import me.neznamy.tab.platforms.bukkit.BukkitTabCommand;
@@ -523,6 +525,13 @@ public class BukkitPlatform implements BackendPlatform {
             plugins.put(p.getDescription().getName(), p.getDescription().getVersion());
         }
         map.put("plugins", plugins);
+        if (placeholderAPI) {
+            Map<String, String> expansions = new LinkedHashMap<>();
+            for (PlaceholderExpansion p : PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansions()) {
+                expansions.put(p.getIdentifier(), p.getVersion());
+            }
+            map.put("placeholderapi-expansions", expansions);
+        }
         return map;
     }
 }
