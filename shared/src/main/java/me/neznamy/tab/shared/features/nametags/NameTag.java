@@ -20,6 +20,7 @@ import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
+import me.neznamy.tab.shared.util.DumpUtils;
 import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.cache.LastColorCache;
 import me.neznamy.tab.shared.util.cache.StringToComponentCache;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 public class NameTag extends RefreshableFeature implements NameTagManager, JoinListener, QuitListener,
@@ -504,6 +506,44 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         }
     }
 
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "NameTags";
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("disabled with condition", player.teamData.disabled.get());
+        map.put("team name", player.teamData.teamName.replaceAll("\\p{C}", ""));
+        map.put("team handling paused with API", player.teamData.teamHandlingPaused);
+        map.put("invisible nametag view", player.teamData.invisibleNameTagView);
+        map.put("collision", player.teamData.getCollisionRule());
+        map.put("invisible nametag", visibilityRefresher.getInvisibleCondition().isMet(player));
+        for (Property property : Arrays.asList(player.teamData.prefix, player.teamData.suffix)) {
+            Map<String, Object> propertyMap = new LinkedHashMap<>();
+            propertyMap.put("configured-raw-value", property.getOriginalRawValue());
+            propertyMap.put("api-forced-raw-value", property.getTemporaryValue());
+            propertyMap.put("current-source", property.getSource());
+            propertyMap.put("replaced-value", property.get());
+            map.put(property.getName(), propertyMap);
+        }
+        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(
+                Arrays.asList("Player", "tagprefix", "team color", "tagsuffix", "Disabled with condition"),
+                Arrays.stream(TAB.getInstance().getOnlinePlayers()).map(p -> Arrays.asList(
+                        p.getName(),
+                        "\"" + p.teamData.prefix.get() + "\"",
+                        lastColorCache.get(p.teamData.prefix.getFormat(p)).getLastStyle().toEnumChatFormat().name(),
+                        "\"" + p.teamData.suffix.get() + "\"",
+                        String.valueOf(p.teamData.disabled.get())
+                )).collect(Collectors.toList())
+        ));
+        return map;
+    }
+
     // ------------------
     // API Implementation
     // ------------------
@@ -708,33 +748,5 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     public boolean hasHiddenNameTagVisibilityView(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         return ((TabPlayer)player).teamData.invisibleNameTagView;
-    }
-
-    @NotNull
-    @Override
-    public String getFeatureName() {
-        return "NameTags";
-    }
-
-    @Override
-    @NotNull
-    public Object dump(@NotNull TabPlayer player) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("configuration", configuration.getSection().getMap());
-        map.put("disabled with condition", player.teamData.disabled.get());
-        map.put("team name", player.teamData.teamName.replaceAll("\\p{C}", ""));
-        map.put("team handling paused with API", player.teamData.teamHandlingPaused);
-        map.put("invisible nametag view", player.teamData.invisibleNameTagView);
-        map.put("collision", player.teamData.getCollisionRule());
-        map.put("invisible nametag", visibilityRefresher.getInvisibleCondition().isMet(player));
-        for (Property property : Arrays.asList(player.teamData.prefix, player.teamData.suffix)) {
-            Map<String, Object> propertyMap = new LinkedHashMap<>();
-            propertyMap.put("configured-raw-value", property.getOriginalRawValue());
-            propertyMap.put("api-forced-raw-value", property.getTemporaryValue());
-            propertyMap.put("current-source", property.getSource());
-            propertyMap.put("replaced-value", property.get());
-            map.put(property.getName(), propertyMap);
-        }
-        return map;
     }
 }
