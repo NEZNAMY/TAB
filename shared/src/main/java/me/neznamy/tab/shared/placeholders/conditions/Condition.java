@@ -160,6 +160,11 @@ public class Condition {
      * Configures refresh interval and registers nested placeholders
      */
     public void finishSetup() {
+        for (TabPlaceholder placeholder : placeholdersInConditions) {
+            if (placeholder.getRefresh() != -1 && (placeholder.getRefresh() < refresh || refresh == -1)) {
+                refresh = placeholder.getRefresh();
+            }
+        }
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
         String identifier = getPlaceholderIdentifier();
         String relIdentifier = getRelationalPlaceholderIdentifier();
@@ -191,9 +196,8 @@ public class Condition {
             if (hasRelationalContent()) {
                 placeholder.addParent(relationalPlaceholder);
             }
-            if (placeholder.getRefresh() < refresh && placeholder.getRefresh() != -1) {
-                refresh = placeholder.getRefresh();
-            }
+            this.placeholder.addChild(placeholder);
+            relationalPlaceholder.addChild(placeholder);
         }
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(placeholdersInConditions);
     }

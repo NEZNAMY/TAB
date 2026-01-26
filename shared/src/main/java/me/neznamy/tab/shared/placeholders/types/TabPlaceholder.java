@@ -166,7 +166,7 @@ public abstract class TabPlaceholder implements Placeholder {
         return added;
     }
 
-    private void addChild(@NonNull TabPlaceholder child) {
+    public void addChild(@NonNull TabPlaceholder child) {
         if (!children.contains(child)) {
             children.add(child);
             for (RefreshableFeature feature : usedByFeatures) {
