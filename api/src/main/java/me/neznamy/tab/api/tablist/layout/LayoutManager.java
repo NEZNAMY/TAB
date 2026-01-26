@@ -25,6 +25,18 @@ public interface LayoutManager {
     Layout createNewLayout(@NonNull String name);
 
     /**
+     * Creates new layout with given name and slot count (1.19.3+ only).
+     *
+     * @param   name
+     *          Unique layout name
+     * @param   slotCount
+     *          Amount of slots to use for 1.19.3+ players
+     * @return  Created layout
+     */
+    @NotNull
+    Layout createNewLayout(@NonNull String name, int slotCount);
+
+    /**
      * Returns defined layout from config by name. If no such layout is defined in config,
      * {@code null} is returned.
      *
