@@ -564,6 +564,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         List<List<String>> playerPlaceholders = new ArrayList<>();
         Map<TabPlayer, List<List<String>>> relationalPlaceholders = new HashMap<>();
         for (Placeholder p : usedPlaceholders) {
+            if (p.getIdentifier().contains("AnonymousCondition")) continue; // These are ugly, don't show them
             if (p instanceof ServerPlaceholderImpl) {
                 serverPlaceholders.add(Arrays.asList(p.getIdentifier(), String.valueOf(p.getRefresh()), ((ServerPlaceholderImpl) p).getLastValue()));
             } else if (p instanceof PlayerPlaceholderImpl) {
