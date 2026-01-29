@@ -66,6 +66,20 @@ public interface Layout {
     void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping);
 
     /**
+     * Adds fixed slot with specified parameters
+     *
+     * @param   slot
+     *          Slot (1-80)
+     * @param   text
+     *          Text to display
+     * @param   skin
+     *          Skin definition like in config
+     * @param   ping
+     *          Slot's ping, accepts placeholders that evaluate to a number
+     */
+    void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, @NonNull String ping);
+
+    /**
      * Adds a player group.
      *
      * @param   condition
