@@ -38,7 +38,7 @@ public class VisibilityRefresher extends RefreshableFeature implements JoinListe
 
     @Override
     public void load() {
-        TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, 500, p -> {
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, p -> {
             TabPlayer player = (TabPlayer) p;
             boolean newInvisibility = invisibleCondition.isMet((TabPlayer) p);
             if (newInvisibility) {

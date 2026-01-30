@@ -169,23 +169,23 @@ public class Condition {
         String identifier = getPlaceholderIdentifier();
         String relIdentifier = getRelationalPlaceholderIdentifier();
         if (hasRelationalContent()) {
-            relationalPlaceholder = manager.registerInternalRelationalPlaceholder(
+            relationalPlaceholder = manager.registerRelationalPlaceholder(
                     relIdentifier,
                     refresh,
                     (viewer, target) -> getText((TabPlayer) viewer, (TabPlayer) target)
             );
-            placeholder = manager.registerInternalPlayerPlaceholder(
+            placeholder = manager.registerPlayerPlaceholder(
                     identifier,
                     -1,
                     p -> "<This is a relational condition, use " + relIdentifier.substring(1, relIdentifier.length()-1) + ">"
             );
         } else {
-            relationalPlaceholder = manager.registerInternalRelationalPlaceholder(
+            relationalPlaceholder = manager.registerRelationalPlaceholder(
                     relIdentifier,
                     -1,
                     (viewer, target) -> "<This is not a relational condition, use " + identifier.substring(1, identifier.length()-1) + ">"
             );
-            placeholder = manager.registerInternalPlayerPlaceholder(
+            placeholder = manager.registerPlayerPlaceholder(
                     identifier,
                     refresh,
                     p -> getText((TabPlayer) p, (TabPlayer) p)

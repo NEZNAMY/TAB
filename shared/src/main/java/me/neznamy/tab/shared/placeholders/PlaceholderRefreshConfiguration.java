@@ -19,9 +19,13 @@ public class PlaceholderRefreshConfiguration {
     @NotNull private final ConfigurationSection section;
     private final int defaultInterval;
     @NotNull private final Map<String, Integer> refreshIntervals;
+    private final int permissionRefreshInterval;
 
     /**
      * Returns refresh interval for specified placeholder.
+     * If this is an internal placeholder, value is taken from {@link Placeholder#REFRESH_INTERVALS}.
+     * If this is an internal permission placeholder, value is taken from {@link #permissionRefreshInterval}.
+     * If this is a PlaceholderAPI placeholder, value is taken from the config section.
      * If not defined, {@link #defaultInterval} is returned.
      *
      * @param   identifier
@@ -29,20 +33,9 @@ public class PlaceholderRefreshConfiguration {
      * @return  Refresh interval for given placeholder
      */
     public int getRefreshInterval(@NotNull String identifier) {
-        return refreshIntervals.getOrDefault(identifier, defaultInterval);
-    }
-
-    /**
-     * Returns refresh interval for specified placeholder.
-     * If not defined, {@code defaultInterval} is returned.
-     *
-     * @param   identifier
-     *          Placeholder identifier
-     * @param   defaultInterval
-     *          Interval to use if not defined in config
-     * @return  Refresh interval for given placeholder
-     */
-    public int getRefreshInterval(@NotNull String identifier, int defaultInterval) {
+        if (identifier.startsWith("%permission:")) { // Bad code, maybe fix this later?
+            return permissionRefreshInterval;
+        }
         return refreshIntervals.getOrDefault(identifier, defaultInterval);
     }
 
@@ -52,12 +45,14 @@ public class PlaceholderRefreshConfiguration {
      *
      * @param   section
      *          Configuration section to load from
+     * @param   permissionRefreshInterval
+     *          Refresh interval for permissions
      * @return  Loaded instance from the given configuration section
      */
     @NotNull
-    public static PlaceholderRefreshConfiguration fromSection(@NotNull ConfigurationSection section) {
+    public static PlaceholderRefreshConfiguration fromSection(@NotNull ConfigurationSection section, int permissionRefreshInterval) {
         int defaultInterval = section.getInt("default-refresh-interval", 500);
-        Map<String, Integer> refreshIntervals = new HashMap<>();
+        Map<String, Integer> refreshIntervals = new HashMap<>(Placeholder.REFRESH_INTERVALS);
         for (Object placeholder : section.getKeys()) {
             String identifier = placeholder.toString();
             if (identifier.equals("default-refresh-interval")) continue;
@@ -69,7 +64,7 @@ public class PlaceholderRefreshConfiguration {
             refreshIntervals.put(identifier, fixInterval(section, identifier, defaultInterval));
         }
         
-        return new PlaceholderRefreshConfiguration(section, defaultInterval, refreshIntervals);
+        return new PlaceholderRefreshConfiguration(section, defaultInterval, refreshIntervals, permissionRefreshInterval);
     }
     
     private static int fixInterval(@NotNull ConfigurationSection section, @NotNull String identifier, int defaultInterval) {

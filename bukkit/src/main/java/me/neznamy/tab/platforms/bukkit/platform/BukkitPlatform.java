@@ -200,14 +200,14 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     public void registerPlaceholders() {
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
-        manager.registerInternalServerPlaceholder("%vault-prefix%", -1, () -> "");
-        manager.registerInternalServerPlaceholder("%vault-suffix%", -1, () -> "");
+        manager.registerServerPlaceholder("%vault-prefix%", -1, () -> "");
+        manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "");
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
             if (rspChat != null) {
                 Chat chat = rspChat.getProvider();
-                manager.registerInternalPlayerPlaceholder("%vault-prefix%", 1000, p -> chat.getPlayerPrefix((Player) p.getPlayer()));
-                manager.registerInternalPlayerPlaceholder("%vault-suffix%", 1000, p -> chat.getPlayerSuffix((Player) p.getPlayer()));
+                manager.registerPlayerPlaceholder("%vault-prefix%", p -> chat.getPlayerPrefix((Player) p.getPlayer()));
+                manager.registerPlayerPlaceholder("%vault-suffix%", p -> chat.getPlayerSuffix((Player) p.getPlayer()));
             }
         }
         BackendPlatform.super.registerPlaceholders();

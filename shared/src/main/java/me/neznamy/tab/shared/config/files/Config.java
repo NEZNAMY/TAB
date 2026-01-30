@@ -91,7 +91,7 @@ public class Config {
         modernConverter.convert(config);
 
         conditions = ConditionsSection.fromSection(config.getConfigurationSection("conditions"));
-        refresh = PlaceholderRefreshConfiguration.fromSection(config.getConfigurationSection("placeholder-refresh-intervals"));
+        refresh = PlaceholderRefreshConfiguration.fromSection(config.getConfigurationSection("placeholder-refresh-intervals"), permissionRefreshInterval);
         replacements = PlaceholderReplacementsConfiguration.fromSection(config.getConfigurationSection("placeholder-output-replacements"));
         placeholders = PlaceholdersConfiguration.fromSection(config.getConfigurationSection("placeholders"));
         components = ComponentConfiguration.fromSection(config.getConfigurationSection("components"));

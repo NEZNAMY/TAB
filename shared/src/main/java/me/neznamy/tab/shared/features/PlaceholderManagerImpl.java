@@ -372,23 +372,6 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     }
 
     @NotNull
-    public ServerPlaceholderImpl registerInternalServerPlaceholder(@NonNull String identifier, int defaultRefresh, @NonNull Supplier<String> supplier) {
-        return registerServerPlaceholder(identifier, configuration.getRefreshInterval(identifier, defaultRefresh), supplier);
-    }
-
-    @NotNull
-    public PlayerPlaceholderImpl registerInternalPlayerPlaceholder(@NonNull String identifier, int defaultRefresh,
-                                                                    @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
-        return registerPlayerPlaceholder(identifier, configuration.getRefreshInterval(identifier, defaultRefresh), function);
-    }
-
-    @NotNull
-    public RelationalPlaceholderImpl registerInternalRelationalPlaceholder(@NonNull String identifier, int defaultRefresh,
-                                                                           @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
-        return registerRelationalPlaceholder(identifier, configuration.getRefreshInterval(identifier, defaultRefresh), function);
-    }
-
-    @NotNull
     public ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, @NonNull Supplier<String> supplier) {
         return registerServerPlaceholder(identifier, configuration.getRefreshInterval(identifier), supplier);
     }
@@ -400,23 +383,11 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     }
 
     @NotNull
-    public RelationalPlaceholderImpl registerRelationalPlaceholder(@NonNull String identifier,
-                                                                   @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
+    public RelationalPlaceholderImpl registerRelationalPlaceholder(
+            @NonNull String identifier,
+            @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function
+    ) {
         return registerRelationalPlaceholder(identifier, configuration.getRefreshInterval(identifier), function);
-    }
-
-    public void registerInternalServerPlaceholder(@NonNull Pattern identifier, int defaultRefresh, @NonNull Function<Matcher, Supplier<String>> function) {
-        registerServerPlaceholder(identifier, configuration.getRefreshInterval(identifier.pattern(), defaultRefresh), function);
-    }
-
-    public void registerInternalPlayerPlaceholder(@NonNull Pattern identifier, int defaultRefresh,
-                                          @NonNull Function<Matcher, Function<me.neznamy.tab.api.TabPlayer, String>> function) {
-        registerPlayerPlaceholder(identifier, configuration.getRefreshInterval(identifier.pattern(), defaultRefresh), function);
-    }
-
-    public void registerInternalRelationalPlaceholder(@NonNull Pattern identifier, int defaultRefresh,
-                                              @NonNull Function<Matcher, BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String>> function) {
-        registerRelationalPlaceholder(identifier, configuration.getRefreshInterval(identifier.pattern(), defaultRefresh), function);
     }
 
     /**

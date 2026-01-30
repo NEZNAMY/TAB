@@ -64,8 +64,8 @@ public class FoliaPlatform extends BukkitPlatform {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator('.');
         decimal2 = new DecimalFormat("#.##", symbols);
-        registerInternalSyncPlaceholder(TabConstants.Placeholder.MSPT, 1000, p -> decimal2.format(Bukkit.getAverageTickTime()));
-        registerInternalSyncPlaceholder(TabConstants.Placeholder.TPS, 1000, p -> decimal2.format(Math.min(20, Bukkit.getTPS()[0])));
+        registerInternalSyncPlaceholder(TabConstants.Placeholder.MSPT, p -> decimal2.format(Bukkit.getAverageTickTime()));
+        registerInternalSyncPlaceholder(TabConstants.Placeholder.TPS, p -> decimal2.format(Math.min(20, Bukkit.getTPS()[0])));
     }
 
     @Override
@@ -85,9 +85,9 @@ public class FoliaPlatform extends BukkitPlatform {
         });
     }
 
-    private void registerInternalSyncPlaceholder(@NonNull String identifier, int refresh, @NonNull Function<TabPlayer, String> function) {
+    private void registerInternalSyncPlaceholder(@NonNull String identifier, @NonNull Function<TabPlayer, String> function) {
         PlayerPlaceholderImpl[] ppl = new PlayerPlaceholderImpl[1];
-        ppl[0] = TAB.getInstance().getPlaceholderManager().registerInternalPlayerPlaceholder(identifier, refresh, p -> {
+        ppl[0] = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, p -> {
             runSync((Entity) p.getPlayer(), () -> {
                 long time = System.nanoTime();
                 String output = function.apply((TabPlayer) p);

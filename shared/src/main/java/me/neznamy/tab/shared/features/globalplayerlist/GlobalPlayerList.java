@@ -43,7 +43,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
         this.configuration = configuration;
         TAB.getInstance().getDataManager().applyConfiguration(configuration);
         for (Map.Entry<String, List<String>> entry : configuration.getSharedServers().entrySet()) {
-            TAB.getInstance().getPlaceholderManager().registerInternalServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
+            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000, () -> {
                 if (onlinePlayers == null) return "0"; // Not loaded yet
                 int count = 0;
                 for (TabPlayer player : onlinePlayers.getPlayers()) {
