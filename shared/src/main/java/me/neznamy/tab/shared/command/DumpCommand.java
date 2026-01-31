@@ -2,6 +2,10 @@ package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.TabClickEvent;
+import me.neznamy.tab.shared.chat.TabTextColor;
+import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.config.files.Config;
 import me.neznamy.tab.shared.features.types.Dumpable;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -62,7 +66,12 @@ public class DumpCommand extends SubCommand {
         try {
             sendMessage(sender, "&eUploading dump...");
             String url = upload(output);
-            sendMessage(sender, "&aDump uploaded: &e" + url);
+            TabComponent urlComponent = new TabTextComponent(url, TabTextColor.YELLOW);
+            urlComponent.getModifier().setClickEvent(new TabClickEvent(TabClickEvent.Action.OPEN_URL, url));
+            sendMessage(sender, new TabTextComponent("", Arrays.asList(
+                    new TabTextComponent("Dump uploaded: ", TabTextColor.GREEN),
+                    urlComponent
+            )));
         } catch (Exception e) {
             sendMessage(sender, "&cAn error occurred while uploading the dump, check console for more info.");
             TAB.getInstance().getErrorManager().criticalError("Failed to upload dump", e);

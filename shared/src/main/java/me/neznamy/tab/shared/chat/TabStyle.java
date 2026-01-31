@@ -22,6 +22,7 @@ public class TabStyle {
     @Nullable private Boolean strikethrough;
     @Nullable private Boolean obfuscated;
     @Nullable private String font;
+    @Nullable private TabClickEvent clickEvent;
 
     /**
      * Constructs a copy of the provided modifier.
@@ -38,6 +39,7 @@ public class TabStyle {
         strikethrough = modifier.strikethrough;
         underlined = modifier.underlined;
         font = modifier.font;
+        clickEvent = modifier.clickEvent;
     }
 
     /**

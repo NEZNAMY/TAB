@@ -8,10 +8,12 @@ import com.mojang.logging.LogUtils;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.chat.TabClickEvent;
 import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.TabKeybindComponent;
@@ -45,6 +47,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.net.URI;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -164,6 +167,10 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
                 .withObfuscated(modifier.getObfuscated())
                 .withFont(modifier.getFont() == null ? null : new FontDescription.Resource(Identifier.parse(modifier.getFont())));
         if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor());
+
+        if (modifier.getClickEvent() != null) {
+            style = style.withClickEvent(convertClickEvent(modifier.getClickEvent()));
+        }
         nmsComponent.setStyle(style);
 
         // Extra
@@ -187,6 +194,27 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
         } else {
             throw new IllegalStateException("Player head component does not have id, name or skin set");
         }
+    }
+
+    @SneakyThrows
+    @Nullable
+    private ClickEvent convertClickEvent(@NotNull TabClickEvent event) {
+        String value = event.getValue();
+        switch (event.getAction()) {
+            case OPEN_URL:
+                return new ClickEvent.OpenUrl(new URI(value));
+            case OPEN_FILE:
+                return new ClickEvent.OpenFile(value);
+            case RUN_COMMAND:
+                return new ClickEvent.RunCommand(value);
+            case SUGGEST_COMMAND:
+                return new ClickEvent.SuggestCommand(value);
+            case CHANGE_PAGE:
+                return new ClickEvent.ChangePage(Integer.parseInt(value));
+            case COPY_TO_CLIPBOARD:
+                return new ClickEvent.CopyToClipboard(value);
+        }
+        return null;
     }
 
     @Override

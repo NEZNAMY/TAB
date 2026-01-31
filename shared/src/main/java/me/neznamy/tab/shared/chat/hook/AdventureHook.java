@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.chat.hook;
 
+import me.neznamy.tab.shared.chat.TabClickEvent;
 import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
@@ -10,6 +11,7 @@ import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.*;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -58,6 +60,9 @@ public class AdventureHook {
                 .decoration(TextDecoration.STRIKETHROUGH, getDecoration(component.getModifier().getStrikethrough()))
                 .decoration(TextDecoration.OBFUSCATED, getDecoration(component.getModifier().getObfuscated()))
                 .font(component.getModifier().getFont() == null ? null : Key.key(component.getModifier().getFont()));
+        if (component.getModifier().getClickEvent() != null) {
+            style.clickEvent(convertClickEvent(component.getModifier().getClickEvent()));
+        }
         if (SHADOW_COLOR_AVAILABLE) {
             AdventureShadowHook.setShadowColor(style, component.getModifier().getShadowColor());
         }
@@ -92,6 +97,26 @@ public class AdventureHook {
     private static TextDecoration.State getDecoration(@Nullable Boolean state) {
         if (state == null) return TextDecoration.State.NOT_SET;
         return state ? TextDecoration.State.TRUE : TextDecoration.State.FALSE;
+    }
+
+    @Nullable
+    private static ClickEvent convertClickEvent(@NotNull TabClickEvent clickEvent) {
+        String value = clickEvent.getValue();
+        switch (clickEvent.getAction()) {
+            case OPEN_URL:
+                return ClickEvent.openUrl(value);
+            case OPEN_FILE:
+                return ClickEvent.openFile(value);
+            case RUN_COMMAND:
+                return ClickEvent.runCommand(value);
+            case SUGGEST_COMMAND:
+                return ClickEvent.suggestCommand(value);
+            case CHANGE_PAGE:
+                return ClickEvent.changePage(Integer.parseInt(value));
+            case COPY_TO_CLIPBOARD:
+                return ClickEvent.copyToClipboard(value);
+        }
+        return null;
     }
 
     /**
@@ -129,7 +154,8 @@ public class AdventureHook {
                 getDecoration(decorations.get(TextDecoration.UNDERLINED)),
                 getDecoration(decorations.get(TextDecoration.STRIKETHROUGH)),
                 getDecoration(decorations.get(TextDecoration.OBFUSCATED)),
-                font == null ? null : font.asString()
+                font == null ? null : font.asString(),
+                null // We don't need click events here
         ));
 
         // Extra

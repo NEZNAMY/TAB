@@ -246,6 +246,13 @@ public class BungeePlatform extends ProxyPlatform {
         bComponent.setUnderlined(modifier.getUnderlined());
         bComponent.setFont(modifier.getFont());
 
+        if (modifier.getClickEvent() != null) {
+            bComponent.setClickEvent(new ClickEvent(
+                    ClickEvent.Action.valueOf(modifier.getClickEvent().getAction().name()),
+                    modifier.getClickEvent().getValue()
+            ));
+        }
+
         // Extra
         for (TabComponent extra : component.getExtra()) {
             bComponent.addExtra(createComponent(extra, version));
