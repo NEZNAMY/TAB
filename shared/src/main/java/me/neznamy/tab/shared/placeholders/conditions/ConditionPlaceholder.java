@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.placeholders.conditions;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.placeholders.PlaceholderReference;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
-import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +32,7 @@ public class ConditionPlaceholder {
     /** The actual placeholder that is being parsed */
     @NotNull
     @Getter
-    private final TabPlaceholder realPlaceholder;
+    private final PlaceholderReference realPlaceholder;
 
     /** Flag tracking whether the placeholder should be parsed as viewer or not */
     private final boolean parseAsViewer;
@@ -70,7 +70,7 @@ public class ConditionPlaceholder {
                 isRelational = placeholderDefinition.startsWith("%rel_");
             }
         }
-        this.realPlaceholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(realPlaceholder);
+        this.realPlaceholder = TAB.getInstance().getPlaceholderManager().getPlaceholderReference(realPlaceholder);
     }
 
     /**
@@ -84,10 +84,10 @@ public class ConditionPlaceholder {
      */
     @NotNull
     public String parse(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        if (realPlaceholder instanceof RelationalPlaceholderImpl) {
-            return ((RelationalPlaceholderImpl) realPlaceholder).getLastValue(viewer, target);
+        if (realPlaceholder.getHandle() instanceof RelationalPlaceholderImpl) {
+            return ((RelationalPlaceholderImpl) realPlaceholder.getHandle()).getLastValue(viewer, target);
         } else {
-            return realPlaceholder.parse(parseAsViewer ? viewer : target);
+            return realPlaceholder.getHandle().parse(parseAsViewer ? viewer : target);
         }
     }
 }

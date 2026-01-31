@@ -65,7 +65,7 @@ public class Animation {
                 AnimationConfiguration cfg = TAB.getInstance().getConfiguration().getAnimations().getAnimations();
                 localRefresh = cfg.getAnimations().containsKey(placeholder) ? cfg.getAnimations().get(placeholder).getChangeInterval() : interval;
             } else {
-                localRefresh = placeholderManager.getPlaceholder(placeholder).getRefresh();
+                localRefresh = placeholderManager.getPlaceholderReference(placeholder).getRefresh();
             }
             if (localRefresh != -1 && localRefresh < refresh) {
                 refresh = localRefresh;

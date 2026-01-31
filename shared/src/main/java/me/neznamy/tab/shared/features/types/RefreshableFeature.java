@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
+import me.neznamy.tab.shared.placeholders.PlaceholderReference;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,10 +36,10 @@ public abstract class RefreshableFeature extends TabFeature {
      * @param   placeholders
      *          placeholders to add as used in this feature
      */
-    public void addUsedPlaceholders(@NotNull Collection<TabPlaceholder> placeholders) {
+    public void addUsedPlaceholderReferences(@NotNull Collection<PlaceholderReference> placeholders) {
         if (placeholders.isEmpty()) return;
-        for (TabPlaceholder p : placeholders) {
-            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(p, this);
+        for (PlaceholderReference p : placeholders) {
+            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(p.getHandle(), this);
         }
     }
 

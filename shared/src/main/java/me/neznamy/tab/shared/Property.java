@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.placeholders.PlaceholderReference;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
-import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -113,13 +113,13 @@ public class Property {
      */
     private void analyze(@NotNull String value) {
         // Identify placeholders used directly
-        List<TabPlaceholder> placeholders = new ArrayList<>();
-        List<RelationalPlaceholderImpl> relPlaceholders0 = new ArrayList<>();
+        List<PlaceholderReference> placeholders = new ArrayList<>();
+        List<PlaceholderReference> relPlaceholders0 = new ArrayList<>();
         for (String identifier : PlaceholderManagerImpl.detectPlaceholders(value)) {
-            TabPlaceholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
+            PlaceholderReference placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholderReference(identifier);
             placeholders.add(placeholder);
-            if (placeholder instanceof RelationalPlaceholderImpl) {
-                relPlaceholders0.add((RelationalPlaceholderImpl) placeholder);
+            if (placeholder.getHandle() instanceof RelationalPlaceholderImpl) {
+                relPlaceholders0.add(placeholder);
             }
         }
 
@@ -130,7 +130,7 @@ public class Property {
             elementList.add(new LiteralElement(EnumChatFormat.color(value)));
         } else {
             String remaining = value;
-            for (TabPlaceholder placeholder : placeholders) {
+            for (PlaceholderReference placeholder : placeholders) {
                 int index = remaining.indexOf(placeholder.getIdentifier());
                 if (index != -1) {
                     // Add literal text before placeholder if not empty
@@ -154,7 +154,7 @@ public class Property {
         relPlaceholders = relPlaceholders0.toArray(new RelationalPlaceholderImpl[0]);
 
         if (listener != null) {
-            listener.addUsedPlaceholders(placeholders);
+            listener.addUsedPlaceholderReferences(placeholders);
         }
         lastReplacedValue = "";
         update();
@@ -297,8 +297,8 @@ public class Property {
         // Nested placeholders
         for (String identifier : PlaceholderManagerImpl.detectPlaceholders(format)) {
             if (!identifier.startsWith("%rel_")) continue;
-            RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-            format = format.replace(pl.getIdentifier(), EnumChatFormat.color(pl.getLastValue(viewer, owner)));
+            PlaceholderReference reference = TAB.getInstance().getPlaceholderManager().getPlaceholderReference(identifier);
+            format = format.replace(reference.getIdentifier(), EnumChatFormat.color(((RelationalPlaceholderImpl)reference.getHandle()).getLastValue(viewer, owner)));
             if (listener != null) listener.addUsedPlaceholder(identifier);
         }
         return format;
@@ -313,7 +313,7 @@ public class Property {
     public String getOriginalReplacedValue() {
         String value = originalRawValue;
         for (String identifier : PlaceholderManagerImpl.detectPlaceholders(value)) {
-            value = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).parse(owner);
+            value = TAB.getInstance().getPlaceholderManager().getPlaceholderReference(identifier).getHandle().parse(owner);
         }
         return EnumChatFormat.color(value);
     }
@@ -350,12 +350,12 @@ public class Property {
     private static class PlaceholderElement extends Element {
 
         @NotNull
-        private final TabPlaceholder placeholder;
+        private final PlaceholderReference placeholder;
 
         @Override
         @NotNull
         String get(@NotNull TabPlayer owner) {
-            return EnumChatFormat.color(placeholder.parse(owner));
+            return EnumChatFormat.color(placeholder.getHandle().parse(owner));
         }
     }
 }

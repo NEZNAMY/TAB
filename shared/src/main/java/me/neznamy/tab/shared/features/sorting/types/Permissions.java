@@ -3,13 +3,11 @@ package me.neznamy.tab.shared.features.sorting.types;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
-import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
+import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * Sorting by permission nodes
@@ -30,13 +28,11 @@ public class Permissions extends SortingType {
     public Permissions(Sorting sorting, String options) {
         super(sorting, "PERMISSIONS", true);
         sortedGroups = convertSortingElements(options.split(","));
-        List<TabPlaceholder> placeholders = new ArrayList<>();
         for (String permission : sortedGroups.keySet()) {
-            String placeholder = "%permission:" + permission + "%";
-            placeholders.add(TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(placeholder,
-                    p -> Boolean.toString(((TabPlayer)p).hasPermission(permission))));
+            PlayerPlaceholderImpl pl = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%permission:" + permission + "%",
+                    p -> Boolean.toString(((TabPlayer)p).hasPermission(permission)));
+            sorting.addUsedPlaceholder(pl.getIdentifier());
         }
-        sorting.addUsedPlaceholders(placeholders);
     }
 
     @Override

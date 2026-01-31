@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.sorting.Sorting;
-import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
+import me.neznamy.tab.shared.placeholders.PlaceholderReference;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +30,7 @@ public abstract class SortingType {
     
     /** Placeholder to sort by, if sorting type uses it */
     @Nullable
-    protected TabPlaceholder sortingPlaceholder;
+    protected PlaceholderReference sortingPlaceholder;
 
     /** Flag tracking if this sorting type is valid or not. If not, it is disabled. */
     protected final boolean valid;
@@ -49,7 +49,7 @@ public abstract class SortingType {
             valid = false;
         } else {
             sorting.addUsedPlaceholder(sortingPlaceholder);
-            this.sortingPlaceholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(sortingPlaceholder);
+            this.sortingPlaceholder = TAB.getInstance().getPlaceholderManager().getPlaceholderReference(sortingPlaceholder);
             valid = true;
         }
     }
@@ -63,7 +63,7 @@ public abstract class SortingType {
      */
     protected String setPlaceholders(TabPlayer player) {
         if (sortingPlaceholder == null) return "";
-        return sortingPlaceholder.parse(player);
+        return sortingPlaceholder.getHandle().parse(player);
     }
 
     /**

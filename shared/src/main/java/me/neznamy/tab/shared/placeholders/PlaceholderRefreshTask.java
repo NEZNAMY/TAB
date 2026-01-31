@@ -2,11 +2,11 @@ package me.neznamy.tab.shared.placeholders;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.ServerPlaceholderImpl;
+import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ import java.util.Map;
 public class PlaceholderRefreshTask implements Runnable {
 
     /** Placeholders that should be refreshed in this loop */
-    private final Collection<Placeholder> placeholdersToRefresh;
+    private final Collection<PlaceholderReference> placeholdersToRefresh;
 
     /** Map of server placeholder results */
     private final Map<ServerPlaceholderImpl, String> serverPlaceholderResults = new HashMap<>();
@@ -42,7 +42,8 @@ public class PlaceholderRefreshTask implements Runnable {
     public void run() {
         boolean trackUsage = TAB.getInstance().getCpu().isTrackUsage();
         TabPlayer[] players = TAB.getInstance().getOnlinePlayers();
-        for (Placeholder placeholder : placeholdersToRefresh) {
+        for (PlaceholderReference reference : placeholdersToRefresh) {
+            TabPlaceholder placeholder = reference.getHandle();
             long nanoTime = 0;
             if (placeholder instanceof ServerPlaceholderImpl) {
                 ServerPlaceholderImpl serverPlaceholder = (ServerPlaceholderImpl) placeholder;

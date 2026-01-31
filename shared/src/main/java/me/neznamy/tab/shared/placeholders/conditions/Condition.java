@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.placeholders.PlaceholderReference;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -54,7 +55,7 @@ public class Condition {
 
     /** List of all placeholders used inside this condition */
     @NotNull
-    private final List<TabPlaceholder> placeholdersInConditions = new ArrayList<>();
+    private final List<PlaceholderReference> placeholdersInConditions = new ArrayList<>();
 
     @Nullable
     private TabPlaceholder placeholder;
@@ -160,7 +161,7 @@ public class Condition {
      * Configures refresh interval and registers nested placeholders
      */
     public void finishSetup() {
-        for (TabPlaceholder placeholder : placeholdersInConditions) {
+        for (PlaceholderReference placeholder : placeholdersInConditions) {
             if (placeholder.getRefresh() != -1 && (placeholder.getRefresh() < refresh || refresh == -1)) {
                 refresh = placeholder.getRefresh();
             }
@@ -191,7 +192,8 @@ public class Condition {
                     p -> getText((TabPlayer) p, (TabPlayer) p)
             );
         }
-        for (TabPlaceholder placeholder : placeholdersInConditions) {
+        for (PlaceholderReference reference : placeholdersInConditions) {
+            TabPlaceholder placeholder = reference.getHandle();
             placeholder.addParent(this.placeholder);
             if (hasRelationalContent()) {
                 placeholder.addParent(relationalPlaceholder);
@@ -199,7 +201,7 @@ public class Condition {
             this.placeholder.addChild(placeholder);
             relationalPlaceholder.addChild(placeholder);
         }
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(placeholdersInConditions);
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholderReferences(placeholdersInConditions);
     }
 
     /**
