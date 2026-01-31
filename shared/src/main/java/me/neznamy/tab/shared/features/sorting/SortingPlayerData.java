@@ -14,9 +14,6 @@ public class SortingPlayerData {
     /** Full sorting string, used for sorting in Layout (and maybe for 1.18+ in the future) */
     public String fullTeamName;
 
-    /** Note explaining player's current team name */
-    public String teamNameNote;
-
     /** Forced team name using API */
     @Nullable
     public String forcedTeamName;

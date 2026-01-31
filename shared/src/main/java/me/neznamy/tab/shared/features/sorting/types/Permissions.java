@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -41,17 +40,12 @@ public class Permissions extends SortingType {
         for (String permission : sortedGroups.keySet()) {
             if (p.hasPermission(permission)) {
                 position = sortedGroups.get(permission.toLowerCase());
-                p.sortingData.teamNameNote += "\n-> Highest sorting permission: &e" + permission + " &a(#" + position + " in list). &r";
-                if (p.hasPermission(TabConstants.Permission.TEST_PERMISSION)) {
-                    p.sortingData.teamNameNote += "&cThis user appears to have all permissions. Are they OP? &r";
-                }
                 break;
             }
         }
         if (position == 0) {
             TAB.getInstance().getConfigHelper().runtime().noPermissionFromSortingList(sortedGroups.keySet(), p);
             position = sortedGroups.size()+1;
-            p.sortingData.teamNameNote += "\n-> &cPlayer does not have any of the defined permissions. &r";
         }
         return String.valueOf((char) (position + 47));
     }

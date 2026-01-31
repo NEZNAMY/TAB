@@ -124,7 +124,6 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
      *          player to build team name for
      */
     public void constructTeamNames(@NotNull TabPlayer p) {
-        p.sortingData.teamNameNote = "";
         StringBuilder shortName = new StringBuilder();
         for (SortingType type : usedSortingTypes) {
             shortName.append(type.getChars(p));
@@ -141,11 +140,6 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         String finalShortName = checkTeamName(p, shortName);
         p.sortingData.shortTeamName = finalShortName;
         p.sortingData.fullTeamName = fullName.append(finalShortName.charAt(finalShortName.length() - 1)).toString();
-
-        // Do not randomly override note
-        if (p.sortingData.forcedTeamName != null) {
-            p.sortingData.teamNameNote = "Set using API";
-        }
     }
 
     /**
@@ -238,7 +232,6 @@ public class Sorting extends RefreshableFeature implements SortingManager, JoinL
         if (Objects.equals(p.sortingData.forcedTeamName, name)) return;
         if (name != null) {
             if (name.length() > Limitations.TEAM_NAME_LENGTH) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
-            p.sortingData.teamNameNote = "Set using API";
         }
         p.sortingData.forcedTeamName = name;
         if (layout != null) layout.updateTeamName(p, p.sortingData.getFullTeamName());

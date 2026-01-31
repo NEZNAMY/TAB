@@ -36,10 +36,8 @@ public class Groups extends SortingType {
         if (!sortedGroups.containsKey(group)) {
             TAB.getInstance().getConfigHelper().runtime().groupNotInSortingList(sortedGroups.keySet(), group, p);
             position = sortedGroups.size() + 1;
-            p.sortingData.teamNameNote += "\n-> &cPrimary group (&e" + p.getGroup() + "&c) is not in sorting list. &r";
         } else {
             position = sortedGroups.get(group);
-            p.sortingData.teamNameNote += "\n-> Primary group (&e" + p.getGroup() + "&r) is &a#" + position + "&r in sorting list.";
         }
         return String.valueOf((char) (position + 47));
     }
