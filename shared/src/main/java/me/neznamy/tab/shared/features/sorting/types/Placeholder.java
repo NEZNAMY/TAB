@@ -58,7 +58,7 @@ public class Placeholder extends SortingType {
 
     @Override
     public String getChars(@NotNull TabPlayer p) {
-        if (!valid) return "";
+        if (sortingPlaceholder == null) return "";
         String output = EnumChatFormat.color(setPlaceholders(p));
         int position;
         String cleanOutput = output.trim().toLowerCase(Locale.US);
@@ -74,7 +74,7 @@ public class Placeholder extends SortingType {
     @Override
     @NotNull
     public String getReturnedValue(@NotNull TabPlayer p) {
-        if (!valid) return "<INVALID>";
+        if (sortingPlaceholder == null) return "<INVALID>";
         String output = EnumChatFormat.color(setPlaceholders(p));
         String cleanOutput = output.trim().toLowerCase(Locale.US);
         if (!sortingMap.containsKey(cleanOutput)) {

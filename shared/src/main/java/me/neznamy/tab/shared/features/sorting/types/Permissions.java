@@ -25,7 +25,7 @@ public class Permissions extends SortingType {
      *          Permission nodes separated with ","
      */
     public Permissions(Sorting sorting, String options) {
-        super(sorting, "PERMISSIONS", true);
+        super(sorting, "PERMISSIONS");
         sortedGroups = convertSortingElements(options.split(","));
         for (String permission : sortedGroups.keySet()) {
             PlayerPlaceholderImpl pl = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%permission:" + permission + "%",

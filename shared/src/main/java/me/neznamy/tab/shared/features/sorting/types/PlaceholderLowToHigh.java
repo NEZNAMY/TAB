@@ -23,7 +23,7 @@ public class PlaceholderLowToHigh extends SortingType {
 
     @Override
     public String getChars(@NotNull TabPlayer p) {
-        if (!valid) return "";
+        if (sortingPlaceholder == null) return "";
         return compressNumber(DEFAULT_NUMBER + parseDouble(setPlaceholders(p), 0, p));
     }
 

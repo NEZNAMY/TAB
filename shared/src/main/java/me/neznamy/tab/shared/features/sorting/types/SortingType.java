@@ -18,22 +18,21 @@ import java.util.LinkedHashMap;
 @RequiredArgsConstructor
 public abstract class SortingType {
 
+    /** Number to add to / subtract from to prevent incorrect sorting with negative values */
+    protected static final int DEFAULT_NUMBER = Integer.MAX_VALUE / 2;
+
     /** Sorting feature */
+    @NotNull
     protected final Sorting sorting;
 
     /** Display name of this sorting type */
     @Getter
+    @NotNull
     private final String displayName;
-
-    /** Number to add to / subtract from to prevent incorrect sorting with negative values */
-    protected final int DEFAULT_NUMBER = Integer.MAX_VALUE / 2;
     
     /** Placeholder to sort by, if sorting type uses it */
     @Nullable
     protected PlaceholderReference sortingPlaceholder;
-
-    /** Flag tracking if this sorting type is valid or not. If not, it is disabled. */
-    protected final boolean valid;
 
     /**
      * Constructs new instance with given parameter
@@ -46,11 +45,9 @@ public abstract class SortingType {
         this.displayName = displayName;
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
             TAB.getInstance().getConfigHelper().startup().invalidSortingPlaceholder(sortingPlaceholder, this);
-            valid = false;
         } else {
             sorting.addUsedPlaceholder(sortingPlaceholder);
             this.sortingPlaceholder = TAB.getInstance().getPlaceholderManager().getPlaceholderReference(sortingPlaceholder);
-            valid = true;
         }
     }
     
@@ -61,7 +58,8 @@ public abstract class SortingType {
      *          player to set placeholders for
      * @return  text with replaced placeholders
      */
-    protected String setPlaceholders(TabPlayer player) {
+    @NotNull
+    protected String setPlaceholders(@NotNull TabPlayer player) {
         if (sortingPlaceholder == null) return "";
         return sortingPlaceholder.getHandle().parse(player);
     }
@@ -73,7 +71,8 @@ public abstract class SortingType {
      *          Configured sorting values
      * @return  Converted map with priorities
      */
-    protected LinkedHashMap<String, Integer> convertSortingElements(String[] elements) {
+    @NotNull
+    protected LinkedHashMap<String, Integer> convertSortingElements(@NotNull String[] elements) {
         LinkedHashMap<String, Integer> sortedGroups = new LinkedHashMap<>();
         int index = 1;
         for (String element : elements) {
@@ -94,6 +93,7 @@ public abstract class SortingType {
      *          Number to convert
      * @return  3 characters long String of converted number with a base of 65534.
      */
+    @NotNull
     public String compressNumber(double number) {
         int wholePart = (int) number;
         int base = Character.MAX_VALUE - 1;
@@ -126,7 +126,7 @@ public abstract class SortingType {
      *          Player name used in error message
      * @return  parsed double or {@code defaultValue} if input is invalid
      */
-    public double parseDouble(@NotNull String output, double defaultValue, TabPlayer player) {
+    public double parseDouble(@NotNull String output, double defaultValue, @NotNull TabPlayer player) {
         try {
             return Double.parseDouble(output.replace(",", "."));
         } catch (NumberFormatException e) {
