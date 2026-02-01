@@ -57,7 +57,7 @@ public class Property {
     @Nullable private String source;
 
     /** Relational placeholders in the text in the same order they are used */
-    private RelationalPlaceholderImpl[] relPlaceholders;
+    private PlaceholderReference[] relPlaceholders;
 
     /** String builder to avoid reallocation on every update call */
     @NotNull
@@ -151,7 +151,7 @@ public class Property {
 
         // Update and save values
         elements = elementList.toArray(new Element[0]);
-        relPlaceholders = relPlaceholders0.toArray(new RelationalPlaceholderImpl[0]);
+        relPlaceholders = relPlaceholders0.toArray(new PlaceholderReference[0]);
 
         if (listener != null) {
             listener.addUsedPlaceholderReferences(placeholders);
@@ -286,12 +286,14 @@ public class Property {
      *          the viewer
      * @return  format for the viewer
      */
-    public @NotNull String getFormat(@NotNull TabPlayer viewer) {
+    @NotNull
+    public String getFormat(@NotNull TabPlayer viewer) {
         if (!mayContainRelPlaceholders) return lastReplacedValue;
         String format = lastReplacedValue;
+
         // Direct placeholders
-        for (RelationalPlaceholderImpl pl : relPlaceholders) {
-            format = format.replace(pl.getIdentifier(), EnumChatFormat.color(pl.getLastValue(viewer, owner)));
+        for (PlaceholderReference pl : relPlaceholders) {
+            format = format.replace(pl.getIdentifier(), EnumChatFormat.color(((RelationalPlaceholderImpl)pl.getHandle()).getLastValue(viewer, owner)));
         }
 
         // Nested placeholders
