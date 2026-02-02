@@ -101,8 +101,8 @@ Design `per-world` is checked first. If condition is not met, `default` is displ
 If a chaining 3 or more and player meets 2 or more conditions for 2 (or more) different designs, the first one defined in the config will be displayed.  You can swap order of designs based on your priority needs.
 
 # Compatibility with other plugins
-Header/Footer is a feature that cannot be handled by multiple plugins at once. 
-To make sure no other plugin sends their own Header/Footer when not disabled in the plugin's config properly, TAB will block header/footer coming from all other plugins if this feature is enabled (and not disabled for a player with a condition). 
+Header/Footer is a feature that cannot be handled by multiple plugins at once.
+To make sure no other plugin sends their own Header/Footer when not disabled in the plugin's config properly, TAB will block header/footer coming from all other plugins if this feature is enabled (and not disabled for a player with a condition).
 An exception to this is Velocity installation, where this "anti-override" is not available.
 
 # Additional info

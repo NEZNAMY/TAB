@@ -3,6 +3,9 @@
 * [Configuration](#configuration)
   * [config.yml](#configyml)
   * [groups.yml and users.yml](#groupsyml-and-usersyml)
+    * [Global settings](#global-settings)
+    * [Per-world / per-server](#per-world--per-server)
+    * [Priorities](#priorities)
   * [Name color](#name-color)
 * [Commands](#commands)
 * [Placeholders](#placeholders)
@@ -63,6 +66,7 @@ All of the options are explained in the following table.
 ## groups.yml and users.yml
 This part allows you to configure prefix and suffix. They are called `tagprefix` and `tagsuffix`, where "tag" refers to name tag, to allow separation from tablist settings.
 
+### Global settings
 Properties can be applied in 2 ways: groups and users. Users can be defined by both username and their UUID. Values applied to users take priority over groups.
 
 **groups.yml**
@@ -94,6 +98,7 @@ _DEFAULT_:
   tagprefix: "&7" # This will be displayed on everyone except admin
 ```
 
+### Per-world / per-server
 Values can also be applied per-world (and per-server on a proxy), where they can be defined per group/user. These values take priority over global settings. Example:  
 **groups.yml**
 ```
@@ -120,6 +125,7 @@ per-world:
       tagsuffix: "Suffix in all worlds starting with lobby-"
 ```
 
+### Priorities
 The full list of priorities to choose correct prefix/suffix for a player looks like this:
 1. value set using the [API](#api)
 2. per-world / per-server applied to username
@@ -142,7 +148,7 @@ part of the value you are looking for.
 ## Name color
 On versions 1.12.2 and below, name color follows the last color of prefix. This also includes magic codes. On 1.13+, this is no longer the case. Instead, a new field called "team color" was created. This is an enum constant, where we need to pick from 22 options - 16 colors, 5 magic codes and reset. **As you can see, it doesn't allow for RGB colors**. This also means name can no longer have color and magic codes simultaneously.
 
-TAB does not have an option for configuring team color to avoid complexity, such as per-version configuration, or having to configure an additional field. 
+TAB does not have an option for configuring team color to avoid complexity, such as per-version configuration, or having to configure an additional field.
 For that reason, TAB detects the last used color code and uses that for team color.
 > [!CAUTION]
 > An exception is when using MiniMessage syntax / using RGB codes on server which has MiniMessage library. In this scenario, it is not possible to detect reset (`&r`) as last used "color", because in Minecraft components it is not a color, rather, it resets formatting by setting all magic codes to false / color to null. If you use `&r` (`<reset>`) and notice it not working, replace it with `&f` (`<white>`) (or add it after the reset to be safe). There seems to be no difference between setting color to `WHITE` versus `RESET`.
@@ -168,7 +174,7 @@ Here are TAB's PlaceholderAPI placeholders you can use when this feature is enab
 | `%tab_nametag_visibility%` | "Enabled" if player can see nametags, "Disabled" if disabled using `/tab nametag toggleview` |
 
 # Limitations
-* [<1.12.2] Prefix/suffix length is limited to 16 characters (including color codes). Any characters beyond that will be cut to prevent players getting disconnected.
+* [1.12.2-] Prefix/suffix length is limited to 16 characters (including color codes). Any characters beyond that will be cut to prevent players getting disconnected.
 * [1.13+] Name color is controlled by a chat format enum constant. This means:
   * Name can only have one code. That is either color or magic code (such as &4 or &l), but not both.
   * Name does not support RGB codes. Any used RGB colors will be rounded to the nearest legacy code.
@@ -182,7 +188,7 @@ If you want to avoid these at all costs, the only way is to create entities (arm
 * [CustomNameplates](https://polymart.org/product/2543/customnameplates)
 
 # Compatibility with other plugins
-Scoreboard teams is a feature that cannot be handled by multiple plugins at once. 
+Scoreboard teams is a feature that cannot be handled by multiple plugins at once.
 To make sure no other plugin sends their own teams when not disabled in the plugin's config properly, TAB will block players being added into teams coming from all other plugins (if this feature is enabled and not disabled for a player with a condition).
 
 # Additional info
@@ -222,7 +228,7 @@ In config.yml. Keep in mind, you'll not be able to use any team features if you 
 ## Additional note 6 - Vanish hook
 When a player is [vanished](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection), their team is unregistered for all other players who do **not** have `tab.seevanished` permission.
 
-The purpose of this is to avoid players figuring out a staff member is still online but just vanished by "checking" registered teams and their members. 
+The purpose of this is to avoid players figuring out a staff member is still online but just vanished by "checking" registered teams and their members.
 An example of "exploiting" this is to have a 3rd party client spawn a player entity with name of a chosen player (staff member) and seeing if their name is formatted (= team is registered = player is online) or not (offline).
 
 For this reason, make sure you give all of your staff members who can see vanished players the `tab.seevanished` permission, otherwise the vanished player will appear on top of the tablist (players without team are above players with team) and their nametag will not be formatted.

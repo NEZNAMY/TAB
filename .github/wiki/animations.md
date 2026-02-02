@@ -44,6 +44,7 @@ That includes header/footer, prefix/suffix, belowname, playerlist objective, bos
 # Tips & Tricks
 * Animations don't need to be fast. You can use them as a changing text in general.
 * Animations can also be used as a short alias to a long text. You can do this by creating an animation with one frame.
+* Adding to the previous point, animations can be used as a way to wrap a placeholder, having two different identifiers return the same value, allowing to use both original and replaced output from [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements).
 
 # External tools
 If you want an animation too complicated to be done manually, you can check out these websites:

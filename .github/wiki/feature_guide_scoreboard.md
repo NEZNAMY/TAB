@@ -108,7 +108,21 @@ A scoreboard consists of the following options:
 ### Line syntax
 The lines are specified as a list of strings.
 
-Since 1.20.3, you can also configure the value on the right side, which no longer has to be a red number. To set it, use `||` sequence and put right-side text after it. Example:
+Since 1.20.3, you can also configure the value on the right side, which no longer has to be a red number.  
+On <1.20.3, you can configure red numbers with either a static number, or a placeholder that evaluates to a number.
+
+The final syntax is `<text>||<number format>||<score>`, where:
+* `<text>` is the main text displayed on the left side
+* `<number format>` is the new 1.20.3+ feature that replaces `score` with any text, not just a number
+* `<score>` is the value (red number), only visible on <1.20.3 and must be a number (or a placeholder evaluating to one)
+
+The second and third part are optional. Example syntaxes that configure a line are:
+* `<text>`
+* `<text>||<number format>`
+* `<text>||<number format>||<score>`
+* `<text>||||<score>`
+
+For example:
 ```
       lines:
       - "Left 1---"
@@ -140,8 +154,7 @@ Additionally, the following configuration:
 Will give you  
 <img width="583" height="131" alt="image" src="https://github.com/user-attachments/assets/15e809c6-4ecd-4234-a30e-744c2d413335" />
 
-
-The right side text will not be visible at 1.20.2 and lower, and numbers will be displayed instead.
+The `number format` will not be visible at 1.20.2 and lower, and `score` will be displayed instead.
 
 ### Hiding a line
 When a line consists only of a placeholder that returned empty output, the line will be hidden completely. This is intentional to allow dynamic scoreboard size based on placeholder output. This is not the case if empty line is configured (`""`), to allow empty lines in configuration.

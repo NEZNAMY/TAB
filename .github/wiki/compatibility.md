@@ -3,13 +3,7 @@
   * [Java](#java)
 * [Supported server software and versions](#supported-server-software-and-versions)
 * [Supported features per platform](#supported-features-per-platform)
-* [Plugin hooks](#plugin-hooks)
-  * [All platforms](#all-platforms)
-  * [Bukkit](#bukkit)
-  * [BungeeCord](#bungeecord)
-  * [Fabric](#fabric)
-  * [Forge / NeoForge](#forge--neoforge)
-  * [Velocity](#velocity)
+* [Plugin / mod hooks](#plugin--mod-hooks)
 * [Compatibility issues](#compatibility-issues)
 
 # Requirements
@@ -49,7 +43,7 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
         </tr>
         <tr>
             <td rowspan=1><a href="https://minecraftforge.net">Forge</a></td>
-            <td>✔ (1.21.9 - 1.21.10)<sup>1</sup></td>
+            <td>✔ (1.21.11)<sup>1</sup></td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://neoforged.net/">NeoForge</a></td>
@@ -97,41 +91,20 @@ so you can always safely update to new version/build of your proxy software if t
 ✔ = Fully functional  
 ❌ = Completely missing
 
-# Plugin hooks
-To enhance user experience, TAB hooks into other plugins for better experience.
-This set of plugins is different for each platform based on their availability.
+# Plugin / mod hooks
+To enhance user experience, TAB hooks into other plugins / mods for better experience.
+This set of plugins / mods is different for each platform based on their availability.
 Some are available on all platforms, some only in a few.
-## All platforms
-[**Floodgate**](https://github.com/GeyserMC/Floodgate) - For properly detecting bedrock players to adapt features for the best possible user experience.  
-[**LuckPerms**](https://github.com/LuckPerms/LuckPerms) - Detecting permission groups of players for per-group settings.  
-[**ViaVersion**](https://github.com/ViaVersion/ViaVersion) - For properly detecting player's version to adapt features for the best possible user experience.
 
-## Bukkit
-[**LibsDisguises**](https://github.com/libraryaddict/LibsDisguises) - Detecting disguised players to disable collision to avoid endless push by colliding with own copy created by LibsDisguises.  
-[**PlaceholderAPI**](https://github.com/PlaceholderAPI/PlaceholderAPI) - Allows users to use its placeholders inside TAB.  
-[**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system.  
-[**Vault**](https://github.com/milkbowl/Vault) - Detecting permission groups of players for per-group settings.
-
-## BungeeCord
-[**PremiumVanish**](https://www.spigotmc.org/resources/14404) -
-Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system.  
-[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) -
-Communicating with other proxies to properly display visuals on players on another proxy.
-
-## Fabric
-[**fabric-permissions-api**](https://github.com/lucko/fabric-permissions-api) - Supporting permission nodes instead of OP levels.  
-[**placeholder-api**](https://modrinth.com/mod/placeholder-api) - Displaying placeholders from that mod and offering TAB's placeholders into it.
-
-## Forge / NeoForge
-[**LuckPerms**](https://github.com/LuckPerms/LuckPerms) - Permission checks with a string instead of using vanilla OP levels.
-
-## Velocity
-[**PremiumVanish**](https://www.spigotmc.org/resources/14404) -
-Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system.  
-[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) -
-Communicating with other proxies to properly display visuals on players on another proxy.  
-[**VelocityScoreboardAPI**](https://github.com/NEZNAMY/VelocityScoreboardAPI) -
-Sending scoreboard packets (scoreboard-teams, belowname-objective, playerlist-objective, scoreboard)
+| Platform      | Plugins / mods                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| All platforms | [**Floodgate**](https://github.com/GeyserMC/Floodgate) - For properly detecting bedrock players to adapt features for the best possible user experience. <br /> [**LuckPerms**](https://github.com/LuckPerms/LuckPerms) - Detecting permission groups of players for per-group settings. <br />  [**ViaVersion**](https://github.com/ViaVersion/ViaVersion) - For properly detecting player's version to adapt features for the best possible user experience.                                                                                                                                                           |
+| Bukkit        | [**LibsDisguises**](https://github.com/libraryaddict/LibsDisguises) - Detecting disguised players to disable collision to avoid endless push by colliding with own copy created by LibsDisguises. <br />[**PlaceholderAPI**](https://github.com/PlaceholderAPI/PlaceholderAPI) - Allows users to use its placeholders inside TAB. <br />[**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system. <br />[**Vault**](https://github.com/milkbowl/Vault) - Detecting permission groups of players for per-group settings. |
+| BungeeCord    | [**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system. <br />[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) - Communicating with other proxies to properly display visuals on players on another proxy.                                                                                                                                                                                                                                                                                                 |
+| Fabric        | [**fabric-permissions-api**](https://github.com/lucko/fabric-permissions-api) - Supporting permission nodes instead of OP levels. <br />[**placeholder-api**](https://modrinth.com/mod/placeholder-api) - Displaying placeholders from that mod and offering TAB's placeholders into it.                                                                                                                                                                                                                                                                                                                                 |
+| Forge         | [**LuckPerms**](https://github.com/LuckPerms/LuckPerms) - Permission checks with a string instead of using vanilla OP levels. <br /> [**ForgePlaceholderAPI**](https://github.com/EnvyWare/ForgePlaceholderAPI) - Allows users to use its placeholders inside TAB. <br /> [**Vanishmod**](https://modrinth.com/mod/vanishmod) - Getting player's vanish status.                                                                                                                                                                                                                                                          |
+| NeoForge      | [**LuckPerms**](https://github.com/LuckPerms/LuckPerms) - Permission checks with a string instead of using vanilla OP levels.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Velocity      | [**PremiumVanish**](https://www.spigotmc.org/resources/14404) - Supporting PremiumVanish's vanishing levels instead of using a basic compatibility system. <br />[**RedisBungee**](https://github.com/ProxioDev/RedisBungee) - Communicating with other proxies to properly display visuals on players on another proxy. <br />[**VelocityScoreboardAPI**](https://github.com/NEZNAMY/VelocityScoreboardAPI) - Sending scoreboard packets (scoreboard-teams, belowname-objective, playerlist-objective, scoreboard)                                                                                                      |
 
 # Compatibility issues
 * **Glow plugins** will fail to apply glow color correctly. Check [How to make the plugin compatible with glow plugins](https://github.com/NEZNAMY/TAB/wiki/How-to-make-TAB-compatible-with-glow-plugins) for more information.

@@ -65,12 +65,13 @@ These placeholders are available on all platforms.
 | %bedrock%                                 | -1               | Returns `true`/`false` based on whether player is using Bedrock edition or not (Java)                                                                                                                                                                                                                                                  |
 | %bossbar_announce_time_total_\<bossbar\>% | -1               | Total time (inputted value) of an announced bossbar.                                                                                                                                                                                                                                                                                   |
 | %bossbar_announce_time_left_\<bossbar\>%  | 100              | Remaining time of an announced bossbar.                                                                                                                                                                                                                                                                                                |
+| %online_\<server name\>%                  | 1000             | Amount of online players on specified server (excluding vanished players)                                                                                                                                                                                                                                                              |
 | %%                                        | -1               | Returns the `%` symbol. Useful to display `%` symbol without breaking all placeholders after it                                                                                                                                                                                                                                        |
 
 ## Backend only
 These placeholders only work when TAB is installed on a backend server, they don't work when TAB is on a proxy. If you have TAB installed on proxy and wish to use these, use their [PlaceholderAPI](https://github.com/NEZNAMY/TAB/wiki/Quick-PlaceholderAPI-startup-guide) alternative with [Bridge plugin](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) installed for PlaceholderAPI support on proxy.
 | Identifier | Refresh interval | Description | PlaceholderAPI alternative |
-| ------------- | ------------- | ------------- | ------------- |
+|---------------|---------------| ------------- | ------------- |
 | %health% | 100 | Player's health, rounded up to match Minecraft's heart display. | %player_health_rounded% |
 | %displayname% | 500 | Player's display name value set by permission plugin. | %player_displayname% |
 | %tps%               | 1000 | TPS of server from the last minute. Measured by the server. Not directly available on modded platforms - primitive approximation using MSPT (TPS = 1000/MSPT, max 20) is used there. | %server_tps_1% |
@@ -82,7 +83,6 @@ These placeholders only work when TAB is installed on a backend server, they don
 |------------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | %server%                     | -1               | Name of server where player is, defined in proxy's config.                                                                                                                    |
 | %serveronline%               | 1000             | Amount of online players on server where the player is (excluding vanished players)                                                                                           |
-| %online_\<server name\>%     | 1000             | Amount of online players on specified server (excluding vanished players)                                                                                                     |
 | %playerlist-group_\<group\>% | 1000             | Amount of online players in specified [global playerlist](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist) group (therefore the feature must be enabled) |
 
 # PlaceholderAPI
@@ -102,41 +102,46 @@ placeholders:
 in **config.yml**.  
 Full list of placeholders (general + feature specific):
 
-**General**:
-| Identifier  | Description |
-| ------------- | ------------- |
-| `%tab_replace_<placeholder>%` | Applies [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) to a PlaceholderAPI placeholder (for example `%tab_replace_essentials_vanished%`) |
-| `%tab_placeholder_<placeholder>%` | returns value of tab's internal placeholder (such as `%tab_placeholder_animation:name%` for `%animation:name%`) |
+**General**:  
+  
+| Identifier                        | Description                                                                                                                                                                                                                                                                     |
+|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `%tab_replace_<placeholder>%`     | Applies [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) to a PlaceholderAPI placeholder (for example `%tab_replace_essentials_vanished%`)                                                                 |
+| `%tab_placeholder_<placeholder>%` | returns value of tab's internal placeholder (such as `%tab_placeholder_animation:name%` for `%animation:name%`) (this also applies [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) to them if configured) |
 
-**BossBar**:
-| Identifier  | Description |
-| ------------- | ------------- |
+**BossBar**:  
+  
+| Identifier              | Description                             |
+|-------------------------|-----------------------------------------|
 | `%tab_bossbar_visible%` | "Enabled" if visible, "Disabled" if not |
 
-**NameTags**:
-| Identifier  | Description |
-| ------------- | ------------- |
-| `%tab_tagprefix%` | Player's current tagprefix with placeholders parsed. |
-| `%tab_tagsuffix%` | Player's current tagprefix with placeholders parsed. |
-| `%tab_tagprefix_raw%` | Player's current raw tagprefix with placeholder identifiers. |
-| `%tab_tagsuffix_raw%` | Player's current raw tagsuffix with placeholder identifiers. |
+**NameTags**:  
+  
+| Identifier                 | Description                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------|
+| `%tab_tagprefix%`          | Player's current tagprefix with placeholders parsed.                                         |
+| `%tab_tagsuffix%`          | Player's current tagprefix with placeholders parsed.                                         |
+| `%tab_tagprefix_raw%`      | Player's current raw tagprefix with placeholder identifiers.                                 |
+| `%tab_tagsuffix_raw%`      | Player's current raw tagsuffix with placeholder identifiers.                                 |
 | `%tab_nametag_visibility%` | "Enabled" if player can see nametags, "Disabled" if disabled using `/tab nametag toggleview` |
 
 **Scoreboard**:  
-| Identifier  | Description |
-| ------------- | ------------- |
-| `%tab_scoreboard_name%` | Returns name of player's currently displayed scoreboard or empty string if none is displayed due to no display condition being met. |
-| `%tab_scoreboard_visible%` | "Enabled" if visible, "Disabled" if not (toggled with a command) |
+  
+| Identifier                 | Description                                                                                                                         |
+|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `%tab_scoreboard_name%`    | Returns name of player's currently displayed scoreboard or empty string if none is displayed due to no display condition being met. |
+| `%tab_scoreboard_visible%` | "Enabled" if visible, "Disabled" if not (toggled with a command)                                                                    |
 
-**Tablist name formatting**:
-| Identifier  | Description |
-| ------------- | ------------- |
-| `%tab_tabprefix%` | Player's current tabprefix with placeholders parsed. |
-| `%tab_customtabname%` | Player's current customtabname with placeholders parsed. |
-| `%tab_tabsuffix%` | Player's current tabprefix with placeholders parsed. |
-| `%tab_tabprefix_raw%` | Player's current raw tabprefix with placeholder identifiers. |
+**Tablist name formatting**:  
+  
+| Identifier                | Description                                                      |
+|---------------------------|------------------------------------------------------------------|
+| `%tab_tabprefix%`         | Player's current tabprefix with placeholders parsed.             |
+| `%tab_customtabname%`     | Player's current customtabname with placeholders parsed.         |
+| `%tab_tabsuffix%`         | Player's current tabprefix with placeholders parsed.             |
+| `%tab_tabprefix_raw%`     | Player's current raw tabprefix with placeholder identifiers.     |
 | `%tab_customtabname_raw%` | Player's current raw customtabname with placeholder identifiers. |
-| `%tab_tabsuffix_raw%` | Player's current raw tabsuffix with placeholder identifiers. |
+| `%tab_tabsuffix_raw%`     | Player's current raw tabsuffix with placeholder identifiers.     |
 
 # Relational placeholders
 ## About

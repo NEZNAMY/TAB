@@ -7,6 +7,7 @@
   * [Additional note 1 - Spectator gamemode](#additional-note-1---spectator-gamemode)
 * [Examples](#examples)
   * [Example 1 - Per-world values](#example-1---per-world-values)
+  * [Example 2 - Displaying hearts](#example-2---displaying-hearts)
 
 # About
 This features gives you control over Minecraft's scoreboard objective feature with PLAYER_LIST slot.
@@ -35,10 +36,10 @@ All of the options are explained in the following table.
 | Option name       | Default value         | Description                                                                                                                                                                                                                                                                                                                                                          |
 |-------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | enabled           | true                  | Enables / Disables the feature                                                                                                                                                                                                                                                                                                                                       |
-| value             | "%ping%"              | [1.20.2-] An integer from -2147483648 to 2147483647, doesn't support decimal values. The number is always yellow. Supports placeholders with player-specific output, such as player health. Only visible on 1.20.2 and lower. <br/> **Note**: Even if you only support 1.20.3+, you still need to configure this value to properly evaluate to a number, because the value is still sent to the client (just not displayed). You can set it to `0` for simplicity. |
-| fancy-value       | "&7Ping: %ping%"      | [1.20.3+] Any text, supports placeholders with per-player output. Only visible on 1.20.3+, where it completely replaces `value`.                                                                                                                                                                                                                                                                                                   |
+| value             | "%ping%"              | [1.20.2-] An integer from -2147483648 to 2147483647, doesn't support decimal values. The number is always yellow. Supports placeholders with player-specific output, such as player health. Only visible on 1.20.2 and lower (unless you set `render-type` to `HEARTS`). <br/> **Note**: Even if you only support 1.20.3+, you still need to configure this value to properly evaluate to a number, because the value is still sent to the client (just not displayed). You can set it to `0` for simplicity. |
+| fancy-value       | "&7Ping: %ping%"      | [1.20.3+] Any text, supports placeholders with per-player output. Only visible on 1.20.3+, where it completely replaces `value`, or if `render-type` is set to `HEARTS`.                                                                                                                                                                                                                                                                                                   |
 | title             | "TAB"                 | Title to send. Only visible on Bedrock Edition.                                                                                                                                                                                                                                                                                                                      |
-| render-type       | INTEGER               | Render type of the value. Supported values are `INTEGER` and `HEARTS`.                                                                                                                                                                                                                                                                                                |
+| render-type       | INTEGER               | Render type of the value. Supported values are `INTEGER` and `HEARTS`. <br />When set to `HEARTS`, the `value` is used displayed even on 1.20.3+, where `fancy-value` is ignored.                                                                                                                                                                                                                                                                                                 |
 | disable-condition | %world%=disabledworld | A [condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) (either name of a condition or a conditional expression) that must be met for disabling the feature for players. Set to empty for not disabling the feature ever. <br/> **Note**: Disabling the feature for a player means sending objective unregister packet to them, which results in player not seeing the feature on anyone anymore. It doesn't work the other way around - you cannot disable this feature on target players, only for viewers.                                                                                                                                                                  |
 
 # Limitations
@@ -97,3 +98,16 @@ playerlist-objective:
 > This is just an example, the plugin is not limited to displaying different values only per world.
 > If you want per server values on proxy, use %server% with server names.
 > This works for any placeholder offered by TAB or by PlaceholderAPI.
+
+## Example 2 - Displaying hearts
+In order to display the value as hearts, set `render-type` to `HEARTS`.  
+Then, set `value` to a placeholder that returns player's health. If you have TAB on a backend server, use `%health%`. If you have TAB on a proxy, use PlaceholderAPI's `%player_health_rounded%`.  
+Example configuration:
+
+```
+  value: "%health%"
+  render-type: HEARTS
+```
+When using `HEARTS` render type, `fancy-value` is not displayed by the client, so it doesn't matter what it is set to.  
+Final result:  
+![](https://images-ext-2.discordapp.net/external/RxWu_5hBSLUWqS7vCvSPY9PnNxkYfAMQQXwkbi6GEyU/https/image.prntscr.com/image/edpM4XpOT1q3SsQ5vYNjzQ.png)

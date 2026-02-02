@@ -104,12 +104,20 @@ where `ATLAS` is the atlas and `SPRITE` is the sprite. Note that atlas can conta
 Example:
 ```
   header:
-    - '&bDiamond helmet: <sprite:"minecraft:blocks":"minecraft:item/diamond_helmet">'
-    - 'Diamond chestplate: <sprite:"minecraft:blocks":"minecraft:item/diamond_chestplate">'
-    - 'Diamond leggings: <sprite:"minecraft:blocks":"minecraft:item/diamond_leggings">'
-    - 'Diamond boots: <sprite:"minecraft:blocks":"minecraft:item/diamond_boots">'
+    - '&bDiamond helmet: <sprite:"minecraft:items":"minecraft:item/diamond_helmet">'
+    - 'Diamond chestplate: <sprite:"minecraft:items":"minecraft:item/diamond_chestplate">'
+    - 'Diamond leggings: <sprite:"minecraft:items":"minecraft:item/diamond_leggings">'
+    - 'Diamond boots: <sprite:"minecraft:items":"minecraft:item/diamond_boots">'
 ```
-<img width="386" height="101" alt="image" src="https://github.com/user-attachments/assets/e9a66305-2ae4-44f4-9d8e-a227fb7591e4" />
+<img width="386" height="101" alt="image" src="https://github.com/user-attachments/assets/e9a66305-2ae4-44f4-9d8e-a227fb7591e4" />  
+
+
+> [!IMPORTANT]
+> These values change over MC versions (for example items were in `minecraft:blocks` atlas in 1.21.9 - 1.21.10, but got moved to `minecraft:items` in 1.21.11), so make sure you are using the correct values for your MC version. For proxy installations, you may need to use conditional placeholders and check for player's version. On backend, ViaVersion may or may not automatically translate these.
+
+> [!TIP]
+> For full list of available sprites you can check out https://www.gamergeeks.net/apps/minecraft/list-of-atlas-sprites. However, it doesn't contain any information regarding different Minecraft versions.
+
 
 
 ## Player sprite

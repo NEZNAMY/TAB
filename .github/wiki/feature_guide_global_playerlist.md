@@ -2,6 +2,7 @@
 * [About](#about)
 * [Configuration](#configuration)
   * [Grouping players only from certain servers](#grouping-players-only-from-certain-servers)
+    * [Pattern Matching](#pattern-matching)
   * [Configuring isolated servers](#configuring-isolated-servers)
   * [Seeing all players on the network from some server](#seeing-all-players-on-the-network-from-some-server)
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
@@ -82,8 +83,8 @@ server-groups:
 ```yaml
 server-groups:
   lobbies:
-    - Lobby-*      # Matches: Lobby-1, Lobby-2, Lobby-Hub, etc.
-    - *-lobby      # Matches: eu-lobby, us-lobby, etc.
+    - "Lobby-*"      # Matches: Lobby-1, Lobby-2, Lobby-Hub, etc.
+    - "*-lobby"      # Matches: eu-lobby, us-lobby, etc.
 ```
 
 **Regex Patterns** - Use `regex:` prefix for advanced pattern matching:

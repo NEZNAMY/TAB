@@ -17,6 +17,7 @@
   * [Additional note 3 - Entry overlap](#additional-note-3---entry-overlap)
 * [Examples](#examples)
   * [Example 1 - Per-server columns](#example-1---per-server-columns)
+  * [Example 2 - Per-world playerlist](#example-2---per-world-playerlist)
 
 # About
 This feature allows you to customize all 80 tablist slots. Displaying less than 4 columns is currently not supported ([here's why](https://gist.github.com/NEZNAMY/3dfcbf7d44283735d3c18266a2851651)). This feature can be enabled and configured in **config.yml** file under **layout** section.
@@ -57,7 +58,7 @@ layout:
         - '43|&8&m                       '
       groups:
         staff:
-          condition: permission:tab.staff
+          display-condition: permission:tab.staff
           slots:
             - 24-40
         players:
@@ -80,9 +81,9 @@ All the options are explained in the following table.
 A layout consists of the following options:
 | Option name | Description      |
 |-------------|------------------|
-| `condition` (optional) | [Condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) (either condition name or a conditional expression) that must be met for the layout to be displayed. If not defined, layout will be displayed without any required condition. If player does not meet condition, another layout may be displayed based on chaining (see below for more info). |
+| `display-condition` (optional) | [Condition](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) (either condition name or a conditional expression) that must be met for the layout to be displayed. If not defined, layout will be displayed without any required condition. If player does not meet condition, another layout may be displayed based on chaining (see below for more info). |
 | `default-skin` (optional)      | Overrides global `default-skin` setting for this layout. |
-| `slot-count` (optional)        | Amount of slots to show in this layout. If not specified, defaults to `80`. **This option is coming in TAB v5.5.0**. |
+| `slot-count` (optional)        | Amount of slots to show in this layout. If not specified, defaults to `80`. **Only works on 1.19.3+**. |
 | `fixed-slots`                  | List of fixed slots, see below for more info. |
 | `player-groups`                | Map of player groups, see below for more info. |
 
@@ -112,7 +113,7 @@ Example:
 ### Player groups
 These are groups of players that meet the specified condition. They consist of 2 parts - condition and slots.
 
-**1. Condition**  
+**1. Display Condition**  
 The condition players must meet to be displayed in the group.
 If a player doesn't meet condition for a group, the next group's condition is checked
 (groups are checked in the order they are defined in config).
@@ -127,7 +128,7 @@ Example:
     myLayout:
       groups:
         staff:
-          condition: permission:tab.staff
+          display-condition: permission:tab.staff
           slots:
             - '24-40'
         players:
@@ -146,7 +147,7 @@ Example:
 ```
 layouts:
   staff:
-    condition: "permission:tab.staff"
+    display-condition: "permission:tab.staff"
     fixed-slots:
       ...
     groups:
@@ -202,19 +203,19 @@ Each layout only displays players in that world.
 ```
   layouts:
     layout1:
-      condition: "%world%=world1"
+      display-condition: "%world%=world1"
       fixed-slots: []
       groups:
         players:
-          condition: "%world%=world1"
+          display-condition: "%world%=world1"
           slots:
             - 1-80
     layout2:
-      condition: "%world%=world2"
+      display-condition: "%world%=world2"
       fixed-slots: []
       groups:
         players:
-          condition: "%world%=world2"
+          display-condition: "%world%=world2"
           slots:
             - 1-80
 ```
@@ -222,11 +223,11 @@ You can also merge multiple worlds into a group.
 ```
   layouts:
     layout1:
-      condition: "%world%=world1|%world%=world2"
+      display-condition: "%world%=world1|%world%=world2"
       fixed-slots: []
       groups:
         players:
-          condition: "%world%=world1|%world%=world2"
+          display-condition: "%world%=world1|%world%=world2"
           slots:
             - 1-80
 ```
@@ -234,7 +235,7 @@ You can also replicate "ignore-effect-in-worlds" by creating a layout with condi
 ```
   layouts:
     globalWorld:
-      condition: "%world%=globalWorld"
+      display-condition: "%world%=globalWorld"
       fixed-slots: []
       groups:
         players: # No condition here to show all players
@@ -297,21 +298,65 @@ layout:
       - "61|&2&lSkyblock"
       groups:
         lobby:
-          condition: "%server%=lobby"
+          display-condition: "%server%=lobby"
           slots:
           - 2-20
         survival:
-          condition: "%server%=survival"
+          display-condition: "%server%=survival"
           slots:
           - 22-40
         creative:
-          condition: "%server%=creative"
+          display-condition: "%server%=creative"
           slots:
           - 42-60
         skyblock:
-          condition: "%server%=skyblock"
+          display-condition: "%server%=skyblock"
           slots:
           - 62-80
 ```
-You can also remove the last condition (in this case `condition: "%server=skyblock%"`) and the columns will be used for all other servers, instead of just a specified one.  
+You can also remove the last condition (in this case `display-condition: "%server=skyblock%"`) and the columns will be used for all other servers, instead of just a specified one.  
 ![image](https://github.com/NEZNAMY/TAB/assets/6338394/81016b5a-9b40-445e-8bfc-58204f5457f5)
+
+
+## Example 2 - Per-world playerlist
+If you want to reproduce the per-world-playerlist feature but with layouts, you can use relational conditions to check the viewer's world (`%viewer:world%`) with the target player's world (`%world%`) like so:
+```yml
+layout:
+  enabled: true
+  direction: COLUMNS
+  default-skin: mineskin:383747683
+  enable-remaining-players-text: true
+  remaining-players-text: '... and %s more'
+  empty-slot-ping-value: 1000
+  layouts:
+    default:
+      slot-count: 80
+      fixed-slots:
+        - '1|&3Website&f:'
+        - '2|&bmyserver.net'
+        - '3|&8&m                       '
+        - '4|&3Name&f:'
+        - '5|&b%player%'
+        - '7|&3Rank&f:'
+        - '8|Rank: %group%'
+        - '10|&3World&f:'
+        - '11|&b%world%'
+        - '13|&3Time&f:'
+        - '14|&b%time%'
+        - '21|&3Teamspeak&f:'
+        - '22|&bts.myserver.net'
+        - '23|&8&m                       '
+        - '41|&3Store&f:'
+        - '42|&bshop.myserver.net'
+        - '43|&8&m                       '
+      groups:
+        players:
+          display-condition: "%viewer:world%=%world%"
+          slots:
+            - 24-40
+            - 44-80
+```
+> [!NOTE]
+> This is just an example, relational conditions are not limited to displaying only players in your world.
+> If you want players in your server on proxy, use `%viewer:server%=%server%` in `display-condition`.
+> This works for any placeholder offered by TAB or by PlaceholderAPI.
