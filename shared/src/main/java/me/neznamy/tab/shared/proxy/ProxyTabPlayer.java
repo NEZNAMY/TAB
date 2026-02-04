@@ -47,6 +47,9 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     /** Map of player's requested permissions */
     private final Map<String, Boolean> permissions = new HashMap<>();
 
+    /** Map of placeholders sent by the bridge */
+    private final Map<String, String> placeholders = new HashMap<>();
+
     /**
      * Constructs new instance with given parameters and sends a message
      * to bridge about this player joining with join data
@@ -76,6 +79,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      */
     public void sendJoinPluginMessage() {
         bridgeConnected = false; // Reset on server switch
+        placeholders.clear();
         sendPluginMessage(new PlayerJoin(
                 TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                     !TAB.getInstance().getConfiguration().getConfig().isGroupsByPermissions(),
@@ -190,6 +194,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
                 char versionRequired = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.charAt(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.length()-1);
                 put("Bridge connection", "Not connected (requires Bridge version " + versionRequired + ".x.x installed)");
             }
+            put("Placeholders", placeholders);
         }});
         return map;
     }

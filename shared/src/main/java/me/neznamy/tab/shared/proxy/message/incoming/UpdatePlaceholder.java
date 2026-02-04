@@ -24,6 +24,7 @@ public class UpdatePlaceholder implements IncomingMessage {
 
     @Override
     public void process(@NotNull ProxyTabPlayer player) {
+        player.getPlaceholders().put(identifier, value);
         // Ignore placeholders that were not registered with this reload
         // (for example, a condition was used in config but not defined, but now it is defined).
         // It is also in bridge memory, but bridge will not return the correct value, so ignore it.

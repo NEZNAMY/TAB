@@ -61,6 +61,7 @@ public class PlayerJoinResponse implements IncomingMessage {
         player.setInvisibilityPotion(false);
         Map<PlayerPlaceholderImpl, String> playerPlaceholderUpdates = new HashMap<>();
         for (Map.Entry<String, Object> entry : placeholders.entrySet()) {
+            player.getPlaceholders().put(entry.getKey(), entry.getValue().toString());
             String identifier = entry.getKey();
 
             // Ignore placeholders that were not registered with this reload
