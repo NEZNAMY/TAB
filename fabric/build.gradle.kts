@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    id("dev.architectury.loom")
+    id("net.fabricmc.fabric-loom")
 }
 
 repositories {
@@ -14,11 +14,12 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/") // Adventure
 }
 
-val minecraftVersion = "1.21.11"
+val minecraftVersion = "26.1-snapshot-6"
 
 // Fabric API versions for each Minecraft version for easier backporting
 // Official website (for updating in the future): https://fabricmc.net/develop/
 val fabricApiVersions = mapOf(
+    "26.1-snapshot-6" to "0.143.2+26.1",
     "1.21.11" to "0.139.4+1.21.11",
     "1.21.10" to "0.136.0+1.21.10",
     "1.21.9" to "0.134.0+1.21.9",
@@ -58,16 +59,20 @@ val fabricApiVersions = mapOf(
 
 dependencies {
     minecraft("com.mojang:minecraft:${minecraftVersion}")
-    mappings(loom.officialMojangMappings())
     api(projects.shared)
-    modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
-    modImplementation("eu.pb4:placeholder-api:2.5.0+1.21.2")
-    modImplementation("net.fabricmc:fabric-loader:0.17.3")
-    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", fabricApiVersions[minecraftVersion]))
-    modImplementation(fabricApi.module("fabric-networking-api-v1", fabricApiVersions[minecraftVersion]))
-    modImplementation(fabricApi.module("fabric-entity-events-v1", fabricApiVersions[minecraftVersion]))
-    modImplementation(fabricApi.module("fabric-command-api-v2", "0.58.0+1.19"))
-    modImplementation(fabricApi.module("fabric-command-api-v1", "0.77.0+1.18.2"))
+
+    val fabricApiVersion = requireNotNull(fabricApiVersions[minecraftVersion]) {
+        "No Fabric API version mapped for minecraftVersion='$minecraftVersion'. Add it to fabricApiVersions."
+    }
+
+    implementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
+    implementation("eu.pb4:placeholder-api:2.8.2+1.21.10")
+    implementation("net.fabricmc:fabric-loader:0.18.4")
+    implementation(fabricApi.module("fabric-lifecycle-events-v1", fabricApiVersion))
+    implementation(fabricApi.module("fabric-networking-api-v1", fabricApiVersion))
+    implementation(fabricApi.module("fabric-entity-events-v1", fabricApiVersion))
+    implementation(fabricApi.module("fabric-command-api-v2", fabricApiVersion))
+    //implementation(fabricApi.module("fabric-command-api-v1", "0.77.0+1.18.2"))
 }
 
 loom.accessWidenerPath.set(file("src/main/resources/resources/tab.accesswidener"))
