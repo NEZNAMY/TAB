@@ -43,7 +43,7 @@ public class BukkitBossBar extends SafeBossBar<BossBar> {
     }
 
     @Override
-    public void create(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
+    public void show(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
         bar.getBossBar().addPlayer(player.getPlayer());
     }
 
@@ -68,7 +68,7 @@ public class BukkitBossBar extends SafeBossBar<BossBar> {
     }
 
     @Override
-    public void remove(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
+    public void hide(SafeBossBar<BossBar>.@NotNull BossBarInfo bar) {
         bar.getBossBar().removePlayer(player.getPlayer());
     }
 }

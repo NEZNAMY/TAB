@@ -34,7 +34,7 @@ public class AdventureBossBar extends SafeBossBar<BossBar> {
     }
 
     @Override
-    public void create(@NotNull BossBarInfo bar) {
+    public void show(@NotNull BossBarInfo bar) {
         ((Audience)player.getPlayer()).showBossBar(bar.getBossBar());
     }
 
@@ -59,7 +59,7 @@ public class AdventureBossBar extends SafeBossBar<BossBar> {
     }
 
     @Override
-    public void remove(@NotNull BossBarInfo bar) {
+    public void hide(@NotNull BossBarInfo bar) {
         ((Audience)player.getPlayer()).hideBossBar(bar.getBossBar());
     }
 }

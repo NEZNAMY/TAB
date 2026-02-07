@@ -33,7 +33,7 @@ public class ForgeBossBar extends SafeBossBar<ServerBossEvent> {
     }
 
     @Override
-    public void create(@NotNull BossBarInfo bar) {
+    public void show(@NotNull BossBarInfo bar) {
         bar.getBossBar().addPlayer(player.getPlayer());
     }
 
@@ -58,7 +58,7 @@ public class ForgeBossBar extends SafeBossBar<ServerBossEvent> {
     }
 
     @Override
-    public void remove(@NotNull BossBarInfo bar) {
+    public void hide(@NotNull BossBarInfo bar) {
         bar.getBossBar().removePlayer(player.getPlayer());
     }
 }

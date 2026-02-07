@@ -37,7 +37,7 @@ public class ViaBossBar extends SafeBossBar<BossBar> {
     }
 
     @Override
-    public void create(@NotNull BossBarInfo bar) {
+    public void show(@NotNull BossBarInfo bar) {
         bar.getBossBar().addPlayer(player.getPlayer().getUniqueId());
     }
 
@@ -62,7 +62,7 @@ public class ViaBossBar extends SafeBossBar<BossBar> {
     }
 
     @Override
-    public void remove(@NotNull BossBarInfo bar) {
+    public void hide(@NotNull BossBarInfo bar) {
         bar.getBossBar().removePlayer(player.getPlayer().getUniqueId());
     }
 }

@@ -65,7 +65,7 @@ public class DeserializableBungeeChannelDuplexHandler extends BungeeChannelDuple
     }
 
     @Override
-    public void write(@NotNull ChannelHandlerContext context, @NotNull Object packet, @NotNull ChannelPromise channelPromise) {
+    public void write(@NotNull ChannelHandlerContext context, @Nullable Object packet, @NotNull ChannelPromise channelPromise) {
         long time = System.nanoTime();
         Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
         TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);

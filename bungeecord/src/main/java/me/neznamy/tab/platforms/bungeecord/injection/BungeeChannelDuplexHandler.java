@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.md_5.bungee.protocol.packet.Login;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Channel duplex handler for BungeeCord, which in addition checks for Login packet.
@@ -30,7 +31,7 @@ public class BungeeChannelDuplexHandler extends TabChannelDuplexHandler {
     }
 
     @Override
-    public void write(@NotNull ChannelHandlerContext context, @NotNull Object packet, @NotNull ChannelPromise channelPromise) {
+    public void write(@NotNull ChannelHandlerContext context, @Nullable Object packet, @NotNull ChannelPromise channelPromise) {
         if (packet instanceof Login) {
             ((SafeScoreboard<?>)player.getScoreboard()).setFrozen(true);
             CpuManager cpu = TAB.getInstance().getCpu();
@@ -40,7 +41,7 @@ public class BungeeChannelDuplexHandler extends TabChannelDuplexHandler {
                 if (player.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
                     // For 1.20.2+ we need to do this, because server switch event is called before tablist is cleared
                     TAB.getInstance().getFeatureManager().onTabListClear(player);
-                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend(false);
+                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend();
                 }
             }, "Pipeline injection", TabConstants.CpuUsageCategory.PACKET_LOGIN), 200);
         }

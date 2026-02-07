@@ -84,7 +84,7 @@ public class VelocityEventListener implements EventListener<Player> {
                 );
                 tab.getFeatureManager().onTabListClear(player);
                 if (player.getVersionId() >= ProtocolVersion.V1_20_2.getNetworkId()) {
-                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndResend(true);
+                    ((SafeBossBar<?>)player.getBossBar()).unfreezeAndSynchronize();
                 }
             }
         });

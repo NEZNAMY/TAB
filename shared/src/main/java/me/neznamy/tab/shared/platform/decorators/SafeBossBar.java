@@ -7,8 +7,7 @@ import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.BossBar;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -24,17 +23,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class SafeBossBar<T> implements BossBar {
 
     /** BossBars currently visible to the player */
+    @NotNull
     private final Map<UUID, BossBarInfo> bossBars = new ConcurrentHashMap<>();
 
     /** Flag tracking whether boss bars should be frozen or not */
     private boolean frozen;
+
+    /** Bossbars shown to the player before the instance was frozen */
+    @NonNull
+    private Collection<BossBarInfo> preFreezeBossBars = Collections.emptyList();
 
     @Override
     public synchronized void create(@NotNull UUID id, @NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         BossBarInfo bar = new BossBarInfo(title, progress, color, style, constructBossBar(title, progress, color, style));
         bossBars.put(id, bar);
         if (frozen) return;
-        create(bar);
+        show(bar);
     }
 
     @Override
@@ -78,7 +82,7 @@ public abstract class SafeBossBar<T> implements BossBar {
         BossBarInfo bar = bossBars.remove(id);
         if (bar == null) return;
         if (frozen) return;
-        remove(bar);
+        hide(bar);
     }
 
     @Override
@@ -93,20 +97,35 @@ public abstract class SafeBossBar<T> implements BossBar {
      */
     public synchronized void freeze() {
         frozen = true;
+        preFreezeBossBars = new ArrayList<>(bossBars.values()); // Make a copy to avoid modifications
+    }
+
+    /**
+     * Unfreezes the class back, enabling it back and synchronizing all BossBars with the client.
+     * This is called on Velocity, where bossbars are managed by the platform and do not need to be resent on server switch for 1.20.2+,
+     * but they still need to be synchronized to avoid client desync if they were updated during freeze.
+     * The freeze is still needed to avoid sending any packets during server switch,
+     * which would cause "Network Protocol Error" disconnect on 1.20.5+ (Velocity bug when player gets kicked from a server).
+     * Changes made during freeze are applied to the BossBarInfo objects, so they will be properly updated when unfreezing and synchronizing.
+     */
+    public synchronized void unfreezeAndSynchronize() {
+        // Do this because if a bossbar was removed while frozen (display condition no longer met), action was not forwarded and Velocity will still resend it.
+        // Hide everything that was shown before and then show what needs to be shown.
+        for (BossBarInfo bar : preFreezeBossBars) {
+            hide(bar);
+        }
+        unfreezeAndResend();
     }
 
     /**
      * Unfreezes the class back, enabling it back and resending all BossBars to the player.
-     *
-     * @param   destroyFirst
-     *          If true, first removes existing BossBars before resending them
+     * Changes made during freeze are applied to the BossBarInfo objects, so they will be properly updated when unfreezing and resending.
      */
-    public synchronized void unfreezeAndResend(boolean destroyFirst) {
+    public synchronized void unfreezeAndResend() {
         frozen = false;
+        preFreezeBossBars.clear();
         for (BossBarInfo bar : bossBars.values()) {
-            if (destroyFirst) remove(bar);
-            bar.setBossBar(constructBossBar(bar.getTitle(), bar.getProgress(), bar.getColor(), bar.getStyle()));
-            create(bar);
+            show(bar);
         }
     }
 
@@ -127,12 +146,12 @@ public abstract class SafeBossBar<T> implements BossBar {
     public abstract T constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style);
 
     /**
-     * Creates the BossBar and sends it to the player.
+     * Shows BossBar to the player.
      *
      * @param   bar
-     *          BossBar to create
+     *          BossBar to show
      */
-    public abstract void create(@NotNull BossBarInfo bar);
+    public abstract void show(@NotNull BossBarInfo bar);
 
     /**
      * Updates title of a BossBar.
@@ -167,12 +186,12 @@ public abstract class SafeBossBar<T> implements BossBar {
     public abstract void updateColor(@NotNull BossBarInfo bar);
 
     /**
-     * Removes BossBar from the player.
+     * Hides BossBar from the player.
      *
      * @param   bar
-     *          BossBar to remove
+     *          BossBar to hide
      */
-    public abstract void remove(@NotNull BossBarInfo bar);
+    public abstract void hide(@NotNull BossBarInfo bar);
 
     /**
      * Class storing raw information about a BossBar.

@@ -18,7 +18,7 @@ public class DummyBossBar extends SafeBossBar<Object> {
     }
 
     @Override
-    public void create(@NotNull BossBarInfo bar) {
+    public void show(@NotNull BossBarInfo bar) {
         // Do nothing
     }
 
@@ -43,7 +43,7 @@ public class DummyBossBar extends SafeBossBar<Object> {
     }
 
     @Override
-    public void remove(@NotNull BossBarInfo bar) {
+    public void hide(@NotNull BossBarInfo bar) {
         // Do nothing
     }
 }
