@@ -8,7 +8,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@v6 # https://github.com/actions/checkout/releases
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up JDK 21
