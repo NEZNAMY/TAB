@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Decorated class for TabList that tracks entries and their expected values.
@@ -35,7 +36,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
     protected final P player;
 
     /** Forced display names based on configuration, saving to restore them if another plugin overrides them */
-    private final Map<UUID, TabComponent> forcedDisplayNames = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<UUID, TabComponent> forcedDisplayNames = new ConcurrentHashMap<>();
 
     /** Players to change to survival gamemode instead of spectator */
     private final Set<UUID> blockedSpectators = Collections.synchronizedSet(new HashSet<>());
@@ -53,7 +54,11 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        forcedDisplayNames.put(entry, displayName);
+        if (displayName != null) {
+            forcedDisplayNames.put(entry, displayName);
+        } else {
+            forcedDisplayNames.remove(entry);
+        }
         if (player.getVersion().getNetworkId() < ProtocolVersion.V1_8.getNetworkId()) {
             return; // Display names are not supported on 1.7 and below
         }
@@ -62,7 +67,11 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     @Override
     public void addEntry(@NonNull Entry entry) {
-        forcedDisplayNames.put(entry.getUniqueId(), entry.getDisplayName());
+        if (entry.getDisplayName() != null) {
+            forcedDisplayNames.put(entry.getUniqueId(), entry.getDisplayName());
+        } else {
+            forcedDisplayNames.remove(entry.getUniqueId());
+        }
         addEntry0(entry);
         if (player.getVersion() == ProtocolVersion.V1_8) {
             // Compensation for 1.8.0 client sided bug
@@ -72,7 +81,11 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
 
     @Override
     public void updateDisplayName(@NonNull TabPlayer target, @Nullable TabComponent displayName) {
-        forcedDisplayNames.put(target.getTablistId(), displayName);
+        if (displayName != null) {
+            forcedDisplayNames.put(target.getTablistId(), displayName);
+        } else {
+            forcedDisplayNames.remove(target.getTablistId());
+        }
         if (target.getVersion().getNetworkId() < ProtocolVersion.V1_8.getNetworkId()) {
             return; // Display names are not supported on 1.7 and below
         }
