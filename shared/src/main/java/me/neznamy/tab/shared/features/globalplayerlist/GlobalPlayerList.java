@@ -120,6 +120,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         onlinePlayers.removePlayer(disconnectedPlayer);
         for (TabPlayer all : onlinePlayers.getPlayers()) {
+            if (disconnectedPlayer.server == all.server) continue; // Already removed by server itself
             all.getTabList().removeEntry(disconnectedPlayer.getTablistId());
         }
     }
