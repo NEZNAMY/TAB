@@ -35,10 +35,16 @@ public class PlayerListProxyPlayerData extends ProxyMessage {
     /** Player's name */
     @NotNull private final String player;
 
-    /** Tablist format */
-    @NotNull private final String format;
+    /** tabprefix */
+    @NotNull private final String prefix;
 
-    /** TabComponent of the format (parsed version of {@link #format}) */
+    /** customtabname */
+    @NotNull private final String name;
+
+    /** tabsuffix */
+    @NotNull private final String suffix;
+
+    /** TabComponent of the format (parsed version of prefix + name + suffix) */
     @NotNull private final TabComponent formatComponent;
 
     /**
@@ -54,8 +60,10 @@ public class PlayerListProxyPlayerData extends ProxyMessage {
         id = in.readLong();
         playerId = readUUID(in);
         player = in.readUTF();
-        format = in.readUTF();
-        formatComponent = feature.getCache().get(format);
+        prefix = in.readUTF();
+        name = in.readUTF();
+        suffix = in.readUTF();
+        formatComponent = feature.getCache().get(prefix + name + suffix);
     }
 
     @Override
@@ -63,7 +71,9 @@ public class PlayerListProxyPlayerData extends ProxyMessage {
         out.writeLong(id);
         writeUUID(out, playerId);
         out.writeUTF(player);
-        out.writeUTF(format);
+        out.writeUTF(prefix);
+        out.writeUTF(name);
+        out.writeUTF(suffix);
     }
 
     @Override

@@ -45,7 +45,7 @@ public class ProxySupportConfiguration {
             type = "PLUGIN";
         }
 
-        String channelName = ProjectVariables.PLUGIN_NAME + "_2_" + section.getString("channel-name-suffix", "TAB");
+        String channelName = ProjectVariables.PLUGIN_NAME + "_3_" + section.getString("channel-name-suffix", "TAB");
 
         ConfigurationSection plugin = section.getConfigurationSection("plugin");
         String pluginName = plugin.getString("name", "RedisBungee");

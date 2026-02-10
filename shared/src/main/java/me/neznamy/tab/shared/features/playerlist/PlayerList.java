@@ -21,9 +21,7 @@ import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -274,16 +272,26 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             propertyMap.put("replaced-value", property.get());
             map.put(property.getName(), propertyMap);
         }
-        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(
-                Arrays.asList("Player", "tabprefix", "(custom)tabname", "tabsuffix", "Disabled with condition"),
-                Arrays.stream(TAB.getInstance().getOnlinePlayers()).map(p -> Arrays.asList(
-                        p.getName(),
-                        "\"" + p.tablistData.prefix.get() + "\"",
-                        "\"" + p.tablistData.name.get() + "\"",
-                        "\"" + p.tablistData.suffix.get() + "\"",
-                        String.valueOf(p.tablistData.disabled.get())
-                )).collect(Collectors.toList())
-        ));
+        List<String> header = Arrays.asList("Player", "tabprefix", "(custom)tabname", "tabsuffix", "Disabled with condition");
+        List<List<String>> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).map(p -> Arrays.asList(
+                p.getName(),
+                "\"" + p.tablistData.prefix.get() + "\"",
+                "\"" + p.tablistData.name.get() + "\"",
+                "\"" + p.tablistData.suffix.get() + "\"",
+                String.valueOf(p.tablistData.disabled.get())
+        )).collect(Collectors.toList());
+        if (proxy != null) {
+            for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
+                players.add(Arrays.asList(
+                        "[Proxy] " + proxied.getName(),
+                        proxied.getTabFormat() == null ? "null" : "\"" + proxied.getTabFormat().getPrefix() + "\"",
+                        proxied.getTabFormat() == null ? "null" : "\"" + proxied.getTabFormat().getName() + "\"",
+                        proxied.getTabFormat() == null ? "null" : "\"" + proxied.getTabFormat().getSuffix() + "\"",
+                        "N/A"
+                ));
+            }
+        }
+        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(header, players));
         return map;
     }
 
@@ -413,7 +421,9 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                     proxy.getIdCounter().incrementAndGet(),
                     player.getUniqueId(),
                     player.getName(),
-                    player.tablistData.prefix.get() + player.tablistData.name.get() + player.tablistData.suffix.get(),
+                    player.tablistData.prefix.get(),
+                    player.tablistData.name.get(),
+                    player.tablistData.suffix.get(),
                     TabComponent.empty() // This instance is for writing, parsed is not needed on this side
             ));
         }
