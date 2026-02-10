@@ -279,16 +279,24 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     public Object dump(@NotNull TabPlayer analyzed) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("configuration", configuration.getSection().getMap());
-        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(
-                Arrays.asList("Player", "value", "fancy-value", "title", "Disabled with condition"),
-                Arrays.stream(onlinePlayers.getPlayers()).map(p -> Arrays.asList(
-                        p.getName(),
-                        p.belowNameData.score.get(),
-                        p.belowNameData.numberFormat.get(),
-                        p.belowNameData.text.get(),
-                        String.valueOf(p.belowNameData.disabled.get())
-                )).collect(Collectors.toList())
-        ));
+        List<String> header = Arrays.asList("Player", "value", "fancy-value", "title", "Disabled with condition");
+        List<List<String>> players = Arrays.stream(onlinePlayers.getPlayers()).map(p -> Arrays.asList(
+                p.getName(),
+                p.belowNameData.score.get(),
+                p.belowNameData.numberFormat.get(),
+                p.belowNameData.text.get(),
+                String.valueOf(p.belowNameData.disabled.get())
+        )).collect(Collectors.toList());
+        if (proxy != null) {
+            players.addAll(proxy.getProxyPlayers().values().stream().map(p -> Arrays.asList(
+                    "[Proxy] " + p.getName(),
+                    p.getBelowname() == null ? "null" : String.valueOf(p.getBelowname().getValue()),
+                    p.getBelowname() == null ? "null" : p.getBelowname().getFancyValue(),
+                    "N/A",
+                    "N/A"
+            )).collect(Collectors.toList()));
+        }
+        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(header, players));
         return map;
     }
 

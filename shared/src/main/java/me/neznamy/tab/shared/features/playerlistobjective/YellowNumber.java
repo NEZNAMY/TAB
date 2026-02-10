@@ -256,16 +256,24 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     public Object dump(@NotNull TabPlayer analyzed) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("configuration", configuration.getSection().getMap());
-        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(
-                Arrays.asList("Player", "value", "fancy-value", "title", "Disabled with condition"),
-                Arrays.stream(onlinePlayers.getPlayers()).map(p -> Arrays.asList(
-                        p.getName(),
-                        p.playerlistObjectiveData.valueLegacy.get(),
-                        p.playerlistObjectiveData.valueModern.get(),
-                        p.playerlistObjectiveData.title.get(),
-                        String.valueOf(p.playerlistObjectiveData.disabled.get())
-                )).collect(Collectors.toList())
-        ));
+        List<String> header = Arrays.asList("Player", "value", "fancy-value", "title", "Disabled with condition");
+        List<List<String>> players = Arrays.stream(onlinePlayers.getPlayers()).map(p -> Arrays.asList(
+                p.getName(),
+                p.playerlistObjectiveData.valueLegacy.get(),
+                p.playerlistObjectiveData.valueModern.get(),
+                p.playerlistObjectiveData.title.get(),
+                String.valueOf(p.playerlistObjectiveData.disabled.get())
+        )).collect(Collectors.toList());
+        if (proxy != null) {
+            players.addAll(proxy.getProxyPlayers().values().stream().map(p -> Arrays.asList(
+                    "[Proxy] " + p.getName(),
+                    p.getPlayerlist() == null ? "null" : String.valueOf(p.getPlayerlist().getValue()),
+                    p.getPlayerlist() == null ? "null" : p.getPlayerlist().getFancyValue(),
+                    "N/A",
+                    "N/A"
+            )).collect(Collectors.toList()));
+        }
+        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(header, players));
         return map;
     }
 
