@@ -10,6 +10,8 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +45,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
 
     @Override
     public void updateDisplayName0(@NonNull UUID entry, @Nullable TabComponent displayName) {
-        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(displayName == null ? null : displayName.toAdventure()));
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setDisplayName(renderDisplayName(displayName)));
     }
 
     @Override
@@ -78,7 +80,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(profile)
-                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventure())
+                .displayName(this.renderDisplayName(entry.getDisplayName()))
                 .latency(entry.getLatency())
                 .gameMode(entry.getGameMode())
                 .listed(entry.isListed())
@@ -127,7 +129,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
             for (LegacyPlayerListItemPacket.Item item : listItem.getItems()) {
                 if (listItem.getAction() == UPDATE_DISPLAY_NAME || listItem.getAction() == ADD_PLAYER) {
                     TabComponent forcedDisplayName = getForcedDisplayNames().get(item.getUuid());
-                    if (forcedDisplayName != null) item.setDisplayName(forcedDisplayName.toAdventure());
+                    if (forcedDisplayName != null) item.setDisplayName(this.renderDisplayName(forcedDisplayName));
                 }
                 if (listItem.getAction() == UPDATE_GAMEMODE || listItem.getAction() == ADD_PLAYER) {
                     if (getBlockedSpectators().contains(item.getUuid()) && item.getGameMode() == 3) {
@@ -148,7 +150,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
                 if (update.getActions().contains(UpsertPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME)) {
                     TabComponent forcedDisplayName = getForcedDisplayNames().get(item.getProfileId());
                     if (forcedDisplayName != null) {
-                        item.setDisplayName(new ComponentHolder(ProtocolVersion.getProtocolVersion(player.getVersionId()), forcedDisplayName.toAdventure()));
+                        item.setDisplayName(new ComponentHolder(ProtocolVersion.getProtocolVersion(player.getVersionId()), this.renderDisplayName(forcedDisplayName)));
                     }
                 }
                 if (update.getActions().contains(UpsertPlayerInfoPacket.Action.UPDATE_GAME_MODE)) {
@@ -172,6 +174,21 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
             }
         }
         return packet;
+    }
+
+    private @Nullable Component renderDisplayName(@Nullable TabComponent displayName) {
+        if (displayName == null) {
+            return null;
+        }
+
+        Component rawComponent = displayName.toAdventure();
+
+        Locale playerLocale = this.player.getPlayer().getEffectiveLocale();
+        if (playerLocale == null) {
+            playerLocale = Locale.getDefault();
+        }
+
+        return GlobalTranslator.render(rawComponent, playerLocale);
     }
 
     @Override
