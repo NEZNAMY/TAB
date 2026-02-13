@@ -285,6 +285,21 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
     }
 
     @Override
+    public void setLines(@NonNull List<String> newLines) {
+        ensureActive();
+        int commonSize = Math.min(this.lines.size(), newLines.size());
+        for (int i = 0; i < commonSize; i++) {
+            String newText = newLines.get(i) == null ? "" : newLines.get(i);
+            if (!this.lines.get(i).getText().equals(newText))
+                this.lines.get(i).setText(newText);
+        }
+        for (int i = this.lines.size() - 1; i >= commonSize; i--)
+            removeLine(i);
+        for (int i = commonSize; i < newLines.size(); i++)
+            addLine(newLines.get(i) == null ? "" : newLines.get(i));
+    }
+
+    @Override
     public void unregister() {
         ensureActive();
         for (TabPlayer all : players.toArray(new TabPlayer[0])) {

@@ -85,6 +85,22 @@ public interface Scoreboard {
     void removeLine(int index);
 
     /**
+     * Replaces all current lines with the provided list.
+     * Supports placeholders, which will automatically be refreshed.
+     * Client can only see up to 15 lines at a time.
+     * If the new list is identical to the current one, nothing happens.
+     *
+     * @param   lines
+     *          New list of lines to display
+     * @throws  NullPointerException
+     *          if {@code lines} is {@code null}
+     * @see     #getLines()
+     * @see     #addLine(String)
+     * @see     #removeLine(int)
+     */
+    void setLines(@NonNull List<String> lines);
+
+    /**
      * Unregisters this scoreboard from all players who can see it.
      */
     void unregister();
