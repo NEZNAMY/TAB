@@ -113,6 +113,18 @@ public class FoliaPlatform extends BukkitPlatform {
     }
 
     /**
+     * Overriding the method to fix initial error caused by ServerPlaceholder implementation trying to
+     * retrieve the value in constructor, but folia does not support that. Overriding this function to avoid the
+     * TPS function being called in the wrong thread.
+     *
+     * @return  -1
+     */
+    @Override
+    public double getTPS() {
+        return -1;
+    }
+
+    /**
      * Runs task using player's entity scheduler. It's using reflection, because
      * Folia uses Java 17 while TAB maintains Java 8 compatibility for compatibility
      * with MC versions older than their player base.
