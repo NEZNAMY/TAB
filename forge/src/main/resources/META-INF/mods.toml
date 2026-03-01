@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "*"
 issueTrackerURL = "https://github.com/NEZNAMY/TAB/issues"
 license = "Apache License Version 2.0"
 
@@ -11,13 +11,6 @@ authors = "@author@"
 credits = "@credits@"
 description = '''@description@'''
 displayURL = "@website@"
-
-[[dependencies.tab]]
-modId = "forge"
-mandatory = true
-versionRange = "*"
-ordering = "NONE"
-side = "SERVER"
 
 [[dependencies.tab]]
 modId = "minecraft"
