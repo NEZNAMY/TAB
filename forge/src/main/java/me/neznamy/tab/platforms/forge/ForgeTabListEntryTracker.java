@@ -27,4 +27,19 @@ public class ForgeTabListEntryTracker extends TabListEntryTracker {
             }
         }
     }
+
+    /**
+     * Override to always return true, because join event is called too late, so TAB
+     * is not able to catch all packets, thus it is not able to track tablist entries properly.
+     * Return true to avoid not applying features. May result in client warnings if using a vanish
+     * mod or similar, but that's a tradeoff.
+     *
+     * @param   uuid
+     *          UUID of player to check
+     * @return  true
+     */
+    @Override
+    public boolean containsEntry(@NotNull UUID uuid) {
+        return true;
+    }
 }
