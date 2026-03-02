@@ -35,12 +35,14 @@ public class PlaceholdersConfiguration {
     @NotNull
     public static PlaceholdersConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("date-format", "time-format", "time-offset", "register-tab-expansion"));
+        section.checkForUnknownKey(Arrays.asList("date-format", "time-format", "time-offset", "register-tab-expansion", "locale"));
+
+        Locale locale = parseLocaleTag(section.getString("locale", "en-US"));
 
         return new PlaceholdersConfiguration(
                 section,
-                parseDateFormat(section.getString("date-format", "dd.MM.yyyy"), "dd.MM.yyyy"),
-                parseDateFormat(section.getString("time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]"),
+                parseDateFormat(section.getString("date-format", "dd.MM.yyyy"), "dd.MM.yyyy", locale),
+                parseDateFormat(section.getString("time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]", locale),
                 section.getNumber("time-offset", 0).doubleValue(),
                 section.getBoolean("register-tab-expansion", false)
         );
@@ -56,12 +58,30 @@ public class PlaceholdersConfiguration {
      *          value to use if entered format is not valid
      * @return  evaluated date format
      */
-    private static SimpleDateFormat parseDateFormat(@NonNull String value, @NonNull String defaultValue) {
+    private static SimpleDateFormat parseDateFormat(@NonNull String value, @NonNull String defaultValue, Locale locale) {
         try {
-            return new SimpleDateFormat(value, Locale.ENGLISH);
+            return new SimpleDateFormat(value, locale);
         } catch (IllegalArgumentException e) {
             TAB.getInstance().getConfigHelper().startup().startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
             return new SimpleDateFormat(defaultValue);
         }
+    }
+
+    /**
+     * Evaluates the inserted locale-tag. If it's not valid, a message is printed into console
+     * and the default English locale is returned.
+     * @param  value
+     *         locale-tag to evaluate
+     * @return evaluated locale
+     */
+    private static Locale parseLocaleTag(@NonNull String value) {
+        Locale locale = Locale.forLanguageTag(value);
+
+        if (locale.getLanguage().isEmpty()) {
+            TAB.getInstance().getConfigHelper().startup().startupWarn("Locale \"" + value + "\" is not valid, see https://wikipedia.org/wiki/IETF_language_tag");
+            return Locale.ENGLISH;
+        }
+
+        return locale;
     }
 }
