@@ -132,6 +132,9 @@ public class ModernConverter {
                 }
             }
         });
+        converters.put(5, config -> {
+            config.getConfigurationSection("placeholders").put("locale", "en-US");
+        });
     }
 
     /**

@@ -58,12 +58,13 @@ public class PlaceholdersConfiguration {
      *          value to use if entered format is not valid
      * @return  evaluated date format
      */
-    private static SimpleDateFormat parseDateFormat(@NonNull String value, @NonNull String defaultValue, Locale locale) {
+    @NotNull
+    private static SimpleDateFormat parseDateFormat(@NonNull String value, @NonNull String defaultValue, @NonNull Locale locale) {
         try {
             return new SimpleDateFormat(value, locale);
         } catch (IllegalArgumentException e) {
             TAB.getInstance().getConfigHelper().startup().startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
-            return new SimpleDateFormat(defaultValue);
+            return new SimpleDateFormat(defaultValue, locale);
         }
     }
 
@@ -74,6 +75,7 @@ public class PlaceholdersConfiguration {
      *         locale-tag to evaluate
      * @return evaluated locale
      */
+    @NotNull
     private static Locale parseLocaleTag(@NonNull String value) {
         Locale locale = Locale.forLanguageTag(value);
 
