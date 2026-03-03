@@ -531,16 +531,26 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
             propertyMap.put("replaced-value", property.get());
             map.put(property.getName(), propertyMap);
         }
-        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(
-                Arrays.asList("Player", "tagprefix", "team color", "tagsuffix", "Disabled with condition"),
-                Arrays.stream(TAB.getInstance().getOnlinePlayers()).map(p -> Arrays.asList(
-                        p.getName(),
-                        "\"" + p.teamData.prefix.get() + "\"",
-                        lastColorCache.get(p.teamData.prefix.getFormat(p)).getLastStyle().toEnumChatFormat().name(),
-                        "\"" + p.teamData.suffix.get() + "\"",
-                        String.valueOf(p.teamData.disabled.get())
-                )).collect(Collectors.toList())
-        ));
+
+        // Table of all players
+        List<String> header = Arrays.asList("Player", "tagprefix", "team color", "tagsuffix", "Disabled with condition");
+        List<List<String>> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).map(p -> Arrays.asList(
+                p.getName(),
+                "\"" + p.teamData.prefix.get() + "\"",
+                lastColorCache.get(p.teamData.prefix.getFormat(p)).getLastStyle().toEnumChatFormat().name(),
+                "\"" + p.teamData.suffix.get() + "\"",
+                String.valueOf(p.teamData.disabled.get())
+        )).collect(Collectors.toList());
+        if (proxy != null) {
+            players.addAll(proxy.getProxyPlayers().values().stream().map(p -> Arrays.asList(
+                    "[Proxy] " + p.getName(),
+                    p.getNametag() == null ? "NULL" : "\"" + p.getNametag().getPrefix() + "\"",
+                    p.getNametag() == null ? "NULL" : lastColorCache.get(p.getNametag().getPrefix()).getLastStyle().toEnumChatFormat().name(),
+                    p.getNametag() == null ? "NULL" : "\"" + p.getNametag().getSuffix() + "\"",
+                    "N/A"
+            )).collect(Collectors.toList()));
+        }
+        map.put("current values for all players (without applying relational placeholders)", DumpUtils.tableToLines(header, players));
         return map;
     }
 
