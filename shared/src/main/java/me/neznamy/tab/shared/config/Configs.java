@@ -78,12 +78,15 @@ public class Configs {
         }
         if (config.getMysql() != null) {
             try {
+                // Load relocated shaded driver for java connector to recognize it and avoid "No suitable driver found" error
+                Class.forName("me.neznamy.tab.libs.com.mysql.cj.jdbc.Driver");
+
                 mysql = new MySQL(config.getMysql());
                 mysql.openConnection();
                 groups = new MySQLGroupConfiguration(mysql);
                 users = new MySQLUserConfiguration(mysql);
                 return;
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 TAB.getInstance().getErrorManager().mysqlConnectionFailed(e);
             }
         }

@@ -13,6 +13,7 @@ dependencies {
         exclude("com.google.guava", "guava")
         exclude("org.checkerframework", "checker-qual")
     }
+    api("com.mysql:mysql-connector-j:9.6.0")
     compileOnlyApi("com.viaversion:viaversion-api:5.2.1")
     compileOnlyApi("io.netty:netty-all:4.1.90.Final")
     compileOnlyApi("net.luckperms:api:5.4")

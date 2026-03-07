@@ -20,5 +20,7 @@ tasks {
         relocate("org.json", "me.neznamy.tab.libs.org.json")
         relocate("com.rabbitmq", "me.neznamy.tab.libs.com.rabbitmq")
         relocate("com.saicone.delivery4j", "me.neznamy.tab.libs.com.saicone.delivery4j")
+        relocate("com.mysql", "me.neznamy.tab.libs.com.mysql")
+        relocate("com.google.protobuf", "me.neznamy.tab.libs.com.google.protobuf")
     }
 }
