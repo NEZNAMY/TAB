@@ -26,12 +26,12 @@
 
 ## Functions
 * [Animations](https://github.com/NEZNAMY/TAB/wiki/Animations)
+* [Component usage (RGB, fonts, sprites)](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components)
 * [Conditional placeholders](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders)
 * [Error logging](https://github.com/NEZNAMY/TAB/wiki/Error-logging)
 * [MySQL](https://github.com/NEZNAMY/TAB/wiki/MySQL)
 * [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements)
 * [Placeholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders)
-* [RGB/font usage](https://github.com/NEZNAMY/TAB/wiki/How-to-use-RGB-color-codes)
 
 ## Other
 * [Additional information](https://github.com/NEZNAMY/TAB/wiki/Additional-information)

@@ -9,6 +9,7 @@ Combine the knowledge gathered by reading the wiki to get interesting results, m
 * [Showing combined online player count from multiple servers](#showing-combined-online-player-count-from-multiple-servers)
   * [Option 1 - Using global playerlist](#option-1---using-global-playerlist)
   * [Option 2 - Using PlaceholderAPI](#option-2---using-placeholderapi)
+* [Showing head components only to 1.21.9+ players](#showing-head-components-only-to-1219-players)
 
 # Displaying kill / death counter in tablist
 This example uses PlaceholderAPI placeholders.  
@@ -203,4 +204,31 @@ Unlike the first option, this one offers much more freedom, but also requires an
 First, you need placeholders for online count on specific servers. Bungee expansion does exactly that. The format is `%bungee_<server>%`. To merge the online counts, use math expansion. The syntax will be `%math_0_<expression>%`, where `expression` uses online counts from specific servers from bungee expansion. Finally, you'll end up with a placeholder like `%math_0_{bungee_lobby1}+{bungee_lobby2}%`. This placeholder will merge online counts from `lobby1` and `lobby2`.  
 Please note that by default, bungee expansion updates values only every 30 seconds. This can be changed in PlaceholderAPI's config. If the numbers still don't show correct value, check if the placeholder works correctly using `/papi parse me <placeholder>`. If not, this is not a TAB issue.
 
-Advantage of this is no requirement for a specific TAB feature to be enabled, which also includes no need to have TAB installed on the proxy. The downside is relying on 3rd party software. If TAB is on proxy, you'll also need [bridge plugin](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge).  
+Advantage of this is no requirement for a specific TAB feature to be enabled, which also includes no need to have TAB installed on the proxy. The downside is relying on 3rd party software. If TAB is on proxy, you'll also need [bridge plugin](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge).
+
+# Showing head components only to 1.21.9+ players
+Object components were added in 1.21.9, which means they cannot be shown to 1.21.8- players. [If you try to do so, you'll either get an ugly text (BungeeCord / backend), or disconnect with a packet decode error (on Velocity)](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components#compatibility-with--1219).
+
+To achieve this goal, we will use [relational conditions](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders#relational-conditions) and check if viewer is 1.21.9+:
+```
+conditions:
+  head:
+    conditions:
+      - "%viewer:player-version-id%>=773"
+    true: "<head:name:%player%> "
+    false: ""  # Show nothing
+```
+The `773` is the protocol version of 1.21.9, so we can use a simple math operation instead of comparing strings. You can check [TAB's source code](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/ProtocolVersion.java) for the full list. This condition will return head component of the **target** player if the **viewer** is 1.21.9+, empty value otherwise.  
+[If you want to use this head syntax, you'll need to disable MiniMessage support](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components#player-sprite), or use a syntax supported by MiniMessage (which is currently extremely limited).  
+Use this condition with `%rel_condition:head%`. The rel is important, so TAB knows the placeholder is a relational placeholder. If you forget to, the condition will return a warning message instead of configured value.  
+To showcase it, I have this in **groups.yml** (to show player versions as well):
+```
+_DEFAULT_:
+  tabprefix: "%rel_condition:head%"
+  tabsuffix: " %player-version% (%player-version-id%)"
+```
+1.21.11 player's view:  
+<img width="634" height="103" alt="image" src="https://github.com/user-attachments/assets/4c762fae-3166-4247-865f-c87d1916afd7" />
+
+1.21.8 player's view:  
+<img width="581" height="106" alt="image" src="https://github.com/user-attachments/assets/cb7ab93d-0db5-4968-bcfe-60004125ddf1" />
