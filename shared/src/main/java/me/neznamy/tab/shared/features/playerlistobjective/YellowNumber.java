@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        CustomThreaded, ProxyFeature, Dumpable {
+        CustomThreaded, ProxyFeature, VanishListener, Dumpable {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
@@ -253,6 +253,20 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "Playerlist Objective";
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        if (player.isVanished()) return;
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            setScore(viewer, player, getValueNumber(player), player.playerlistObjectiveData.valueModern.getFormat(viewer));
+        }
+    }
+
     @Override
     @NotNull
     public Object dump(@NotNull TabPlayer analyzed) {
@@ -327,11 +341,5 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
                     cache.get(player.getPlayerlist().getFancyValue())
             );
         }
-    }
-
-    @NotNull
-    @Override
-    public String getFeatureName() {
-        return "Playerlist Objective";
     }
 }

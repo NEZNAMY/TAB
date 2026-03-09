@@ -228,13 +228,15 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         if (viewer.belowNameData.disabled.get()) return;
         if (!viewer.getTabList().containsEntry(scoreHolder.getTablistId())) return; // Prevent hack clients from knowing vanished players are connected
         if (viewer.server != scoreHolder.server || viewer.world != scoreHolder.world) return; // Viewer definitely cannot see this player in game
-        viewer.getScoreboard().setScore(
-                OBJECTIVE_NAME,
-                scoreHolder.getNickname(),
-                value,
-                null, // Unused by this objective slot
-                cache.get(fancyDisplay)
-        );
+        if (viewer.canSee(scoreHolder)) {
+            viewer.getScoreboard().setScore(
+                    OBJECTIVE_NAME,
+                    scoreHolder.getNickname(),
+                    value,
+                    null, // Unused by this objective slot
+                    cache.get(fancyDisplay)
+            );
+        }
     }
 
     @Override
@@ -272,6 +274,20 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         onlinePlayers.removePlayer(disconnectedPlayer);
+    }
+
+    @NotNull
+    @Override
+    public String getFeatureName() {
+        return "BelowName";
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        if (player.isVanished()) return;
+        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+            setScore(viewer, player, getValue(player), player.belowNameData.numberFormat.getFormat(viewer));
+        }
     }
 
     @Override
@@ -341,20 +357,6 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     public void onProxyLoadRequest() {
         for (TabPlayer all : onlinePlayers.getPlayers()) {
             sendProxyMessage(all);
-        }
-    }
-
-    @NotNull
-    @Override
-    public String getFeatureName() {
-        return "BelowName";
-    }
-
-    @Override
-    public void onVanishStatusChange(@NotNull TabPlayer player) {
-        if (player.isVanished()) return;
-        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            setScore(viewer, player, getValue(player), player.belowNameData.numberFormat.getFormat(viewer));
         }
     }
 }
