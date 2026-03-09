@@ -222,13 +222,15 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
      */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyValue) {
         if (viewer.playerlistObjectiveData.disabled.get()) return;
-        viewer.getScoreboard().setScore(
-                OBJECTIVE_NAME,
-                scoreHolder.getNickname(),
-                value,
-                null, // Unused by this objective slot
-                cache.get(fancyValue)
-        );
+        if (viewer.canSee(scoreHolder)) {
+            viewer.getScoreboard().setScore(
+                    OBJECTIVE_NAME,
+                    scoreHolder.getNickname(),
+                    value,
+                    null, // Unused by this objective slot
+                    cache.get(fancyValue)
+            );
+        }
     }
 
     /**
