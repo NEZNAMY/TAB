@@ -9,14 +9,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class BelowNamePlayerData {
 
-    /** Player's score value (1.20.2-) */
-    public Property score;
+    /** Player's value (1.20.2-) */
+    public Property value;
 
-    /** Player's score number format (1.20.3+) */
-    public Property numberFormat;
+    /** Player's number format (1.20.3+) */
+    public Property fancyValue;
 
-    /** Scoreboard title */
-    public Property text;
+    /** Objective title */
+    public Property title;
 
     /** Default number format for NPCs (1.20.3+) */
     public Property defaultNumberFormat;

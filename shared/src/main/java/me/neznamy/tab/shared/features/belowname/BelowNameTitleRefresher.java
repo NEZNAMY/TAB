@@ -18,12 +18,9 @@ public class BelowNameTitleRefresher extends RefreshableFeature implements Custo
     private final BelowName feature;
 
     @NotNull
-    private final ThreadExecutor customThread;
-
-    @NotNull
     @Override
     public String getFeatureName() {
-        return "BelowName";
+        return feature.getFeatureName();
     }
 
     @NotNull
@@ -37,7 +34,7 @@ public class BelowNameTitleRefresher extends RefreshableFeature implements Custo
         if (refreshed.belowNameData.disabled.get()) return;
         refreshed.getScoreboard().updateObjective(
                 BelowName.OBJECTIVE_NAME,
-                feature.getCache().get(refreshed.belowNameData.text.updateAndGet()),
+                feature.getCache().get(refreshed.belowNameData.title.updateAndGet()),
                 Scoreboard.HealthDisplay.INTEGER,
                 feature.getCache().get(refreshed.belowNameData.defaultNumberFormat.updateAndGet())
         );
@@ -46,6 +43,6 @@ public class BelowNameTitleRefresher extends RefreshableFeature implements Custo
     @Override
     @NotNull
     public ThreadExecutor getCustomThread() {
-        return customThread;
+        return feature.getCustomThread();
     }
 }

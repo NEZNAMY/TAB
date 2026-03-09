@@ -9,11 +9,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class PlayerListObjectivePlayerData {
 
-    /** Player's score value (1.20.2-) */
-    public Property valueLegacy;
+    /** Player's value (1.20.2-) */
+    public Property value;
 
-    /** Player's score number format (1.20.3+) */
-    public Property valueModern;
+    /** Player's number format (1.20.3+) */
+    public Property fancyValue;
 
     /** Objective title (only visible on Bedrock Edition) */
     public Property title;
