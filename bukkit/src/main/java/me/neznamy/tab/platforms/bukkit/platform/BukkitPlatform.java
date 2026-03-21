@@ -310,7 +310,7 @@ public class BukkitPlatform implements BackendPlatform {
         Metrics metrics = new Metrics(plugin, TabConstants.BSTATS_PLUGIN_ID_BUKKIT);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM,
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
-        metrics.addCustomChart(new SimplePie("tab_5_5_0_servers", serverVersion::getFriendlyName));
+        metrics.addCustomChart(new SimplePie("tab_6_0_0_servers", serverVersion::getFriendlyName));
     }
 
     @Override
