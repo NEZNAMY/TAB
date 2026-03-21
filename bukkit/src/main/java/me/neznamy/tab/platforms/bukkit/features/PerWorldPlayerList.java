@@ -15,6 +15,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -142,6 +143,9 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      */
     private boolean shouldSee(@NotNull Player viewer, @NotNull Player target) {
         if (target == viewer) return true;
+        for (MetadataValue v : target.getMetadata("vanished")) {
+            if (v.asBoolean() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
+        }
         if ((configuration.isAllowBypassPermission() && viewer.hasPermission(TabConstants.Permission.PER_WORLD_PLAYERLIST_BYPASS)) || configuration.getIgnoredWorlds().contains(viewer.getWorld().getName())) return true;
         String viewerWorldGroup = viewer.getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
         String targetWorldGroup = target.getWorld().getName() + "-default";
