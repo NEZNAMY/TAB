@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.features.types.UnLoadable;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +15,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +35,9 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     /** Config options */
     @NotNull
     private final PerWorldPlayerListConfiguration configuration;
+
+    /** Check for presence of modern (1.12.2+) methods that take plugin as argument to avoid conflict */
+    private final boolean modernMethodsAvailable = ReflectionUtils.methodExists(Player.class, "hidePlayer", Plugin.class, Player.class);
 
     /**
      * Constructs new instance and registers events.
@@ -61,7 +66,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     public void unload() {
         for (Player p : platform.getOnlinePlayers()) {
             for (Player pl : platform.getOnlinePlayers()) {
-                p.showPlayer(pl);
+                showPlayer(p, pl);
             }
         }
         HandlerList.unregisterAll(this);
@@ -104,10 +109,26 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     private void checkPlayer(@NotNull Player p) {
         for (Player all : platform.getOnlinePlayers()) {
             if (all == p) continue;
-            if (!shouldSee(p, all) && p.canSee(all)) p.hidePlayer(all);
-            if (shouldSee(p, all) && !p.canSee(all)) p.showPlayer(all);
-            if (!shouldSee(all, p) && all.canSee(p)) all.hidePlayer(p);
-            if (shouldSee(all, p) && !all.canSee(p)) all.showPlayer(p);
+            if (!shouldSee(p, all) && p.canSee(all)) hidePlayer(p, all);
+            if (shouldSee(p, all) && !p.canSee(all)) showPlayer(p, all);
+            if (!shouldSee(all, p) && all.canSee(p)) hidePlayer(all, p);
+            if (shouldSee(all, p) && !all.canSee(p)) showPlayer(all, p);
+        }
+    }
+
+    private void hidePlayer(@NotNull Player viewer, @NotNull Player target) {
+        if (modernMethodsAvailable) {
+            viewer.hidePlayer(platform.getPlugin(), target);
+        } else {
+            viewer.hidePlayer(target);
+        }
+    }
+
+    private void showPlayer(@NotNull Player viewer, @NotNull Player target) {
+        if (modernMethodsAvailable) {
+            viewer.showPlayer(platform.getPlugin(), target);
+        } else {
+            viewer.showPlayer(target);
         }
     }
 
