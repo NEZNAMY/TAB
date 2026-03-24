@@ -7,6 +7,8 @@ import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.features.types.UnLoadable;
+import me.neznamy.tab.shared.features.types.VanishListener;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -27,7 +29,7 @@ import java.util.Map.Entry;
  * Per-world-PlayerList feature handler
  */
 @SuppressWarnings("deprecation")
-public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
+public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable, VanishListener {
 
     /** Reference to platform */
     @NotNull
@@ -110,10 +112,16 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     private void checkPlayer(@NotNull Player p) {
         for (Player all : platform.getOnlinePlayers()) {
             if (all == p) continue;
-            if (!shouldSee(p, all) && p.canSee(all)) hidePlayer(p, all);
-            if (shouldSee(p, all) && !p.canSee(all)) showPlayer(p, all);
-            if (!shouldSee(all, p) && all.canSee(p)) hidePlayer(all, p);
-            if (shouldSee(all, p) && !all.canSee(p)) showPlayer(all, p);
+            if (shouldSee(p, all)) {
+                showPlayer(p, all);
+            } else {
+                hidePlayer(p, all);
+            }
+            if (shouldSee(all, p)) {
+                showPlayer(all, p);
+            } else {
+                hidePlayer(all, p);
+            }
         }
     }
 
@@ -162,5 +170,10 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     @Override
     public String getFeatureName() {
         return "Per world PlayerList";
+    }
+
+    @Override
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        platform.runSync((Player) player.getPlayer(), () -> checkPlayer((Player) player.getPlayer()));
     }
 }
