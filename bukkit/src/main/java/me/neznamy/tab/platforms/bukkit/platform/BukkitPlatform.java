@@ -87,7 +87,7 @@ public class BukkitPlatform implements BackendPlatform {
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
-    /** Package name of the server implementation, null on Paper 1.20.5+ */
+    /** Package name of the server implementation, null on Paper 1.20.5+ / Spigot 26+ */
     @Nullable
     private final String serverPackage;
 
@@ -133,38 +133,62 @@ public class BukkitPlatform implements BackendPlatform {
         knownCommands = (Map<String, Command>) ReflectionUtils.getField(SimpleCommandMap.class, "knownCommands").get(commandMap);
     }
 
+    /**
+     * Finds implementation provider for current server software and version.
+     *
+     * @return  Implementation provider for current server
+     * @throws  IllegalStateException
+     *          If no implementation was found
+     */
     @NotNull
-    @SneakyThrows
     private ImplementationProvider findImplementationProvider() {
-        if (serverPackage == null) {
-            // Paper 1.20.5+, check for available module
-            String paperModule = getPaperModule();
-            if (paperModule != null) {
-                return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        } else {
-            // Paper <1.20.5 or Spigot
+        Map<ProtocolVersion, String> spigotVersions = new LinkedHashMap<>();
+        spigotVersions.put(ProtocolVersion.V26_1, "v26_1");
+
+        if (serverPackage != null) {
+            // Paper <1.20.5 or Spigot 1.x
             try {
                 // Does not actually support flat 1.19, but whatever, no one is using it anyway
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
-            } catch (ClassNotFoundException ignored) {
-                throw new UnsupportedOperationException();
+            } catch (ReflectiveOperationException ignored) {
+                throw new IllegalStateException("Server package is \"" + serverPackage + "\", but implementation for this version was not found.");
             }
+        }
+
+        if (paperTps) { // This needs a better check
+            // Paper 1.20.5+
+            String paperModule = getPaperModule();
+            if (paperModule != null) {
+                try {
+                    return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
+                } catch (ReflectiveOperationException ignored) {
+                    throw new IllegalStateException("Failed to initialize implementation for Paper " + paperModule + ". This is probably a bug.");
+                }
+            } else {
+                throw new IllegalStateException("No implementation was found for this Paper version.");
+            }
+        }
+
+        // Spigot 26+
+        String version = spigotVersions.get(serverVersion);
+        if (version == null) {
+            throw new IllegalStateException("No implementation was found for this Spigot version.");
+        }
+        try {
+            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + version + ".NMSImplementationProvider").getConstructor().newInstance();
+        } catch (ReflectiveOperationException ignored) {
+            throw new IllegalStateException("Failed to initialize implementation for Spigot " + version + ". This is probably a bug.");
         }
     }
 
     /**
      * Returns name of the paper module that can be used on this server.
-     * If this server is not using paper or no module is available for any other reason,
-     * {@code null} is returned.
+     * If no module is available, {@code null} is returned.
      *
      * @return  Name of the available paper module or {@code null} if not available
      */
     @Nullable
     private String getPaperModule() {
-        if (!ReflectionUtils.classExists("org.bukkit.craftbukkit.CraftServer")) return null;
         switch (serverVersion) {
             case V1_20_5:
             case V1_20_6:
