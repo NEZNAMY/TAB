@@ -110,7 +110,11 @@ public enum ProtocolVersion {
      */
     ProtocolVersion(int networkId) {
         this.networkId = networkId;
-        minorVersion = Integer.parseInt(toString().split("_")[1]);
+        if (toString().startsWith("V1_")) {
+            minorVersion = Integer.parseInt(toString().split("_")[1]);
+        } else {
+            minorVersion = Integer.parseInt(toString().split("_")[0].substring(1));
+        }
         friendlyName = toString().substring(1).replace("_", ".");
     }
 
