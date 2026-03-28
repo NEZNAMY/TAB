@@ -25,6 +25,7 @@ public class TabCommand extends SubCommand {
         super(null, null);
         registerSubCommand(new BossBarCommand());
         registerSubCommand(new CpuCommand());
+        registerSubCommand(new DebugCommand());
         registerSubCommand(new DumpCommand());
         registerSubCommand(new GroupCommand());
         registerSubCommand(new GroupsCommand());
