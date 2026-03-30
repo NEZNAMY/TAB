@@ -1,7 +1,8 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Feature refreshing score / NumberFormat in a scoreboard line for players.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ScoreRefresher extends RefreshableFeature implements CustomThreaded {
 
     private static final StringToComponentCache cache = new StringToComponentCache("Scoreboard NumberFormat", 1000);
@@ -25,7 +26,7 @@ public class ScoreRefresher extends RefreshableFeature implements CustomThreaded
     @NonNull private final ScoreboardLine line;
 
     /** Line number to use if nothing is configured (1-15) */
-    private final int lineNumber;
+    @Setter private int lineNumber;
 
     /** Configured score for <1.20.3 (can be null if not configured) */
     @Nullable private final String score;

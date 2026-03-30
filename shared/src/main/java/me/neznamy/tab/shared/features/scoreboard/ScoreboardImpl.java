@@ -204,16 +204,15 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Player to recalculate scores for
      */
     public void recalculateScores(@NonNull TabPlayer p) {
-        List<Line> linesReversed = new ArrayList<>(lines);
-        Collections.reverse(linesReversed);
-        int score = 0;
-        for (Line line : linesReversed) {
+        int score = 1;
+        for (Line line : lines) {
             Property pr = p.scoreboardData.lineProperties.get((ScoreboardLine) line);
             if (pr.getCurrentRawValue().isEmpty() || (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {
+                ((ScoreboardLine)line).getScoreRefresher().setLineNumber(score++);
                 p.getScoreboard().setScore(
                         ScoreboardManagerImpl.OBJECTIVE_NAME,
                         ((ScoreboardLine)line).getPlayerName(p),
-                        ((ScoreboardLine)line).getScoreRefresher().getScore(p, score++),
+                        ((ScoreboardLine)line).getScoreRefresher().getScore(p),
                         null, // Makes no sense for TAB
                         ((ScoreboardLine) line).getScoreRefresher().getNumberFormat(p)
                 );
