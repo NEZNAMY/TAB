@@ -12,6 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.boss.BossBar;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 /**
  * BossBar for 1.9+ servers where Bukkit API is used. If ViaVersion is used
  * to allow 1.8 players, it will handle the entity and teleporting by itself.
@@ -32,7 +34,7 @@ public class BukkitBossBar extends SafeBossBar<BossBar> {
 
     @Override
     @NotNull
-    public BossBar constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    public BossBar constructBossBar(@NotNull UUID id, @NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         BossBar bar = Bukkit.createBossBar(
                 player.getPlatform().toBukkitFormat(title),
                 org.bukkit.boss.BarColor.valueOf(color.name()),

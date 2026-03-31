@@ -12,6 +12,8 @@ import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeBossBar;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 /**
  * Handler for 1.9+ players on 1.8 server using ViaVersion API.
  */
@@ -27,7 +29,7 @@ public class ViaBossBar extends SafeBossBar<BossBar> {
 
     @Override
     @NotNull
-    public BossBar constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
+    public BossBar constructBossBar(@NotNull UUID id, @NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         return Via.getAPI().legacyAPI().createLegacyBossBar(
                 title.toLegacyText(),
                 progress,

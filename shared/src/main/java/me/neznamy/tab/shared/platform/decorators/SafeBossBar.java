@@ -35,7 +35,7 @@ public abstract class SafeBossBar<T> implements BossBar {
 
     @Override
     public synchronized void create(@NotNull UUID id, @NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
-        BossBarInfo bar = new BossBarInfo(title, progress, color, style, constructBossBar(title, progress, color, style));
+        BossBarInfo bar = new BossBarInfo(title, progress, color, style, constructBossBar(id, title, progress, color, style));
         bossBars.put(id, bar);
         if (frozen) return;
         show(bar);
@@ -132,6 +132,8 @@ public abstract class SafeBossBar<T> implements BossBar {
     /**
      * Constructs platform's BossBar object with given parameters.
      *
+     * @param   id
+     *          BossBar UUID (if configurable by platform)
      * @param   title
      *          BossBar title
      * @param   progress
@@ -143,7 +145,7 @@ public abstract class SafeBossBar<T> implements BossBar {
      * @return  Platform's BossBar with given data
      */
     @NotNull
-    public abstract T constructBossBar(@NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style);
+    public abstract T constructBossBar(@NotNull UUID id, @NotNull TabComponent title, float progress, @NotNull BarColor color, @NotNull BarStyle style);
 
     /**
      * Shows BossBar to the player.
