@@ -161,8 +161,8 @@ public class BukkitPlatform implements BackendPlatform {
             if (paperModule != null) {
                 try {
                     return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
-                } catch (ReflectiveOperationException ignored) {
-                    throw new IllegalStateException("Failed to initialize implementation for Paper " + paperModule + ". This is probably a bug.");
+                } catch (ReflectiveOperationException e) {
+                    throw new IllegalStateException("Failed to initialize implementation for Paper " + paperModule + ". This is probably a bug.", e);
                 }
             } else {
                 throw new IllegalStateException("No implementation was found for this Paper version.");
@@ -176,8 +176,8 @@ public class BukkitPlatform implements BackendPlatform {
         }
         try {
             return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + version + ".NMSImplementationProvider").getConstructor().newInstance();
-        } catch (ReflectiveOperationException ignored) {
-            throw new IllegalStateException("Failed to initialize implementation for Spigot " + version + ". This is probably a bug.");
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to initialize implementation for Spigot " + version + ". This is probably a bug.", e);
         }
     }
 
