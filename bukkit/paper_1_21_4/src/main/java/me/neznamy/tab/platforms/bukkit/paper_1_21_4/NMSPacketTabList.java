@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * TabList implementation using direct mojang-mapped code.
  */
-public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
+public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
 
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> addPlayer = EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class);
     private static final EnumSet<ClientboundPlayerInfoUpdatePacket.Action> updateDisplayName = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);
@@ -39,7 +39,7 @@ public class PaperPacketTabList extends TrackedTabList<BukkitTabPlayer> {
      * @param   player
      *          Player this tablist will belong to
      */
-    public PaperPacketTabList(@NotNull BukkitTabPlayer player) {
+    public NMSPacketTabList(@NotNull BukkitTabPlayer player) {
         super(player);
     }
 

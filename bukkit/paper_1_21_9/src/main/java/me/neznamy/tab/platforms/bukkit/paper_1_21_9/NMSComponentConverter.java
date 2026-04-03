@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.paper_1_21_11;
+package me.neznamy.tab.platforms.bukkit.paper_1_21_9;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
@@ -12,14 +12,14 @@ import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.network.chat.contents.objects.PlayerSprite;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Component converter using direct mojang-mapped code.
  */
-public class PaperComponentConverter extends ComponentConverter<Component> {
+public class NMSComponentConverter extends ComponentConverter<Component> {
 
     @Override
     @NotNull
@@ -42,7 +42,7 @@ public class PaperComponentConverter extends ComponentConverter<Component> {
     @Override
     @NotNull
     public Component newObjectComponent(@NotNull TabAtlasSprite sprite) {
-        return Component.object(new AtlasSprite(Identifier.parse(sprite.getAtlas()), Identifier.parse(sprite.getSprite())));
+        return Component.object(new AtlasSprite(ResourceLocation.parse(sprite.getAtlas()), ResourceLocation.parse(sprite.getSprite())));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class PaperComponentConverter extends ComponentConverter<Component> {
                 .withUnderlined(modifier.getUnderlined())
                 .withStrikethrough(modifier.getStrikethrough())
                 .withObfuscated(modifier.getObfuscated())
-                .withFont(modifier.getFont() == null ? null : new FontDescription.Resource(Identifier.parse(modifier.getFont())));
+                .withFont(modifier.getFont() == null ? null : new FontDescription.Resource(ResourceLocation.parse(modifier.getFont())));
         if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor()); // withShadowColor takes int instead of Integer, bug?
         ((MutableComponent)nmsComponent).setStyle(style);
     }

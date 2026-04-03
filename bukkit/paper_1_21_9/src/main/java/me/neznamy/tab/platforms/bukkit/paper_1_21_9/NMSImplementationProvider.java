@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.paper_1_21_2;
+package me.neznamy.tab.platforms.bukkit.paper_1_21_9;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -13,24 +13,24 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Implementation provider using direct Mojang-mapped NMS code for versions 1.21.2 - 1.21.3.
+ * Implementation provider using direct Mojang-mapped NMS code for paper 1.21.9 - 1.21.10.
  */
 @Getter
-public class PaperImplementationProvider implements ImplementationProvider {
+public class NMSImplementationProvider implements ImplementationProvider {
 
     @NotNull
-    private final ComponentConverter<?> componentConverter = new PaperComponentConverter();
+    private final ComponentConverter<?> componentConverter = new NMSComponentConverter();
     
     @Override
     @NotNull
     public Scoreboard newScoreboard(@NotNull BukkitTabPlayer player) {
-        return new PaperPacketScoreboard(player);
+        return new NMSPacketScoreboard(player);
     }
 
     @Override
     @NotNull
     public TabList newTabList(@NotNull BukkitTabPlayer player) {
-        return new PaperPacketTabList(player);
+        return new NMSPacketTabList(player);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class PaperImplementationProvider implements ImplementationProvider {
     @Override
     @NotNull
     public TabListEntryTracker newTabListEntryTracker() {
-        return new PaperTabListEntryTracker();
+        return new NMSTabListEntryTracker();
     }
 
     @Override

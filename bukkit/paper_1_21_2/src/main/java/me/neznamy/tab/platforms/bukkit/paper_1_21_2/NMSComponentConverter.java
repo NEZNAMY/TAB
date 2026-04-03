@@ -1,18 +1,21 @@
-package me.neznamy.tab.platforms.bukkit.paper_1_20_5;
+package me.neznamy.tab.platforms.bukkit.paper_1_21_2;
 
 import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
 import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Component converter using direct mojang-mapped code.
  */
-public class PaperComponentConverter extends ComponentConverter<Component> {
+public class NMSComponentConverter extends ComponentConverter<Component> {
 
     @Override
     @NotNull

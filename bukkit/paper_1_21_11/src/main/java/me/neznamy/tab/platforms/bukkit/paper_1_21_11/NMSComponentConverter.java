@@ -1,18 +1,25 @@
-package me.neznamy.tab.platforms.bukkit.paper_1_21_4;
+package me.neznamy.tab.platforms.bukkit.paper_1_21_11;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
+import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.shared.chat.TabStyle;
 import me.neznamy.tab.shared.chat.component.object.TabAtlasSprite;
-import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
-import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.shared.chat.component.object.TabPlayerSprite;
+import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.contents.objects.AtlasSprite;
+import net.minecraft.network.chat.contents.objects.PlayerSprite;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Component converter using direct mojang-mapped code.
  */
-public class PaperComponentConverter extends ComponentConverter<Component> {
+public class NMSComponentConverter extends ComponentConverter<Component> {
 
     @Override
     @NotNull
@@ -35,13 +42,25 @@ public class PaperComponentConverter extends ComponentConverter<Component> {
     @Override
     @NotNull
     public Component newObjectComponent(@NotNull TabAtlasSprite sprite) {
-        return Component.literal(TabObjectComponent.ERROR_MESSAGE);
+        return Component.object(new AtlasSprite(Identifier.parse(sprite.getAtlas()), Identifier.parse(sprite.getSprite())));
     }
 
     @Override
     @NotNull
     public Component newObjectComponent(@NotNull TabPlayerSprite sprite) {
-        return Component.literal(TabObjectComponent.ERROR_MESSAGE);
+        ResolvableProfile profile;
+        if (sprite.getId() != null) {
+            profile = ResolvableProfile.createUnresolved(sprite.getId());
+        } else if (sprite.getName() != null) {
+            profile = ResolvableProfile.createUnresolved(sprite.getName());
+        } else if (sprite.getSkin() != null) {
+            ImmutableMultimap.Builder<String, Property> builder = ImmutableMultimap.builder();
+            builder.put(TabList.TEXTURES_PROPERTY, new Property(TabList.TEXTURES_PROPERTY, sprite.getSkin().getValue(), sprite.getSkin().getSignature()));
+            profile = ResolvableProfile.createResolved(new GameProfile(NIL_UUID, "", new PropertyMap(builder.build())));
+        } else {
+            throw new IllegalStateException("Player head component does not have id, name or skin set");
+        }
+        return Component.object(new PlayerSprite(profile, sprite.isShowHat()));
     }
 
     @Override
@@ -53,7 +72,7 @@ public class PaperComponentConverter extends ComponentConverter<Component> {
                 .withUnderlined(modifier.getUnderlined())
                 .withStrikethrough(modifier.getStrikethrough())
                 .withObfuscated(modifier.getObfuscated())
-                .withFont(modifier.getFont() == null ? null : ResourceLocation.tryParse(modifier.getFont()));
+                .withFont(modifier.getFont() == null ? null : new FontDescription.Resource(Identifier.parse(modifier.getFont())));
         if (modifier.getShadowColor() != null) style = style.withShadowColor(modifier.getShadowColor()); // withShadowColor takes int instead of Integer, bug?
         ((MutableComponent)nmsComponent).setStyle(style);
     }

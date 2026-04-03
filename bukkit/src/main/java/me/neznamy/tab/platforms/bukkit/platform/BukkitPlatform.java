@@ -120,6 +120,7 @@ public class BukkitPlatform implements BackendPlatform {
         String[] array = CRAFTBUKKIT_PACKAGE.split("\\.");
         serverPackage = array.length > 3 ? array[3] : null;
         implementationProvider = findImplementationProvider();
+        logInfo(new TabTextComponent("Found NMS implementation: " + implementationProvider.getClass().getName(), TabTextColor.GRAY));
         try {
             Object server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
             recentTps = ((double[]) server.getClass().getField("recentTps").get(server));
@@ -160,7 +161,7 @@ public class BukkitPlatform implements BackendPlatform {
             String paperModule = getPaperModule();
             if (paperModule != null) {
                 try {
-                    return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.paper_" + paperModule + ".PaperImplementationProvider").getConstructor().newInstance();
+                    return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.paper_" + paperModule + ".NMSImplementationProvider").getConstructor().newInstance();
                 } catch (ReflectiveOperationException e) {
                     throw new IllegalStateException("Failed to initialize implementation for Paper " + paperModule + ". This is probably a bug.", e);
                 }

@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.paper_1_20_5;
+package me.neznamy.tab.platforms.bukkit.paper_1_21_9;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * Scoreboard implementation using direct mojang-mapped code.
  */
-public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
+public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     private static final ChatFormatting[] formats = ChatFormatting.values();
     private static final net.minecraft.world.scores.Team.CollisionRule[] collisions = net.minecraft.world.scores.Team.CollisionRule.values();
@@ -39,7 +39,7 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      * @param   player
      *          Player this scoreboard will belong to
      */
-    public PaperPacketScoreboard(@NotNull BukkitTabPlayer player) {
+    public NMSPacketScoreboard(@NotNull BukkitTabPlayer player) {
         super(player);
     }
 
@@ -171,6 +171,6 @@ public class PaperPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      *          Packet to send
      */
     private void sendPacket(@NotNull Packet<?> packet) {
-        ((CraftPlayer)player.getPlayer()).getHandle().connection.sendPacket(packet);
+        ((CraftPlayer)player.getPlayer()).getHandle().connection.send(packet);
     }
 }

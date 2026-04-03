@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.paper_1_21_11;
+package me.neznamy.tab.platforms.bukkit.paper_1_21_9;
 
 import me.neznamy.tab.shared.platform.TabListEntryTracker;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * Implementation of TabListEntryTracker.
  */
-public class PaperTabListEntryTracker extends TabListEntryTracker {
+public class NMSTabListEntryTracker extends TabListEntryTracker {
 
     @Override
     public void onPacketSend(@NotNull Object packet) {
