@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -215,6 +216,11 @@ public class TAB extends TabAPI {
             kill();
             return (configuration == null ? "&4Failed to reload, file %file% has broken syntax. Check console for more info."
                     : configuration.getMessages().getReloadFailBrokenFile()).replace("%file%", brokenFile);
+        } catch (IOException e) {
+            platform.logWarn(new TabTextComponent("Fatal IO error occurred while enabling: " +
+                    e.getClass().getSimpleName() + ": " + e.getMessage(), TabTextColor.RED));
+            kill();
+            return "&cFailed to enable due to an IO error. Check console for more info.";
         } catch (Throwable e) {
             errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
             kill();
