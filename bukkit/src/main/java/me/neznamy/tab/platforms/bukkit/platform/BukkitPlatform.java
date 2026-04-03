@@ -143,75 +143,55 @@ public class BukkitPlatform implements BackendPlatform {
      */
     @NotNull
     private ImplementationProvider findImplementationProvider() {
-        Map<ProtocolVersion, String> spigotVersions = new LinkedHashMap<>();
-        spigotVersions.put(ProtocolVersion.V26_1, "v26_1");
-
         if (serverPackage != null) {
             // Paper <1.20.5 or Spigot 1.x
             try {
                 // Does not actually support flat 1.19, but whatever, no one is using it anyway
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
             } catch (ReflectiveOperationException ignored) {
-                throw new IllegalStateException("Server package is \"" + serverPackage + "\", but implementation for this version was not found.");
+                throw new IllegalStateException("Implementation for version \"" + serverPackage + "\" was not found.");
             }
         }
 
-        if (paperTps) { // This needs a better check
-            // Paper 1.20.5+
-            String paperModule = getPaperModule();
-            if (paperModule != null) {
-                try {
-                    return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit.paper_" + paperModule + ".NMSImplementationProvider").getConstructor().newInstance();
-                } catch (ReflectiveOperationException e) {
-                    throw new IllegalStateException("Failed to initialize implementation for Paper " + paperModule + ". This is probably a bug.", e);
-                }
-            } else {
-                throw new IllegalStateException("No implementation was found for this Paper version.");
-            }
-        }
+        Map<ProtocolVersion, String> spigotVersions = new LinkedHashMap<>();
+        spigotVersions.put(ProtocolVersion.V26_1, "v26_1");
 
-        // Spigot 26+
-        String version = spigotVersions.get(serverVersion);
-        if (version == null) {
-            throw new IllegalStateException("No implementation was found for this Spigot version.");
+        Map<ProtocolVersion, String> paperVersions = new LinkedHashMap<>();
+        paperVersions.put(ProtocolVersion.V1_20_5, "paper_1_20_5");
+        paperVersions.put(ProtocolVersion.V1_20_6, "paper_1_20_5");
+        paperVersions.put(ProtocolVersion.V1_21, "paper_1_20_5");
+        paperVersions.put(ProtocolVersion.V1_21_1, "paper_1_20_5");
+        paperVersions.put(ProtocolVersion.V1_21_2, "paper_1_21_2");
+        paperVersions.put(ProtocolVersion.V1_21_3, "paper_1_21_2");
+        paperVersions.put(ProtocolVersion.V1_21_4, "paper_1_21_4");
+        paperVersions.put(ProtocolVersion.V1_21_5, "paper_1_21_4");
+        paperVersions.put(ProtocolVersion.V1_21_6, "paper_1_21_4");
+        paperVersions.put(ProtocolVersion.V1_21_7, "paper_1_21_4");
+        paperVersions.put(ProtocolVersion.V1_21_8, "paper_1_21_4");
+        paperVersions.put(ProtocolVersion.V1_21_9, "paper_1_21_9");
+        paperVersions.put(ProtocolVersion.V1_21_10, "paper_1_21_9");
+        paperVersions.put(ProtocolVersion.V1_21_11, "paper_1_21_11");
+
+        String software;
+        Map<ProtocolVersion, String> versions;
+        if (paperTps) {  // This needs a better check
+            software = "Paper";
+            versions = paperVersions;
+        } else {
+            software = "Spigot";
+            versions = spigotVersions;
+        }
+        String serverVersionString = Bukkit.getBukkitVersion().split("-")[0];
+        String implementation = versions.get(serverVersion);
+        if (implementation == null) {
+            throw new IllegalStateException(String.format("No implementation is available for your server version (%s %s).", software, serverVersionString));
         }
         try {
-            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + version + ".NMSImplementationProvider").getConstructor().newInstance();
+            return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + implementation + ".NMSImplementationProvider").getConstructor().newInstance();
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(String.format("Your server version (%s %s) is marked as compatible, but the implementation does not exist. This is probably a bug.", software, serverVersionString), e);
         } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("Failed to initialize implementation for Spigot " + version + ". This is probably a bug.", e);
-        }
-    }
-
-    /**
-     * Returns name of the paper module that can be used on this server.
-     * If no module is available, {@code null} is returned.
-     *
-     * @return  Name of the available paper module or {@code null} if not available
-     */
-    @Nullable
-    private String getPaperModule() {
-        switch (serverVersion) {
-            case V1_20_5:
-            case V1_20_6:
-            case V1_21:
-            case V1_21_1:
-                return "1_20_5";
-            case V1_21_2:
-            case V1_21_3:
-                return "1_21_2";
-            case V1_21_4:
-            case V1_21_5:
-            case V1_21_6:
-            case V1_21_7:
-            case V1_21_8:
-                return "1_21_4";
-            case V1_21_9:
-            case V1_21_10:
-                return "1_21_9";
-            case V1_21_11:
-                return "1_21_11";
-            default:
-                return null;
+            throw new IllegalStateException(String.format("Failed to initialize implementation for %s %s. This is probably a bug.", software, serverVersionString), e);
         }
     }
 
