@@ -72,8 +72,11 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     private final JavaPlugin plugin;
 
+    /** Server version string taken directly from Bukkit API */
+    private final String serverVersionString = Bukkit.getBukkitVersion().split("-")[0];
+
     /** Server version */
-    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
+    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(serverVersionString);
 
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
@@ -183,7 +186,6 @@ public class BukkitPlatform implements BackendPlatform {
             software = "Spigot";
             versions = spigotVersions;
         }
-        String serverVersionString = Bukkit.getBukkitVersion().split("-")[0];
         String implementation = versions.get(serverVersion);
         if (implementation == null) {
             throw new IllegalStateException(String.format("No implementation is available for your server version (%s %s).", software, serverVersionString));
@@ -516,7 +518,7 @@ public class BukkitPlatform implements BackendPlatform {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("server-type", "Bukkit");
         map.put("server-name", Bukkit.getName());
-        map.put("server-version", Bukkit.getBukkitVersion().split("-")[0]);
+        map.put("server-version", serverVersionString);
         map.put("craftbukkit-package", serverPackage);
         map.put("tab-version", ProjectVariables.PLUGIN_VERSION);
         Map<String, Object> plugins = new LinkedHashMap<>();
