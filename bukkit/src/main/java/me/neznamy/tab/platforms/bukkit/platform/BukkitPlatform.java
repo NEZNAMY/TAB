@@ -153,8 +153,10 @@ public class BukkitPlatform implements BackendPlatform {
             }
         }
 
+        // Paper 1.20.5+ or Spigot 26+
         Map<ProtocolVersion, String> spigotVersions = new LinkedHashMap<>();
         spigotVersions.put(ProtocolVersion.V26_1, "v26_1");
+        spigotVersions.put(ProtocolVersion.V26_1_1, "v26_1");
 
         Map<ProtocolVersion, String> paperVersions = new LinkedHashMap<>();
         paperVersions.put(ProtocolVersion.V1_20_5, "paper_1_20_5");
