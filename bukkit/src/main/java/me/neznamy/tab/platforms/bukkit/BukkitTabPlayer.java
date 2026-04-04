@@ -25,7 +25,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      *          bukkit player
      */
     public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
-        super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName(), platform.getServerVersion().getNetworkId());
+        super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName(), platform.getServerVersionInfo().getServerVersion().getNetworkId());
     }
 
     @Override
@@ -35,7 +35,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getPing() {
-        return getPlatform().getImplementationProvider().getPing(this);
+        return getPlatform().getServerVersionInfo().getImplementationProvider().getPing(this);
     }
 
     @Override

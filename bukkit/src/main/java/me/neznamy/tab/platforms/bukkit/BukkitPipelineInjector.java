@@ -21,6 +21,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @Override
     @NotNull
     protected Channel getChannel(@NotNull TabPlayer player) {
-        return ((BukkitPlatform)player.getPlatform()).getImplementationProvider().getChannel(((BukkitTabPlayer) player).getPlayer());
+        return ((BukkitPlatform)player.getPlatform()).getServerVersionInfo().getImplementationProvider().getChannel(((BukkitTabPlayer) player).getPlayer());
     }
 }
