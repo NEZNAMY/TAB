@@ -22,7 +22,7 @@ There are 2 simple steps to this:
 > (for luckperms /lp group \<group\> setweight \<number\>).
 
 > [!TIP]
-> Verify player's group using `/tab debug <player>`. It should say `Primary permission group: <your group>`.
+> Verify player's group using `/tab dump <player>`, opening the link and check "permissionGroup" in player info.
 
 ## Option 2: Permission nodes
 Instead of taking whole groups, TAB will check for permission nodes and assign groups based on the highest permission.

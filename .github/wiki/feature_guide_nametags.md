@@ -142,8 +142,8 @@ This list is browsed through until the first match is found. If no match is foun
 Values are taken independently of each other.
 This means you can set per-world tagprefix, but only keep one global tagsuffix, for example.
 
-You can see the source of a value displayed on player by using `/tab debug <player>` and checking "source"
-part of the value you are looking for.
+You can see the source of a value displayed on player by using `/tab dump <player>`, opening the link and checking "source"
+part of the value you are looking for (tagprefix / tagsuffix).
 
 ## Name color
 On versions 1.12.2 and below, name color follows the last color of prefix. This also includes magic codes. On 1.13+, this is no longer the case. Instead, a new field called "team color" was created. This is an enum constant, where we need to pick from 22 options - 16 colors, 5 magic codes and reset. **As you can see, it doesn't allow for RGB colors**. This also means name can no longer have color and magic codes simultaneously.

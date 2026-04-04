@@ -7,6 +7,7 @@
   * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
   * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
   * [Additional note 3 - Visible on NPCs](#additional-note-3---visible-on-npcs)
+    * [[26.1] Visible on all entities](#261-visible-on-all-entities)
   * [Additional note 4 - Compatibility with modified clients](#additional-note-4---compatibility-with-modified-clients)
 * [Examples](#examples)
   * [Example 1 - Per-world values](#example-1---per-world-values)
@@ -102,7 +103,17 @@ This is how you can achieve it using the following popular NPC plugins:
   * 3 - Change the NPC's name by editing your hologram's line(s): `/hologram edit hi setline 1 <text>`.  
     You can also add more lines if you want. See [FancyNpcs's wiki](https://docs.fancyinnovations.com/fancyholograms/commands/hologram/#text-hologram-modification) for more commands & info.
 
-# Additional note 4 - Compatibility with modified clients
+### [26.1] Visible on all entities
+In Minecraft version 26.1, Mojang "fixed" [MC-99647](https://bugs.mojang.com/browse/MC/issues/MC-99647), which reported that belowname is not visible on non-player entities. As a result, the belowname is now visible on all entities with a custom name (this even includes invisible armor stands, holograms and more). A new bug report was made for this: [MC-307012](https://bugs.mojang.com/browse/MC/issues/MC-307012).
+
+**This is a client-sided bug. You will experience it on 26.1 regardless of the server version**.  
+If your server is on 26.1 or you support players with this version through ViaVersion, this might be a deal breaker for you. If that's the case, either disable this feature entirely, or set
+```
+disable-condition: "%player-version-id%>=775"
+```
+which will make 26.1 players not see this feature on anyone (remember: disabling this feature disables it for the viewer, not target players).
+
+## Additional note 4 - Compatibility with modified clients
 Sadly, this feature is suffering from bugs introduced by third party clients such as Feather and Lunar. These two completely ignore `fancy-value` as if it was never added into the game, even on 1.20.3+. This is just an example, and it's not limited to these two clients and this one issue. If you experience issues with the feature and believe you configured it correctly, use vanilla client to make sure it's not caused by a broken client.
 
 # Examples

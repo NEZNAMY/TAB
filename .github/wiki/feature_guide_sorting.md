@@ -21,9 +21,6 @@
 # Enabling
 To enable sorting, you must have either [Nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) or [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) (or both) enabled.
 
-> [!TIP]
-> To verify you enabled sorting, run `/tab debug`. It will say `Sorting type:` followed by anything except `DISABLED`.
-
 # Methods of sorting
 Below are all the different methods that you can use to sort players.
 
@@ -33,10 +30,6 @@ This is the default and recommended method. Players will be sorted by their prim
 First, put your players into groups in your permission plugin.
 All the ways to do it can be found
 at [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups).
-> [!TIP]
-> Verify player's group using `/tab debug <player>`.
-It should say `Primary permission group:` followed by group you configured.
-If not, you did not assign players into groups correctly.
 
 Second, place all of your groups in to a comma separated list **in order of priority** into `sorting-types`. Example:
 ```yaml
@@ -44,15 +37,6 @@ scoreboard-teams:
   sorting-types:
     - "GROUPS:owner,admin,mod,default"
 ```
-> [!TIP]
-> Verify configured sorting priority of players using `/tab debug <player>`.
-
-It should show a message like this:  
-![image](https://github.com/NEZNAMY/TAB/assets/6338394/095d8523-e8c0-4eff-8935-b0b8e6e0d5ff)
-
-If a group is not in the list, you will get the following:  
-![image](https://github.com/NEZNAMY/TAB/assets/6338394/9c530873-87c9-4db7-8916-a6121dbeed37)  
-If that's the case, you forgot to add that group into the list.
 
 ## PERMISSIONS
 > [!CAUTION]
@@ -71,8 +55,6 @@ scoreboard-teams:
   sorting-types:
     - "PERMISSIONS:my.permission.1,my.permission.2,my.permission.3"
 ```
-> [!TIP]  
-> Verify sorting permissions of a player using `/tab debug <player>`
 
 ## PLACEHOLDER
 This method sorts players using the output of a placeholder and comparing that to pre-defined values.  
@@ -233,7 +215,6 @@ The most common mistakes include:
   * Installing TAB on a proxy without having any permission plugin on the proxy.
   * Enabling `assign-groups-by-permissions` without giving those permissions (or the opposite - giving away OP to users, resulting in the highest group being taken).
 
-  [Debug command](https://github.com/NEZNAMY/TAB/wiki/Commands-&-Permissions#tab-debug-player) will help you identify if this is your case.
 * Using a plugin that causes TAB to fail to apply teams (such as Tablisknu). This includes installing TAB plugin on both backend and proxy, causing the installations to conflict.
 * Using TAB on Velocity without installing [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)
 

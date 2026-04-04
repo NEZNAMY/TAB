@@ -169,7 +169,7 @@ Currently, TAB supports these skin formats:
 |--------|---------|-------------|
 | `mineskin:<UUID>` | `mineskin:37e93c8e12cd426cb28fce31969e0674` | Takes UUID from [MineSkin](https://mineskin.org). |
 | `player:<name>` | `player:Notch` | Displays skin of specified player. |
-| `texture:<texture>` | `texture:469b3bac406b51ba0e76c2c218aa4d45fde9ea7c101c85fbd8106c92c4aa36dd` | Uses skin texture from `textures.minecraft.net`. Skin browsing websites show this value. |
+| `texture:<texture>` | `texture:469b3bac406b51ba0e76c2c218aa4d45fde9ea7c101c85fbd8106c92c4aa36dd` | Uses skin texture from `textures.minecraft.net`. Skin browsing websites often show this value (for example `Texture URL` on mineskin.org). |
 
 # Compatibility with other plugins
 This feature does not have any compatibility issues with other plugins.  

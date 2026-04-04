@@ -28,7 +28,7 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
         <tr>
             <td rowspan=2>Vanilla</td>
             <td rowspan=1><a href="https://getbukkit.org/">Bukkit</a> (+forge hybrids)</td>
-            <td>✔ (1.7.x - 1.21.11)</td>
+            <td>✔ (1.7.10 ~ 26.1.1) (not all versions included)</td>
         </tr>
         <tr>
             <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>

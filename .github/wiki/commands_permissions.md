@@ -13,7 +13,7 @@ Commands have required permissions associated with them.
   * [/tab \<player/group/playeruuid\> \<name\> \<property\> \[value\] \[options\]](#tab-playergroupplayeruuid-name-property-value-options)
   * [/tab \<player/group/playeruuid\> \<name\> remove](#tab-playergroupplayeruuid-name-remove)
   * [/tab reload](#tab-reload)
-  * [/tab debug \[player\]](#tab-debug-player)
+  * [/tab dump \[player\]](#tab-dump-player)
   * [/tab group \<group\>](#tab-group-group)
   * [/tab groups](#tab-groups)
 * [Bossbar](#bossbar)
@@ -65,13 +65,9 @@ Commands have required permissions associated with them.
 * **Permission:** `tab.reload`
 * **Description:** Unloads the plugin, loads configuration files including changes and loads the plugin.
 
-## /tab debug [player]
-* **Permission:** `tab.debug`
-* **Description:** Shows the server version, plugin version, permission group choice logic, and sorting type. If player argument is filled, shows info about that player:
-  * On proxy, shows whether player is connected to the backend server with [Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) plugin or not.
-  * Sorting value & explanation, useful to see what went wrong if players are not sorted correctly.
-  * Primary group set using [How to assign players into groups](https://github.com/NEZNAMY/TAB/wiki/How-to-assign-players-into-groups)
-  * List of all configured properties, their values and source.
+## /tab dump \<player\>
+* **Permission:** `tab.dump`
+* **Description:** Creates a very detailed dump about the specified player to help with troubleshooting, uploads it to a paste site and shows the generated URL.
 
 ## /tab group \<group\>
 * **Permission:** `tab.groupinfo`

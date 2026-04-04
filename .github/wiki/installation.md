@@ -35,6 +35,7 @@ Advantages of proxy installation compared to installing on all backend servers i
 * [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) can work with all players connected to the proxy
 * Avoid [header/footer](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer#additional-note-1---not-resetting-on-server-switch) and [bossbar](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar#additional-note-2---not-hiding-on-server-switch) not disappearing on server switch
 * Configuration files in a single place for easier editing / no need to use MySQL for syncing data
+* Can use new features for new players even if backend is using an older version (RGB, 1.20.3+ NumberFormat and more).
 
 
 Disadvantages compared to installing on all backend servers instead:
