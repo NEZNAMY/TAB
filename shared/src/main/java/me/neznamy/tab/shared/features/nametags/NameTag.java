@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
-import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -45,6 +44,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
     private final int teamOptions;
     private final DisableChecker disableChecker;
     @Nullable private final ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
+    private final NameTagProxyHandler proxyHandler = new NameTagProxyHandler(this);
 
     /**
      * Constructs new instance and registers sub-features.
@@ -77,7 +77,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 continue;
             }
             all.expansionData.setNameTagVisibility(true);
-            sendProxyMessage(all);
+            proxyHandler.sendProxyMessage(all);
         }
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             for (TabPlayer target : onlinePlayers.getPlayers()) {
@@ -165,7 +165,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         lastColorCache.get(proxied.getNametag().getPrefix()).getLastStyle().toEnumChatFormat()
                 );
             }
-            sendProxyMessage(connectedPlayer);
+            proxyHandler.sendProxyMessage(connectedPlayer);
         }
     }
 
@@ -259,7 +259,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                     lastColorCache.get(player.teamData.prefix.getFormat(viewer)).getLastStyle().toEnumChatFormat()
             );
         }
-        sendProxyMessage(player);
+        proxyHandler.sendProxyMessage(player);
     }
 
     /**
@@ -300,7 +300,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                         getTeamVisibility(player, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER
                 );
             }
-            sendProxyMessage(player);
+            proxyHandler.sendProxyMessage(player);
         }, getFeatureName(), "Updating visibility"));
     }
 
@@ -375,7 +375,7 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
                 viewer.getScoreboard().renameTeam(player.teamData.teamName, newTeamName);
             }
             player.teamData.teamName = newTeamName;
-            sendProxyMessage(player);
+            proxyHandler.sendProxyMessage(player);
         }, getFeatureName(), "Updating team name"));
     }
 
@@ -453,57 +453,19 @@ public class NameTag extends RefreshableFeature implements NameTagManager, JoinL
         }, getFeatureName(), cpuReason));
     }
 
-    // ------------------
-    // ProxySupport
-    // ------------------
-
-    private void sendProxyMessage(@NotNull TabPlayer player) {
-        if (proxy != null) {
-            proxy.sendMessage(new NameTagProxyPlayerData(
-                    this,
-                    proxy.getIdCounter().incrementAndGet(),
-                    player.getUniqueId(),
-                    player.teamData.teamName,
-                    player.teamData.prefix.get(),
-                    player.teamData.suffix.get(),
-                    getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER
-            ));
-        }
-    }
-
     @Override
     public void onProxyLoadRequest() {
-        for (TabPlayer all : onlinePlayers.getPlayers()) {
-            sendProxyMessage(all);
-        }
+        proxyHandler.onProxyLoadRequest();
     }
 
     @Override
     public void onQuit(@NotNull ProxyPlayer player) {
-        if (player.getNametag() == null) {
-            // One of the two options is being forcibly unregistered when real player joined
-            return;
-        }
-        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            ((SafeScoreboard<?>)viewer.getScoreboard()).unregisterTeamSafe(player.getNametag().getResolvedTeamName());
-        }
+        proxyHandler.onQuit(player);
     }
 
     @Override
     public void onJoin(@NotNull ProxyPlayer player) {
-        if (player.getNametag() == null) return; // Player not loaded yet
-        for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            viewer.getScoreboard().registerTeam(
-                    player.getNametag().getResolvedTeamName(),
-                    prefixCache.get(player.getNametag().getPrefix()),
-                    suffixCache.get(player.getNametag().getSuffix()),
-                    player.getNametag().getNameVisibility(),
-                    Scoreboard.CollisionRule.ALWAYS,
-                    Collections.singletonList(player.getNickname()),
-                    teamOptions,
-                    lastColorCache.get(player.getNametag().getPrefix()).getLastStyle().toEnumChatFormat()
-            );
-        }
+        proxyHandler.onJoin(player);
     }
 
     @NotNull
