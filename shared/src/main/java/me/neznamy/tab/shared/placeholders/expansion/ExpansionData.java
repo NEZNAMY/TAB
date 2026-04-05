@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.placeholders.expansion;
 
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.ExpansionPlaceholder;
@@ -110,7 +111,7 @@ public class ExpansionData {
      */
     private void setValue(@NotNull String key, @NotNull String value) {
         data.put(key, value);
-        if (player instanceof ProxyTabPlayer) {
+        if (player instanceof ProxyTabPlayer && TAB.getInstance().getConfiguration().getConfig().getPlaceholders().isRegisterTabExpansion()) {
             ((ProxyTabPlayer)player).sendPluginMessage(new ExpansionPlaceholder(key, value));
         }
     }
@@ -131,7 +132,7 @@ public class ExpansionData {
      * Resends all values to the player, typically on server switch on proxy.
      */
     public void resendAllValues() {
-        if (player instanceof ProxyTabPlayer) {
+        if (player instanceof ProxyTabPlayer && TAB.getInstance().getConfiguration().getConfig().getPlaceholders().isRegisterTabExpansion()) {
             for (Map.Entry<String, String> entry : data.entrySet()) {
                 ((ProxyTabPlayer)player).sendPluginMessage(new ExpansionPlaceholder(entry.getKey(), entry.getValue()));
             }
