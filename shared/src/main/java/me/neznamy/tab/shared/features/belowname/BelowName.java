@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.belowname;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
@@ -226,13 +227,17 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         if (viewer.belowNameData.disabled.get()) return;
         if (viewer.server != scoreHolder.server || viewer.world != scoreHolder.world) return; // Viewer definitely cannot see this player in game
         if (viewer.canSee(scoreHolder)) {
-            viewer.getScoreboard().setScore(
-                    OBJECTIVE_NAME,
-                    scoreHolder.getNickname(),
-                    value,
-                    null, // Unused by this objective slot
-                    cache.get(fancyValue)
-            );
+            if (fancyValue.isEmpty() && viewer.getVersionId() > ProtocolVersion.V26_1_2.getNetworkId()) { // TODO change this to use V26_2 once added
+                viewer.getScoreboard().removeScore(OBJECTIVE_NAME, scoreHolder.getNickname());
+            } else {
+                viewer.getScoreboard().setScore(
+                        OBJECTIVE_NAME,
+                        scoreHolder.getNickname(),
+                        value,
+                        null, // Unused by this objective slot
+                        cache.get(fancyValue)
+                );
+            }
         }
     }
 
