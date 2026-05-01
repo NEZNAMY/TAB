@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.belowname;
 
 import me.neznamy.tab.shared.Property;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,6 +22,11 @@ public class BelowNamePlayerData {
     /** Default number format for NPCs (1.20.3+) */
     public Property defaultNumberFormat;
 
-    /** Flag tracking whether this feature is disabled for the player with condition or not */
-    public final AtomicBoolean disabled = new AtomicBoolean();
+    /** Flag tracking whether this feature is disabled for the player as viewer with condition or not */
+    @NotNull
+    public final AtomicBoolean disabledAsViewer = new AtomicBoolean();
+
+    /** Flag tracking whether this feature is disabled for the player as target with condition or not (26.2+) */
+    @NotNull
+    public final AtomicBoolean disabledAsTarget = new AtomicBoolean();
 }

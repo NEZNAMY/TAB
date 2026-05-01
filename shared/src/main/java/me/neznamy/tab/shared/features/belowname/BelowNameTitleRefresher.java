@@ -31,7 +31,7 @@ public class BelowNameTitleRefresher extends RefreshableFeature implements Custo
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (refreshed.belowNameData.disabled.get()) return;
+        if (refreshed.belowNameData.disabledAsViewer.get()) return;
         refreshed.getScoreboard().updateObjective(
                 BelowName.OBJECTIVE_NAME,
                 feature.getCache().get(refreshed.belowNameData.title.updateAndGet()),

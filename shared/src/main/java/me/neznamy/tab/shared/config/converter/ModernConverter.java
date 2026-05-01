@@ -135,6 +135,14 @@ public class ModernConverter {
         converters.put(5, config -> {
             config.getConfigurationSection("placeholders").put("locale", "en-US");
         });
+        converters.put(6, config -> {
+            ConfigurationSection belowname = config.getConfigurationSection("belowname-objective");
+            // Rename old option
+            belowname.put("viewer-disable-condition", belowname.getString("disable-condition", "%world%=disabledworld"));
+            belowname.remove("disable-condition");
+            // Add new option
+            belowname.put("target-disable-condition", "%world%=disabledworld");
+        });
     }
 
     /**

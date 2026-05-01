@@ -41,7 +41,8 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     private final BelowNameConfiguration configuration;
 
     private final BelowNameTitleRefresher titleRefresher = new BelowNameTitleRefresher(this);
-    private final DisableChecker disableChecker;
+    private final DisableChecker viewerDisableChecker;
+    private final DisableChecker targetDisableChecker;
 
     @Nullable
     private final ProxySupport proxy = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PROXY_SUPPORT);
@@ -54,8 +55,20 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      */
     public BelowName(@NotNull BelowNameConfiguration configuration) {
         this.configuration = configuration;
-        disableChecker = new DisableChecker(this, TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.belowNameData.disabled);
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
+        viewerDisableChecker = new DisableChecker(
+                this,
+                TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getViewerDisableCondition()),
+                this::onViewerDisableConditionChange,
+                p -> p.belowNameData.disabledAsViewer
+        );
+        targetDisableChecker = new DisableChecker(
+                this,
+                TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getTargetDisableCondition()),
+                this::onTargetDisableConditionChange,
+                p -> p.belowNameData.disabledAsTarget
+        );
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-ViewerCondition", viewerDisableChecker);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-TargetCondition", targetDisableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, titleRefresher);
         if (proxy != null) {
             proxy.registerMessage(BelowNameProxyPlayerData.class, in -> new BelowNameProxyPlayerData(in, this));
@@ -68,10 +81,13 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : onlinePlayers.getPlayers()) {
             loadProperties(loaded);
-            if (disableChecker.isDisableConditionMet(loaded)) {
-                loaded.belowNameData.disabled.set(true);
+            if (viewerDisableChecker.isDisableConditionMet(loaded)) {
+                loaded.belowNameData.disabledAsViewer.set(true);
             } else {
                 register(loaded);
+            }
+            if (targetDisableChecker.isDisableConditionMet(loaded)) {
+                loaded.belowNameData.disabledAsTarget.set(true);
             }
             values.put(loaded, getValue(loaded));
             sendProxyMessage(loaded.getUniqueId(), values.get(loaded), loaded.belowNameData.fancyValue.get());
@@ -94,10 +110,13 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
         loadProperties(connectedPlayer);
-        if (disableChecker.isDisableConditionMet(connectedPlayer)) {
-            connectedPlayer.belowNameData.disabled.set(true);
+        if (viewerDisableChecker.isDisableConditionMet(connectedPlayer)) {
+            connectedPlayer.belowNameData.disabledAsViewer.set(true);
         } else {
             register(connectedPlayer);
+        }
+        if (targetDisableChecker.isDisableConditionMet(connectedPlayer)) {
+            connectedPlayer.belowNameData.disabledAsTarget.set(true);
         }
         int value = getValue(connectedPlayer);
         Property fancyValue = connectedPlayer.belowNameData.fancyValue;
@@ -110,7 +129,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         }
         if (proxy != null) {
             sendProxyMessage(connectedPlayer);
-            if (connectedPlayer.belowNameData.disabled.get()) return;
+            if (connectedPlayer.belowNameData.disabledAsViewer.get()) return;
             for (ProxyPlayer proxyPlayer : proxy.getProxyPlayers().values()) {
                 if (proxyPlayer.getBelowname() == null) continue; // This proxy player is not loaded yet
                 connectedPlayer.getScoreboard().setScore(
@@ -125,14 +144,14 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     }
 
     /**
-     * Processes disable condition change.
+     * Processes viewer disable condition change.
      *
      * @param   p
      *          Player who the condition has changed for
      * @param   disabledNow
      *          Whether the feature is disabled now or not
      */
-    public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
+    public void onViewerDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         } else {
@@ -152,6 +171,27 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                             cache.get(proxyPlayer.getBelowname().getFancyValue())
                     );
                 }
+            }
+        }
+    }
+
+    /**
+     * Processes target disable condition change.
+     *
+     * @param   target
+     *          Player who the condition has changed for
+     * @param   disabledNow
+     *          Whether the feature is disabled now or not
+     */
+    public void onTargetDisableConditionChange(TabPlayer target, boolean disabledNow) {
+        if (disabledNow) {
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                // TODO add check for 26.2+ when constant is added
+                viewer.getScoreboard().removeScore(OBJECTIVE_NAME, target.getNickname());
+            }
+        } else {
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                setScore(viewer, target, getValue(target), target.belowNameData.fancyValue.getFormat(viewer));
             }
         }
     }
@@ -223,7 +263,8 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      *          NumberFormat display of the score
      */
     public void setScore(@NotNull TabPlayer viewer, @NotNull TabPlayer scoreHolder, int value, @NotNull String fancyValue) {
-        if (viewer.belowNameData.disabled.get()) return;
+        if (viewer.belowNameData.disabledAsViewer.get()) return;
+        if (scoreHolder.belowNameData.disabledAsTarget.get()) return;
         if (viewer.server != scoreHolder.server || viewer.world != scoreHolder.world) return; // Viewer definitely cannot see this player in game
         if (viewer.canSee(scoreHolder)) {
             viewer.getScoreboard().setScore(
@@ -292,19 +333,21 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     public Object dump(@NotNull TabPlayer analyzed) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("configuration", configuration.getSection().getMap());
-        List<String> header = Arrays.asList("Player", "value", "fancy-value", "title", "Disabled with condition");
+        List<String> header = Arrays.asList("Player", "value", "fancy-value", "title", "Disabled as viewer", "Disabled as target");
         List<List<String>> players = Arrays.stream(onlinePlayers.getPlayers()).map(p -> Arrays.asList(
                 p.getName(),
                 p.belowNameData.value.get(),
                 p.belowNameData.fancyValue.get(),
                 p.belowNameData.title.get(),
-                String.valueOf(p.belowNameData.disabled.get())
+                String.valueOf(p.belowNameData.disabledAsViewer.get()),
+                String.valueOf(p.belowNameData.disabledAsTarget.get())
         )).collect(Collectors.toList());
         if (proxy != null) {
             players.addAll(proxy.getProxyPlayers().values().stream().map(p -> Arrays.asList(
                     "[Proxy] " + p.getName(),
                     p.getBelowname() == null ? "null" : String.valueOf(p.getBelowname().getValue()),
                     p.getBelowname() == null ? "null" : p.getBelowname().getFancyValue(),
+                    "N/A",
                     "N/A",
                     "N/A"
             )).collect(Collectors.toList()));
@@ -331,7 +374,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     public void updatePlayer(@NotNull ProxyPlayer player) {
         if (player.getBelowname() == null) return; // Player not loaded yet
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            if (viewer.belowNameData.disabled.get()) continue;
+            if (viewer.belowNameData.disabledAsViewer.get()) continue;
             viewer.getScoreboard().setScore(
                     OBJECTIVE_NAME,
                     player.getNickname(),

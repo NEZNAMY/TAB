@@ -21,7 +21,8 @@ public class BelowNameConfiguration {
     @NotNull private final String title;
     @NotNull private final String fancyValue;
     @NotNull private final String fancyValueDefault;
-    @NotNull private final String disableCondition;
+    @NotNull private final String viewerDisableCondition;
+    @NotNull private final String targetDisableCondition;
 
     /**
      * Returns instance of this class created from given configuration section. If there are
@@ -34,7 +35,15 @@ public class BelowNameConfiguration {
     @NotNull
     public static BelowNameConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "value", "title", "fancy-value-default", "fancy-value", "disable-condition"));
+        section.checkForUnknownKey(Arrays.asList(
+                "enabled",
+                "value",
+                "title",
+                "fancy-value-default",
+                "fancy-value",
+                "viewer-disable-condition",
+                "target-disable-condition"
+        ));
 
         // Check placeholders in title
         String title = section.getString("title", "Health");
@@ -72,7 +81,8 @@ public class BelowNameConfiguration {
                 title,
                 section.getString("fancy-value", "&c" + TabConstants.Placeholder.HEALTH),
                 section.getString("fancy-value-default", "NPC"),
-                section.getString("disable-condition", "%world%=disabledworld")
+                section.getString("viewer-disable-condition", "%world%=disabledworld"),
+                section.getString("target-disable-condition", "%world%=disabledworld")
         );
     }
 }

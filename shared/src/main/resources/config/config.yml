@@ -58,7 +58,8 @@ belowname-objective:
   fancy-value: "&c%health%"
   fancy-value-default: "NPC"
   title: "&cHealth"
-  disable-condition: '%world%=disabledworld'
+  viewer-disable-condition: '%world%=disabledworld'
+  target-disable-condition: '%world%=disabledworld'
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix
 prevent-spectator-effect:
@@ -260,7 +261,7 @@ components:
   disable-shadow-for-heads: true
 
 # Internal value, do not change this
-config-version: 6
+config-version: 7
 
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #
