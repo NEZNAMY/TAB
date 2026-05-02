@@ -3,9 +3,13 @@
 * [Configuration](#configuration)
   * [Design](#design)
   * [Chaining designs](#chaining-designs)
+* ~Commands~
+* ~Placeholders~
+* ~Limitations~
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Additional info](#additional-info)
   * [Additional note 1 - [1.8 - 1.20.1] Not resetting on server switch](#additional-note-1---18---1201-not-resetting-on-server-switch)
+* ~Troubleshooting~
 * [API](#api)
 * [Examples](#examples)
   * [Example 1 - Per-version header/footer](#example-1---per-version-headerfooter)

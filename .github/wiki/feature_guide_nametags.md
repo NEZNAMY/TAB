@@ -9,7 +9,6 @@
   * [Name color](#name-color)
 * [Commands](#commands)
 * [Placeholders](#placeholders)
-  * [PlaceholderAPI placeholders](#placeholderapi-placeholders)
 * [Limitations](#limitations)
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Additional info](#additional-info)
@@ -19,6 +18,7 @@
   * [Additional note 4 - F1 view](#additional-note-4---f1-view)
   * [Additional note 5 - Transparent players](#additional-note-5---transparent-players)
   * [Additional note 6 - Vanish hook](#additional-note-6---vanish-hook)
+* ~Troubleshooting~
 * [API](#api)
   * [Changing prefix and suffix](#changing-prefix-and-suffix)
   * [Collision](#collision)
@@ -161,9 +161,6 @@ For that reason, TAB detects the last used color code and uses that for team col
 | /tab setcollision \<player\> \<true\|false\>                       | `tab.setcollision`                                                                         | Forces collision rule for specified player, overriding configuration.                                                                                                                                      |
 
 # Placeholders
-This feature does not offer any internal placeholders, only PlaceholderAPI placeholders.
-
-## PlaceholderAPI placeholders
 Here are TAB's PlaceholderAPI placeholders you can use when this feature is enabled:
 | Placeholder | Description |
 |-------------|-------------|

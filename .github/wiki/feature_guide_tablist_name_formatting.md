@@ -7,9 +7,12 @@
     * [Global settings](#global-settings)
     * [Per-world / per-server](#per-world--per-server)
     * [Priorities](#priorities)
+* ~Commands~
 * [Placeholders](#placeholders)
-  * [PlaceholderAPI placeholders](#placeholderapi-placeholders)
+* ~Limitations~
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
+* ~Additional info~
+* ~Troubleshooting~
 * [API](#api)
 * [Examples](#examples)
   * [Example 1 - Taking prefix/suffix from permission plugin](#example-1---taking-prefixsuffix-from-permission-plugin)
@@ -137,9 +140,6 @@ You can see the source of a value displayed on player by using `/tab dump <playe
 part of the value you are looking for (tabprefix / customtabname / tabsuffix).
 
 # Placeholders
-This feature does not offer any internal placeholders, only PlaceholderAPI placeholders.
-
-## PlaceholderAPI placeholders
 Here are TAB's PlaceholderAPI placeholders you can use when this feature is enabled:
 | Placeholder | Description |
 |-------------|-------------|

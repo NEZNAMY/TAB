@@ -1,14 +1,18 @@
 # Content
 * [About](#about)
 * [Configuration](#configuration)
+* ~Commands~
+* ~Placeholders~
 * [Limitations](#limitations)
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Additional info](#additional-info)
   * [Additional note 1 - Copying nametag visibility rule](#additional-note-1---copying-nametag-visibility-rule)
   * [Additional note 2 - Hidden on sneak on 1.8](#additional-note-2---hidden-on-sneak-on-18)
   * [Additional note 3 - Visible on NPCs](#additional-note-3---visible-on-npcs)
-    * [[26.1] Visible on all entities](#261-visible-on-all-entities)
+    * [[26.1.x] Visible on all entities](#261x-visible-on-all-entities)
   * [Additional note 4 - Compatibility with modified clients](#additional-note-4---compatibility-with-modified-clients)
+* [Troubleshooting](#troubleshooting)
+* ~API~
 * [Examples](#examples)
   * [Example 1 - Per-world values](#example-1---per-world-values)
   * [Example 2 - Hiding `title` for 1.20.3+ players](#example-2---hiding-title-for-1203-players)
@@ -103,18 +107,37 @@ This is how you can achieve it using the following popular NPC plugins:
   * 3 - Change the NPC's name by editing your hologram's line(s): `/hologram edit hi setline 1 <text>`.  
     You can also add more lines if you want. See [FancyNpcs's wiki](https://docs.fancyinnovations.com/fancyholograms/commands/hologram/#text-hologram-modification) for more commands & info.
 
-### [26.1] Visible on all entities
+### [26.1.x] Visible on all entities
 In Minecraft version 26.1, Mojang "fixed" [MC-99647](https://bugs.mojang.com/browse/MC/issues/MC-99647), which reported that belowname is not visible on non-player entities. As a result, the belowname is now visible on all entities with a custom name (this even includes invisible armor stands, holograms and more). A new bug report was made for this: [MC-307012](https://bugs.mojang.com/browse/MC/issues/MC-307012).
 
-**This is a client-sided bug. You will experience it on 26.1 regardless of the server version**.  
-If your server is on 26.1 or you support players with this version through ViaVersion, this might be a deal breaker for you. If that's the case, either disable this feature entirely, or set
+**This is a client-sided bug. You will experience it on 26.1.x regardless of the server version**.  
+If your server is on 26.1.x, or you support players with this version through ViaVersion, this might be a dealbreaker for you. If that's the case, either disable this feature entirely, or set
 ```
-disable-condition: "%player-version-id%>=775"
+disable-condition: "%player-version-id%=775"
 ```
-which will make 26.1 players not see this feature on anyone (remember: disabling this feature disables it for the viewer, not target players).
+which will make 26.1.x players not see this feature on anyone (remember: disabling this feature disables it for the viewer, not target players).  
+**This bug was fixed in Minecraft version 26.2.**
 
 ## Additional note 4 - Compatibility with modified clients
 Sadly, this feature is suffering from bugs introduced by third party clients such as Feather and Lunar. These two completely ignore `fancy-value` as if it was never added into the game, even on 1.20.3+. This is just an example, and it's not limited to these two clients and this one issue. If you experience issues with the feature and believe you configured it correctly, use vanilla client to make sure it's not caused by a broken client.
+
+# Troubleshooting
+This is a collection of tips to help you figure out why the feature isn't working as you expect.  
+To get started, run `/tab dump <any player>` (this feature doesn't contain per-player content in dump output) and open the generated link. Scroll down to `features` -> `BelowName` and check the content:
+* If it says `BelowName: Feature is disabled`, it means you disabled the feature. Enable it by setting
+  ```
+  belowname-objective:
+    enabled: true
+  ```
+* Check the `configuration` section and compare it with your config file. If it's different, you either forgot to reload TAB, or uploaded the config to the wrong server (or did not upload it at all).
+* If a player cannot see belowname on anyone, check the table of players and make sure it's not because `Disabled with condition` is `true`.
+* Check the table of players for `value`, `fancy-value` and `title` and make sure they match your expectations. Don't forget `value` only supports numbers.
+* If you want to see `fancy-value` instead of just `value`'s number:
+  * Make sure your client is on 1.20.3+.
+  * Make sure your server is on 1.20.3+ (using TAB on proxy counts as being latest).
+  * Make sure you are not using a 3rd party client that removed this feature from 1.20.3+, such as Lunar or Feather.
+* Keep in mind `title` parses for viewer and is visible on all other players, it does not parse for each target player. Do not use placeholders with strictly per-player results in `title`.
+* If you have TAB on Velocity, install [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases) (and make sure it is not outdated).
 
 # Examples
 ## Example 1 - Per-world values
@@ -202,6 +225,7 @@ You can achieve this on `1.20.3+` using `healthbar` expansion from PlaceholderAP
 ```
 belowname-objective:
   fancy-value: "%healthbar_healthbar%"
+  title: ""
 ```
 <img width="130" height="159" alt="image" src="https://github.com/user-attachments/assets/cef217ec-0a39-41ad-8457-f8f67a1e4b02" />  
 

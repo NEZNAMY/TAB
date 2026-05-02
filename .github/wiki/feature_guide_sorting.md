@@ -1,4 +1,5 @@
 # Content
+* ~About~
 * [Enabling](#enabling)
 * [Methods of sorting](#methods-of-sorting)
   * [GROUPS](#groups)
@@ -11,12 +12,17 @@
 * [Multiple elements with the same priority](#multiple-elements-with-the-same-priority)
 * [Combining multiple sorting types](#combining-multiple-sorting-types)
 * [Additional settings](#additional-settings)
+* ~Commands~
+* ~Placeholders~
+* ~Limitations~
+* ~Compatibility with other plugins~
 * [Additional info](#additional-info)
   * [Additional note 1 - Limitations](#additional-note-1---limitations)
   * [Additional note 2 - per-world sorting](#additional-note-2---per-world-sorting)
   * [Additional note 3 - Compatibility issues with other plugins](#additional-note-3---compatibility-issues-with-other-plugins)
-* [Common mistakes](#common-mistakes)
+* [Troubleshooting](#troubleshooting)
 * [API](#api)
+* ~Examples~
 
 # Enabling
 To enable sorting, you must have either [Nametags](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags) or [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) (or both) enabled.
@@ -202,21 +208,24 @@ To identify such an issue, check if /tab reload fixes your sorting issue.
 If it does, it's a compatibility issue of some sort.
 If not, it is most likely a misconfiguration issue.
 
-# Common mistakes
-Every possible mistake could be called "not reading this wiki page", but that would make this section pointless.
-For that reason, let's call it list of mistakes made when following this page.
+# Troubleshooting
+There are many possible reasons why sorting may not work as desired, let's name them all.  
+To get started, run `/tab dump <some player>` and open the generated link. Scroll down to `features` -> `Sorting`.  
+If it says `Sorting: Feature is disabled`, it means you disabled sorting. See [Enabling](#enabling).  
+Check the table of players in the `Sorting` section. The players are listed in the order they should appear in the tablist. Does it match the in-game result?  
+**Option 1 - Players are listed in the same order they appear in game** - This means you did not configure sorting correctly. Check the table of all values for all players and see what is different than you expected:
+* Your group is wrong (shown in the table as well as on top of the dump):
+  * You did not configure weights in LuckPerms.
+  * You accidentally enabled `use-bukkit-permission-manager` option when on a proxy without knowing what it does.
+  * You installed TAB on a proxy without having any permission plugin on the proxy.
+  * You enabled `assign-groups-by-permissions` without giving those permissions (or the opposite - giving away OP to users, resulting in the highest group being taken).
+* You mistook `primary-group-finding-list` for the sorting list and did not configure the actual group sorting list.
+* You combined multiple sorting types, but listed them in the wrong order. See [Combining multiple sorting types](#combining-multiple-sorting-types) (sorting element priorities go from top to bottom, in the table they appear from left to right).
 
-The most common mistakes include:
-* Disabling both teams and layout, not realizing it disables sorting as well.
-* Mistaking `primary-group-finding-list` for the sorting list, despite that list having nothing to do with sorting and by default even having a comment above it saying it has nothing to do with sorting.
-* Not configuring primary groups correctly. This can have multiple reasons, such as
-  * Not configuring group weights in LuckPerms.
-  * Accidentally enabling `use-bukkit-permission-manager` option when on a proxy without knowing what it does.
-  * Installing TAB on a proxy without having any permission plugin on the proxy.
-  * Enabling `assign-groups-by-permissions` without giving those permissions (or the opposite - giving away OP to users, resulting in the highest group being taken).
-
-* Using a plugin that causes TAB to fail to apply teams (such as Tablisknu). This includes installing TAB plugin on both backend and proxy, causing the installations to conflict.
-* Using TAB on Velocity without installing [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases)
+**Option 2 - Players are listed in a different order than in-game** - This means teams were not applied properly. Possible reasons include:
+* Teams are disabled for the player (`disable-condition` was met or teams were disabled via API).
+* You have TAB on Velocity and forgot to install [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/releases) (or it's outdated and doesn't support your Velocity / game version).
+* You are using a plugin that causes TAB to fail to apply teams (such as Tablisknu). This includes installing TAB plugin on both backend and proxy, causing the installations to conflict (typically proxy taking over and backend not working).
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*

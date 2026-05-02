@@ -5,7 +5,14 @@
     * [Pattern Matching](#pattern-matching)
   * [Configuring isolated servers](#configuring-isolated-servers)
   * [Seeing all players on the network from some server](#seeing-all-players-on-the-network-from-some-server)
+* ~Commands~
+* [Placeholders](#placeholders)
+* ~Limitations~
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
+* ~Additional Info~
+* ~Troubleshooting~
+* ~API~
+* ~Examples~
 
 # About
 This feature allows you to see players from other servers, instead of only seeing players on the same server.  
@@ -122,6 +129,12 @@ global-playerlist:
     - spyserver2
 ```
 Now, players connected to "spyserver1" or "spyserver2" will see everyone on the network in tablist, but no one else (unless on another spy server / in the same server group) will see them.
+
+# Placeholders
+Here are TAB's internal placeholders you can use when this feature is enabled:
+| Placeholder | Description |
+|-------------|-------------|
+| %playerlist-group_\<group\>% | Amount of online players in specified global playerlist group |
 
 # Compatibility with other plugins
 For compatibility with vanish plugins, vanish status must be detected correctly. See [Additional information - Vanish detection](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection) for more info.

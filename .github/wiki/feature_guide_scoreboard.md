@@ -8,12 +8,12 @@
   * [Chaining scoreboards](#chaining-scoreboards)
 * [Commands](#commands)
 * [Placeholders](#placeholders)
-  * [PlaceholderAPI placeholders](#placeholderapi-placeholders)
 * [Limitations](#limitations)
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Additional info](#additional-info)
   * [Additional note 1 - Text alignment](#additional-note-1---text-alignment)
   * [Additional note 2 - Geyser / Bedrock issues](#additional-note-2---geyser--bedrock-issues)
+* ~Troubleshooting~
 * [API](#api)
   * [Creating custom scoreboards](#creating-custom-scoreboards)
   * [Showing custom scoreboards](#showing-custom-scoreboards)
@@ -219,9 +219,6 @@ If a player meets both conditions (has defined permission and is in defined worl
 | `/tab scoreboard announce <name> <duration>`         | `tab.announce.scoreboard`                                                                | Shows the scoreboard with the given `name` to every player on the server for the given `duration`, in seconds.                                                                                   |
 
 # Placeholders
-This feature does not offer any internal placeholders, only PlaceholderAPI placeholders.
-
-## PlaceholderAPI placeholders
 Here are TAB's PlaceholderAPI placeholders you can use when this feature is enabled:
 | Placeholder | Description |
 |-------------|-------------|

@@ -11,67 +11,99 @@ TAB does not depend on any other plugins. The experience can however be enhanced
 
 ## Java
 TAB's shared module is compiled with Java 8. For the platforms themselves, TAB does have a higher requirement, however, it does not require a Java version higher than the server software itself does. Specifically:
-* Fabric, Forge and NeoForge require Java 21
+* Fabric and NeoForge require Java 25
 * Velocity requires Java 17
 * Bukkit and BungeeCord are ok with Java 8
 
 # Supported server software and versions
-<table>
-    <thead>
-        <tr>
-            <th>Software type</th>
-            <th>Software name</th>
-            <th>Supported versions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td rowspan=2>Vanilla</td>
-            <td rowspan=1><a href="https://getbukkit.org/">Bukkit</a> (+forge hybrids)</td>
-            <td>✔ (1.7.10 ~ 26.1.1) (not all versions included)</td>
-        </tr>
-        <tr>
-            <td rowspan=1><a href="https://www.spongepowered.org/">Sponge</a></td>
-            <td>❌</td>
-        </tr>
-    </tbody>
-    <tbody>
-        <tr>
-            <td rowspan=3>Modded</td>
-            <td rowspan=1><a href="https://fabricmc.net">Fabric</a></td>
-            <td>✔ (1.21.11)<sup>1</sup></td>
-        </tr>
-        <tr>
-            <td rowspan=1><a href="https://minecraftforge.net">Forge</a></td>
-            <td>✔ (1.21.11)<sup>1</sup></td>
-        </tr>
-        <tr>
-            <td rowspan=1><a href="https://neoforged.net/">NeoForge</a></td>
-            <td>✔ (1.21.11)<sup>1</sup></td>
-        </tr>
-    </tbody>
-    <tbody>
-        <tr>
-            <td rowspan=2>Proxies</td>
-            <td rowspan=1><a href="https://ci.md-5.net/job/BungeeCord/">BungeeCord</a></td>
-            <td>✔ (latest only)<sup>2</sup></td>
-        </tr>
-        <tr>
-            <td rowspan=1><a href="https://www.velocitypowered.com/">Velocity</a></td>
-            <td>✔ (latest only)<sup>2</sup></td>
-        </tr>
-    </tbody>
-</table>
+The table below shows which server software and Minecraft versions are supported by TAB.  
+The plugin is being developed for the latest Minecraft version, so support for older versions may be dropped at some point in the future.  
+If you want to use TAB on an unsupported version, you can try using an older version of the plugin or request a backport.  
+Explanation of values in the table:
+* ✔ = Supported by the latest release.
+* ❌ = Not supported at all.
+* `/` = Software does not exist for this Minecraft version, so support is not possible.
+* `<version>` = Latest version of TAB that supports this version.
+* `<version> backport` = Latest version of TAB that supports this version. A backport of this TAB version was made to support an older MC version and uploaded to [Modrinth](https://modrinth.com/plugin/tab-was-taken). Use its download filter to find the correct jar for your server software and version.
 
-<sup>1</sup> Modded platforms only support the latest MC version(s). For older MC versions try [Modrinth](https://modrinth.com/plugin/tab-was-taken)'s version download filter. If TAB is not available for your desired Minecraft version or is very outdated, you may [request a backport](https://github.com/NEZNAMY/TAB/issues/new?template=backport.yml).
+| Minecraft version \ Server software | Bukkit | Fabric         | Forge          | NeoForge       | Sponge |
+|-------------------------------------|--------|----------------|----------------|----------------|--------|
+| 26.1 - 26.1.2                       | ✔      | ✔              | ❌              | ✔              | ❌      |
+| 1.21.11                             | ✔      | 6.0.1          | 6.0.1          | 6.0.1          | ❌      |
+| 1.21.10                             | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.3.2  |
+| 1.21.9                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.3.2  |
+| 1.21.8                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.5  |
+| 1.21.7                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.5  |
+| 1.21.6                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.5  |
+| 1.21.5                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
+| 1.21.4                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
+| 1.21.3                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
+| 1.21.2                              | ✔      | 5.5.0 backport | /              | 5.5.0 backport | 5.2.1  |
+| 1.21.1                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
+| 1.21                                | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
+| 1.20.6                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
+| 1.20.5                              | ✔      | 5.5.0 backport | /              | 5.5.0 backport | /      |
+| 1.20.4                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
+| 1.20.3                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | /      |
+| 1.20.2                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
+| 1.20.1                              | ✔      | 5.5.0 backport | 5.5.0 backport | /              | 5.2.1  |
+| 1.20                                | ✔      | 5.5.0 backport | 5.5.0 backport | /              | 5.2.1  |
+| 1.19.4                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.19.3                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.19.2                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.19.1                              | ✔      | 5.0.7          | ❌              | /              | /      |
+| 1.19                                | 5.2.0  | 5.0.7          | ❌              | /              | /      |
+| 1.18.2                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.18.1                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.18                                | 5.5.0  | 5.0.7          | ❌              | /              | /      |
+| 1.17.1                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.17                                | ✔      | 5.0.7          | /              | /              | 5.2.1  |
+| 1.16.5                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.16.4                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.16.3                              | 5.5.0  | 5.0.7          | ❌              | /              | /      |
+| 1.16.2                              | 5.5.0  | 5.0.7          | ❌              | /              | /      |
+| 1.16.1                              | 5.5.0  | 5.0.7          | ❌              | /              | /      |
+| 1.16                                | 5.5.0  | 5.0.7          | /              | /              | /      |
+| 1.15.2                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
+| 1.15.1                              | ✔      | 5.0.7          | ❌              | /              | /      |
+| 1.15                                | ✔      | 5.0.7          | ❌              | /              | /      |
+| 1.14.4                              | ✔      | 5.0.7          | ❌              | /              | /      |
+| 1.14.3                              | ✔      | 5.0.7          | ❌              | /              | /      |
+| 1.14.2                              | ✔      | 5.0.7          | ❌              | /              | /      |
+| 1.14.1                              | ✔      | 5.0.7          | /              | /              | /      |
+| 1.14                                | ✔      | 5.0.7          | /              | /              | /      |
+| 1.13.2                              | ✔      | /              | ❌              | /              | /      |
+| 1.13.1                              | ✔      | /              | /              | /              | /      |
+| 1.13                                | 5.5.0  | /              | /              | /              | /      |
+| 1.12.2                              | ✔      | /              | ❌              | /              | 5.2.1  |
+| 1.12.1                              | ✔      | /              | ❌              | /              | 5.2.1  |
+| 1.12                                | ✔      | /              | ❌              | /              | 5.2.1  |
+| 1.11.1                              | ✔      | /              | /              | /              | 5.2.1  |
+| 1.11                                | ✔      | /              | ❌              | /              | 5.2.1  |
+| 1.10.2                              | ✔      | /              | ❌              | /              | 5.2.1  |
+| 1.10.1                              | ✔      | /              | /              | /              | /      |
+| 1.10                                | ✔      | /              | ❌              | /              | /      |
+| 1.9.4                               | ✔      | /              | ❌              | /              | 5.2.1  |
+| 1.9.3                               | ✔      | /              | /              | /              | /      |
+| 1.9.2                               | 5.5.0  | /              | /              | /              | /      |
+| 1.9.1                               | 5.5.0  | /              | /              | /              | /      |
+| 1.9                                 | 5.5.0  | /              | ❌              | /              | 5.2.1  |
+| 1.8.8                               | ✔      | /              | ❌              | /              | ❌      |
+| 1.8.5 - 1.8.7                       | ✔      | /              | /              | /              | /      |
+| 1.8.1 - 1.8.4                       | 5.5.0  | /              | /              | /              | /      |
+| 1.8                                 | 5.5.0  | /              | ❌              | /              | ❌      |
+| 1.7.10                              | ✔      | /              | ❌              | /              | /      |
+| 1.7.3 - 1.7.9                       | 5.5.0  | /              | /              | /              | /      |
+| 1.7.2                               | 5.5.0  | /              | ❌              | /              | /      |
+| 1.5 - 1.6.4                         | 5.2.5  | /              | ❌              | /              | /      |
 
-<sup>2</sup> Latest only doesn't mean only the latest build will work,
-it means the plugin was made to be compatible with the latest version/build.
+
+For proxies, the plugin is made to work with the latest build.
 Since breaking changes don't happen too often, it means a wide range of versions is usually supported.
 When a breaking change occurs, the plugin is updated to support the new version,
 automatically making old versions incompatible.
 Since proxies support all client versions, there is never a reason to stay outdated,
-so you can always safely update to new version/build of your proxy software if the plugin requires it.
+so you can always safely update to a new build of your proxy software if the plugin requires it.
 
 # Supported features per platform
 | Feature          <sup>Platform</sup>                                                                                                                               | Bukkit / Hybrid | Fabric / Forge / NeoForge | BungeeCord | Velocity                                                                   |

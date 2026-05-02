@@ -6,6 +6,9 @@
     * [Player groups](#player-groups)
   * [Chaining layouts](#chaining-layouts)
   * [Skins](#skins)
+* ~Commands~
+* ~Placeholders~
+* ~Limitations~
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Compatibility with other features](#compatibility-with-other-features)
   * [Playerlist objective incompatibility](#playerlist-objective-incompatibility)
@@ -15,6 +18,8 @@
   * [Additional note 1 - [1.19.3 - 1.21.1] Entries in chat complete](#additional-note-1---1193---1211-entries-in-chat-complete)
   * [Additional note 2 - [1.8 - 1.21.3] Second layer of skin missing](#additional-note-2---18---1213-second-layer-of-skin-missing)
   * [Additional note 3 - Entry overlap](#additional-note-3---entry-overlap)
+* ~Troubleshooting~
+* ~API~
 * [Examples](#examples)
   * [Example 1 - Per-server columns](#example-1---per-server-columns)
   * [Example 2 - Per-world playerlist](#example-2---per-world-playerlist)

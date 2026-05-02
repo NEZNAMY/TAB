@@ -5,7 +5,7 @@
 * [#4 - Why is player sorting not working?](#4---why-is-player-sorting-not-working)
 * [#5 - How to add players to %staffonline% placeholder?](#5---how-to-add-players-to-the-staffonline-placeholder)
 * [#6 - How to make player heads visible in tablist?](#6---how-to-make-player-heads-visible-in-tablist)
-* [#7 - Where can i find current default config files?](#7---where-can-i-find-current-default-config-files)
+* [#7 - Where can I find current default config files?](#7---where-can-i-find-current-default-config-files)
 * [#8 - How can I split players into multiple columns?](#8---how-can-i-split-players-into-multiple-columns)
 * [#9 - How to use space in prefix/suffix command?](#9---how-to-use-spaces-in-prefixsuffix-command)
 * [#10 - Can I change/remove the green connection bar in tablist?](#10---can-i-changeremove-the-green-connection-bar-in-tablist)
@@ -54,7 +54,7 @@ The same goes for disabling heads - you cannot disable them if you have online m
 
 Minecraft 1.21.9 has added [object components](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components#object-components-1219), which allow you to display player heads. You can put for example `<head:name:%player%>` at the beginning of tabprefix to simulate this.
 
-## #7 - Where can i find current default config files?
+## #7 - Where can I find current default config files?
 You can do any of the following:
 * Check the [source code](https://github.com/NEZNAMY/TAB/tree/master/shared/src/main/resources/config).
 * Delete or rename a file, and the plugin will regenerate it.

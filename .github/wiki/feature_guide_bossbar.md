@@ -3,12 +3,11 @@
 * [Configuration](#configuration)
 * [Commands](#commands)
 * [Placeholders](#placeholders)
-  * [Internal placeholders](#internal-placeholders)
-  * [PlaceholderAPI placeholders](#placeholderapi-placeholders)
 * [Limitations](#limitations)
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Additional info](#additional-info)
   * [Additional note 1 - Hiding bar itself](#additional-note-1---hiding-bar-itself)
+* [Troubleshooting](#troubleshooting)
 * [API](#api)
 * [Examples](#examples)
   * [Example 1 - Changing text](#example-1---changing-text)
@@ -81,7 +80,6 @@ Here is an example using all 6 properties:
 | /tab bossbar announce \<name\> \<duration\>           | `tab.announce.bar`                                                                 | Shows the bossbar with the given `name` to every player on the server for the given `duration`, in seconds.                                                                                   |
 
 # Placeholders
-## Internal placeholders
 Here are TAB's internal placeholders you can use when this feature is enabled:
 | Placeholder | Description |
 |-------------|-------------|
@@ -90,7 +88,6 @@ Here are TAB's internal placeholders you can use when this feature is enabled:
 
 You can further use these placeholders in progress, for example, using Math expansion from PlaceholderAPI, such as `%math_{tab_placeholder_bossbar_announce_time_left_<bossbar>}/{tab_placeholder_bossbar_announce_time_total_<bossbar>}*100%` (remember to replace `<bossbar>` with the actual name of the bossbar).
 
-## PlaceholderAPI placeholders
 Here are TAB's PlaceholderAPI placeholders you can use when this feature is enabled:
 | Placeholder | Description |
 |-------------|-------------|
@@ -98,7 +95,8 @@ Here are TAB's PlaceholderAPI placeholders you can use when this feature is enab
 
 # Limitations
 * Does not support newlines. If you want to display more lines, you'll need to create multiple bossbars.
-* The bar itself cannot be removed from the server side. However, it can be removed with a resource pack.
+* The bar itself cannot be removed from the server side. However, it can be removed with a resource pack (see below for more info).
+* While there is no explicit limit to how many bossbars you can configure, the client will only display up to 9 depending on window size and GUI scale in client settings.
 
 # Compatibility with other plugins
 Bossbar is a feature that can have multiple instances sent and displayed, so there is no possible conflict like in scoreboard for example. Every plugin manages its own bossbars and doesn't care about others.
@@ -120,6 +118,20 @@ Here is how to do it:
 * Use GIMP or any other Photo editing software and remove the White bars in the file. Save the file and move it to `assets/minecraft/textures/gui/`.
 
 Finally, set your Bossbar color in TAB Config to `WHITE`. Now the line will be invisible!
+
+# Troubleshooting
+This is a collection of tips to help you figure out why the feature isn't working as you expect.  
+To get started, run `/tab dump <affected player` and open the generated link. Scroll down to `features` -> `BossBar` and check the content:
+* If it says `BossBar: Feature is disabled`, it means you disabled the feature. Enable it by setting
+  ```
+  bossbar:
+    enabled: true
+  ```
+* Check the `configuration` section and compare it with your config file. If it's different, you either forgot to reload TAB, or uploaded the config to the wrong server (or did not upload it at all).
+* Check the `bossbar conditions` section and for each bossbar and analyze the `display-condition` options (the value, with placeholders parsed, whether it is met or not) if it matches what you expect. If not, you may have made a mistake in your conditions.
+* Check `bossbars visible` value to make sure user did not toggle the bossbar(s).
+* Check `currently displayed bossbars` section and compare it with your expectations, as well as the actual in-game result. If it doesn't match your expectations, you didn't configure something correctly. If the output doesn't match the in-game result, it might be a bug.
+
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*

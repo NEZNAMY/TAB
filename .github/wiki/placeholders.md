@@ -102,21 +102,21 @@ placeholders:
 in **config.yml**.  
 Full list of placeholders (general + feature specific):
 
-**General**:  
-  
+**General**:
+
 | Identifier                        | Description                                                                                                                                                                                                                                                                     |
 |-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `%tab_replace_<placeholder>%`     | Applies [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) to a PlaceholderAPI placeholder (for example `%tab_replace_essentials_vanished%`)                                                                 |
 | `%tab_placeholder_<placeholder>%` | returns value of tab's internal placeholder (such as `%tab_placeholder_animation:name%` for `%animation:name%`) (this also applies [Placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) to them if configured) |
 
-**BossBar**:  
-  
+**BossBar**:
+
 | Identifier              | Description                             |
 |-------------------------|-----------------------------------------|
 | `%tab_bossbar_visible%` | "Enabled" if visible, "Disabled" if not |
 
-**NameTags**:  
-  
+**NameTags**:
+
 | Identifier                 | Description                                                                                  |
 |----------------------------|----------------------------------------------------------------------------------------------|
 | `%tab_tagprefix%`          | Player's current tagprefix with placeholders parsed.                                         |
@@ -125,15 +125,15 @@ Full list of placeholders (general + feature specific):
 | `%tab_tagsuffix_raw%`      | Player's current raw tagsuffix with placeholder identifiers.                                 |
 | `%tab_nametag_visibility%` | "Enabled" if player can see nametags, "Disabled" if disabled using `/tab nametag toggleview` |
 
-**Scoreboard**:  
-  
+**Scoreboard**:
+
 | Identifier                 | Description                                                                                                                         |
 |----------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `%tab_scoreboard_name%`    | Returns name of player's currently displayed scoreboard or empty string if none is displayed due to no display condition being met. |
 | `%tab_scoreboard_visible%` | "Enabled" if visible, "Disabled" if not (toggled with a command)                                                                    |
 
-**Tablist name formatting**:  
-  
+**Tablist name formatting**:
+
 | Identifier                | Description                                                      |
 |---------------------------|------------------------------------------------------------------|
 | `%tab_tabprefix%`         | Player's current tabprefix with placeholders parsed.             |
