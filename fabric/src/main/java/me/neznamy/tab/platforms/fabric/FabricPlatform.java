@@ -5,12 +5,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.logging.LogUtils;
-import eu.pb4.placeholders.api.PlaceholderContext;
-import eu.pb4.placeholders.api.Placeholders;
-import eu.pb4.placeholders.api.node.TextNode;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.fabric.hook.FabricTabExpansion;
+import me.neznamy.tab.platforms.fabric.hook.PlaceholderAPIHook;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -71,10 +69,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
 
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
         manager.registerPlayerPlaceholder(identifier,
-                p -> Placeholders.SERVER_PLACEHOLDER_PARSER.parseComponent(
-                        TextNode.convert(Component.literal(identifier)),
-                        PlaceholderContext.of((ServerPlayer) p.getPlayer()).asParserContext()
-                ).getString()
+                p -> PlaceholderAPIHook.parsePlaceholders(identifier, ((FabricTabPlayer) p).getPlayer())
         );
     }
 

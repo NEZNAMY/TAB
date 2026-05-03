@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,11 +56,10 @@ public class FabricTabExpansion implements TabExpansion {
             do {
                 textBefore = text;
                 for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(text)) {
-                    text = text.replace(placeholder, TAB.getInstance().getPlaceholderManager().findReplacement(placeholder,
-                            Placeholders.SERVER_PLACEHOLDER_PARSER.parseComponent(
-                                    placeholder,
-                                    PlaceholderContext.of(ctx.player()).asParserContext()
-                            ).getString()));
+                    text = text.replace(placeholder, TAB.getInstance().getPlaceholderManager().findReplacement(
+                            placeholder,
+                            PlaceholderAPIHook.parsePlaceholders(placeholder, (ServerPlayer) ctx.player())
+                    ));
                 }
             } while (!textBefore.equals(text));
 
