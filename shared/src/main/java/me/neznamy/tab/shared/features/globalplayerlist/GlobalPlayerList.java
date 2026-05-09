@@ -8,14 +8,17 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
+import me.neznamy.tab.shared.data.ServerGroup;
 import me.neznamy.tab.shared.features.playerlist.PlayerList;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.api.integration.VanishIntegration;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.OnlinePlayers;
 import me.neznamy.tab.shared.util.PerformanceUtil;
+import me.neznamy.tab.shared.util.DumpUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +28,7 @@ import java.util.*;
  * Feature handler for global PlayerList feature.
  */
 public class GlobalPlayerList extends RefreshableFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
-        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, CustomThreaded, ProxyFeature {
+        Loadable, UnLoadable, ServerSwitchListener, TabListClearListener, CustomThreaded, ProxyFeature, Dumpable {
 
     @Getter private final ThreadExecutor customThread = new ThreadExecutor("TAB Global PlayerList Thread");
     @Getter private OnlinePlayers onlinePlayers;
@@ -317,5 +320,132 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
             }
         }
         return false;
+    }
+
+    @Override
+    @NotNull
+    public Object dump(@NotNull TabPlayer player) {
+        Map<String, Object> playerInfo = new LinkedHashMap<>();
+        playerInfo.put("server", player.server.getName());
+        playerInfo.put("server is spy server", player.server.isSpyServer());
+        playerInfo.put("server group", player.server.getServerGroup().getName());
+        playerInfo.put("servers in the group", player.server.getServerGroup().getPatterns());
+
+        List<List<String>> rows = new ArrayList<>();
+        List<TabPlayer> targets = new ArrayList<>(Arrays.asList(TAB.getInstance().getOnlinePlayers()));
+        targets.sort(Comparator.comparing(TabPlayer::getName, String.CASE_INSENSITIVE_ORDER));
+        for (TabPlayer t : targets) {
+            String msg = getShouldSeeMessage(t, player);
+            rows.add(Arrays.asList(
+                    t.getName(),
+                    t.server.getName(),
+                    t.server.getServerGroup().getName(),
+                    msg
+            ));
+        }
+        if (proxy != null) {
+            List<ProxyPlayer> proxyTargets = new ArrayList<>(proxy.getProxyPlayers().values());
+            proxyTargets.sort(Comparator.comparing(ProxyPlayer::getName, String.CASE_INSENSITIVE_ORDER));
+            for (ProxyPlayer t : proxyTargets) {
+                String msg = getShouldSeeMessage(t, player);
+                rows.add(Arrays.asList(
+                        "[Proxy] " + t.getName(),
+                        t.server.getName(),
+                        t.server.getServerGroup().getName(),
+                        msg
+                ));
+            }
+        }
+        playerInfo.put("visibility from viewer's perspective", DumpUtils.tableToLines(
+                Arrays.asList("Player", "Server", "Server Group", "Visible for " + player.getName()),
+                rows
+        ));
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configuration", configuration.getSection().getMap());
+        map.put("player info", playerInfo);
+        return map;
+    }
+
+    /**
+     * Returns a message about whether viewer can see target player or not and why.
+     *
+     * @param   target
+     *          Target player to see
+     * @param   viewer
+     *          Tablist viewer
+     * @return  Message about whether viewer can see target player or not and why
+     */
+    @NotNull
+    private String getShouldSeeMessage(@NotNull TabPlayer target, @NotNull TabPlayer viewer) {
+        if (viewer == target) return "yes - same player";
+
+        if (!viewer.server.canSee(target.server)) {
+            return "no - servers are in different groups (viewer=" + viewer.server.getServerGroup().getName() +
+                    ", target=" + target.server.getServerGroup().getName() + ") and viewer is not in a spy server";
+        }
+        for (VanishIntegration i : VanishIntegration.getHandlers()) {
+            try {
+                if (!i.canSee(viewer, target)) {
+                    return "no - vanish integration '" + i.getPlugin() + "' prevents viewer from seeing target";
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) {
+            return "no - target is vanished and viewer lacks permission (" + TabConstants.Permission.SEE_VANISHED + ")";
+        }
+
+        if (viewer.server == target.server) {
+            return "yes - same server (" + viewer.server.getName() + ")";
+        }
+        if (viewer.server.isSpyServer()) {
+            return "yes - viewer is in spy server (" + viewer.server.getName() + ")";
+        }
+        if (viewer.server.getServerGroup() == target.server.getServerGroup()) {
+            if (viewer.server.getServerGroup() == ServerGroup.DEFAULT) {
+                return "yes - both servers are not listed in any group, so they are put in a default shared group";
+            } else {
+                return "yes - same server group (" + viewer.server.getServerGroup().getName() + ")";
+            }
+        }
+
+        return "You should never see this message";
+    }
+
+    /**
+     * Returns a message about whether viewer can see target player or not and why.
+     *
+     * @param   target
+     *          Target player to see
+     * @param   viewer
+     *          Tablist viewer
+     * @return  Message about whether viewer can see target player or not and why
+     */
+    @NotNull
+    private String getShouldSeeMessage(@NotNull ProxyPlayer target, @NotNull TabPlayer viewer) {
+        if (!viewer.server.canSee(target.server)) {
+            return "no - servers are in different groups (viewer=" + viewer.server.getServerGroup().getName() +
+                    ", target=" + target.server.getServerGroup().getName() + ") and viewer is not in a spy server";
+        }
+        if (target.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) {
+            return "no - target is vanished and viewer lacks permission (" + TabConstants.Permission.SEE_VANISHED + ")";
+        }
+
+        if (viewer.server == target.server) {
+            return "yes - same server (" + viewer.server.getName() + ")";
+        }
+        if (viewer.server.isSpyServer()) {
+            return "yes - viewer is in spy server (" + viewer.server.getName() + ")";
+        }
+        if (viewer.server.getServerGroup() == target.server.getServerGroup()) {
+            if (viewer.server.getServerGroup() == ServerGroup.DEFAULT) {
+                return "yes - both servers are not listed in any group, so they are put in a default shared group";
+            } else {
+                return "yes - same server group (" + viewer.server.getServerGroup().getName() + ")";
+            }
+        }
+
+        return "You should never see this message";
     }
 }

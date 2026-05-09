@@ -22,7 +22,7 @@ public class Server {
     /** Flag tracking whether this server is marked as spy-server in global playerlist configuration or not */
     private boolean isSpyServer;
 
-    /** Server group this server is part of, null if not part of any group */
+    /** Server group this server is part of, null if global playerlist is disabled */
     @Nullable
     @Setter
     private ServerGroup serverGroup;

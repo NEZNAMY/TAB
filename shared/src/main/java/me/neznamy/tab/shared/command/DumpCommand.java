@@ -108,6 +108,7 @@ public class DumpCommand extends SubCommand {
         List<String> featureList = Arrays.asList(
                 TabConstants.Feature.BELOW_NAME,
                 TabConstants.Feature.BOSS_BAR,
+                TabConstants.Feature.GLOBAL_PLAYER_LIST,
                 TabConstants.Feature.HEADER_FOOTER,
                 TabConstants.Feature.LAYOUT,
                 TabConstants.Feature.NAME_TAGS,

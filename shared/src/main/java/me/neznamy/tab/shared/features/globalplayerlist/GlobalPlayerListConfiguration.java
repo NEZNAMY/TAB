@@ -14,6 +14,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class GlobalPlayerListConfiguration {
 
+    @NotNull private final ConfigurationSection section;
     private final boolean othersAsSpectators;
     private final boolean vanishedAsSpectators;
     private final boolean isolateUnlistedServers;
@@ -53,6 +54,7 @@ public class GlobalPlayerListConfiguration {
         }
 
         return new GlobalPlayerListConfiguration(
+                section,
                 section.getBoolean("display-others-as-spectators", false),
                 section.getBoolean("display-vanished-players-as-spectators", true),
                 section.getBoolean("isolate-unlisted-servers", false),
