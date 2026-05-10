@@ -10,11 +10,14 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
+import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.message.outgoing.RegisterPlaceholder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 /**
  * Abstract class containing common variables and methods
@@ -44,6 +47,11 @@ public abstract class ProxyPlatform implements Platform {
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             ((ProxyTabPlayer)all).sendPluginMessage(new RegisterPlaceholder(placeholder.getIdentifier(), refresh));
+            Map<String, String> bridgePlaceholders = ((ProxyTabPlayer)all).getPlaceholders();
+            // TODO do relational placeholders as well
+            if (placeholder instanceof PlayerPlaceholderImpl && bridgePlaceholders.containsKey(identifier)) {
+                ((PlayerPlaceholderImpl)placeholder).updateValue(all, bridgePlaceholders.get(identifier));
+            }
         }
     }
 
