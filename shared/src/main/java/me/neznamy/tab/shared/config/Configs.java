@@ -36,10 +36,22 @@ public class Configs {
     /** animations.yml file */
     private final Animations animations = new Animations();
 
-    //messages.yml file
+    /** groups.yml file */
+    private final YamlPropertyConfigurationFile groupsFile = new YamlPropertyConfigurationFile(
+            getClass().getClassLoader().getResourceAsStream("config/groups.yml"),
+            new File(TAB.getInstance().getDataFolder(), "groups.yml")
+    );
+
+    /** users.yml file */
+    private final YamlPropertyConfigurationFile usersFile = new YamlPropertyConfigurationFile(
+            getClass().getClassLoader().getResourceAsStream("config/users.yml"),
+            new File(TAB.getInstance().getDataFolder(), "users.yml")
+    );
+
+    /** messages.yml file */
     private final MessageFile messages = new MessageFile();
 
-    //playerdata.yml, used for bossbar & scoreboard toggle saving
+    /** playerdata.yml, used for bossbar & scoreboard toggle saving */
     private final ConfigurationFile playerData = new YamlConfigurationFile(
             new ByteArrayInputStream(new byte[0]),
             new File(TAB.getInstance().getDataFolder(), "playerdata.yml")
@@ -90,8 +102,8 @@ public class Configs {
                 TAB.getInstance().getErrorManager().mysqlConnectionFailed(e);
             }
         }
-        groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
-        users = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
+        groups = groupsFile;
+        users = usersFile;
     }
 
     /**

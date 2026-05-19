@@ -6,7 +6,7 @@ import me.neznamy.tab.shared.chat.TabClickEvent;
 import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.TabTextComponent;
-import me.neznamy.tab.shared.config.files.Config;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.types.Dumpable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -53,10 +53,10 @@ public class DumpCommand extends SubCommand {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("platform", TAB.getInstance().getPlatform().dump());
         data.put("player", analyzed.dump());
-        data.put("general-settings", dumpGeneralSettings());
         data.put("features", dumpFeatures(analyzed));
         data.put("placeholders", TAB.getInstance().getPlaceholderManager().dump(analyzed));
         data.put("tablist", analyzed.getTabList().dump());
+        data.put("files", dumpFiles());
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         options.setWidth(Integer.MAX_VALUE);
@@ -79,31 +79,7 @@ public class DumpCommand extends SubCommand {
     }
 
     @NotNull
-    private Object dumpGeneralSettings() {
-        Map<String, Object> settings = new LinkedHashMap<>();
-        Config config = TAB.getInstance().getConfiguration().getConfig();
-        settings.put("assign-groups-by-permissions", config.isGroupsByPermissions());
-        settings.put("primary-group-finding-list", config.getPrimaryGroupFindingList());
-        settings.put("permission-refresh-interval", config.getPermissionRefreshInterval());
-        settings.put("debug", config.isDebugMode());
-        settings.put("mysql.enabled", config.getMysql() != null);
-        if (config.getProxySupport() != null) {
-            settings.put("proxy-support", "type: " + config.getProxySupport().getType());
-        } else {
-            settings.put("proxy-support", "Disabled");
-        }
-
-        settings.put("components", config.getComponents().getSection().getMap());
-        settings.put("config-version", config.getConfig().getInt("config-version", 0));
-        settings.put("compensate-for-packetevents-bug", config.isPacketEventsCompensation());
-        settings.put("use-bukkit-permissions-manager", config.isBukkitPermissions());
-        settings.put("use-online-uuid-in-tablist", config.isOnlineUuidInTabList());
-        settings.put("server-name", config.getServerName());
-        return settings;
-    }
-
-    @NotNull
-    private Object dumpFeatures(@NotNull TabPlayer player) {
+    private Map<String, Object> dumpFeatures(@NotNull TabPlayer player) {
         Map<String, Object> features = new LinkedHashMap<>();
         List<String> featureList = Arrays.asList(
                 TabConstants.Feature.BELOW_NAME,
@@ -130,6 +106,71 @@ public class DumpCommand extends SubCommand {
             }
         }
         return features;
+    }
+
+    @NotNull
+    private Map<String, Object> dumpFiles() {
+        Map<String, Object> files = new LinkedHashMap<>();
+        Configs configs = TAB.getInstance().getConfiguration();
+        files.put("animations.yml", configs.getAnimations().getAnimationFile().getValues());
+        Map<Object, Object> configClone = deepCopy(configs.getConfig().getConfig().getValues());
+        censorConfig(configClone);
+        files.put("config.yml", configClone);
+        if (configs.getMysql() == null) {
+            files.put("groups.yml", configs.getGroupsFile().getValues());
+            files.put("users.yml", configs.getUsersFile().getValues());
+        } else {
+            files.put("groups.yml", "MySQL connection enabled, groups are in database");
+            files.put("users.yml", "MySQL connection enabled, users are in database");
+        }
+        return files;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void censorConfig(@NotNull Map<Object, Object> config) {
+        Map<String, Object> mysql = (Map<String, Object>) config.get("mysql");
+        mysql.put("host", "*CENSORED*");
+        mysql.put("database", "*CENSORED*");
+        mysql.put("username", "*CENSORED*");
+        mysql.put("password", "*CENSORED*");
+        Map<String, Object> proxySupport = (Map<String, Object>) config.get("proxy-support");
+        Map<String, Object> redis = (Map<String, Object>) proxySupport.get("redis");
+        redis.put("url", "*CENSORED*");
+        Map<String, Object> rabbitmq = (Map<String, Object>) proxySupport.get("rabbitmq");
+        rabbitmq.put("url", "*CENSORED*");
+    }
+
+    @NotNull
+    @SuppressWarnings("unchecked")
+    private Map<Object, Object> deepCopy(@NotNull Map<Object, Object> original) {
+        Map<Object, Object> copy = new LinkedHashMap<>();
+        for (Map.Entry<Object, Object> entry : original.entrySet()) {
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                copy.put(entry.getKey(), deepCopy((Map<Object, Object>) value));
+            } else if (value instanceof List) {
+                copy.put(entry.getKey(), deepCopy((List<?>) value));
+            } else {
+                copy.put(entry.getKey(), value);
+            }
+        }
+        return copy;
+    }
+
+    @NotNull
+    @SuppressWarnings("unchecked")
+    private List<?> deepCopy(@NotNull List<?> original) {
+        List<Object> copy = new ArrayList<>();
+        for (Object item : original) {
+            if (item instanceof Map) {
+                copy.add(deepCopy((Map<Object, Object>) item));
+            } else if (item instanceof List) {
+                copy.add(deepCopy((List<?>) item));
+            } else {
+                copy.add(item);
+            }
+        }
+        return copy;
     }
 
     @NotNull
