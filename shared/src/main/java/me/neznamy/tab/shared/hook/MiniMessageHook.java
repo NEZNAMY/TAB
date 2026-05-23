@@ -1,9 +1,14 @@
 package me.neznamy.tab.shared.hook;
 
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.chat.hook.AdventureHook;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class MiniMessageHook {
 
+    private static final boolean OBJECT_COMPONENTS_AVAILABLE = ReflectionUtils.classExists("net.kyori.adventure.text.object.ObjectContents");
+
     /** Minimessage deserializer with disabled component post-processing */
     @Nullable
     private static final MiniMessage mm = createMiniMessage();
@@ -19,10 +26,23 @@ public class MiniMessageHook {
     @Nullable
     private static MiniMessage createMiniMessage() {
         try {
-            return MiniMessage.miniMessage();
+            return MiniMessage.builder()
+                    .editTags(builder -> builder.resolver(headTextureTag()))
+                    .build();
         } catch (Throwable ignored) {
             return null;
         }
+    }
+
+    @NotNull
+    private static TagResolver headTextureTag() {
+        if (OBJECT_COMPONENTS_AVAILABLE) {
+            return MiniMessageObjectHook.headTextureTag();
+        }
+        return TagResolver.resolver("head_texture", (args, context) -> {
+            args.popOr("Expected texture url"); // Consume the argument to keep the same tag signature
+            return Tag.selfClosingInserting(Component.text(TabObjectComponent.ERROR_MESSAGE));
+        });
     }
 
     /**
