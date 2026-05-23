@@ -14,21 +14,19 @@ import java.util.regex.Pattern;
  */
 public class MiniMessageObjectHook {
 
-    /** Pattern for validating Minecraft texture URLs */
-    private static final Pattern TEXTURE_URL_PATTERN = Pattern.compile("^https?://textures\\.minecraft\\.net/texture/[0-9a-f]+$");
+    /** Constant prefix shared by every Minecraft texture URL */
+    private static final String TEXTURE_URL_PREFIX = "https://textures.minecraft.net/texture/";
 
     /**
-     * Creates a tag resolver for the "head_texture" tag, which allows inserting player heads with custom textures using a texture URL.
-     * The tag expects a single argument: the URL of the Minecraft texture. It validates the URL format and constructs the appropriate player head object if valid.
-     * If the URL is invalid, it throws an exception with a descriptive error message.
+     * Creates a tag resolver for the "head_texture" tag, which allows inserting player heads with custom textures using a texture hash.
+     * The tag expects a single argument: the Minecraft texture hash (the part after "https://textures.minecraft.net/texture/").
+     *
      * @return A TagResolver for the "head_texture" tag.
      */
     public static TagResolver headTextureTag() {
         return TagResolver.resolver("head_texture", (args, context) -> {
-            String textureUrl = args.popOr("Expected texture url").lowerValue().trim();
-            if (!TEXTURE_URL_PATTERN.matcher(textureUrl).matches()) {
-                throw context.newException("Expected a valid minecraft texture URL", args);
-            }
+            String hash = args.popOr("Expected texture hash").lowerValue().trim();
+            String textureUrl = TEXTURE_URL_PREFIX + hash;
 
             String json = String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", textureUrl);
             String texture = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
