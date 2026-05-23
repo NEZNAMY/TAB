@@ -26,10 +26,10 @@ public class BungeeTAB extends Plugin {
         int buildNumber = 2000;
         String releaseDate = "September 30th, 2025";
         String oldTabVersion = "5.2.5";
-        getLogger().warning("§c====================================================================================================");
-        getLogger().warning(String.format("§cThe plugin requires BungeeCord build #%d (released on %s) and up (or an equivalent fork) to work.", buildNumber, releaseDate));
-        getLogger().warning(String.format("§cIf you are using a fork that did not update to the new BungeeCord version yet, stay on TAB v%s, which supports older builds.", oldTabVersion));
-        getLogger().warning("§c====================================================================================================");
+        getLogger().severe("§c====================================================================================================");
+        getLogger().severe(String.format("§cThe plugin requires BungeeCord build #%d (released on %s) and up (or an equivalent fork) to work.", buildNumber, releaseDate));
+        getLogger().severe(String.format("§cIf you are using a fork that did not update to the new BungeeCord version yet, stay on TAB v%s, which supports older builds.", oldTabVersion));
+        getLogger().severe("§c====================================================================================================");
     }
 
     @Override
