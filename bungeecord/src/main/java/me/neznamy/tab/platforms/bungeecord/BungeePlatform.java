@@ -31,6 +31,7 @@ import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -76,8 +77,20 @@ public class BungeePlatform extends ProxyPlatform {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void loadPlayers() {
+        try {
+            ProxyConfig config = ProxyServer.getInstance().getConfig();
+            if ((boolean) config.getClass().getMethod("isDisableTabListRewrite").invoke(config)) {
+                logWarn(TabComponent.legacyText(
+                        "Waterfall's \"disable_tab_list_rewrite: true\" option may cause " +
+                        "the plugin to not work correctly. Disable it to avoid issues."
+                ));
+            }
+        } catch (Exception e) {
+            // Not waterfall
+        }
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             TAB.getInstance().addPlayer(new BungeeTabPlayer(this, p));
         }
