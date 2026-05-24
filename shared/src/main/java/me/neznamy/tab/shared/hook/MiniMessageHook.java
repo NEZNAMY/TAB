@@ -39,10 +39,7 @@ public class MiniMessageHook {
         if (OBJECT_COMPONENTS_AVAILABLE) {
             return MiniMessageObjectHook.headTextureTag();
         }
-        return TagResolver.resolver("head_texture", (args, context) -> {
-            args.popOr("Expected texture url"); // Consume the argument to keep the same tag signature
-            return Tag.selfClosingInserting(Component.text(TabObjectComponent.ERROR_MESSAGE));
-        });
+        return MiniMessageSafeAccessHack.fallbackHeadTag();
     }
 
     /**
@@ -70,6 +67,21 @@ public class MiniMessageHook {
         } catch (Throwable t) {
             TAB.getInstance().getErrorManager().printError("Failed to convert \"" + text + "\" into a MiniMessage component", t);
             return null;
+        }
+    }
+
+    /**
+     * Class loader hack to avoid class initializer error when using static methods in interfaces.
+     * No, try/catch does not solve this.
+     */
+    private static class MiniMessageSafeAccessHack {
+
+        @NotNull
+        private static TagResolver fallbackHeadTag() {
+            return TagResolver.resolver("head_texture", (args, context) -> {
+                args.popOr("Expected texture url"); // Consume the argument to keep the same tag signature
+                return Tag.selfClosingInserting(Component.text(TabObjectComponent.ERROR_MESSAGE));
+            });
         }
     }
 }
