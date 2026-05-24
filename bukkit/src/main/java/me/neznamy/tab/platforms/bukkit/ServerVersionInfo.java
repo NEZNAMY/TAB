@@ -26,6 +26,7 @@ public class ServerVersionInfo {
     @NotNull
     private final String minecraftVersion;
 
+    /** Name of the server software, either "Paper" or "Spigot" */
     @NotNull
     private final String serverName;
 
