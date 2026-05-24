@@ -12,6 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Class for detecting server software and version and finding available NMS implementation(s).
+ */
 @Getter
 public class ServerVersionInfo {
 
@@ -75,7 +78,7 @@ public class ServerVersionInfo {
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
             } catch (ReflectiveOperationException ignored) {
                 throw new IllegalStateException(String.format(
-                        "Your server version (%s - %s) is no longer supported.",
+                        "Your server version (%s - %s) is no longer supported. Please use an older version of TAB.",
                         minecraftVersion, serverPackage
                 ));
             }
@@ -108,14 +111,14 @@ public class ServerVersionInfo {
 
         if (serverVersion == ProtocolVersion.UNKNOWN) {
             throw new IllegalStateException(String.format(
-                    "Unknown server version (%s), can not find implementation.",
+                    "Unknown server version (%s), cannot find implementation.",
                     minecraftVersion
             ));
         }
         String implementation = (serverName.equals("Paper") ? paperVersions : spigotVersions).get(serverVersion);
         if (implementation == null) {
             throw new IllegalStateException(String.format(
-                    "Your server version (%s %s) is no longer supported.",
+                    "Your server version (%s %s) is no longer supported. Please use an older version of TAB.",
                     serverName, minecraftVersion
             ));
         }
