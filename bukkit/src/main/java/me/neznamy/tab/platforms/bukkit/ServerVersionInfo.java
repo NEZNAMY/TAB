@@ -38,6 +38,10 @@ public class ServerVersionInfo {
     @Setter
     private ImplementationProvider implementationProvider;
 
+    /** Name of the implementation package (such as v1_7_R4 or paper_1_20_5) */
+    @Nullable
+    private String implementationPackage;
+
     /**
      * Constructs new instance and detects server version info.
      */
@@ -76,6 +80,7 @@ public class ServerVersionInfo {
             // Paper <1.20.5 or Spigot 1.x
             try {
                 // Does not actually support flat 1.19, but whatever, no one is using it anyway
+                implementationPackage = serverPackage;
                 return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + serverPackage + ".NMSImplementationProvider").getConstructor().newInstance();
             } catch (ReflectiveOperationException ignored) {
                 throw new IllegalStateException(String.format(
@@ -124,6 +129,7 @@ public class ServerVersionInfo {
             ));
         }
         try {
+            implementationPackage = implementation;
             return (ImplementationProvider) Class.forName("me.neznamy.tab.platforms.bukkit." + implementation + ".NMSImplementationProvider").getConstructor().newInstance();
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(String.format(

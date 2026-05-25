@@ -240,6 +240,7 @@ public class BukkitPlatform implements BackendPlatform {
                 () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
         metrics.addCustomChart(new SimplePie("tab_6_1_0_servers",
                 () -> serverVersionInfo.getServerName() + " " + serverVersionInfo.getServerVersion().getFriendlyName()));
+        metrics.addCustomChart(new SimplePie("tab_6_1_0_package", serverVersionInfo::getImplementationPackage));
     }
 
     @Override
