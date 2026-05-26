@@ -18,6 +18,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.function.Consumer;
@@ -28,14 +29,25 @@ import java.util.function.Function;
  */
 public class FoliaPlatform extends BukkitPlatform {
 
+    /** Global tick thread scheduler */
+    @NotNull
+    private final Object globalScheduler;
+
+    /** FoliaGlobalRegionScheduler#execute(Plugin, Runnable) method */
+    private final Method globalScheduler_execute;
+
     /**
      * Constructs new instance with given plugin.
      *
      * @param   plugin
      *          Plugin
      */
+    @SneakyThrows
+    @SuppressWarnings("JavaReflectionMemberAccess")
     public FoliaPlatform(@NotNull JavaPlugin plugin) {
         super(plugin);
+        globalScheduler = Bukkit.class.getMethod("getGlobalRegionScheduler").invoke(null);
+        globalScheduler_execute = globalScheduler.getClass().getMethod("execute", Plugin.class, Runnable.class);
     }
 
     @Override
@@ -142,5 +154,19 @@ public class FoliaPlatform extends BukkitPlatform {
         Consumer<?> consumer = $ -> task.run(); // Reflection and lambdas don't go together
         entityScheduler.getClass().getMethod("run", Plugin.class, Consumer.class, Runnable.class)
                 .invoke(entityScheduler, getPlugin(), consumer, null);
+    }
+
+    /**
+     * Runs task in global tick thread. It's using reflection, because
+     * Folia uses Java 17 while TAB maintains Java 8 compatibility for compatibility
+     * with MC versions older than their player base.
+     *
+     * @param   task
+     *          Task to run
+     */
+    @Override
+    @SneakyThrows
+    public void runSyncGlobal(@NotNull Runnable task) {
+        globalScheduler_execute.invoke(globalScheduler, getPlugin(), task);
     }
 }

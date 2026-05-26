@@ -30,7 +30,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final ChatFormatting[] formats = ChatFormatting.values();
     private static final net.minecraft.world.scores.Team.CollisionRule[] collisions = net.minecraft.world.scores.Team.CollisionRule.values();
     private static final net.minecraft.world.scores.Team.Visibility[] visibilities = net.minecraft.world.scores.Team.Visibility.values();
-    private static final Scoreboard dummyScoreboard = new Scoreboard();
+    protected static final Scoreboard dummyScoreboard = new Scoreboard();
     private static final Field players = ReflectionUtils.getOnlyField(ClientboundSetPlayerTeamPacket.class, Collection.class);
 
     /**
@@ -170,7 +170,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
      * @param   packet
      *          Packet to send
      */
-    private void sendPacket(@NotNull Packet<?> packet) {
+    protected void sendPacket(@NotNull Packet<?> packet) {
         ((CraftPlayer)player.getPlayer()).getHandle().connection.send(packet);
     }
 }

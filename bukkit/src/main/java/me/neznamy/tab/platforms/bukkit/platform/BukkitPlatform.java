@@ -371,11 +371,21 @@ public class BukkitPlatform implements BackendPlatform {
      * Runs task in the main thread for given entity.
      *
      * @param   entity
-     *          Entity's main thread
+     *          Entity to run the task for
      * @param   task
      *          Task to run
      */
     public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
+        Bukkit.getScheduler().runTask(plugin, task);
+    }
+
+    /**
+     * Runs task in the global tick thread.
+     *
+     * @param   task
+     *          Task to run
+     */
+    public void runSyncGlobal(@NotNull Runnable task) {
         Bukkit.getScheduler().runTask(plugin, task);
     }
 
