@@ -17,9 +17,13 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,6 +36,8 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final net.minecraft.world.scores.Team.Visibility[] visibilities = net.minecraft.world.scores.Team.Visibility.values();
     private static final Scoreboard dummyScoreboard = new Scoreboard();
     private static final Field players = ReflectionUtils.getOnlyField(ClientboundSetPlayerTeamPacket.class, Collection.class);
+    private static final Constructor<?> teamPacketConstructor = getTeamPacketConstructor();
+    private static final List<Field> parameterFields = getParameterFields();
 
     /**
      * Constructs new instance with given player.
@@ -45,15 +51,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerObjective(@NonNull Objective objective) {
-        net.minecraft.world.scores.Objective obj = new net.minecraft.world.scores.Objective(
-                dummyScoreboard,
-                objective.getName(),
-                ObjectiveCriteria.DUMMY,
-                objective.getTitle().convert(),
-                RenderType.values()[objective.getHealthDisplay().ordinal()],
-                false,
-                objective.getNumberFormat() == null ? null : objective.getNumberFormat().toFixedFormat(FixedFormat::new)
-        );
+        net.minecraft.world.scores.Objective obj = createObjective(objective);
         objective.setPlatformObjective(obj);
         sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.REGISTER));
     }
@@ -73,9 +71,8 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateObjective(@NonNull Objective objective) {
-        net.minecraft.world.scores.Objective obj = (net.minecraft.world.scores.Objective) objective.getPlatformObjective();
-        obj.setDisplayName(objective.getTitle().convert());
-        obj.setRenderType(RenderType.values()[objective.getHealthDisplay().ordinal()]);
+        net.minecraft.world.scores.Objective obj = createObjective(objective);
+        objective.setPlatformObjective(obj);
         sendPacket(new ClientboundSetObjectivePacket(obj, ObjectiveAction.UPDATE));
     }
 
@@ -103,10 +100,7 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void registerTeam(@NonNull Team team) {
-        updateTeamProperties(team);
-        PlayerTeam t = (PlayerTeam) team.getPlatformTeam();
-        t.getPlayers().addAll(team.getPlayers());
-        sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(t, true));
+        sendPacket(createTeamPacket(team, true));
     }
 
     @Override
@@ -116,19 +110,55 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
 
     @Override
     public void updateTeam(@NonNull Team team) {
-        updateTeamProperties(team);
-        sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket((PlayerTeam) team.getPlatformTeam(), false));
+        sendPacket(createTeamPacket(team, false));
     }
 
-    private void updateTeamProperties(@NonNull Team team) {
-        PlayerTeam t = (PlayerTeam) team.getPlatformTeam();
-        t.setAllowFriendlyFire((team.getOptions() & 0x01) != 0);
-        t.setSeeFriendlyInvisibles((team.getOptions() & 0x02) != 0);
-        t.setColor(formats[team.getColor().ordinal()]);
-        t.setCollisionRule(collisions[team.getCollision().ordinal()]);
-        t.setNameTagVisibility(visibilities[team.getVisibility().ordinal()]);
-        t.setPlayerPrefix(team.getPrefix().convert());
-        t.setPlayerSuffix(team.getSuffix().convert());
+    @NotNull
+    private net.minecraft.world.scores.Objective createObjective(@NonNull Objective objective) {
+        return new net.minecraft.world.scores.Objective(
+                dummyScoreboard,
+                objective.getName(),
+                ObjectiveCriteria.DUMMY,
+                objective.getTitle().convert(),
+                RenderType.values()[objective.getHealthDisplay().ordinal()],
+                false,
+                objective.getNumberFormat() == null ? null : objective.getNumberFormat().toFixedFormat(FixedFormat::new)
+        );
+    }
+
+    @NotNull
+    @SneakyThrows
+    private ClientboundSetPlayerTeamPacket createTeamPacket(@NonNull Team team, boolean create) {
+        ClientboundSetPlayerTeamPacket.Parameters parameters = new ClientboundSetPlayerTeamPacket.Parameters(new PlayerTeam(dummyScoreboard, team.getName()));
+        parameterFields.get(1).set(parameters, team.getPrefix().convert());
+        parameterFields.get(2).set(parameters, team.getSuffix().convert());
+        parameterFields.get(3).set(parameters, visibilities[team.getVisibility().ordinal()]);
+        parameterFields.get(4).set(parameters, collisions[team.getCollision().ordinal()]);
+        parameterFields.get(5).set(parameters, formats[team.getColor().ordinal()]);
+        parameterFields.get(6).setInt(parameters, team.getOptions());
+        return (ClientboundSetPlayerTeamPacket) teamPacketConstructor.newInstance(
+                team.getName(),
+                create ? TeamAction.CREATE : TeamAction.UPDATE,
+                Optional.of(parameters),
+                create ? team.getPlayers() : Collections.emptyList()
+        );
+    }
+
+    @SneakyThrows
+    @NotNull
+    private static Constructor<?> getTeamPacketConstructor() {
+        return ReflectionUtils.setAccessible(ClientboundSetPlayerTeamPacket.class.getDeclaredConstructor(String.class, int.class, Optional.class, Collection.class));
+    }
+
+    @NotNull
+    private static List<Field> getParameterFields() {
+        List<Field> fields = new ArrayList<>();
+        for (Field field : ClientboundSetPlayerTeamPacket.Parameters.class.getDeclaredFields()) {
+            if (!Modifier.isStatic(field.getModifiers())) {
+                fields.add(ReflectionUtils.setAccessible(field));
+            }
+        }
+        return fields;
     }
 
     @Override
