@@ -150,6 +150,7 @@ public class FoliaPlatform extends BukkitPlatform {
     @SneakyThrows
     @SuppressWarnings("JavaReflectionMemberAccess")
     public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
+        if (!getPlugin().isEnabled()) return; // Server shutdown, no one cares anymore, everyone is about to be kicked
         Object entityScheduler = Entity.class.getMethod("getScheduler").invoke(entity);
         Consumer<?> consumer = $ -> task.run(); // Reflection and lambdas don't go together
         entityScheduler.getClass().getMethod("run", Plugin.class, Consumer.class, Runnable.class)
@@ -167,6 +168,7 @@ public class FoliaPlatform extends BukkitPlatform {
     @Override
     @SneakyThrows
     public void runSyncGlobal(@NotNull Runnable task) {
+        if (!getPlugin().isEnabled()) return; // Server shutdown, no one cares anymore, everyone is about to be kicked
         globalScheduler_execute.invoke(globalScheduler, getPlugin(), task);
     }
 }
