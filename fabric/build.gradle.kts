@@ -14,11 +14,12 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/") // Adventure
 }
 
-val minecraftVersion = "26.1.2"
+val minecraftVersion = "26.2-pre-1"
 
 // Fabric API versions for each Minecraft version for easier backporting
 // Official website (for updating in the future): https://fabricmc.net/develop/
 val fabricApiVersions = mapOf(
+    "26.2-pre-1" to "0.149.2+26.2",
     "26.1.2" to "0.146.1+26.1.2"
 )
 
