@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -150,11 +149,9 @@ public class FoliaPlatform extends BukkitPlatform {
     @SneakyThrows
     @SuppressWarnings("JavaReflectionMemberAccess")
     public void runSync(@NotNull Entity entity, @NotNull Runnable task) {
-        if (!getPlugin().isEnabled()) return; // Server shutdown, no one cares anymore, everyone is about to be kicked
         Object entityScheduler = Entity.class.getMethod("getScheduler").invoke(entity);
-        Consumer<?> consumer = $ -> task.run(); // Reflection and lambdas don't go together
-        entityScheduler.getClass().getMethod("run", Plugin.class, Consumer.class, Runnable.class)
-                .invoke(entityScheduler, getPlugin(), consumer, null);
+        entityScheduler.getClass().getMethod("execute", Plugin.class, Runnable.class, Runnable.class, long.class)
+                .invoke(entityScheduler, getPlugin(), task, null, 1L);
     }
 
     /**
@@ -168,7 +165,6 @@ public class FoliaPlatform extends BukkitPlatform {
     @Override
     @SneakyThrows
     public void runSyncGlobal(@NotNull Runnable task) {
-        if (!getPlugin().isEnabled()) return; // Server shutdown, no one cares anymore, everyone is about to be kicked
         globalScheduler_execute.invoke(globalScheduler, getPlugin(), task);
     }
 }
