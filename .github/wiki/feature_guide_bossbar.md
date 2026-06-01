@@ -121,7 +121,7 @@ Finally, set your Bossbar color in TAB Config to `WHITE`. Now the line will be i
 
 # Troubleshooting
 This is a collection of tips to help you figure out why the feature isn't working as you expect.  
-To get started, run `/tab dump <affected player` and open the generated link. Scroll down to `features` -> `BossBar` and check the content:
+To get started, run `/tab dump <affected player>` and open the generated link. Scroll down to `features` -> `BossBar` and check the content:
 * If it says `BossBar: Feature is disabled`, it means you disabled the feature. Enable it by setting
   ```
   bossbar:

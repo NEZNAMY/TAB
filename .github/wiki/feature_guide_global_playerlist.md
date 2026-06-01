@@ -10,7 +10,7 @@
 * ~Limitations~
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * ~Additional Info~
-* ~Troubleshooting~
+* [Troubleshooting](#troubleshooting)
 * ~API~
 * ~Examples~
 
@@ -138,3 +138,25 @@ Here are TAB's internal placeholders you can use when this feature is enabled:
 
 # Compatibility with other plugins
 For compatibility with vanish plugins, vanish status must be detected correctly. See [Additional information - Vanish detection](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection) for more info.
+
+# Troubleshooting
+> [!NOTE]
+> This functionality is coming in the next TAB update (6.0.3 / 6.1.0). Adding it here to prepare the wiki in advance (and for users using dev builds).
+
+This is a collection of tips to help you figure out why the feature isn't working as you expect.  
+To get started, run `/tab dump <player looking at the tablist>` and open the generated link. Scroll down to `features` -> `GlobalPlayerList` and check the content:
+* If it says `GlobalPlayerList: Feature is disabled`, it means you did not enable the feature. Enable it by setting
+  ```
+  global-playerlist:
+    enabled: true
+  ```
+* Check the `configuration` section and compare it with your config file. If it's different, you either forgot to reload TAB, uploaded the config to the wrong server, or did not upload it at all.
+* Check the `player info` section and make sure everything is as expected - server name, server group and other servers in that group. If server name says `N/A`, it means you did not configure `server-name` (TODO create section and link it).
+* Check the `visibility from viewer's perspective` table. Find the target player who the viewer should see but doesn't (or vice versa) and check their server, server group and whether they should be visible or not.
+  <br /> **If "visible" doesn't match the expected result, but matches what is shown in-game:**
+  * See the full message for a hint why the player is or is not visible
+  * Make sure server groups are configured as desired
+  * If the issue involves vanishing, see [Vanish Detection](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection). In short, make sure the player has `tab.seevanished` permission to see vanished players and if the vanish plugin is PremiumVanish, its layered vanish system does not block the target player from being seen by the viewer
+
+  **If "visible" matches the expected result, but not in-game result:**
+  * If both players are on the same server, the visibility is managed purely by the server (and plugins there), not by TAB. It means the player was hidden by another plugin or not shown by the server itself, for example when using redis to connect the servers and TAB, but the different servers acting  as one do not share tablist information between them.

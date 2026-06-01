@@ -172,10 +172,10 @@ See table below for behavior based on your setup.
 
 # MiniMessage
 TAB has [MiniMessage](https://docs.advntr.dev/minimessage/format.html) hook, however, it does not include this library on its own. Including it would cause conflicts, so it has to be included in the server software.
-* It **is** included in **Paper 1.18.2+**, **Velocity** and **Sponge**.
+* It **is** included in **Paper 1.18.2+** and **Velocity**.
 * It **is not** included in **Spigot**, any server software for **1.18.1-**, **BungeeCord**, **Fabric**, **Forge** and **NeoForge**.
 
-When MiniMessage is detected on your server, it is automatically used. All codes are translated to MiniMessage syntax and then parsed by MiniMessage.
+When MiniMessage is detected on your server, it is automatically used unless support is disabled. All codes are translated to MiniMessage syntax and then parsed by MiniMessage.
 
 # Config options
 | Option name              | Default value | Description                                                                                                                                |

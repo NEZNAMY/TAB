@@ -25,7 +25,7 @@
   * [Example 2 - Per-world playerlist](#example-2---per-world-playerlist)
 
 # About
-This feature allows you to customize all 80 tablist slots. Displaying less than 4 columns is currently not supported ([here's why](https://gist.github.com/NEZNAMY/3dfcbf7d44283735d3c18266a2851651)). This feature can be enabled and configured in **config.yml** file under **layout** section.
+This feature allows you to customize all 80 tablist slots (possibly less on 1.19.3+). This feature can be enabled and configured in **config.yml** file under **layout** section.
 
 This feature is only available for versions **1.8** and up due to massive tablist changes, which would make 1.7- compatibility require a complete rewrite of the functionality and could still cause all kinds of visual issues, including, but not limited to compatibility with other plugins adding/removing players from the tablist.
 

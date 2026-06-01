@@ -116,7 +116,7 @@ Commands have required permissions associated with them.
 
 ## /tab nametag <showview/hideview/toggleview> \[viewer\] \[options\]
 * **Permission:** `tab.nametag.view` (`tab.nametag.view.other` for toggling for other players)
-* **Description:** Shows / hides / toggles nametag VIEW a specified player.
+* **Description:** Shows / hides / toggles nametag VIEW of a specified player. When hidden, the viewer will not see anyone's nametags.
 * **Options:**
   * `-s` for silent toggling (no chat message for affected player)
 

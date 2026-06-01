@@ -113,7 +113,8 @@ In Minecraft version 26.1, Mojang "fixed" [MC-99647](https://bugs.mojang.com/bro
 **This is a client-sided bug. You will experience it on 26.1.x regardless of the server version**.  
 If your server is on 26.1.x, or you support players with this version through ViaVersion, this might be a dealbreaker for you. If that's the case, either disable this feature entirely, or set
 ```
-disable-condition: "%player-version-id%=775"
+belowname-objective:
+  disable-condition: "%player-version-id%=775"
 ```
 which will make 26.1.x players not see this feature on anyone (remember: disabling this feature disables it for the viewer, not target players).  
 **This bug was fixed in Minecraft version 26.2.**

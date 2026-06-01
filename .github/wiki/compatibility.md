@@ -16,94 +16,46 @@ TAB's shared module is compiled with Java 8. For the platforms themselves, TAB d
 * Bukkit and BungeeCord are ok with Java 8
 
 # Supported server software and versions
-The table below shows which server software and Minecraft versions are supported by TAB.  
-The plugin is being developed for the latest Minecraft version, so support for older versions may be dropped at some point in the future.  
-If you want to use TAB on an unsupported version, you can try using an older version of the plugin or request a backport.  
-Explanation of values in the table:
-* ✔ = Supported by the latest release.
-* ❌ = Not supported at all.
-* `/` = Software does not exist for this Minecraft version, so support is not possible.
-* `<version>` = Latest version of TAB that supports this version.
-* `<version> backport` = Latest version of TAB that supports this version. A backport of this TAB version was made to support an older MC version and uploaded to [Modrinth](https://modrinth.com/plugin/tab-was-taken). Use its download filter to find the correct jar for your server software and version.
+With the introduction of new Minecraft versions, it is becoming harder and harder to support many versions in the same jar, eventually making it impossible since Minecraft 26.1.  
+**As a general rule, if you want the latest TAB version for your server please use [Modrinth](https://modrinth.com/plugin/tab-was-taken)'s download filter where you can select your server software and version and you'll get the latest jar.**
 
-| Minecraft version \ Server software | Bukkit | Fabric         | Forge          | NeoForge       | Sponge |
-|-------------------------------------|--------|----------------|----------------|----------------|--------|
-| 26.1 - 26.1.2                       | ✔      | ✔              | ❌              | ✔              | ❌      |
-| 1.21.11                             | ✔      | 6.0.1          | 6.0.1          | 6.0.1          | ❌      |
-| 1.21.10                             | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.3.2  |
-| 1.21.9                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.3.2  |
-| 1.21.8                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.5  |
-| 1.21.7                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.5  |
-| 1.21.6                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.5  |
-| 1.21.5                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
-| 1.21.4                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
-| 1.21.3                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
-| 1.21.2                              | ✔      | 5.5.0 backport | /              | 5.5.0 backport | 5.2.1  |
-| 1.21.1                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
-| 1.21                                | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
-| 1.20.6                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
-| 1.20.5                              | ✔      | 5.5.0 backport | /              | 5.5.0 backport | /      |
-| 1.20.4                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
-| 1.20.3                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | /      |
-| 1.20.2                              | ✔      | 5.5.0 backport | 5.5.0 backport | 5.5.0 backport | 5.2.1  |
-| 1.20.1                              | ✔      | 5.5.0 backport | 5.5.0 backport | /              | 5.2.1  |
-| 1.20                                | ✔      | 5.5.0 backport | 5.5.0 backport | /              | 5.2.1  |
-| 1.19.4                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.19.3                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.19.2                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.19.1                              | ✔      | 5.0.7          | ❌              | /              | /      |
-| 1.19                                | 5.2.0  | 5.0.7          | ❌              | /              | /      |
-| 1.18.2                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.18.1                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.18                                | 5.5.0  | 5.0.7          | ❌              | /              | /      |
-| 1.17.1                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.17                                | ✔      | 5.0.7          | /              | /              | 5.2.1  |
-| 1.16.5                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.16.4                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.16.3                              | 5.5.0  | 5.0.7          | ❌              | /              | /      |
-| 1.16.2                              | 5.5.0  | 5.0.7          | ❌              | /              | /      |
-| 1.16.1                              | 5.5.0  | 5.0.7          | ❌              | /              | /      |
-| 1.16                                | 5.5.0  | 5.0.7          | /              | /              | /      |
-| 1.15.2                              | ✔      | 5.0.7          | ❌              | /              | 5.2.1  |
-| 1.15.1                              | ✔      | 5.0.7          | ❌              | /              | /      |
-| 1.15                                | ✔      | 5.0.7          | ❌              | /              | /      |
-| 1.14.4                              | ✔      | 5.0.7          | ❌              | /              | /      |
-| 1.14.3                              | ✔      | 5.0.7          | ❌              | /              | /      |
-| 1.14.2                              | ✔      | 5.0.7          | ❌              | /              | /      |
-| 1.14.1                              | ✔      | 5.0.7          | /              | /              | /      |
-| 1.14                                | ✔      | 5.0.7          | /              | /              | /      |
-| 1.13.2                              | ✔      | /              | ❌              | /              | /      |
-| 1.13.1                              | ✔      | /              | /              | /              | /      |
-| 1.13                                | 5.5.0  | /              | /              | /              | /      |
-| 1.12.2                              | ✔      | /              | ❌              | /              | 5.2.1  |
-| 1.12.1                              | ✔      | /              | ❌              | /              | 5.2.1  |
-| 1.12                                | ✔      | /              | ❌              | /              | 5.2.1  |
-| 1.11.1                              | ✔      | /              | /              | /              | 5.2.1  |
-| 1.11                                | ✔      | /              | ❌              | /              | 5.2.1  |
-| 1.10.2                              | ✔      | /              | ❌              | /              | 5.2.1  |
-| 1.10.1                              | ✔      | /              | /              | /              | /      |
-| 1.10                                | ✔      | /              | ❌              | /              | /      |
-| 1.9.4                               | ✔      | /              | ❌              | /              | 5.2.1  |
-| 1.9.3                               | ✔      | /              | /              | /              | /      |
-| 1.9.2                               | 5.5.0  | /              | /              | /              | /      |
-| 1.9.1                               | 5.5.0  | /              | /              | /              | /      |
-| 1.9                                 | 5.5.0  | /              | ❌              | /              | 5.2.1  |
-| 1.8.8                               | ✔      | /              | ❌              | /              | ❌      |
-| 1.8.5 - 1.8.7                       | ✔      | /              | /              | /              | /      |
-| 1.8.1 - 1.8.4                       | 5.5.0  | /              | /              | /              | /      |
-| 1.8                                 | 5.5.0  | /              | ❌              | /              | ❌      |
-| 1.7.10                              | ✔      | /              | ❌              | /              | /      |
-| 1.7.3 - 1.7.9                       | 5.5.0  | /              | /              | /              | /      |
-| 1.7.2                               | 5.5.0  | /              | ❌              | /              | /      |
-| 1.5 - 1.6.4                         | 5.2.5  | /              | ❌              | /              | /      |
+Currently, the latest Minecraft version supported by TAB is 26.1.2. When new versions come out, TAB is always updated soon after to support them.
 
+If your server software and version is reasonably popular and TAB hasn't been backported to that version in a very long time, you may [request a backport](https://github.com/NEZNAMY/TAB/issues/new/choose) (unless backports to that version are no longer offered, see below).  
+Since TAB 6.0.0, Minecraft 1.x started taking hits with each subsequent versions - Bukkit versions started disappearing and **modded platforms no longer offer backports of TAB 6.0.0+ to MC 1.x** (this is because the build scripts had to be massively changed for MC 26+).
 
+The sections below provide **additional** information for each platform.
+
+## Bukkit
+TAB 5.5.0 supports all 1.x versions starting with 1.7. For 1.5.2 - 1.6.4, use TAB v5.2.5.  
+Since TAB 6.0.0, support for unused 1.x versions will continue to disappear with each subsequent Minecraft release.
+
+## BungeeCord / Velocity
 For proxies, the plugin is made to work with the latest build.
 Since breaking changes don't happen too often, it means a wide range of versions is usually supported.
 When a breaking change occurs, the plugin is updated to support the new version,
 automatically making old versions incompatible.
 Since proxies support all client versions, there is never a reason to stay outdated,
 so you can always safely update to a new build of your proxy software if the plugin requires it.
+
+## Fabric
+Every TAB update only supports the latest Fabric version(s) at the time of release.
+
+Minecraft 1.x - TAB 5.5.0 was backported to 1.20 - 1.21.11 and the jars were uploaded to Modrinth. TAB 5.0.7 supports all Fabric versions from 1.14 to 1.19.4. Backports to 1.x are no longer offered.
+
+## Forge
+Every TAB update only supports the latest Forge version(s) at the time of release.  
+**Currently, Forge 26.x is not supported because the modding tool is broken**.
+
+Minecraft 1.x - TAB 5.5.0 was backported to 1.20 - 1.21.11 and the jars were uploaded to Modrinth, along with a few other random versions people requested. If your version is not available, you may request a backport.
+
+## NeoForge
+Every TAB update only supports the latest NeoForge version(s) at the time of release.
+
+Minecraft 1.x - TAB 5.5.0 was backported to all existing NeoForge versions (1.20.2+) and the jars were uploaded to Modrinth. Backports to 1.x are no longer offered.
+
+## Sponge
+This platform is no longer supported as no one is using it and it has breaking changes to the API with each Minecraft version. Sponge is supposed to be combined with Forge or NeoForge, both of which TAB supports. You can use Modrinth's download filter to see what is available.
 
 # Supported features per platform
 | Feature          <sup>Platform</sup>                                                                                                                               | Bukkit / Hybrid | Fabric / Forge / NeoForge | BungeeCord | Velocity                                                                   |
@@ -144,7 +96,6 @@ Some are available on all platforms, some only in a few.
 * **Waterfall**'s `disable_tab_list_rewrite: true` **may** cause tablist to use offline UUIDs while TAB expects online UUIDs, causing various problems (most notably tablist formatting not working). Checking for this option is not an option either, because tablist rewrite might still be enabled despite being disabled (don't ask how, I have no idea). Set the option to `false` if you are experiencing issues.
 * **ViaVersion on proxy and TAB on backend** acts like a client-sided protocol hack, making it impossible for TAB to know player's real version and causing issues related to it, see [Per-version experience](https://github.com/NEZNAMY/TAB/wiki/Additional-information#per-version-experience) for more info. Avoid this combination. Either install ViaVersion on all backend servers instead or install TAB on the proxy as well.
 * **Nexo**'s `hide_scoreboard_numbers` config option (may apply to ItemsAdder and Oraxen as well) makes [Belowname](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname)'s and [Playerlist objective](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Playerlist-Objective)'s `value` and `fancy-value` not visible. When using these features, you'll need to keep the option disabled.
-* **LimboAuth** may prevent TAB from applying tablist formatting in a way that is not detectable using Velocity API, resulting in the feature not working properly on join.
 * **Custom clients / resource packs** - Unofficially modified Minecraft clients often tend to break things. Just Lunar client has tons of bugs that can be reproduced with TAB. Resource packs may also contain modifications you are not aware of, making things not look the way you want them to. If you are experiencing any visual issue and are using a custom client or resource pack, try it with a clean vanilla client. If it works there, it's an issue with the client / resource pack and TAB cannot do anything about it.  
   For example, here are a few bugs in LunarClient / FeatherClient that you may run into when using TAB:
   * They add their icon to players in tablist, but don't widen the entries. This results in player names overlapping with latency bar. You can avoid this by configuring some spaces in tabsuffix.

@@ -11,6 +11,7 @@
     * [Example 1 - Adding brackets to placeholder output if it returns non-empty value](#example-1---adding-brackets-to-placeholder-output-if-it-returns-non-empty-value)
     * [Example 2 - Replicating PlaceholderAPI's %player_colored_ping%](#example-2---replicating-placeholderapis-player_colored_ping)
     * [Example 3 - Using both original and replaced output](#example-3---using-both-original-and-replaced-output)
+    * [Example 4 - Replacing identifier with custom text](#example-4---replacing-identifier-with-custom-text)
 
 # About
 Most placeholders don't have fully configurable output, making you unable to customize it as you'd like.
@@ -194,3 +195,15 @@ placeholder-output-replacements:
 Now, you can use `%ping%` for original output and `%animation:ping%` for replaced.
 
 </details>
+
+## Example 4 - Replacing identifier with custom text
+Sometimes a placeholder doesn't parse and instead returns the identifier itself (such as on proxy installation before Bridge responds back with placeholder values), but you want to display some default value to avoid issues (ugly text, warnings in console if used in sorting or conditions).
+
+This can be achieved in the following way:
+
+```
+placeholder-output-replacements:
+  "%my_placeholder%":
+    "%my_placeholder%": "Loading..."
+```
+If the placeholder is used in numeric sorting for example, you can make it default to `0` or anything else you need at the time.

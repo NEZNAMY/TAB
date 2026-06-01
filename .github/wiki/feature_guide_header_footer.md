@@ -9,7 +9,7 @@
 * [Compatibility with other plugins](#compatibility-with-other-plugins)
 * [Additional info](#additional-info)
   * [Additional note 1 - [1.8 - 1.20.1] Not resetting on server switch](#additional-note-1---18---1201-not-resetting-on-server-switch)
-* ~Troubleshooting~
+* [Troubleshooting](#troubleshooting)
 * [API](#api)
 * [Examples](#examples)
   * [Example 1 - Per-version header/footer](#example-1---per-version-headerfooter)
@@ -115,7 +115,21 @@ When under a BungeeCord network and having TAB installed on backend server and s
 * Install TAB on BungeeCord and disable header/footer on the server.
 * Install a plugin that sends some, or even empty header/footer on join.
 
-Velocity sends reset packet, so it isn't a problem there.
+Velocity sends a reset packet on server switch, so it isn't a problem there. It is also not a problem since 1.20.2, where configuration phase was added.
+
+# Troubleshooting
+This is a collection of tips to help you figure out why the feature isn't working as you expect.  
+To get started, run `/tab dump <affected player>` and open the generated link. Scroll down to `features` -> `HeaderFooter` and check the content:
+* If it says `HeaderFooter: Feature is disabled`, it means you disabled the feature. Enable it by setting
+  ```
+  header-footer:
+    enabled: true
+  ```
+* Check the `configuration` section and compare it with your config file. If it's different, you either forgot to reload TAB, or uploaded the config to the wrong server (or did not upload it at all).
+* Check the `chain` section and for each design and analyze the `display-condition` options (the value, with placeholders parsed, whether it is met or not) if it matches what you expect. If not, you may have made a mistake in your conditions. If more display conditions for more than 1 design are met, the first design with display condition met is displayed. See [Chaining designs](#chaining-designs) for more info.
+* Check `currently displayed design` and compare it with your expectations, as well as the actual in-game result. If it doesn't match your expectations, you didn't configure something correctly.
+* Make sure you don't have another plugin sending header/footer, such as CMI. While TAB should block other plugins from applying it, this functionality is not available on Velocity installation.
+
 
 # API
 *To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*
@@ -176,9 +190,8 @@ header-footer:
 
 ## Example 3 - Dynamic line count
 The entire header is just a single character sequence that allows newline symbol (`\n`) for new lines. It is only being split into multiple lines in config for convenience to make it readable when configuring and editing. Same for footer.  
-If using a placeholder that returns the newline symbol, it will create a new line. You can use this to your advantage and create a [conditional placeholder](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) or an [animation](https://github.com/NEZNAMY/TAB/wiki/Animations) that includes newline in some frames.
-<details>
-  <summary>Example</summary>
+If using a placeholder that returns the newline symbol, it will create a new line. You can use this to your advantage and create a [conditional placeholder](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders) or an [animation](https://github.com/NEZNAMY/TAB/wiki/Animations) that includes newline in some frames.  
+**Example**:
 
 **animations.yml**
 ```
@@ -196,4 +209,3 @@ header-footer:
       header:
         - "%animation:MyAnimation%"
 ```
-</details>
