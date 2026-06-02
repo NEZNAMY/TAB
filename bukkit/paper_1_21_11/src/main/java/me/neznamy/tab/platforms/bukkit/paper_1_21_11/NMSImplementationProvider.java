@@ -8,6 +8,7 @@ import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabListEntryTracker;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -18,13 +19,20 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class NMSImplementationProvider implements ImplementationProvider {
 
+    /** Flag tracking if this server is Canvas 26.1.2+ with new scoreboard checks */
+    private final boolean isCanvas = ReflectionUtils.classExists("io.canvasmc.canvas.world.scores.TeamData");
+
     @NotNull
     private final ComponentConverter<?> componentConverter = new NMSComponentConverter();
     
     @Override
     @NotNull
     public Scoreboard newScoreboard(@NotNull BukkitTabPlayer player) {
-        return new NMSPacketScoreboard(player);
+        if (isCanvas) {
+            return new CanvasPacketScoreboard(player);
+        } else {
+            return new NMSPacketScoreboard(player);
+        }
     }
 
     @Override
