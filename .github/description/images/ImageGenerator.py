@@ -274,7 +274,7 @@ if __name__ == "__main__":
                  ]
     )
 
-    release = "6.0.2"
+    release = "6.0.3"
     download_image(f"https://img.shields.io/badge/Release-{release}-blue.svg", "Badge_Release.svg")
 
     java = "8+"
