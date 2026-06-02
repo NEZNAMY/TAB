@@ -1,1 +1,1 @@
-This is a backup of the repository at the state of 6.0.2 release.
+This is a backup of the repository at the state of 6.0.3 release.
