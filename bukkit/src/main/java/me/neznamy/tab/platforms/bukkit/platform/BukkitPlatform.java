@@ -378,6 +378,16 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     /**
+     * Runs task in the global tick thread.
+     *
+     * @param   task
+     *          Task to run
+     */
+    public void runSyncGlobal(@NotNull Runnable task) {
+        Bukkit.getScheduler().runTask(plugin, task);
+    }
+
+    /**
      * Converts component to string using bukkit RGB format if supported by the server.
      * If not, closest legacy color is used instead.
      *
