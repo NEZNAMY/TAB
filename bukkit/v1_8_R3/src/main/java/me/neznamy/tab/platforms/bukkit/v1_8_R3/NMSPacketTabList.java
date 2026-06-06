@@ -162,22 +162,26 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         }
         if (rewritePacket) {
             PacketPlayOutPlayerInfo newPacket = new PacketPlayOutPlayerInfo(action, Collections.emptyList());
-            PLAYERS.set(newPacket, updatedList);
+            List<PlayerInfoData> entries = (List<PlayerInfoData>) PLAYERS.get(newPacket);
+            entries.clear();
+            entries.addAll(updatedList);
             return newPacket;
         }
         return packet;
     }
 
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     private void sendPacket(@NonNull EnumPlayerInfoAction action, @NonNull UUID id, @NonNull String name,
                             @Nullable Skin skin, int latency, int gameMode, @Nullable TabComponent displayName) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(action);
-        PLAYERS.set(packet, Collections.singletonList(packet.new PlayerInfoData(
+        List<PlayerInfoData> entries = (List<PlayerInfoData>) PLAYERS.get(packet);
+        entries.add(packet.new PlayerInfoData(
                 createProfile(id, name, skin),
                 latency,
                 EnumGamemode.getById(gameMode),
                 displayName == null ? null : displayName.convert())
-        ));
+        );
         sendPacket(packet);
     }
 
