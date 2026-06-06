@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.numbers.FixedFormat;
 import net.minecraft.network.protocol.Packet;
@@ -17,9 +16,8 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -31,8 +29,16 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
     private static final net.minecraft.world.scores.Team.CollisionRule[] collisions = net.minecraft.world.scores.Team.CollisionRule.values();
     private static final net.minecraft.world.scores.Team.Visibility[] visibilities = net.minecraft.world.scores.Team.Visibility.values();
     protected static final Scoreboard dummyScoreboard = new Scoreboard();
-    private static final Field players = ReflectionUtils.getOnlyField(ClientboundSetPlayerTeamPacket.class, Collection.class);
+    private static final Constructor<ClientboundSetPlayerTeamPacket> teamConstructor;
 
+    static {
+        try {
+            teamConstructor = ClientboundSetPlayerTeamPacket.class.getDeclaredConstructor(String.class, int.class, Optional.class, Collection.class);
+            teamConstructor.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
     /**
      * Constructs new instance with given player.
      *
@@ -144,7 +150,15 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
         if (packet instanceof ClientboundSetPlayerTeamPacket team) {
             int action = getMethod(team);
             if (action != TeamAction.UPDATE) {
-                players.set(team, onTeamPacket(action, team.getName(), team.getPlayers() == null ? Collections.emptyList() : team.getPlayers()));
+                Collection<String> players = team.getPlayers();
+                if (players != null) {
+                    return teamConstructor.newInstance(
+                            team.getName(),
+                            action,
+                            team.getParameters(),
+                            onTeamPacket(action, team.getName(), players)
+                    );
+                }
             }
         }
         return packet;
