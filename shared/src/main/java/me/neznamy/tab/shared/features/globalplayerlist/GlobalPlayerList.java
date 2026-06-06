@@ -315,7 +315,7 @@ public class GlobalPlayerList extends RefreshableFeature implements JoinListener
      */
     private boolean matchesAnyPattern(@NotNull String serverName, @NotNull List<String> patterns) {
         for (String pattern : patterns) {
-            if (TAB.getInstance().getDataManager().matchesServerPattern(serverName, pattern)) {
+            if (TAB.getInstance().getDataManager().matchesPattern(serverName, pattern)) {
                 return true;
             }
         }

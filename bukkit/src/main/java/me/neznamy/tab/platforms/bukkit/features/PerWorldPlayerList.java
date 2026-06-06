@@ -155,15 +155,21 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
             if (v.asBoolean() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
         }
         if ((configuration.isAllowBypassPermission() && viewer.hasPermission(TabConstants.Permission.PER_WORLD_PLAYERLIST_BYPASS)) || configuration.getIgnoredWorlds().contains(viewer.getWorld().getName())) return true;
-        String viewerWorldGroup = viewer.getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
-        String targetWorldGroup = target.getWorld().getName() + "-default";
+        return computeWorldGroup(viewer).equals(computeWorldGroup(target));
+    }
+
+    @NotNull
+    private String computeWorldGroup(@NotNull Player p) {
         for (Entry<String, List<String>> group : configuration.getSharedWorlds().entrySet()) {
-            if (group.getValue() != null) {
-                if (group.getValue().contains(viewer.getWorld().getName())) viewerWorldGroup = group.getKey();
-                if (group.getValue().contains(target.getWorld().getName())) targetWorldGroup = group.getKey();
+            List<String> worlds = group.getValue();
+            if (worlds == null) continue;
+            for (String world : worlds) {
+                if (TAB.getInstance().getDataManager().matchesPattern(p.getWorld().getName(), world)) {
+                    return group.getKey();
+                }
             }
         }
-        return viewerWorldGroup.equals(targetWorldGroup);
+        return p.getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
     }
 
     @NotNull

@@ -64,7 +64,7 @@ public class DataManager {
         if (globalPlayerListConfiguration == null) return null;
         for (ServerGroup group : serverGroups.values()) {
             for (String serverDefinition : group.getPatterns()) {
-                if (matchesServerPattern(server.getName(), serverDefinition)) {
+                if (matchesPattern(server.getName(), serverDefinition)) {
                     return group;
                 }
             }
@@ -77,32 +77,32 @@ public class DataManager {
     }
 
     /**
-     * Checks if a server name matches the given pattern. Supports:
+     * Checks if name of an object (server / world) matches the given pattern. Supports:
      * - Exact match: "lobby"
      * - Prefix wildcard: "lobby*"
      * - Suffix wildcard: "*lobby"
      * - Regex pattern: "regex:lobby-[0-9]+"
      *
-     * @param   serverName
-     *          Server name to check
+     * @param   objectName
+     *          Server / world name to check
      * @param   pattern
      *          Pattern to match against
-     * @return  {@code true} if server name matches the pattern, {@code false} otherwise
+     * @return  {@code true} if name matches the pattern, {@code false} otherwise
      */
-    public boolean matchesServerPattern(@NotNull String serverName, @NotNull String pattern) {
+    public boolean matchesPattern(@NotNull String objectName, @NotNull String pattern) {
         if (pattern.startsWith("regex:")) {
             try {
-                return Pattern.compile(pattern.substring(6)).matcher(serverName).matches();
+                return Pattern.compile(pattern.substring(6)).matcher(objectName).matches();
             } catch (PatternSyntaxException e) {
                 // Invalid regex pattern, treat as literal match
-                return serverName.equals(pattern);
+                return objectName.equals(pattern);
             }
         } else if (pattern.endsWith("*")) {
-            return serverName.startsWith(pattern.substring(0, pattern.length()-1));
+            return objectName.startsWith(pattern.substring(0, pattern.length()-1));
         } else if (pattern.startsWith("*")) {
-            return serverName.endsWith(pattern.substring(1));
+            return objectName.endsWith(pattern.substring(1));
         } else {
-            return serverName.equals(pattern);
+            return objectName.equals(pattern);
         }
     }
 }
