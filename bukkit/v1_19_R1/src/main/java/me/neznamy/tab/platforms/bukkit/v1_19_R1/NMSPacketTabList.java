@@ -4,12 +4,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
@@ -22,15 +21,12 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 /**
  * TabList implementation using direct NMS code.
  */
 public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
-
-    private static final Field PLAYERS = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfo.class, List.class);
 
     private static final EnumPlayerInfoAction ADD_PLAYER = EnumPlayerInfoAction.a;
     private static final EnumPlayerInfoAction UPDATE_GAME_MODE = EnumPlayerInfoAction.b;
@@ -161,23 +157,23 @@ public class NMSPacketTabList extends TrackedTabList<BukkitTabPlayer> {
         }
         if (rewritePacket) {
             PacketPlayOutPlayerInfo newPacket = new PacketPlayOutPlayerInfo(action, Collections.emptyList());
-            PLAYERS.set(newPacket, updatedList);
+            newPacket.b().clear();
+            newPacket.b().addAll(updatedList);
             return newPacket;
         }
         return packet;
     }
 
-    @SneakyThrows
     private void sendPacket(@NonNull EnumPlayerInfoAction action, @NonNull UUID id, @NonNull String name,
                             @Nullable Skin skin, int latency, int gameMode, @Nullable TabComponent displayName) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(action);
-        PLAYERS.set(packet, Collections.singletonList(new PlayerInfoData(
+        packet.b().add(new PlayerInfoData(
                 createProfile(id, name, skin),
                 latency,
                 EnumGamemode.a(gameMode),
                 displayName == null ? null : displayName.convert(),
                 null
-        )));
+        ));
         sendPacket(packet);
     }
 
