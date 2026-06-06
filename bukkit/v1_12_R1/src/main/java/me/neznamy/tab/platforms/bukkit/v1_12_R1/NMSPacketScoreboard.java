@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Scoreboard implementation using direct NMS code.
@@ -137,8 +136,11 @@ public class NMSPacketScoreboard extends SafeScoreboard<BukkitTabPlayer> {
             int action = TeamPacket_ACTION.getInt(packet);
             if (action != TeamAction.UPDATE) {
                 Collection<String> players = (Collection<String>) TeamPacket_PLAYERS.get(packet);
-                if (players == null) players = Collections.emptyList();
-                TeamPacket_PLAYERS.set(packet, onTeamPacket(action, (String) TeamPacket_NAME.get(packet), players));
+                if (players != null) {
+                    Collection<String> modified = onTeamPacket(action, (String) TeamPacket_NAME.get(packet), players);
+                    players.clear();
+                    players.addAll(modified);
+                }
             }
         }
         return packet;
