@@ -70,11 +70,16 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public void load() {
         TAB.getInstance().getPlatform().registerCustomCommand(configuration.getToggleCommand().replaceFirst("/", ""), (p, args) -> {
             if (!isActive()) return;
-            if (p.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE)) {
-                toggleScoreboard(p, true);
+            String[] forwardedArgs;
+            if (args.length == 0) {
+                forwardedArgs = new String[]{"scoreboard", "toggle"};
             } else {
-                p.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNoPermission());
+                forwardedArgs = new String[args.length + 2];
+                forwardedArgs[0] = "scoreboard";
+                forwardedArgs[1] = "toggle";
+                System.arraycopy(args, 0, forwardedArgs, 2, args.length);
             }
+            TAB.getInstance().getCommand().execute(p, forwardedArgs);
         });
         for (Entry<String, ScoreboardDefinition> entry : configuration.getScoreboards().entrySet()) {
             String scoreboardName = entry.getKey();
