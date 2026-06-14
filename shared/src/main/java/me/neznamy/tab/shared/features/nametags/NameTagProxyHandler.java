@@ -28,7 +28,8 @@ public class NameTagProxyHandler implements ProxyFeature {
                     player.teamData.teamName,
                     player.teamData.prefix.get(),
                     player.teamData.suffix.get(),
-                    player.teamData.getTeamVisibility(player) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER
+                    player.teamData.getTeamVisibility(player) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER,
+                    player.teamData.isDisabled()
             ));
         }
     }
@@ -52,6 +53,7 @@ public class NameTagProxyHandler implements ProxyFeature {
     @Override
     public void onJoin(@NotNull ProxyPlayer player) {
         if (player.getNametag() == null) return; // Player not loaded yet
+        if (player.getNametag().isDisabled()) return;
         for (TabPlayer viewer : feature.getOnlinePlayers().getPlayers()) {
             viewer.teamData.registerTeam(
                     player,

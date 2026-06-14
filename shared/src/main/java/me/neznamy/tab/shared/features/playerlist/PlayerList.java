@@ -189,6 +189,9 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
         } else {
             formatPlayerForEveryone(p, true);
         }
+        if (proxy != null) {
+            sendProxyMessage(p);
+        }
     }
 
     @NotNull
@@ -284,10 +287,10 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
             for (ProxyPlayer proxied : proxy.getProxyPlayers().values()) {
                 players.add(Arrays.asList(
                         "[Proxy] " + proxied.getName(),
-                        proxied.getTabFormat() == null ? "null" : "\"" + proxied.getTabFormat().getPrefix() + "\"",
-                        proxied.getTabFormat() == null ? "null" : "\"" + proxied.getTabFormat().getName() + "\"",
-                        proxied.getTabFormat() == null ? "null" : "\"" + proxied.getTabFormat().getSuffix() + "\"",
-                        "N/A"
+                        proxied.getTabFormat() == null ? "NULL" : "\"" + proxied.getTabFormat().getPrefix() + "\"",
+                        proxied.getTabFormat() == null ? "NULL" : "\"" + proxied.getTabFormat().getName() + "\"",
+                        proxied.getTabFormat() == null ? "NULL" : "\"" + proxied.getTabFormat().getSuffix() + "\"",
+                        proxied.getTabFormat() == null ? "NULL" : String.valueOf(proxied.getTabFormat().isDisabled())
                 ));
             }
         }
@@ -424,7 +427,8 @@ public class PlayerList extends RefreshableFeature implements TabListFormatManag
                     player.tablistData.prefix.get(),
                     player.tablistData.name.get(),
                     player.tablistData.suffix.get(),
-                    TabComponent.empty() // This instance is for writing, parsed is not needed on this side
+                    TabComponent.empty(), // This instance is for writing, parsed is not needed on this side
+                    player.tablistData.disabled.get()
             ));
         }
     }

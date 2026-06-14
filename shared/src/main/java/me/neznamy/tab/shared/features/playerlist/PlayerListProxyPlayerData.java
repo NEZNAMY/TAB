@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.proxy.QueuedData;
 import me.neznamy.tab.shared.features.proxy.message.ProxyMessage;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -47,6 +48,9 @@ public class PlayerListProxyPlayerData extends ProxyMessage {
     /** TabComponent of the format (parsed version of prefix + name + suffix) */
     @NotNull private final TabComponent formatComponent;
 
+    /** Whether the player has the feature disabled with condition or not */
+    private final boolean disabled;
+
     /**
      * Creates new instance and reads data from byte input.
      *
@@ -64,6 +68,7 @@ public class PlayerListProxyPlayerData extends ProxyMessage {
         name = in.readUTF();
         suffix = in.readUTF();
         formatComponent = feature.getCache().get(prefix + name + suffix);
+        disabled = in.readBoolean();
     }
 
     @Override
@@ -74,6 +79,7 @@ public class PlayerListProxyPlayerData extends ProxyMessage {
         out.writeUTF(prefix);
         out.writeUTF(name);
         out.writeUTF(suffix);
+        out.writeBoolean(disabled);
     }
 
     @Override
@@ -91,8 +97,18 @@ public class PlayerListProxyPlayerData extends ProxyMessage {
             TAB.getInstance().debug("Dropping tabformat update action for player " + target.getName() + " due to newer action already being present");
             return;
         }
+        PlayerListProxyPlayerData oldData = target.getTabFormat();
+
         target.setTabFormat(this);
         if (target.getConnectionState() == ProxyPlayer.ConnectionState.CONNECTED) {
+            if (disabled) {
+                if (!oldData.disabled) {
+                    for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                        viewer.getTabList().updateDisplayName(target.getTablistId(), null);
+                    }
+                }
+                return;
+            }
             feature.formatPlayerForEveryone(target);
         }
     }

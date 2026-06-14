@@ -36,6 +36,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
     @NotNull private final String suffix;
     @NotNull private final Scoreboard.NameVisibility nameVisibility;
     @Nullable private String resolvedTeamName;
+    private final boolean disabled;
 
     /**
      * Creates new instance and reads data from byte input.
@@ -53,6 +54,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
         prefix = in.readUTF();
         suffix = in.readUTF();
         nameVisibility = Scoreboard.NameVisibility.getByName(in.readUTF());
+        disabled = in.readBoolean();
     }
 
     @NotNull
@@ -68,6 +70,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
         out.writeUTF(prefix);
         out.writeUTF(suffix);
         out.writeUTF(nameVisibility.toString());
+        out.writeBoolean(disabled);
     }
 
     @Override
@@ -95,7 +98,28 @@ public class NameTagProxyPlayerData extends ProxyMessage {
             TabComponent lastColor = feature.getLastColorCache().get(this.prefix);
             TabComponent suffix = feature.getSuffixCache().get(this.suffix);
             for (TabPlayer viewer : feature.getOnlinePlayers().getPlayers()) {
+                if (oldData != null && !oldData.disabled && disabled) {
+                    // Enabled to disabled
+                    viewer.teamData.unregisterTeam(target);
+                    continue;
+                }
+                if (oldData != null && oldData.disabled && !disabled) {
+                    // Disabled to enabled
+                    viewer.teamData.registerTeam(
+                            target,
+                            resolvedTeamName,
+                            prefix,
+                            suffix,
+                            nameVisibility,
+                            Scoreboard.CollisionRule.ALWAYS,
+                            Collections.singletonList(target.getNickname()),
+                            feature.getTeamOptions(),
+                            lastColor.getLastStyle().toEnumChatFormat()
+                    );
+                    continue;
+                }
                 if (oldData != null && resolvedTeamName.equals(oldData.resolvedTeamName)) {
+                    // Property update
                     if (viewer.teamData.hasTeamRegistered(target)) {
                         viewer.getScoreboard().updateTeam(
                                 oldData.teamName,
@@ -108,6 +132,7 @@ public class NameTagProxyPlayerData extends ProxyMessage {
                         );
                     }
                 } else {
+                    // Team rename
                     viewer.teamData.unregisterTeam(target);
                     viewer.teamData.registerTeam(
                             target,
