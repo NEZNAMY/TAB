@@ -117,8 +117,8 @@ public class ServerVersionInfo {
 
         if (serverVersion == ProtocolVersion.UNKNOWN) {
             throw new IllegalStateException(String.format(
-                    "Unknown server version (%s), cannot find implementation.",
-                    minecraftVersion
+                    "Unknown server version (%s %s), cannot find implementation.",
+                    serverName, minecraftVersion
             ));
         }
         String implementation = (serverName.equals("Paper") ? paperVersions : spigotVersions).get(serverVersion);
