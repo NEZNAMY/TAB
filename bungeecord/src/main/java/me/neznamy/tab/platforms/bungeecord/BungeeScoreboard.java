@@ -2,11 +2,10 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.google.common.collect.Lists;
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.data.NumberFormat;
@@ -19,7 +18,6 @@ import net.md_5.bungee.protocol.util.Either;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +28,6 @@ import java.util.Optional;
  * downstream tracker, we need to use packets.
  */
 public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
-
-    private static final Optional<Integer>[] colors = Arrays.stream(EnumChatFormat.values()).map(e -> Optional.of(Math.min(e.ordinal(), 15))).toArray(Optional[]::new);
-    private static final Optional<Integer> optionalZero = Optional.of(0);
 
     /**
      * Constructs new instance with given parameter
@@ -108,7 +103,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
 
     @Override
     public void unregisterTeam(@NonNull Team team) {
-        sendTeamPacket(team, (byte) TeamAction.REMOVE);
+        player.sendPacket(new net.md_5.bungee.protocol.packet.Team(team.getName()));
     }
 
     @Override
@@ -117,6 +112,14 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
     }
 
     private void sendTeamPacket(@NonNull Team team, byte action) {
+        Optional<Integer> color;
+        if (player.getVersion().getNetworkId() >= ProtocolVersion.V26_2.getNetworkId()) {
+            color = Optional.of(Math.min(team.getColor().ordinal(), 15));
+        } else if (player.getVersion().getNetworkId() >= ProtocolVersion.V1_13.getNetworkId()) {
+            color = Optional.of(team.getColor().ordinal());
+        } else {
+            color = Optional.of(0);
+        }
         player.sendPacket(new net.md_5.bungee.protocol.packet.Team(
                 team.getName(),
                 action,
@@ -125,7 +128,7 @@ public class BungeeScoreboard extends SafeScoreboard<BungeeTabPlayer> {
                 either(team.getSuffix(), Limitations.TEAM_PREFIX_SUFFIX_PRE_1_13),
                 convertVisibility(team.getVisibility()),
                 convertCollision(team.getCollision()),
-                player.getVersion().getNetworkId() >= ProtocolVersion.V1_13.getNetworkId() ? colors[team.getColor().ordinal()] : optionalZero,
+                color,
                 (byte) team.getOptions(),
                 team.getPlayers().toArray(new String[0])
         ));
