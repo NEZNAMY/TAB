@@ -7,6 +7,12 @@ plugins {
     id("com.gradleup.shadow")
 }
 
+val brokenPlatformPaths = setOf(
+    ":bukkit:paper_1_20_5",
+    ":bukkit:paper_1_21_2",
+    ":bukkit:paper_1_21_4"
+)
+
 val platformPaths = setOf(
     ":bukkit",
     ":bukkit:paper_1_20_5",
@@ -47,12 +53,13 @@ val moddedPaths = setOf(
 //    ":forge"
 )
 
+val brokenPlatforms: List<Project> = brokenPlatformPaths.map { rootProject.project(it) }
 val platforms: List<Project> = platformPaths.map { rootProject.project(it) }
 val moddedPlatforms: List<Project> = moddedPaths.map { rootProject.project(it) }
 
 tasks {
     shadowJar {
-        archiveFileName.set("TAB v${project.version} - Fabric, NeoForge.jar")
+        archiveFileName.set("TAB v${project.version}.jar")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
         fun registerPlatform(project: Project, jarTask: AbstractArchiveTask) {
@@ -72,9 +79,9 @@ tasks {
         }
     }
 
-    val shadowJarVanilla = register<ShadowJar>("shadowJarVanilla") {
-        description = "Shadows only vanilla platforms, without any modded platforms that require Java 25+."
-        archiveFileName.set("TAB v${project.version} - Vanilla.jar")
+    val shadowJarBrokenPaper = register<ShadowJar>("shadowJarBrokenPaper") {
+        description = "Shadows only Paper versions 1.20.6 - 1.21.4, which break if jar has classes compiled with Java 24+."
+        archiveFileName.set("TAB v${project.version} - Paper 1.20.6 - 1.21.4.jar")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
         fun registerPlatform(project: Project, jarTask: AbstractArchiveTask) {
@@ -83,11 +90,11 @@ tasks {
             from(zipTree(jarTask.archiveFile))
         }
 
-        platforms.forEach { p ->
+        brokenPlatforms.forEach { p ->
             val task = p.tasks.named<ShadowJar>("shadowJar").get()
             registerPlatform(p, task)
         }
     }
 
-    build.get().dependsOn(shadowJar, shadowJarVanilla)
+    build.get().dependsOn(shadowJar, shadowJarBrokenPaper)
 }
