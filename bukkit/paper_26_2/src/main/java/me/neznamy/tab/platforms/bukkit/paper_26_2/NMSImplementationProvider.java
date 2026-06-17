@@ -1,8 +1,7 @@
-package me.neznamy.tab.platforms.bukkit.v26_1;
+package me.neznamy.tab.platforms.bukkit.paper_26_2;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.provider.ComponentConverter;
 import me.neznamy.tab.platforms.bukkit.provider.ImplementationProvider;
@@ -10,22 +9,18 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabListEntryTracker;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import net.minecraft.network.Connection;
-import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
-
 /**
- * Implementation provider using direct NMS code for 26.1.x.
+ * Implementation provider using direct Mojang-mapped NMS code for Paper 26.2.
  */
 @Getter
 public class NMSImplementationProvider implements ImplementationProvider {
 
-    /** Field is somehow private */
-    private static final Field networkManager = ReflectionUtils.getOnlyField(ServerCommonPacketListenerImpl.class, Connection.class);
+    /** Flag tracking if this server is Canvas 26.1.2+ with new scoreboard checks */
+    private final boolean isCanvas = ReflectionUtils.classExists("io.canvasmc.canvas.world.scores.TeamData");
 
     @NotNull
     private final ComponentConverter<?> componentConverter = new NMSComponentConverter();
@@ -33,7 +28,11 @@ public class NMSImplementationProvider implements ImplementationProvider {
     @Override
     @NotNull
     public Scoreboard newScoreboard(@NotNull BukkitTabPlayer player) {
-        return new NMSPacketScoreboard(player);
+        if (isCanvas) {
+            return new CanvasPacketScoreboard(player);
+        } else {
+            return new NMSPacketScoreboard(player);
+        }
     }
 
     @Override
@@ -44,9 +43,8 @@ public class NMSImplementationProvider implements ImplementationProvider {
 
     @Override
     @NotNull
-    @SneakyThrows
     public Channel getChannel(@NotNull Player player) {
-        return ((Connection)networkManager.get(((CraftPlayer)player).getHandle().connection)).channel;
+        return ((CraftPlayer)player).getHandle().connection.connection.channel;
     }
 
     @Override

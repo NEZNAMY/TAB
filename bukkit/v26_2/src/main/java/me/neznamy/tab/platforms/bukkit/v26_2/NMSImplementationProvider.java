@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.v26_1;
+package me.neznamy.tab.platforms.bukkit.v26_2;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 
 /**
- * Implementation provider using direct NMS code for 26.1.x.
+ * Implementation provider using direct NMS code for 26.2.
  */
 @Getter
 public class NMSImplementationProvider implements ImplementationProvider {

@@ -15,7 +15,7 @@ repositories {
     }
 }
 
-val version = "1.21.4-R0.1-SNAPSHOT"
+val version = "26.2.build.+"
 
 dependencies {
     implementation(projects.bukkit)
@@ -24,5 +24,5 @@ dependencies {
 }
 
 tasks.compileJava {
-    options.release.set(21)
+    options.release.set(25)
 }

@@ -72,7 +72,7 @@ public class BukkitPlatform implements BackendPlatform {
     private final ServerVersionInfo serverVersionInfo = new ServerVersionInfo();
 
     /** Variables checking presence of other plugins to hook into */
-    private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
+    private final boolean placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 
     /** Spigot field for tracking TPS, the array is final and only being modified instead of re-instantiated */
     private double[] recentTps;

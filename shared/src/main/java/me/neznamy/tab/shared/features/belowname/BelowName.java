@@ -227,7 +227,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         if (viewer.belowNameData.disabled.get()) return;
         if (viewer.server != scoreHolder.server || viewer.world != scoreHolder.world) return; // Viewer definitely cannot see this player in game
         if (viewer.canSee(scoreHolder)) {
-            if (fancyValue.isEmpty() && viewer.getVersionId() > ProtocolVersion.V26_1_2.getNetworkId()) { // TODO change this to use V26_2 once added
+            if (fancyValue.isEmpty() && viewer.getVersionId() >= ProtocolVersion.V26_2.getNetworkId()) {
                 viewer.getScoreboard().removeScore(OBJECTIVE_NAME, scoreHolder.getNickname());
             } else {
                 viewer.getScoreboard().setScore(
