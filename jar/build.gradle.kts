@@ -80,8 +80,8 @@ tasks {
     }
 
     val shadowJarBrokenPaper = register<ShadowJar>("shadowJarBrokenPaper") {
-        description = "Shadows only Paper versions 1.20.6 - 1.21.4, which break if jar has classes compiled with Java 24+."
-        archiveFileName.set("TAB v${project.version} - Paper 1.20.6 - 1.21.4.jar")
+        description = "Shadows only Paper versions 1.20.5 - 1.21.4, which break if jar has classes compiled with Java 24+."
+        archiveFileName.set("TAB v${project.version} - Paper 1.20.5 - 1.21.4.jar")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
         fun registerPlatform(project: Project, jarTask: AbstractArchiveTask) {
