@@ -45,9 +45,11 @@ public class LegacyTextComponent extends TabTextComponent {
                     modifier.setStrikethrough(true);
                 } else if (color == TabTextColor.OBFUSCATED) {
                     modifier.setObfuscated(true);
+                } else if (color == TabTextColor.RESET) {
+                    return modifier; // Return whatever we have
                 } else {
                     modifier.setColor(color);
-                    break; // color found, do not continue anymore
+                    return modifier; // color found, do not continue anymore
                 }
             }
         }
