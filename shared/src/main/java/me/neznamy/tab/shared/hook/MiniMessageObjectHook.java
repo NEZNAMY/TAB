@@ -7,7 +7,7 @@ import net.kyori.adventure.text.object.ObjectContents;
 import net.kyori.adventure.text.object.PlayerHeadObjectContents;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.regex.Pattern;
+
 
 /**
  * Class for hooking into MiniMessage to support object components in a way that is compatible with older versions of the library.
