@@ -27,7 +27,7 @@ public class MiniMessageHook {
     private static MiniMessage createMiniMessage() {
         try {
             return MiniMessage.builder()
-                    .editTags(builder -> builder.resolver(headTextureTag()))
+                    .editTags(builder -> builder.resolvers(headTextureTag(), mineskinTag()))
                     .build();
         } catch (Throwable ignored) {
             return null;
@@ -39,7 +39,15 @@ public class MiniMessageHook {
         if (OBJECT_COMPONENTS_AVAILABLE) {
             return MiniMessageObjectHook.headTextureTag();
         }
-        return MiniMessageSafeAccessHack.fallbackHeadTag();
+        return MiniMessageSafeAccessHack.fallbackHeadTextureTag();
+    }
+
+    @NotNull
+    private static TagResolver mineskinTag() {
+        if (OBJECT_COMPONENTS_AVAILABLE) {
+            return MiniMessageObjectHook.mineskinTag();
+        }
+        return MiniMessageSafeAccessHack.fallbackMineskinTag();
     }
 
     /**
@@ -71,15 +79,24 @@ public class MiniMessageHook {
     }
 
     /**
-     * Class loader hack to avoid class initializer error when using static methods in interfaces.
+     * Class loader hack to avoid class initializer error when using static methods in interfaces
+     * due to missing object components on <1.21.9.
      * No, try/catch does not solve this.
      */
     private static class MiniMessageSafeAccessHack {
 
         @NotNull
-        private static TagResolver fallbackHeadTag() {
+        private static TagResolver fallbackHeadTextureTag() {
             return TagResolver.resolver("head_texture", (args, context) -> {
                 args.popOr("Expected texture url"); // Consume the argument to keep the same tag signature
+                return Tag.selfClosingInserting(Component.text(TabObjectComponent.ERROR_MESSAGE));
+            });
+        }
+
+        @NotNull
+        private static TagResolver fallbackMineskinTag() {
+            return TagResolver.resolver("mineskin", (args, context) -> {
+                args.popOr("Expected skin uuid"); // Consume the argument to keep the same tag signature
                 return Tag.selfClosingInserting(Component.text(TabObjectComponent.ERROR_MESSAGE));
             });
         }

@@ -1,16 +1,20 @@
 package me.neznamy.tab.shared.hook;
 
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.object.ObjectContents;
 import net.kyori.adventure.text.object.PlayerHeadObjectContents;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 
 /**
- * Class for hooking into MiniMessage to support object components in a way that is compatible with older versions of the library.
+ * Class loader hack to avoid class initializer error when using static methods in interfaces.
+ * No, try/catch does not solve this.
  */
 public class MiniMessageObjectHook {
 
@@ -40,4 +44,25 @@ public class MiniMessageObjectHook {
         });
     }
 
+    /**
+     * Creates a tag resolver for the "mineskin" tag, which uses mineskin UUID.
+     *
+     * @return A TagResolver for the "mineskin" tag.
+     */
+    public static TagResolver mineskinTag() {
+        return TagResolver.resolver("mineskin", (args, context) -> {
+            String uuid = args.popOr("Expected skin uuid").lowerValue().trim();
+            TabList.Skin skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin("mineskin:" + uuid);
+            if (skin == null) {
+                return Tag.selfClosingInserting(Component.text("<Invalid mineskin UUID>"));
+            }
+            PlayerHeadObjectContents contents = ObjectContents.playerHead()
+                    .profileProperty(
+                            PlayerHeadObjectContents.property("textures", skin.getValue(), skin.getSignature())
+                    )
+                    .build();
+
+            return Tag.selfClosingInserting(Component.object(contents));
+        });
+    }
 }
