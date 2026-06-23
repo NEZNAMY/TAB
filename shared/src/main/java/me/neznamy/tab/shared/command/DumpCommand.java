@@ -9,7 +9,9 @@ import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.types.Dumpable;
 import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.hook.MiniMessageHook;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
@@ -54,6 +56,7 @@ public class DumpCommand extends SubCommand {
         data.put("platform", TAB.getInstance().getPlatform().dump());
         data.put("player", analyzed.dump());
         data.put("features", dumpFeatures(analyzed));
+        data.put("minimessage", dumpMiniMessage());
         data.put("placeholders", TAB.getInstance().getPlaceholderManager().dump(analyzed));
         data.put("tablist", analyzed.getTabList().dump());
         data.put("files", dumpFiles());
@@ -106,6 +109,16 @@ public class DumpCommand extends SubCommand {
             }
         }
         return features;
+    }
+
+    @NotNull
+    private Map<String, Object> dumpMiniMessage() {
+        Map<String, Object> content = new LinkedHashMap<>();
+        content.put("support is enabled in config", TAB.getInstance().getConfiguration().getConfig().getComponents().isMinimessageSupport());
+        content.put("MiniMessage library is available", ReflectionUtils.classExists("net.kyori.adventure.text.minimessage.MiniMessage"));
+        content.put("TAB's MiniMessage instance", String.valueOf(MiniMessageHook.getMiniMessage()));
+        content.put("... and therefore MiniMessage works", MiniMessageHook.isAvailable());
+        return content;
     }
 
     @NotNull

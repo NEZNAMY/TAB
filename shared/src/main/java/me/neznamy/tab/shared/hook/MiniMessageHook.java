@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.hook;
 
+import lombok.Getter;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.object.TabObjectComponent;
 import me.neznamy.tab.shared.chat.hook.AdventureHook;
@@ -21,7 +22,8 @@ public class MiniMessageHook {
 
     /** Minimessage deserializer with disabled component post-processing */
     @Nullable
-    private static final MiniMessage mm = createMiniMessage();
+    @Getter
+    private static final MiniMessage miniMessage = createMiniMessage();
 
     @Nullable
     private static MiniMessage createMiniMessage() {
@@ -56,7 +58,7 @@ public class MiniMessageHook {
      * @return  {@code true} if MiniMessage is available on the server, {@code false} if not
      */
     public static boolean isAvailable() {
-        return mm != null && TAB.getInstance().getConfiguration().getConfig().getComponents().isMinimessageSupport();
+        return miniMessage != null && TAB.getInstance().getConfiguration().getConfig().getComponents().isMinimessageSupport();
     }
 
     /**
@@ -69,9 +71,9 @@ public class MiniMessageHook {
      */
     @Nullable
     public static TabComponent parseText(@NotNull String text) {
-        if (mm == null) return null;
+        if (miniMessage == null) return null;
         try {
-            return AdventureHook.convert(mm.deserialize(text));
+            return AdventureHook.convert(miniMessage.deserialize(text));
         } catch (Throwable t) {
             TAB.getInstance().getErrorManager().printError("Failed to convert \"" + text + "\" into a MiniMessage component", t);
             return null;
