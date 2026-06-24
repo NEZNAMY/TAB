@@ -20,7 +20,7 @@ public class VanishHook {
 
     static {
         try {
-            if (ModList.get().isLoaded("vmod")) {
+            if (ModList.isLoaded("vmod")) {
                 isVanished = Class.forName("redstonedubstep.mods.vanishmod.VanishUtil").getMethod("isVanished", Player.class);
             }
         } catch (Exception e) {

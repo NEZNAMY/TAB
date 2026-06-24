@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class LuckPermsAPIHook {
 
     /** Flag tracking presence of LuckPerms API */
-    private static final boolean luckPerms = ModList.get().isLoaded("luckperms");
+    private static final boolean luckPerms = ModList.isLoaded("luckperms");
 
     /**
      * Checks for permission and returns the result.

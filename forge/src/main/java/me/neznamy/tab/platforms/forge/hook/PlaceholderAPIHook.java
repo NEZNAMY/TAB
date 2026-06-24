@@ -19,7 +19,7 @@ public class PlaceholderAPIHook {
 
     static {
         try {
-            if (ModList.get().isLoaded("forgeplaceholderapi")) {
+            if (ModList.isLoaded("forgeplaceholderapi")) {
                 replaceIdentifiers = Class.forName("com.envyful.papi.api.util.UtilPlaceholder").getMethod("replaceIdentifiers", Object.class, String.class);
             }
         } catch (Exception e) {
