@@ -49,8 +49,8 @@ val platformPaths = setOf(
 
 val moddedPaths = setOf(
     ":fabric",
-    ":neoforge"
-//    ":forge"
+    ":neoforge",
+    ":forge"
 )
 
 val brokenPlatforms: List<Project> = brokenPlatformPaths.map { rootProject.project(it) }
