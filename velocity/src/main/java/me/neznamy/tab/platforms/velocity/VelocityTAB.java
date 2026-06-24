@@ -28,7 +28,10 @@ import java.nio.file.Path;
         description = ProjectVariables.PLUGIN_DESCRIPTION,
         url = ProjectVariables.PLUGIN_WEBSITE,
         authors = ProjectVariables.PLUGIN_AUTHOR,
-        dependencies = @Dependency(id = "velocity-scoreboard-api", optional = true)
+        dependencies = {
+                @Dependency(id = "velocity-scoreboard-api", optional = true),
+                @Dependency(id = "miniplaceholders", optional = true)
+        }
 )
 @Getter
 public class VelocityTAB {
