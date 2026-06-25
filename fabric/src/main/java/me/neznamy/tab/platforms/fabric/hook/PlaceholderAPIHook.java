@@ -46,7 +46,7 @@ public class PlaceholderAPIHook {
     private static String toTabString(@NotNull Component component) {
         StringBuilder sb = new StringBuilder();
         if (component.getStyle().getColor() != null) {
-            sb.append("#").append(Integer.toHexString(component.getStyle().getColor().getValue()));
+            sb.append(String.format("#%06X", component.getStyle().getColor().getValue()));
         }
         if (component.getStyle().isBold()) sb.append("§l");
         if (component.getStyle().isItalic()) sb.append("§o");
@@ -56,7 +56,7 @@ public class PlaceholderAPIHook {
         if (component.getContents() instanceof PlainTextContents text) {
             sb.append(text.text());
         } else {
-            sb.append(component.getContents()); // Fallback for non-plain text contents
+            sb.append(component.getContents()); // Fallback for non-text contents
         }
         for (Component extra : component.getSiblings()) {
             sb.append(toTabString(extra));
