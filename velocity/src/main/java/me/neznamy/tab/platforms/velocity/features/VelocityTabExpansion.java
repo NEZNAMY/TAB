@@ -11,9 +11,9 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -26,27 +26,27 @@ import java.util.List;
 @Getter
 public class VelocityTabExpansion implements TabExpansion {
 
-    private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
+    private static final StringToComponentCache COLORED_TEXT_CACHE = new StringToComponentCache("MiniPlaceholders expansion", 1000);
 
     /** List of all placeholders offered by the plugin for command suggestions */
     @NotNull
     private final List<String> placeholders = Collections.unmodifiableList(Arrays.asList(
-            "%tab_tabprefix%",
-            "%tab_tabsuffix%",
-            "%tab_tagprefix%",
-            "%tab_tagsuffix%",
-            "%tab_customtabname%",
-            "%tab_tabprefix_raw%",
-            "%tab_tabsuffix_raw%",
-            "%tab_tagprefix_raw%",
-            "%tab_tagsuffix_raw%",
-            "%tab_customtabname_raw%",
-            "%tab_scoreboard_name%",
-            "%tab_scoreboard_visible%",
-            "%tab_bossbar_visible%",
-            "%tab_nametag_visibility%",
-            "%tab_replace_<placeholder>%",
-            "%tab_placeholder_<placeholder>%"
+            "<" + ProjectVariables.PLUGIN_ID + ":tabprefix>",
+            "<" + ProjectVariables.PLUGIN_ID + ":tabsuffix>",
+            "<" + ProjectVariables.PLUGIN_ID + ":tagprefix>",
+            "<" + ProjectVariables.PLUGIN_ID + ":tagsuffix>",
+            "<" + ProjectVariables.PLUGIN_ID + ":customtabname>",
+            "<" + ProjectVariables.PLUGIN_ID + ":tabprefix_raw>",
+            "<" + ProjectVariables.PLUGIN_ID + ":tabsuffix_raw>",
+            "<" + ProjectVariables.PLUGIN_ID + ":tagprefix_raw>",
+            "<" + ProjectVariables.PLUGIN_ID + ":tagsuffix_raw>",
+            "<" + ProjectVariables.PLUGIN_ID + ":customtabname_raw>",
+            "<" + ProjectVariables.PLUGIN_ID + ":scoreboard_name>",
+            "<" + ProjectVariables.PLUGIN_ID + ":scoreboard_visible>",
+            "<" + ProjectVariables.PLUGIN_ID + ":bossbar_visible>",
+            "<" + ProjectVariables.PLUGIN_ID + ":nametag_visibility>",
+            "<" + ProjectVariables.PLUGIN_ID + ":replace:placeholder>",
+            "<" + ProjectVariables.PLUGIN_ID + ":placeholder:placeholder>"
     ));
 
     /** Registered expansion instance */
@@ -87,25 +87,16 @@ public class VelocityTabExpansion implements TabExpansion {
             if (!queue.hasNext()) {
                 return Tag.selfClosingInserting(Component.text("<No placeholder>"));
             }
-            String text = "%" + queue.pop().value() + "%";
-            String textBefore;
-            do {
-                textBefore = text;
-                for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(text)) {
-                    text = text.replace(placeholder, TAB.getInstance().getPlaceholderManager().findReplacement(
-                            placeholder,
-                            MiniPlaceholdersHook.parseText(placeholder, player)
-                    ));
-                }
-            } while (!textBefore.equals(text));
-            return createTag(text);
+            String arg = queue.pop().value();
+            String resolved = MiniPlaceholdersHook.parseText(toMiniPlaceholder(arg), player);
+            return createTag(TAB.getInstance().getPlaceholderManager().findReplacement(toTabIdentifier(arg), resolved));
         });
 
         builder.audiencePlaceholder(Player.class, "placeholder", (player, queue, ctx) -> {
             if (!queue.hasNext()) {
                 return Tag.selfClosingInserting(Component.text("<No placeholder>"));
             }
-            String requestedPlaceholder = "%" + queue.pop().value() + "%";
+            String requestedPlaceholder = toTabIdentifier(queue.pop().value());
             PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
             pm.addUsedPlaceholder(requestedPlaceholder, pm);
             TabPlayer tabPlayer = TAB.getInstance().getPlayer(player.getUniqueId());
@@ -122,18 +113,9 @@ public class VelocityTabExpansion implements TabExpansion {
             if (!(viewer instanceof Player) || !(target instanceof Player)) {
                 return Tag.selfClosingInserting(Component.text("<Players must be online>"));
             }
-            String text = "%" + queue.pop().value() + "%";
-            String textBefore;
-            do {
-                textBefore = text;
-                for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(text)) {
-                    text = text.replace(placeholder, TAB.getInstance().getPlaceholderManager().findReplacement(
-                            placeholder,
-                            MiniPlaceholdersHook.parseRelational(placeholder, (Player) viewer, (Player) target)
-                    ));
-                }
-            } while (!textBefore.equals(text));
-            return createTag(text);
+            String arg = queue.pop().value();
+            String resolved = MiniPlaceholdersHook.parseRelational(toMiniPlaceholder(arg), (Player) viewer, (Player) target);
+            return createTag(TAB.getInstance().getPlaceholderManager().findReplacement(toTabIdentifier(arg), resolved));
         });
 
         builder.relationalPlaceholder("placeholder", (viewer, target, queue, ctx) -> {
@@ -143,7 +125,7 @@ public class VelocityTabExpansion implements TabExpansion {
             if (!(viewer instanceof Player) || !(target instanceof Player)) {
                 return Tag.selfClosingInserting(Component.text("<Players must be online>"));
             }
-            String requestedPlaceholder = "%" + queue.pop().value() + "%";
+            String requestedPlaceholder = toTabIdentifier(queue.pop().value());
             PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
             pm.addUsedPlaceholder(requestedPlaceholder, pm);
             Placeholder placeholder = pm.getPlaceholder(requestedPlaceholder);
@@ -163,8 +145,19 @@ public class VelocityTabExpansion implements TabExpansion {
     }
 
     @NotNull
+    private static String toMiniPlaceholder(@NotNull String arg) {
+        return arg.startsWith("<") ? arg : "<" + arg + ">";
+    }
+
+    @NotNull
+    private static String toTabIdentifier(@NotNull String arg) {
+        String name = arg.startsWith("<") && arg.endsWith(">") ? arg.substring(1, arg.length() - 1) : arg;
+        return "%" + name + "%";
+    }
+
+    @NotNull
     private static Tag createTag(@NotNull String value) {
-        return Tag.selfClosingInserting(LEGACY_SERIALIZER.deserialize(value));
+        return Tag.selfClosingInserting(COLORED_TEXT_CACHE.get(value).toAdventure());
     }
 
     @NotNull

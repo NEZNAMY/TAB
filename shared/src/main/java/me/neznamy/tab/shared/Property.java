@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.placeholders.PlaceholderIdentifier;
 import me.neznamy.tab.shared.placeholders.PlaceholderReference;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -261,7 +262,7 @@ public class Property {
 
         if (!lastReplacedValue.equals(string)) {
             lastReplacedValue = string;
-            mayContainRelPlaceholders = lastReplacedValue.indexOf('%') != -1;
+            mayContainRelPlaceholders = lastReplacedValue.indexOf('%') != -1 || lastReplacedValue.contains("<rel_");
             if (name != null) {
                 owner.expansionData.setPropertyValue(name, lastReplacedValue);
             }
@@ -298,7 +299,7 @@ public class Property {
 
         // Nested placeholders
         for (String identifier : PlaceholderManagerImpl.detectPlaceholders(format)) {
-            if (!identifier.startsWith("%rel_")) continue;
+            if (!PlaceholderIdentifier.isRelational(identifier)) continue;
             PlaceholderReference reference = TAB.getInstance().getPlaceholderManager().getPlaceholderReference(identifier);
             format = format.replace(reference.getIdentifier(), EnumChatFormat.color(((RelationalPlaceholderImpl)reference.getHandle()).getLastValue(viewer, owner)));
             if (listener != null) listener.addUsedPlaceholder(identifier);

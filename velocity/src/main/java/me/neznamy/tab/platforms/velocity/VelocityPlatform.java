@@ -83,20 +83,27 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
-        if (!miniPlaceholders) {
-            super.registerUnknownPlaceholder(identifier);
+        if (miniPlaceholders && MiniPlaceholdersHook.isMiniPlaceholdersIdentifier(identifier)) {
+            if (identifier.startsWith("<rel_")) {
+                TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, (viewer, target) ->
+                        MiniPlaceholdersHook.parseRelational(identifier, ((VelocityTabPlayer) viewer).getPlayer(), ((VelocityTabPlayer) target).getPlayer()));
+            } else if (identifier.startsWith("<server_")) {
+                TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier,
+                        () -> MiniPlaceholdersHook.parseGlobal(identifier));
+            } else {
+                TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier,
+                        p -> MiniPlaceholdersHook.parsePlayer(identifier, ((VelocityTabPlayer) p).getPlayer()));
+            }
             return;
         }
-        if (identifier.startsWith("%rel_")) {
-            TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, (viewer, target) ->
-                    MiniPlaceholdersHook.parseRelational(identifier, ((VelocityTabPlayer) viewer).getPlayer(), ((VelocityTabPlayer) target).getPlayer()));
-        } else if (identifier.startsWith("%server_")) {
-            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier,
-                    () -> MiniPlaceholdersHook.parseGlobal(identifier));
-        } else {
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier,
-                    p -> MiniPlaceholdersHook.parsePlayer(identifier, ((VelocityTabPlayer) p).getPlayer()));
-        }
+        super.registerUnknownPlaceholder(identifier);
+    }
+
+    @Override
+    @NotNull
+    public List<String> detectAdditionalPlaceholders(@NotNull String text) {
+        if (!miniPlaceholders) return Collections.emptyList();
+        return MiniPlaceholdersHook.detectPlaceholders(text);
     }
 
     @Override

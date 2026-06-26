@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 /**
@@ -35,6 +37,19 @@ public interface Platform {
      *          placeholder's identifier
      */
     void registerUnknownPlaceholder(@NotNull String identifier);
+
+    /**
+     * Detects additional placeholders in text using platform-specific syntax.
+     * On Velocity with MiniPlaceholders, this detects {@code <placeholder>} syntax.
+     *
+     * @param   text
+     *          text to detect placeholders in
+     * @return  list of detected placeholder identifiers
+     */
+    @NotNull
+    default List<String> detectAdditionalPlaceholders(@NotNull String text) {
+        return Collections.emptyList();
+    }
 
     /**
      * Creates instance for all online players and adds them to the plugin

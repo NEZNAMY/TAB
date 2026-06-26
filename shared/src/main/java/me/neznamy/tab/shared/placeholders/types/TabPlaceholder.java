@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.placeholders.PlaceholderIdentifier;
 import me.neznamy.tab.shared.placeholders.PlaceholderReplacementPattern;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -59,11 +60,18 @@ public abstract class TabPlaceholder implements Placeholder {
     protected TabPlaceholder(@NonNull String identifier, int refresh) {
         if (refresh % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0 && refresh != -1)
             throw new IllegalArgumentException("Refresh interval must be divisible by " + TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
-        if (!identifier.startsWith("%") || !identifier.endsWith("%"))
-            throw new IllegalArgumentException("Identifier must start and end with % (attempted to use \"" + identifier + "\")");
+        if (!PlaceholderIdentifier.isValid(identifier))
+            throw new IllegalArgumentException("Identifier must start and end with % or <> (attempted to use \"" + identifier + "\")");
         this.identifier = identifier;
         this.refresh = refresh;
         Map<Object, Object> map = TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues().get(identifier);
+        if (map == null) {
+            map = TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues().get(
+                    PlaceholderIdentifier.toPercentSyntax(identifier).equals(identifier)
+                            ? PlaceholderIdentifier.toAngleBracketSyntax(identifier)
+                            : PlaceholderIdentifier.toPercentSyntax(identifier)
+            );
+        }
         replacements = map == null ? PlaceholderReplacementPattern.EMPTY : PlaceholderReplacementPattern.create(identifier, map);
         for (String nested : replacements.getNestedPlaceholders()) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(this);
@@ -81,7 +89,7 @@ public abstract class TabPlaceholder implements Placeholder {
     @NotNull
     public String parse(@Nullable TabPlayer player) {
         String value = getLastValue(player);
-        if (!value.contains("%")) return value; // No nested placeholders, return immediately
+        if (!value.contains("%") && !value.contains("<")) return value; // No nested placeholders, return immediately
         return setPlaceholders(value, player);
     }
 
@@ -108,7 +116,7 @@ public abstract class TabPlaceholder implements Placeholder {
 
         for (String s : PlaceholderManagerImpl.detectPlaceholders(string)) {
             if (s.equals(identifier)) continue; // Prevent infinite loop when placeholder returns itself
-            if (s.startsWith("%rel_")) continue; // Relational placeholders are handled separately
+            if (PlaceholderIdentifier.isRelational(s)) continue; // Relational placeholders are handled separately
             if ((identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s))) continue; // Self, but as sync variant
             TabPlaceholder nested = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
             nested.addParent(this);

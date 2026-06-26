@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.placeholders.PlaceholderIdentifier;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +40,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     public RelationalPlaceholderImpl(@NonNull String identifier, int refresh,
                                      @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String> function) {
         super(identifier, refresh);
-        if (!identifier.startsWith("%rel_")) throw new IllegalArgumentException(
+        if (!PlaceholderIdentifier.isRelational(identifier)) throw new IllegalArgumentException(
                 "Relational placeholder identifiers must start with \"rel_\" (attempted to use \"" + identifier + "\")");
         this.function = function;
     }
