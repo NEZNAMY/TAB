@@ -40,7 +40,7 @@ public class MiniPlaceholdersHook {
     /**
      * Checks if the given identifier should be resolved using MiniPlaceholders.
      * MiniPlaceholders placeholders use {@code <syntax>}, while {@code %placeholder%} syntax
-     * is reserved for PlaceholderAPI (via PAPIProxyBridge on Velocity).
+     * is reserved for PlaceholderAPI (via TAB Bridge on Velocity).
      *
      * @param   identifier
      *          placeholder identifier
