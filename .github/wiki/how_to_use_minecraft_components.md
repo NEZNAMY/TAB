@@ -177,6 +177,9 @@ TAB has [MiniMessage](https://docs.advntr.dev/minimessage/format.html) hook, how
 
 When MiniMessage is detected on your server, it is automatically used unless support is disabled. All codes are translated to MiniMessage syntax and then parsed by MiniMessage.
 
+> [!WARNING]
+> TAB's gradient syntax (`<#RRGGBB>Text</#RRGGBB>`) is a compatibility layer that TAB rewrites before parsing — it is more fragile than native [MiniMessage](https://docs.advntr.dev/minimessage/format.html) gradients (`<gradient:#RRGGBB:#RRGGBB>Text</gradient>`). On **Velocity**, this is especially problematic when a [MiniPlaceholders](https://github.com/MiniPlaceholders/MiniPlaceholders) placeholder (see [TAB integration PR #1677](https://github.com/NEZNAMY/TAB/pull/1677)) outputs text containing `<` characters, as TAB's MiniMessage preprocessing can break the formatting. Prefer native MiniMessage syntax in placeholder output, or set `minimessage-support: false` in **config.yml** if you only need TAB's own RGB/gradient handling.
+
 # Config options
 | Option name              | Default value | Description                                                                                                                                |
 |--------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------|

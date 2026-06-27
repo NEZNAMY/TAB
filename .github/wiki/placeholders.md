@@ -5,6 +5,7 @@
   * [Backend only](#backend-only)
   * [Proxy only](#proxy-only)
 * [PlaceholderAPI](#placeholderapi)
+* [MiniPlaceholders](#miniplaceholders)
 * [Relational placeholders](#relational-placeholders)
   * [About](#about-1)
   * [Usage](#usage)
@@ -142,6 +143,12 @@ Full list of placeholders (general + feature specific):
 | `%tab_tabprefix_raw%`     | Player's current raw tabprefix with placeholder identifiers.     |
 | `%tab_customtabname_raw%` | Player's current raw customtabname with placeholder identifiers. |
 | `%tab_tabsuffix_raw%`     | Player's current raw tabsuffix with placeholder identifiers.     |
+
+# MiniPlaceholders
+On **Velocity**, TAB integrates with [MiniPlaceholders](https://github.com/MiniPlaceholders/MiniPlaceholders) when the plugin is installed. TAB automatically detects and resolves MiniPlaceholders placeholders in config text, including global, per-player, and relational ones. Placeholders use angle brackets, with the expansion and name separated by an underscore (for example `<luckperms_prefix>`), and arguments added after a colon (for example `<luckperms_meta:key>`). See the [MiniPlaceholders placeholder list](https://miniplaceholders.github.io/docs/user-guide/Placeholders) for all available placeholders. TAB also registers its own expansion, offering placeholders such as `<tab_tabprefix>` and `<tab_placeholder:name>`. The `%placeholder%` syntax remains reserved for [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) (via PAPIProxyBridge on Velocity).
+
+> [!WARNING]
+> TAB's gradient syntax (`<#RRGGBB>Text</#RRGGBB>`) is a compatibility layer that TAB rewrites before parsing — it is more fragile than native [MiniMessage](https://docs.advntr.dev/minimessage/format.html) gradients (`<gradient:#RRGGBB:#RRGGBB>Text</gradient>`). On **Velocity**, this is especially problematic when a MiniPlaceholders placeholder outputs text containing `<` characters, as TAB's MiniMessage preprocessing can break the formatting. Prefer native MiniMessage syntax in placeholder output, or set `minimessage-support: false` in **config.yml** if you only need TAB's own RGB/gradient handling. See [How to use Minecraft components - MiniMessage](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components#minimessage) for more information.
 
 # Relational placeholders
 ## About
