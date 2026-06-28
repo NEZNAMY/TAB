@@ -30,7 +30,7 @@ public abstract class TabPlaceholder implements Placeholder {
     /** Refresh interval of the placeholder */
     private final int refresh;
 
-    /** Placeholder's identifier including % */
+    /** Placeholder's identifier including % or <> */
     @NonNull protected final String identifier;
 
     /** Configured placeholder output replacements */
@@ -52,7 +52,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * Constructs new instance with given parameters and loads placeholder output replacements
      *
      * @param   identifier
-     *          placeholder's identifier, must start and end with %
+     *          placeholder's identifier, must start and end with % or <>
      * @param   refresh
      *          refresh interval in milliseconds, must be divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *          or equal to -1 to disable automatic refreshing
@@ -65,13 +65,6 @@ public abstract class TabPlaceholder implements Placeholder {
         this.identifier = identifier;
         this.refresh = refresh;
         Map<Object, Object> map = TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues().get(identifier);
-        if (map == null) {
-            map = TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues().get(
-                    PlaceholderIdentifier.toPercentSyntax(identifier).equals(identifier)
-                            ? PlaceholderIdentifier.toAngleBracketSyntax(identifier)
-                            : PlaceholderIdentifier.toPercentSyntax(identifier)
-            );
-        }
         replacements = map == null ? PlaceholderReplacementPattern.EMPTY : PlaceholderReplacementPattern.create(identifier, map);
         for (String nested : replacements.getNestedPlaceholders()) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(this);

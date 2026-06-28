@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
+import me.neznamy.tab.shared.placeholders.PlaceholderIdentifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -33,9 +34,9 @@ public class PlaceholderReplacementsConfiguration {
         for (Object key : section.getKeys()) {
             String identifier = key.toString();
             Map<Object, Object> map = section.getMap(identifier, Collections.emptyMap());
-            if (!identifier.startsWith("%") || !identifier.endsWith("%")) {
+            if (!PlaceholderIdentifier.isValid(identifier)) {
                 section.startupWarn("Placeholder output replacements have a section for \"" + identifier + "\", which is not " +
-                        "a valid placeholder pattern (placeholders must start and end with %)");
+                        "a valid placeholder pattern (placeholders must start and end with % or <>)");
                 continue;
             }
             for (Map.Entry<?, ?> pattern : map.entrySet()) {

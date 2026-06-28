@@ -37,12 +37,7 @@ public class PlaceholderRefreshConfiguration {
         if (identifier.startsWith("%permission:") || identifier.startsWith("<permission:")) { // Bad code, maybe fix this later?
             return permissionRefreshInterval;
         }
-        Integer interval = refreshIntervals.get(identifier);
-        if (interval != null) return interval;
-        String alternate = PlaceholderIdentifier.toPercentSyntax(identifier).equals(identifier)
-                ? PlaceholderIdentifier.toAngleBracketSyntax(identifier)
-                : PlaceholderIdentifier.toPercentSyntax(identifier);
-        return refreshIntervals.getOrDefault(alternate, defaultInterval);
+        return refreshIntervals.getOrDefault(identifier, defaultInterval);
     }
 
     /**
@@ -62,9 +57,9 @@ public class PlaceholderRefreshConfiguration {
         for (Object placeholder : section.getKeys()) {
             String identifier = placeholder.toString();
             if (identifier.equals("default-refresh-interval")) continue;
-            if (!identifier.startsWith("%") || !identifier.endsWith("%")) {
-                section.startupWarn("PlaceholderAPI refresh intervals have a value for \"" + identifier + "\", which is not " +
-                        "a valid placeholder pattern (placeholders must start and end with %)");
+            if (!PlaceholderIdentifier.isValid(identifier)) {
+                section.startupWarn("Placeholder refresh intervals have a value for \"" + identifier + "\", which is not " +
+                        "a valid placeholder pattern (placeholders must start and end with % or <>)");
                 continue;
             }
             refreshIntervals.put(identifier, fixInterval(section, identifier, defaultInterval));
