@@ -269,11 +269,9 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     public static List<String> detectPlaceholders(@NonNull String text) {
         List<String> placeholders = new ArrayList<>(detectPercentPlaceholders(text));
         TAB tab = TAB.getInstance();
-        if (tab != null) {
-            for (String placeholder : tab.getPlatform().detectAdditionalPlaceholders(text)) {
-                if (!placeholders.contains(placeholder)) {
-                    placeholders.add(placeholder);
-                }
+        for (String placeholder : tab.getPlatform().detectAdditionalPlaceholders(text)) {
+            if (!placeholders.contains(placeholder)) {
+                placeholders.add(placeholder);
             }
         }
         return placeholders;
