@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.TabConstants.CpuUsageCategory;
 import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.placeholders.PlaceholderIdentifier;
 import me.neznamy.tab.shared.placeholders.PlaceholderReference;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshConfiguration;
 import me.neznamy.tab.shared.placeholders.PlaceholderRefreshTask;
@@ -257,7 +258,8 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     }
 
     /**
-     * Detects placeholders in text using %% pattern and returns list of all detected identifiers
+     * Detects placeholders in text using %% pattern and platform-specific syntax,
+     * returning list of all detected identifiers
      *
      * @param   text
      *          text to detect placeholders in
@@ -265,6 +267,18 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      */
     @NotNull
     public static List<String> detectPlaceholders(@NonNull String text) {
+        List<String> placeholders = new ArrayList<>(detectPercentPlaceholders(text));
+        TAB tab = TAB.getInstance();
+        for (String placeholder : tab.getPlatform().detectAdditionalPlaceholders(text)) {
+            if (!placeholders.contains(placeholder)) {
+                placeholders.add(placeholder);
+            }
+        }
+        return placeholders;
+    }
+
+    @NotNull
+    private static List<String> detectPercentPlaceholders(@NonNull String text) {
         if (!text.contains("%")) return Collections.emptyList();
         if (text.charAt(0) == '%' && text.charAt(text.length()-1) == '%') {
             int count = 0;
@@ -481,8 +495,8 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
 
     @NotNull
     public synchronized PlaceholderReference getPlaceholderReference(@NonNull String identifier) {
-        if (identifier.charAt(0) != '%' || identifier.charAt(identifier.length() - 1) != '%') {
-            throw new IllegalArgumentException("Placeholder identifier must start and end with % (attempted to use \"" + identifier + "\")");
+        if (!PlaceholderIdentifier.isValid(identifier)) {
+            throw new IllegalArgumentException("Placeholder identifier must start and end with % or <> (attempted to use \"" + identifier + "\")");
         }
         // Check if placeholder is already registered
         PlaceholderReference reference = registeredPlaceholders.get(identifier);

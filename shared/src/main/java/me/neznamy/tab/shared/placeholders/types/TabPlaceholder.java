@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.placeholders.PlaceholderIdentifier;
 import me.neznamy.tab.shared.placeholders.PlaceholderReplacementPattern;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ public abstract class TabPlaceholder implements Placeholder {
     /** Refresh interval of the placeholder */
     private final int refresh;
 
-    /** Placeholder's identifier including % */
+    /** Placeholder's identifier including % or <> */
     @NonNull protected final String identifier;
 
     /** Configured placeholder output replacements */
@@ -51,7 +52,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * Constructs new instance with given parameters and loads placeholder output replacements
      *
      * @param   identifier
-     *          placeholder's identifier, must start and end with %
+     *          placeholder's identifier, must start and end with % or <>
      * @param   refresh
      *          refresh interval in milliseconds, must be divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *          or equal to -1 to disable automatic refreshing
@@ -59,8 +60,8 @@ public abstract class TabPlaceholder implements Placeholder {
     protected TabPlaceholder(@NonNull String identifier, int refresh) {
         if (refresh % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0 && refresh != -1)
             throw new IllegalArgumentException("Refresh interval must be divisible by " + TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
-        if (!identifier.startsWith("%") || !identifier.endsWith("%"))
-            throw new IllegalArgumentException("Identifier must start and end with % (attempted to use \"" + identifier + "\")");
+        if (!PlaceholderIdentifier.isValid(identifier))
+            throw new IllegalArgumentException("Identifier must start and end with % or <> (attempted to use \"" + identifier + "\")");
         this.identifier = identifier;
         this.refresh = refresh;
         Map<Object, Object> map = TAB.getInstance().getConfiguration().getConfig().getReplacements().getValues().get(identifier);
@@ -81,7 +82,7 @@ public abstract class TabPlaceholder implements Placeholder {
     @NotNull
     public String parse(@Nullable TabPlayer player) {
         String value = getLastValue(player);
-        if (!value.contains("%")) return value; // No nested placeholders, return immediately
+        if (!value.contains("%") && !value.contains("<")) return value; // No nested placeholders, return immediately
         return setPlaceholders(value, player);
     }
 
@@ -108,7 +109,7 @@ public abstract class TabPlaceholder implements Placeholder {
 
         for (String s : PlaceholderManagerImpl.detectPlaceholders(string)) {
             if (s.equals(identifier)) continue; // Prevent infinite loop when placeholder returns itself
-            if (s.startsWith("%rel_")) continue; // Relational placeholders are handled separately
+            if (PlaceholderIdentifier.isRelational(s)) continue; // Relational placeholders are handled separately
             if ((identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s))) continue; // Self, but as sync variant
             TabPlaceholder nested = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
             nested.addParent(this);

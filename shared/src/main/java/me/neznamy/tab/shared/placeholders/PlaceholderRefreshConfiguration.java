@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants.Placeholder;
+import me.neznamy.tab.shared.placeholders.PlaceholderIdentifier;
 import me.neznamy.tab.shared.config.file.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +34,7 @@ public class PlaceholderRefreshConfiguration {
      * @return  Refresh interval for given placeholder
      */
     public int getRefreshInterval(@NotNull String identifier) {
-        if (identifier.startsWith("%permission:")) { // Bad code, maybe fix this later?
+        if (identifier.startsWith("%permission:") || identifier.startsWith("<permission:")) { // Bad code, maybe fix this later?
             return permissionRefreshInterval;
         }
         return refreshIntervals.getOrDefault(identifier, defaultInterval);
@@ -56,9 +57,9 @@ public class PlaceholderRefreshConfiguration {
         for (Object placeholder : section.getKeys()) {
             String identifier = placeholder.toString();
             if (identifier.equals("default-refresh-interval")) continue;
-            if (!identifier.startsWith("%") || !identifier.endsWith("%")) {
-                section.startupWarn("PlaceholderAPI refresh intervals have a value for \"" + identifier + "\", which is not " +
-                        "a valid placeholder pattern (placeholders must start and end with %)");
+            if (!PlaceholderIdentifier.isValid(identifier)) {
+                section.startupWarn("Placeholder refresh intervals have a value for \"" + identifier + "\", which is not " +
+                        "a valid placeholder pattern (placeholders must start and end with % or <>)");
                 continue;
             }
             refreshIntervals.put(identifier, fixInterval(section, identifier, defaultInterval));

@@ -11,6 +11,8 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scoreboard.ScoreboardManager;
 import lombok.Getter;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
+import me.neznamy.tab.platforms.velocity.features.VelocityTabExpansion;
+import me.neznamy.tab.platforms.velocity.hook.MiniPlaceholdersHook;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
@@ -20,6 +22,8 @@ import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -50,6 +54,9 @@ public class VelocityPlatform extends ProxyPlatform {
     /** Flag tracking presence of Velocity Scoreboard API */
     private boolean scoreboardAPI;
 
+    /** Flag tracking presence of MiniPlaceholders */
+    private final boolean miniPlaceholders;
+
     /** Plugin message channel */
     private final MinecraftChannelIdentifier MCI = MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
 
@@ -67,10 +74,45 @@ public class VelocityPlatform extends ProxyPlatform {
      */
     public VelocityPlatform(@NotNull VelocityTAB plugin) {
         this.plugin = plugin;
+        this.miniPlaceholders = plugin.getServer().getPluginManager().isLoaded("miniplaceholders");
         loadVSAPIHook();
         if (plugin.getServer().getPluginManager().isLoaded("premiumvanish")) {
             new VelocityPremiumVanishHook().register();
         }
+    }
+
+    @Override
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
+        if (miniPlaceholders && MiniPlaceholdersHook.isMiniPlaceholdersIdentifier(identifier)) {
+            if (identifier.startsWith("<rel_")) {
+                TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, (viewer, target) ->
+                        MiniPlaceholdersHook.parseRelational(identifier, ((VelocityTabPlayer) viewer).getPlayer(), ((VelocityTabPlayer) target).getPlayer()));
+            } else if (identifier.startsWith("<server_")) {
+                TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier,
+                        () -> MiniPlaceholdersHook.parseGlobal(identifier));
+            } else {
+                TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier,
+                        p -> MiniPlaceholdersHook.parsePlayer(identifier, ((VelocityTabPlayer) p).getPlayer()));
+            }
+            return;
+        }
+        super.registerUnknownPlaceholder(identifier);
+    }
+
+    @Override
+    @NotNull
+    public List<String> detectAdditionalPlaceholders(@NotNull String text) {
+        if (!miniPlaceholders) return Collections.emptyList();
+        return MiniPlaceholdersHook.detectPlaceholders(text);
+    }
+
+    @Override
+    @NotNull
+    public TabExpansion createTabExpansion() {
+        if (miniPlaceholders) {
+            return new VelocityTabExpansion();
+        }
+        return new EmptyTabExpansion();
     }
 
     private void loadVSAPIHook() {
@@ -266,6 +308,9 @@ public class VelocityPlatform extends ProxyPlatform {
             vsapiString = "Installed (version " + vsapi.get().getDescription().getVersion().orElse("null") + ")";
         }
         map.put("VelocityScoreboardAPI", vsapiString);
+        Optional<PluginContainer> miniPlaceholdersPlugin = plugin.getServer().getPluginManager().getPlugin("miniplaceholders");
+        map.put("MiniPlaceholders", miniPlaceholdersPlugin.isEmpty() ? "Not installed" :
+                "Installed (version " + miniPlaceholdersPlugin.get().getDescription().getVersion().orElse("null") + ")");
         Map<String, Object> plugins = new LinkedHashMap<>();
         PluginContainer[] pluginArray = plugin.getServer().getPluginManager().getPlugins().toArray(new PluginContainer[0]);
         Arrays.sort(pluginArray, Comparator.comparing(p -> p.getDescription().getName().orElse("null"), String.CASE_INSENSITIVE_ORDER));

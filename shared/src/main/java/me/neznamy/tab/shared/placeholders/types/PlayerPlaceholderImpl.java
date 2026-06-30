@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
+import me.neznamy.tab.shared.placeholders.PlaceholderIdentifier;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      */
     public PlayerPlaceholderImpl(@NonNull String identifier, int refresh, @NonNull Function<me.neznamy.tab.api.TabPlayer, String> function) {
         super(identifier, refresh);
-        if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
+        if (PlaceholderIdentifier.isRelational(identifier)) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
         this.function = function;
     }
 
