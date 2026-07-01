@@ -229,6 +229,9 @@ permission-refresh-interval: 1000
 # Unlocks extra console messages
 debug: false
 
+# If enabled, %tps% returns 20 without querying the real server TPS.
+disable-tps: false
+
 # https://github.com/NEZNAMY/TAB/wiki/MySQL
 mysql:
   enabled: false

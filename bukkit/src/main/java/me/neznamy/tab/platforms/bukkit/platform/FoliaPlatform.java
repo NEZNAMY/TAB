@@ -77,7 +77,9 @@ public class FoliaPlatform extends BukkitPlatform {
         symbols.setDecimalSeparator('.');
         decimal2 = new DecimalFormat("#.##", symbols);
         registerInternalSyncPlaceholder(TabConstants.Placeholder.MSPT, p -> decimal2.format(Bukkit.getAverageTickTime()));
-        registerInternalSyncPlaceholder(TabConstants.Placeholder.TPS, p -> decimal2.format(Math.min(20, Bukkit.getTPS()[0])));
+        if (!TAB.getInstance().getConfiguration().getConfig().isDisableTps()) {
+            registerInternalSyncPlaceholder(TabConstants.Placeholder.TPS, p -> decimal2.format(Math.min(20, Bukkit.getTPS()[0])));
+        }
     }
 
     @Override
@@ -133,6 +135,9 @@ public class FoliaPlatform extends BukkitPlatform {
      */
     @Override
     public double getTPS() {
+        if (TAB.getInstance().getConfiguration() != null && TAB.getInstance().getConfiguration().getConfig().isDisableTps()) {
+            return 20.0D;
+        }
         return -1;
     }
 
