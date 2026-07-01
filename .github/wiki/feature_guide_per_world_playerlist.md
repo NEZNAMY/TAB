@@ -2,6 +2,7 @@
 * [About](#about)
 * [Configuration](#configuration)
   * [Grouping playerlist from multiple worlds](#grouping-playerlist-from-multiple-worlds)
+    * [Pattern Matching](#pattern-matching)
 * ~Commands~
 * ~Placeholders~
 * ~Limitations~
@@ -40,4 +41,34 @@ Contains 2 groups, each of them consisting of 2 worlds.
 World group name can be anything (in our case, they're called "lobby" and "minigames").
 Under group name, list the actual world names.
 
-With this setup, "lobby1" and "lobby2" will share playerlist, as well as "paintball" with "bedwars". All other worlds will have playerlist not shared with any other worlds. Creating a group for 1 world only is completely useless.  
+With this setup, "lobby1" and "lobby2" will share playerlist, as well as "paintball" with "bedwars". All other worlds will have playerlist not shared with any other worlds. Creating a group for 1 world only is completely useless.
+
+### Pattern Matching
+World names in groups support multiple pattern types for flexible configuration:
+
+**Exact Match** - Matches server name exactly:
+```yaml
+  shared-playerlist-world-groups:
+    worlds:
+      - world1
+      - world2
+```
+
+**Wildcard Patterns** - Use `*` for prefix or suffix matching:
+```yaml
+  shared-playerlist-world-groups:
+    worlds:
+      - "World-*"      # Matches: World-1, World-2, World-Hub, etc.
+      - "*-world"      # Matches: eu-world, us-world, etc.
+```
+
+**Regex Patterns** - Use `regex:` prefix for advanced pattern matching:
+```yaml
+  shared-playerlist-world-groups:
+    worlds:
+      - regex:World-[0-9]+        # Matches: World-1, World-23, but not World-Hub
+    smp:
+      - regex:SMP-(EU|US)-[0-9]+  # Matches: SMP-EU-1, SMP-US-2, etc.
+```
+
+Note: Wildcard patterns are case-insensitive, while regex patterns are case-sensitive by default (use `(?i)` flag for case-insensitive regex).

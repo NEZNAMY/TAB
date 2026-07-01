@@ -140,9 +140,6 @@ Here are TAB's internal placeholders you can use when this feature is enabled:
 For compatibility with vanish plugins, vanish status must be detected correctly. See [Additional information - Vanish detection](https://github.com/NEZNAMY/TAB/wiki/Additional-information#vanish-detection) for more info.
 
 # Troubleshooting
-> [!NOTE]
-> This functionality is coming in the next TAB update (6.0.3 / 6.1.0). Adding it here to prepare the wiki in advance (and for users using dev builds).
-
 This is a collection of tips to help you figure out why the feature isn't working as you expect.  
 To get started, run `/tab dump <player looking at the tablist>` and open the generated link. Scroll down to `features` -> `GlobalPlayerList` and check the content:
 * If it says `GlobalPlayerList: Feature is disabled`, it means you did not enable the feature. Enable it by setting

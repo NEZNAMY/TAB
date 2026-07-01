@@ -7,19 +7,13 @@
 * [Compatibility issues](#compatibility-issues)
 
 # Requirements
-TAB does not depend on any other plugins. The experience can however be enhanced by installing other plugins, see below.
-
-## Java
-TAB's shared module is compiled with Java 8. For the platforms themselves, TAB does have a higher requirement, however, it does not require a Java version higher than the server software itself does. Specifically:
-* Fabric and NeoForge require Java 25
-* Velocity requires Java 17
-* Bukkit and BungeeCord are ok with Java 8
+TAB does not depend on any other plugins. The experience can however be enhanced by installing other plugins, see below. There is also no additional Java version requirement. If your server runs on your Java version, TAB will too.
 
 # Supported server software and versions
 With the introduction of new Minecraft versions, it is becoming harder and harder to support many versions in the same jar, eventually making it impossible since Minecraft 26.1.  
 **As a general rule, if you want the latest TAB version for your server please use [Modrinth](https://modrinth.com/plugin/tab-was-taken)'s download filter where you can select your server software and version and you'll get the latest jar.**
 
-Currently, the latest Minecraft version supported by TAB is 26.1.2. When new versions come out, TAB is always updated soon after to support them.
+Currently, the latest Minecraft version supported by TAB is **26.2**. When new versions come out, TAB is always updated soon after to support them.
 
 If your server software and version is reasonably popular and TAB hasn't been backported to that version in a very long time, you may [request a backport](https://github.com/NEZNAMY/TAB/issues/new/choose) (unless backports to that version are no longer offered, see below).  
 Since TAB 6.0.0, Minecraft 1.x started taking hits with each subsequent versions - Bukkit versions started disappearing and **modded platforms no longer offer backports of TAB 6.0.0+ to MC 1.x** (this is because the build scripts had to be massively changed for MC 26+).

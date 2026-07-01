@@ -10,6 +10,8 @@
   * [Using in a field where condition is expected (short format)](#using-in-a-field-where-condition-is-expected-short-format)
   * [Relational conditions](#relational-conditions)
 * [Refresh interval](#refresh-interval)
+* [Additional info](#additional-info)
+  * [Additional note 1 - Choosing the correct AND / OR type](#additional-note-1---choosing-the-correct-and--or-type)
 * [Examples](#examples)
   * [Example 1 - Chaining conditional placeholders](#example-1---chaining-conditional-placeholders)
   * [Example 2 - Combining AND and OR](#example-2---combining-and-and-or)
@@ -52,6 +54,9 @@ condition must contain the altered output.
 To see the exact output of a placeholder including color codes, use `/tab parse <player> <placeholder>`.
 
 ## Permission
+> [!WARNING]
+> Giving someone OP status will automatically give them all permissions, which will make all the permission checks in conditions pass.
+
 | Operation             | Description                     | Example                                                                                      |
 |-----------------------|---------------------------------|----------------------------------------------------------------------------------------------|
 | `permission:<value>`  | Permission requirement          | `permission:my.permission` will pass if player has `my.permission` permission                |
@@ -146,8 +151,9 @@ There are 2 ways to use it:
 * display-condition of layout player groups (which is currently the only feature supporting it as it would not make sense elsewhere)
 * A placeholder using `%rel_condition:<condition>%` syntax
 
-If trying to use relational condition in `%condition:name%` syntax, it will return a warning text instead of evaluating the condition.
-Same the other way around, if trying to use standard condition in `%rel_condition:name%` syntax, it will return a warning text.
+Using `%viewer:...%` will upgrade the condition to a relational condition and standard version will no longer be available.  
+If trying to use relational condition in `%condition:name%` syntax, it will return a warning text instead of evaluating the condition.  
+Same the other way around - if trying to use standard condition in `%rel_condition:name%` syntax, it will return a warning text.
 
 # Refresh interval
 Conditions are just placeholders after all, and, as such, they must be refreshed periodically.
@@ -156,6 +162,13 @@ They are based on placeholders used inside (subconditions, true/false values).
 Permission checks count as 1000ms.  
 To configure refresh intervals of placeholders,
 check out the [Optimization guide](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---all-platforms-placeholder-refresh-intervals).
+
+# Additional Info
+## Additional note 1 - Choosing the correct AND / OR type
+Sometimes you want to combine multiple expressions using `AND` or `OR`. When doing this, you must pick the correct one based on your needs.  
+A common mistake is trying to turn spoken language directly into config, which can be wrong.
+
+For example, you say you want to display scoreboard in servers `server1` **and** `server2`. As such, you may accidentally use `type: AND` or `;` in short format (`%server%=server1;%server%=server2`). This is, however, wrong, because that would mean your server must be `server1` **and** `server2` at the same time, which is obviously impossible. The correct type is `OR` here (`|`). So instead of thinking "I want to display scoreboard in `server1` **and** `server2`", you should think "I want to display scoreboard if player is in `server1` **or** `server2`.
 
 # Examples
 ## Example 1 - Chaining conditional placeholders
