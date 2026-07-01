@@ -352,6 +352,9 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public double getTPS() {
+        if (TAB.getInstance().getConfiguration() != null && TAB.getInstance().getConfiguration().getConfig().isDisableTps()) {
+            return 20.0D;
+        }
         if (recentTps != null) {
             return recentTps[0];
         } else if (paperTps) {
