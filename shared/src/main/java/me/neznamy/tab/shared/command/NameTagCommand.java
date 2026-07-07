@@ -16,10 +16,14 @@ import java.util.Locale;
 /**
  * Handler for "/tab nametag" subcommand.
  * Options:
- *   /tab nametag show/hide/toggle [player] [viewer] [-s]
- *   /tab nametag showview/hideview/toggleview [viewer] [-s]
+ *   /tab nametag show/opaque/hide/toggle [player] [viewer] [-s]
+ *   /tab nametag showview/opaqueview/hideview/toggleview [viewer] [-s]
  */
 public class NameTagCommand extends SubCommand {
+
+    private static final List<String> TARGET_ACTIONS = Arrays.asList("show", "opaque", "hide", "toggle");
+    private static final List<String> VIEW_ACTIONS = Arrays.asList("showview", "opaqueview", "hideview", "toggleview");
+    private static final List<String> ALL_ACTIONS = Arrays.asList("show", "opaque", "hide", "toggle", "showview", "opaqueview", "hideview", "toggleview");
 
     /**
      * Constructs new instance
@@ -47,9 +51,9 @@ public class NameTagCommand extends SubCommand {
         }
 
         String action = args[0].toLowerCase(Locale.US);
-        if (action.equals("show") || action.equals("hide") || action.equals("toggle")) {
+        if (TARGET_ACTIONS.contains(action)) {
             processTarget(teams, sender, action, Arrays.copyOfRange(args, 1, args.length));
-        } else if (action.equals("showview") || action.equals("hideview") || action.equals("toggleview")) {
+        } else if (VIEW_ACTIONS.contains(action)) {
             processView(teams, sender, action,  Arrays.copyOfRange(args, 1, args.length));
         } else {
             sendMessages(sender, getMessages().getNameTagHelpMenu());
@@ -58,14 +62,19 @@ public class NameTagCommand extends SubCommand {
 
     private void processTarget(@NotNull NameTag teams, @Nullable TabPlayer sender, @NotNull String action, @NotNull String[] args) {
         boolean silent = args.length > 0 && args[args.length - 1].equals("-s");
+        String[] effectiveArgs = silent ? Arrays.copyOf(args, args.length - 1) : args;
 
-        TabPlayer player = args.length >= 1 ? TAB.getInstance().getPlayer(args[0]) : sender;
+        TabPlayer player = effectiveArgs.length >= 1 ? TAB.getInstance().getPlayer(effectiveArgs[0]) : sender;
         if (player == null) {
-            sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
+            sendMessage(sender, effectiveArgs.length == 0 ? getMessages().getNameTagNoArgFromConsole() : getMessages().getPlayerNotFound(effectiveArgs[0]));
             return;
         }
 
-        TabPlayer viewer = args.length >= 2 ? TAB.getInstance().getPlayer(args[1]) : null;
+        TabPlayer viewer = effectiveArgs.length >= 2 ? TAB.getInstance().getPlayer(effectiveArgs[1]) : null;
+        if (effectiveArgs.length >= 2 && viewer == null) {
+            sendMessage(sender, getMessages().getPlayerNotFound(effectiveArgs[1]));
+            return;
+        }
 
         String permission = sender == viewer ? TabConstants.Permission.COMMAND_NAMETAG_VISIBILITY : TabConstants.Permission.COMMAND_NAMETAG_VISIBILITY_OTHER;
         if (!hasPermission(sender, permission)) {
@@ -73,7 +82,13 @@ public class NameTagCommand extends SubCommand {
             return;
         }
 
-        if (action.equals("show")) {
+        if (action.equals("opaque")) {
+            if (viewer != null) {
+                teams.getVisibilityManager().setOpaqueNameTag(player, viewer, "Processing command (opaque)", !silent);
+            } else {
+                teams.getVisibilityManager().setOpaqueNameTag(player, null, "Processing command (opaque)", !silent);
+            }
+        } else if (action.equals("show")) {
             if (viewer != null) {
                 teams.getVisibilityManager().showNameTag(player, viewer, NameTagInvisibilityReason.HIDE_COMMAND, "Processing command (show)", !silent);
             } else {
@@ -96,10 +111,11 @@ public class NameTagCommand extends SubCommand {
 
     private void processView(@NotNull NameTag teams, @Nullable TabPlayer sender, @NotNull String action, @NotNull String[] args) {
         boolean silent = args.length > 0 && args[args.length - 1].equals("-s");
-        TabPlayer viewer = args.length >= 1 ? TAB.getInstance().getPlayer(args[0]) : sender;
+        String[] effectiveArgs = silent ? Arrays.copyOf(args, args.length - 1) : args;
+        TabPlayer viewer = effectiveArgs.length >= 1 ? TAB.getInstance().getPlayer(effectiveArgs[0]) : sender;
 
         if (viewer == null) {
-            sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
+            sendMessage(sender, effectiveArgs.length == 0 ? getMessages().getNameTagNoArgFromConsole() : getMessages().getPlayerNotFound(effectiveArgs[0]));
             return;
         }
 
@@ -111,24 +127,29 @@ public class NameTagCommand extends SubCommand {
 
         if (action.equals("showview")) {
             teams.showNameTagVisibilityView(viewer, !silent);
+            teams.getVisibilityManager().clearOpaqueNameTagView(viewer, "Processing command (showview)");
+        } else if (action.equals("opaqueview")) {
+            teams.getVisibilityManager().setOpaqueNameTagView(viewer, "Processing command (opaqueview)", !silent);
         } else if (action.equals("hideview")) {
             teams.hideNameTagVisibilityView(viewer, !silent);
+            teams.getVisibilityManager().clearOpaqueNameTagView(viewer, "Processing command (hideview)");
         } else {
             teams.toggleNameTagVisibilityView(viewer, !silent);
+            teams.getVisibilityManager().clearOpaqueNameTagView(viewer, "Processing command (toggleview)");
         }
     }
 
     @Override
     @NotNull
     public List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
-        if (arguments.length == 1) return getStartingArgument(Arrays.asList("show", "hide", "toggle", "showview", "hideview", "toggleview"), arguments[0]);
+        if (arguments.length == 1) return getStartingArgument(ALL_ACTIONS, arguments[0]);
         if (arguments.length == 2) return getOnlinePlayers(arguments[1]);
         String action = arguments[0].toLowerCase(Locale.US);
-        boolean targeting = action.equals("show") || action.equals("hide") || action.equals("toggle");
+        boolean targeting = TARGET_ACTIONS.contains(action);
         if (arguments.length == 3) {
             if (targeting) {
                 return getOnlinePlayers(arguments[2]);
-            } else if (action.equals("showview") || action.equals("hideview") || action.equals("toggleview")) {
+            } else if (VIEW_ACTIONS.contains(action)) {
                 return getStartingArgument(Collections.singletonList("-s"), arguments[2]);
             } else {
                 return Collections.emptyList();

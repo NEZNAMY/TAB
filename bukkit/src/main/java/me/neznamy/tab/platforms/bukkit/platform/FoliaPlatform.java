@@ -171,4 +171,9 @@ public class FoliaPlatform extends BukkitPlatform {
         if (!getPlugin().isEnabled()) return; // Server shutdown, no one cares anymore, everyone is about to be kicked
         globalScheduler_execute.invoke(globalScheduler, getPlugin(), task);
     }
+
+    @Override
+    public boolean hasLineOfSight(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        return true; // Cross-entity line-of-sight checks are not safe from Folia's global scheduler.
+    }
 }

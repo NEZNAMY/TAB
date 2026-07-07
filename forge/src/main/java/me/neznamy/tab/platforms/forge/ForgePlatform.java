@@ -263,6 +263,16 @@ public record ForgePlatform(MinecraftServer server) implements BackendPlatform {
     }
 
     @Override
+    public void runSyncGlobal(@NotNull Runnable task) {
+        server.execute(task);
+    }
+
+    @Override
+    public boolean hasLineOfSight(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        return ((ForgeTabPlayer) viewer).getPlayer().hasLineOfSight(((ForgeTabPlayer) target).getPlayer());
+    }
+
+    @Override
     @NotNull
     public Object dump() {
         Map<String, Object> map = new LinkedHashMap<>();

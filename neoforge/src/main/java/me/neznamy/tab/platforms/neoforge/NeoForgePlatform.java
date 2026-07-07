@@ -254,6 +254,16 @@ public record NeoForgePlatform(MinecraftServer server) implements BackendPlatfor
     }
 
     @Override
+    public void runSyncGlobal(@NotNull Runnable task) {
+        server.execute(task);
+    }
+
+    @Override
+    public boolean hasLineOfSight(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        return ((NeoForgeTabPlayer) viewer).getPlayer().hasLineOfSight(((NeoForgeTabPlayer) target).getPlayer());
+    }
+
+    @Override
     @NotNull
     public Object dump() {
         Map<String, Object> map = new LinkedHashMap<>();
