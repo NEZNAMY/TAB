@@ -259,7 +259,7 @@ public class Property {
             }
             string = stringBuilder.toString();
         }
-
+        string = EnumChatFormat.color(string); // Support & + color being in different elements
         if (!lastReplacedValue.equals(string)) {
             lastReplacedValue = string;
             mayContainRelPlaceholders = lastReplacedValue.indexOf('%') != -1 || lastReplacedValue.contains("<rel_");
