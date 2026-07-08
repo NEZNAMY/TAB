@@ -20,7 +20,8 @@ import org.jetbrains.annotations.NotNull;
 public class NMSImplementationProvider implements ImplementationProvider {
 
     /** Flag tracking if this server is Canvas 26.1.2+ with new scoreboard checks */
-    private final boolean isCanvas = ReflectionUtils.classExists("io.canvasmc.canvas.world.scores.TeamData");
+    private final boolean isCanvas = ReflectionUtils.classExists("io.canvasmc.canvas.world.scores.TeamData") ||
+            ReflectionUtils.classExists("io.canvasmc.canvas.threadedregions.scores.TeamData");
 
     @NotNull
     private final ComponentConverter<?> componentConverter = new NMSComponentConverter();
