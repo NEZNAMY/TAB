@@ -389,6 +389,11 @@ public class BukkitPlatform implements BackendPlatform {
         Bukkit.getScheduler().runTask(plugin, task);
     }
 
+    @Override
+    public boolean hasLineOfSight(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        return ((Player) viewer.getPlayer()).hasLineOfSight((Player) target.getPlayer());
+    }
+
     /**
      * Converts component to string using bukkit RGB format if supported by the server.
      * If not, closest legacy color is used instead.

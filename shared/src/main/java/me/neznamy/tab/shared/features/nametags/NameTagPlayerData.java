@@ -42,6 +42,12 @@ public class NameTagPlayerData {
     /** Flag tracking whether this player disabled nametags on all players or not */
     public boolean invisibleNameTagView;
 
+    /** Whether opaque nametag mode is enabled for all viewers */
+    private boolean opaqueNameTagMode;
+
+    /** Viewers with opaque nametag mode enabled only for them */
+    private final Set<TabPlayer> opaqueNameTagViewers = Collections.newSetFromMap(new WeakHashMap<>());
+
     /** Players who this player is vanished for */
     public final Set<UUID> vanishedFor = new HashSet<>();
 
@@ -199,6 +205,45 @@ public class NameTagPlayerData {
         if (viewer.teamData.invisibleNameTagView) return false; // Viewer does not want to see nametags
         if (viewer.getVersion() == ProtocolVersion.V1_8 && player.hasInvisibilityPotion()) return false;
         return true;
+    }
+
+    /**
+     * Returns {@code true} if opaque nametag mode is enabled for specified viewer.
+     *
+     * @param   viewer
+     *          Viewer to check
+     * @return  {@code true} if enabled, {@code false} if not
+     */
+    public boolean isOpaqueNameTagMode(@NotNull TabPlayer viewer) {
+        return opaqueNameTagMode || opaqueNameTagViewers.contains(viewer);
+    }
+
+    /**
+     * Enables or disables opaque nametag mode globally or for specified viewer.
+     *
+     * @param   viewer
+     *          Viewer to change mode for, or {@code null} for all viewers
+     * @param   enabled
+     *          Whether opaque nametag mode should be enabled
+     */
+    public void setOpaqueNameTagMode(@Nullable TabPlayer viewer, boolean enabled) {
+        if (viewer == null) {
+            opaqueNameTagMode = enabled;
+            if (!enabled) opaqueNameTagViewers.clear();
+        } else if (enabled) {
+            opaqueNameTagViewers.add(viewer);
+        } else {
+            opaqueNameTagViewers.remove(viewer);
+        }
+    }
+
+    /**
+     * Returns {@code true} if opaque nametag mode is enabled globally or for at least one viewer.
+     *
+     * @return  {@code true} if enabled, {@code false} if not
+     */
+    public boolean hasOpaqueNameTagMode() {
+        return opaqueNameTagMode || !opaqueNameTagViewers.isEmpty();
     }
 
     public void registerTeam(@NotNull TabPlayer target, @NotNull String teamName, @NotNull TabComponent prefix, @NotNull TabComponent suffix,

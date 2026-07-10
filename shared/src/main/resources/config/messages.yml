@@ -62,8 +62,8 @@ bossbar-help-menu:
   - "/tab bossbar announce <name> <length>"
 nametag:
   help-menu:
-    - "/tab nametag <show/hide/toggle> [player] [-s] - Toggles nametag of specified player"
-    - "/tab nametag <showview/hideview/toggleview> [player] [viewer] [-s] - Toggles nametag VIEW of specified player on other player(s)"
+    - "/tab nametag <show/opaque/hide/toggle> [player] [viewer] [-s] - Toggles nametag of specified player"
+    - "/tab nametag <showview/opaqueview/hideview/toggleview> [viewer] [-s] - Toggles nametag VIEW of specified player"
   feature-not-enabled: "&cThis command requires nametag feature to be enabled."
   view-hidden: "&aNametags of all players were hidden to you"
   view-shown: "&aNametags of all players were shown to you"
