@@ -2,8 +2,11 @@ package me.neznamy.tab.platforms.fand;
 
 import io.fand.api.entity.GameMode;
 import io.fand.api.entity.Player;
+import io.fand.api.visibility.DisguiseService;
+import io.fand.api.visibility.VanishService;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +42,8 @@ public final class FandTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean isDisguised() {
-        return false;
+        DisguiseService service = getPlatform().disguiseService();
+        return service != null && service.disguised(getPlayer());
     }
 
     @Override
@@ -55,7 +59,20 @@ public final class FandTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean isVanished0() {
-        return false;
+        VanishService service = getPlatform().vanishService();
+        return service != null && service.vanished(getPlayer());
+    }
+
+    @Override
+    public boolean canSee(@NotNull TabPlayer target) {
+        if (target == this) {
+            return true;
+        }
+        VanishService service = getPlatform().vanishService();
+        if (service != null && target instanceof FandTabPlayer fandTarget) {
+            return service.canSee(getPlayer(), fandTarget.getPlayer());
+        }
+        return super.canSee(target);
     }
 
     @Override

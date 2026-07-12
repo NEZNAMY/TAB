@@ -171,8 +171,18 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     }
 
     @Override
-    public void onDisplayObjective(@NotNull TabPlayer receiver, int slot, @NotNull String objective) {
-        if (slot == Scoreboard.DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
+    public void onDisplayObjective(@NotNull TabPlayer receiver, int slot, @Nullable String objective) {
+        if (slot != Scoreboard.DisplaySlot.SIDEBAR.ordinal()) {
+            return;
+        }
+        if (objective == null) {
+            if (receiver.scoreboardData.otherPluginScoreboard != null) {
+                receiver.scoreboardData.otherPluginScoreboard = null;
+                if (receiver.scoreboardData.activeScoreboard != null) {
+                    receiver.getScoreboard().setDisplaySlot(OBJECTIVE_NAME, Scoreboard.DisplaySlot.SIDEBAR);
+                }
+            }
+        } else if (!objective.equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", disabling TAB's scoreboard slotting.");
             receiver.scoreboardData.otherPluginScoreboard = objective;
         }

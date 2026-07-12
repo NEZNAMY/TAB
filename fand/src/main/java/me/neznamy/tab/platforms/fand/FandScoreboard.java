@@ -1,5 +1,8 @@
 package me.neznamy.tab.platforms.fand;
 
+import io.fand.api.packet.view.ClientboundSetDisplayObjectivePacketView;
+import io.fand.api.packet.view.ClientboundSetObjectivePacketView;
+import io.fand.api.packet.view.ClientboundSetPlayerTeamPacketView;
 import io.fand.api.scoreboard.PlayerScoreboard;
 import io.fand.api.scoreboard.ScoreDisplaySlot;
 import io.fand.api.scoreboard.ScoreNumberFormat;
@@ -8,6 +11,10 @@ import io.fand.api.scoreboard.ScoreboardObjective;
 import io.fand.api.scoreboard.ScoreboardTeam;
 import io.fand.api.scoreboard.TeamCollisionRule;
 import io.fand.api.scoreboard.TeamVisibility;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.platform.decorators.SafeScoreboard;
@@ -160,6 +167,51 @@ public final class FandScoreboard extends SafeScoreboard<FandTabPlayer> {
 
     private static NamedTextColor color(EnumChatFormat color) {
         return color.isColor() ? COLORS[color.ordinal()] : null;
+    }
+
+    void observeDisplayObjective(@NotNull ClientboundSetDisplayObjectivePacketView packet) {
+        String objectiveName = packet.objectiveName();
+        ScoreDisplaySlot slot = packet.value("slot", ScoreDisplaySlot.class);
+        if (objectiveName == null) {
+            player.getPlatform().context().scheduler().runMain(() -> notifyDisplayObjective(slot, null));
+            return;
+        }
+        notifyDisplayObjective(slot, objectiveName);
+    }
+
+    private void notifyDisplayObjective(ScoreDisplaySlot slot, String objectiveName) {
+        TAB tab = TAB.getInstance();
+        if (tab == null || tab.isPluginDisabled() || tab.getPlayer(player.getUniqueId()) != player) {
+            return;
+        }
+        tab.getFeatureManager().onDisplayObjective(player, slot.ordinal(), objectiveName);
+    }
+
+    void observeObjective(@NotNull ClientboundSetObjectivePacketView packet) {
+        TAB.getInstance().getFeatureManager().onObjective(player, packet.method(), packet.objectiveName());
+    }
+
+    @NotNull
+    ClientboundSetPlayerTeamPacketView rewriteTeam(@NotNull ClientboundSetPlayerTeamPacketView packet) {
+        if (packet.method() == TeamAction.UPDATE) {
+            return packet;
+        }
+        Collection<?> rawPlayers = packet.value("players", Collection.class);
+        List<String> players = new ArrayList<>(rawPlayers.size());
+        for (Object entry : rawPlayers) {
+            if (!(entry instanceof String playerName)) {
+                return packet;
+            }
+            players.add(playerName);
+        }
+        Collection<String> replacement = onTeamPacket(packet.method(), packet.name(), players);
+        if (players.equals(replacement)) {
+            return packet;
+        }
+        return packet.with(
+                "players",
+                List.copyOf(replacement),
+                ClientboundSetPlayerTeamPacketView.class);
     }
 
 }

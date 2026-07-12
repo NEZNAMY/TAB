@@ -3,7 +3,10 @@ package me.neznamy.tab.platforms.fand;
 import io.fand.api.Fand;
 import io.fand.api.command.CommandRegistration;
 import io.fand.api.entity.Player;
+import io.fand.api.placeholder.PlaceholderContext;
 import io.fand.api.plugin.PluginContext;
+import io.fand.api.visibility.DisguiseService;
+import io.fand.api.visibility.VanishService;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,15 +15,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
+import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
@@ -54,10 +60,20 @@ public final class FandPlatform implements BackendPlatform {
         return protocolVersion;
     }
 
+    @Nullable
+    VanishService vanishService() {
+        return context.services().service(VanishService.class).orElse(null);
+    }
+
+    @Nullable
+    DisguiseService disguiseService() {
+        return context.services().service(DisguiseService.class).orElse(null);
+    }
+
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
         if (identifier.startsWith("%rel_")) {
-            registerDummyPlaceholder(identifier);
+            registerRelationalPlaceholder(identifier);
             return;
         }
         String fandIdentifier = identifier;
@@ -78,6 +94,36 @@ public final class FandPlatform implements BackendPlatform {
     }
 
     @Override
+    public void registerPlaceholders() {
+        BackendPlatform.super.registerPlaceholders();
+        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        manager.registerPlayerPlaceholder("%fand_prefix%", player -> context.permissions()
+                .prefix(((FandTabPlayer) player).getPlayer())
+                .orElse(""));
+        manager.registerPlayerPlaceholder("%fand_suffix%", player -> context.permissions()
+                .suffix(((FandTabPlayer) player).getPlayer())
+                .orElse(""));
+    }
+
+    private void registerRelationalPlaceholder(@NotNull String identifier) {
+        String fandIdentifier = identifier.substring("%rel_".length(), identifier.length() - 1);
+        TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, (viewer, target) ->
+                context.placeholders().resolve(
+                                fandIdentifier,
+                                PlaceholderContext.builder()
+                                        .viewer(((FandTabPlayer) viewer).getPlayer())
+                                        .target(((FandTabPlayer) target).getPlayer())
+                                        .build())
+                        .orElse(identifier));
+    }
+
+    @Override
+    @NotNull
+    public TabExpansion createTabExpansion() {
+        return new FandTabExpansion(context);
+    }
+
+    @Override
     public void loadPlayers() {
         for (Player player : Fand.server().players()) {
             TAB.getInstance().addPlayer(new FandTabPlayer(this, player));
@@ -91,9 +137,8 @@ public final class FandPlatform implements BackendPlatform {
     }
 
     @Override
-    @Nullable
     public TabFeature getPerWorldPlayerList(@NotNull PerWorldPlayerListConfiguration configuration) {
-        return null;
+        return new FandPerWorldPlayerList(context, configuration);
     }
 
     @Override
@@ -109,6 +154,7 @@ public final class FandPlatform implements BackendPlatform {
     @Override
     public void registerListener() {
         new FandEventListener(context).register();
+        new FandPacketListener(context).register();
     }
 
     @Override
@@ -185,6 +231,14 @@ public final class FandPlatform implements BackendPlatform {
             customCommands.forEach(CommandRegistration::unregister);
             customCommands.clear();
         }
+    }
+
+    @Override
+    @NotNull
+    public GroupManager detectPermissionPlugin() {
+        return new GroupManager("Fand", player -> context.permissions()
+                .primaryGroup(((FandTabPlayer) player).getPlayer())
+                .orElse(TabConstants.NO_GROUP));
     }
 
     @Override
