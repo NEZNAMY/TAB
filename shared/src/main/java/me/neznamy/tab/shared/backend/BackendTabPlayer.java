@@ -53,6 +53,16 @@ public abstract class BackendTabPlayer extends TabPlayer {
     }
 
     /**
+     * Updates the cached vanish state after receiving a platform event.
+     *
+     * @param vanished new vanish state
+     */
+    public void updateVanishState(boolean vanished) {
+        this.vanished = vanished;
+        lastVanishCheck = System.currentTimeMillis();
+    }
+
+    /**
      * Returns player's health for {@link Placeholder#HEALTH} placeholder.
      *
      * @return  player's health

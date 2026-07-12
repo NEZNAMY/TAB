@@ -1,0 +1,52 @@
+{
+  "id": "@id@",
+  "version": "@version@",
+  "mainClass": "me.neznamy.tab.platforms.fand.FandTAB",
+  "description": "@description@",
+  "website": "@website@",
+  "license": "Apache-2.0",
+  "apiVersion": "0.1.1",
+  "authors": ["@author@"],
+  "depends": [],
+  "loadAfter": ["luckperms", "viaversion", "floodgate"],
+  "loadBefore": [],
+  "permissions": [
+    {
+      "node": "tab.admin",
+      "defaultAccess": "OPERATOR",
+      "children": {
+        "tab.tabcomplete": true,
+        "tab.reload": true,
+        "tab.cpu": true,
+        "tab.debug": true,
+        "tab.dump": true,
+        "tab.groupinfo": true,
+        "tab.grouplist": true,
+        "tab.parse": true,
+        "tab.setcollision": true,
+        "tab.remove": true,
+        "tab.change.*": true,
+        "tab.announce.bar": true,
+        "tab.bossbar.toggle": true,
+        "tab.bossbar.toggle.other": true,
+        "tab.send.bar": true,
+        "tab.mysql.download": true,
+        "tab.mysql.upload": true,
+        "tab.nametag.visibility": true,
+        "tab.nametag.visibility.other": true,
+        "tab.nametag.view": true,
+        "tab.nametag.view.other": true,
+        "tab.announce.scoreboard": true,
+        "tab.scoreboard.toggle": true,
+        "tab.scoreboard.toggle.other": true,
+        "tab.scoreboard.show": true,
+        "tab.scoreboard.show.other": true,
+        "tab.staff": true,
+        "tab.group.*": true,
+        "tab.bypass": true,
+        "tab.seevanished": true,
+        "tab.spectatorbypass": true
+      }
+    }
+  ]
+}

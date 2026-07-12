@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.features.types.CustomThreaded;
+import me.neznamy.tab.shared.features.types.DisguiseListener;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.RefreshableFeature;
@@ -19,7 +20,7 @@ import java.util.Objects;
 /**
  * Class managing collision rule for players.
  */
-public class CollisionManager extends RefreshableFeature implements JoinListener, Loadable, CustomThreaded {
+public class CollisionManager extends RefreshableFeature implements JoinListener, Loadable, CustomThreaded, DisguiseListener {
 
     @NotNull private final NameTag nameTags;
     @NotNull private final Condition enableCollision;
@@ -40,7 +41,7 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, p -> {
             TabPlayer player = (TabPlayer) p;
             if (player.teamData.forcedCollision != null) return Boolean.toString(player.teamData.forcedCollision);
-            boolean newCollision = !((TabPlayer)p).isDisguised() && enableCollision.isMet((TabPlayer) p);
+            boolean newCollision = collision(player);
             player.teamData.collisionRule = newCollision;
             return Boolean.toString(newCollision);
         });
@@ -52,7 +53,16 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
     
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
-        connectedPlayer.teamData.collisionRule = enableCollision.isMet(connectedPlayer);
+        connectedPlayer.teamData.collisionRule = collision(connectedPlayer);
+    }
+
+    @Override
+    public void onDisguiseStatusChange(@NotNull TabPlayer player) {
+        if (player.teamData.forcedCollision != null) return;
+        boolean collision = collision(player);
+        if (player.teamData.collisionRule == collision) return;
+        player.teamData.collisionRule = collision;
+        updateCollision(player);
     }
 
     @NotNull
@@ -95,6 +105,10 @@ public class CollisionManager extends RefreshableFeature implements JoinListener
                 );
             }
         }
+    }
+
+    private boolean collision(TabPlayer player) {
+        return !player.isDisguised() && enableCollision.isMet(player);
     }
 
     public void setCollisionRule(@NotNull me.neznamy.tab.api.TabPlayer player, Boolean collision) {

@@ -44,6 +44,7 @@ val platformPaths = setOf(
     ":bukkit:v26_1",
     ":bukkit:v26_2",
     ":bungeecord",
+    ":fand",
     ":velocity"
 )
 

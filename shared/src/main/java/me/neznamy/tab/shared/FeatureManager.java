@@ -281,7 +281,7 @@ public class FeatureManager {
      * @param   objective
      *          Objective name
      */
-    public void onDisplayObjective(@NotNull TabPlayer packetReceiver, int slot, @NotNull String objective) {
+    public void onDisplayObjective(@NotNull TabPlayer packetReceiver, int slot, @Nullable String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof DisplayObjectiveListener)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
@@ -328,6 +328,25 @@ public class FeatureManager {
             if (!(f instanceof VanishListener)) continue;
             TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
                     () -> ((VanishListener) f).onVanishStatusChange(player), f.getFeatureName(), CpuUsageCategory.VANISH_CHANGE);
+            if (f instanceof CustomThreaded) {
+                ((CustomThreaded) f).getCustomThread().execute(task);
+            } else {
+                task.run();
+            }
+        }
+    }
+
+    /**
+     * Forwards disguise status changes to all enabled features.
+     *
+     * @param player player whose disguise status changed
+     */
+    public void onDisguiseStatusChange(@NotNull TabPlayer player) {
+        for (TabFeature f : values) {
+            if (!(f instanceof DisguiseListener)) continue;
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(),
+                    () -> ((DisguiseListener) f).onDisguiseStatusChange(player),
+                    f.getFeatureName(), CpuUsageCategory.DISGUISE_CHANGE);
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
             } else {
