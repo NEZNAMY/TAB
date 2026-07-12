@@ -83,6 +83,8 @@ public class MessageFile extends YamlConfigurationFile {
     private final String nameTagViewShown = getString("nametag.view-shown", "&aNametags of all players were shown to you");
     private final String nameTagTargetHidden = getString("nametag.player-hidden", "&aYour nametag was hidden");
     private final String nameTagTargetShown = getString("nametag.player-shown", "&aYour nametag was shown");
+    private final String nameTagOpaqueViewShown = getString("nametag.opaque-view-enabled", "&aYou will no longer see nametags of players behind walls");
+    private final String nameTagOpaqueTargetShown = getString("nametag.opaque-player-enabled", "&aYour nametag will no longer be visible through walls");
     private final String nameTagNoArgFromConsole = getString("nametag.no-arg-from-console", "&cYou need to specify player if running this command from the console");
 
     public MessageFile() throws IOException {

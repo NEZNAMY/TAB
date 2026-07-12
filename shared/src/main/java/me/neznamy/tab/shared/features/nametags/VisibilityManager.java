@@ -239,7 +239,7 @@ public class VisibilityManager extends RefreshableFeature implements JoinListene
                 updateVisibility(player);
             }
             requestOpaqueOcclusionRefresh();
-            if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagTargetShown());
+            if (sendMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagOpaqueTargetShown());
         }, getFeatureName(), cpuReason));
     }
 
@@ -254,7 +254,7 @@ public class VisibilityManager extends RefreshableFeature implements JoinListene
                 updateVisibility(player, viewer);
             }
             requestOpaqueOcclusionRefresh();
-            if (sendMessage) viewer.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagViewShown());
+            if (sendMessage) viewer.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagOpaqueViewShown());
         }, getFeatureName(), cpuReason));
     }
 

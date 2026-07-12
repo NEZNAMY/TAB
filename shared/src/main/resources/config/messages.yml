@@ -69,4 +69,6 @@ nametag:
   view-shown: "&aNametags of all players were shown to you"
   player-hidden: "&aYour nametag was hidden"
   player-shown: "&aYour nametag was shown"
+  opaque-player-enabled: "&aYour nametag will no longer be visible through walls"
+  opaque-view-enabled: "&aYou will no longer see nametags of players behind walls"
   no-arg-from-console: "&cYou need to specify player if running this command from the console"
