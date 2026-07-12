@@ -8,18 +8,12 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.object.ObjectContents;
 import net.kyori.adventure.text.object.PlayerHeadObjectContents;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
 
 /**
  * Class loader hack to avoid class initializer error when using static methods in interfaces.
  * No, try/catch does not solve this.
  */
 public class MiniMessageObjectHook {
-
-    /** Constant prefix shared by every Minecraft texture URL */
-    private static final String TEXTURE_URL_PREFIX = "https://textures.minecraft.net/texture/";
 
     /**
      * Creates a tag resolver for the "head_texture" tag, which allows inserting player heads with custom textures using a texture hash.
@@ -30,13 +24,9 @@ public class MiniMessageObjectHook {
     public static TagResolver headTextureTag() {
         return TagResolver.resolver("head_texture", (args, context) -> {
             String hash = args.popOr("Expected texture hash").lowerValue().trim();
-            String textureUrl = TEXTURE_URL_PREFIX + hash;
-
-            String json = String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", textureUrl);
-            String texture = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
             PlayerHeadObjectContents contents = ObjectContents.playerHead()
                     .profileProperty(
-                            PlayerHeadObjectContents.property("textures", texture)
+                            PlayerHeadObjectContents.property("textures", TabList.Skin.fromTextureHash(hash).getValue())
                     )
                     .build();
 

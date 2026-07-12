@@ -5,6 +5,8 @@ import me.neznamy.tab.shared.chat.component.TabComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -258,6 +260,9 @@ public interface TabList {
     @AllArgsConstructor
     class Skin {
 
+        /** Constant prefix shared by every Minecraft texture URL */
+        private static final String TEXTURE_URL_PREFIX = "https://textures.minecraft.net/texture/";
+
         /** Skin value */
         @NonNull
         private final String value;
@@ -265,5 +270,22 @@ public interface TabList {
         /** Skin signature */
         @Nullable
         private final String signature;
+
+        /**
+         * Creates a skin with custom textures using a texture hash.
+         * The method expects a single argument: the Minecraft texture hash (the part after "https://textures.minecraft.net/texture/").
+         * Only works in head components, tablist also requires signature, which is not available.
+         *
+         * @param   hash
+         *          Skin hash
+         * @return  Skin with given texture.
+         */
+        @NotNull
+        public static Skin fromTextureHash(@NonNull String hash) {
+            String textureUrl = TEXTURE_URL_PREFIX + hash;
+            String json = String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", textureUrl);
+            String texture = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+            return new Skin(texture, null);
+        }
     }
 }

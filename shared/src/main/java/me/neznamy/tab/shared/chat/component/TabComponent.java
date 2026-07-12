@@ -99,9 +99,45 @@ public abstract class TabComponent {
     /** Pattern for detecting fonts */
     private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
 
-    private static final Pattern ATLAS_PATTERN = Pattern.compile("<sprite:(?:\"([^\"]+)\"|([^:]+)):(?:\"([^\"]+)\"|([^>]+))>");
+    private static final Map<Pattern, Function<Matcher, TabComponent>> OBJECT_PATTERNS = new LinkedHashMap<>();
 
-    private static final Pattern HEAD_PATTERN = Pattern.compile("<head:([^>]+)>");
+    static {
+        OBJECT_PATTERNS.put(Pattern.compile("<sprite:(?:\"([^\"]+)\"|([^:]+)):(?:\"([^\"]+)\"|([^>]+))>"), matcher -> {
+            String atlas = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+            String sprite = matcher.group(3) != null ? matcher.group(3) : matcher.group(4);
+            return atlasSprite(atlas, sprite);
+        });
+        OBJECT_PATTERNS.put(Pattern.compile("<head:([^>:]+)(?::([^>]+))?>"), matcher -> {
+            try {
+                TabObjectComponent headComponent = new TabObjectComponent(head(matcher.group(1), matcher.group(2)));
+                if (TAB.getInstance().getConfiguration().getConfig().getComponents().isDisableShadowForHeads()) {
+                    headComponent.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
+                }
+                return headComponent;
+            } catch (IllegalArgumentException e) {
+                return new LegacyTextComponent(String.format("<Invalid head: \"%s\">", matcher.group(1)));
+            }
+        });
+        OBJECT_PATTERNS.put(Pattern.compile("<head_texture:([^>:]+)>"), matcher -> {
+            TabObjectComponent headComponent = new TabObjectComponent(new TabPlayerSprite(null, null, TabList.Skin.fromTextureHash(matcher.group(1)), true));
+            if (TAB.getInstance().getConfiguration().getConfig().getComponents().isDisableShadowForHeads()) {
+                headComponent.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
+            }
+            return headComponent;
+        });
+        OBJECT_PATTERNS.put(Pattern.compile("<mineskin:([^>:]+)>"), matcher -> {
+            TabList.Skin skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin("mineskin:" + matcher.group(1));
+            if (skin != null) {
+                TabObjectComponent headComponent = new TabObjectComponent(new TabPlayerSprite(null, null, skin, true));
+                if (TAB.getInstance().getConfiguration().getConfig().getComponents().isDisableShadowForHeads()) {
+                    headComponent.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
+                }
+                return headComponent;
+            } else {
+                return new LegacyTextComponent(String.format("<Invalid mineskin: \"%s\">", matcher.group(1)));
+            }
+        });
+    }
 
     @Nullable
     private Object converted;
@@ -308,57 +344,41 @@ public abstract class TabComponent {
         component.modifier.setFont(font);
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
+
+            // Object components
             if (c == '<') {
-                Matcher matcher = ATLAS_PATTERN.matcher(text.substring(i));
-                if (matcher.find() && matcher.start() == 0) {
-                    // flush current builder
-                    if (builder.length() > 0) {
-                        component.setText(builder.toString());
-                        components.add(component);
+                boolean matched = false;
+                for (Map.Entry<Pattern, Function<Matcher, TabComponent>> entry : OBJECT_PATTERNS.entrySet()) {
+                    Matcher matcher = entry.getKey().matcher(text.substring(i));
+                    if (matcher.find() && matcher.start() == 0) {
+                        // flush current builder
+                        if (builder.length() > 0) {
+                            component.setText(builder.toString());
+                            components.add(component);
+                            component = new TabTextComponent(component);
+                            component.setText("");
+                            component.modifier.setFont(font);
+                            builder = new StringBuilder();
+                        }
+                        components.add(entry.getValue().apply(matcher));
+
+                        // skip
+                        i += matcher.group(0).length() - 1;
+
+                        // reset formatting component safely
                         component = new TabTextComponent(component);
                         component.setText("");
                         component.modifier.setFont(font);
-                        builder = new StringBuilder();
+                        matched = true;
+                        break;
                     }
-                    String atlas = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
-                    String sprite = matcher.group(3) != null ? matcher.group(3) : matcher.group(4);
-                    components.add(atlasSprite(atlas, sprite));
-
-                    // skip
-                    i += matcher.group(0).length() - 1;
-
-                    // reset formatting component safely
-                    component = new TabTextComponent(component);
-                    component.setText("");
-                    component.modifier.setFont(font);
-                    continue;
                 }
-
-                matcher = HEAD_PATTERN.matcher(text.substring(i));
-                if (matcher.find() && matcher.start() == 0) {
-                    String skinDefinition = matcher.group(1);
-                    // flush current builder
-                    if (builder.length() > 0) {
-                        component.setText(builder.toString());
-                        components.add(component);
-                        component = new TabTextComponent(component);
-                        component.setText("");
-                        component.modifier.setFont(font);
-                        builder = new StringBuilder();
-                    }
-                    components.add(head(skinDefinition));
-
-                    // skip
-                    i += matcher.group(0).length() - 1;
-
-                    // reset formatting component safely
-                    component = new TabTextComponent(component);
-                    component.setText("");
-                    component.modifier.setFont(font);
+                if (matched) {
                     continue;
                 }
             }
 
+            // Colors
             if (c == '§') {
                 i++;
                 if (i >= text.length()) {
@@ -399,6 +419,7 @@ public abstract class TabComponent {
                     }
                 }
             } else if (c == '#' && text.length() > i+6) {
+                // RGB
                 String hex = text.substring(i+1, i+7);
                 if (isHexCode(hex)) {
                     TabTextColor color = new TabTextColor(hex);
@@ -512,41 +533,34 @@ public abstract class TabComponent {
     }
 
     /**
-     * Creates a new component of "object" type with given player skin definition.
+     * Creates a new component of "object" type with given player definition and outer layer.
      * If the skin definition is invalid in any way, text component with the error message is returned.
      *
-     * @param   skinDefinition
-     *          Skin definition to use in the component
+     * @param   head
+     *          Head definition to use in the component
+     * @param   outerLayer
+     *          Outer layer definition to use in the component, defaults to {@code true}
      * @return  New object component with given player skin or text component with error message
+     * @throws  IllegalArgumentException
+     *          If the head definition is invalid
      */
     @NotNull
-    public static TabComponent head(@NonNull String skinDefinition) {
-        UUID id = null;
-        String name = null;
-        TabList.Skin skin = null;
-        if (skinDefinition.startsWith("id:")) {
-            String stringUUID = skinDefinition.substring(3);
-            try {
-                id = UUID.fromString(stringUUID);
-            } catch (IllegalArgumentException e) {
-                return new LegacyTextComponent(String.format("<Invalid UUID: \"%s\">", stringUUID));
-            }
-        } else if (skinDefinition.startsWith("name:")) {
-            name = skinDefinition.substring(5);
-            if (name.length() > 16) {
-                return new LegacyTextComponent(String.format("<Invalid name (too long): \"%s\">", name));
-            }
-        } else {
-            skin = TAB.getInstance().getConfiguration().getSkinManager().getSkin(skinDefinition);
-            if (skin == null) {
-                return new LegacyTextComponent(String.format("<Invalid skin: \"%s\">", skinDefinition));
-            }
+    public static TabPlayerSprite head(@NonNull String head, @Nullable String outerLayer) {
+        boolean hat = outerLayer == null || outerLayer.equals("true");
+        try {
+            // UUID
+            UUID id = UUID.fromString(head);
+            return new TabPlayerSprite(id, null, null, hat);
+        } catch (IllegalArgumentException ignored) {
         }
-        TabObjectComponent component = new TabObjectComponent(new TabPlayerSprite(id, name, skin, true)); // Always show hat
-        if (TAB.getInstance().getConfiguration().getConfig().getComponents().isDisableShadowForHeads()) {
-            component.modifier.setShadowColor(0); // Hide shadow to match heads in online mode
+        if (head.contains("/")) {
+            // Texture path, not supported yet
+            return new TabPlayerSprite(null, null, new TabList.Skin(head, null), hat); // Just to avoid an error
         }
-        return component;
+        if (head.length() <= 16) {
+            return new TabPlayerSprite(null, head, null, hat);
+        }
+        throw new IllegalArgumentException("Invalid head definition: " + head);
     }
 
     /**
