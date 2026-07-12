@@ -172,10 +172,6 @@ public final class FandScoreboard extends SafeScoreboard<FandTabPlayer> {
     void observeDisplayObjective(@NotNull ClientboundSetDisplayObjectivePacketView packet) {
         String objectiveName = packet.objectiveName();
         ScoreDisplaySlot slot = packet.value("slot", ScoreDisplaySlot.class);
-        if (objectiveName == null) {
-            player.getPlatform().context().scheduler().runMain(() -> notifyDisplayObjective(slot, null));
-            return;
-        }
         notifyDisplayObjective(slot, objectiveName);
     }
 

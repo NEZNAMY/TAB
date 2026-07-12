@@ -47,7 +47,7 @@ public final class FandTabList extends TrackedTabList<FandTabPlayer> {
         state.remove(entry);
         managedEntries.remove(entry);
         observedEntries.remove(entry);
-        removedEntries.add(entry);
+        markRemoved(entry);
         context.packets().sender().send(
                 player.getPlayer(),
                 context.packets().playerInfo().remove(List.of(entry)));
@@ -203,8 +203,20 @@ public final class FandTabList extends TrackedTabList<FandTabPlayer> {
                 state.remove(profileId);
                 managedEntries.remove(profileId);
                 observedEntries.remove(profileId);
-                removedEntries.add(profileId);
+                markRemoved(profileId);
             }
+        }
+    }
+
+    private void markRemoved(UUID profileId) {
+        updateRemovalState(removedEntries, profileId, Fand.server().player(profileId).isPresent());
+    }
+
+    static void updateRemovalState(Set<UUID> removedEntries, UUID profileId, boolean onlineRealPlayer) {
+        if (onlineRealPlayer) {
+            removedEntries.add(profileId);
+        } else {
+            removedEntries.remove(profileId);
         }
     }
 

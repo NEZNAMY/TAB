@@ -73,7 +73,12 @@ public final class FandPlatform implements BackendPlatform {
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
         if (identifier.startsWith("%rel_")) {
-            registerRelationalPlaceholder(identifier);
+            String fandIdentifier = identifier.substring("%rel_".length(), identifier.length() - 1);
+            if (isFandPlaceholderIdentifier(fandIdentifier)) {
+                registerRelationalPlaceholder(identifier);
+            } else {
+                registerDummyPlaceholder(identifier);
+            }
             return;
         }
         String fandIdentifier = identifier;
@@ -82,6 +87,10 @@ public final class FandPlatform implements BackendPlatform {
         }
         String resolvedIdentifier = fandIdentifier;
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        if (!isFandPlaceholderIdentifier(resolvedIdentifier)) {
+            registerDummyPlaceholder(identifier);
+            return;
+        }
         if (identifier.startsWith("%server_")) {
             manager.registerServerPlaceholder(identifier, () -> context.placeholders()
                     .resolve(null, resolvedIdentifier)
@@ -91,6 +100,25 @@ public final class FandPlatform implements BackendPlatform {
         manager.registerPlayerPlaceholder(identifier, player -> context.placeholders()
                 .resolve(((FandTabPlayer) player).getPlayer(), resolvedIdentifier)
                 .orElse(identifier));
+    }
+
+    static boolean isFandPlaceholderIdentifier(@NotNull String identifier) {
+        String normalized = identifier.trim();
+        if (normalized.isEmpty()) {
+            return false;
+        }
+        for (int index = 0; index < normalized.length(); index++) {
+            char value = normalized.charAt(index);
+            if (!(value >= 'a' && value <= 'z')
+                    && !(value >= 'A' && value <= 'Z')
+                    && !(value >= '0' && value <= '9')
+                    && value != '_'
+                    && value != '-'
+                    && value != '.') {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

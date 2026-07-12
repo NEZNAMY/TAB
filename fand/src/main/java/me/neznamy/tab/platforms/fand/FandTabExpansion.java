@@ -5,6 +5,9 @@ import io.fand.api.placeholder.PlaceholderContext;
 import io.fand.api.placeholder.PlaceholderProvider;
 import io.fand.api.placeholder.PlaceholderRegistration;
 import io.fand.api.plugin.PluginContext;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.UnaryOperator;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
@@ -18,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 public final class FandTabExpansion implements TabExpansion {
 
     private static final String NAMESPACE_PREFIX = "tab_";
+    private static final int MAX_REPLACEMENT_PASSES = 32;
 
     private final PluginContext context;
     private final PlaceholderRegistration registration;
@@ -99,17 +103,29 @@ public final class FandTabExpansion implements TabExpansion {
             @NotNull PlaceholderContext placeholderContext,
             @NotNull String requestedIdentifier
     ) {
-        String text = "%" + requestedIdentifier + "%";
-        String previous;
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
-        do {
-            previous = text;
+        return expandReplacement("%" + requestedIdentifier + "%", text -> {
+            String expanded = text;
             for (String placeholder : PlaceholderManagerImpl.detectPlaceholders(text)) {
                 String identifier = placeholder.substring(1, placeholder.length() - 1);
                 String value = context.placeholders().resolve(identifier, placeholderContext).orElse(placeholder);
-                text = text.replace(placeholder, manager.findReplacement(placeholder, value));
+                expanded = expanded.replace(placeholder, manager.findReplacement(placeholder, value));
             }
-        } while (!previous.equals(text));
+            return expanded;
+        });
+    }
+
+    @NotNull
+    static String expandReplacement(@NotNull String initial, @NotNull UnaryOperator<String> expansionPass) {
+        Set<String> seen = new HashSet<>();
+        String text = initial;
+        for (int pass = 0; pass < MAX_REPLACEMENT_PASSES && seen.add(text); pass++) {
+            String expanded = expansionPass.apply(text);
+            if (expanded.equals(text)) {
+                return text;
+            }
+            text = expanded;
+        }
         return text;
     }
 }
