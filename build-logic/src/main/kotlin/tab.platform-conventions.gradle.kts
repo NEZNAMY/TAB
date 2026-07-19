@@ -15,22 +15,10 @@ tasks {
         relocate("net.kyori.event", "me.neznamy.tab.libs.net.kyori.event")
         relocate("me.neznamy.yamlassist", "me.neznamy.tab.libs.me.neznamy.yamlassist")
         relocate("org.yaml.snakeyaml", "me.neznamy.tab.libs.org.yaml.snakeyaml")
-        if (project.path == ":fand") {
-            dependencies {
-                exclude(dependency("com.mysql:mysql-connector-j:.*"))
-                exclude(dependency("com.google.protobuf:protobuf-java:.*"))
-                exclude(dependency("com.saicone.delivery4j:.*:.*"))
-                exclude(dependency("com.rabbitmq:amqp-client:.*"))
-                exclude(dependency("redis.clients:jedis:.*"))
-                exclude(dependency("org.apache.commons:commons-pool2:.*"))
-                exclude(dependency("org.json:json:.*"))
-            }
-        } else {
-            relocate("redis.clients.jedis", "me.neznamy.tab.libs.redis.clients.jedis")
-            relocate("org.apache.commons.pool2", "me.neznamy.tab.libs.org.apache.commons.pool2")
-            relocate("org.json", "me.neznamy.tab.libs.org.json")
-            relocate("com.rabbitmq", "me.neznamy.tab.libs.com.rabbitmq")
-            relocate("com.saicone.delivery4j", "me.neznamy.tab.libs.com.saicone.delivery4j")
-        }
+        relocate("redis.clients.jedis", "me.neznamy.tab.libs.redis.clients.jedis")
+        relocate("org.apache.commons.pool2", "me.neznamy.tab.libs.org.apache.commons.pool2")
+        relocate("org.json", "me.neznamy.tab.libs.org.json")
+        relocate("com.rabbitmq", "me.neznamy.tab.libs.com.rabbitmq")
+        relocate("com.saicone.delivery4j", "me.neznamy.tab.libs.com.saicone.delivery4j")
     }
 }
