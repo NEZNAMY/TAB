@@ -267,14 +267,44 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      */
     @NotNull
     public static List<String> detectPlaceholders(@NonNull String text) {
-        List<String> placeholders = new ArrayList<>(detectPercentPlaceholders(text));
-        TAB tab = TAB.getInstance();
-        for (String placeholder : tab.getPlatform().detectAdditionalPlaceholders(text)) {
-            if (!placeholders.contains(placeholder)) {
-                placeholders.add(placeholder);
+        List<String> detectedPlaceholders = new ArrayList<>(detectPercentPlaceholders(text));
+        detectedPlaceholders.addAll(TAB.getInstance().getPlatform().detectAdditionalPlaceholders(text));
+
+        // The two detection methods return placeholders in their own local order,
+        // but merging them by appending breaks the order as they appear in the
+        // original text. Reorder by iterating through the string and finding
+        // placeholders in the actual order they appear.
+        List<String> orderedPlaceholders = new ArrayList<>();
+        String remaining = text;
+
+        while (!detectedPlaceholders.isEmpty()) {
+            // Find which placeholder appears first in the remaining text
+            String nextPlaceholder = null;
+            int nextIndex = Integer.MAX_VALUE;
+
+            for (String placeholder : detectedPlaceholders) {
+                int idx = remaining.indexOf(placeholder);
+                if (idx != -1 && idx < nextIndex) {
+                    nextIndex = idx;
+                    nextPlaceholder = placeholder;
+                }
             }
+
+            // If no more placeholders found, add remaining ones
+            if (nextPlaceholder == null) {
+                orderedPlaceholders.addAll(detectedPlaceholders);
+                break;
+            }
+
+            // Add the found placeholder and remove it from further consideration
+            orderedPlaceholders.add(nextPlaceholder);
+            detectedPlaceholders.remove(nextPlaceholder);
+
+            // Move past this occurrence to find next placeholders in order
+            remaining = remaining.substring(nextIndex + nextPlaceholder.length());
         }
-        return placeholders;
+
+        return orderedPlaceholders;
     }
 
     @NotNull

@@ -70,7 +70,7 @@ public class MiniPlaceholdersHook {
         Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
             String placeholder = matcher.group();
-            if (!isMiniMessageTag(matcher.group(1)) && !placeholders.contains(placeholder)) {
+            if (!isMiniMessageTag(matcher.group(1))) {
                 placeholders.add(placeholder);
             }
         }
