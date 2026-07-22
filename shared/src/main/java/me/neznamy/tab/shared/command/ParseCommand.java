@@ -52,10 +52,6 @@ public class ParseCommand extends SubCommand {
             }
         }
         String textToParse = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-        if (!textToParse.contains("%")) {
-            sendMessage(sender, "&cThe provided input (" + textToParse + ") does not contain any placeholders, therefore there's nothing to test.");
-            return;
-        }
         // Do it this way to avoid sending the "§" symbol to the console to try to color the text (does not work on Velocity)
         sendMessage(sender, new TabTextComponent("", Arrays.asList(
                 new TabTextComponent("Replacing placeholder ", TabTextColor.GOLD),
