@@ -17,6 +17,9 @@ import java.util.regex.Pattern;
  */
 public class StringToComponentCache extends Cache<String, TabComponent> {
 
+    /** Global cache for turning text into components in random places */
+    public static StringToComponentCache GLOBAL = new StringToComponentCache("Global", 1000);
+
     /** Formatter to use Kyori's &lt;gradient:#RRGGBB:#RRGGBB>Text&lt;/gradient> */
     private static final TriFunction<TabTextColor, String, TabTextColor, String> kyoriGradientFormatter =
             (start, text, end) -> String.format("<gradient:#%s:#%s>%s</gradient>", start.getHexCode(), end.getHexCode(), text);
