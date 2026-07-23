@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
  */
 public class MiniPlaceholdersHook {
 
+    private static final String DUMMY_CHAR = "\uFFFF";
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
     private static final LegacyComponentSerializer LEGACY_HEX_SERIALIZER =
             LegacyComponentSerializer.builder().character('§').hexColors().build();
@@ -95,7 +96,7 @@ public class MiniPlaceholdersHook {
     @NotNull
     public static String parseGlobal(@NotNull String identifier) {
         Component component = MINI_MESSAGE.deserialize(
-                identifier,
+                identifier + DUMMY_CHAR,
                 MiniPlaceholders.globalPlaceholders()
         );
         return toLegacyString(component);
@@ -113,7 +114,7 @@ public class MiniPlaceholdersHook {
     @NotNull
     public static String parsePlayer(@NotNull String identifier, @NotNull Player player) {
         Component component = MINI_MESSAGE.deserialize(
-                identifier,
+                identifier + DUMMY_CHAR,
                 player,
                 MiniPlaceholders.globalPlaceholders(),
                 MiniPlaceholders.audiencePlaceholders()
@@ -135,7 +136,7 @@ public class MiniPlaceholdersHook {
     @NotNull
     public static String parseRelational(@NotNull String identifier, @NotNull Player viewer, @NotNull Player target) {
         Component component = MINI_MESSAGE.deserialize(
-                identifier,
+                identifier + DUMMY_CHAR,
                 new RelationalAudience<>(viewer, target),
                 MiniPlaceholders.globalPlaceholders(),
                 MiniPlaceholders.audiencePlaceholders(),
@@ -159,7 +160,7 @@ public class MiniPlaceholdersHook {
             return parseGlobal(text);
         }
         Component component = MINI_MESSAGE.deserialize(
-                text,
+                text + DUMMY_CHAR,
                 player,
                 MiniPlaceholders.globalPlaceholders(),
                 MiniPlaceholders.audiencePlaceholders()
@@ -177,6 +178,10 @@ public class MiniPlaceholdersHook {
      */
     @NotNull
     public static String toLegacyString(@NotNull Component component) {
-        return LEGACY_HEX_SERIALIZER.serialize(component);
+        String serialized = LEGACY_HEX_SERIALIZER.serialize(component);
+        if (serialized.endsWith(DUMMY_CHAR)) { // Should always be true
+            serialized = serialized.substring(0, serialized.length() - 1);
+        }
+        return serialized;
     }
 }
