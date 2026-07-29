@@ -134,8 +134,6 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
      *          Player to send this scoreboard to
      */
     public void addPlayer(@NonNull TabPlayer p) {
-        if (!p.isOnline()) return; // player is not online, cannot send scoreboard
-
         if (p.scoreboardData.activeScoreboard == this) return; // already registered
         p.scoreboardData.titleProperty = new Property(this, p, title);
         p.getScoreboard().registerObjective(

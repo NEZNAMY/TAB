@@ -114,6 +114,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         if (configuration.getJoinDelay() > 0) {
             connectedPlayer.scoreboardData.joinDelayed = true;
             customThread.executeLater(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+                if (!connectedPlayer.isOnline()) return; // Player disconnected before the delay ran out
                 setScoreboardVisible(connectedPlayer, configuration.isHiddenByDefault() == (toggleManager != null && toggleManager.contains(connectedPlayer)), false);
                 connectedPlayer.scoreboardData.joinDelayed = false;
             }, getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN), configuration.getJoinDelay());
