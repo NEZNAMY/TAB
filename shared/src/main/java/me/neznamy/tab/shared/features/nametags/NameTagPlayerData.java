@@ -309,4 +309,14 @@ public class NameTagPlayerData {
             player.getScoreboard().unregisterTeam(teamName);
         }
     }
+
+    /**
+     * Forgets all teams registered to this player without sending any packets.
+     * Called when the player disconnects to drop references to team owners,
+     * as this data may stay in memory if another plugin holds a reference to the player.
+     */
+    public void clearRegisteredTeams() {
+        registeredTeams.clear();
+        registeredProxyTeams.clear();
+    }
 }

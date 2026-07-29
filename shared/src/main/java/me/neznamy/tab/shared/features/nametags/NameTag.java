@@ -143,6 +143,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         onlinePlayers.removePlayer(disconnectedPlayer);
         unregisterTeam(disconnectedPlayer);
+        disconnectedPlayer.teamData.clearRegisteredTeams();
     }
 
     @Override
