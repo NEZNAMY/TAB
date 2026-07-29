@@ -67,10 +67,10 @@ public class NameTagPlayerData {
     private final Map<TabPlayer, EnumSet<NameTagInvisibilityReason>> nameTagInvisibilityReasonsRelational = new WeakHashMap<>();
 
     /** Teams registered to this player mapped as team owner to team name */
-    private final Map<TabPlayer, String> registeredTeams = new WeakHashMap<>();
+    private final Map<TabPlayer, String> registeredTeams = new HashMap<>();
 
     /** Teams of proxy players registered to this player mapped as team owner to team name */
-    private final Map<ProxyPlayer, String> registeredProxyTeams = new WeakHashMap<>();
+    private final Map<ProxyPlayer, String> registeredProxyTeams = new HashMap<>();
 
     /**
      * Returns current collision rule. If forced using API, the forced value is returned.
@@ -308,5 +308,15 @@ public class NameTagPlayerData {
         if (teamName != null) {
             player.getScoreboard().unregisterTeam(teamName);
         }
+    }
+
+    /**
+     * Forgets all teams registered to this player without sending any packets.
+     * Called when the player disconnects to drop references to team owners,
+     * as this data may stay in memory if another plugin holds a reference to the player.
+     */
+    public void clearRegisteredTeams() {
+        registeredTeams.clear();
+        registeredProxyTeams.clear();
     }
 }
