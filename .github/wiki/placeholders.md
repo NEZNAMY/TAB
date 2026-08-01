@@ -177,7 +177,7 @@ To properly distinguish viewer/target (if needed), your relational placeholder e
 
 # Refreshing
 ## Refresh intervals
-TAB is refreshing placeholders in intervals. For internal placeholders it's using values I found the most optimal and set directly in the plugin. Refresh intervals for PlaceholderAPI placeholders can be [configured](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---placeholder-refresh-intervals).
+TAB is refreshing placeholders in intervals. For internal placeholders it's using values I found the most optimal and set directly in the plugin. Refresh intervals for PlaceholderAPI placeholders can be [configured](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---all-platforms-placeholder-refresh-intervals).
 
 ## Sync refreshing
 By default, all placeholders are refreshed asynchronously,

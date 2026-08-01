@@ -27,7 +27,7 @@ Install [TAB-Bridge](https://github.com/NEZNAMY/TAB/wiki/TAB-Bridge) on your **b
 If you are using **Velocity**,
 install [VelocityScoreboardAPI](https://github.com/NEZNAMY/VelocityScoreboardAPI/) plugin **on the proxy** for scoreboard-related features to work.
 
-> [!NOTE]  
+> [!NOTE]
 > With proxy installation, use **/btab** command instead of **/tab**.
 
 Advantages of proxy installation compared to installing on all backend servers instead:

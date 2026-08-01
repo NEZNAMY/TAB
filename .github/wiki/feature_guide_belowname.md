@@ -23,9 +23,9 @@
   * [Tip 1 - Heart symbol](#tip-1---heart-symbol)
 
 # About
-This features gives you control over Minecraft's scoreboard objective feature with BELOW_NAME slot.
-This line is displayed below the nametags of all player entities in game. It is not possible to explicitly disable this feature for NPCs; however, this goal can be achieved (see below for more info).
-It is only visible when within an 8-block range of the player (the range is hardcoded in the client and cannot be changed with a plugin).
+This features gives you control over Minecraft's scoreboard objective feature with BELOW_NAME slot.  
+On Minecraft 1.21.11 and below, it is visible on all player entities (including NPCs). On 26.1.x, it is visible on all player entities and all named entities (such as holograms), making this feature unusable. On 26.2 and above, it only appears on entities with a score assigned (the ideal implementation).  
+It is only visible when the target player is within a 10-block range of the viewer (the value is configurable since Minecraft 26.1).
 
 Example visual effect:  
 ![](https://images-ext-1.discordapp.net/external/YlGPCRDJVeZZI0TPWmVBKyHszxSkjatmclyqUThvTz8/https/image.prntscr.com/image/jcETUzVQQYqectQ2aI4iqQ.png)
