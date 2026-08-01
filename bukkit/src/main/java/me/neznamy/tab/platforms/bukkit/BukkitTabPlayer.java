@@ -5,16 +5,30 @@ import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.chat.component.TabComponent;
 import org.bukkit.Statistic;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * TabPlayer implementation for Bukkit platform
  */
 @SuppressWarnings("deprecation")
 public class BukkitTabPlayer extends BackendTabPlayer {
+
+    /** Below name distance attribute (26.1+) */
+    @Nullable
+    private static Attribute BELOW_NAME_DISTANCE;
+
+    static {
+        try {
+            BELOW_NAME_DISTANCE = (Attribute) Attribute.class.getDeclaredField("BELOW_NAME_DISTANCE").get(null);
+        } catch (ReflectiveOperationException e) {
+            // 1.21.11 and lower
+        }
+    }
 
     /**
      * Constructs new instance with given bukkit player
@@ -62,6 +76,13 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public BukkitPlatform getPlatform() {
         return (BukkitPlatform) platform;
+    }
+
+    @Override
+    public void setBelowNameDistance(double distance) {
+        if (BELOW_NAME_DISTANCE != null) {
+            getPlayer().getAttribute(BELOW_NAME_DISTANCE).setBaseValue(distance);
+        }
     }
 
     @Override

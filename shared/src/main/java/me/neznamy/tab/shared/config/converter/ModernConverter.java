@@ -135,6 +135,9 @@ public class ModernConverter {
         converters.put(5, config -> {
             config.getConfigurationSection("placeholders").put("locale", "en-US");
         });
+        converters.put(6, config -> {
+            config.getConfigurationSection("belowname-objective").put("view-distance", 10);
+        });
     }
 
     /**

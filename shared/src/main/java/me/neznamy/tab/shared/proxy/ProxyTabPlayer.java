@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.proxy.message.outgoing.PermissionRequest;
 import me.neznamy.tab.shared.proxy.message.outgoing.PlayerJoin;
 import me.neznamy.tab.shared.task.PluginMessageEncodeTask;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -50,6 +51,10 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     /** Map of placeholders sent by the bridge */
     private final Map<String, String> placeholders = new HashMap<>();
 
+    /** View distance of this player's belowname */
+    @Nullable
+    private Double belowNameDistance;
+
     /**
      * Constructs new instance with given parameters and sends a message
      * to bridge about this player joining with join data
@@ -71,6 +76,12 @@ public abstract class ProxyTabPlayer extends TabPlayer {
                              @NotNull String name, @NotNull String server, int protocolVersion) {
         super(platform, player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().getConfig().isOnlineUuidInTabList());
         sendJoinPluginMessage();
+    }
+
+    @Override
+    public void setBelowNameDistance(double distance) {
+        belowNameDistance = distance;
+        // TODO implement this on proxy
     }
 
     /**

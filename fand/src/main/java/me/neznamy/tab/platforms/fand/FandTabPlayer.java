@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.fand;
 
+import io.fand.api.entity.AttributeKey;
 import io.fand.api.entity.GameMode;
 import io.fand.api.entity.Player;
 import io.fand.api.visibility.DisguiseService;
@@ -55,6 +56,11 @@ public final class FandTabPlayer extends BackendTabPlayer {
     @Override
     public FandPlatform getPlatform() {
         return (FandPlatform) platform;
+    }
+
+    @Override
+    public void setBelowNameDistance(double distance) {
+        getPlayer().attribute(AttributeKey.BELOW_NAME_DISTANCE).ifPresent(attr -> attr.setBaseValue(distance));
     }
 
     @Override

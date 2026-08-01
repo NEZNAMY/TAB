@@ -450,4 +450,12 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  Server platform
      */
     public abstract Platform getPlatform();
+
+    /**
+     * Sets view distance of belowname assigned to this player.
+     *
+     * @param   distance
+     *          View distance of this player's belowname
+     */
+    public abstract void setBelowNameDistance(double distance);
 }

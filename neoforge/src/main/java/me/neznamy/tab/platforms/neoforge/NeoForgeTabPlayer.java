@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -60,6 +61,11 @@ public class NeoForgeTabPlayer extends BackendTabPlayer {
     @Override
     public NeoForgePlatform getPlatform() {
         return (NeoForgePlatform) platform;
+    }
+
+    @Override
+    public void setBelowNameDistance(double distance) {
+        getPlayer().getAttribute(Attributes.BELOW_NAME_DISTANCE).setBaseValue(distance);
     }
 
     @Override
