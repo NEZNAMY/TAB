@@ -55,4 +55,9 @@ public class LegacyTextComponent extends TabTextComponent {
         }
         return modifier;
     }
+
+    @Override
+    public String toString() {
+        return text;
+    }
 }

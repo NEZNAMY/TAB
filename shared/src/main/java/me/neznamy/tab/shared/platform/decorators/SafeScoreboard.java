@@ -225,6 +225,49 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
         }
     }
 
+    @Override
+    @NotNull
+    public Map<String, Object> dump() {
+        // Objectives
+        Map<String, Object> objectives = new LinkedHashMap<>();
+        for (Objective objective : this.objectives.values()) {
+            Map<String, Object> objectiveMap = new LinkedHashMap<>();
+            objectiveMap.put("displaySlot", objective.getDisplaySlot() == null ? null : objective.getDisplaySlot().name());
+            objectiveMap.put("title", objective.getTitle().toString());
+            objectiveMap.put("healthDisplay", objective.getHealthDisplay().name());
+            objectiveMap.put("numberFormat", objective.getNumberFormat() == null ? null : objective.getNumberFormat().toString());
+            Map<String, Object> scores = new LinkedHashMap<>();
+            for (Score score : objective.getScores().values()) {
+                Map<String, Object> scoreMap = new LinkedHashMap<>();
+                scoreMap.put("value", score.getValue());
+                scoreMap.put("displayName", score.getDisplayName() == null ? null : score.getDisplayName().toString());
+                scoreMap.put("numberFormat", score.getNumberFormat() == null ? null : score.getNumberFormat().toString());
+                scores.put(score.getHolder(), scoreMap);
+            }
+            objectiveMap.put("scores", scores);
+            objectives.put(objective.getName(), objectiveMap);
+        }
+
+        // Teams
+        Map<String, Object> teams = new LinkedHashMap<>();
+        for (Team team : this.teams.values()) {
+            Map<String, Object> teamMap = new LinkedHashMap<>();
+            teamMap.put("prefix", team.getPrefix().toString());
+            teamMap.put("suffix", team.getSuffix().toString());
+            teamMap.put("color", team.getColor().name());
+            teamMap.put("visibility", team.getVisibility().name());
+            teamMap.put("collision", team.getCollision().name());
+            teamMap.put("options", team.getOptions());
+            teamMap.put("players", team.getPlayers());
+            teams.put(team.getName(), teamMap);
+        }
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("objectives", objectives);
+        map.put("teams", teams);
+        return map;
+    }
+
     /**
      * Prints a debug message if attempted to perform an invalid operation.
      *

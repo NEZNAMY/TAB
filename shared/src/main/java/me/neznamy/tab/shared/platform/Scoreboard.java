@@ -192,6 +192,14 @@ public interface Scoreboard {
     void clear();
 
     /**
+     * Creates a dump of the scoreboard for debugging purposes.
+     *
+     * @return  A map containing the scoreboard's state, including objectives and teams.
+     */
+    @NotNull
+    Map<String, Object> dump();
+
+    /**
      * Team collision rule enum.
      */
     @AllArgsConstructor

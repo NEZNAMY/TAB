@@ -59,6 +59,7 @@ public class DumpCommand extends SubCommand {
         data.put("minimessage", dumpMiniMessage());
         data.put("placeholders", TAB.getInstance().getPlaceholderManager().dump(analyzed));
         data.put("tablist", analyzed.getTabList().dump());
+        data.put("scoreboard", analyzed.getScoreboard().dump());
         data.put("files", dumpFiles());
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
