@@ -28,6 +28,9 @@ import java.util.Map.Entry;
 public class LayoutManagerImpl extends RefreshableFeature implements LayoutManager, JoinListener, QuitListener, VanishListener, Loadable,
         UnLoadable, TabListClearListener, Dumpable {
 
+    /** public static for simple access */
+    public static final Set<UUID> UUIDS_SET = new HashSet<>();
+
     private final LayoutConfiguration configuration;
     private final LayoutSkinManager skinManager;
     private final UUID[] uuids = new UUID[80];
@@ -47,7 +50,9 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         this.configuration = configuration;
         skinManager = new LayoutSkinManager(TAB.getInstance().getConfiguration().getSkinManager(), configuration.getDefaultSkin(), configuration.getDefaultSkinHashMap());
         for (int slot=1; slot<=80; slot++) {
-            uuids[slot-1] = new UUID(0, configuration.getDirection().translateSlot(slot));
+            UUID id = new UUID(1, configuration.getDirection().translateSlot(slot));
+            uuids[slot-1] = id;
+            UUIDS_SET.add(id);
         }
         for (Entry<String, LayoutDefinition> entry : configuration.getLayouts().entrySet()) {
             LayoutPattern pattern = new LayoutPattern(this, entry.getValue());
@@ -127,6 +132,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
                 p.layoutData.currentLayout.view.destroy();
             }
         }
+        UUIDS_SET.clear();
     }
 
     @Override

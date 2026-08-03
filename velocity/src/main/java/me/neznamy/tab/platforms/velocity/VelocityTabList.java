@@ -9,6 +9,7 @@ import com.velocitypowered.proxy.protocol.packet.chat.ComponentHolder;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import org.jetbrains.annotations.NotNull;
@@ -163,7 +164,7 @@ public class VelocityTabList extends TrackedTabList<VelocityTabPlayer> {
                     }
                 }
                 if (update.getActions().contains(UpsertPlayerInfoPacket.Action.UPDATE_LISTED)) {
-                    if (allPlayersHidden && item.getProfileId().getMostSignificantBits() != 0) { // Filter out layout entries
+                    if (allPlayersHidden && !LayoutManagerImpl.UUIDS_SET.contains(item.getProfileId())) { // Filter out layout entries
                         item.setListed(false);
                     }
                 }

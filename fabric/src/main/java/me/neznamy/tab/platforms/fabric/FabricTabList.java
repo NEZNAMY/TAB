@@ -7,6 +7,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -136,7 +137,7 @@ public class FabricTabList extends TrackedTabList<FabricTabPlayer> {
                     }
                 }
                 if (actions.contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED)) {
-                    if (allPlayersHidden && nmsData.profileId().getMostSignificantBits() != 0) { // Filter out layout entries
+                    if (allPlayersHidden && !LayoutManagerImpl.UUIDS_SET.contains(nmsData.profileId())) { // Filter out layout entries
                         listed = false;
                         rewriteEntry = rewritePacket = true;
                     }

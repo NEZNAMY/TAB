@@ -11,22 +11,18 @@ import io.fand.api.player.PlayerProfile;
 import io.fand.api.player.PlayerSkin;
 import io.fand.api.plugin.PluginContext;
 import io.fand.api.tablist.TabListEntry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.UnaryOperator;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.component.TabComponent;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.platform.decorators.TrackedTabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.UnaryOperator;
 
 /** Per-viewer tab list implementation using Fand's structured packet API. */
 public final class FandTabList extends TrackedTabList<FandTabPlayer> {
@@ -179,8 +175,8 @@ public final class FandTabList extends TrackedTabList<FandTabPlayer> {
                     && updated.latency() != forcedLatency) {
                 updated = updated.withLatency(forcedLatency);
             }
-            if (actions.contains("UPDATE_LISTED") && allPlayersHidden
-                    && profileId.getMostSignificantBits() != 0 && updated.listed()) {
+            if (actions.contains("UPDATE_LISTED") && allPlayersHidden &&
+                !LayoutManagerImpl.UUIDS_SET.contains(profileId) && updated.listed()) {
                 updated = updated.withListed(false);
             }
             if (actions.contains("ADD_PLAYER")) {
