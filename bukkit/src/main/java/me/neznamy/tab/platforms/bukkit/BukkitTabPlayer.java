@@ -25,7 +25,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     static {
         try {
             BELOW_NAME_DISTANCE = (Attribute) Attribute.class.getDeclaredField("BELOW_NAME_DISTANCE").get(null);
-        } catch (ReflectiveOperationException e) {
+        } catch (Throwable e) {
             // 1.21.11 and lower
         }
     }
