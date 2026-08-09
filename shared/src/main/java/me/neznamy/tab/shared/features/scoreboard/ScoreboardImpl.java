@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.component.TabComponent;
@@ -207,15 +208,23 @@ public class ScoreboardImpl extends RefreshableFeature implements me.neznamy.tab
         int score = 1;
         for (Line line : lines) {
             Property pr = p.scoreboardData.lineProperties.get((ScoreboardLine) line);
-            if (pr.getCurrentRawValue().isEmpty() || (!pr.getCurrentRawValue().isEmpty() && !pr.get().isEmpty())) {
-                ((ScoreboardLine)line).getScoreRefresher().setLineNumber(score++);
+            ScoreboardLine scoreboardLine = (ScoreboardLine) line;
+            boolean visible = pr.getCurrentRawValue().isEmpty() ?
+                    scoreboardLine.getNumberFormat() == null ||
+                            !p.scoreboardData.numberFormatProperties.get(scoreboardLine).get().isEmpty() ||
+                            (p.getVersion().getNetworkId() < ProtocolVersion.V1_20_3.getNetworkId() && scoreboardLine.getScore() != null) :
+                    !pr.get().isEmpty();
+            if (visible) {
+                scoreboardLine.getScoreRefresher().setLineNumber(score++);
                 p.getScoreboard().setScore(
                         ScoreboardManagerImpl.OBJECTIVE_NAME,
-                        ((ScoreboardLine)line).getPlayerName(p),
-                        ((ScoreboardLine)line).getScoreRefresher().getScore(p),
+                        scoreboardLine.getPlayerName(p),
+                        scoreboardLine.getScoreRefresher().getScore(p),
                         null, // Makes no sense for TAB
-                        ((ScoreboardLine) line).getScoreRefresher().getNumberFormat(p)
+                        scoreboardLine.getScoreRefresher().getNumberFormat(p)
                 );
+            } else {
+                p.getScoreboard().removeScore(ScoreboardManagerImpl.OBJECTIVE_NAME, scoreboardLine.getPlayerName(p));
             }
         }
     }
