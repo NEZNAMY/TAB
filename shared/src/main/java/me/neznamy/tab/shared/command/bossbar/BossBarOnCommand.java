@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,11 +32,14 @@ public class BossBarOnCommand extends SubCommand {
             return;
         }
         TabPlayer target = sender;
-        if (args.length > 0) {
+        boolean silent = args.length > 0 && args[args.length-1].equals("-s");
+        int providedArgs = args.length - (silent ? 1 : 0);
+        if (providedArgs > 0) {
             if (hasPermission(sender, TabConstants.Permission.COMMAND_BOSSBAR_TOGGLE_OTHER)) {
-                target = TAB.getInstance().getPlayer(args[0]);
+                String playerName = args[0];
+                target = TAB.getInstance().getPlayer(playerName);
                 if (target == null) {
-                    sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
+                    sendMessage(sender, getMessages().getPlayerNotFound(playerName));
                     return;
                 }
             } else {
@@ -46,13 +50,17 @@ public class BossBarOnCommand extends SubCommand {
             sendMessage(null, getMessages().getCommandOnlyFromGame());
             return;
         }
-        boolean silent = args.length == 2 && args[1].equals("-s");
         feature.setBossBarVisible(target, true, !silent);
     }
 
     @Override
     public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
-        if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
+        if (arguments.length == 1) {
+            List<String> suggestions = new ArrayList<>();
+            suggestions.addAll(getOnlinePlayers(arguments[0]));
+            suggestions.addAll(getStartingArgument(Collections.singletonList("-s"), arguments[0]));
+            return suggestions;
+        }
         if (arguments.length == 2) return getStartingArgument(Collections.singletonList("-s"), arguments[1]);
         return Collections.emptyList();
     }
