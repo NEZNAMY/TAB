@@ -67,6 +67,9 @@ public class ConditionManager {
      */
     public void finishSetups() {
         for (Condition c : registeredConditions.values()) {
+            c.registerPlaceholder();
+        }
+        for (Condition c : registeredConditions.values()) {
             c.finishSetup();
         }
     }

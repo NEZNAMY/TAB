@@ -49,13 +49,17 @@ public class Condition {
 
     /**
      * Refresh interval of placeholder created from this condition.
-     * It is calculated based on nested placeholders used in sub-conditions.
+     * It is calculated based on placeholders used in condition expressions.
      */
     private int refresh = -1;
 
-    /** List of all placeholders used inside this condition */
+    /** List of placeholders used inside this condition's expressions */
     @NotNull
     private final List<PlaceholderReference> placeholdersInConditions = new ArrayList<>();
+
+    /** List of placeholders used in this condition's output */
+    @NotNull
+    private final List<PlaceholderReference> placeholdersInOutput = new ArrayList<>();
 
     @Nullable
     private TabPlaceholder placeholder;
@@ -125,6 +129,13 @@ public class Condition {
                 placeholdersInConditions.addAll(Arrays.stream(comparator.getRightSide().getPlaceholders()).map(ConditionPlaceholder::getRealPlaceholder).collect(Collectors.toList()));
             }
         }
+        for (String output : Arrays.asList(yes, no)) {
+            for (String identifier : PlaceholderManagerImpl.detectPlaceholders(output)) {
+                if (!identifier.equals(getPlaceholderIdentifier())) {
+                    placeholdersInOutput.add(TAB.getInstance().getPlaceholderManager().getPlaceholderReference(identifier));
+                }
+            }
+        }
     }
 
     /**
@@ -161,11 +172,28 @@ public class Condition {
      * Configures refresh interval and registers nested placeholders
      */
     public void finishSetup() {
-        for (PlaceholderReference placeholder : placeholdersInConditions) {
-            if (placeholder.getRefresh() != -1 && (placeholder.getRefresh() < refresh || refresh == -1)) {
-                refresh = placeholder.getRefresh();
+        updateRefresh();
+        registerPlaceholder();
+        for (PlaceholderReference reference : getAllPlaceholders()) {
+            TabPlaceholder placeholder = reference.getHandle();
+            placeholder.addParent(this.placeholder);
+            if (hasRelationalContent()) {
+                placeholder.addParent(relationalPlaceholder);
             }
+            this.placeholder.addChild(placeholder);
+            relationalPlaceholder.addChild(placeholder);
         }
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholderReferences(getAllPlaceholders());
+    }
+
+    /**
+     * Registers this condition's own placeholders before dependencies are wired.
+     * This is required for nested conditions, whose references may be created
+     * before the referenced condition itself is registered.
+     */
+    public void registerPlaceholder() {
+        if (placeholder != null) return;
+        updateRefresh();
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
         String identifier = getPlaceholderIdentifier();
         String relIdentifier = getRelationalPlaceholderIdentifier();
@@ -192,16 +220,21 @@ public class Condition {
                     p -> getText((TabPlayer) p, (TabPlayer) p)
             );
         }
+    }
+
+    private void updateRefresh() {
         for (PlaceholderReference reference : placeholdersInConditions) {
-            TabPlaceholder placeholder = reference.getHandle();
-            placeholder.addParent(this.placeholder);
-            if (hasRelationalContent()) {
-                placeholder.addParent(relationalPlaceholder);
+            if (reference.getRefresh() != -1 && (reference.getRefresh() < refresh || refresh == -1)) {
+                refresh = reference.getRefresh();
             }
-            this.placeholder.addChild(placeholder);
-            relationalPlaceholder.addChild(placeholder);
         }
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholderReferences(placeholdersInConditions);
+    }
+
+    @NotNull
+    private List<PlaceholderReference> getAllPlaceholders() {
+        List<PlaceholderReference> result = new ArrayList<>(placeholdersInConditions);
+        result.addAll(placeholdersInOutput);
+        return result;
     }
 
     /**
