@@ -25,17 +25,17 @@ public abstract class ConditionalExpression {
 
     static {
         registerConditionType(">=", Operator.GREATER_THAN_OR_EQUAL);
-        registerConditionType(">", Operator.GREATER_THAN);
+        registerConditionType("!=", Operator.NOT_EQUALS);
         registerConditionType("<=", Operator.LESS_THAN_OR_EQUAL);
+        registerConditionType("=", Operator.EQUALS);
         registerConditionType("!<-", Operator.NOT_CONTAINS);
         registerConditionType("!|-", Operator.NOT_STARTS_WITH);
         registerConditionType("!-|", Operator.NOT_ENDS_WITH);
-        registerConditionType("<-", Operator.CONTAINS);
-        registerConditionType("<", Operator.LESS_THAN);
         registerConditionType("-|", Operator.ENDS_WITH);
         registerConditionType("|-", Operator.STARTS_WITH);
-        registerConditionType("!=", Operator.NOT_EQUALS);
-        registerConditionType("=", Operator.EQUALS);
+        registerConditionType("<-", Operator.CONTAINS);
+        registerConditionType("<", Operator.LESS_THAN);
+        registerConditionType(">", Operator.GREATER_THAN);
         conditionTypes.put("!permission:", line -> {
             String node = splitAndTrim(line, ":")[1];
             return new NotPermission(node);
