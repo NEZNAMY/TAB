@@ -189,6 +189,34 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
         }
     }
 
+    /**
+     * Handles a sidebar display sent through VelocityScoreboardAPI.
+     *
+     * <p>VelocityScoreboardAPI gives proxy objectives priority over downstream
+     * objectives. Its display event is therefore the last opportunity to remove
+     * TAB's proxy objective before the downstream display packet is cancelled.
+     * This method is intentionally called synchronously by the Velocity hook.</p>
+     *
+     * @param receiver
+     *          player receiving the packet
+     * @param slot
+     *          display slot
+     * @param objective
+     *          objective assigned to the slot, or {@code null}
+     */
+    public void onVelocityScoreboardDisplay(@NotNull TabPlayer receiver, int slot, @Nullable String objective) {
+        if (slot != Scoreboard.DisplaySlot.SIDEBAR.ordinal()) {
+            return;
+        }
+        if (objective == null) {
+            restoreAfterVelocityScoreboard(receiver);
+        } else if (!objective.equals(OBJECTIVE_NAME)) {
+            TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", releasing TAB's proxy scoreboard.");
+            receiver.scoreboardData.otherPluginScoreboard = objective;
+            unregisterScoreboard(receiver);
+        }
+    }
+
     @Override
     public void onObjective(@NotNull TabPlayer receiver, int action, @NotNull String objective) {
         if (action == Scoreboard.ObjectiveAction.UNREGISTER && objective.equals(receiver.scoreboardData.otherPluginScoreboard)) {
@@ -198,6 +226,30 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
                 receiver.getScoreboard().setDisplaySlot(OBJECTIVE_NAME, Scoreboard.DisplaySlot.SIDEBAR);
             }
         }
+    }
+
+    /**
+     * Handles removal of a downstream objective reported by VelocityScoreboardAPI.
+     * This is synchronous for the same reason as {@link #onVelocityScoreboardDisplay(TabPlayer, int, String)}.
+     *
+     * @param receiver
+     *          player receiving the packet
+     * @param objective
+     *          removed objective
+     */
+    public void onVelocityScoreboardUnregister(@NotNull TabPlayer receiver, @NotNull String objective) {
+        if (objective.equals(receiver.scoreboardData.otherPluginScoreboard)) {
+            restoreAfterVelocityScoreboard(receiver);
+        }
+    }
+
+    private void restoreAfterVelocityScoreboard(@NotNull TabPlayer receiver) {
+        if (receiver.scoreboardData.otherPluginScoreboard == null) {
+            return;
+        }
+        TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, restoring TAB's proxy scoreboard.");
+        receiver.scoreboardData.otherPluginScoreboard = null;
+        sendHighestScoreboard(receiver);
     }
 
     @Override
