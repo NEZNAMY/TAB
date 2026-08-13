@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.chat.component.TabComponent;
 import me.neznamy.tab.shared.chat.component.TabTextComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.BossBar;
@@ -147,18 +148,22 @@ public class VelocityPlatform extends ProxyPlatform {
         plugin.getServer().getEventManager().register(plugin, ObjectiveEvent.Display.class, e -> {
             TAB tab = TAB.getInstance();
             if (tab.isPluginDisabled()) return;
-            tab.getCPUManager().runTask(() -> {
-                TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
-                if (player != null) tab.getFeatureManager().onDisplayObjective(player, e.getNewSlot().ordinal(), e.getObjectiveName());
-            });
+            TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
+            if (player == null) return;
+            ScoreboardManagerImpl scoreboard = tab.getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
+            if (scoreboard != null) {
+                scoreboard.onVelocityScoreboardDisplay(player, e.getNewSlot().ordinal(), e.getObjectiveName());
+            }
         });
         plugin.getServer().getEventManager().register(plugin, ObjectiveEvent.Unregister.class, e -> {
             TAB tab = TAB.getInstance();
             if (tab.isPluginDisabled()) return;
-            tab.getCPUManager().runTask(() -> {
-                TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
-                if (player != null) tab.getFeatureManager().onObjective(player, Scoreboard.ObjectiveAction.UNREGISTER, e.getObjectiveName());
-            });
+            TabPlayer player = tab.getPlayer(e.getPlayer().getUniqueId());
+            if (player == null) return;
+            ScoreboardManagerImpl scoreboard = tab.getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
+            if (scoreboard != null) {
+                scoreboard.onVelocityScoreboardUnregister(player, e.getObjectiveName());
+            }
         });
     }
 
