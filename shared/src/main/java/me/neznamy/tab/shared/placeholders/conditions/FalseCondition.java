@@ -14,7 +14,7 @@ public class FalseCondition extends Condition {
     public static final FalseCondition INSTANCE = new FalseCondition();
 
     private FalseCondition() {
-        super("false", Collections.emptyList(), true, "true", "false");
+        super("false", Collections.emptyList(), true, "true", "false", true);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class TrueCondition extends Condition {
     public static final TrueCondition INSTANCE = new TrueCondition();
 
     private TrueCondition() {
-        super("true", Collections.emptyList(), true, "true", "false");
+        super("true", Collections.emptyList(), true, "true", "false", true);
     }
 
     @Override

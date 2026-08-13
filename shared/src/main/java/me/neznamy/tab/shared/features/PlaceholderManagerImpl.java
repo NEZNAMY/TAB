@@ -152,7 +152,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
                     if (!target.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                     if (placeholder.hasValueChanged(viewer, target, targetResult.getValue())) {
                         placeholder.updateParents(target);
-                        for (RefreshableFeature f : placeholder.getUsedByFeatures()) {
+                        for (RefreshableFeature f : placeholder.getReference().getUsedByFeatures()) {
                             update.computeIfAbsent(f, c -> new HashSet<>()).add(target);
                         }
                     }
@@ -172,7 +172,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
                 if (!player.isOnline()) continue; // Player disconnected in the meantime while refreshing in another thread
                 if (placeholder.hasValueChanged(player, playerResult.getValue(), true)) {
                     placeholder.updateParents(player);
-                    for (RefreshableFeature f : placeholder.getUsedByFeatures()) {
+                    for (RefreshableFeature f : placeholder.getReference().getUsedByFeatures()) {
                         update.computeIfAbsent(f, c -> new HashSet<>()).add(player);
                     }
                     if (placeholder.getIdentifier().equals(TabConstants.Placeholder.VANISHED)) {
@@ -192,7 +192,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
         for (Entry<ServerPlaceholderImpl, String> entry : results.entrySet()) {
             ServerPlaceholderImpl placeholder = entry.getKey();
             if (placeholder.hasValueChanged(entry.getValue())) {
-                set.addAll(placeholder.getUsedByFeatures());
+                set.addAll(placeholder.getReference().getUsedByFeatures());
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     placeholder.updateParents(all);
                 }
@@ -226,7 +226,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             existing.setHandle((TabPlaceholder) placeholder);
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (!p.isLoaded()) continue;
-                for (RefreshableFeature f : ((TabPlaceholder)placeholder).getUsedByFeatures()) {
+                for (RefreshableFeature f : existing.getUsedByFeatures()) {
                     TimedCaughtTask task = new TimedCaughtTask(cpu, () -> f.refresh(p, true), f.getFeatureName(), f.getRefreshDisplayName());
                     if (f instanceof CustomThreaded) {
                         ((CustomThreaded) f).getCustomThread().execute(task);
@@ -235,10 +235,12 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
                     }
                 }
             }
+            ((TabPlaceholder) placeholder).setReference(existing);
             return existing;
         } else {
             PlaceholderReference reference = new PlaceholderReference(placeholder.getIdentifier(), (TabPlaceholder) placeholder);
             registeredPlaceholders.put(placeholder.getIdentifier(), reference);
+            ((TabPlaceholder) placeholder).setReference(reference);
             return reference;
         }
     }
@@ -337,7 +339,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      *          Feature using the placeholder
      */
     public synchronized void addUsedPlaceholder(@NonNull String identifier, @NonNull RefreshableFeature feature) {
-        if (getPlaceholder(identifier).addUsedFeature(feature)) {
+        if (getPlaceholder(identifier).getReference().addUsedFeature(feature)) {
             recalculateUsedPlaceholders();
             TabPlaceholder p = getPlaceholder(identifier);
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -355,7 +357,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      *          Feature using the placeholder
      */
     public synchronized void addUsedPlaceholder(@NonNull TabPlaceholder placeholder, @NonNull RefreshableFeature feature) {
-        if (placeholder.addUsedFeature(feature)) {
+        if (placeholder.getReference().addUsedFeature(feature)) {
             recalculateUsedPlaceholders();
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 all.expansionData.setPlaceholderValue(placeholder.getIdentifier(), placeholder.getLastValueSafe(all));
@@ -367,7 +369,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
      * Updates array of used placeholders.
      */
     private void recalculateUsedPlaceholders() {
-        usedPlaceholders = registeredPlaceholders.values().stream().filter(p -> !p.getHandle().getUsedByFeatures().isEmpty()).toArray(PlaceholderReference[]::new);
+        usedPlaceholders = registeredPlaceholders.values().stream().filter(p -> !p.getUsedByFeatures().isEmpty()).toArray(PlaceholderReference[]::new);
     }
 
     /**
@@ -389,7 +391,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         for (PlaceholderReference p : usedPlaceholders) {
             if (p.getHandle() instanceof ServerPlaceholderImpl) { // server placeholders don't update on join
-                connectedPlayer.expansionData.setPlaceholderValue(p.getIdentifier(), ((ServerPlaceholderImpl) p.getHandle()).getLastValue());
+                connectedPlayer.expansionData.setPlaceholderValue(p.getIdentifier(), p.getHandle().getLastValue(null));
             }
         }
         // Initialize to avoid onVanishStatusChange being called in the loop after joining because previous value was null
@@ -584,7 +586,7 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
             TabPlaceholder p = reference.getHandle();
             if (p.getIdentifier().contains("AnonymousCondition")) continue; // These are ugly, don't show them
             if (p instanceof ServerPlaceholderImpl) {
-                serverPlaceholders.add(Arrays.asList(p.getIdentifier(), String.valueOf(reference.getRefresh()), ((ServerPlaceholderImpl) p).getLastValue()));
+                serverPlaceholders.add(Arrays.asList(p.getIdentifier(), String.valueOf(reference.getRefresh()), p.getLastValue(null)));
             } else if (p instanceof PlayerPlaceholderImpl) {
                 playerPlaceholders.add(Arrays.asList(p.getIdentifier(), String.valueOf(reference.getRefresh()), p.getLastValueSafe(player)));
             } else if (p instanceof RelationalPlaceholderImpl) {

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.PlaceholderReference;
@@ -9,7 +8,6 @@ import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.types.TabPlaceholder;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +22,6 @@ import java.util.stream.Collectors;
  * condition types that must be met in order to display specified
  * text or make a condition requirement for a visual to be displayed.
  */
-@RequiredArgsConstructor
 @Getter
 public class Condition {
 
@@ -53,68 +50,36 @@ public class Condition {
      */
     private int refresh = -1;
 
-    /** List of all placeholders used inside this condition */
-    @NotNull
-    private final List<PlaceholderReference> placeholdersInConditions = new ArrayList<>();
-
-    @Nullable
-    private TabPlaceholder placeholder;
-
-    @Nullable
-    private RelationalPlaceholderImpl relationalPlaceholder;
-
     /**
-     * Constructs new instance with given definition and registers
-     * this condition to list as well as the placeholder.
+     * Constructs new instance with given parameters and analyzes content
+     * to determine refresh interval.
      *
-     * @param   definition
-     *          Condition definition from configuration
+     * @param   name
+     *          Name of this condition defined in configuration
+     * @param   expressions
+     *          All defined expressions inside this condition
+     * @param   type
+     *          Condition type, {@code true} for AND type and {@code false} for OR type
+     * @param   yes
+     *          Text to display if condition passed
+     * @param   no
+     *          Text to display if condition failed
+     * @param   primitive
+     *          Whether this is a primitive condition (TrueCondition or FalseCondition with no nested placeholders)
      */
-    public Condition(@NotNull ConditionsSection.ConditionDefinition definition) {
-        type = definition.isType();
-        name = definition.getName();
-        expressions = definition.getConditions().stream().map(expressionString -> {
-            ConditionalExpression expression = ConditionalExpression.compile(expressionString.trim());
-            if (expression == null) {
-                TAB.getInstance().getConfigHelper().startup().startupWarn("Line \"" + expressionString + "\" is not a valid conditional expression.");
-            }
-            return expression;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
-        yes = definition.getYes();
-        no = definition.getNo();
-        analyzeContent();
-    }
+    public Condition(@NotNull String name, @NotNull List<ConditionalExpression> expressions, boolean type, @NotNull String yes, @NotNull String no, boolean primitive) {
+        this.name = name;
+        this.expressions = expressions;
+        this.type = type;
+        this.yes = yes;
+        this.no = no;
 
-    /**
-     * Constructs new instance from a condition string in short format.
-     * This constructor is used for anonymous conditions only.
-     *
-     * @param   shortFormat
-     *          Condition in short format
-     */
-    public Condition(@NotNull String shortFormat) {
-        name = "AnonymousCondition[" + shortFormat + "]";
-        yes = "true";
-        no = "false";
-        List<String> conditions;
-        if (shortFormat.contains(";")) {
-            type = true;
-            conditions = Arrays.asList(shortFormat.split(";"));
-        } else {
-            type = false;
-            conditions = splitString(shortFormat);
-        }
-        expressions = conditions.stream().map(expressionString -> {
-            ConditionalExpression expression = ConditionalExpression.compile(expressionString.trim());
-            if (expression == null) {
-                TAB.getInstance().getConfigHelper().startup().startupWarn("Line \"" + expressionString + "\" is not a valid conditional expression.");
-            }
-            return expression;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
-        analyzeContent();
-    }
+        if (primitive) return;
 
-    private void analyzeContent() {
+        List<PlaceholderReference> placeholdersInConditions = new ArrayList<>();
+        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        placeholdersInConditions.addAll(manager.detectPlaceholders(yes).stream().map(manager::getPlaceholderReference).collect(Collectors.toList()));
+        placeholdersInConditions.addAll(manager.detectPlaceholders(no).stream().map(manager::getPlaceholderReference).collect(Collectors.toList()));
         for (ConditionalExpression expression : expressions) {
             if (expression instanceof Permission || expression instanceof NotPermission) {
                 int permissionRefresh = TAB.getInstance().getConfiguration().getConfig().getPermissionRefreshInterval();
@@ -125,50 +90,11 @@ public class Condition {
                 placeholdersInConditions.addAll(Arrays.stream(comparator.getRightSide().getPlaceholders()).map(ConditionPlaceholder::getRealPlaceholder).collect(Collectors.toList()));
             }
         }
-    }
-
-    /**
-     * Splits string using `|` symbol except cases where it is used as |- or -|.
-     * This method was 100% made by ChatGPT!
-     *
-     * @param   input
-     *          String to split
-     * @return  Split string
-     */
-    private List<String> splitString(@NotNull String input) {
-        List<String> result = new ArrayList<>();
-
-        // Define a regular expression pattern to match the desired delimiter
-        Pattern pattern = Pattern.compile("(?<!-)[|](?!-)");
-
-        // Use a Matcher to split the input string
-        Matcher matcher = pattern.matcher(input);
-        int start = 0;
-
-        while (matcher.find()) {
-            int end = matcher.start();
-            result.add(input.substring(start, end));
-            start = matcher.end();
-        }
-
-        // Add the remaining part of the string
-        result.add(input.substring(start));
-
-        return result;
-    }
-
-    /**
-     * Configures refresh interval and registers nested placeholders
-     */
-    public void finishSetup() {
-        for (PlaceholderReference placeholder : placeholdersInConditions) {
-            if (placeholder.getRefresh() != -1 && (placeholder.getRefresh() < refresh || refresh == -1)) {
-                refresh = placeholder.getRefresh();
-            }
-        }
-        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        manager.addUsedPlaceholderReferences(placeholdersInConditions);
         String identifier = getPlaceholderIdentifier();
         String relIdentifier = getRelationalPlaceholderIdentifier();
+        TabPlaceholder placeholder;
+        RelationalPlaceholderImpl relationalPlaceholder;
         if (hasRelationalContent()) {
             relationalPlaceholder = manager.registerRelationalPlaceholder(
                     relIdentifier,
@@ -193,15 +119,11 @@ public class Condition {
             );
         }
         for (PlaceholderReference reference : placeholdersInConditions) {
-            TabPlaceholder placeholder = reference.getHandle();
-            placeholder.addParent(this.placeholder);
+            reference.addParent(placeholder.getReference());
             if (hasRelationalContent()) {
-                placeholder.addParent(relationalPlaceholder);
+                reference.addParent(relationalPlaceholder.getReference());
             }
-            this.placeholder.addChild(placeholder);
-            relationalPlaceholder.addChild(placeholder);
         }
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholderReferences(placeholdersInConditions);
     }
 
     /**
@@ -260,13 +182,14 @@ public class Condition {
      */
     @NotNull
     public Condition invert() {
-        return new Condition(new ConditionsSection.ConditionDefinition(
+        return new Condition(
                 "inverted:" + name,
-                expressions.stream().map(expr -> expr.invert().toShortFormat()).collect(Collectors.toList()),
+                expressions.stream().map(ConditionalExpression::invert).collect(Collectors.toList()),
                 !type,
                 yes,
-                no
-        ));
+                no,
+                false
+        );
     }
 
     /**
@@ -312,4 +235,93 @@ public class Condition {
         }
         return false;
     }
+
+    /**
+     * Creates a new condition instance based on definition.
+     *
+     * @param   definition
+     *          Condition definition from configuration
+     * @return  A new Condition instance based on the provided definition
+     */
+    @NotNull
+    public static Condition fromDefinition(@NotNull ConditionsSection.ConditionDefinition definition) {
+        return new Condition(
+                definition.getName(),
+                definition.getConditions().stream().map(expressionString -> {
+                    ConditionalExpression expression = ConditionalExpression.compile(expressionString.trim());
+                    if (expression == null) {
+                        TAB.getInstance().getConfigHelper().startup().startupWarn("Line \"" + expressionString + "\" is not a valid conditional expression.");
+                    }
+                    return expression;
+                }).filter(Objects::nonNull).collect(Collectors.toList()),
+                definition.isType(),
+                definition.getYes(),
+                definition.getNo(),
+                false
+        );
+    }
+
+    /**
+     * Creates a new condition instance from a short format string.
+     *
+     * @param   shortFormat
+     *          Condition in short format
+     * @return  A new Condition instance based on the provided short format string
+     */
+    @NotNull
+    public static Condition fromShortFormat(@NotNull String shortFormat) {
+        boolean type;
+        List<String> conditions;
+        if (shortFormat.contains(";")) {
+            type = true;
+            conditions = Arrays.asList(shortFormat.split(";"));
+        } else {
+            type = false;
+            conditions = splitString(shortFormat);
+        }
+        return new Condition(
+                "AnonymousCondition[" + shortFormat + "]",
+                conditions.stream().map(expressionString -> {
+                    ConditionalExpression expression = ConditionalExpression.compile(expressionString.trim());
+                    if (expression == null) {
+                        TAB.getInstance().getConfigHelper().startup().startupWarn("Line \"" + expressionString + "\" is not a valid conditional expression.");
+                    }
+                    return expression;
+                }).filter(Objects::nonNull).collect(Collectors.toList()),
+                type,
+                "true",
+                "false",
+                false
+        );
+    }
+    /**
+     * Splits string using `|` symbol except cases where it is used as |- or -|.
+     *
+     * @param   input
+     *          String to split
+     * @return  Split string
+     */
+    @NotNull
+    private static List<String> splitString(@NotNull String input) {
+        List<String> result = new ArrayList<>();
+
+        // Define a regular expression pattern to match the desired delimiter
+        Pattern pattern = Pattern.compile("(?<!-)[|](?!-)");
+
+        // Use a Matcher to split the input string
+        Matcher matcher = pattern.matcher(input);
+        int start = 0;
+
+        while (matcher.find()) {
+            int end = matcher.start();
+            result.add(input.substring(start, end));
+            start = matcher.end();
+        }
+
+        // Add the remaining part of the string
+        result.add(input.substring(start));
+
+        return result;
+    }
+
 }

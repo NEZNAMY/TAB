@@ -1,11 +1,11 @@
 package me.neznamy.tab.shared.placeholders;
 
-import lombok.Getter;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -30,12 +30,6 @@ public class PlaceholderReplacementPattern {
      */
     private final Map<float[], String> numberIntervals = new HashMap<>();
 
-    /** Set of all used placeholders in replacement values */
-    @Getter private final Set<String> nestedPlaceholders = new HashSet<>();
-
-    /** Flag tracking if this replacement map is empty */
-    private final boolean empty;
-
     /**
      * Constructs new instance from given replacement map from config
      *
@@ -45,15 +39,12 @@ public class PlaceholderReplacementPattern {
      *          replacement map from config
      */
     private PlaceholderReplacementPattern(@NotNull String identifier, @NotNull Map<Object, Object> map) {
-        empty = map.isEmpty();
         for (Entry<Object, Object> entry : map.entrySet()) {
             String key = String.valueOf(entry.getKey());
             String value = String.valueOf(entry.getValue()).replace(identifier, "%value%");
             replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
             replacements.put(key, value);
-            nestedPlaceholders.addAll(PlaceholderManagerImpl.detectPlaceholders(value));
-            nestedPlaceholders.remove("%value%"); //not a real placeholder
-            //snakeyaml converts yes & no to booleans, making them not work when used without "
+            // SnakeYAML converts yes & no to booleans, making them not work when used without "
             if ("true".equals(key)) {
                 replacements.put("yes", value);
                 replacements.put("Yes", value);
@@ -81,7 +72,7 @@ public class PlaceholderReplacementPattern {
      */
     @NotNull
     public String findReplacement(@NotNull String output) {
-        if (empty) return output;
+        if (this == EMPTY) return output;
         String replacement = findReplacement0(output);
         if (replacement.contains("%value%")) {
             replacement = replacement.replace("%value%", output);

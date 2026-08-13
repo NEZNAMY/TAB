@@ -182,9 +182,8 @@ public class UniversalPlaceholderRegistry {
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.animation(a.getName()), a.getRefresh(), p -> a.getMessage());
         }
         for (Entry<String, ConditionDefinition> condition : TAB.getInstance().getConfiguration().getConfig().getConditions().getConditions().entrySet()) {
-            Condition c = new Condition(condition.getValue());
+            Condition c = Condition.fromDefinition(condition.getValue());
             TAB.getInstance().getPlaceholderManager().getConditionManager().registerCondition(c);
         }
-        manager.getConditionManager().finishSetups();
     }
 }

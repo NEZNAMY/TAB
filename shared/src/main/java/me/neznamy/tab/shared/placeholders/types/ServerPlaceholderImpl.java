@@ -20,12 +20,17 @@ import java.util.function.Supplier;
 public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlaceholder {
 
     /** Placeholder function returning fresh output on request */
+    @NotNull
     private final Supplier<String> supplier;
 
     /** Last known output of the placeholder */
     @Getter
     @NotNull
-    private String lastValue = identifier;
+    private String lastReturnedValue = identifier;
+
+    /** Last known value with all nested placeholders replaced and output replacements applied */
+    @NotNull
+    private String lastEvaluatedValue = identifier;
 
     /**
      * Constructs new instance with given parameters
@@ -53,7 +58,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     @Override
     public void updateValue(@Nullable String value) {
         if (hasValueChanged(value)) {
-            for (RefreshableFeature r : getUsedByFeatures()) {
+            for (RefreshableFeature r : reference.getUsedByFeatures()) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     if (!all.isLoaded()) return; // Updated on join
                     TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> r.refresh(all, false), r.getFeatureName(), r.getRefreshDisplayName());
@@ -67,15 +72,16 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         }
     }
 
-    public boolean hasValueChanged(@Nullable String value) {
-        if (value == null) return false;
-        String newValue = setPlaceholders(replacements.findReplacement(value), null);
+    public boolean hasValueChanged(@Nullable String returnedValue) {
+        if (returnedValue == null || returnedValue.equals(ERROR_VALUE)) return false;
+        lastReturnedValue = returnedValue;
+        String newEvaluatedValue = evaluate(returnedValue, null);
 
-        if (!ERROR_VALUE.equals(newValue) && !lastValue.equals(newValue)) {
-            lastValue = newValue;
+        if (!lastEvaluatedValue.equals(newEvaluatedValue)) {
+            lastEvaluatedValue = newEvaluatedValue;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 updateParents(player);
-                player.expansionData.setPlaceholderValue(identifier, newValue);
+                player.expansionData.setPlaceholderValue(identifier, newEvaluatedValue);
             }
             return true;
         }
@@ -90,13 +96,19 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     @Override
     @NotNull
     public String getLastValue(@Nullable TabPlayer p) {
-        return lastValue;
+        return lastEvaluatedValue;
+    }
+
+    @Override
+    @NotNull
+    public String getLastReturnedValue(@Nullable TabPlayer player) {
+        return lastReturnedValue;
     }
 
     @Override
     @NotNull
     public String getLastValueSafe(@NotNull TabPlayer player) {
-        return lastValue;
+        return lastEvaluatedValue;
     }
 
     /**

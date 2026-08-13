@@ -53,21 +53,9 @@ public class ConditionManager {
         } else if (registeredConditions.containsKey(anonVersion)) {
             return registeredConditions.get(anonVersion);
         } else {
-            Condition c = new Condition(string);
-            c.finishSetup();
+            Condition c = Condition.fromShortFormat(string);
             registerCondition(c);
             return c;
-        }
-    }
-
-    /**
-     * Marks all placeholders used in the condition as used and registers them.
-     * Using a separate method to avoid premature registration of nested conditional placeholders
-     * before they are registered properly.
-     */
-    public void finishSetups() {
-        for (Condition c : registeredConditions.values()) {
-            c.finishSetup();
         }
     }
 }

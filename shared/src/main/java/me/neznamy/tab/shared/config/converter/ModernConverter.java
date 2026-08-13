@@ -100,7 +100,7 @@ public class ModernConverter {
                     defaultDesign.put("display-condition", "%condition:" + namedCondition.getName() + "%=" + namedCondition.getNo());
                 } else {
                     // Short format
-                    defaultDesign.put("display-condition", new Condition(disableCondition).invert().toShortFormat());
+                    defaultDesign.put("display-condition", Condition.fromShortFormat(disableCondition).invert().toShortFormat());
                 }
             }
             defaultDesign.put("header", defaultHeader);

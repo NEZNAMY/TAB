@@ -132,8 +132,11 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** LuckPerms user for fast access */
     @Nullable public User luckPermsUser;
 
+    /** Last known values for each player placeholder as returned by function */
+    public final Map<PlayerPlaceholder, String> lastPlaceholderReturnedValues = new ConcurrentHashMap<>();
+
     /** Last known values for each player placeholder after applying replacements and nested placeholders */
-    public final Map<PlayerPlaceholder, String> lastPlaceholderValues = new ConcurrentHashMap<>();
+    public final Map<PlayerPlaceholder, String> lastPlaceholderEvaluatedValues = new ConcurrentHashMap<>();
 
     /** Last known values for each relational placeholder after applying replacements and nested placeholders */
     public final Map<RelationalPlaceholder, Map<TabPlayer, String>> lastRelationalValues = new ConcurrentHashMap<>();
