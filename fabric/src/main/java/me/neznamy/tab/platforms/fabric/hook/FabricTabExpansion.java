@@ -74,7 +74,7 @@ public class FabricTabExpansion implements TabExpansion {
             String placeholder = "%"+arg+"%";
             PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
             manager.addUsedPlaceholder(placeholder, manager);
-            return PlaceholderResult.value(manager.getPlaceholder(placeholder).getLastValue(player));
+            return PlaceholderResult.value(manager.getPlaceholderReference(placeholder).getHandle().getLastValue(player));
         });
     }
 

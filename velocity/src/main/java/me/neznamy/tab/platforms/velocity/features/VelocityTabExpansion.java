@@ -103,7 +103,7 @@ public class VelocityTabExpansion implements TabExpansion {
             if (tabPlayer == null) {
                 return Tag.selfClosingInserting(Component.text("<Player is not loaded>"));
             }
-            return createTag(pm.getPlaceholder(requestedPlaceholder).parse(tabPlayer));
+            return createTag(pm.getPlaceholderReference(requestedPlaceholder).getHandle().parse(tabPlayer));
         });
 
         builder.relationalPlaceholder("replace", (viewer, target, queue, ctx) -> {

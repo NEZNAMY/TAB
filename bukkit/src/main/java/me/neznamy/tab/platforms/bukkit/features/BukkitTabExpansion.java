@@ -4,10 +4,10 @@ import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.clip.placeholderapi.expansion.Relational;
-import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.ProjectVariables;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.placeholders.PlaceholderReference;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -98,7 +98,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             String requestedPlaceholder = "%" + identifier.substring("placeholder_".length()) + "%";
             PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
             pm.addUsedPlaceholder(requestedPlaceholder, pm);
-            return pm.getPlaceholder(requestedPlaceholder).parse(p);
+            return pm.getPlaceholderReference(requestedPlaceholder).getHandle().parse(p);
         }
         return p.expansionData.getValue(identifier);
     }
@@ -121,9 +121,9 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             String requestedPlaceholder = "%" + identifier.substring("placeholder_".length()) + "%";
             PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
             pm.addUsedPlaceholder(requestedPlaceholder, pm);
-            Placeholder placeholder = pm.getPlaceholder(requestedPlaceholder);
-            if (placeholder instanceof RelationalPlaceholderImpl) {
-                RelationalPlaceholderImpl rel = (RelationalPlaceholderImpl) placeholder;
+            PlaceholderReference placeholder = pm.getPlaceholderReference(requestedPlaceholder);
+            if (placeholder.getHandle() instanceof RelationalPlaceholderImpl) {
+                RelationalPlaceholderImpl rel = (RelationalPlaceholderImpl) placeholder.getHandle();
                 TabPlayer v = TAB.getInstance().getPlayer(viewer.getUniqueId());
                 TabPlayer t = TAB.getInstance().getPlayer(target.getUniqueId());
                 if (v == null || t == null) return "<Player is not loaded>";

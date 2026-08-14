@@ -130,6 +130,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (value != null) return value;
 
         // Value not present, initialize
+        p.lastPlaceholderReturnedValues.put(this, identifier);
         p.lastPlaceholderEvaluatedValues.put(this, replacements.findReplacement(identifier));
         hasValueChanged(p, request(p), false);
         return p.lastPlaceholderEvaluatedValues.get(this);
@@ -143,6 +144,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (value != null) return value;
 
         // Value not present, initialize
+        player.lastPlaceholderReturnedValues.put(this, identifier);
         player.lastPlaceholderEvaluatedValues.put(this, replacements.findReplacement(identifier));
         hasValueChanged(player, request(player), false);
         return player.lastPlaceholderReturnedValues.get(this);

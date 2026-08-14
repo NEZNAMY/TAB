@@ -84,7 +84,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @return  evaluated string with all nested placeholders and output replacements applied
      */
     @NotNull
-    protected String evaluate(@NotNull String returnedValue, @Nullable TabPlayer player) {
+    protected String evaluate(@NonNull String returnedValue, @Nullable TabPlayer player) {
         String value = returnedValue;
         if (value.contains("%") || value.contains("<")) {
             value = setPlaceholders(value, player);
@@ -114,9 +114,9 @@ public abstract class TabPlaceholder implements Placeholder {
             if (s.equals(identifier)) continue; // Prevent infinite loop when placeholder returns itself
             if (PlaceholderIdentifier.isRelational(s)) continue; // Relational placeholders are handled separately
             if ((identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s))) continue; // Self, but as sync variant
-            TabPlaceholder nested = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
-            nested.reference.addParent(reference);
-            string = string.replace(s, nested.parse(player));
+            PlaceholderReference nested = TAB.getInstance().getPlaceholderManager().getPlaceholderReference(s);
+            nested.addParent(reference);
+            string = string.replace(s, nested.getHandle().parse(player));
         }
         return string;
     }
@@ -129,6 +129,7 @@ public abstract class TabPlaceholder implements Placeholder {
      *          Player to update placeholders for.
      */
     public void updateParents(@NonNull TabPlayer player) {
+        if (reference == null) return;
         if (reference.getParents().isEmpty()) return;
         for (PlaceholderReference pl : new ArrayList<>(reference.getParents())) {
             pl.getHandle().updateFromNested(player);

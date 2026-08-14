@@ -5,9 +5,6 @@ import io.fand.api.placeholder.PlaceholderContext;
 import io.fand.api.placeholder.PlaceholderProvider;
 import io.fand.api.placeholder.PlaceholderRegistration;
 import io.fand.api.plugin.PluginContext;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.UnaryOperator;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
@@ -16,6 +13,10 @@ import me.neznamy.tab.shared.placeholders.types.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.UnaryOperator;
 
 /** Exposes TAB's placeholder expansion through Fand's placeholder service. */
 public final class FandTabExpansion implements TabExpansion {
@@ -64,7 +65,7 @@ public final class FandTabExpansion implements TabExpansion {
             String requestedPlaceholder = "%" + expansionIdentifier.substring("placeholder_".length()) + "%";
             PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
             manager.addUsedPlaceholder(requestedPlaceholder, manager);
-            return manager.getPlaceholder(requestedPlaceholder).parse(player);
+            return manager.getPlaceholderReference(requestedPlaceholder).getHandle().parse(player);
         }
         return player.expansionData.getValue(expansionIdentifier);
     }
