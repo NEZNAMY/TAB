@@ -11,7 +11,7 @@ import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.features.ToggleManager;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardConfiguration.ScoreboardDefinition;
-import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLineHolder;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -34,6 +34,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
     private final StringToComponentCache cache = new StringToComponentCache("Scoreboard", 1000);
+    private final StringToComponentCache numberFormatCache = new StringToComponentCache("Scoreboard NumberFormat", 1000);
 
     private final ThreadExecutor customThread = new ThreadExecutor("TAB Scoreboard Thread");
 
@@ -282,8 +283,8 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
                 put("title", player.scoreboardData.titleProperty.get());
                 List<String> lines = new ArrayList<>();
                 for (Line line : player.scoreboardData.activeScoreboard.getLines()) {
-                    lines.add(player.scoreboardData.lineProperties.get((ScoreboardLine) line).get() + " || " +
-                            player.scoreboardData.numberFormatProperties.get((ScoreboardLine) line).get());
+                    lines.add(player.scoreboardData.lineProperties.get((ScoreboardLineHolder) line).textProperty.get() + " || " +
+                            player.scoreboardData.lineProperties.get((ScoreboardLineHolder) line).numberFormatProperty.get());
                 }
                 put("lines", lines);
             }});
@@ -301,7 +302,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
     @NotNull
     public me.neznamy.tab.api.scoreboard.Scoreboard createScoreboard(@NonNull String name, @NonNull String title, @NonNull List<String> lines) {
         ensureActive();
-        ScoreboardImpl sb = new ScoreboardImpl(this, name, new ScoreboardDefinition(null, title, lines), true, true);
+        ScoreboardImpl sb = new ScoreboardImpl(this, name, new ScoreboardDefinition(null, title, lines), true);
         registeredScoreboards.put(name, sb);
         return sb;
     }

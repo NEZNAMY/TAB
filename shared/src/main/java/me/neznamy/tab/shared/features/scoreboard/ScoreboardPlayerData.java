@@ -1,7 +1,8 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
+import lombok.AllArgsConstructor;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLineHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,19 +36,30 @@ public class ScoreboardPlayerData {
     @Nullable
     public Property titleProperty;
 
-    /** Map of line text properties */
+    /** Properties of scoreboard lines of scoreboard the player can currently see */
     @NotNull
-    public final Map<ScoreboardLine, Property> lineProperties = new IdentityHashMap<>();
+    public final Map<ScoreboardLineHolder, LineProperties> lineProperties = new IdentityHashMap<>();
 
-    /** Map of line player name properties (used in long lines) */
-    @NotNull
-    public final Map<ScoreboardLine, Property> lineNameProperties = new IdentityHashMap<>();
+    /**
+     * Data class for storing properties of a scoreboard line for a player.
+     */
+    @AllArgsConstructor
+    public static class LineProperties {
 
-    /** Map of line score properties */
-    @NotNull
-    public final Map<ScoreboardLine, Property> scoreProperties = new IdentityHashMap<>();
+        /** Property of line text */
+        @NotNull
+        public final Property textProperty;
 
-    /** Map of line NumberFormat properties */
-    @NotNull
-    public final Map<ScoreboardLine, Property> numberFormatProperties = new IdentityHashMap<>();
+        /** Name of the score (used in long lines) */
+        @NotNull
+        public String scoreName;
+
+        /** Property of line NumberFormat */
+        @NotNull
+        public final Property numberFormatProperty;
+
+        /** Property of line score */
+        @NotNull
+        public final Property scoreProperty;
+    }
 }
