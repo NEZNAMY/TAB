@@ -5,10 +5,14 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.Limitations;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.TabTextColor;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardPlayerData;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
 
 /**
  * Line using all 3 values - prefix, name and suffix. Line may flicker when placeholder changes value.
@@ -40,7 +44,7 @@ public class LongLine implements ScoreboardLine {
                     player.getVersion().getNetworkId() >= ProtocolVersion.V1_8.getNetworkId() ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
             );
             properties.scoreName = values[1];
-            holder.updateTeam(player, values[0], values[2]);
+            updateTeam(player, values);
             holder.setScore(player, values[1]);
         }
     }
@@ -65,11 +69,25 @@ public class LongLine implements ScoreboardLine {
                         holder.getParent().getManager().getCache().get(properties.textProperty.get()).toLegacyText(),
                         player.getVersion().getNetworkId() >= ProtocolVersion.V1_8.getNetworkId() ? Limitations.SCOREBOARD_SCORE_LENGTH_1_8 : Limitations.SCOREBOARD_SCORE_LENGTH_1_7
                 );
-                holder.updateTeam(player, values[0], values[2]);
+                updateTeam(player, values);
                 holder.setScore(player, values[1]);
                 properties.scoreName = values[1];
             }
         }
+    }
+
+    private void updateTeam(@NotNull TabPlayer player, @NotNull String[] values) {
+        player.getScoreboard().unregisterTeam(holder.getTeamName());
+        player.getScoreboard().registerTeam(
+                holder.getTeamName(),
+                holder.getParent().getManager().getCache().get(values[0]),
+                holder.getParent().getManager().getCache().get(values[2]),
+                Scoreboard.NameVisibility.NEVER,
+                Scoreboard.CollisionRule.NEVER,
+                Collections.singletonList(values[1]),
+                0,
+                TabTextColor.RESET.getLegacyColor()
+        );
     }
 
     @Override
