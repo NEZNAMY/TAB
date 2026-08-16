@@ -120,7 +120,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
     @Override
     public void updateFromNested(@NonNull TabPlayer player) {
-        hasValueChanged(player, request(player), true);
+        updateValue(player, request(player));
     }
 
     @NotNull

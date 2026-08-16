@@ -90,7 +90,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 
     @Override
     public void updateFromNested(@NonNull TabPlayer unused) {
-        hasValueChanged(request());
+        updateValue(request());
     }
 
     @Override
