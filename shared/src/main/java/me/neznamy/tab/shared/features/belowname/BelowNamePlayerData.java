@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.belowname;
 
 import me.neznamy.tab.shared.Property;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -23,4 +24,7 @@ public class BelowNamePlayerData {
 
     /** Flag tracking whether this feature is disabled for the player with condition or not */
     public final AtomicBoolean disabled = new AtomicBoolean();
+
+    /** Visibility forced using the API, {@code null} if not forced */
+    @Nullable public volatile Boolean forcedEnabled;
 }

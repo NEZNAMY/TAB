@@ -596,12 +596,8 @@ public class FeatureManager {
         if (config.getScoreboard() != null) {
             registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl(config.getScoreboard()));
         }
-        if (config.getPlayerlistObjective() != null) {
-            registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber(config.getPlayerlistObjective()));
-        }
-        if (config.getBelowname() != null) {
-            registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName(config.getBelowname()));
-        }
+        registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber(config.getPlayerlistObjective()));
+        registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName(config.getBelowname()));
         if (config.getSorting() != null) {
             registerFeature(TabConstants.Feature.SORTING, new Sorting(config.getSorting()));
         }

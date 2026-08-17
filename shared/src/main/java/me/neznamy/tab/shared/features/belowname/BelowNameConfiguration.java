@@ -17,6 +17,7 @@ import java.util.Arrays;
 public class BelowNameConfiguration {
 
     @NotNull private final ConfigurationSection section;
+    private final boolean enabled;
     @NotNull private final String value;
     @NotNull private final String title;
     @NotNull private final String fancyValue;
@@ -70,6 +71,7 @@ public class BelowNameConfiguration {
 
         return new BelowNameConfiguration(
                 section,
+                section.getBoolean("enabled", false),
                 value,
                 title,
                 section.getString("fancy-value", "&c" + TabConstants.Placeholder.HEALTH),

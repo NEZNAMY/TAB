@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.features.playerlistobjective;
 
 import lombok.Getter;
+import lombok.NonNull;
+import me.neznamy.tab.api.playerlistobjective.PlayerListObjectiveManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 public class YellowNumber extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        CustomThreaded, ProxyFeature, VanishListener, Dumpable {
+        CustomThreaded, ProxyFeature, VanishListener, Dumpable, PlayerListObjectiveManager {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-PlayerList";
@@ -67,7 +69,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : onlinePlayers.getPlayers()) {
             loadProperties(loaded);
-            if (disableChecker.isDisableConditionMet(loaded)) {
+            if (configuredDisabled(loaded)) {
                 loaded.playerlistObjectiveData.disabled.set(true);
             } else {
                 register(loaded);
@@ -92,7 +94,7 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
         loadProperties(connectedPlayer);
-        if (disableChecker.isDisableConditionMet(connectedPlayer)) {
+        if (configuredDisabled(connectedPlayer)) {
             connectedPlayer.playerlistObjectiveData.disabled.set(true);
         } else {
             register(connectedPlayer);
@@ -131,6 +133,28 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
      *          Whether the feature is disabled now or not
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
+        Boolean forced = p.playerlistObjectiveData.forcedEnabled;
+        if (forced != null) {
+            p.playerlistObjectiveData.disabled.set(!forced);
+            return;
+        }
+        if (!configuration.isEnabled()) {
+            p.playerlistObjectiveData.disabled.set(true);
+            return;
+        }
+        updateVisibility(p, disabledNow);
+    }
+
+    private boolean configuredDisabled(@NotNull TabPlayer p) {
+        return !configuration.isEnabled() || disableChecker.isDisableConditionMet(p);
+    }
+
+    private void applyDisabledState(@NotNull TabPlayer p, boolean disabled) {
+        if (p.playerlistObjectiveData.disabled.getAndSet(disabled) == disabled) return;
+        updateVisibility(p, disabled);
+    }
+
+    private void updateVisibility(@NotNull TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         } else {
@@ -202,10 +226,25 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         player.getScoreboard().registerObjective(
                 OBJECTIVE_NAME,
                 cache.get(player.playerlistObjectiveData.title.updateAndGet()),
-                configuration.getHealthDisplay(),
+                getHealthDisplay(player),
                 TabComponent.empty()
         );
         player.getScoreboard().setDisplaySlot(OBJECTIVE_NAME, Scoreboard.DisplaySlot.PLAYER_LIST);
+    }
+
+    private void updateObjective(@NotNull TabPlayer player) {
+        player.getScoreboard().updateObjective(
+                OBJECTIVE_NAME,
+                cache.get(player.playerlistObjectiveData.title.updateAndGet()),
+                getHealthDisplay(player),
+                TabComponent.empty()
+        );
+    }
+
+    @NotNull
+    private Scoreboard.HealthDisplay getHealthDisplay(@NotNull TabPlayer player) {
+        RenderType forced = player.playerlistObjectiveData.forcedRenderType;
+        return forced == null ? configuration.getHealthDisplay() : Scoreboard.HealthDisplay.valueOf(forced.name());
     }
 
     /**
@@ -265,6 +304,83 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, player, getValue(player), player.playerlistObjectiveData.fancyValue.getFormat(viewer));
         }
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+
+    @Override
+    public void setEnabled(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Boolean enabled) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            p.playerlistObjectiveData.forcedEnabled = enabled;
+            applyDisabledState(p, enabled == null ? configuredDisabled(p) : !enabled);
+        }, getFeatureName(), "Processing API call (setEnabled)"));
+    }
+
+    @Override
+    @Nullable
+    public Boolean getCustomEnabled(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        return ((TabPlayer) player).playerlistObjectiveData.forcedEnabled;
+    }
+
+    @Override
+    public void setValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Integer value) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            String newValue = value == null ? null : String.valueOf(value);
+            if (Objects.equals(p.playerlistObjectiveData.value.getTemporaryValue(), newValue)) return;
+            p.playerlistObjectiveData.value.setTemporaryValue(newValue);
+            p.playerlistObjectiveData.fancyValue.setTemporaryValue(newValue);
+            refresh(p, true);
+        }, getFeatureName(), "Processing API call (setValue)"));
+    }
+
+    @Override
+    public void setTitle(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String title) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (Objects.equals(p.playerlistObjectiveData.title.getTemporaryValue(), title)) return;
+            p.playerlistObjectiveData.title.setTemporaryValue(title);
+            if (!p.playerlistObjectiveData.disabled.get()) updateObjective(p);
+        }, getFeatureName(), "Processing API call (setTitle)"));
+    }
+
+    @Override
+    public void setRenderType(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable RenderType renderType) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (p.playerlistObjectiveData.forcedRenderType == renderType) return;
+            p.playerlistObjectiveData.forcedRenderType = renderType;
+            if (!p.playerlistObjectiveData.disabled.get()) updateObjective(p);
+        }, getFeatureName(), "Processing API call (setRenderType)"));
+    }
+
+    @Override
+    public void reset(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            p.playerlistObjectiveData.forcedEnabled = null;
+            p.playerlistObjectiveData.forcedRenderType = null;
+            p.playerlistObjectiveData.value.setTemporaryValue(null);
+            p.playerlistObjectiveData.fancyValue.setTemporaryValue(null);
+            p.playerlistObjectiveData.title.setTemporaryValue(null);
+            applyDisabledState(p, configuredDisabled(p));
+            if (!p.playerlistObjectiveData.disabled.get()) updateObjective(p);
+            refresh(p, true);
+        }, getFeatureName(), "Processing API call (reset)"));
     }
 
     @Override
