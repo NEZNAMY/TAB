@@ -1,0 +1,20 @@
+name: Problem
+description: A problem with the plugin that is not a bug
+labels: ["Type: Problem"]
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: Describe the problem
+      placeholder: |
+        Describe the problem here. This is not limited to the plugin jar itself. You may report issues with the wiki, plugin description on marketplaces, or anything else related to TAB.
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Let's make sure this report is valid
+      options:
+        - label: This is not an error, bug report, compatibility issue or anything of that kind
+          required: true
