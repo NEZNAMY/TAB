@@ -329,17 +329,41 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     }
 
     @Override
-    public void setValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Integer value) {
+    public void setValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String value) {
         ensureActive();
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
             TabPlayer p = (TabPlayer) player;
             p.ensureLoaded();
-            String newValue = value == null ? null : String.valueOf(value);
-            if (Objects.equals(p.playerlistObjectiveData.value.getTemporaryValue(), newValue)) return;
-            p.playerlistObjectiveData.value.setTemporaryValue(newValue);
-            p.playerlistObjectiveData.fancyValue.setTemporaryValue(newValue);
+            if (Objects.equals(p.playerlistObjectiveData.value.getTemporaryValue(), value)) return;
+            p.playerlistObjectiveData.value.setTemporaryValue(value);
             refresh(p, true);
         }, getFeatureName(), "Processing API call (setValue)"));
+    }
+
+    @Override
+    @Nullable
+    public String getCustomValue(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        return ((TabPlayer) player).playerlistObjectiveData.value.getTemporaryValue();
+    }
+
+    @Override
+    public void setFancyValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String fancyValue) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (Objects.equals(p.playerlistObjectiveData.fancyValue.getTemporaryValue(), fancyValue)) return;
+            p.playerlistObjectiveData.fancyValue.setTemporaryValue(fancyValue);
+            refresh(p, true);
+        }, getFeatureName(), "Processing API call (setFancyValue)"));
+    }
+
+    @Override
+    @Nullable
+    public String getCustomFancyValue(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        return ((TabPlayer) player).playerlistObjectiveData.fancyValue.getTemporaryValue();
     }
 
     @Override
@@ -355,6 +379,13 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     }
 
     @Override
+    @Nullable
+    public String getCustomTitle(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        return ((TabPlayer) player).playerlistObjectiveData.title.getTemporaryValue();
+    }
+
+    @Override
     public void setRenderType(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable RenderType renderType) {
         ensureActive();
         customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
@@ -367,20 +398,10 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     }
 
     @Override
-    public void reset(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    @Nullable
+    public RenderType getCustomRenderType(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
-        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
-            TabPlayer p = (TabPlayer) player;
-            p.ensureLoaded();
-            p.playerlistObjectiveData.forcedEnabled = null;
-            p.playerlistObjectiveData.forcedRenderType = null;
-            p.playerlistObjectiveData.value.setTemporaryValue(null);
-            p.playerlistObjectiveData.fancyValue.setTemporaryValue(null);
-            p.playerlistObjectiveData.title.setTemporaryValue(null);
-            applyDisabledState(p, configuredDisabled(p));
-            if (!p.playerlistObjectiveData.disabled.get()) updateObjective(p);
-            refresh(p, true);
-        }, getFeatureName(), "Processing API call (reset)"));
+        return ((TabPlayer) player).playerlistObjectiveData.forcedRenderType;
     }
 
     @Override
