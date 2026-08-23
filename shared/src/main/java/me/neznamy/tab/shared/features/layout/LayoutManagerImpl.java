@@ -50,7 +50,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         this.configuration = configuration;
         skinManager = new LayoutSkinManager(TAB.getInstance().getConfiguration().getSkinManager(), configuration.getDefaultSkin(), configuration.getDefaultSkinHashMap());
         for (int slot=1; slot<=80; slot++) {
-            UUID id = new UUID(1, configuration.getDirection().translateSlot(slot));
+            UUID id = new UUID(0,  configuration.getDirection().translateSlot(slot));
             uuids[slot-1] = id;
             UUIDS_SET.add(id);
         }
