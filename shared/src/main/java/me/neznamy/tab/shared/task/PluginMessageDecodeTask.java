@@ -44,7 +44,12 @@ public class PluginMessageDecodeTask implements Runnable {
         ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(playerId);
         if (player == null) return;
         ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
-        Supplier<IncomingMessage> supplier = registeredMessages[in.readByte()];
+        int type = in.readByte() & 0xFF;
+        if (type >= registeredMessages.length) {
+            TAB.getInstance().getErrorManager().unknownPluginMessage(type, registeredMessages.length - 1);
+            return;
+        }
+        Supplier<IncomingMessage> supplier = registeredMessages[type];
         IncomingMessage msg = supplier.get();
         msg.read(in);
         TAB.getInstance().getCpu().runMeasuredTask("Plugin message handling", CpuUsageCategory.PLUGIN_MESSAGE_PROCESS, new PluginMessageProcessTask(msg, player));

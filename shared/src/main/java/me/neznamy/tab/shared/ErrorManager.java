@@ -240,6 +240,20 @@ public class ErrorManager {
     }
 
     /**
+     * Prints error message when Bridge sent a plugin message with an unknown type.
+     *
+     * @param   type
+     *          Received message type
+     * @param   highestKnownType
+     *          Highest message type this build knows
+     */
+    public void unknownPluginMessage(int type, int highestKnownType) {
+        printError("Bridge sent a plugin message with unknown type " + type +
+                " (expected 0-" + highestKnownType + ")",
+                Collections.emptyList(), false, errorLog);
+    }
+
+    /**
      * Prints error message when MineSkin download failed with an error.
      *
      * @param   id
