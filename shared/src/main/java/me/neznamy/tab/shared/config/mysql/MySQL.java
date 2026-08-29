@@ -19,6 +19,9 @@ public class MySQL {
     private Connection con;
     @NotNull private final MySQLConfiguration configuration;
 
+    /** Whether a transaction is currently open, to forbid a silent reconnect while it runs */
+    private boolean inTransaction;
+
     public void openConnection() throws SQLException {
         if (isConnected()) return;
         Properties properties = new Properties();
@@ -44,9 +47,54 @@ public class MySQL {
         }
     }
 
+    /**
+     * Starts a transaction, so that a group of statements either all apply or none do.
+     *
+     * @throws  SQLException
+     *          If the connection could not be opened
+     */
+    public void beginTransaction() throws SQLException {
+        if (!isConnected()) openConnection();
+        con.setAutoCommit(false);
+        inTransaction = true;
+    }
+
+    /**
+     * Commits the open transaction and restores auto-commit.
+     *
+     * @throws  SQLException
+     *          If the commit failed
+     */
+    public void commit() throws SQLException {
+        con.commit();
+        con.setAutoCommit(true);
+        inTransaction = false;
+    }
+
+    /**
+     * Rolls the open transaction back, restoring auto-commit. Does nothing if the connection
+     * is already gone, in which case the server has discarded the transaction on its own.
+     */
+    public void rollback() {
+        inTransaction = false;
+        try {
+            if (con != null && !con.isClosed()) {
+                con.rollback();
+                con.setAutoCommit(true);
+            }
+        } catch (SQLException ignored) {
+            // Connection lost: the server dropped the transaction, there is nothing to undo
+        }
+    }
+
     @NotNull
     private PreparedStatement prepareStatement(@NonNull String query, @Nullable Object... vars) throws SQLException {
-        if (!isConnected()) openConnection();
+        if (!isConnected()) {
+            // Reconnecting here would silently start a NEW transaction, leaving the statements
+            // already sent committed and making the rollback protect nothing.
+            if (inTransaction) throw new SQLException("Connection lost during a transaction");
+            openConnection();
+        }
         PreparedStatement ps = con.prepareStatement(query);
         int i = 0;
         if (query.contains("?")) {
