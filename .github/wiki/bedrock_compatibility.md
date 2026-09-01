@@ -8,9 +8,10 @@ For TAB to properly detect player as a bedrock player, floodgate and TAB must be
 If TAB is installed on backend and floodgate is on both proxy and backend,
 make sure [they are connected](https://geysermc.org/wiki/floodgate/setup/?platform=proxy-servers).
 
-To make sure floodgate is configured correctly, you have two options:
+To make sure floodgate is configured correctly, you can do any of the following:
 * Set `debug: true` in TAB config and check console output on join/reload. It should say `Floodgate returned bedrock status TRUE for player <player>`.
 * Run `/tab parse <player> %bedrock%`. It should return `true`.
+* Run `/tab dump <player>`, open the link and see `  bedrockPlayer: '<true|false> (floodgate is installed: <true|false>)'`
 
 If any of them say `false` for an actual bedrock player, you didn't connect floodgate correctly.
 

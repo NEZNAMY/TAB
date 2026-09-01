@@ -12,7 +12,7 @@
 * [Object components (1.21.9+)](#object-components-1219)
   * [Atlas sprite](#atlas-sprite)
   * [Player sprite](#player-sprite)
-  * [Compatibility with < 1.21.9](#compatibility-with--1219)
+  * [Compatibility with <1.21.9](#compatibility-with-1219)
 * [MiniMessage](#minimessage)
 * [Config options](#config-options)
 * [Tips & Tricks](#tips--tricks)
@@ -121,13 +121,6 @@ Example:
 
 
 ## Player sprite
-> [!WARNING]
-> In order to use these, you will need to disable MiniMessage support, because head components were not added to MiniMessage yet. Even when they are added, they will have a different syntax, so TAB will be updated to match the format to avoid complications. For now, use the existing syntax for prototyping and testing. To disable MiniMessage support, set:
-> ```
-> components:
->   minimessage-support: false
-> ```
-> in **config.yml**.
 
 This type allows you to display Minecraft heads. There are 3 ways to define a head:
 | Type                     | Functionality                                                             |
@@ -139,27 +132,25 @@ This type allows you to display Minecraft heads. There are 3 ways to define a he
 Here are all the ways you can display player skins using TAB and their implementation (using `ALL CAPS` for "placeholder" text instead of `<>` to avoid confusion as `<>` is actual part of the syntax):
 | Syntax | Explanation | Implementation |
 |-----|-------------|------------|
-| `<head:name:NAME>` | Shows head defined by player name | name |
-| `<head:id:UUID>` | Shows head defined by player UUID | uuid |
-| `<head:signed_texture:VALUE;SIGNATURE>` | Shows head defined by value and signature | value and signature |
-| `<head:player:NAME` | Connects to Mojang and retrieves value and signature of defined player | value and signature |
-| `<head:mineskin:ID>` | Connects to Mineskin and retrieves value and signature of specified upload ID | value and signature |
-| `<head:texture:TEXTURE>` | Gets the texture from `http://textures.minecraft.net/texture/TEXTURE` | value and signature |
+| `<head:NAME>` | Shows head defined by player name | name |
+| `<head:UUID>` | Shows head defined by player UUID | uuid |
+| `<mineskin:ID>` | Connects to Mineskin and retrieves value and signature of specified upload ID | value and signature |
+| `<head_texture:TEXTURE>` | Gets the texture from `http://textures.minecraft.net/texture/TEXTURE` | value and signature |
+
+All these syntaxes are identical to MiniMessage syntax for convenience. MiniMessage only supports the first two types by default, but TAB adds tag resolvers for `mineskin` and `head_texture` as well.
 
 Here is an example for all types:
 ```
       footer:
-      - 'Head by id: <head:id:%uuid%>'  # This will obviously not work in offline mode
-      - 'Head by name: <head:name:%player%>'  # May or may not work in offline mode (see above for full explanation)
-      - 'Head by raw texture: <head:signed_texture:ewogICJ0aW1lc3RhbXAiIDogMTc1NjMxNjc0OTk4MywKICAicHJvZmlsZUlkIiA6ICIyMzdkOGI1NTNmOTc0NzQ5YWE2MGU5ZmU5N2I0NTA2MiIsCiAgInByb2ZpbGVOYW1lIiA6ICJfTkVaTkFNWV8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY1ZTNhNWRmODkxYzEzMTdhZjUzMmMzNmY4NDgxNDBhNDBmMGZhMGNlZGRmZmEwNWU5NGU1NzU1OGQxY2Q4YyIKICAgIH0KICB9Cn0=;YFVoqA0CqWgnZhme5s/M7xtadURyLkyLWVsh0vN8BqdfwzN32nqlBJb2pRjkxIs0V21EOeKbGFjgdKQKzPRQdf6sTFQ/x0KOjUg8A/neAiwCvDSDrsTQ2Yf7yoVP6M2PpuB7te19N+I139mGY5psxU100x6GiV/uFfpUfG3XBJog43JtXzRJ9fRtoSeIEzqLrkpCmt6o5Mzo6GZFZc4CtI76OU90Mg9ZvTZTYelvtjFtllxTtkNZCcglzvh5R19+qtzLOzEr+N8m4Ed+5yZyezEb3LeeSgmbSLIjuOKuUupE+2F6yVYP3eKhgGLZ2G+cg9TZZjTCsNMzHqewM/1+qStzTQCdNmggXCGcIfC8HcYsBfdv4SicxBq8ff+BDyveFZMFyREpQNqX/fLmlz16cmxHvBQ9qqA+IzIsBJ7i/mrG78jBhkJsvtcHMHvTviXascCSQP1TCn58D6HJ/Agww6HFTJe/B6sX0Utzm0URE4jZK7wnhrx0q2H8OkCXc5ZwuXALqtvk0uWmZo2RMnIGQNi4nb5AUsGV8pNirhS16MfqZeJ4q0HGaIVscRp4jazab6kMVKusbuqQB1cZNbaao7mP1HAUVCd5geWQL4CQQIc6gv0q3KT2E45d0YeYqpy/RppKMWmg1+aQ5wVGQW4/p2mqXos71FKy6vP0ur6txd8=>'
-      - 'Head by player: <head:player:%player%>'
-      - 'Head by mineskin: <head:mineskin:37e93c8e12cd426cb28fce31969e0674>'
-      - 'Head by texture: <head:texture:ff9bb9e56125c8227b94bbda9f6e0f862931c229255ba8f1205d13c44c1bb561>'
+      - 'Head by id: <head:%uuid%>'  # This will obviously not work in offline mode
+      - 'Head by name: <head:%player%>'  # May or may not work in offline mode (see above for full explanation)
+      - 'Head by mineskin: <mineskin:37e93c8e12cd426cb28fce31969e0674>'
+      - 'Head by texture: <head_texture:ff9bb9e56125c8227b94bbda9f6e0f862931c229255ba8f1205d13c44c1bb561>'
 ```
 
 <img width="331" height="111" alt="image" src="https://github.com/user-attachments/assets/5912975a-a892-42c3-b9ab-7eab33ee42b6" />
 
-## Compatibility with < 1.21.9
+## Compatibility with <1.21.9
 You may be wondering what happens when you try to use these and the client is below 1.21.9.  
 See table below for behavior based on your setup.
 
@@ -177,8 +168,7 @@ TAB has [MiniMessage](https://docs.advntr.dev/minimessage/format.html) hook, how
 
 When MiniMessage is detected on your server, it is automatically used unless support is disabled. All codes are translated to MiniMessage syntax and then parsed by MiniMessage.
 
-> [!WARNING]
-> TAB's gradient syntax (`<#RRGGBB>Text</#RRGGBB>`) is a compatibility layer that TAB rewrites before parsing, it is more fragile than native [MiniMessage](https://docs.advntr.dev/minimessage/format.html) gradients (`<gradient:#RRGGBB:#RRGGBB>Text</gradient>`). On **Velocity**, this is especially problematic because [MiniPlaceholders](https://github.com/MiniPlaceholders/MiniPlaceholders) (see [TAB integration PR #1677](https://github.com/NEZNAMY/TAB/pull/1677)) parses MiniMessage *before* TAB can rewrite its gradient syntax. For example, placeholder output like `<#E0B11E>MyServer</#FF0000>` is interpreted by MiniPlaceholders as a hex color tag (`<#E0B11E>`), but `</#FF0000>` is not recognized as a gradient closing tag, so the formatting breaks. Prefer native MiniMessage syntax in placeholder output (e.g. `<gradient:#E0B11E:#FF0000>MyServer</gradient>`). See [Placeholders - MiniPlaceholders](https://github.com/NEZNAMY/TAB/wiki/Placeholders#miniplaceholders) for more information.
+TAB creates a modified MiniMessage parser that also accepts `<head_texture:TEXTURE>` and `<mineskin:ID>` head syntaxes just like TAB's own component parser.
 
 # Config options
 | Option name              | Default value | Description                                                                                                                                |

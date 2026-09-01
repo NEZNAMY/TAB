@@ -52,7 +52,7 @@ Most commonly used plugins for this are [FastLogin](https://www.spigotmc.org/res
 which change connections of premium players who enabled it to online connections.  
 The same goes for disabling heads - you cannot disable them if you have online mode enabled.
 
-Minecraft 1.21.9 has added [object components](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components#object-components-1219), which allow you to display player heads. You can put for example `<head:name:%player%>` at the beginning of tabprefix to simulate this.
+Minecraft 1.21.9 has added [object components](https://github.com/NEZNAMY/TAB/wiki/How-to-use-Minecraft-components#object-components-1219), which allow you to display player heads. You can put for example `<head:%player%>` at the beginning of tabprefix to simulate this (you will need a plugin like SkinsRestorer for the players to properly be able to recognize skins by player name).
 
 ## #7 - Where can I find current default config files?
 You can do any of the following:
@@ -118,16 +118,14 @@ Using `''` will result in the text being display literally, not as a code.
 **Note:** Minecraft does not support every single UTF symbol and displays unsupported symbols as a box. You can try sending your symbol into chat and see if it works or not. If not, it's not supported by MC.
 
 ## #14 - Is there a way to remove all players from tablist?
-In Minecraft, for a player to be visible in-game, they also need to appear in the tablist.
-Remember the issue with NPCs showing up in the tablist? It's the same underlying mechanic.
+Here are various ways to achieve this goal:
 
-If you're okay with players not being visible in the world, you can use a plugin that hides all players completely.
+* **Option 1: Hide players entirely** - In Minecraft, for a player to be visible in-game, they also need to added into the tablist. If you don't mind hiding players from game as well, there are plugins that offer this (TAB is, however, not one of them).  
+  In 1.19.3, the player info packet received a new field that allows us to explicitly hide players from tablist while all the necessary data is still sent to players.
 
-Since Minecraft 1.19.3, this limitation has been lifted — it's now possible to have entities in the game without showing them in the tablist.
-However, the TAB plugin does **not** support removing all players from the tablist in any version of Minecraft.
+* **Option 2: Layout with 0 slots** - Since Minecraft 1.19.3, the limitation explained above has been lifted — it's now possible to have entities in the game without showing them in the tablist. TAB does not have an explicit feature for doing this. However, since 1.19.3, the [Layout](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Layout) feature uses this mechanic to allow less than 80 slots. This feature can be "abused" by enabling the feature, removing fixed-slots and adding `slot-count: 0` to the displayed layout. The final effect will be a playerless tablist.
 
-An alternative solution using TAB is putting a lot of empty lines into header,
-which will push all players out of the screen.
+* **Option 3: Pushing players out of the screen with header** - You can add a ton of empty lines into the header. As a result, players will be pushed down out of the screen and effectively not visible.
 
 ## #15 - How to add images to tablist?
 You can check out [this Reddit post](https://www.reddit.com/r/admincraft/comments/llrgty/comment/gnswdcz/?utm_source=share&utm_medium=web2x&context=3).

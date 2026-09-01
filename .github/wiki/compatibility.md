@@ -11,12 +11,12 @@ TAB does not depend on any other plugins. The experience can however be enhanced
 
 # Supported server software and versions
 With the introduction of new Minecraft versions, it is becoming harder and harder to support many versions in the same jar, eventually making it impossible since Minecraft 26.1.  
-**As a general rule, if you want the latest TAB version for your server please use [Modrinth](https://modrinth.com/plugin/tab-was-taken)'s download filter where you can select your server software and version and you'll get the latest jar.**
+**As a general rule, if you want the latest TAB version for your server, please use [Modrinth](https://modrinth.com/plugin/tab-was-taken)'s download filter, where you can select your server software and version and you'll get the latest jar.**
 
 Currently, the latest Minecraft version supported by TAB is **26.2**. When new versions come out, TAB is always updated soon after to support them.
 
 If your server software and version is reasonably popular and TAB hasn't been backported to that version in a very long time, you may [request a backport](https://github.com/NEZNAMY/TAB/issues/new/choose) (unless backports to that version are no longer offered, see below).  
-Since TAB 6.0.0, Minecraft 1.x started taking hits with each subsequent versions - Bukkit versions started disappearing and **modded platforms no longer offer backports of TAB 6.0.0+ to MC 1.x** (this is because the build scripts had to be massively changed for MC 26+).
+Since TAB 6.0.0, Minecraft 1.x started taking hits with each subsequent TAB versions - Bukkit versions started disappearing and **modded platforms no longer offer backports of TAB 6.0.0+ to MC 1.x** (this is because the build scripts had to be massively changed for MC 26+).
 
 The sections below provide **additional** information for each platform.
 
@@ -38,8 +38,7 @@ Every TAB update only supports the latest Fabric version(s) at the time of relea
 Minecraft 1.x - TAB 5.5.0 was backported to 1.20 - 1.21.11 and the jars were uploaded to Modrinth. TAB 5.0.7 supports all Fabric versions from 1.14 to 1.19.4. Backports to 1.x are no longer offered.
 
 ## Forge
-Every TAB update only supports the latest Forge version(s) at the time of release.  
-**Currently, Forge 26.x is not supported because the modding tool is broken**.
+Every TAB update only supports the latest Forge version(s) at the time of release.
 
 Minecraft 1.x - TAB 5.5.0 was backported to 1.20 - 1.21.11 and the jars were uploaded to Modrinth, along with a few other random versions people requested. If your version is not available, you may request a backport.
 

@@ -17,7 +17,7 @@
 # About
 This page explains how to import TAB's API into your project and together with other pages everything you can do with it.
 
-Before starting please seriously reconsider if you really need this and cannot already achieve it using existing features (such as registering placeholders into PlaceholderAPI instead of TAB, using display conditions for scoreboards, ...). If not, consider making a request.
+Before starting, please seriously reconsider if you really need this and cannot already achieve it using existing features (such as registering placeholders into PlaceholderAPI instead of TAB, using display conditions for scoreboards, ...). If not, consider making a request.
 
 # Adding the dependency
 
@@ -35,7 +35,7 @@ For Maven users, you can add the API dependency like this:
     <dependency>
         <groupId>com.github.NEZNAMY</groupId>
         <artifactId>TAB-API</artifactId>
-        <version>6.0.0</version>
+        <version>6.1.2</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.NEZNAMY:TAB-API:6.0.0'
+    compileOnly 'com.github.NEZNAMY:TAB-API:6.1.2'
 }
 ```
 
@@ -61,7 +61,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.NEZNAMY", "TAB-API", "6.0.0")
+    compileOnly("com.github.NEZNAMY", "TAB-API", "6.1.2")
 }
 ```
 
