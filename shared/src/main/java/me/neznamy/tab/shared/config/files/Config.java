@@ -40,7 +40,7 @@ public class Config {
     @NotNull private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config/config.yml"),
             new File(TAB.getInstance().getDataFolder(), "config.yml"));
 
-    @NotNull private final BelowNameConfiguration belowname;
+    @Nullable private BelowNameConfiguration belowname;
     @Nullable private BossBarConfiguration bossbar;
     @NotNull private final ConditionsSection conditions;
     @Nullable private GlobalPlayerListConfiguration globalPlayerList;
@@ -52,7 +52,7 @@ public class Config {
     @NotNull private final PlaceholderRefreshConfiguration refresh;
     @NotNull private final PlaceholderReplacementsConfiguration replacements;
     @NotNull private final PlaceholdersConfiguration placeholders;
-    @NotNull private final PlayerListObjectiveConfiguration playerlistObjective;
+    @Nullable private PlayerListObjectiveConfiguration playerlistObjective;
     @Nullable private ScoreboardConfiguration scoreboard;
     @Nullable private SortingConfiguration sorting;
     @Nullable private TablistFormattingConfiguration tablistFormatting;
@@ -95,10 +95,10 @@ public class Config {
         replacements = PlaceholderReplacementsConfiguration.fromSection(config.getConfigurationSection("placeholder-output-replacements"));
         placeholders = PlaceholdersConfiguration.fromSection(config.getConfigurationSection("placeholders"));
         components = ComponentConfiguration.fromSection(config.getConfigurationSection("components"));
-        belowname = BelowNameConfiguration.fromSection(config.getConfigurationSection("belowname-objective"));
-        playerlistObjective = PlayerListObjectiveConfiguration.fromSection(config.getConfigurationSection("playerlist-objective"));
 
         if (config.getBoolean("bossbar.enabled", false)) bossbar = BossBarConfiguration.fromSection(config.getConfigurationSection("bossbar"));
+        if (config.getBoolean("belowname-objective.enabled", false)) belowname = BelowNameConfiguration.fromSection(config.getConfigurationSection("belowname-objective"));
+        if (config.getBoolean("playerlist-objective.enabled", true)) playerlistObjective = PlayerListObjectiveConfiguration.fromSection(config.getConfigurationSection("playerlist-objective"));
         if (config.getBoolean("global-playerlist.enabled", false)) globalPlayerList = GlobalPlayerListConfiguration.fromSection(config.getConfigurationSection("global-playerlist"));
         if (config.getBoolean("header-footer.enabled", true)) headerFooter = HeaderFooterConfiguration.fromSection(config.getConfigurationSection("header-footer"));
         if (config.getBoolean("layout.enabled", false)) layout = LayoutConfiguration.fromSection(config.getConfigurationSection("layout"));
@@ -118,7 +118,7 @@ public class Config {
                                 " fake players, making per world playerlist completely useless as real players are pushed out of the playerlist. " +
                         "Disable per world playerlist for the same result, but with better performance.");
             }
-            if (playerlistObjective.isEnabled()) {
+            if (playerlistObjective != null) {
                 TAB.getInstance().getConfigHelper().startup().startupWarn(config.getFile(), "Layout feature breaks playerlist-objective feature, because it replaces real player with fake slots " +
                         "with different usernames for more reliable functionality. Disable playerlist-objective feature, as it will only look bad " +
                         "and consume resources.");

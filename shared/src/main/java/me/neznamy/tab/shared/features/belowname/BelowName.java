@@ -150,15 +150,11 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
             p.belowNameData.disabled.set(!forced);
             return;
         }
-        if (!configuration.isEnabled()) {
-            p.belowNameData.disabled.set(true);
-            return;
-        }
         updateVisibility(p, disabledNow);
     }
 
     private boolean configuredDisabled(@NotNull TabPlayer p) {
-        return !configuration.isEnabled() || disableChecker.isDisableConditionMet(p);
+        return disableChecker.isDisableConditionMet(p);
     }
 
     private void applyDisabledState(@NotNull TabPlayer p, boolean disabled) {

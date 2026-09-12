@@ -18,7 +18,6 @@ import java.util.Arrays;
 public class PlayerListObjectiveConfiguration {
 
     @NotNull private final ConfigurationSection section;
-    private final boolean enabled;
     @NotNull private final String value;
     @NotNull private final String fancyValue;
     @NotNull private final String title;
@@ -72,7 +71,6 @@ public class PlayerListObjectiveConfiguration {
 
         return new PlayerListObjectiveConfiguration(
                 section,
-                section.getBoolean("enabled", true),
                 value,
                 section.getString("fancy-value", "&7Ping: " + Placeholder.PING),
                 section.getString("title", "TAB"),
