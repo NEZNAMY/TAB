@@ -5,8 +5,8 @@ accessible field net/minecraft/server/network/ServerCommonPacketListenerImpl con
 accessible field net/minecraft/network/Connection channel Lio/netty/channel/Channel;
 
 # Scoreboard team
-accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;
-mutable field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/Collection;
+accessible field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/List;
+mutable field net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket players Ljava/util/List;
 
 # Player info
 accessible field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;

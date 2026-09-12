@@ -324,11 +324,11 @@ public abstract class SafeScoreboard<T extends TabPlayer> implements Scoreboard 
      *          Team name in the packet
      * @param   players
      *          Players in the packet
-     * @return  Modified collection of players
+     * @return  Modified list of players
      */
     @NotNull
-    public Collection<String> onTeamPacket(int action, @NonNull String teamName, @NonNull Collection<String> players) {
-        Collection<String> newList = new ArrayList<>();
+    public List<String> onTeamPacket(int action, @NonNull String teamName, @NonNull Collection<String> players) {
+        List<String> newList = new ArrayList<>();
         if (action == TeamAction.CREATE || action == TeamAction.ADD_PLAYER) {
             for (String entry : players) {
                 Team expectedTeam = getExpectedTeam(entry);
