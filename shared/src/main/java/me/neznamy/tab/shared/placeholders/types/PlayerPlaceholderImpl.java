@@ -138,7 +138,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
     @Override
     @NotNull
-    public String getLastReturnedValue(@Nullable TabPlayer player) {
+    public synchronized String getLastReturnedValue(@Nullable TabPlayer player) {
         if (player == null) return identifier;
         String value = player.lastPlaceholderReturnedValues.get(this);
         if (value != null) return value;
