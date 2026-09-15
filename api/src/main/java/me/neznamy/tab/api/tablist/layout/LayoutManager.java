@@ -48,14 +48,12 @@ public interface LayoutManager {
     Layout getLayout(@NonNull String name);
 
     /**
-     * Sends layout to player. Set to {@code null} to make player not see
-     * any layout, but default TabList instead.
+     * Sends layout to player. Set to {@code null} to reset layout back to original one based on configuration.
      *
      * @param   player
      *          Player to send layout to
      * @param   layout
      *          Layout to send
-     * @see     #resetLayout(TabPlayer)
      */
     void sendLayout(@NonNull TabPlayer player, @Nullable Layout layout);
 
@@ -65,6 +63,8 @@ public interface LayoutManager {
      * @param   player
      *          Player to reset layout for
      * @see     #sendLayout(TabPlayer, Layout)
+     * @deprecated Use {@link #sendLayout(TabPlayer, Layout)} with {@code null} instead
      */
+    @Deprecated
     void resetLayout(@NonNull TabPlayer player);
 }

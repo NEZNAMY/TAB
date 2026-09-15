@@ -210,11 +210,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
 
     @Override
     public void resetLayout(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        ensureActive();
-        TabPlayer p = (TabPlayer) player;
-        p.ensureLoaded();
-        p.layoutData.forcedLayout = null;
-        refresh(p, false);
+        sendLayout(player, null);
     }
 
     @NotNull
