@@ -78,6 +78,7 @@ public class Condition {
 
         List<PlaceholderReference> placeholdersInConditions = new ArrayList<>();
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        if (manager == null) return; // Header / footer config conversion, the placeholder manager is not initialized yet
         placeholdersInConditions.addAll(manager.detectPlaceholders(yes).stream().map(manager::getPlaceholderReference).collect(Collectors.toList()));
         placeholdersInConditions.addAll(manager.detectPlaceholders(no).stream().map(manager::getPlaceholderReference).collect(Collectors.toList()));
         for (ConditionalExpression expression : expressions) {
