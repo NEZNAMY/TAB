@@ -96,6 +96,7 @@ public class ServerVersionInfo {
         spigotVersions.put(ProtocolVersion.V26_1_1, "v26_1");
         spigotVersions.put(ProtocolVersion.V26_1_2, "v26_1");
         spigotVersions.put(ProtocolVersion.V26_2, "v26_2");
+        spigotVersions.put(ProtocolVersion.V26_3, "v26_2");
 
         Map<ProtocolVersion, String> paperVersions = new LinkedHashMap<>();
         paperVersions.put(ProtocolVersion.V1_20_5, "paper_1_20_5");
