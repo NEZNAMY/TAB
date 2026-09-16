@@ -133,7 +133,12 @@ public class NeoForgeScoreboard extends SafeScoreboard<NeoForgeTabPlayer> {
         if (packet instanceof ClientboundSetPlayerTeamPacket team) {
             int method = getMethod(team);
             if (method != TeamAction.UPDATE) {
-                team.players = onTeamPacket(method, team.getName(), team.getPlayers());
+                return new ClientboundSetPlayerTeamPacket(
+                        team.getName(),
+                        method,
+                        team.getParameters(),
+                        onTeamPacket(method, team.getName(), team.getPlayers())
+                );
             }
         }
         return packet;
