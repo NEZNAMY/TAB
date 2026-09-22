@@ -15,13 +15,14 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/") // Adventure
 }
 
-val minecraftVersion = "26.2"
+val minecraftVersion = "26.3"
 
 // Forge API versions for each Minecraft version for easier backporting
 // Official website (for updating in the future): https://files.minecraftforge.net/net/minecraftforge/forge/
 val forgeApiVersions = mapOf(
-    "26.2" to "26.2-65.0.0",
-    "26.1.2" to "26.1.2-64.0.4"
+    "26.3" to "26.3-66.0.2",
+    "26.2" to "26.2-65.1.3",
+    "26.1.2" to "26.1.2-64.1.3"
 )
 
 dependencies {
