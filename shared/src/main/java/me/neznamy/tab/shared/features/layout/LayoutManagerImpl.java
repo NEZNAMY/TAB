@@ -77,17 +77,9 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         p.layoutData.sortingString = p.sortingData.fullTeamName;
         sortedPlayers.put(p, p.sortingData.fullTeamName);
         LayoutPattern highest = getHighestLayout(p);
-        if (highest != null) {
-            sendLayout(p, highest);
-        }
+        sendLayout(p, highest);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.layoutData.currentLayout != null) all.layoutData.currentLayout.view.onJoin(p);
-        }
-
-        // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
-        if (highest == null) return;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            p.getTabList().updateDisplayName(all, null);
         }
     }
 
@@ -112,17 +104,30 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
         LayoutPattern current = p.layoutData.currentLayout == null ? null : p.layoutData.currentLayout.view.getPattern();
         if (highest != current) {
             if (current != null) p.layoutData.currentLayout.view.destroy();
-            p.layoutData.currentLayout = null;
-            if (highest != null) {
-                sendLayout(p, highest);
-            }
+            sendLayout(p, highest);
         }
     }
 
-    private void sendLayout(@NotNull TabPlayer player, @NotNull LayoutPattern pattern) {
-        LayoutBase view = new FakeEntryLayout(this, pattern, player);
-        player.layoutData.currentLayout = new LayoutData(view);
-        view.send();
+    private void sendLayout(@NotNull TabPlayer player, @Nullable LayoutPattern pattern) {
+        if (pattern != null) {
+            LayoutBase view = new FakeEntryLayout(this, pattern, player);
+            player.layoutData.currentLayout = new LayoutData(view);
+            view.send();
+            if (playerList != null) {
+                // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                    player.getTabList().updateDisplayName(all, null);
+                }
+            }
+        } else {
+            player.layoutData.currentLayout = null;
+            if (playerList != null) {
+                // Reformat original entries for players without any layout
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                    player.getTabList().updateDisplayName(all, playerList.getTabFormat(all, player));
+                }
+            }
+        }
     }
 
     @Override
