@@ -95,7 +95,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
             String value = request(viewer, target);
             String s = replacements.findReplacement(String.valueOf(value));
             viewer.lastRelationalValues.computeIfAbsent(this, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
-            if (!target.isLoaded()) return; // Updated on join
+            if (!target.isLoaded()) continue; // Updated on join
             for (RefreshableFeature f : reference.getUsedByFeatures()) {
                 TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(target, true),
                         f.getFeatureName(), f.getRefreshDisplayName());
