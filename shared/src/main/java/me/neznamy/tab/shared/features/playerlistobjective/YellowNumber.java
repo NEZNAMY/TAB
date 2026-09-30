@@ -297,8 +297,9 @@ public class YellowNumber extends RefreshableFeature implements JoinListener, Qu
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
         if (player.isVanished()) return;
+        int value = getValue(player);
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
-            setScore(viewer, player, getValue(player), player.playerlistObjectiveData.fancyValue.getFormat(viewer));
+            setScore(viewer, player, value, player.playerlistObjectiveData.fancyValue.getFormat(viewer));
         }
     }
 
