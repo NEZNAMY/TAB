@@ -86,7 +86,7 @@ public abstract class TrackedTabList<P extends TabPlayer> implements TabList {
         } else {
             forcedDisplayNames.remove(target.getTablistId());
         }
-        if (target.getVersion().getNetworkId() < ProtocolVersion.V1_8.getNetworkId()) {
+        if (player.getVersion().getNetworkId() < ProtocolVersion.V1_8.getNetworkId()) {
             return; // Display names are not supported on 1.7 and below
         }
         if (containsEntry(target.getTablistId())) {
