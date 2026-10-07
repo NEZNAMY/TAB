@@ -13,7 +13,7 @@ TAB does not depend on any other plugins. The experience can however be enhanced
 With the introduction of new Minecraft versions, it is becoming harder and harder to support many versions in the same jar, eventually making it impossible since Minecraft 26.1.  
 **As a general rule, if you want the latest TAB version for your server, please use [Modrinth](https://modrinth.com/plugin/tab-was-taken)'s download filter, where you can select your server software and version and you'll get the latest jar.**
 
-Currently, the latest Minecraft version supported by TAB is **26.2**. When new versions come out, TAB is always updated soon after to support them.
+Currently, the latest Minecraft version supported by TAB is **26.3**. When new versions come out, TAB is always updated soon after to support them.
 
 If your server software and version is reasonably popular and TAB hasn't been backported to that version in a very long time, you may [request a backport](https://github.com/NEZNAMY/TAB/issues/new/choose) (unless backports to that version are no longer offered, see below).  
 Since TAB 6.0.0, Minecraft 1.x started taking hits with each subsequent TAB versions - Bukkit versions started disappearing and **modded platforms no longer offer backports of TAB 6.0.0+ to MC 1.x** (this is because the build scripts had to be massively changed for MC 26+).
@@ -21,8 +21,17 @@ Since TAB 6.0.0, Minecraft 1.x started taking hits with each subsequent TAB vers
 The sections below provide **additional** information for each platform.
 
 ## Bukkit
-TAB 5.5.0 supports all 1.x versions starting with 1.7. For 1.5.2 - 1.6.4, use TAB v5.2.5.  
-Since TAB 6.0.0, support for unused 1.x versions will continue to disappear with each subsequent Minecraft release.
+Since TAB 6.0.0, support for unused 1.x versions started disappearing and will continue to disappear with each subsequent Minecraft release.  
+Currently, the latest release supports the following versions:
+* 1.7.10
+* 1.8.8
+* 1.12.2
+* 1.16.5
+* 1.17.1
+* 1.18.2
+* 1.19.4 - 26.3
+
+If you want a jar with support for a 1.x version that is no longer supported, you can use TAB v5.5.0, which supports all MC 1.x versions. For 1.5.2 - 1.6.4, use TAB v5.2.5.
 
 ## BungeeCord / Velocity
 For proxies, the plugin is made to work with the latest build.

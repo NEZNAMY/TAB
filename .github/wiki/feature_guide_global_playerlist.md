@@ -15,8 +15,8 @@
 * ~Examples~
 
 # About
-This feature allows you to see players from other servers, instead of only seeing players on the same server.  
-If TAB is installed on a backend server, you'll need to set up [Multi server support](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Multi-server-support) for proper linking of servers. On proxy installation, this is not required.
+This feature allows you to see players from different servers, instead of only seeing players on the same server. The typical use is to show players under the whole proxy network.  
+If TAB is installed on a backend server, you'll need to set up [Multi server support](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Multi-server-support) to properly make the servers communicate. On proxy installation, this is not needed, unless you have multiple proxies.
 
 # Configuration
 The feature can be configured in **config.yml** under **global-playerlist** section.  
@@ -117,6 +117,8 @@ global-playerlist:
     test2:
       - isolatedServer2
 ```
+
+This is not needed when `isolate-unlisted-servers` is set to `true`, in which case all unlisted servers are isolated by default.
 
 ## Seeing all players on the network from some server
 If, despite configuring server groups,

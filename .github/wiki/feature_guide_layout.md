@@ -19,7 +19,7 @@
   * [Additional note 2 - [1.8 - 1.21.3] Second layer of skin missing](#additional-note-2---18---1213-second-layer-of-skin-missing)
   * [Additional note 3 - Entry overlap](#additional-note-3---entry-overlap)
 * ~Troubleshooting~
-* ~API~
+* [API](#api)
 * [Examples](#examples)
   * [Example 1 - Per-server columns](#example-1---per-server-columns)
   * [Example 2 - Per-world playerlist](#example-2---per-world-playerlist)
@@ -283,6 +283,22 @@ Here are a few tips how to do that:
 * Use a shorter alternative for your prefixes, such as `A` instead of `Admin`
 * Remove unnecessary brackets from prefix
 
+
+# API
+*To get started with the API, see [Developer API](https://github.com/NEZNAMY/TAB/wiki/Developer-API) page.*
+
+To access this feature, you'll need to obtain `LayoutManager` instance. Get it using `TabAPI.getInstance().getLayoutManager()`. If this feature is disabled, the method will return `null`.
+
+The `LayoutManager` has the following methods:
+* `Layout createNewLayout(String name)` - Creates new layout with given internal name and 80 slots.
+* `Layout createNewLayout(String name, int slotCount)` - Creates new layout with given internal name and slot count (for 1.19.3+, <1.19.3 players will still see 80 slots).
+* `Layout getLayout(String name)` - Returns layout by given internal name. Works for layouts created in both configuration and through the API.
+* `sendLayout(TabPlayer player, Layout layout)` - Sends given layout to the player, overriding configuration. Sending `null` as layout will restore layout from configuration.
+
+After creating a `Layout` using the API or getting it from configuration, you can use the following methods:
+* `String getName()` - Returns layout's name
+* `addFixedSlot(int slot, String text)` / `addFixedSlot(int slot, String text, String skin)` / `addFixedSlot(int slot, String text, int ping)` / `addFixedSlot(int slot, String text, String skin, int ping)` / `addFixedSlot(int slot, String text, String skin, String ping)` - Adds a fixed slot with gieven properties - slot, text, skin (optional) and ping (optional)
+* `addGroup(String condition, int[] slots)` - Adds a new player group with given condition (nullable for no condition) and slots. Condition can be either a conditional expression, or a condition created in config.
 
 # Examples
 ## Example 1 - Per-server columns
