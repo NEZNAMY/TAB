@@ -25,8 +25,9 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     private final String PER_WORLD = "per-world";
     
     private final String category;
-    private final Collection<String> worldGroups = new ArrayList<>(this.<String, Object>getMap(PER_WORLD).keySet());
-    private final Collection<String> serverGroups = new ArrayList<>(this.<String, Object>getMap(PER_SERVER).keySet());
+    private final ConfigurationSection root = getConfigurationSection("");
+    private final Collection<String> worldGroups = section(PER_WORLD).getKeys().stream().map(Object::toString).collect(Collectors.toList());
+    private final Collection<String> serverGroups = section(PER_SERVER).getKeys().stream().map(Object::toString).collect(Collectors.toList());
 
     /**
      * Constructs new instance and attempts to load specified configuration file.
@@ -48,26 +49,29 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     public YamlPropertyConfigurationFile(@Nullable InputStream source, @NonNull File destination) throws IOException {
         super(source, destination);
         category = destination.getName().contains("groups") ? "group" : "user";
-        for (Map.Entry<Object, Object> entry : getValues().entrySet()) {
-            if (entry.getKey().equals(PER_SERVER)) {
+        for (Object key : root.getKeys()) {
+            String entry = key.toString();
+            if (entry.equals(PER_SERVER)) {
                 for (String server : serverGroups) {
-                    for (String name : this.<String, Object>getMap(PER_SERVER + "." + server).keySet()) {
-                        for (String property : this.<String, Object>getMap(PER_SERVER + "." + server + "." + name).keySet()) {
-                            checkProperty(destination.getName(), category, name, property, server, null, true);
+                    ConfigurationSection serverSection = section(PER_SERVER, server);
+                    for (Object name : serverSection.getKeys()) {
+                        for (Object property : serverSection.getConfigurationSection(name.toString()).getKeys()) {
+                            checkProperty(destination.getName(), category, name.toString(), property.toString(), server, null, true);
                         }
                     }
                 }
-            } else if (entry.getKey().equals(PER_WORLD)) {
+            } else if (entry.equals(PER_WORLD)) {
                 for (String world : worldGroups) {
-                    for (String name : this.<String, Object>getMap(PER_WORLD + "." + world).keySet()) {
-                        for (String property : this.<String, Object>getMap(PER_WORLD + "." + world + "." + name).keySet()) {
-                            checkProperty(destination.getName(), category, name, property, null, world, true);
+                    ConfigurationSection worldSection = section(PER_WORLD, world);
+                    for (Object name : worldSection.getKeys()) {
+                        for (Object property : worldSection.getConfigurationSection(name.toString()).getKeys()) {
+                            checkProperty(destination.getName(), category, name.toString(), property.toString(), null, world, true);
                         }
                     }
                 }
             } else {
-                for (String property : this.<String, Object>getMap(entry.getKey().toString()).keySet()) {
-                    checkProperty(destination.getName(), category, entry.getKey().toString(), property, null, null, true);
+                for (Object property : root.getConfigurationSection(entry).getKeys()) {
+                    checkProperty(destination.getName(), category, entry, property.toString(), null, null, true);
                 }
             }
         }
@@ -75,13 +79,16 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 
     @Override
     public void setProperty(@NonNull String name, @NonNull String property, @Nullable Server server, @Nullable World world, @Nullable String value) {
+        ConfigurationSection target;
         if (world != null) {
-            set(String.format("%s.%s.%s.%s", PER_WORLD, world.getName(), name, property), fromString(value));
+            target = getOrCreateSection(PER_WORLD, world.getName(), name);
         } else if (server != null) {
-            set(String.format("%s.%s.%s.%s", PER_SERVER, server.getName(), name, property), fromString(value));
+            target = getOrCreateSection(PER_SERVER, server.getName(), name);
         } else {
-            set(String.format("%s.%s", name, property), fromString(value));
+            target = getOrCreateSection(name);
         }
+        target.put(property, fromString(value));
+        save();
     }
 
     @Override
@@ -89,22 +96,22 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
         String worldName = world == null ? null : world.getName();
         String serverName = server == null ? null : server.getName();
         Object value;
-        if ((value = getObject(new String[] {PER_WORLD, TAB.getInstance().getConfiguration().getGroup(worldGroups, worldName), name, property})) != null) {
+        if ((value = section(PER_WORLD, TAB.getInstance().getConfiguration().getGroup(worldGroups, worldName), name).getObject(property)) != null) {
             return new String[] {toString(value), category + "=" + name + ", world=" + worldName};
         }
-        if ((value = getObject(new String[] {PER_WORLD, TAB.getInstance().getConfiguration().getGroup(worldGroups, worldName), TabConstants.DEFAULT_GROUP, property})) != null) {
+        if ((value = section(PER_WORLD, TAB.getInstance().getConfiguration().getGroup(worldGroups, worldName), TabConstants.DEFAULT_GROUP).getObject(property)) != null) {
             return new String[] {toString(value), category + "=" + TabConstants.DEFAULT_GROUP + ", world=" + worldName};
         }
-        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getServerGroup(serverGroups, server), name, property})) != null) {
+        if ((value = section(PER_SERVER, TAB.getInstance().getConfiguration().getServerGroup(serverGroups, server), name).getObject(property)) != null) {
             return new String[] {toString(value), category + "=" + name + ", server=" + serverName};
         }
-        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getServerGroup(serverGroups, server), TabConstants.DEFAULT_GROUP, property})) != null) {
+        if ((value = section(PER_SERVER, TAB.getInstance().getConfiguration().getServerGroup(serverGroups, server), TabConstants.DEFAULT_GROUP).getObject(property)) != null) {
             return new String[] {toString(value), category + "=" + TabConstants.DEFAULT_GROUP + ", server=" + serverName};
         }
-        if ((value = getObject(new String[] {name, property})) != null) {
+        if ((value = section(name).getObject(property)) != null) {
             return new String[] {toString(value), category + "=" + name};
         }
-        if ((value = getObject(new String[] {TabConstants.DEFAULT_GROUP, property})) != null) {
+        if ((value = section(TabConstants.DEFAULT_GROUP).getObject(property)) != null) {
             return new String[] {toString(value), category + "=" + TabConstants.DEFAULT_GROUP};
         }
         return new String[0];
@@ -112,39 +119,81 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 
     @Override
     public void remove(@NonNull String name) {
-        set(name, null);
-        getMap(PER_WORLD).keySet().forEach(world -> set(PER_WORLD + "." + world + "." + name, null));
-        getMap(PER_SERVER).keySet().forEach(server -> set(PER_SERVER + "." + server + "." + name, null));
+        root.remove(name);
+        for (Object world : section(PER_WORLD).getKeys()) {
+            section(PER_WORLD, world.toString()).remove(name);
+        }
+        for (Object server : section(PER_SERVER).getKeys()) {
+            section(PER_SERVER, server.toString()).remove(name);
+        }
+        save();
     }
 
     @Override
     @NotNull
     public Map<String, Object> getGlobalSettings(@NonNull String name) {
-        return getMap(name);
+        Map<String, Object> settings = root.getMap(name);
+        return settings == null ? new LinkedHashMap<>() : settings;
     }
 
     @Override
     @NotNull
     public Map<String, Map<String, Object>> getPerWorldSettings(@NonNull String name) {
-        return convertMap(getMap(PER_WORLD), name);
+        return getSettingsByGroup(PER_WORLD, name);
     }
 
     @Override
     @NotNull
     public Map<String, Map<String, Object>> getPerServerSettings(@NonNull String name) {
-        return convertMap(getMap(PER_SERVER), name);
+        return getSettingsByGroup(PER_SERVER, name);
     }
 
     @Override
     @NotNull
     public Set<String> getAllEntries() {
-        Set<Object> set = new HashSet<>(values.keySet());
+        Set<Object> set = new HashSet<>(root.getKeys());
         set.remove(PER_WORLD);
         set.remove(PER_SERVER);
-        Map<String, Map<String, Map<String, String>>> perWorld = getMap(PER_WORLD);
-        perWorld.values().forEach(m -> set.addAll(m.keySet()));
-        Map<String, Map<String, Map<String, String>>> perServer = getMap(PER_SERVER);
-        perServer.values().forEach(m -> set.addAll(m.keySet()));
+        addNestedEntryNames(set, PER_WORLD);
+        addNestedEntryNames(set, PER_SERVER);
         return set.stream().map(Object::toString).collect(Collectors.toSet());
+    }
+
+    @NotNull
+    private ConfigurationSection section(@NotNull String... path) {
+        ConfigurationSection section = root;
+        for (String key : path) {
+            section = section.getConfigurationSection(key);
+        }
+        return section;
+    }
+
+    @NotNull
+    private ConfigurationSection getOrCreateSection(@NotNull String... path) {
+        ConfigurationSection section = root;
+        for (String key : path) {
+            if (section.getMap(key) == null) {
+                section.put(key, new LinkedHashMap<>());
+            }
+            section = section.getConfigurationSection(key);
+        }
+        return section;
+    }
+
+    @NotNull
+    private Map<String, Map<String, Object>> getSettingsByGroup(@NotNull String sectionName, @NotNull String name) {
+        Map<String, Map<String, Object>> settings = new HashMap<>();
+        ConfigurationSection sections = section(sectionName);
+        for (Object key : sections.getKeys()) {
+            settings.put(key.toString(), sections.getConfigurationSection(key.toString()).getMap(name));
+        }
+        return settings;
+    }
+
+    private void addNestedEntryNames(@NotNull Set<Object> entries, @NotNull String sectionName) {
+        ConfigurationSection sections = section(sectionName);
+        for (Object key : sections.getKeys()) {
+            entries.addAll(sections.getConfigurationSection(key.toString()).getKeys());
+        }
     }
 }
