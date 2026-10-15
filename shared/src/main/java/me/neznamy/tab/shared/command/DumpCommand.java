@@ -149,9 +149,13 @@ public class DumpCommand extends SubCommand {
         mysql.put("password", "*CENSORED*");
         Map<String, Object> proxySupport = (Map<String, Object>) config.get("proxy-support");
         Map<String, Object> redis = (Map<String, Object>) proxySupport.get("redis");
-        redis.put("url", "*CENSORED*");
+        if (redis != null) {
+            redis.put("url", "*CENSORED*");
+        }
         Map<String, Object> rabbitmq = (Map<String, Object>) proxySupport.get("rabbitmq");
-        rabbitmq.put("url", "*CENSORED*");
+        if (rabbitmq != null) {
+            rabbitmq.put("url", "*CENSORED*");
+        }
     }
 
     @NotNull
