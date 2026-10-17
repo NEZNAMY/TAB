@@ -495,6 +495,8 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
     public void registerServerPlaceholder(@NonNull Pattern identifier, int refresh, @NonNull Function<Matcher, Supplier<String>> function) {
         ensureActive();
         registeredDynamicPlaceholders.put(identifier, id -> groups -> new ServerPlaceholderImpl(id, refresh, function.apply(groups)));
+        replaceMatchingPlaceholders(identifier,
+                (id, groups) -> new ServerPlaceholderImpl(id, refresh, function.apply(groups)));
     }
 
     @Override
@@ -502,6 +504,8 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
                                           @NonNull Function<Matcher, Function<me.neznamy.tab.api.TabPlayer, String>> function) {
         ensureActive();
         registeredDynamicPlaceholders.put(identifier, id -> groups -> new PlayerPlaceholderImpl(id, refresh, function.apply(groups)));
+        replaceMatchingPlaceholders(identifier,
+                (id, groups) -> new PlayerPlaceholderImpl(id, refresh, function.apply(groups)));
     }
 
     @Override
@@ -509,6 +513,18 @@ public class PlaceholderManagerImpl extends RefreshableFeature implements Placeh
                                               @NonNull Function<Matcher, BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, String>> function) {
         ensureActive();
         registeredDynamicPlaceholders.put(identifier, id -> groups -> new RelationalPlaceholderImpl(id, refresh, function.apply(groups)));
+        replaceMatchingPlaceholders(identifier,
+                (id, groups) -> new RelationalPlaceholderImpl(id, refresh, function.apply(groups)));
+    }
+
+    private void replaceMatchingPlaceholders(@NotNull Pattern identifier,
+                                             @NotNull BiFunction<String, Matcher, ? extends Placeholder> factory) {
+        for (Entry<String, PlaceholderReference> entry : new ArrayList<>(registeredPlaceholders.entrySet())) {
+            Matcher matcher = identifier.matcher(entry.getKey());
+            if (!matcher.matches()) continue;
+            bridgePlaceholders.remove(entry.getKey());
+            registerPlaceholder(factory.apply(entry.getKey(), matcher));
+        }
     }
 
     @NotNull
