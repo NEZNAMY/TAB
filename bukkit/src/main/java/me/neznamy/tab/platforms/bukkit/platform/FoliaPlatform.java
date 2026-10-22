@@ -9,8 +9,10 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
+import me.neznamy.tab.shared.platform.LineOfSightCheck;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -21,8 +23,15 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 /**
  * Platform override for Folia.
@@ -36,6 +45,11 @@ public class FoliaPlatform extends BukkitPlatform {
     /** FoliaGlobalRegionScheduler#execute(Plugin, Runnable) method */
     private final Method globalScheduler_execute;
 
+    /** Location overload avoids accessing a target entity from the viewer's region. */
+    private final Method hasLineOfSightLocation;
+
+    private final AtomicBoolean lineOfSightErrorLogged = new AtomicBoolean();
+
     /**
      * Constructs new instance with given plugin.
      *
@@ -48,6 +62,7 @@ public class FoliaPlatform extends BukkitPlatform {
         super(plugin);
         globalScheduler = Bukkit.class.getMethod("getGlobalRegionScheduler").invoke(null);
         globalScheduler_execute = globalScheduler.getClass().getMethod("execute", Plugin.class, Runnable.class);
+        hasLineOfSightLocation = Player.class.getMethod("hasLineOfSight", Location.class);
     }
 
     @Override
@@ -172,8 +187,93 @@ public class FoliaPlatform extends BukkitPlatform {
         globalScheduler_execute.invoke(globalScheduler, getPlugin(), task);
     }
 
+    /**
+     * Captures target positions on their owning regions, then ray traces from each viewer's
+     * owning region. No target entity is read while running a viewer's check.
+     */
     @Override
-    public boolean hasLineOfSight(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
-        return true; // Cross-entity line-of-sight checks are not safe from Folia's global scheduler.
+    public void requestLineOfSight(@NotNull List<LineOfSightCheck> checks, @NotNull Consumer<boolean[]> callback) {
+        boolean[] visible = new boolean[checks.size()];
+        if (checks.isEmpty() || !getPlugin().isEnabled()) {
+            callback.accept(visible);
+            return;
+        }
+
+        Map<TabPlayer, CompletableFuture<Location>> targetLocations = new IdentityHashMap<>();
+        for (LineOfSightCheck check : checks) {
+            targetLocations.computeIfAbsent(check.getTarget(), target -> {
+                CompletableFuture<Location> location = new CompletableFuture<>();
+                scheduleEntity((Player) target.getPlayer(), () -> {
+                    try {
+                        Player player = (Player) target.getPlayer();
+                        location.complete(player.isOnline() ? player.getEyeLocation() : null);
+                    } catch (RuntimeException e) {
+                        location.complete(null);
+                        logLineOfSightError(e);
+                    }
+                }, () -> location.complete(null));
+                return location;
+            });
+        }
+
+        CompletableFuture.allOf(targetLocations.values().toArray(new CompletableFuture[0])).whenComplete((ignored, error) -> {
+            Map<TabPlayer, List<Integer>> checksByViewer = new IdentityHashMap<>();
+            for (int i = 0; i < checks.size(); i++) {
+                checksByViewer.computeIfAbsent(checks.get(i).getViewer(), viewer -> new ArrayList<>()).add(i);
+            }
+
+            List<CompletableFuture<Void>> viewerTasks = new ArrayList<>(checksByViewer.size());
+            for (Map.Entry<TabPlayer, List<Integer>> entry : checksByViewer.entrySet()) {
+                CompletableFuture<Void> finished = new CompletableFuture<>();
+                viewerTasks.add(finished);
+                scheduleEntity((Player) entry.getKey().getPlayer(), () -> {
+                    try {
+                        Player viewer = (Player) entry.getKey().getPlayer();
+                        if (viewer.isOnline()) {
+                            for (int index : entry.getValue()) {
+                                Location target = targetLocations.get(checks.get(index).getTarget()).getNow(null);
+                                if (target == null || target.getWorld() != viewer.getWorld()) continue;
+                                try {
+                                    visible[index] = (boolean) hasLineOfSightLocation.invoke(viewer, target);
+                                } catch (ReflectiveOperationException | RuntimeException e) {
+                                    visible[index] = false;
+                                    logLineOfSightError(e);
+                                }
+                            }
+                        }
+                    } catch (RuntimeException e) {
+                        for (int index : entry.getValue()) visible[index] = false;
+                        logLineOfSightError(e);
+                    } finally {
+                        finished.complete(null);
+                    }
+                }, () -> finished.complete(null));
+            }
+            CompletableFuture.allOf(viewerTasks.toArray(new CompletableFuture[0]))
+                    .whenComplete((done, failure) -> callback.accept(visible));
+        });
+    }
+
+    private void scheduleEntity(@NotNull Player player, @NotNull Runnable task, @NotNull Runnable retired) {
+        if (!getPlugin().isEnabled()) {
+            retired.run();
+            return;
+        }
+        try {
+            Object scheduler = Entity.class.getMethod("getScheduler").invoke(player);
+            Consumer<?> consumer = ignored -> task.run();
+            Object scheduled = scheduler.getClass().getMethod("run", Plugin.class, Consumer.class, Runnable.class)
+                    .invoke(scheduler, getPlugin(), consumer, retired);
+            if (scheduled == null) retired.run();
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            retired.run();
+            logLineOfSightError(e);
+        }
+    }
+
+    private void logLineOfSightError(@NotNull Exception error) {
+        if (lineOfSightErrorLogged.compareAndSet(false, true)) {
+            getPlugin().getLogger().log(Level.WARNING, "Unable to check opaque nametag line of sight on Folia", error);
+        }
     }
 }
