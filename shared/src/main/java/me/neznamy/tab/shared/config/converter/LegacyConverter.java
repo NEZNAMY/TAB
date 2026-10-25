@@ -512,15 +512,16 @@ public class LegacyConverter {
      *          Config file
      */
     public void convert507to510(@NonNull ConfigurationFile config) {
-        if (config.rename("enable-redisbungee-support", "proxy-support.enabled")) {
+        config.rename("enable-redisbungee-support", "proxy-support.enabled");
+        config.setIfMissing("proxy-support.enabled", true);
+        config.setIfMissing("proxy-support.type", "PLUGIN");
+        config.setIfMissing("proxy-support.plugin.name", "RedisBungee");
+        config.setIfMissing("proxy-support.redis.url", "redis://:password@localhost:6379/0");
+        config.setIfMissing("proxy-support.rabbitmq.exchange", "plugin");
+        config.setIfMissing("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
+        if (config.rename("placeholderapi-refresh-intervals", "placeholder-refresh-intervals")) {
             TAB.getInstance().getPlatform().logInfo(new TabTextComponent("Performing configuration conversion from 5.0.7 to 5.1.0", TabTextColor.YELLOW));
-            config.set("proxy-support.type", "PLUGIN");
-            config.set("proxy-support.plugin.name", "RedisBungee");
-            config.set("proxy-support.redis.url", "redis://:password@localhost:6379/0");
-            config.set("proxy-support.rabbitmq.exchange", "plugin");
-            config.set("proxy-support.rabbitmq.url", "amqp://guest:guest@localhost:5672/%2F");
         }
-        config.rename("placeholderapi-refresh-intervals", "placeholder-refresh-intervals");
         config.setIfMissing("playerlist-objective.title", "TAB");
         config.setIfMissing("playerlist-objective.render-type", Arrays.asList("%health%", "%player_health%", "%player_health_rounded%").contains(config.getString("playerlist-objective.value", "")) ? "HEARTS" : "INTEGER");
     }
