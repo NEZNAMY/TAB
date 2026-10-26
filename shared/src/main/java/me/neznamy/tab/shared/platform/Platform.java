@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * An interface with methods that are called in universal code,
@@ -276,5 +277,22 @@ public interface Platform {
      */
     default boolean hasLineOfSight(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         return true;
+    }
+
+    /**
+     * Checks block line of sight without assuming that all entities share a server thread.
+     * The callback receives one result per input check, in the same order. Platforms with
+     * region-owned entities can override this to complete the checks asynchronously.
+     */
+    default void requestLineOfSight(@NotNull List<LineOfSightCheck> checks, @NotNull Consumer<boolean[]> callback) {
+        runSyncGlobal(() -> {
+            boolean[] results = new boolean[checks.size()];
+            for (int i = 0; i < checks.size(); i++) {
+                LineOfSightCheck check = checks.get(i);
+                results[i] = !check.getViewer().isOnline() || !check.getTarget().isOnline() ||
+                        hasLineOfSight(check.getViewer(), check.getTarget());
+            }
+            callback.accept(results);
+        });
     }
 }
