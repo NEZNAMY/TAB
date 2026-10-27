@@ -90,26 +90,15 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     }
 
     @Override
-    public void updateFromNested(@NonNull TabPlayer viewer) {
-        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+    public void updateFromNested(@NonNull TabPlayer target) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             String value = request(viewer, target);
             String s = replacements.findReplacement(String.valueOf(value));
             viewer.lastRelationalValues.computeIfAbsent(this, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
-            if (!target.isLoaded()) continue; // Updated on join
-            for (RefreshableFeature f : reference.getUsedByFeatures()) {
-                TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(target, true),
-                        f.getFeatureName(), f.getRefreshDisplayName());
-                if (f instanceof CustomThreaded) {
-                    ((CustomThreaded) f).getCustomThread().execute(task);
-                } else {
-                    task.run();
-                }
-            }
-            updateParents(target);
         }
-        if (!viewer.isLoaded()) return; // Updated on join
+        if (!target.isLoaded()) return; // Updated on join
         for (RefreshableFeature f : reference.getUsedByFeatures()) {
-            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(viewer, true),
+            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(target, true),
                     f.getFeatureName(), f.getRefreshDisplayName());
             if (f instanceof CustomThreaded) {
                 ((CustomThreaded) f).getCustomThread().execute(task);
@@ -117,7 +106,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
                 task.run();
             }
         }
-        updateParents(viewer);
+        updateParents(target);
     }
 
     /**
