@@ -86,6 +86,7 @@ public class LayoutManagerImpl extends RefreshableFeature implements LayoutManag
     @Override
     public void onQuit(@NotNull TabPlayer p) {
         sortedPlayers.remove(p);
+        p.layoutData.currentLayout = null;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == p) continue;
             if (all.layoutData.currentLayout != null) all.layoutData.currentLayout.view.tick();
