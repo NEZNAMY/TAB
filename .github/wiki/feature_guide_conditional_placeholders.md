@@ -15,6 +15,7 @@
 * [Examples](#examples)
   * [Example 1 - Chaining conditional placeholders](#example-1---chaining-conditional-placeholders)
   * [Example 2 - Combining AND and OR](#example-2---combining-and-and-or)
+  * [Example 3 - Showing vanish status only for staff members](#example-3---showing-vanish-status-only-for-staff-members)
 
 # About
 Conditions / conditional placeholders allow you
@@ -216,3 +217,26 @@ conditions:
     type: AND
 ```
 Then, use condition `main` as the display condition (or as a placeholder - `%condition:main%`). Note that `true`/`false` values were not defined, as such, they default to `true` and `false`, respectively. Therefore, we use the placeholder from the condition and check if the result is `true`. Then, check if player is also in the specified server.
+
+## Example 3 - Showing vanish status only for staff members
+This example shows you how to show some text on vanished players, but only available to see to staff members. For that, we will use a relational condition.  
+We want to create a condition that checks for 2 things - target player is vanished and the viewer has permission. If both of them are met (`AND`), some text should display. Otherwise, nothing should display.  
+Let's build the individual components of the condition:
+* Vanish placeholder - in this example, we will use `%essentials_vanished%`. The placeholder returns `yes` if player is vanished, otherwise `no`. If you configured [placeholder output replacements](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements) for the vanish placeholder, you will either need to use the replaced output, or remove the replacement (since you aren't going to use the placeholder directly anyway). To check what exactly a placeholder returns, you can run `/tab parse <player> <placeholder>`.
+* Staff check - for the lack of a better idea, let's name our permission `my.permission`. The important part is that we want to check this permission for the player who is looking at the tablist, not the target player who is vanished. Following the guide on relational placeholders, we will use `%viewer:player_has_permission_my.permission%`. We need to compare it to the "true" value, (typically `yes`), just like with vanish placeholder. See above for more info.
+* true / false texts - The `true` value will be set to the value to show if target player is vanished and viewer has the permission. `false` value will be displayed otherwise. This will probably remain empty.
+
+After combining all of this, here is what the condition may look like:
+```
+conditions:
+  vanish:
+    conditions:
+      - '%viewer:player_has_permission_my.permission%=yes'
+      - '%essentials_vanished%=yes'
+    type: AND
+    true: ' &7&l[V]&r'
+    false: ''
+```
+You may replace the leading space in `true` value with a trailing one based on your needs. Afterwards, use the placeholder using `%rel_condition:vanish%` in `tabprefix` / `tabsuffix` for example.
+
+The usefulness of this example is questionable, but the purpose of examples is to teach afterall, not to just be copied over to your config (I know you have been doing that!). This one is, however, useful, because unvanishing will result in TAB instantly formatting the player name before placeholders are periodically updated, which would otherwise result in a small flash of vanished text visible for everyone for a split second after unvanishing.

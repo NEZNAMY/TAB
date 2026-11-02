@@ -157,13 +157,13 @@ On **Velocity**, TAB integrates with [MiniPlaceholders](https://github.com/MiniP
 Unlike classic placeholders which take either 0
 (placeholders with the same output for all players) or 1 (per-player placeholders) players,
 relational placeholders take in 2 players.
-The first usage was to display relation between two players, specifically enemies / allies (red / green) for factions,
+The first ever recorded usage was to display relation between two players, specifically enemies / allies (red / green) for factions,
 allowing players to see faction names of other players colored based on relation.
 While the usage is not limited to this, the name of the 2-player placeholder type has been established as "relational"
-and will be called that everywhere.
+and will be called that everywhere. These placeholders only make sense in functions that allow 2 players to see each other - chat, nametags (+ belowname), tablist formatting (+ objective). Other places, such as scoreboard, bossbar or header/footer don't make sense and don't support these placeholders, as there is no other player to use.
 
 ## Usage
-TAB does not offer any internal relational placeholders. However, it has full support for PlaceholderAPI placeholders. You can also register your own relational placeholders using the [API](#relational-placeholders-1). In PlaceholderAPI, all relational placeholder identifiers must start with `%rel_`. This rule is adopted and used in TAB as well (including those registered via API).
+TAB offers [relational conditions](https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders#relational-conditions) as well as full support for PlaceholderAPI placeholders. You can also register your own relational placeholders using the [API](#relational-placeholders-1). In PlaceholderAPI, all relational placeholder identifiers must start with `%rel_`. This rule is adopted and used in TAB as well (including those registered via API).
 
 When passing players into the function, first player is the player viewing the text, second player is the one text is being displayed on.  
 Code wise, the PlaceholderAPI request function becomes
@@ -177,7 +177,27 @@ To properly distinguish viewer/target (if needed), your relational placeholder e
 
 # Refreshing
 ## Refresh intervals
-TAB is refreshing placeholders in intervals. For internal placeholders it's using values I found the most optimal and set directly in the plugin. Refresh intervals for PlaceholderAPI placeholders can be [configured](https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#2---all-platforms-placeholder-refresh-intervals).
+Internal placeholders use a value hardcoded into the plugin by default. PlaceholderAPI placeholders use `default-refresh-interval` by default.
+
+To begin, find this part in your config
+```yml
+placeholder-refresh-intervals:
+  default-refresh-interval: 500
+  "%server_uptime%": 1000
+  "%server_tps_1_colored%": 1000
+  "%player_health%": 200
+  "%player_ping%": 1000
+  "%vault_prefix%": 1000
+  "%rel_factionsuuid_relation_color%": 500
+```
+Refresh interval is in milliseconds. It must be divisible by 50.
+
+Keep in mind that CPU measurement is reset every 10 seconds.
+This means that if you configure a higher refresh interval than 10000,
+there will be intervals when placeholder didn't refresh at all,
+making it look like the CPU is perfect, while on the next refresh it may be high.
+For this reason, if you want to cleanly track usage, keep the interval at 10000 at most.
+Using a higher interval will help if needed, but may lead to misleading info in cpu output.
 
 ## Sync refreshing
 By default, all placeholders are refreshed asynchronously,

@@ -28,31 +28,8 @@ Another option is to configure prefixes per-group in config
 instead of using placeholders to take those values from your permission plugin.
 
 ## #2 - [All platforms] Placeholder refresh intervals
-Some placeholders take a long time to process and result in high cpu usage. However, this can be optimized by configuring refresh interval of placeholders.
-
-Internal placeholders use a value hardcoded into the plugin by default. PlaceholderAPI placeholders use `default-refresh-interval`.
-
-To begin, find this part in your config
-```yml
-placeholder-refresh-intervals:
-  default-refresh-interval: 500
-  "%server_uptime%": 1000
-  "%server_tps_1_colored%": 1000
-  "%player_health%": 200
-  "%player_ping%": 1000
-  "%vault_prefix%": 1000
-  "%rel_factionsuuid_relation_color%": 500
-```
-Refresh interval is in milliseconds. It must be divisible by 50.
-
-`default-refresh-interval` is refresh interval for all unlisted PlaceholderAPI placeholders.
-
-Keep in mind that CPU measurement is reset every 10 seconds.
-This means that if you configure a higher refresh interval than 10000,
-there will be intervals when placeholder didn't refresh at all,
-making it look like the CPU is perfect, while on the next refresh it may be high.
-For this reason, if you want to cleanly track usage, keep the interval at 10000 at most.
-Using a higher interval will help if needed, but may lead to misleading info in cpu output.
+Some placeholders take a long time to process and result in high cpu usage. However, this can be optimized by configuring refresh interval of placeholders.  
+See [Placeholders - Refreshing](https://github.com/NEZNAMY/TAB/wiki/Placeholders#refreshing) for information about modifying refresh intervals of placeholders.
 
 ## #3 - [All platforms] Don't use RGB
 Though RGB colors look good, they require the text to be split into several components with `color` field used instead of the whole text pasted into the `text` field. This is a complicated process that takes quite some time. Sticking to legacy colors results in better performance.
