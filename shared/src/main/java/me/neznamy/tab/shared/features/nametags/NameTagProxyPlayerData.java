@@ -165,7 +165,18 @@ public class NameTagProxyPlayerData extends ProxyMessage {
             if (!nameTaken && feature.getProxy() != null) {
                 for (ProxyPlayer all : feature.getProxy().getProxyPlayers().values()) {
                     if (all == player) continue;
-                    if (all.getNametag() != null && potentialTeamName.equals(all.getNametag().teamName)) {
+                    NameTagProxyPlayerData nametag = all.getNametag();
+                    if (nametag != null && (potentialTeamName.equals(nametag.teamName) || potentialTeamName.equals(nametag.resolvedTeamName))) {
+                        nameTaken = true;
+                        break;
+                    }
+                }
+            }
+            if (!nameTaken && feature.getProxy() != null) {
+                // Players still queued have a resolved name that will be used once they are known
+                for (QueuedData queued : feature.getProxy().getQueuedData().values()) {
+                    NameTagProxyPlayerData nametag = queued.getNametag();
+                    if (nametag != null && nametag != this && !nametag.playerId.equals(playerId) && potentialTeamName.equals(nametag.resolvedTeamName)) {
                         nameTaken = true;
                         break;
                     }
