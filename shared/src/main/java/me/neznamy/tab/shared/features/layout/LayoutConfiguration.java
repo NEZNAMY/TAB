@@ -64,7 +64,11 @@ public class LayoutConfiguration {
             ConfigurationSection groupSection = defaultSkins.getConfigurationSection(asString);
 
             String skin = groupSection.getString("skin");
-            for (String line : section.getStringList("slots", Collections.emptyList())) {
+            if (skin == null) {
+                groupSection.startupWarn("Default skin group \"" + asString + "\" does not define \"skin\", ignoring it.");
+                continue;
+            }
+            for (String line : groupSection.getStringList("slots", Collections.emptyList())) {
                 String[] arr = line.split("-");
                 int from = Integer.parseInt(arr[0]);
                 int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
