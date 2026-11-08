@@ -22,7 +22,7 @@ public class BossBarSendCommand extends SubCommand {
      * Constructs new instance
      */
     public BossBarSendCommand() {
-        super("send", TabConstants.Permission.COMMAND_SCOREBOARD_SHOW);
+        super("send", TabConstants.Permission.COMMAND_BOSSBAR_SEND);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class BossBarSendCommand extends SubCommand {
         try {
             duration = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            sendMessage(sender, getMessages().getInvalidNumber(args[1]));
+            sendMessage(sender, getMessages().getInvalidNumber(args[2]));
             return;
         }
         BossBar bar = feature.getBossBar(barName);
