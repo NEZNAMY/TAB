@@ -34,8 +34,9 @@ public class QueuedData {
     @Nullable
     private NameTagProxyPlayerData nametag;
 
-    /** Whether player is vanished or not */
-    private boolean vanished;
+    /** Whether player is vanished or not, {@code null} if no vanish status update was received */
+    @Nullable
+    private Boolean vanished;
 
     /** Name of server the player is connected to */
     @NotNull
