@@ -347,7 +347,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         if (!VanishIntegration.getHandlers().isEmpty()) {
             try {
                 for (VanishIntegration i : VanishIntegration.getHandlers()) {
-                    if (!i.canSee(this, target)) return false;
+                    // if (!i.canSee(this, target)) return false;
+                    // #1739 - Vanish integration should have an absolute say
+                    return i.canSee(this, target);
                 }
             } catch (ConcurrentModificationException e) {
                 // PV error, try again
