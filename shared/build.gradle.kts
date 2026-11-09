@@ -13,9 +13,7 @@ dependencies {
         exclude("com.google.guava", "guava")
         exclude("org.checkerframework", "checker-qual")
     }
-    api("com.mysql:mysql-connector-j:26.10.0") {
-        exclude("com.google.protobuf", "protobuf-java") // Only needed for X DevAPI (mysqlx), not JDBC
-    }
+    api("com.mysql:mysql-connector-j:9.6.0")
     compileOnlyApi("com.viaversion:viaversion-api:5.12.2")
     compileOnlyApi("io.netty:netty-all:4.1.90.Final")
     compileOnlyApi("net.luckperms:api:5.5")
