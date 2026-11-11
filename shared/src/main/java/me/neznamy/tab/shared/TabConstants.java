@@ -85,6 +85,7 @@ public class TabConstants {
         public static final String COMMAND_PROPERTY_CHANGE_PREFIX   = "tab.change.";
 
         public static final String COMMAND_BOSSBAR_ANNOUNCE         = "tab.announce.bar";
+        public static final String COMMAND_BOSSBAR_SEND             = "tab.send.bar";
         public static final String COMMAND_BOSSBAR_TOGGLE           = "tab.bossbar.toggle";
         public static final String COMMAND_BOSSBAR_TOGGLE_OTHER     = "tab.bossbar.toggle.other";
 

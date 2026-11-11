@@ -87,7 +87,7 @@ public class PlayerJoin extends ProxyMessage {
             decodedPlayer.setTabFormat(data.getTabFormat());
             decodedPlayer.setNametag(data.getNametag());
             decodedPlayer.setPlayerlist(data.getPlayerlist());
-            decodedPlayer.setVanished(data.isVanished());
+            if (data.getVanished() != null) decodedPlayer.setVanished(data.getVanished());
         }
         if (TAB.getInstance().getPlayer(decodedPlayer.getUniqueId()) == null) {
             TAB.getInstance().getFeatureManager().onJoin(decodedPlayer);

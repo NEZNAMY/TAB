@@ -314,7 +314,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             throw new IllegalArgumentException("No registered scoreboard found with name " + name);
         }
 
-        Set<TabPlayer> players = removed.getPlayers();
+        Set<TabPlayer> players = new HashSet<>(removed.getPlayers()); // Copy, unregister() clears the set
         removed.unregister();
         for (TabPlayer p : players) {
             p.scoreboardData.forcedScoreboard = null;
@@ -328,7 +328,7 @@ public class ScoreboardManagerImpl extends RefreshableFeature implements Scorebo
             throw new IllegalArgumentException("This scoreboard (" + scoreboard.getName() + ") is not registered.");
         }
 
-        Set<TabPlayer> players = ((ScoreboardImpl)scoreboard).getPlayers();
+        Set<TabPlayer> players = new HashSet<>(((ScoreboardImpl)scoreboard).getPlayers()); // Copy, unregister() clears the set
         scoreboard.unregister();
         for (TabPlayer p : players) {
             p.scoreboardData.forcedScoreboard = null;
