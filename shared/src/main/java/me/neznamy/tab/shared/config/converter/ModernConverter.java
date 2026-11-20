@@ -138,6 +138,15 @@ public class ModernConverter {
         converters.put(6, config -> {
             config.getConfigurationSection("belowname-objective").put("view-distance", 10);
         });
+        converters.put(7, config -> {
+            ConfigurationSection perWorldPlayerList = config.getConfigurationSection("per-world-playerlist");
+            List<String> ignoredWorlds = perWorldPlayerList.getStringList("ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+            String disableCondition = ignoredWorlds.stream()
+                    .map(world -> "%world%=" + world)
+                    .collect(Collectors.joining("|"));
+            perWorldPlayerList.put("disable-condition", disableCondition);
+            perWorldPlayerList.remove("ignore-effect-in-worlds");
+        });
     }
 
     /**

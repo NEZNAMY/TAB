@@ -261,7 +261,7 @@ components:
   disable-shadow-for-heads: true
 
 # Internal value, do not change this
-config-version: 7
+config-version: 8
 
 ########################################################################
 # BUKKIT ONLY - THE FOLLOWING SECTION IS ONLY FOR BACKEND INSTALLATION #
@@ -270,12 +270,9 @@ config-version: 7
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist
 per-world-playerlist:
   enabled: false
+  disable-condition: '%world%=ignoredworld|%world%=build'
   # players with tab.staff will always see all players
   allow-bypass-permission: false
-  # players in these worlds will always see all players
-  ignore-effect-in-worlds:
-    - ignoredworld
-    - build
   shared-playerlist-world-groups:
     lobby:
       - lobby1

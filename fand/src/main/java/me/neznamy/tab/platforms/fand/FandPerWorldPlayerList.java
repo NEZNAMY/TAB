@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.PerWorldPlayerListConfiguration;
+import me.neznamy.tab.shared.features.types.DisableChecker;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.QuitListener;
@@ -19,6 +20,7 @@ import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.features.types.UnLoadable;
 import me.neznamy.tab.shared.features.types.VanishListener;
 import me.neznamy.tab.shared.features.types.WorldSwitchListener;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +30,7 @@ public final class FandPerWorldPlayerList extends TabFeature implements
 
     private final PluginContext context;
     private final PerWorldPlayerListConfiguration configuration;
+    private final DisableChecker disableChecker;
     private final Set<VisibilityPair> hiddenPairs = ConcurrentHashMap.newKeySet();
 
     public FandPerWorldPlayerList(
@@ -36,12 +39,21 @@ public final class FandPerWorldPlayerList extends TabFeature implements
     ) {
         this.context = context;
         this.configuration = configuration;
+        Condition disableCondition = TAB.getInstance().getPlaceholderManager().getConditionManager()
+                .getByNameOrExpression(configuration.getDisableCondition());
+        disableChecker = new DisableChecker(this, disableCondition, this::onDisableConditionChange,
+                p -> p.perWorldPlayerListData.disabled);
+        TAB.getInstance().getFeatureManager().registerFeature("PerWorldPlayerList-Condition", disableChecker);
     }
 
     @Override
     public void load() {
-        for (Player player : Fand.server().players()) {
-            checkPlayer(player);
+        TabPlayer[] players = TAB.getInstance().getOnlinePlayers();
+        for (TabPlayer player : players) {
+            player.perWorldPlayerListData.disabled.set(disableChecker.isDisableConditionMet(player));
+        }
+        for (TabPlayer player : players) {
+            checkPlayer(((FandTabPlayer) player).getPlayer());
         }
     }
 
@@ -55,6 +67,7 @@ public final class FandPerWorldPlayerList extends TabFeature implements
 
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
+        connectedPlayer.perWorldPlayerListData.disabled.set(disableChecker.isDisableConditionMet(connectedPlayer));
         checkPlayer(((FandTabPlayer) connectedPlayer).getPlayer());
     }
 
@@ -148,10 +161,15 @@ public final class FandPerWorldPlayerList extends TabFeature implements
             return true;
         }
         String viewerWorld = viewer.world().name();
-        if (configuration.getIgnoredWorlds().contains(viewerWorld)) {
-            return true;
-        }
+        if (tabViewer != null && tabViewer.perWorldPlayerListData.disabled.get()) return true;
         return computeWorldGroup(viewerWorld).equals(computeWorldGroup(target.world().name()));
+    }
+
+    private void onDisableConditionChange(@NotNull TabPlayer player, boolean disabledNow) {
+        if (TAB.getInstance().getPlayer(player.getUniqueId()) == null) {
+            return;
+        }
+        checkPlayer(((FandTabPlayer) player).getPlayer());
     }
 
     @NotNull

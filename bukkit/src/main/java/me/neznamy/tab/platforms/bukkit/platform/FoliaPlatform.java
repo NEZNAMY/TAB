@@ -3,9 +3,8 @@ package me.neznamy.tab.platforms.bukkit.platform;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.placeholders.types.PlayerPlaceholderImpl;
@@ -15,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -75,10 +73,6 @@ public class FoliaPlatform extends BukkitPlatform {
                 World actualWorld = World.byName(((Player) player.getPlayer()).getWorld().getName());
                 if (player.world != actualWorld) {
                     TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), actualWorld);
-                    PerWorldPlayerList pwp = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST);
-                    if (pwp != null) {
-                        runSync((Entity) player.getPlayer(), () -> pwp.onWorldChange(new PlayerChangedWorldEvent((Player) player.getPlayer(), ((Player) player.getPlayer()).getWorld())));
-                    }
                 }
             }
         }, "Folia compatibility", "Refreshing world"), 100);

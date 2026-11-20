@@ -14,8 +14,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PerWorldPlayerListConfiguration {
 
+    @NotNull private final String disableCondition;
     private final boolean allowBypassPermission;
-    @NotNull private final List<String> ignoredWorlds;
     @NotNull private final Map<String, List<String>> sharedWorlds;
 
     /**
@@ -29,7 +29,7 @@ public class PerWorldPlayerListConfiguration {
     @NotNull
     public static PerWorldPlayerListConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "allow-bypass-permission", "ignore-effect-in-worlds", "shared-playerlist-world-groups"));
+        section.checkForUnknownKey(Arrays.asList("enabled", "disable-condition", "allow-bypass-permission", "shared-playerlist-world-groups"));
 
         ConfigurationSection sharedWorldsSection = section.getConfigurationSection("shared-playerlist-world-groups");
         Map<String, List<String>> sharedWorlds = new HashMap<>();
@@ -49,8 +49,8 @@ public class PerWorldPlayerListConfiguration {
         }
 
         return new PerWorldPlayerListConfiguration(
+                section.getString("disable-condition", "%world%=ignoredworld|%world%=build"),
                 section.getBoolean("allow-bypass-permission", false),
-                section.getStringList("ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build")),
                 sharedWorlds
         );
     }

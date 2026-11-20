@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
+import me.neznamy.tab.shared.features.PerWorldPlayerListPlayerData;
 import me.neznamy.tab.shared.features.belowname.BelowNamePlayerData;
 import me.neznamy.tab.shared.features.bossbar.BossBarPlayerData;
 import me.neznamy.tab.shared.features.header.HeaderFooterPlayerData;
@@ -100,6 +101,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Data for sorting */
     public final SortingPlayerData sortingData = new SortingPlayerData();
+
+    /** Data for per-world playerlist */
+    public final PerWorldPlayerListPlayerData perWorldPlayerListData = new PerWorldPlayerListPlayerData();
 
     /** Data for sidebar scoreboard feature */
     public final ScoreboardPlayerData scoreboardData = new ScoreboardPlayerData();

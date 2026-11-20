@@ -161,7 +161,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @Nullable
     public TabFeature getPerWorldPlayerList(@NotNull PerWorldPlayerListConfiguration configuration) {
-        return new PerWorldPlayerList(plugin, this, configuration);
+        return new PerWorldPlayerList(this, configuration);
     }
 
     @Override
