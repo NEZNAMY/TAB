@@ -14,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
@@ -90,23 +92,38 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     }
 
     @Override
-    public void updateFromNested(@NonNull TabPlayer target) {
+    public void updateFromNested(@NonNull TabPlayer player) {
+        Set<TabPlayer> targets = new HashSet<>();
+        targets.add(player);
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+            updateCachedValue(player, target);
+            targets.add(target);
+        }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            String value = request(viewer, target);
-            String s = replacements.findReplacement(String.valueOf(value));
-            viewer.lastRelationalValues.computeIfAbsent(this, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
+            if (viewer == player) continue;
+            updateCachedValue(viewer, player);
         }
-        if (!target.isLoaded()) return; // Updated on join
-        for (RefreshableFeature f : reference.getUsedByFeatures()) {
-            TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(target, true),
-                    f.getFeatureName(), f.getRefreshDisplayName());
-            if (f instanceof CustomThreaded) {
-                ((CustomThreaded) f).getCustomThread().execute(task);
-            } else {
-                task.run();
+        for (TabPlayer target : targets) {
+            if (!target.isLoaded()) continue; // Updated on join
+            for (RefreshableFeature f : reference.getUsedByFeatures()) {
+                TimedCaughtTask task = new TimedCaughtTask(TAB.getInstance().getCpu(), () -> f.refresh(target, true),
+                        f.getFeatureName(), f.getRefreshDisplayName());
+                if (f instanceof CustomThreaded) {
+                    ((CustomThreaded) f).getCustomThread().execute(task);
+                } else {
+                    task.run();
+                }
             }
+            updateParents(target);
         }
-        updateParents(target);
+        if (!player.isLoaded()) return; // Updated on join
+        updateParents(player);
+    }
+
+    private void updateCachedValue(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
+        String value = request(viewer, target);
+        String s = replacements.findReplacement(String.valueOf(value));
+        viewer.lastRelationalValues.computeIfAbsent(this, v -> Collections.synchronizedMap(new WeakHashMap<>())).put(target, s);
     }
 
     /**
